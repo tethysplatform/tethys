@@ -21,7 +21,7 @@
           <h1>Disconnect</h1>
         </div>
         <div class="account-form-body">
-          <form role="form" method="post" action="{% url 'social:disconnect_individual' provider association_id %}?next=/user/{{ user.username }}/settings/">
+          <form role="form" method="post" action="{% url 'social:disconnect_individual' provider association_id %}?next=/user/settings/">
             {% if 'google' in provider %}
               <p>Are you sure you want to disconnect your Google account?</p>
             {% elif 'linkedin' in provider %}
@@ -39,7 +39,7 @@
             {% endif %}
 
             {% csrf_token %}
-            <a href="{% url 'user:settings' username=user.username %}" class="btn btn-default">Cancel</a>
+            <a href="{% url 'user:settings' %}" class="btn btn-default">Cancel</a>
             <button type="submit" id="disconnect-social-submit" class="btn btn-danger" name="disconnect-social-submit">Disconnect</button>
           </form>
         </div>

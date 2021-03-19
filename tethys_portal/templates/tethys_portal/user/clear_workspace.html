@@ -28,7 +28,7 @@
           <form role="form" method="post" action="">
             <p>Are you sure you want to clear your workspace in the {{ app_name }} app?</p>
             {% csrf_token %}
-            <a href="{% url 'user:manage_storage' username=user.username %}" class="btn btn-default">Cancel</a>
+            <a href="{% url 'user:manage_storage' %}" class="btn btn-default">Cancel</a>
             <button type="submit" id="clear-workspace-submit" class="btn btn-danger" name="clear-workspace-submit">Clear</button>
           </form>
         </div>

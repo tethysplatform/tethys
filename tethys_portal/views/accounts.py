@@ -26,7 +26,7 @@ def login_view(request):
     """
     # Only allow users to access login page if they are not logged in
     if not request.user.is_anonymous:
-        return redirect('user:profile', username=request.user.username)
+        return redirect('user:profile')
 
     # Handle form
     if request.method == 'POST' and 'login-submit' in request.POST:
@@ -81,7 +81,7 @@ def register(request):
     """
     # Only allow users to access register page if they are not logged in
     if not request.user.is_anonymous:
-        return redirect('user:profile', username=request.user.username)
+        return redirect('user:profile')
 
     # Disallow access to this page if open signup is disabled
     if not hasattr(settings, 'ENABLE_OPEN_SIGNUP') or not settings.ENABLE_OPEN_SIGNUP:
@@ -116,7 +116,7 @@ def register(request):
                     if 'next' in request.GET:
                         return redirect(request.GET['next'])
                     else:
-                        return redirect('user:profile', username=user.username)
+                        return redirect('user:profile')
                 else:
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message

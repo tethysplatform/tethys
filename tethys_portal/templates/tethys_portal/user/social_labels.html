@@ -2,7 +2,7 @@
   {% for backend in backends %}
     {% if 'azuread' in backend or 'azuread' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-windows">Disconnect Azure AD</span></a>
+      <a href="{% url 'user:disconnect' backend.provider backend.id %}"><span class="label label-windows">Disconnect Azure AD</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-windows">Connect Azure AD</span></a>
       {% else %}
@@ -10,7 +10,7 @@
       {% endif %}
     {% elif 'adfs' in backend or 'adfs' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-windows">Disconnect ADFS</span></a>
+      <a href="{% url 'user:disconnect' backend.provider backend.id %}"><span class="label label-windows">Disconnect ADFS</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-windows">Connect ADFS</span></a>
       {% else %}
@@ -18,7 +18,7 @@
       {% endif %}
     {% elif 'linkedin' in backend or 'linkedin' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username 'linkedin-oauth2' backend.id %}"><span class="label label-linkedin">Disconnect LinkedIn</span></a>
+      <a href="{% url 'user:disconnect' 'linkedin-oauth2' backend.id %}"><span class="label label-linkedin">Disconnect LinkedIn</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' 'linkedin-oauth2' %}?next={{ request.path }}"><span class="label label-linkedin">Connect LinkedIn</span></a>
       {% else %}
@@ -26,7 +26,7 @@
       {% endif %}
     {% elif 'google' in backend or 'google' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username 'google-oauth2' backend.id %}"><span class="label label-google">Disconnect Google</span></a>
+      <a href="{% url 'user:disconnect' 'google-oauth2' backend.id %}"><span class="label label-google">Disconnect Google</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span class="label label-google">Connect Google</span></a>
       {% else %}
@@ -34,7 +34,7 @@
       {% endif %}
     {% elif 'facebook' in backend or 'facebook' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username 'facebook' backend.id %}"><span class="label label-facebook">Disconnect Facebook</span></a>
+      <a href="{% url 'user:disconnect' 'facebook' backend.id %}"><span class="label label-facebook">Disconnect Facebook</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}"><span class="label label-facebook">Connect Facebook</span></a>
       {% else %}
@@ -42,7 +42,7 @@
       {% endif %}
     {% elif 'hydroshare_beta' in backend or 'hydroshare_beta' == backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username 'hydroshare_beta' backend.id %}"><span class="label label-hydroshare">Disconnect HydroShare-beta</span></a>
+      <a href="{% url 'user:disconnect' 'hydroshare_beta' backend.id %}"><span class="label label-hydroshare">Disconnect HydroShare-beta</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' 'hydroshare_beta' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare-beta</span></a>
       {% else %}
@@ -50,7 +50,7 @@
       {% endif %}
     {% elif 'hydroshare_playground' in backend or 'hydroshare_playground' == backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username 'hydroshare_playground' backend.id %}"><span class="label label-hydroshare">Disconnect HydroShare-playground</span></a>
+      <a href="{% url 'user:disconnect' 'hydroshare_playground' backend.id %}"><span class="label label-hydroshare">Disconnect HydroShare-playground</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' 'hydroshare_playground' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare-playground</span></a>
       {% else %}
@@ -58,7 +58,7 @@
       {% endif %}
     {% elif 'hydroshare' in backend or 'hydroshare' == backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username 'hydroshare' backend.id %}"><span class="label label-hydroshare">Disconnect HydroShare</span></a>
+      <a href="{% url 'user:disconnect' 'hydroshare' backend.id %}"><span class="label label-hydroshare">Disconnect HydroShare</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' 'hydroshare' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare</span></a>
       {% else %}
@@ -86,7 +86,7 @@
       {% endif %}
     {% elif 'okta' in backend or 'okta' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-okta">Disconnect Okta</span></a>
+      <a href="{% url 'user:disconnect' backend.provider backend.id %}"><span class="label label-okta">Disconnect Okta</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-okta">Connect Okta</span></a>
       {% else %}
@@ -94,7 +94,7 @@
       {% endif %}
     {% elif 'onelogin' in backend or 'onelogin' in backend.provider %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-onelogin">Disconnect OneLogin</span></a>
+      <a href="{% url 'user:disconnect' backend.provider backend.id %}"><span class="label label-onelogin">Disconnect OneLogin</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-onelogin">Connect OneLogin</span></a>
       {% else %}
@@ -102,7 +102,7 @@
       {% endif %}
     {% else %}
       {% if action == 'disconnect' %}
-      <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-custom-oauth">Disconnect {{ backend.provider }}</span></a>
+      <a href="{% url 'user:disconnect' backend.provider backend.id %}"><span class="label label-custom-oauth">Disconnect {{ backend.provider }}</span></a>
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-custom-oauth">Connect {{ backend }}</span></a>
       {% else %}

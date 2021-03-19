@@ -28,7 +28,7 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                 if request.user.is_anonymous:
                     return redirect('accounts:login')
                 else:
-                    return redirect('user:settings', username=request.user.username)
+                    return redirect('user:settings')
             elif isinstance(exception, social_exceptions.AuthAlreadyAssociated):
                 blurb = 'The {0} account you tried to connect to has already been associated with another account.'
                 with pretty_output(FG_WHITE) as p:
@@ -49,14 +49,14 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                 if request.user.is_anonymous:
                     return redirect('accounts:login')
                 else:
-                    return redirect('user:settings', username=request.user.username)
+                    return redirect('user:settings')
             elif isinstance(exception, social_exceptions.NotAllowedToDisconnect):
                 blurb = 'Unable to disconnect from this social account.'
                 messages.success(request, blurb)
                 if request.user.is_anonymous:
                     return redirect('accounts:login')
                 else:
-                    return redirect('user:settings', username=request.user.username)
+                    return redirect('user:settings')
 
 
 class TethysAppAccessMiddleware:

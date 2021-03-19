@@ -102,7 +102,7 @@
         {% endif %}
         {% if user.is_authenticated and user.is_active %}
           <li>
-            <a href="{% url 'user:profile' username=user.username %}" title="User Profile">
+            <a href="{% url 'user:profile' %}" title="User Profile">
               <span>Profile</span>
             </a>
           </li>
@@ -164,12 +164,12 @@
 
         <li class="user-dropdown">
           <div class="user-profile-nav-item">
-            <a id="user-profile" class="user-profile" href="{% url 'user:profile' username=user.username %}" class="image" title="User Profile"><span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}  {% gravatar user.email 25 %}</span></a>
+            <a id="user-profile" class="user-profile" href="{% url 'user:profile' %}" class="image" title="User Profile"><span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}  {% gravatar user.email 25 %}</span></a>
             <a id="user-dropdown-toggle" class="user-dropdown-toggle" title="User Menu" href="javascript:void(0);" onclick="toggle_menu('#user-profile', this, '#user-dropdown-menu');"><span class="glyphicon glyphicon-chevron-down"></span></a>
           </div>
           <ul id="user-dropdown-menu" class="user-dropdown-menu">
             <li>
-              <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
+              <a href="{% url 'user:settings' %}" title="User Settings">
                 <span class="glyphicon glyphicon-user"></span><span>    User Settings</span>
               </a>
             </li>

@@ -94,38 +94,38 @@ class TestUrls(TethysTestCase):
         self.assertEqual('tethys_portal.views.psa', resolver.func.__module__)
 
     def test_user_urls_profile(self):
-        url = reverse('user:profile', kwargs={'username': 'foo'})
+        url = reverse('user:profile')
         resolver = resolve(url)
 
-        self.assertEqual('/user/foo/', url)
+        self.assertEqual('/user/', url)
         self.assertEqual('profile', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
     def test_user_urls_settings(self):
-        url = reverse('user:settings', kwargs={'username': 'foo'})
+        url = reverse('user:settings')
         resolver = resolve(url)
-        self.assertEqual('/user/foo/settings/', url)
+        self.assertEqual('/user/settings/', url)
         self.assertEqual('settings', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
     def test_user_urls_change_password(self):
-        url = reverse('user:change_password', kwargs={'username': 'foo'})
+        url = reverse('user:change_password')
         resolver = resolve(url)
-        self.assertEqual('/user/foo/change-password/', url)
+        self.assertEqual('/user/change-password/', url)
         self.assertEqual('change_password', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
     def test_user_urls_disconnect(self):
-        url = reverse('user:change_password', kwargs={'username': 'foo'})
+        url = reverse('user:change_password')
         resolver = resolve(url)
-        self.assertEqual('/user/foo/change-password/', url)
+        self.assertEqual('/user/change-password/', url)
         self.assertEqual('change_password', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
     def test_user_urls_delete(self):
-        url = reverse('user:delete', kwargs={'username': 'foo'})
+        url = reverse('user:delete')
         resolver = resolve(url)
-        self.assertEqual('/user/foo/delete-account/', url)
+        self.assertEqual('/user/delete-account/', url)
         self.assertEqual('delete_account', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
