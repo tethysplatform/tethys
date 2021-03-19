@@ -23,7 +23,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_request.user.is_anonymous = False
         mock_request.user.username = 'sam'
         login_view(mock_request)
-        mock_redirect.assert_called_once_with('user:profile', username='sam')
+        mock_redirect.assert_called_once_with('user:profile')
 
     @mock.patch('tethys_portal.views.accounts.log_user_in')
     @mock.patch('tethys_portal.views.accounts.authenticate')
@@ -296,7 +296,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_request.user.is_anonymous = False
         mock_request.user.username = 'sam'
         register(mock_request)
-        mock_redirect.assert_called_once_with('user:profile', username='sam')
+        mock_redirect.assert_called_once_with('user:profile')
 
     @override_settings(ENABLE_OPEN_SIGNUP=False)
     @mock.patch('tethys_portal.views.accounts.redirect')
@@ -354,7 +354,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_login.assert_called_with(mock_request, mock_user)
 
         # mock redirect after logged in using next parameter or default to user profile
-        mock_redirect.assert_called_once_with('user:profile', username=mock_user.username)
+        mock_redirect.assert_called_once_with('user:profile')
 
     @override_settings(ENABLE_OPEN_SIGNUP=True)
     @mock.patch('tethys_portal.views.accounts.login')
