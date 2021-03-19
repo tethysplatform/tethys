@@ -593,7 +593,8 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_app_class(self, mock_harvester):
         """"""
         from tethysapp.test_app.app import TestApp
-        mock_harvester().apps = [TestApp()]
+        test_app = TestApp()
+        mock_harvester().apps = [test_app]
 
         mock_db_app = mock.MagicMock()
         mock_db_app.name = TestApp.name  # This should match the name of TestApp
@@ -602,13 +603,14 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         ret = utilities.get_app_class(mock_db_app)
 
         # Should work because package is used to find the class, not the name
-        self.assertTrue(ret is TestApp)
+        self.assertTrue(ret is test_app)
 
     @mock.patch('tethys_apps.utilities.SingletonHarvester')
     def test_get_app_class__different_name(self, mock_harvester):
         """Test case when user changes name of app in DB (from app settings)."""
         from tethysapp.test_app.app import TestApp
-        mock_harvester().apps = [TestApp()]
+        test_app = TestApp()
+        mock_harvester().apps = [test_app]
 
         mock_db_app = mock.MagicMock()
         mock_db_app.name = 'Different Name'  # This shouldn't match the name of TestApp
@@ -617,7 +619,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         ret = utilities.get_app_class(mock_db_app)
 
         # Should work because package is used to find the class, not the name
-        self.assertTrue(ret is TestApp)
+        self.assertTrue(ret is test_app)
 
     @mock.patch('tethys_apps.utilities.SingletonHarvester')
     def test_get_app_class__no_matching_class(self, mock_harvester):
