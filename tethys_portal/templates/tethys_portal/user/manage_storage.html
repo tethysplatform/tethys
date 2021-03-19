@@ -49,7 +49,7 @@
           </td>
           <td>{{ app.current_use }}</td>
           <td>
-            <a class="btn btn-danger btn-sm" href="{% url 'user:clear_workspace' user.username app.root_url %}">Clear Workspace</a>
+            <a class="btn btn-danger btn-sm" href="{% url 'user:clear_workspace' app.root_url %}">Clear Workspace</a>
           </td>
         </tr>
         {% endfor %}
