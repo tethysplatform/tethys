@@ -15,6 +15,10 @@ class ArcGISPortalOAuth2(ArcGISOAuth2):
     ArcGISPortal OAuth2 authentication backend.
     """
     name = 'arcgis_portal'
+    EXTRA_DATA = [
+        ('refresh_token', 'refresh_token'),
+        ('expires_in', 'expires_in'),
+    ]
 
     @property
     def PORTAL_URL(self):
