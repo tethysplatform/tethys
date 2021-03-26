@@ -139,9 +139,8 @@ def get_active_app(request=None, url=None, get_class=None):
 
 
 def get_app_class(app):
-    apps_s = SingletonHarvester().apps
-    for app_s in apps_s:
-        if app_s.name == app.name:
+    for app_s in SingletonHarvester().apps:
+        if app_s.package == app.package:
             return app_s
 
 
