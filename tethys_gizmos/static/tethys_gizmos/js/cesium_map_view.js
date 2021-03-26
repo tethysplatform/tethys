@@ -195,11 +195,11 @@ var CESIUM_MAP_VIEW = (function() {
                     if (curr_layer.options.params.VIEWPARAMS) {
                         parameters.VIEWPARAMS = curr_layer.options.params.VIEWPARAMS;
                     }
-                    if (curr_layer.options.times) {
+                    if (curr_layer.times) {
                         // times should be in this format "["20210322T112511Z", "20210322T122511Z", "20210323T032511Z"]"
-                        var times = JSON.parse(curr_layer.options.times);
+                        var times = JSON.parse(curr_layer.times);
                         const provider_interval = new Cesium.TimeIntervalCollection.fromIso8601DateArray({
-                            iso8601Dates: JSON.parse(curr_layer.options.times),
+                            iso8601Dates: JSON.parse(curr_layer.times),
                             dataCallback: cesium_time_callback,
                         });
 
