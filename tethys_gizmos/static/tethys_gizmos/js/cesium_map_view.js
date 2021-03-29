@@ -39,7 +39,8 @@ var CESIUM_MAP_VIEW = (function() {
 
     // Utility Methods
     var is_defined, is_empty_or_undefined, in_array, string_to_object, string_to_function, string_w_arg_to_function,
-        build_options, build_options_string, need_to_run, cesium_options, json_parser, clear_data;
+        build_options, build_options_string, need_to_run, cesium_options, json_parser, clear_data,
+        cesium_time_callback;
 
 
  	/************************************************************************
@@ -76,7 +77,6 @@ var CESIUM_MAP_VIEW = (function() {
         // Get view settings from data attribute
         var $map_element = $('#' + m_map_target);
         m_clock = $map_element.data('clock');
-
         if (!is_empty_or_undefined(m_clock))
         {
             // Parse out the Cesium objects
@@ -195,12 +195,37 @@ var CESIUM_MAP_VIEW = (function() {
                     if (curr_layer.options.params.VIEWPARAMS) {
                         parameters.VIEWPARAMS = curr_layer.options.params.VIEWPARAMS;
                     }
+                    if (curr_layer.times) {
+                        // times should be a JSON array string with times in ISO 8601 format: "["20210322T112511Z", "20210322T122511Z", "20210323T032511Z"]"
+                        var times = JSON.parse(curr_layer.times);
+                        const provider_interval = new Cesium.TimeIntervalCollection.fromIso8601DateArray({
+                            iso8601Dates: times,
+                            dataCallback: cesium_time_callback,
+                        });
 
-                    var tile_wms = new Cesium.WebMapServiceImageryProvider({
-                        url: curr_layer.options.url,
-                        layers: curr_layer.options.params.LAYERS,
-                        parameters: parameters
-                    });
+                        var clock = m_viewer.clock;
+                        var start = Cesium.JulianDate.fromIso8601(times[0])
+                        var stop = Cesium.JulianDate.fromIso8601(times[times.length - 1])
+                        clock.startTime = start;
+                        clock.stopTime = stop;
+                        clock.currentTime = start;
+                        clock.multiplier = 600;  // run at 10-minute interval speed.
+                        var tile_wms = new Cesium.WebMapServiceImageryProvider({
+                            url: curr_layer.options.url,
+                            layers: curr_layer.options.params.LAYERS,
+                            parameters: parameters,
+                            times: provider_interval,
+                            clock: m_viewer.clock,
+                        });
+                    }
+                    else {
+                        var tile_wms = new Cesium.WebMapServiceImageryProvider({
+                            url: curr_layer.options.url,
+                            layers: curr_layer.options.params.LAYERS,
+                            parameters: parameters,
+                        });
+                        console.log(tile_wms)
+                    }
                     var img_layer = m_viewer.imageryLayers.addImageryProvider(tile_wms);
                     img_layer['tethys_data'] = curr_layer.data;
                     img_layer['legend_title'] = curr_layer.legend_title;
@@ -210,7 +235,6 @@ var CESIUM_MAP_VIEW = (function() {
                     img_layer['feature_selection'] = curr_layer.feature_selection;
                     img_layer['geometry_attribute'] = curr_layer.geometry_attribute;
                 }
-
             } else {
                 var layer_options = cesium_options(curr_layer);
                 for (var layer_option in layer_options) {
@@ -282,7 +306,6 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         var m_entities_options = [];
         var raw_entities_options = $map_element.data('entities');
-
         if(is_empty_or_undefined(raw_entities_options))
         {
             return;
@@ -781,6 +804,12 @@ var CESIUM_MAP_VIEW = (function() {
                 return false;
         }
         return true;
+    }
+
+    cesium_time_callback = function(interval) {
+        return {
+            time: Cesium.JulianDate.toIso8601(interval.start)
+        };
     }
 
 	/************************************************************************

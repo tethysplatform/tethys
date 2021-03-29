@@ -109,13 +109,15 @@ class TestMapView(unittest.TestCase):
         source = 'KML'
         legend_title = 'Park City Watershed'
         options = {'url': '/static/tethys_gizmos/data/model.kml'}
+        times = ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]
 
-        result = gizmo_map_view.MVLayer(source=source, legend_title=legend_title, options=options)
+        result = gizmo_map_view.MVLayer(source=source, legend_title=legend_title, options=options, times=times)
 
         # Check Result
         self.assertEqual(source, result['source'])
         self.assertEqual(legend_title, result['legend_title'])
         self.assertEqual(options, result['options'])
+        self.assertEqual(times, result['times'])
 
     @mock.patch('tethys_gizmos.gizmo_options.map_view.log.warning')
     def test_MVLayer_warning(self, mock_log):
