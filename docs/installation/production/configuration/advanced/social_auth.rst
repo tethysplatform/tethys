@@ -642,7 +642,7 @@ OneLogin
 
         .. code-block::
 
-            http://<SERVER_DOMAIN_NAME>/login/
+            http://<SERVER_DOMAIN_NAME>/accounts/login/
             http://localhost:8000/accounts/login/
 
     c. On the SSO tab, set the Token Endpoint Authentication Method to ``POST``.
