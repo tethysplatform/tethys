@@ -525,7 +525,7 @@ class MVLayer(SecondaryGizmoOptions):
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
         data (dict): Dictionary representation of layer data
-        times (list): only for Cesium. List of start time for geoserver image mosaic layers. (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"])
+        times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
     Example
 
     ::

@@ -196,10 +196,10 @@ var CESIUM_MAP_VIEW = (function() {
                         parameters.VIEWPARAMS = curr_layer.options.params.VIEWPARAMS;
                     }
                     if (curr_layer.times) {
-                        // times should be in this format "["20210322T112511Z", "20210322T122511Z", "20210323T032511Z"]"
+                        // times should be a JSON array string with times in ISO 8601 format: "["20210322T112511Z", "20210322T122511Z", "20210323T032511Z"]"
                         var times = JSON.parse(curr_layer.times);
                         const provider_interval = new Cesium.TimeIntervalCollection.fromIso8601DateArray({
-                            iso8601Dates: JSON.parse(curr_layer.times),
+                            iso8601Dates: times,
                             dataCallback: cesium_time_callback,
                         });
 
@@ -209,7 +209,7 @@ var CESIUM_MAP_VIEW = (function() {
                         clock.startTime = start;
                         clock.stopTime = stop;
                         clock.currentTime = start;
-                        clock.multiplier = 600;
+                        clock.multiplier = 600;  // run at 10-minute interval speed.
                         var tile_wms = new Cesium.WebMapServiceImageryProvider({
                             url: curr_layer.options.url,
                             layers: curr_layer.options.params.LAYERS,
@@ -235,7 +235,25 @@ var CESIUM_MAP_VIEW = (function() {
                     img_layer['feature_selection'] = curr_layer.feature_selection;
                     img_layer['geometry_attribute'] = curr_layer.geometry_attribute;
                 }
+                else if (curr_layer.source.toLowerCase() == 'geojson') {
+                    let gjson = curr_layer.options;
+                    let dataSourcePromise = Cesium.GeoJsonDataSource.load(gjson).then(function(source_result) {
+                        source_result['tethys_data'] = curr_layer.data;
+                        source_result['legend_title'] = curr_layer.legend_title;
+                        source_result['legend_classes'] = curr_layer.legend_classes;
+                        source_result['legend_extent'] = curr_layer.legend_extent;
+                        source_result['legend_extent_projection'] = curr_layer.legend_extent_projection;
+                        source_result['feature_selection'] = curr_layer.feature_selection;
+                        source_result['geometry_attribute'] = curr_layer.geometry_attribute;
 
+                        if ('layer_options' in curr_layer && curr_layer.layer_options &&
+                            'visible' in curr_layer.layer_options) {
+                            source_result.show = curr_layer.layer_options.visible;
+                        }
+                        return source_result;
+                    });
+                    m_viewer.dataSources.add(dataSourcePromise);
+                }
             } else {
                 var layer_options = cesium_options(curr_layer);
                 for (var layer_option in layer_options) {
@@ -307,7 +325,6 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         var m_entities_options = [];
         var raw_entities_options = $map_element.data('entities');
-
         if(is_empty_or_undefined(raw_entities_options))
         {
             return;
