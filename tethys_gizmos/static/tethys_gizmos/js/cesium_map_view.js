@@ -806,7 +806,7 @@ var CESIUM_MAP_VIEW = (function() {
         return true;
     }
 
-    cesium_time_callback = function (interval) {
+    cesium_time_callback = function(interval) {
         return {
             time: Cesium.JulianDate.toIso8601(interval.start)
         };
