@@ -525,7 +525,7 @@ class MVLayer(SecondaryGizmoOptions):
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
         data (dict): Dictionary representation of layer data
-
+        times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
     Example
 
     ::
@@ -682,7 +682,7 @@ class MVLayer(SecondaryGizmoOptions):
     def __init__(self, source, options, legend_title, layer_options=None, editable=True,
                  legend_classes=None, legend_extent=None,
                  legend_extent_projection='EPSG:4326',
-                 feature_selection=False, geometry_attribute=None, data=None):
+                 feature_selection=False, geometry_attribute=None, data=None, times=None):
         """
         Constructor
         """
@@ -699,6 +699,7 @@ class MVLayer(SecondaryGizmoOptions):
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
         self.data = data or dict()
+        self.times = times
 
         if feature_selection and not geometry_attribute:
             log.warning("geometry_attribute not defined -using default value 'the_geom'")
