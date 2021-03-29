@@ -235,25 +235,6 @@ var CESIUM_MAP_VIEW = (function() {
                     img_layer['feature_selection'] = curr_layer.feature_selection;
                     img_layer['geometry_attribute'] = curr_layer.geometry_attribute;
                 }
-                else if (curr_layer.source.toLowerCase() == 'geojson') {
-                    let gjson = curr_layer.options;
-                    let dataSourcePromise = Cesium.GeoJsonDataSource.load(gjson).then(function(source_result) {
-                        source_result['tethys_data'] = curr_layer.data;
-                        source_result['legend_title'] = curr_layer.legend_title;
-                        source_result['legend_classes'] = curr_layer.legend_classes;
-                        source_result['legend_extent'] = curr_layer.legend_extent;
-                        source_result['legend_extent_projection'] = curr_layer.legend_extent_projection;
-                        source_result['feature_selection'] = curr_layer.feature_selection;
-                        source_result['geometry_attribute'] = curr_layer.geometry_attribute;
-
-                        if ('layer_options' in curr_layer && curr_layer.layer_options &&
-                            'visible' in curr_layer.layer_options) {
-                            source_result.show = curr_layer.layer_options.visible;
-                        }
-                        return source_result;
-                    });
-                    m_viewer.dataSources.add(dataSourcePromise);
-                }
             } else {
                 var layer_options = cesium_options(curr_layer);
                 for (var layer_option in layer_options) {
