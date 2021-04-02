@@ -642,14 +642,14 @@ OneLogin
 
         .. code-block::
 
-            http://<SERVER_DOMAIN_NAME>/login/
-            http://localhost:8000/login/
+            http://<SERVER_DOMAIN_NAME>/accounts/login/
+            http://localhost:8000/accounts/login/
 
     c. On the SSO tab, set the Token Endpoint Authentication Method to ``POST``.
 
 3. Select the **SSO** tab if you are not on it already and note the ``Client ID`` and ``Client Secret`` for Step 5.
 
-4. Point to **Settings > Account Settings** and note the ``Subdomain`` for step 5.
+4. Point to **Settings > Account Settings** and note the ``Subdomain`` for step 5 (e.g.: https://example.onelogin.com).
 
 5. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
 
