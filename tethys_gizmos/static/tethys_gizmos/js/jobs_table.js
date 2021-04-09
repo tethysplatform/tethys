@@ -554,7 +554,7 @@ function get_month_from_string(mon){
 function parse_datetime(date){
     var parts = date.split(/[\s,:]+/);
 
-    var mon = get_month_from_string(parts[0]);
+    var mon = get_month_from_string(parts[0].slice(0, 3) + '.');
     var day = parts[1];
     var year = parts[2];
     var hour = parseInt(parts[3]);

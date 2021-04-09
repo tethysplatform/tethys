@@ -23,7 +23,7 @@
       <div class="row">
         <div class="col-md-3 col-md-offset-2">
           <div class="profile-image-wrapper">
-            {% gravatar user.email 250 %}
+            {% if user.email %}{% gravatar user.email 250 %}{% else %}{% gravatar "tethys@example.com" 250 %}{% endif %}
           </div>
         </div>
         <div class="col-md-7">
