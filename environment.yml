@@ -38,7 +38,7 @@ dependencies:
 - social-auth-app-django
 - dask=1.2.*
 - tethys_dask_scheduler>=1.0.2
-- channels
+- channels=2.*
 - daphne=2.5.*
 - service_identity
 - condorpy
