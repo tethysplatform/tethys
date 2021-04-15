@@ -342,6 +342,7 @@ var CESIUM_MAP_VIEW = (function() {
             else if (curr_entity_options.source.toLowerCase() == 'geojson')
             {
                 var gjson = curr_entity_options.options;
+                var default_point = gjson && gjson['properties'] && gjson['properties']['default_point'] == 'point'
                 var dataSourcePromise = Cesium.GeoJsonDataSource.load(gjson).then(function(source_result) {
                     source_result['tethys_data'] = curr_entity_options.data;
                     source_result['legend_title'] = curr_entity_options.legend_title;
@@ -354,7 +355,18 @@ var CESIUM_MAP_VIEW = (function() {
                     if ('layer_options' in curr_entity_options && curr_entity_options.layer_options &&
                         'visible' in curr_entity_options.layer_options) {
                         source_result.show = curr_entity_options.layer_options.visible;
+                        if (default_point) {
+                            var point = new Cesium.PointGraphics({
+                                color: Cesium.Color.ORANGE,
+                                pixelSize: 8,
+                            });
+                            source_result.entities.values.forEach((value) => {
+                                value.billboard = undefined;
+                                value.point = point;
+                            })
+                        }
                     }
+
                     return source_result;
                 });
                 m_viewer.dataSources.add(dataSourcePromise);
