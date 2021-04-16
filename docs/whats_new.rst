@@ -57,7 +57,7 @@ See: :ref:`tethys_user_pages`
 Password Reset
 ==============
 
-* Changes configuration for Password Reset feature of Tethys Portal to be teh same as the configuration for MFA email support.
+* Changes configuration for Password Reset feature of Tethys Portal to be the same as the configuration for MFA email support.
 * This allows the emails sent by the Password Reset and MFA features to be sent from the same email address and alias.
 
 See: :ref:`setup_email_capabilities`
