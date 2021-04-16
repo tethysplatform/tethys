@@ -1,3 +1,5 @@
+.. _app_base_class_api:
+
 ******************
 App Base Class API
 ******************
@@ -47,6 +49,9 @@ Class Methods
 -------------
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_custom_setting
+   :noindex:
+
+.. automethod:: tethys_apps.base.TethysAppBase.set_custom_setting
    :noindex:
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_persistent_store_connection
