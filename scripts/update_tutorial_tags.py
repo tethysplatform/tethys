@@ -2,8 +2,10 @@ import getpass
 from github import Github
 from github.GithubException import BadCredentialsException
 
+# Requirements: pip install PyGithub
+
 # Tethys Version to Tag For
-tethys_version = '3.1'
+tethys_version = '3.3'
 
 # Tutorial repos ({<repo_name>: {<branch>: <tag_prefix>}}
 tutorial_repos = {
