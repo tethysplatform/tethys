@@ -1,3 +1,5 @@
+.. _tethys_user_pages:
+
 ************
 Tethys Users
 ************
