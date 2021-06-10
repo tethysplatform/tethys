@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -10,30 +11,30 @@ from tethys_sdk.gizmos import SelectInput
 log = logging.getLogger('tethys.tethys_gizmos.views.jobs_table')
 
 
-def execute(request, job_id):
+def perform_action(request, job_id, action):
     try:
         job = TethysJob.objects.get_subclass(id=job_id)
-        job.execute()
+        getattr(job, action)()
         success = True
         message = ''
     except Exception as e:
         success = False
         message = str(e)
-        log.error('The following error occurred when executing job %s: %s', job_id, message)
+        log.exception(e)
+        log.error('The following error occurred when running "%s" on job %s: %s', action, job_id, message)
     return JsonResponse({'success': success, 'message': message})
+
+
+def execute(request, job_id):
+    return perform_action(request, job_id, 'execute')
 
 
 def terminate(request, job_id):
-    try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        job.stop()
-        success = True
-        message = ''
-    except Exception as e:
-        success = True
-        message = str(e)
-        log.error('The following error occurred when terminating job %s: %s', job_id, message)
-    return JsonResponse({'success': success, 'message': message})
+    return perform_action(request, job_id, 'stop')
+
+
+def resubmit(request, job_id):
+    return perform_action(request, job_id, 'resubmit')
 
 
 def delete(request, job_id):
@@ -47,21 +48,6 @@ def delete(request, job_id):
         success = True
         message = str(e)
         log.error('The following error occurred when deleting job %s: %s', job_id, message)
-    return JsonResponse({'success': success, 'message': message})
-
-
-def resubmit(request, job_id):
-    try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        # Resubmit the Job.
-        job.resubmit()
-
-        success = True
-        message = ''
-    except Exception as e:
-        success = True
-        message = str(e)
-        log.error('The following error occurred when resubmiting job %s: %s', job_id, message)
     return JsonResponse({'success': success, 'message': message})
 
 
@@ -137,18 +123,8 @@ def get_log_content(request, job_id, key1, key2=None):
 
 def update_row(request, job_id):
     filters = []
-
     try:
-        data = {key: _parse_value(val) for key, val in request.POST.items()}
-
-        # parse out dictionaries from POST items
-        keys = [k.split('[') for k in data.keys() if '[' in k]
-        for name, key in keys:
-            data.setdefault(name, {})
-            data[name][key.strip(']')] = _parse_value(data.pop(f'{name}[{key}'))
-
-        filter_string = data.pop('column_fields')
-        filters = [f.strip('\'\" ') for f in filter_string.strip('[]').split(',')]
+        data = reconstruct_post_dict(request)
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
         status_msg = job.status_message
@@ -180,9 +156,8 @@ def update_row(request, job_id):
             if status == 'Results-Ready':
                 status = 'Running'
 
-        row = JobsTable.get_row(job, filters)
-
-        data.update({'job': job, 'job_id': job.id, 'row': row, 'column_fields': filters, 'job_status': status,
+        row = JobsTable.get_row(job, data['column_fields'], data['custom_actions'])
+        data.update({'job': job, 'job_id': job.id, 'row': row, 'job_status': status,
                      'job_statuses': statuses, 'delay_loading_status': False, 'error_message': status_msg})
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
@@ -319,5 +294,24 @@ def _parse_value(val):
         return True
     elif val in ('False', 'false'):
         return False
+    elif val.startswith('['):
+        return [f.strip('\'\" ') for f in val.strip('[]').split(',')]
     else:
         return val
+
+
+def reconstruct_post_dict(request):
+    data = {key: _parse_value(val) for key, val in request.POST.items()}
+    # parse out dictionaries from POST items
+    parts = [re.split('\W+', k)[:-1] for k in data.keys() if '[' in k]
+    for p in parts:
+        name = p[0]
+        keys = p[1:]
+        value = data.pop(f"{name}{''.join([f'[{k}]' for k in keys])}")
+        data.setdefault(name, {})
+        d = data[name]
+        for k in keys[:-1]:
+            d.setdefault(k, {})
+            d = d[k]
+        d[keys[-1]] = value
+    return data
