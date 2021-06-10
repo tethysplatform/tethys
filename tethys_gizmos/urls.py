@@ -18,6 +18,8 @@ ajax_urls = [
     re_path(r'^(?P<job_id>[\d.@+-]+)/log-content/(?P<key1>[\w+_-]+)(?:/(?P<key2>.*))?',
             jobs_table_views.get_log_content, name='log_content'),
     re_path(r'^(?P<job_id>[\d.@+-]+)/execute', jobs_table_views.execute, name='execute_job'),
+    re_path(r'^(?P<job_id>[\d.@+-]+)/custom-action/(?P<action>[\w+-]+)', jobs_table_views.perform_action,
+            name='custom_action'),
     re_path(r'^(?P<job_id>[\d.@+-]+)/update-row', jobs_table_views.update_row, name='update_job_row'),
     re_path(r'^(?P<job_id>[\d.@+-]+)/update-workflow-nodes-row', jobs_table_views.update_workflow_nodes_row,
             name='update_workflow_nodes_row'),

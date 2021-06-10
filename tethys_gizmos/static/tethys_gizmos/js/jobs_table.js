@@ -3,10 +3,41 @@
  * Update job status with a timeout while job is still running.
  *
  *****************************************************************************/
+function add_message(message, message_type='danger'){
+  var alert_html = '<div class="alert alert-' + message_type + ' alert-dismissible" role="alert">' +
+                      '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                      '<strong>Error!</strong> ' + message +
+                  '</div>';
+  $('#jobs-table-messages').append(alert_html);
+}
 
-function bind_run_button(btn){
-    var job_id = $(btn).data('job-id');
-    $(btn).on('click', function () {
+function bind_custom_action(action){
+     var job_id = $(action).data('job-id');
+     var callback = $(action).data('callback')
+     $(action).on('click', function () {
+
+        var action_url = '/developer/gizmos/ajax/' + job_id + '/custom-action/' + callback;
+        $.ajax({
+            url: action_url
+        }).done(function (json) {
+            status_html =
+            '<div class="progress" style="margin-bottom: 0;">' +
+                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                    '<span class="sr-only">100% Complete</span>' +
+                '</div>' +
+            '</div>'
+            $(action).parent().html(status_html);
+            update_row($('#jobs-table-row-' + job_id));
+            if(!json.success){
+              add_message(json.message);
+            }
+        });
+    });
+}
+
+function bind_run_action(action){
+    var job_id = $(action).data('job-id');
+    $(action).on('click', function () {
         var execute_url = '/developer/gizmos/ajax/' + job_id + '/execute';
         $.ajax({
             url: execute_url
@@ -17,15 +48,15 @@ function bind_run_button(btn){
                     '<span class="sr-only">100% Complete</span>' +
                 '</div>' +
             '</div>'
-            $(btn).parent().html(status_html);
+            $(action).parent().html(status_html);
             update_row($('#jobs-table-row-' + job_id));
         });
     });
 }
 
-function bind_refresh_button(btn){
-    var job_id = $(btn).data('job-id');
-    $(btn).on('click', function () {
+function bind_refresh_action(action){
+    var job_id = $(action).data('job-id');
+    $(action).on('click', function () {
         var execute_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
         $.ajax({
             url: execute_url
@@ -36,15 +67,15 @@ function bind_refresh_button(btn){
                     '<span class="sr-only">100% Complete</span>' +
                 '</div>' +
             '</div>'
-            $(btn).parent().html(status_html);
+            $(action).parent().html(status_html);
             update_row($('#jobs-table-row-' + job_id));
         });
     });
 }
 
-function bind_terminate_button(btn){
-    var job_id = $(btn).data('job-id');
-    $(btn).on('click', function(){
+function bind_terminate_action(action){
+    var job_id = $(action).data('job-id');
+    $(action).on('click', function(){
         $('#modal-dialog-jobs-table-confirm-content').html('Are you sure you want to terminate this job');
         $('#tethys_jobs-table-confirm').html('Terminate');
         $('#tethys_jobs-table-confirm').off('click');
@@ -71,9 +102,9 @@ function bind_terminate_button(btn){
     });
 }
 
-function bind_delete_button(btn){
-    var job_id = $(btn).data('job-id');
-    $(btn).on('click', function(){
+function bind_delete_action(action){
+    var job_id = $(action).data('job-id');
+    $(action).on('click', function(){
         $('#modal-dialog-jobs-table-confirm-content').html('Are you sure you want to permanently delete this job?');
         $('#tethys_jobs-table-confirm').html('Delete');
         $('#tethys_jobs-table-confirm').off('click');
@@ -106,16 +137,16 @@ function bind_delete_button(btn){
     });
 }
 
-function bind_resubmit_button(btn){
-    var job_id = $(btn).data('job-id');
-    $(btn).on('click', function(){
+function bind_resubmit_action(action){
+    var job_id = $(action).data('job-id');
+    $(action).on('click', function(){
         $("#jobs_table_overlay").removeClass('d-none');
         var resubmit_url = '/developer/gizmos/ajax/' + job_id + '/resubmit';
         $.ajax({
             url: resubmit_url
         }).done(function(json){
-            update_row($(btn).closest('tr'));
-            update_workflow_nodes_row($(btn).closest('tr').next('tr'));
+            update_row($(action).closest('tr'));
+            update_workflow_nodes_row($(action).closest('tr').next('tr'));
             $("#jobs_table_overlay").addClass('d-none');
             if(json.success){
                 var alert_html = '<div class="alert alert-success alert-dismissible" role="alert">' +
@@ -213,9 +244,9 @@ function update_log_content(event, use_cache=true){
   }
 }
 
-function bind_show_log_button(btn){
-    var job_id = $(btn).data('job-id');
-    $(btn).on('click', function(){
+function bind_show_log_action(action){
+    var job_id = $(action).data('job-id');
+    $(action).on('click', function(){
         $('#modal-dialog-jobs-table-log-nav').html('');
         bind_log_refresh_button(job_id);
         load_log_content(job_id);
@@ -347,21 +378,28 @@ function update_row(table_elem){
     var show_status = $(table).data('show-status');
     var show_actions = $(table).data('show-actions');
     var actions = $(table).data('actions');
+    var custom_actions = $(table).data('custom-actions');
     var column_fields = $(table).data('column-fields');
-    var run = $(table).data('run');
-    var delete_btn = $(table).data('delete');
-    var resubmit_btn = $(table).data('resubmit');
-    var show_log_btn = $(table).data('show-log')
     var results_url = $(table).data('results-url');
     var monitor_url = $(table).data('monitor-url');
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
 
+    var data = {
+        column_fields: column_fields,
+        show_status: show_status,
+        show_actions: show_actions,
+        monitor_url: monitor_url,
+        results_url: results_url,
+        actions: actions,
+        custom_actions: custom_actions
+    }
+
     $.ajax({
         method: 'POST',
         url: update_url,
-        data: {column_fields: column_fields, show_status: show_status, show_actions: show_actions, run: run, delete: delete_btn, monitor_url: monitor_url, show_resubmit_btn: resubmit_btn, show_log_btn: show_log_btn, results_url: results_url, actions: actions}
+        data: data
     }).done(function(json){
         if(json.success){
             var current_status = $('#jobs-table-status-'+job_id).children('div').attr('title') || 'None';
@@ -386,23 +424,26 @@ function update_row(table_elem){
 }
 
 function bind_jobs_table_actions(table_elem){
-  $(table_elem).find('.btn-job-run').each(function(){
-      bind_run_button(this);
+  $(table_elem).find('.job-action-run').each(function(){
+      bind_run_action(this);
   });
-  $(table_elem).find('.btn-job-terminate').each(function(){
-      bind_terminate_button(this);
+  $(table_elem).find('.job-action-terminate').each(function(){
+      bind_terminate_action(this);
   });
-  $(table_elem).find('.btn-job-delete').each(function(){
-      bind_delete_button(this);
+  $(table_elem).find('.job-action-delete').each(function(){
+      bind_delete_action(this);
   });
-  $(table_elem).find('.btn-job-resubmit').each(function(){
-      bind_resubmit_button(this);
+  $(table_elem).find('.job-action-resubmit').each(function(){
+      bind_resubmit_action(this);
   });
-  $(table_elem).find('.btn-job-show-log').each(function(){
-      bind_show_log_button(this);
+  $(table_elem).find('.job-action-show-log').each(function(){
+      bind_show_log_action(this);
   });
-  $(table_elem).find('.btn-refresh-status').each(function(){
-      bind_refresh_button(this);
+  $(table_elem).find('.job-action-refresh-status').each(function(){
+      bind_refresh_action(this);
+  });
+  $(table_elem).find('.job-action-custom').each(function(){
+      bind_custom_action(this);
   });
   format_time_fields();
 }

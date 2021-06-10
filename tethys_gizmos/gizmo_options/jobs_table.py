@@ -10,9 +10,12 @@
 """
 from collections import namedtuple
 import logging
+from functools import wraps
+from copy import deepcopy
 
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_warning
+from tethys_compute.models import TethysJob
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
 
@@ -21,7 +24,51 @@ log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.jobs_table')
 __all__ = ['JobsTable']
 
 
-JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions'])
+JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions', 'custom_actions'])
+
+
+def add_static_method(cls):
+    def outer(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            return func(*args, **kwargs)
+        setattr(cls, func.__name__, wrapper)
+        return func
+    return outer
+
+
+def add_method(cls):
+    def outer(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        setattr(cls, func.__name__, wrapper)
+        return func
+    return outer
+
+
+class CustomJobAction:
+    def __init__(self, label, callback, enabled_callback=None, job_type=TethysJob):
+        self.label = label
+        self.callback = self.register_callback(callback, job_type)
+        if enabled_callback:
+            self.register_callback(enabled_callback, job_type, self.get_enabled_callback_name(label))
+
+    @staticmethod
+    def register_callback(callback, job_type, name=None):
+        if isinstance(callback, str):
+            getattr(job_type, callback)
+            return callback
+        elif callable(callback):
+            name = name or callback.__name__
+            setattr(job_type, name, callback)
+            return name
+        else:
+            raise ValueError(f'The specified callback "{callback}" is not valid.')
+
+    @staticmethod
+    def get_enabled_callback_name(label):
+        return f'custom_action_{label}_enabled'
 
 
 class JobsTable(TethysGizmoOptions):
@@ -86,9 +133,7 @@ class JobsTable(TethysGizmoOptions):
     def __init__(self, jobs, column_fields, show_status=True, show_actions=True,
                  monitor_url='', results_url='', hover=False, striped=False, bordered=False, condensed=False,
                  attributes=None, classes='', refresh_interval=5000, delay_loading_status=True,
-                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None,
-                 # Deprecated options:
-                 status_actions=None, show_resubmit_btn=None, run_btn=None, delete_btn=None, show_log_btn=None):
+                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None):
         """
         Constructor
         """
@@ -99,7 +144,6 @@ class JobsTable(TethysGizmoOptions):
         self.rows = None
         self.column_fields = None
         self.column_names = None
-        self.set_rows_and_columns(jobs, column_fields)
 
         self.show_status = show_status
         self.show_actions = show_actions
@@ -123,29 +167,6 @@ class JobsTable(TethysGizmoOptions):
         if results_url:
             actions.append('results')
 
-        # code for backwards compatibility. Remove in Tethys v3.3
-        if status_actions is not None:
-            # deprecation warning
-            write_warning('Deprecation Warning: The "status_actions" option in JobsTable will be removed in '
-                          'the next release of Tethys. Please use "show_status" and "show_actions" instead.')
-            self.show_actions = status_actions
-        lcl = locals()
-        for option, action in (('run_btn', 'run'), ('delete_btn', 'delete'), ('show_resubmit_btn', 'resubmit'),
-                               ('show_log_btn', 'logs')):
-            option_val = lcl[option]
-            if option_val is not None:
-                # deprecation warning
-                write_warning(f'Deprecation Warning: The "{option}" option in JobsTable will be removed in the '
-                              f'next release of Tethys. Please use the "show_actions" and "actions" options instead.')
-                if option_val:
-                    actions.append(action)
-                else:
-                    try:
-                        actions.remove(action)
-                    except ValueError:
-                        pass
-        # end compatibility code
-
         self.actions = dict(
             run='run' in actions,
             resubmit='resubmit' in actions,
@@ -155,6 +176,16 @@ class JobsTable(TethysGizmoOptions):
             terminate='terminate' in actions,
             delete='delete' in actions,
         )
+
+        self.custom_actions = dict()
+        for action in actions:
+            if isinstance(action, tuple):
+                action = CustomJobAction(*action)
+
+            if isinstance(action, CustomJobAction):
+                self.custom_actions[action.label] = {'callback': action.callback}
+
+        self.set_rows_and_columns(jobs, column_fields)
 
         # Compute column count
         self.num_cols = len(column_fields)
@@ -188,11 +219,11 @@ class JobsTable(TethysGizmoOptions):
                             column_name, str(first_job), field)
 
         for job in sorted(jobs):
-            row_values = self.get_row(job, self.column_fields)
+            row_values = self.get_row(job, self.column_fields, deepcopy(self.custom_actions))
             self.rows.append(row_values)
 
     @staticmethod
-    def get_row(job, job_attributes):
+    def get_row(job, job_attributes, custom_actions=None):
         """Get the field values for one row (corresponding to one job).
 
         Args:
@@ -203,7 +234,7 @@ class JobsTable(TethysGizmoOptions):
             A list of field values for one row.
 
         """
-        from tethys_compute.models import TethysJob
+        custom_actions = custom_actions or []
         row_values = list()
         job_actions = dict()
         for attribute in job_attributes:
@@ -228,7 +259,10 @@ class JobsTable(TethysGizmoOptions):
                 delete=job_status not in TethysJob.ACTIVE_STATUSES,
             )
 
-        return JobsTableRow(row_values, actions=job_actions)
+        for action, properties in custom_actions.items():
+            properties['enabled'] = getattr(job, CustomJobAction.get_enabled_callback_name(action), lambda: True)()
+
+        return JobsTableRow(row_values, actions=job_actions, custom_actions=custom_actions)
 
     @staticmethod
     def get_gizmo_css():
