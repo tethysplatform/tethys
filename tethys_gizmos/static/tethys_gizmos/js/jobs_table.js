@@ -4,165 +4,73 @@
  *
  *****************************************************************************/
 function add_message(message, message_type='danger'){
-  var alert_html = '<div class="alert alert-' + message_type + ' alert-dismissible" role="alert">' +
-                      '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-                      '<strong>Error!</strong> ' + message +
-                  '</div>';
-  $('#jobs-table-messages').append(alert_html);
+  if(message){
+    if(message_type == 'danger'){
+      message = '<strong>Error!</strong> ' + message;
+    }
+    var alert_html = '<div class="alert alert-' + message_type + ' alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                         message +
+                    '</div>';
+    $('#jobs-table-messages').append(alert_html);
+  }
 }
 
-function bind_custom_action(action){
-     var job_id = $(action).data('job-id');
-     var callback = $(action).data('callback')
-     $(action).on('click', function () {
+const status_html =
+'<div class="progress" style="margin-bottom: 0;">' +
+    '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+        '<span class="sr-only">100% Complete</span>' +
+    '</div>' +
+'</div>';
 
-        var action_url = '/developer/gizmos/ajax/' + job_id + '/custom-action/' + callback;
-        $.ajax({
-            url: action_url
-        }).done(function (json) {
-            status_html =
-            '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
-                    '<span class="sr-only">100% Complete</span>' +
-                '</div>' +
-            '</div>'
-            $(action).parent().html(status_html);
-            update_row($('#jobs-table-row-' + job_id));
-            if(!json.success){
-              add_message(json.message);
-            }
-        });
-    });
-}
+function bind_action(action, on_success=()=>{}){
+  if($(action).parent().hasClass('disabled')){
+    return;
+  }
+  var job_id = $(action).data('job-id');
+  var label = $(action).text();
+  var show_overlay = $(action).data('show-overlay');
+  var confirm_message = $(action).data('confirm-message');
+  var modal_url = $(action).data('modal-url');
+  var callback = $(action).data('callback');
+  var url = '/developer/gizmos/ajax/' + job_id + '/action/' + callback;
 
-function bind_run_action(action){
-    var job_id = $(action).data('job-id');
-    $(action).on('click', function () {
-        var execute_url = '/developer/gizmos/ajax/' + job_id + '/execute';
-        $.ajax({
-            url: execute_url
-        }).done(function (json) {
-            status_html =
-            '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
-                    '<span class="sr-only">100% Complete</span>' +
-                '</div>' +
-            '</div>'
-            $(action).parent().html(status_html);
-            update_row($('#jobs-table-row-' + job_id));
-        });
-    });
-}
+  var do_action = function () {
+      if(show_overlay){
+        $("#jobs_table_overlay").removeClass('hidden');
+      }
+      $(action).closest('td').prev().html(status_html);
+      $.ajax({
+          url: url
+      }).done(function (json) {
+          $("#jobs_table_overlay").addClass('hidden');
+          update_row($('#jobs-table-row-' + job_id));
+          if(json.success){
+            on_success(job_id);
+            add_message(json.message, message_type='success');
+          }
+          else{
+            add_message(json.message)
+          }
+      });
+  };
 
-function bind_refresh_action(action){
-    var job_id = $(action).data('job-id');
-    $(action).on('click', function () {
-        var execute_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
-        $.ajax({
-            url: execute_url
-        }).done(function (json) {
-            status_html =
-            '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
-                    '<span class="sr-only">100% Complete</span>' +
-                '</div>' +
-            '</div>'
-            $(action).parent().html(status_html);
-            update_row($('#jobs-table-row-' + job_id));
-        });
-    });
-}
-
-function bind_terminate_action(action){
-    var job_id = $(action).data('job-id');
+  if(callback){
     $(action).on('click', function(){
-        $('#modal-dialog-jobs-table-confirm-content').html('Are you sure you want to terminate this job');
-        $('#tethys_jobs-table-confirm').html('Terminate');
+      if(confirm_message){
+        $('#modal-dialog-jobs-table-confirm-content').html(confirm_message);
+        $('#tethys_jobs-table-confirm').html(label);
         $('#tethys_jobs-table-confirm').off('click');
         $('#tethys_jobs-table-confirm').on('click', function(){
-            $("#jobs_table_overlay").removeClass('d-none');
-            $('#modal-dialog-jobs-table-confirm').modal('hide');
-            var delete_url = '/developer/gizmos/ajax/' + job_id + '/terminate';
-            $.ajax({
-                url: delete_url
-            }).done(function(json){
-                $("#jobs_table_overlay").addClass('d-none');
-                if(json.success){
-                    update_row($('#jobs-table-row-' + job_id));
-                }
-                else{
-                    var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                                        '<strong>Error!</strong> Unable to terminate job ' + job_id + '.' +
-                                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                                     '</div>';
-                    $('#jobs-table-messages').append(alert_html);
-                }
-            });
-         });
-    });
-}
-
-function bind_delete_action(action){
-    var job_id = $(action).data('job-id');
-    $(action).on('click', function(){
-        $('#modal-dialog-jobs-table-confirm-content').html('Are you sure you want to permanently delete this job?');
-        $('#tethys_jobs-table-confirm').html('Delete');
-        $('#tethys_jobs-table-confirm').off('click');
-        $('#tethys_jobs-table-confirm').on('click', function(){
-            $("#jobs_table_overlay").removeClass('d-none');
-            $('#modal-dialog-jobs-table-confirm').modal('hide');
-            var delete_url = '/developer/gizmos/ajax/' + job_id + '/delete';
-            $.ajax({
-                url: delete_url
-            }).done(function(json){
-                $("#jobs_table_overlay").addClass('d-none');
-                if(json.success){
-                    row = $('#jobs-table-row-' + job_id);
-                    row.remove();
-                    workflow_row = $('#workflow-nodes-row-' + job_id);
-                    workflow_row.remove();
-
-                    // Delete bokeh row when delete row.
-                    $('#bokeh-nodes-row-' + job_id).html('');
-                }
-                else{
-                    var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                                        '<strong>Error!</strong> Unable to delete job ' + job_id + '.' +
-                                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                                     '</div>';
-                    $('#jobs-table-messages').append(alert_html);
-                }
-            });
-         });
-    });
-}
-
-function bind_resubmit_action(action){
-    var job_id = $(action).data('job-id');
-    $(action).on('click', function(){
-        $("#jobs_table_overlay").removeClass('d-none');
-        var resubmit_url = '/developer/gizmos/ajax/' + job_id + '/resubmit';
-        $.ajax({
-            url: resubmit_url
-        }).done(function(json){
-            update_row($(action).closest('tr'));
-            update_workflow_nodes_row($(action).closest('tr').next('tr'));
-            $("#jobs_table_overlay").addClass('d-none');
-            if(json.success){
-                var alert_html = '<div class="alert alert-success alert-dismissible" role="alert">' +
-                                    '<strong>Successfully resubmit job: ' + job_id + '.' +
-                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                                 '</div>';
-            }
-            else{
-                var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                                    '<strong>Error!</strong> Unable to resubmit job ' + job_id + '.' +
-                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                                 '</div>';
-            }
-            $('#jobs-table-messages').append(alert_html);
+          do_action();
+          $('#modal-dialog-jobs-table-confirm').modal('hide');
         });
+      }
+      else{
+        do_action();
+      }
     });
+  }
 }
 
 var log_contents = {};
@@ -173,7 +81,7 @@ function load_log_content(job_id) {
     $("#jobs_table_logs_overlay").removeClass('d-none');
 
     $('#ModalJobLogTitle').html('Logs for Job ID: ' + $('#job_id-' + job_id).html())
-    var show_log_url = '/developer/gizmos/ajax/' + job_id + '/show-log';
+    var show_log_url = '/developer/gizmos/ajax/' + job_id + '/action/show-log';
     $.ajax({
         url: show_log_url
     }).done(function(json){
@@ -282,7 +190,6 @@ function display_log_content(log_content_id) {
     $('#' + log_content_id).show();
 }
 
-
 function render_workflow_nodes_graph(dag, target_selector) {
     // Create new graph with left-right orientation.
     let g = new dagreD3.graphlib.Graph()
@@ -378,23 +285,17 @@ function update_row(table_elem){
     var show_status = $(table).data('show-status');
     var show_actions = $(table).data('show-actions');
     var actions = $(table).data('actions');
-    var custom_actions = $(table).data('custom-actions');
     var column_fields = $(table).data('column-fields');
-    var results_url = $(table).data('results-url');
-    var monitor_url = $(table).data('monitor-url');
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
+    var update_url = '/developer/gizmos/ajax/' + job_id + '/action/update-row';
 
     var data = {
         column_fields: column_fields,
         show_status: show_status,
         show_actions: show_actions,
-        monitor_url: monitor_url,
-        results_url: results_url,
         actions: actions,
-        custom_actions: custom_actions
-    }
+    };
 
     $.ajax({
         method: 'POST',
@@ -421,29 +322,50 @@ function update_row(table_elem){
         }
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
+
+    var next_row = $(table_elem).next('tr');
+
+    if($(next_row).hasClass('workflow-nodes-row')){
+      update_workflow_nodes_row(next_row);
+    }
+}
+
+function bind_modal_url(action){
+  var job_id = $(action).data('job-id');
+  var modal_url = $(action).data('modal-url');
+    $(action).on('click', function(){
+    $.ajax({
+        url: modal_url,
+    }).done(function(response){
+       $('#modal-dialog-jobs-table-modal-content').html(response)
+      })
+  });
 }
 
 function bind_jobs_table_actions(table_elem){
-  $(table_elem).find('.job-action-run').each(function(){
-      bind_run_action(this);
-  });
-  $(table_elem).find('.job-action-terminate').each(function(){
-      bind_terminate_action(this);
-  });
-  $(table_elem).find('.job-action-delete').each(function(){
-      bind_delete_action(this);
-  });
-  $(table_elem).find('.job-action-resubmit').each(function(){
-      bind_resubmit_action(this);
-  });
-  $(table_elem).find('.job-action-show-log').each(function(){
-      bind_show_log_action(this);
-  });
-  $(table_elem).find('.job-action-refresh-status').each(function(){
-      bind_refresh_action(this);
-  });
-  $(table_elem).find('.job-action-custom').each(function(){
-      bind_custom_action(this);
+  $(table_elem).find('.job-action').each(function(){
+    var action = $(this);
+    if(action.hasClass('job-action-delete')){
+      var on_success = function(job_id){
+          row = $('#jobs-table-row-' + job_id);
+          row.remove();
+          workflow_row = $('#workflow-nodes-row-' + job_id);
+          workflow_row.remove();
+
+          // Delete bokeh row when delete row.
+          $('#bokeh-nodes-row-' + job_id).html('');
+      };
+      bind_action(action, on_success);
+    }
+    else if(action.hasClass('job-action-view-logs')){
+      bind_show_log_action(action);
+    }
+    else if(action.data('modal-url')){
+      bind_modal_url(action);
+    }
+    else{
+      bind_action(action);
+    }
   });
   format_time_fields();
 }
@@ -454,7 +376,7 @@ function update_workflow_nodes_row(table_elem){
     var job_id = $(table_elem).data('job-id');
     var target_selector = "#" + $(table_elem).attr('id') + " td .workflow-nodes-graph";
     var error_selector = target_selector + ' .loading-error';
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-workflow-nodes-row';
+    var update_url = '/developer/gizmos/ajax/' + job_id + '/action/update-workflow-nodes-row';
 
     $.ajax({
         method: 'POST',
@@ -602,10 +524,6 @@ var active_counter = 0;
 
 $('.job-row').each(function(){
     update_row(this);
-});
-
-$('.workflow-nodes-row').each(function(){
-    update_workflow_nodes_row(this);
 });
 
 // Only show bokeh for the top row.

@@ -17,3 +17,7 @@ from tethys_compute.models import (
     CondorWorkflowJobNode,
     DaskJob
 )
+
+from tethys_gizmos.gizmo_options.jobs_table import(
+    CustomJobAction
+)
