@@ -10,31 +10,22 @@ from tethys_sdk.gizmos import SelectInput
 
 log = logging.getLogger('tethys.tethys_gizmos.views.jobs_table')
 
-
-def perform_action(request, job_id, action):
+def perform_action(request, job_id, action, success_message='', error_message=None):
     try:
         job = TethysJob.objects.get_subclass(id=job_id)
         getattr(job, action)()
         success = True
-        message = ''
+        message = success_message
     except Exception as e:
         success = False
-        message = str(e)
         log.exception(e)
-        log.error('The following error occurred when running "%s" on job %s: %s', action, job_id, message)
+        log.error('The following error occurred when running "%s" on job %s: %s', action, job_id, str(e))
+        message = error_message or f'Unable to {action} job {job_id}.'
     return JsonResponse({'success': success, 'message': message})
 
 
-def execute(request, job_id):
-    return perform_action(request, job_id, 'execute')
-
-
-def terminate(request, job_id):
-    return perform_action(request, job_id, 'stop')
-
-
 def resubmit(request, job_id):
-    return perform_action(request, job_id, 'resubmit')
+    return perform_action(request, job_id, 'resubmit', f'Successfully resubmitted job: {job_id}.')
 
 
 def delete(request, job_id):
@@ -122,9 +113,8 @@ def get_log_content(request, job_id, key1, key2=None):
 
 
 def update_row(request, job_id):
-    filters = []
+    data = reconstruct_post_dict(request)
     try:
-        data = reconstruct_post_dict(request)
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
         status_msg = job.status_message
@@ -156,8 +146,8 @@ def update_row(request, job_id):
             if status == 'Results-Ready':
                 status = 'Running'
 
-        row = JobsTable.get_row(job, data['column_fields'], data['custom_actions'])
-        data.update({'job': job, 'job_id': job.id, 'row': row, 'job_status': status,
+        row = JobsTable.get_row(job, data['column_fields'], data.get('actions'))
+        data.update({'job': job, 'row': row, 'job_status': status,
                      'job_statuses': statuses, 'delay_loading_status': False, 'error_message': status_msg})
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
@@ -172,7 +162,7 @@ def update_row(request, job_id):
                                 {
                                     'job_id': job_id,
                                     'error_msg': user_friendly_error,
-                                    'num_cols': len(filters) if filters else 1
+                                    'num_cols': len(data.get('column_fields', [1]))
                                 })
 
     return JsonResponse({'success': success, 'status': status, 'html': html})
@@ -303,7 +293,7 @@ def _parse_value(val):
 def reconstruct_post_dict(request):
     data = {key: _parse_value(val) for key, val in request.POST.items()}
     # parse out dictionaries from POST items
-    parts = [re.split('\W+', k)[:-1] for k in data.keys() if '[' in k]
+    parts = [re.split('[\[\]]+', k)[:-1] for k in data.keys() if '[' in k]
     for p in parts:
         name = p[0]
         keys = p[1:]

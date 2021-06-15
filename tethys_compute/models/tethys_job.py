@@ -35,22 +35,26 @@ class TethysJob(models.Model):
         ('PEN', 'Pending'),
         ('SUB', 'Submitted'),
         ('RUN', 'Running'),
+        ('VAR', 'Various'),
+        ('PAS', 'Paused'),
         ('COM', 'Complete'),
         ('ERR', 'Error'),
         ('ABT', 'Aborted'),
-        ('VAR', 'Various'),
         ('VCP', 'Various-Complete'),
         ('RES', 'Results-Ready'),
+        ('OTH', 'Other')
     )
 
     VALID_STATUSES = [v for v, _ in STATUSES]
     DISPLAY_STATUSES = [k for _, k in STATUSES]
-    DISPLAY_STATUSES.insert(3, DISPLAY_STATUSES.pop(6))  # Move 'Various' to be by 'Running'
+    REVERSE_STATUSES = {v: k for k, v in STATUSES}
 
     PRE_RUNNING_STATUSES = DISPLAY_STATUSES[:2]
     RUNNING_STATUSES = DISPLAY_STATUSES[2:4]
-    ACTIVE_STATUSES = DISPLAY_STATUSES[1:4]
-    TERMINAL_STATUSES = DISPLAY_STATUSES[4:]
+    ACTIVE_STATUSES = DISPLAY_STATUSES[1:5]
+    TERMINAL_STATUSES = DISPLAY_STATUSES[5:]
+
+    OTHER_STATUS_KEY = '__other_status__'
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default='')
@@ -94,6 +98,8 @@ class TethysJob(models.Model):
         self.update_status()
         field = self._meta.get_field('_status')
         status = self._get_FIELD_display(field)
+        if self._status == 'OTH':
+            status = self.extended_properties.get(self.OTHER_STATUS_KEY, status)
         return status
 
     @status.setter
@@ -132,9 +138,13 @@ class TethysJob(models.Model):
         # Set status from status given
         if status:
             if status not in self.VALID_STATUSES:
-                log.error('Invalid status given: {}'.format(status))
-                return
-
+                if status in self.DISPLAY_STATUSES:
+                    status = self.REVERSE_STATUSES[status]
+                else:
+                    self.extended_properties[self.OTHER_STATUS_KEY] = status
+                    status = 'OTH'
+            if status != 'OTH':
+                self.extended_properties.pop(self.OTHER_STATUS_KEY, None)
             self._status = status
             self.save()
 
@@ -197,8 +207,8 @@ class TethysJob(models.Model):
         self.save()
         log.debug('Finished processing results for job: {}'.format(self))
 
-    def resubmit(self):
-        self._resubmit()
+    def resubmit(self, *args, **kwargs):
+        self._resubmit(*args, **kwargs)
 
     def get_logs(self):
         return self._get_logs()

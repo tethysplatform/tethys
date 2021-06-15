@@ -7,10 +7,10 @@
     </span>
 </td>
 <td>
-    <a class='btn btn-primary btn-job-refresh-status btn-xs' data-job-id="{{ job_id }}" href="javascript:void(0)">Refresh Status</a>
+    <a class='btn btn-primary job-action job-action-refresh-status btn-xs' data-callback="update-row" data-job-id="{{ job_id }}" href="javascript:void(0)">Refresh Status</a>
 </td>
 <td>
-  <a class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)" data-job-id="{{ job_id }}" >Delete</a>
+  <a class='btn btn-danger btn-xs job-action job-action-delete' href="javascript:void(0)" data-callback="delete" data-job-id="{{ job_id }}" >Delete</a>
 </td>
 {% if show_resubmit_btn %}
 <td>
