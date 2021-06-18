@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import unittest
 import tethys_gizmos.gizmo_options.date_picker as gizmo_date_picker
 
