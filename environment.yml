@@ -22,7 +22,7 @@ dependencies:
 
 # database dependencies
 - postgresql
-- psycopg2
+- psycopg2<2.9  # remove pin after upgrading to django 3.
 - sqlalchemy
 - geoalchemy2
 
