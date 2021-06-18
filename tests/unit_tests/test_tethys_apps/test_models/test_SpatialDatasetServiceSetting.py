@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
