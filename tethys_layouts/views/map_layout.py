@@ -2,33 +2,33 @@
 ********************************************************************************
 * Name: map_layout/__init__.py
 * Author: nswain
-* Created On: October 15, 2018
-* Copyright: (c) Aquaveo 2018
+* Created On: June 24, 2021
+* Copyright: (c) Aquaveo 2021
 ********************************************************************************
 """
+import collections
+from io import BytesIO
+import json
 import logging
+import os
 import requests
 import uuid
-import collections
-from django.shortcuts import redirect, render
-from django.http import JsonResponse
+from zipfile import ZipFile
+
 from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+import shapefile
+
+from tethys_gizmos.gizmo_options import SlideSheet
+from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission, permission_required
 from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView
-from tethysext.atcore.controllers.resource_view import ResourceView
-from tethysext.atcore.services.model_database import ModelDatabase
-from tethysext.atcore.gizmos import SlideSheet
-import json
-import shapefile
-from django.http import HttpResponse
-from zipfile import ZipFile
-from io import BytesIO
-import os
 
 log = logging.getLogger(f'tethys.{__name__}')
 
 
-class MapLayout(ResourceView):
+class MapLayout(TethysLayout):
     """
     Controller for a map layout view.
     """
