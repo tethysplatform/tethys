@@ -1,0 +1,294 @@
+/********************************************************************************
+ * Name: atcore_map_view.css
+ * Author: nswain
+ * Created On: October 18, 2018
+ * Copyright: (c) Aquaveo 2018
+ * License:
+ ********************************************************************************/
+/* Map Format */
+#app-content-wrapper #app-content {
+    height: 100%;
+}
+
+#inner-app-content {
+    height: 100%;
+    padding: 0;
+    overflow: auto;
+}
+
+.map-form {
+    height: 100%;
+}
+
+
+/* Prevent basemap drop down from getting too long */
+#basemap_dropdown_container .dropdown-menu {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+}
+
+/* Layer Selector */
+.layer-group-item:first-child {
+    margin-top: 20px;
+}
+
+.layer-group-item {
+    margin-bottom: 5px;
+}
+
+.layer-group-item .flatmark {
+    display: inline-block;
+    font-weight: 700;
+    max-width: 292px;
+    overflow: hidden;
+}
+
+.layer-list {
+    list-style: none;
+    padding-inline-start: 30px;
+    transition: height 0.2s ease-out;
+}
+
+.layer-list-item {
+    margin-bottom: 10px;
+}
+
+.layer-list-item .flatmark {
+    display: inline-block;
+    max-width: 292px;
+    overflow: hidden;
+}
+
+.layers-context-menu {
+    display: inline-block;
+}
+
+.layers-context-menu .dropdown-menu li .glyphicon  {
+    color: #666666;
+}
+
+.layers-context-menu .dropdown-menu li:hover .glyphicon  {
+    color: #ffffff;
+}
+
+.layers-btn {
+    color: #666666!important;
+    border: none;
+    outline: none;
+    margin-left: 5px;
+}
+
+.layers-context-menu.open .layers-btn,
+.layers-btn:hover,
+.layers-btn:active,
+.layers-btn:focus {
+    border: none;
+    outline: none;
+    background-color: #777777!important;
+    color: #ffffff!important;
+}
+
+.layers-context-menu .dropdown-menu {
+    min-width: 185px;
+}
+
+.layers-context-menu .dropdown-menu li:hover,
+.layers-context-menu .dropdown-menu li > a:hover {
+    background-color: #777777!important;
+    color: #ffffff;
+}
+
+.layers-context-menu .dropdown-menu li a:hover {
+    background-color: #777777!important;
+    color: #ffffff!important;
+}
+
+.layers-context-menu .dropdown-menu li a {
+    color: #666666!important;
+}
+
+.layers-context-menu .dropdown-menu li .flat-slider-container {
+    padding: 3px 20px;
+
+}
+
+.layers-context-menu .dropdown-menu li .flat-slider-container label {
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.layers-context-menu .dropdown-menu li .command-name {
+    padding-left: 10px;
+}
+
+/* Open Layers Pop-up */
+.ol-popup {
+    display: none;
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 280px;
+    z-index: 10000;
+}
+
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+
+.ol-popup-close-btn {
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #777777;
+}
+
+.ol-popup-close-btn:hover,
+.ol-popup-close-btn:focus {
+    text-decoration: none;
+    color: #555555;
+    font-weight: 700;
+}
+
+.ol-popup-content {
+    max-height: 250px;
+    overflow: auto;
+}
+
+/* Plot Slide Sheet */
+#app-content-wrapper.show-nav #app-content .slide-sheet {
+    padding-right: 400px;
+}
+
+.js-plotly-plot .plotly .modebar {
+    right: 80px;
+}
+
+.slide-sheet-title {
+    margin-left: 25px;
+}
+
+/* Properties Sheet */
+#properties-popup-content h6 {
+    margin-bottom: 0;
+}
+
+.plot-btn-wrapper {
+    margin-top: 10px;
+}
+
+.btn-popup {
+    display: block;
+}
+
+#properties-popup-content .table {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+/* Legend Tab */
+.legend-group-item:first-child {
+    margin-top: 20px;
+}
+
+.legend-group-item {
+    margin-bottom: 5px;
+}
+
+[id^="form-group-tethys-color-ramp-picker-"] {
+    width: 50%;
+    padding-bottom: 5px;
+    margin-left: 30px !important;
+}
+
+.legend-group-item .flatmark {
+    display: inline-block;
+    font-weight: 700;
+    max-width: 315px;
+    overflow: hidden;
+}
+
+.legend-list {
+    list-style: none;
+    padding-inline-start: 30px;
+    transition: height 0.2s ease-out;
+    border-style: solid;
+    border-width: 1px;
+    background-color: #ffffff;
+    margin-left: 30px;
+    margin-right: auto;
+    width: 50%;
+    overflow-x: auto;
+}
+
+.legend-list-item {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.legend-list-item .flatmark {
+    display: inline-block;
+    max-width: 310px;
+    overflow: hidden;
+}
+
+.legend-item {
+    position: relative;
+}
+
+.legend-item p {
+    padding-left: 60px;
+    padding-top: 2px;
+}
+
+.legend-item .color-box {
+    width: 40px;
+    height: 10px;
+    display: inline-block;
+    background-color: #ccc;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+.hidden {
+    display: none
+}
+
+.tab-content .form-group {
+    margin-bottom: 0 !important;
+    margin-left: 20px;
+}
+
+.map-tabs .tab-content {
+    max-height: 700px;
+    overflow-y: auto;
+    height: 700px;
+}

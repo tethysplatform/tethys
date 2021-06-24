@@ -1,0 +1,301 @@
+{% extends base_template %}
+{% load tethys_gizmos static %}
+
+{% block import_gizmos %}
+  {% import_gizmo_dependency select_input %}
+  <script src="https://cdn.plot.ly/plotly-1.41.3.min.js"></script>
+{% endblock %}
+
+{% block app_navigation_items %}
+  {# NAV HEADER #}
+  {% block before_nav_header %}
+  {% endblock %}
+  {% include 'tethys_layouts/components/nav_header.html' %}
+  {% block after_nav_header %}
+  {% endblock %}
+
+  {# TABS #}
+  <div class="map-tabs">
+    <!-- Nav tabs -->
+    {% block map_tabs %}
+      <ul class="nav nav-tabs atcore-nav-tabs" role="tablist">
+        {# LAYERS TAB #}
+        <li role="presentation" {% block disable_default_tab %}class="active"{% endblock %}>
+          <a id="layers-tab-toggle"
+             href="#layers-tab-panel"
+             aria-controls="layers-tab-panel"
+             aria-selected="true"
+             role="tab"
+             data-toggle="tab">{{ layer_tab_name }}</a>
+        </li>
+        {# LEGEND TAB #}
+        {% if show_legends %}
+          {% block legend_tab %}
+            {% if legends %}
+            <li role="presentation" {% block disable_legend_tab %}{% endblock %}>
+              <a id="legend-tab-toggle"
+                 href="#legend-tab-panel"
+                 aria-controls="legend-tab-panel"
+                 aria-selected="false"
+                 role="tab"
+                 data-toggle="tab">Legend</a>
+            </li>
+            {% endif %}
+          {% endblock %}
+        {% endif %}
+
+        {# CUSTOM TABS #}
+        {% block custom_map_tabs %}
+        {% endblock %}
+      </ul>
+    {% endblock %}
+
+    {# TAB PANELS #}
+    {% block map_tab_panels %}
+      <div class="tab-content">
+        {# LAYERS TAB PANEL #}
+        <div role="tabpanel" class="tab-pane{% block disable_default_tab_panel %} active{% endblock %}" id="layers-tab-panel">
+          {% block layer_tab_panel %}
+          {% for layer_group in layer_groups %}
+          {% if layer_group.id == 'custom_layers'%}
+            {% if show_custom_layer %}
+              <li id="custom_layers" class="layer-group-item">
+
+                {# LAYER GROUP VISIBILITY CONTROL #}
+                <label class="flatmark"><span class="display-name">{{ layer_group.display_name }}</span>
+                  <input type="checkbox"
+                         class="layer-group-visibility-control"
+                         {% if layer_group.visible %}checked="checked"{% endif %}
+                         data-layer-group-id="{{ layer_group.id }}">
+                  <span class="checkmark checkbox"></span>
+                </label>
+
+                {# LAYER GROUP CONTEXT MENU #}
+                {% if show_public_toggle or show_remove or show_rename %}
+                  <div class="dropdown layers-context-menu pull-right">
+                    <a id="{{ layer_group.id }}--context-menu"
+                       class="btn btn-xs dropdown-toggle layers-btn"
+                       data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="true">
+                      <span class="glyphicon glyphicon-option-vertical"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labeledby="{{ layer_group.id }}--context-menu">
+                      {% if show_rename %}
+                        <li><a class="rename-action" href="javascript:void(0);"><span class="glyphicon glyphicon-pencil"></span><span class="command-name">Rename</span></a></li>
+                      {% endif %}
+                      {% if show_remove %}
+                      <li><a class="remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="{{ layer.data.layer_name }}"><span class="glyphicon glyphicon-remove"></span><span class="command-name">Remove</span></a></li>
+                      {% endif %}
+                      {% if layer_group.id == 'custom_layers' %}
+                        <li role="separator" class="divider"></li>
+                        <li><a class="add-layer-to-layer-group" href="javascript:void(0);"><span class="glyphicon glyphicon-plus"></span><span class="command-name">Add Layer</span></a></li>
+                      {% endif %}
+                    </ul>
+                  </div>
+                {% endif %}
+
+                <a id="{{ layer_group.id }}--collapse"
+                   class="collapse-action btn btn-xs layers-btn pull-right">
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                </a>
+              </li>
+
+              <ul class="layer-list" {% if layer_group.collapsed %} data-collapsed="true"  style="overflow:hidden; height: 0px;" {% else %} data-collapsed="false" {% endif %}>
+                {% for layer in layer_group.layers %}
+                <li class="layer-list-item">
+                  {# LAYER VISIBILITY CONTROL #}
+                  <label class="flatmark"><span class="display-name">{{ layer.legend_title }}</span>
+                    <input type="{{ layer_group.control }}"
+                           class="layer-visibility-control"
+                           {% if layer.layer_options.visible %}checked="checked"{% endif %}
+                           {% if not layer_group.visible %}disabled{% endif %}
+                           data-layer-id="{{ layer.data.layer_id }}"
+                           data-layer-variable="{{ layer.data.layer_variable }}"
+                           name="{{ layer_group.id }}">
+                    <span class="checkmark {{ layer_group.control }}"></span>
+                  </label>
+
+                  {# LAYER CONTEXT MENU #}
+                  <div class="dropdown layers-context-menu pull-right">
+                    <a id="{{ layer.data.layer_id }}--context-menu"
+                       class="btn btn-xs dropdown-toggle layers-btn {% if not layer_group.visible %}disabled{% endif %}"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="true">
+                      <span class="glyphicon glyphicon-option-vertical"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labeledby="{{ layer.data.layer_id }}--context-menu">
+                      {% if show_rename %}
+                        <li><a class="rename-action" href="javascript:void(0);"><span class="glyphicon glyphicon-pencil"></span><span class="command-name">Rename</span></a></li>
+                      {% endif %}
+                      {% if show_remove %}
+                      <li><a class="remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="{{ layer.data.layer_id }}"><span class="glyphicon glyphicon-remove"></span><span class="command-name">Remove</span></a></li>
+                      {% endif %}
+                      {% if show_public_toggle or show_remove or show_rename %}
+                        <li role="separator" class="divider"></li>
+                      {% endif %}
+                      <li><a class="zoom-to-layer-action" href="javascript:void(0);" data-layer-id="{{ layer.data.layer_id }}"><span class="glyphicon glyphicon-fullscreen"></span><span class="command-name">Zoom to Layer</span></a></li>
+                      {% comment %}
+                      {# TODO: Implement download layer action #}
+                      <li role="separator" class="divider"></li>
+                      <li><a class="download-layer" href="javascript:void(0);"><span class="glyphicon glyphicon-cloud-download"></span><span class="command-name">Download</span></a></li>
+                      {% endcomment %}
+                      <li role="separator" class="divider"></li>
+                      <li>
+                        <div class="flat-slider-container">
+                          <label><span class="glyphicon glyphicon-adjust"></span><span class="command-name">Opacity: </span><span class="slider-value">100%</span></label>
+                          <input type="range"
+                                 class="flat-slider layer-opacity-control"
+                                 min="0" max="100"
+                                 value="100"
+                                 data-layer-id="{{ layer.data.layer_id }}"
+                                 data-layer-variable="{{ layer.data.variable }}">
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+            {% else %}
+              {% include 'tethys_layouts/map_layout/layer_group_content.html' %}
+            {% endif %}
+          {% endfor %}
+          {% endblock %}
+        </div>
+
+
+        {# LEGEND TAB PANEL #}
+        {% if show_legends %}
+          {% block legend_panel %}
+            {% if legends %}
+            <div role="tabpanel" class="tab-pane{% block disable_legend_tab_panel %}{% endblock %}" id="legend-tab-panel">
+              {% block legend_items %}
+              {% for legend, legend_select_input in legends %}
+                <div id="legend-{{ legend.legend_id }}" class="hidden">
+                    <li class="legend-group-item">
+                      <label class="flatmark"><span class="display-name">{{ legend.title|title }}{% if legend.units %} ({{ legend.units }}){% endif %}</span></label>
+                    </li>
+                    {% gizmo legend_select_input %}
+                    <div id="color-ramp-component-{{ legend.legend_id }}">
+                      {% include "tethys_layouts/map_layout/color_ramp_component.html" %}
+                    </div>
+                </div>
+              {% endfor %}
+              {% endblock %}
+            </div>
+            {% endif %}
+          {% endblock %}
+        {% endif %}
+
+        {# CUSTOM TAB PANELS #}
+        {% block custom_map_tab_panels %}
+        {% endblock %}
+      </div>
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block app_content %}
+  {# ADDRESS SEARCH/GEOCODE #}
+  {% if geocode_enabled and can_use_geocode %}
+  <div id="map-geocode-wrapper">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="input-group">
+          <select name="geocode_select" id="geocode_select" class="geocode-search" multiple></select>
+          <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# MAP #}
+  {% block map %}
+    {% gizmo map_view %}
+  {% endblock %}
+
+  {# MAP ATTRIBUTES #}
+  <div id="vr-button-container"></div>
+  <div id="atcore-map-attributes"
+       data-layer-groups="{{ layer_groups|jsonify }}"
+       data-map-extent="{{ map_extent|jsonify }}"
+       data-workspace="{{ workspace }}"
+       data-enable-properties-popup="{% if enable_properties_popup %}true{% else %}false{% endif %}"
+       data-map-type={{ map_type|jsonify }}
+       style="display: none;"
+  ></div>
+  <div id="atcore-map-permissions"
+       data-can-use-geocode="{{ can_use_geocode|jsonify }}"
+       data-can-use-plot="{{ can_use_plot|jsonify }}"
+       style="display: none;"
+       ></div>
+
+  {% if can_use_plot %}
+    {# PLOT SLIDE SHEET #}
+    {% gizmo plot_slide_sheet %}
+  {% endif %}
+
+  {% csrf_token %}
+{% endblock %}
+
+{% block app_actions %}
+{% endblock %}
+
+{% block after_app_content %}
+  {# Action Modal #}
+  <div class="modal fade" id="action-modal" tabindex="-1" role="dialog" aria-labelledby="action-modal-title">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="action-modal-title">Action</h4>
+        </div>
+        <div class="modal-body" id="action-modal-content">
+          Action content
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-action-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <a id="do-action-button" class="btn" href="javascript:void(0);">Action</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Properties Pop-up #}
+  <div id="properties-popup" class="ol-popup">
+    <a href="javascript:void(0);" id="properties-popup-close-btn" class="ol-popup-close-btn">&times;</a>
+    <div id="properties-popup-content" class="ol-popup-content"></div>
+  </div>
+{% endblock %}
+
+{% block content_dependent_styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_sdk/css/wide_nav.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/nav_header.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/nav_tabs.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_layouts/map_layout/flat_map.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_layouts/map_layout/map_layout.css' %}" rel="stylesheet"/>
+  {% if map_type == "cesium_map_view" %}
+  <link href="{% static 'tethys_layouts/map_layout/map_layout_cesium.css' %}" rel="stylesheet"/>
+  {% endif %}
+  <link href="{% static 'tethys_layouts/map_layout/geocoder.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/messages.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/flatmark.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/flat-slider.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'tethys_sdk/js/check_ie.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_sdk/js/utilities.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_sdk/js/collapse.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_sdk/js/csrf.js' %}" type="text/javascript"></script>
+  {% if map_type == "cesium_map_view" %}
+    <script src="{% static 'tethys_layouts/map_layout/map_layout_cesium.js' %}" type="module"></script>
+  {% else %}
+    <script src="{% static 'tethys_layouts/map_layout/map_layout.js' %}" type="text/javascript"></script>
+  {% endif %}
+{% endblock %}

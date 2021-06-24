@@ -1,0 +1,38 @@
+/* Nav Tab */
+#app-content-wrapper #app-content #app-navigation div ul.nav.nav-tabs {
+    padding-bottom: 0;
+    padding-top: 5px;
+}
+
+#app-content-wrapper #app-content #app-navigation div .nav li a {
+    color: #666666!important;
+    background-color: transparent!important;
+}
+
+.nav-tabs {
+    overflow: visible!important;
+}
+
+.nav-tabs>li {
+    float: left;
+    margin-bottom: -1px;
+}
+
+.nav-tabs>li>a {
+    font-size: 11pt!important;
+    margin-right: 2px;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    padding: 5px 10px 5px 10px;
+}
+
+.nav-tabs.atcore-nav-tabs>li.active>a,
+.nav-tabs.atcore-nav-tabs>li.active>a:hover,
+.nav-tabs.atcore-nav-tabs>li.active>a:focus {
+    margin-right: 2px;
+    border: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+    padding: 5px 10px 5px 10px;
+    border-bottom-color: rgb(239, 239, 239)!important;
+    box-shadow: none;
+}

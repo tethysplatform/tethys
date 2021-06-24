@@ -1,0 +1,63 @@
+/********************************************************************************
+ * Name: geocoder.css
+ * Author: nswain
+ * Created On: October 19, 2018
+ * Copyright: (c) Aquaveo 2018
+ * License:
+ ********************************************************************************/
+/* Geocoder */
+#map-geocode-wrapper {
+    position: absolute;
+    top: 0.5em;
+    right: 4em;
+    z-index: 1000;
+    width: 400px;
+}
+
+.geocode-search {
+    width: 100%;
+}
+
+.select2-selection.select2-selection--multiple {
+    min-height: 2.25em;
+    font-size: 1.14em;
+    line-height: 0.4em;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+    margin-top: 0.55em;
+}
+
+.select2-container--default .select2-selection--multiple {
+    border-radius: 0;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: solid #cccccc 1px;
+}
+
+/* Hide the search field when an item is selected */
+.geocode-item-selected {
+    display: none;
+}
+
+/* Hide the drop down that displays search results messages */
+li.select2-results__option.select2-results__message {
+   display: none;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__clear {
+  line-height: 25px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: inline-block;
+    float: none;
+    border: none;
+    background-color: transparent;
+    line-height: 25px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    display: none;
+}

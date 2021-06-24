@@ -1,0 +1,22 @@
+/* Wider Nav */
+#app-content-wrapper #app-content #app-navigation {
+    left: -400px;
+    width: 400px;
+}
+
+#app-content-wrapper.show-nav #app-content {
+    padding-right: 400px;
+    webkit-transform: translateX(400px,0,0);
+    -moz-transform: translateX(400px,0,0);
+    -ms-transform: translateX(400px,0,0);
+    -o-transform: translateX(400px,0,0);
+    transform: translateX(400px,0,0);
+    webkit-transform: translate3d(400px,0,0);
+    -moz-transform: translate3d(400px,0,0);
+    -ms-transform: translate3d(400px,0,0);
+    -o-transform: translate3d(400px,0,0);
+    transform: translate3d(400px,0,0);
+}
+
+#app-content-wrapper.show-nav #app-content #app-actions {
+    padding-right: 415px;

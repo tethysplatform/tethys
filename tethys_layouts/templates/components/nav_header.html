@@ -1,0 +1,38 @@
+{% load static %}
+{# NAV HEADER #}
+{% comment %}
+Include to add a header with a title, subtitle, and back button, at the top of a nav bar.
+
+Required Context Variables:
+  back_url(str): URL for the back button to link to.
+  nav_title(str): Title to show at the top of the nav.
+  nav_subtitle(str, optional): Sub-title to show below the title.
+
+Required CSS:
+  <link href="{% static 'atcore/css/nav_header.css' %}" rel="stylesheet"/>
+Optional CSS:
+  <link href="{% static 'atcore/css/wide_nav.css' %}" rel="stylesheet"/>
+{% endcomment %}
+
+{% block nav_header %}
+<div id="nav-header">
+  {# BACK BUTTON #}
+  {% block back_button %}
+    <div id="back-button">
+      <a href="{{ back_url }}" title="Back">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+      </a>
+    </div>
+  {% endblock %}
+
+  {# TITLE #}
+  {% block nav_title %}
+    <div id="nav-title">
+      <p class="title">{{ nav_title }}</p>
+      {% if nav_subtitle %}
+      <p class="subtitle">{{ nav_subtitle }}</p>
+      {% endif %}
+    </div>
+  {% endblock %}
+</div>
+{% endblock %}
