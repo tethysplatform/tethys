@@ -1,0 +1,116 @@
+/* Clear bootstrap styles */
+.checkbox, .radio {
+  margin: 0;
+
+}
+
+/* Customize the label (the flatmark) */
+.flatmark {
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  color: #444444;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.flatmark input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.flatmark .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #bbbbbb;
+}
+
+.flatmark .checkmark.radio {
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.flatmark:hover input ~ .checkmark {
+  background-color: #999999;
+}
+
+/* When the checkbox is checked, add a darker background */
+.flatmark input:checked ~ .checkmark {
+  background-color: #777777;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.flatmark .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.flatmark input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Grey out when control is disabled */
+.flatmark:has(> input[disabled]) {
+  color: #dddddd;
+  cursor: pointer;
+}
+
+.flatmark input[disabled] ~ span {
+  background-color: #dddddd!important;
+}
+
+.flatmark:hover input[disabled] ~ span {
+  background-color: #dddddd!important;
+}
+
+/* Style the checkmark/indicator */
+.flatmark .checkmark.checkbox:after {
+  left: 8px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+/* Style the indicator (dot/circle) */
+.flatmark .checkmark.radio:after {
+  top: 6px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+.flatmark-group {
+    padding: 10px;
+    background: #f5f5f5;
+}
+
+.flatmark-group .flatmark {
+    margin-bottom: 7px;
+}
+
+.flatmark-group .flatmark:last-child {
+    margin-bottom: 0;
+}
