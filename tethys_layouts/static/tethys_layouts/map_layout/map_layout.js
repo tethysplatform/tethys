@@ -1,5 +1,5 @@
 /*****************************************************************************
- * FILE:    atcore_map_view.js
+ * FILE:    map_layout.js
  * DATE:    October, 19, 2018
  * AUTHOR:  Nathan Swain
  * COPYRIGHT: (c) Aquaveo 2018
@@ -10,7 +10,7 @@
  *                      LIBRARY WRAPPER
  *****************************************************************************/
 
-var ATCORE_MAP_VIEW = (function() {
+var MAP_LAYOUT = (function() {
 	// Wrap the library in a package function
 	"use strict"; // And enable strict mode for this library
 
@@ -100,7 +100,7 @@ var ATCORE_MAP_VIEW = (function() {
  	*************************************************************************/
     // Config
     parse_attributes = function() {
-        var $map_attributes = $('#atcore-map-attributes');
+        var $map_attributes = $('#map-layout-attributes');
         m_layer_groups = $map_attributes.data('layer-groups');
         m_extent = $map_attributes.data('map-extent');
         m_workspace = $map_attributes.data('workspace');
@@ -108,7 +108,7 @@ var ATCORE_MAP_VIEW = (function() {
     };
 
     parse_permissions = function() {
-        var $map_permissions = $('#atcore-map-permissions');
+        var $map_permissions = $('#map-layout-permissions');
         p_can_geocode = $map_permissions.data('can-use-geocode');
         p_can_plot = $map_permissions.data('can-use-plot');
         if (typeof p_can_plot !== "boolean") {
@@ -1112,23 +1112,23 @@ var ATCORE_MAP_VIEW = (function() {
         if (coordinates instanceof ol.geom.Point) {
             c = coordinates.getCoordinates();
         }
-        m_$props_popup_container.trigger('show.atcore.popup');
+        m_$props_popup_container.trigger('show.map-layout.popup');
         m_props_popup_overlay.setPosition(c);
-        m_$props_popup_container.trigger('shown.atcore.popup');
+        m_$props_popup_container.trigger('shown.map-layout.popup');
     };
 
     hide_properties_pop_up = function() {
-        m_$props_popup_container.trigger('hide.atcore.popup');
+        m_$props_popup_container.trigger('hide.map-layout.popup');
         m_props_popup_overlay.setPosition(undefined);
         m_$props_popup_closer.blur();
-        m_$props_popup_container.trigger('hidden.atcore.popup');
+        m_$props_popup_container.trigger('hidden.map-layout.popup');
     };
 
     close_properties_pop_up = function() {
-        m_$props_popup_container.trigger('closing.atcore.popup');
+        m_$props_popup_container.trigger('closing.map-layout.popup');
         hide_properties_pop_up();
         TETHYS_MAP_VIEW.clearSelection();
-        m_$props_popup_container.trigger('closed.atcore.popup');
+        m_$props_popup_container.trigger('closed.map-layout.popup');
     };
 
     reset_properties_pop_up = function() {
