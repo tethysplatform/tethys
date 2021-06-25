@@ -20,18 +20,15 @@ log = logging.getLogger(f'tethys.{__name__}')
 
 class TethysLayout(TethysController):
     """
-    Base controller for all Tethys Layout views. Provides helpful functionality such as mapping method mapping.
+    Base controller for all Tethys Layout views. Pass kwargs to as_controller() to override TethysLayout properties.
     """
-    _app = None
-    back_url = None
-    base_template = 'tethys_layouts/tethys_layout.html'
-    layout_title = ''
-    layout_subtitle = ''
     template_name = ''
 
-    # TODO: Can this be automatically derived? Is this required?
-    def get_app(self):
-        return self._app
+    app = None
+    back_url = None
+    base_template = 'tethys_layouts/tethys_layout.html'
+    layout_title = ''  # TODO: Is this used anywhere?
+    layout_subtitle = ''  # TODO: Is this used anywhere?
 
     def get(self, request, *args, **kwargs):
         """
@@ -66,9 +63,6 @@ class TethysLayout(TethysController):
             'open_portal_mode': getattr(settings, 'ENABLE_OPEN_PORTAL', False),
         })
 
-        # Context hook
-        context = self.get_context(request=request, context=context, *args, **kwargs)
-
         # Default Permissions
         permissions = dict()
 
@@ -77,6 +71,9 @@ class TethysLayout(TethysController):
 
         # Add permissions to context
         context.update(permissions)
+
+        # Context hook
+        context = self.get_context(request=request, context=context, *args, **kwargs)
 
         return render(request, self.template_name, context)
 
@@ -123,6 +120,19 @@ class TethysLayout(TethysController):
         """  # noqa: E501
         return None
 
+    def get_permissions(self, request, permissions, *args, **kwargs):
+        """
+        Hook to perform has_permission checks in. Values returned here are added to the context.
+
+        Args:
+            request (HttpRequest): The request.
+            permissions (dict): The permissions dictionary with boolean values.
+
+        Returns:
+            dict: modified permisssions dictionary.
+        """
+        return permissions
+
     def get_context(self, request, context, *args, **kwargs):
         """
         Hook to add additional content to context. Avoid removing or modifying items in context already to prevent unexpected behavior.
@@ -135,16 +145,3 @@ class TethysLayout(TethysController):
             dict: modified context dictionary.
         """  # noqa: E501
         return context
-
-    def get_permissions(self, request, permissions, *args, **kwargs):
-        """
-        Hook to perform has_permission checks in. Added to the context.
-
-        Args:
-            request (HttpRequest): The request.
-            permissions (dict): The permissions dictionary with boolean values.
-
-        Returns:
-            dict: modified permisssions dictionary.
-        """
-        return permissions

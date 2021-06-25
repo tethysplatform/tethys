@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: map_layout/__init__.py
+* Name: map_layout.py
 * Author: nswain
 * Created On: June 24, 2021
 * Copyright: (c) Aquaveo 2021
@@ -30,174 +30,119 @@ log = logging.getLogger(f'tethys.{__name__}')
 
 class MapLayout(TethysLayout):
     """
-    Controller for a map layout view.
+    Controller for the MapLayout view. Pass kwargs matching property names to as_controller()
+        to override their values and configure the MapLayout view.
+
+    Recommended Properties:
+        app (TethysApp): The class of the app contained in app.py.
+        base_template (str): Template to use as base template. Recommend overriding this to be your app's base template. Defaults to "tethys_layouts/tethys_layout.html".
+        map_manager_class (MapManager): A MapManager class that defines the map layers.
+        map_subtitle (str): The subtitle to display on the MapLayout view.
+        map_title (str): The title to display on the MapLayout view.
+
+    Optional Properties:
+        back_url (str): URL that will be added to the back button. No back button if not provided.
+        cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view". See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
+        default_disable_basemap (bool) Set to True to disable the basemap.
+        geocode_api_key = An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
+        feature_selection_mutiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
+        feature_selection_sensitivity (int): Feature selection sensitivity/relative search radius. Defaults to 4.
+        layer_tab_name (str) Name of the "Layers" tab. Defaults to "Layers".
+        map_type (str): Type of map gizmo to use. One of "tethys_map_view" or "cesium_map_view". Defaults to "tethys_map_view".
+        properties_popup_enabled (bool): Set to False to disable the properties popup. Defaults to True.
+        sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager using the kwarg "sds_engine".
+        show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS layers to the Custom Layers layer group dynamically. Defaults to True.
+        show_legends (bool): Show the Legend tab. Defaults to False.
     """
-    map_title = ''
-    map_subtitle = ''
+    # Changing these will likely break the MapLayout
     template_name = 'tethys_layouts/map_layout/map_layout.html'
     http_method_names = ['get', 'post']
+    _geocode_endpoint = 'http://api.opencagedata.com/geocode/v1/geojson'
 
+    # Required Properties
+    map_manager_class = None
+    map_subtitle = ''  # TODO: just use layout_title and layout_subtitle?
+    map_title = ''
+
+    # Optional Properties
+    cesium_ion_token = None
     default_disable_basemap = False
-    geoserver_name = ''
-    geocode_enabled = False
-    geocode_api_key = '449ce48a52689190cb913b284efea8e9'  # TODO: Set as controller arg
-    geocode_endpoint = 'http://api.opencagedata.com/geocode/v1/geojson'
-    mutiselect = False
+    geocode_api_key = None
+    feature_selection_mutiselect = False
+    feature_selection_sensitivity = 4
+    layer_tab_name = 'Layers'
+    map_type = 'tethys_map_view'
     properties_popup_enabled = True
+    sds_setting_name = ''
     show_custom_layer = True
     show_legends = False
 
-    _MapManager = None
-    _ModelDatabase = ModelDatabase
-    _SpatialManager = None
-    layer_tab_name = 'Layers'
-    map_type = 'tethys_map_view'
-
-    def get_context(self, request, session, resource, context, model_db, *args, **kwargs):
+    def get_permissions(self, request, permissions, *args, **kwargs):
         """
-        Hook to add additional content to context. Avoid removing or modifying items in context already to prevent unexpected behavior.
+        Perform permissions checks for MapLayout specific features.
 
         Args:
             request (HttpRequest): The request.
-            session (sqlalchemy.Session): the session.
-            resource (Resource): the resource for this request.
+            permissions (dict): The permissions dictionary with boolean values.
+
+        Returns:
+            dict: modified permissions dictionary.
+        """
+        permissions = {
+            'can_download': has_permission(request, 'can_download'),
+            'can_use_geocode': has_permission(request, 'use_map_geocode'),
+            'can_use_plot': has_permission(request, 'use_map_plot'),
+            'show_public_toggle': has_permission(request, 'toggle_public_layers'),
+            'show_remove': has_permission(request, 'remove_layers'),
+            'show_rename': has_permission(request, 'rename_layers'),
+        }
+        return permissions
+
+    def get_context(self, request, context, *args, **kwargs):
+        """
+        Create context for the Map Layout view.
+
+        Args:
+            request (HttpRequest): The request.
             context (dict): The context dictionary.
-            model_db (ModelDatabase): ModelDatabase instance associated with this request.
 
         Returns:
             dict: modified context dictionary.
         """  # noqa: E501
-        # Use scenario id from the resource, if it is there
-        scenario_id = resource.get_attribute('scenario_id') or 1 if resource else 1
+        # Get the MapManager
+        map_manager = self.get_map_manager()
 
-        # If "scenario-id" is passed in via the GET parameters, use that instead of the one given by the resource
-        scenario_id = request.GET.get('scenario-id', scenario_id)
+        # Get additional kwargs for compose_map()
+        compose_map_kwargs = self.get_compose_map_kwargs(request, *args, **kwargs)
+        if not isinstance(compose_map_kwargs, dict):
+            raise TypeError('The get_compose_map_kwargs() method must return a dictionary.')
 
-        # Load Primary Map View
-        resource_id = None
-
-        if resource:
-            resource_id = resource.id
-
-        # Get Managers Hook
-        model_db, map_manager = self.get_managers(
+        # Compose the Map
+        map_view, map_extent, layer_groups = map_manager.compose_map(
             request=request,
-            resource=resource,
+            **compose_map_kwargs,
             *args, **kwargs
         )
 
-        # Render the Map
-        map_view, model_extent, layer_groups = map_manager.compose_map(
-            request=request,
-            resource_id=resource_id,
-            scenario_id=scenario_id,
-            *args, **kwargs
-        )
+        map_view = self.configure_map_view(args, kwargs, layer_groups, map_extent, map_manager, map_view, request)
 
-        # Tweak map settings
-        map_view.legend = False  # Ensure the built-in legend is not turned on.
-        map_view.height = '100%'  # Ensure 100% height
-        map_view.width = '100%'  # Ensure 100% width
-        map_view.disable_basemap = self.should_disable_basemap(
-            request=request,
-            model_db=model_db,
-            map_manager=map_manager
-        )
-
-        map_view.controls = [
-            'Rotate',
-            'FullScreen',
-            {'ZoomToExtent': {
-                'projection': 'EPSG:4326',
-                'extent': model_extent
-            }}
-        ]
-
-        map_view.feature_selection = {'multiselect': self.mutiselect, 'sensitivity': 4}
-
-        # Check if we need to create a blank custom layer group
-        create_custom_layer = True
-        for layer_group in layer_groups:
-            if layer_group['id'] == 'custom_layers':
-                create_custom_layer = False
-                break
-
-        if create_custom_layer:
-            custom_layers = map_manager.build_layer_group(id="custom_layers", display_name="Custom Layer", layers='',
-                                                          layer_control='checkbox', visible=True)
-            layer_groups.append(custom_layers)
-
-        # Translate to Cesium if necessary..
-        if self.map_type == "cesium_map_view":
-            # CesiumMapView.cesium_version = '1.64'
-
-            # Get view object from tethys map_view
-            layers, entities = self.translate_layers_to_cesium(map_view.layers)
-
-            CesiumMapView.cesium_version = "1.74"
-
-            cesium_map_view = CesiumMapView(
-                cesium_ion_token=map_manager.get_cesium_token(),
-                options={
-                    'contextOptions': {
-                        'webgl': {
-                            'xrCompatible': True,
-                            'alpha': True,
-                            'preserveDrawingBuffer': True,
-                        }
-                    },
-                    'vrButton': False,
-                    'scene3DOnly': True,
-                },
-                terrain={
-                    'terrainProvider': {
-                        'Cesium.createWorldTerrain': {
-                            'requestVertexNormals': True,
-                            'requestWaterMask': True
-                        }
-                    }
-                },
-                layers=layers,
-                entities=entities
-            )
-
-            map_view = cesium_map_view
-
-        # Initialize context
+        # Prepare context
         context.update({
-            'map_view': map_view,
-            'map_extent': model_extent,
-            'layer_groups': layer_groups,
             'enable_properties_popup': self.properties_popup_enabled,
-            'nav_subtitle': self.map_subtitle,
-            'workspace': self._SpatialManager.WORKSPACE,
-            'back_url': self.back_url,
-            'show_custom_layer': self.show_custom_layer,
+            'geocode_enabled': self.geocode_api_key is not None,
+            'layer_groups': layer_groups,
             'layer_tab_name': self.layer_tab_name,
+            'map_extent': map_extent,
             'map_type': self.map_type,
-            'geocode_enabled': self.geocode_enabled,
+            'map_view': map_view,
+            'nav_subtitle': self.map_subtitle,
+            'nav_title': self.map_title,
+            'show_custom_layer': self.show_custom_layer,
             'show_legends': self.show_legends,
+            'workspace': self._SpatialManager.WORKSPACE,  # TODO: what is this used for?
         })
 
-        if resource:
-            context.update({'nav_title': self.map_title or resource.name})
-        else:
-            context.update({'nav_title': self.map_title})
-
-        # open_portal_mode = getattr(settings, 'ENABLE_OPEN_PORTAL', False)
-        show_rename = has_permission(request, 'rename_layers')
-        show_remove = has_permission(request, 'remove_layers')
-        show_public_toggle = has_permission(request, 'toggle_public_layers')
-        can_download = has_permission(request, 'can_download')
-
-        context.update({
-            'show_rename': show_rename,
-            'show_remove': show_remove,
-            'show_public_toggle': show_public_toggle,
-            'can_download': can_download,
-        })
-
-        if show_public_toggle:
+        if context.get('show_public_toggle', False):
             layer_dropdown_toggle = ToggleSwitch(display_text='',
                                                  name='layer-dropdown-toggle',
                                                  on_label='Yes',
@@ -220,25 +165,94 @@ class MapLayout(TethysLayout):
 
         return context
 
-    def get_permissions(self, request, permissions, model_db, *args, **kwargs):
+    def configure_map_view(self, args, kwargs, layer_groups, map_extent, map_manager, map_view, request):
+        # Reset/override map settings for common baseline
+        map_view.legend = False  # Ensure the built-in legend is not turned on.
+        map_view.height = '100%'  # Ensure 100% height
+        map_view.width = '100%'  # Ensure 100% width
+        map_view.controls = [
+            'Rotate',
+            'FullScreen',
+            {'ZoomToExtent': {
+                'projection': 'EPSG:4326',
+                'extent': map_extent
+            }}
+        ]
+        # Configure initial basemap visibility
+        map_view.disable_basemap = self.should_disable_basemap(
+            request=request,
+            map_manager=map_manager,
+            *args, **kwargs
+        )
+        # Configure feature selection
+        map_view.feature_selection = {
+            'multiselect': self.feature_selection_mutiselect,
+            'sensitivity': self.feature_selection_sensitivity,
+        }
+        # Create the Custom Layers layer group
+        self.create_custom_layers_layer_group(layer_groups, map_manager)
+        # Override MapView with CesiumMapView if Cesium is the chosen map_type.
+        if self.map_type == "cesium_map_view":
+            map_view = self.build_ceisum_map_view(map_view)
+        return map_view
+
+    # View Utilities -------------------------------------------------------- #
+    def build_ceisum_map_view(self, map_view):
         """
-        Hook to modify permissions.
+        Translate the layers of the given MapView into Cesium Layers and Entities and build CesiumMapView.
 
         Args:
-            request (HttpRequest): The request.
-            permissions (dict): The permissions dictionary with boolean values.
-            model_db (ModelDatabase): ModelDatabase instance associated with this request.
+            map_view (MapView): A MapView Gizmo object.
 
         Returns:
-            dict: modified permissions dictionary.
+            CesiumMapView: A CesiumMapView populated with translated layers.
         """
-        permissions = {
-            'can_use_geocode': has_permission(request, 'use_map_geocode'),
-            'can_use_plot': has_permission(request, 'use_map_plot')
-        }
-        return permissions
+        if not self.cesium_ion_token:
+            raise RuntimeError('You must set the "cesium_ion_token" attribute of the '
+                               'MapLayout to use the Cesium "map_type".')
+
+        # Translate the MapView.layers into Cesium layers and entities
+        layers, entities = self.translate_layers_to_cesium(map_view.layers)
+
+        # Build CesiumMapView
+        CesiumMapView.cesium_version = "1.74"
+        cesium_map_view = CesiumMapView(
+            cesium_ion_token=self.ceisum_ion_token,
+            options={
+                'contextOptions': {
+                    'webgl': {
+                        'xrCompatible': True,
+                        'alpha': True,
+                        'preserveDrawingBuffer': True,
+                    }
+                },
+                'vrButton': False,
+                'scene3DOnly': True,
+            },
+            terrain={
+                'terrainProvider': {
+                    'Cesium.createWorldTerrain': {
+                        'requestVertexNormals': True,
+                        'requestWaterMask': True
+                    }
+                }
+            },
+            layers=layers,
+            entities=entities
+        )
+        return cesium_map_view
 
     def translate_layers_to_cesium(self, map_view_layers):
+        """
+        Map MVLayers to Cesium Layers (WMS) and Entities (vector).
+            Only supports ImageWMS, TileWMS, and GeoJSON MVLayers.
+
+        Args:
+            map_view_layers (list<MVLayer>): A list of MVLayers.
+
+        Returns:
+            (list<MVLayer>, list<MVLayer>): Lists of layers and entities (entities, layers).
+        """
         cesium_layers = []
         cesium_entities = []
         for layer in map_view_layers:
@@ -249,40 +263,84 @@ class MapLayout(TethysLayout):
 
         return cesium_layers, cesium_entities
 
-    def save_custom_layers(self, request, session, resource, *args, **kwargs):
+    def create_custom_layers_layer_group(self, layer_groups, map_manager):
         """
-        Persist custom layers added to map by user.
+        Create an empty layer group with display name "Custom Layers" if it does not already exist.
+
+        Args:
+            layer_groups (list<dict>): A list of layer group dictionaries.
+            map_manager (MapManager): The MapManager instance for this MapLayout view.
+        """
+        # Check if we need to create a blank custom layer group
+        create_custom_layer = True
+        for layer_group in layer_groups:
+            if layer_group['id'] == 'custom_layers':
+                create_custom_layer = False
+                break
+
+        if create_custom_layer:
+            custom_layers = map_manager.build_layer_group(
+                id="custom_layers",
+                display_name="Custom Layers",
+                layers=[],
+                layer_control='checkbox',
+                visible=True
+            )
+            layer_groups.append(custom_layers)
+
+    # AJAX Handlers --------------------------------------------------------- #
+    def get_plot_data(self, request, *args, **kwargs):
+        """
+        Load plot from given parameters.
+
+        Args:
+            request (HttpRequest): The request.
+
+        Returns:
+            JsonResponse: title, data, and layout options for the plot.
+        """
+        # Get request parameters
+        layer_name = request.POST.get('layer_name', '')
+        feature_id = request.POST.get('feature_id', '')
+
+        # Initialize MapManager
+        map_manager = self.get_map_manager()
+        title, data, layout = map_manager.get_plot_for_layer_feature(layer_name, feature_id)
+
+        return JsonResponse({'title': title, 'data': data, 'layout': layout})
+
+    def save_custom_layers(self, request, *args, **kwargs):
+        """
+        An AJAX handler method that persists custom layers added to map by user.
+
         Args:
             request(HttpRequest): The request.
-            session(sqlalchemy.Session): The database session.
-            resource(Resource): The resource.
 
         Returns:
             JsonResponse: success.
         """
+        # TODO: Implement a method that does not require the database. JSON File? Localstorage?
         display_name = request.POST.get('layer_name', '')
         layer_uuid = request.POST.get('uuid', '')
         service_link = request.POST.get('service_link', '')
         service_type = request.POST.get('service_type', 'WMS')
         service_layer_name = request.POST.get('service_layer_name', '')
-        # TODO: Should use map_manager._build_mv_layer or at the very least MVLayer
         custom_layer = [{'layer_id': layer_uuid, 'display_name': display_name, 'service_link': service_link,
                          'service_type': service_type, 'service_layer_name': service_layer_name}]
         custom_layers = resource.get_attribute('custom_layers')
         if custom_layers is None:
             custom_layers = []
         custom_layers.extend(custom_layer)
+        # TODO: Should use map_manager._build_mv_layer or at the very least MVLayer
         resource.set_attribute('custom_layers', custom_layers)
         session.commit()
         return JsonResponse({'success': True})
 
-    def remove_custom_layer(self, request, session, resource, *args, **kwargs):
+    def remove_custom_layer(self, request, *args, **kwargs):
         """
-        Remove custom layers removed by user.
+        An AJAX handler method that removes persisted custom layers removed by user.
         Args:
             request(HttpRequest): The request.
-            session(sqlalchemy.Session): The database session.
-            resource(Resource): The resource.
 
         Returns:
             JsonResponse: success.
@@ -296,20 +354,19 @@ class MapLayout(TethysLayout):
                 for custom_layer in custom_layers:
                     if custom_layer['layer_id'] != layer_id:
                         new_custom_layers.append(custom_layer)
+                # TODO: Implement a method that does not require the database. JSON File? Localstorage?
                 resource.set_attribute(layer_group_type, new_custom_layers)
         session.commit()
         return JsonResponse({'success': True})
 
-    def build_legend_item(self, request, session, resource, *args, **kwargs):
+    def build_legend_item(self, request, *args, **kwargs):
         """
-        Render the HTML for a legend.
+        A jQuery.load() handler method that renders the HTML for a legend.
         """
-        # Get Managers Hook
-        model_db, map_manager = self.get_managers(
-            request=request,
-            resource=resource,
-            *args, **kwargs
-        )
+        # Get the MapManager
+        map_manager = self.get_map_manager()
+
+        # Get request parameters
         legend_div_id = json.loads(request.POST.get('div_id'))
         minimum = json.loads(request.POST.get('minimum'))
         maximum = json.loads(request.POST.get('maximum'))
@@ -323,42 +380,51 @@ class MapLayout(TethysLayout):
             'divisions': dict(),
         }
 
-        divisions = map_manager.generate_custom_color_ramp_divisions(min_value=minimum, max_value=maximum,
-                                                                     color_ramp=color_ramp, prefix=prefix,
-                                                                     color_prefix=color_prefix,
-                                                                     first_division=first_division)
+        divisions = map_manager.generate_custom_color_ramp_divisions(
+            min_value=minimum,
+            max_value=maximum,
+            color_ramp=color_ramp, prefix=prefix,
+            color_prefix=color_prefix,
+            first_division=first_division
+        )
 
         division_string = map_manager.build_param_string(**divisions)
         for label in divisions.keys():
             if color_prefix in label and int(label.replace(color_prefix, '')) >= first_division:
                 legend['divisions'][float(divisions[label.replace(color_prefix, prefix)])] = divisions[label]
+
         legend['divisions'] = collections.OrderedDict(
             sorted(legend['divisions'].items())
         )
 
-        html = render(
+        r = render(
             request,
             'tethys_layouts/map_layout/color_ramp_component.html',
             {'legend': legend}
         )
 
-        response = str(html.content, 'utf-8')
-        return JsonResponse({'success': True, 'response': response, 'div_id': legend_div_id, 'color_ramp': color_ramp,
-                             'division_string': division_string, 'layer_id': layer_id})
+        html_str = str(r.content, 'utf-8')
+        response = JsonResponse({
+            'success': True,
+            'response': html_str,
+            'div_id': legend_div_id,
+            'color_ramp': color_ramp,
+            'division_string': division_string,
+            'layer_id': layer_id
+        })
+        return response
 
-    def build_layer_group_tree_item(self, request, session, resource, *args, **kwargs):
+    def build_layer_group_tree_item(self, request, *args, **kwargs):
         """
-        Render the HTML for a layer group tree item.
+        A jQuery.loads() handler that renders the HTML for a layer group tree item.
 
         status (create/append): create is create a whole new layer group with all the layer items associated with it
                                 append is append an associated layer into an existing layer group
         """
-        # Get Managers Hook
-        model_db, map_manager = self.get_managers(
-            request=request,
-            resource=resource,
-            *args, **kwargs
-        )
+        # Get MapManager instance
+        map_manager = self.get_map_manager()
+
+        # Get request parameters
         status = request.POST.get('status', 'create')
         layer_group_name = request.POST.get('layer_group_name')
         layer_group_id = request.POST.get('layer_group_id')
@@ -370,110 +436,44 @@ class MapLayout(TethysLayout):
         show_download = json.loads(request.POST.get('show_download', 'false'))
         layers = []
 
+        # Reconstruct the MVLayer objects
         for i in range(len(layer_names)):
-            layers.append(map_manager._build_mv_layer("GeoJSON", layer_ids[i], layer_names[i], layer_legends[i],
-                                                      options=''))
+            layers.append(map_manager._build_mv_layer(
+                layer_source="GeoJSON",
+                layer_name=layer_ids[i],
+                layer_title=layer_names[i],
+                layer_variable=layer_legends[i],
+                options=None,
+            ))
 
         # Build Layer groups
         layer_group = map_manager.build_layer_group(layer_group_id, layer_group_name, layers=layers)
-        context = {'layer_group': layer_group, 'show_rename': show_rename, 'show_remove': show_remove,
-                   'show_download': show_download}
+        context = {
+            'layer_group': layer_group,
+            'show_rename': show_rename,
+            'show_remove': show_remove,
+            'show_download': show_download
+        }
+
         if status == 'create':
-            html_link = 'tethys_layouts/map_layout/layer_group_content.html'
+            template = 'tethys_layouts/map_layout/layer_group_content.r'
         else:
             # Only works for one layer at a time for now.
-            html_link = 'tethys_layouts/map_layout/layer_item_content.html'
+            template = 'tethys_layouts/map_layout/layer_item_content.r'
             context['layer'] = layers[0]
 
-        html = render(request, html_link, context)
+        r = render(request, template, context)
 
-        response = str(html.content, 'utf-8')
-        return JsonResponse({'success': True, 'response': response})
-
-    def should_disable_basemap(self, request, model_db, map_manager):
-        """
-        Hook to override disabling the basemap.
-
-        Args:
-            request (HttpRequest): The request.
-            model_db (ModelDatabase): ModelDatabase instance associated with this request.
-            map_manager (MapManager): MapManager instance associated with this request.
-
-        Returns:
-            bool: True to disable the basemap.
-        """
-        return self.default_disable_basemap
-
-    def get_managers(self, request, resource, *args, **kwargs):
-        """
-        Hook to get managers. Avoid removing or modifying items in context already to prevent unexpected behavior.
-
-        Args:
-            request (HttpRequest): The request.
-            resource (Resource): Resource instance or None.
-
-        Returns:
-            model_db (ModelDatabase): ModelDatabase instance.
-            map_manager (MapManager): Map Manager instance
-        """  # noqa: E501
-        # Lazy load the model_db and map_manager if not defined
-        if not getattr(self, '_model_db', None) or not getattr(self, '_map_manager', None):
-            database_id = None
-
-            if resource:
-                database_id = resource.get_attribute('database_id')
-
-            if not database_id:
-                log.warning('no model database provided')
-                self._model_db = None
-                # raise RuntimeError('A resource with database_id attribute is required: '
-                #                    'Resource - {} Database ID - {}'.format(resource, database_id))
-            else:
-                self._model_db = self._ModelDatabase(app=self._app, database_id=database_id)
-            gs_engine = self._app.get_spatial_dataset_service(self.geoserver_name, as_engine=True)
-            spatial_manager = self._SpatialManager(geoserver_engine=gs_engine)
-            self._map_manager = self._MapManager(spatial_manager=spatial_manager, model_db=self._model_db)
-
-        return self._model_db, self._map_manager
-
-    def get_plot_data(self, request, session, resource, *args, **kwargs):
-        """
-        Load plot from given parameters.
-
-        Args:
-            request (HttpRequest): The request.
-            session(sqlalchemy.Session): The database session.
-            resource(Resource): The resource.
-
-        Returns:
-            JsonResponse: title, data, and layout options for the plot.
-        """
-        # Get Resource
-        layer_name = request.POST.get('layer_name', '')
-        feature_id = request.POST.get('feature_id', '')
-        database_id = resource.get_attribute('database_id') if resource else None
-
-        if not database_id:
-            messages.error(request, 'An unexpected error occurred. Please try again.')
-            return redirect(self.back_url)
-
-        # Initialize MapManager
-        model_db = self._ModelDatabase(app=self._app, database_id=database_id)
-        gs_engine = self._app.get_spatial_dataset_service(self.geoserver_name, as_engine=True)
-        spatial_manager = self._SpatialManager(geoserver_engine=gs_engine)
-        map_manager = self._MapManager(spatial_manager=spatial_manager, model_db=model_db)
-        title, data, layout = map_manager.get_plot_for_layer_feature(layer_name, feature_id)
-
-        return JsonResponse({'title': title, 'data': data, 'layout': layout})
+        html_str = str(r.content, 'utf-8')
+        return JsonResponse({'success': True, 'response': html_str})
 
     @permission_required('use_map_geocode', raise_exception=True)
     def find_location_by_query(self, request, *args, **kwargs):
         """"
-        This controller is used in default geocode feature.
+        An AJAX handler that performs geocoding queries.
 
         Args:
             request(HttpRequest): The request.
-            resource_id(str): UUID of the resource being mapped.
         """
         query = request.POST.get('q', None)
         extent = request.POST.get('extent', None)
@@ -487,7 +487,7 @@ class MapLayout(TethysLayout):
             params['bounds'] = extent
 
         response = requests.get(
-            url=self.geocode_endpoint,
+            url=self._geocode_endpoint,
             params=params
         )
 
@@ -550,12 +550,15 @@ class MapLayout(TethysLayout):
     @permission_required('use_map_geocode', raise_exception=True)
     def find_location_by_advanced_query(self, request, *args, **kwargs):
         """"
-        This controller called by the advanced geocode search feature.
+        An AJAX handler that performs an advanced address search.
 
         Args:
             request(HttpRequest): The request.
-            resource_id(str): UUID of the resource being mapped.
         """
+        if not self.geocode_api_key:
+            raise RuntimeError('Can not run GeoCode query because no API token was supplied. Please provide the '
+                               'API key via the "geocode_api_key" attribute of the MapLayoutView.')
+
         query = request.POST.get('q', None)
         # location = request.POST.get('l', None)
 
@@ -565,7 +568,7 @@ class MapLayout(TethysLayout):
         }
 
         response = requests.get(
-            url=self.geocode_endpoint,
+            url=self._geocode_endpoint,
             params=params
         )
 
@@ -625,18 +628,21 @@ class MapLayout(TethysLayout):
 
         return JsonResponse(json)
 
-    def convert_geojson_to_shapefile(self, request, session, resource, *args, **kwargs):
+    def convert_geojson_to_shapefile(self, request, *args, **kwargs):
         """
+        AJAX handler that converts GeoJSON data into a shapefile for download.
         credit to:
         https://github.com/TipsForGIS/geoJSONToShpFile/blob/master/geoJ.py
         Args:
             request(HttpRequest): The request.
-            session(sqlalchemy.Session): The database session.
-            resource(Resource): The resource.
 
         Returns:
             JsonResponse: success.
         """
+        if not self.geocode_api_key:
+            raise RuntimeError('Can not run GeoCode query because no API token was supplied. Please provide the '
+                               'API key via the "geocode_api_key" attribute of the MapLayoutView.')
+
         json_data = json.loads(request.POST.get('data', ''))
         layer_id = request.POST.get('id', '0')
         json_type = json_data['features'][0]['geometry']['type']
@@ -701,3 +707,51 @@ class MapLayout(TethysLayout):
         in_memory.seek(0)
         response.write(in_memory.read())
         return response
+
+        # Hooks ------------------------------------------------------------- #
+        def get_map_manager(self):
+            """
+            Hook for overriding how the MapManager is created (e.g.: pass custom arguments).
+
+            Args:
+                request (HttpRequest): The request.
+
+            Returns:
+                map_manager (MapManager): Map Manager instance
+            """  # noqa: E501
+            # TODO: Internalize SpatialManager into MapManager?
+            if getattr(self, '_map_manager', None) is not None:
+                return self._map_manager
+
+            if self.sds_setting_name:
+                sds_engine = self.app.get_spatial_dataset_service(self.sds_setting_name, as_engine=True)
+                self._map_manager = self.map_manager_class(sds_engine=sds_engine)
+            else:
+                self._map_manager = self.map_manager_class()
+
+            return self._map_manager
+
+        def should_disable_basemap(self, request, map_manager, *args, **kwargs):
+            """
+            Hook to override disabling the basemap.
+
+            Args:
+                request (HttpRequest): The request.
+                map_manager (MapManager): MapManager instance associated with this request.
+
+            Returns:
+                bool: True to disable the basemap.
+            """
+            return self.default_disable_basemap
+
+        def get_compose_map_kwargs(self, request, *args, **kwargs):
+            """
+            Hook for specifying additional kwargs that should be passed to the MapManager.compose_map() call.
+
+            Args:
+                request (HttpRequest): The request.
+
+            Returns:
+                dict: keyword value pairs to be passed as kwargs to MapManager.compose_map().
+            """
+            return dict()
