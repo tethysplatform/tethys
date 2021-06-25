@@ -9,20 +9,22 @@ Required Context Variables:
   nav_subtitle(str, optional): Sub-title to show below the title.
 
 Required CSS:
-  <link href="{% static 'atcore/css/nav_header.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/nav_header.css' %}" rel="stylesheet"/>
 Optional CSS:
-  <link href="{% static 'atcore/css/wide_nav.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/wide_nav.css' %}" rel="stylesheet"/>
 {% endcomment %}
 
 {% block nav_header %}
 <div id="nav-header">
   {# BACK BUTTON #}
   {% block back_button %}
+    {% if back_url %}
     <div id="back-button">
       <a href="{{ back_url }}" title="Back">
         <span class="glyphicon glyphicon-chevron-left"></span>
       </a>
     </div>
+    {% endif %}
   {% endblock %}
 
   {# TITLE #}
