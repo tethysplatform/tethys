@@ -27,8 +27,8 @@ class TethysLayout(TethysController):
     app = None
     back_url = None
     base_template = 'tethys_layouts/tethys_layout.html'
-    layout_title = ''  # TODO: Is this used anywhere?
-    layout_subtitle = ''  # TODO: Is this used anywhere?
+    layout_title = ''
+    layout_subtitle = ''
 
     def get(self, request, *args, **kwargs):
         """
