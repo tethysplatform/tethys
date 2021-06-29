@@ -105,30 +105,38 @@ class MapLayout(TethysLayout):
 
     Recommended Properties:
         app (TethysApp): The class of the app contained in app.py.
-        base_template (str): Template to use as base template. Recommend overriding this to be your app's base template. Defaults to "tethys_layouts/tethys_layout.html".
+        base_template (str): Template to use as base template. Recommend overriding this to be your app's base
+            template. Defaults to "tethys_layouts/tethys_layout.html".
         map_subtitle (str): The subtitle to display on the MapLayout view.
         map_title (str): The title to display on the MapLayout view.
 
     Optional Properties:
         back_url (str): URL that will be added to the back button. No back button if not provided.
-        cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view". See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
+        cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view".
+            See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
         default_center (2-list<float>): Coordinates of the initial center for the map. Defaults to [-98.583, 39.833].
         default_disable_basemap (bool) Set to True to disable the basemap.
         default_zoom (int): Default zoom level. Defaults to 4.
-        geocode_api_key = An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
+        geocode_api_key = An Open Cage Geocoding API key. Required to enable address search/geocoding feature.
+            See: https://opencagedata.com/api#quickstart
         geoserver_workspace = Name of the GeoServer workspace of layers if applicable. Defaults to None.
         initial_map_extent = The initial zoom extent for the map. Defaults to [-180, -90, 180, 90].
-        feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
+        feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is
+            enabled. Defaults to False.
         feature_selection_sensitivity (int): Feature selection sensitivity/relative search radius. Defaults to 4.
         layer_tab_name (str) Name of the "Layers" tab. Defaults to "Layers".
-        map_type (str): Type of map gizmo to use. One of "tethys_map_view" or "cesium_map_view". Defaults to "tethys_map_view".
+        map_type (str): Type of map gizmo to use. One of "tethys_map_view" or "cesium_map_view". Defaults
+            to "tethys_map_view".
         max_zoom (int): Maximum zoom level. Defaults to 28.
         min_zoom (int): Minimum zoom level. Defaults to 0.
         properties_popup_enabled (bool): Set to False to disable the properties popup. Defaults to True.
-        sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager using the kwarg "sds_engine".
-        show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS layers to the Custom Layers layer group dynamically. Defaults to True.
+        sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when
+            initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager
+                using the kwarg "sds_engine".
+        show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS
+            layers to the Custom Layers layer group dynamically. Defaults to True.
         show_legends (bool): Show the Legend tab. Defaults to False.
-    """  # noqa: E501
+    """
     __metaclass__ = ABCMeta
 
     # Changing these will likely break the MapLayout
@@ -187,20 +195,22 @@ class MapLayout(TethysLayout):
             cls._sds_engine = cls.app.get_spatial_dataset_engine_setting(cls.sds_setting_name)
         return cls._sds_engine
 
-    # Abstract Methods -------------------------------------------------- #
-    @abstractmethod
-    def compose_map(self, request, *args, **kwargs):
+    # Methods to Override  -------------------------------------------------- #
+    def compose_layers(self, request, map_view, *args, **kwargs):
         """
-        Compose the MapView object.
+        Compose layers and layer groups for the MapLayout and add to the given MapView. Use the built-in
+            utility methods to build the MVLayer objects and layer group dictionaries. Returns a list of
+            layer group dictionaries.
+
         Args:
             request(HttpRequest): A Django request object.
+            map_view(MapView): The MapView gizmo to add layers to.
 
         Returns:
-            MapView, 4-list<float>, list<LayerGroupDicts>: The MapView, extent, and list of LayerGroup dictionaries.
+            list<LayerGroupDicts>: The MapView, extent, and list of LayerGroup dictionaries.
         """
-        raise NotImplemented('You must extend MapLayout and implement the compose_map method.')
+        return []
 
-    # Hooks ------------------------------------------------------------- #
     @classmethod
     def get_initial_map_extent(cls):
         """
@@ -304,13 +314,32 @@ class MapLayout(TethysLayout):
             dict: modified context dictionary.
         """  # noqa: E501
         # Compose the Map
-        # TODO: refactor to create map_view and pass to compose_map - get_map_layers?
-        map_view, map_extent, layer_groups = self.compose_map(
-            request=request,
-            *args, **kwargs
-        )
+        map_view = self._build_map_view(request, *args, **kwargs)
 
-        map_view = self._build_map_view(request, layer_groups, map_extent, *args, **kwargs)
+        # Add layers to the Map
+        layer_groups = self.compose_layers(request=request, map_view=map_view, *args, **kwargs)
+
+        # Check if we need to create a blank custom layer group
+        create_custom_layer = True
+        for layer_group in layer_groups:
+            if layer_group['id'] == 'custom_layers':
+                create_custom_layer = False
+                break
+
+        # Create the Custom Layers layer group
+        if create_custom_layer:
+            custom_layers = self.build_layer_group(
+                id="custom_layers",
+                display_name="Custom Layers",
+                layers=[],
+                layer_control='checkbox',
+                visible=True
+            )
+            layer_groups.append(custom_layers)
+
+        # Override MapView with CesiumMapView if Cesium is the chosen map_type.
+        if self.map_type == "cesium_map_view":
+            map_view = self._build_ceisum_map_view(map_view)
 
         # Prepare context
         context.update({
@@ -318,7 +347,7 @@ class MapLayout(TethysLayout):
             'geocode_enabled': self.geocode_api_key is not None,
             'layer_groups': layer_groups,
             'layer_tab_name': self.layer_tab_name,
-            'map_extent': map_extent,
+            'map_extent': self.map_extent,
             'map_type': self.map_type,
             'map_view': map_view,
             'nav_subtitle': self.map_subtitle,
@@ -373,54 +402,49 @@ class MapLayout(TethysLayout):
         return permissions
 
     # Private View Helpers -------------------------------------------------- #
-    def _build_map_view(self, request, map_view, layer_groups, map_extent, *args, **kwargs):
+    def _build_map_view(self, request, *args, **kwargs):
         """
-        TODO: Refactor to create the MapView and return it.
+        Build the MapView gizmo.
+
+        Args:
+            request (HttpRequest): The request.
+
+        Returns:
+            MapView: the MapView gizmo.
         """
-        # Reset/override map settings for common baseline
-        map_view.legend = False  # Ensure the built-in legend is not turned on.
-        map_view.height = '100%'  # Ensure 100% height
-        map_view.width = '100%'  # Ensure 100% width
-        map_view.controls = [
-            'Rotate',
-            'FullScreen',
-            {'ZoomToExtent': {
-                'projection': 'EPSG:4326',
-                'extent': map_extent
-            }}
-        ]
+        map_view = MapView(
+            height='100%',
+            width='100%',
+            controls=[
+                'Rotate',
+                'FullScreen',
+                {'ZoomToExtent': {
+                    'projection': 'EPSG:4326',
+                    'extent': self.map_extent
+                }}
+            ],
+            layers=[],
+            view=self.default_view,
+            basemap=[
+                'Stamen',
+                {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
+                'OpenStreetMap',
+                'ESRI',
+            ],
+            legend=False
+        )
+
         # Configure initial basemap visibility
         map_view.disable_basemap = self.should_disable_basemap(
             request=request,
             *args, **kwargs
         )
+
         # Configure feature selection
         map_view.feature_selection = {
             'multiselect': self.feature_selection_mutiselect,
             'sensitivity': self.feature_selection_sensitivity,
         }
-
-        # Check if we need to create a blank custom layer group
-        create_custom_layer = True
-        for layer_group in layer_groups:
-            if layer_group['id'] == 'custom_layers':
-                create_custom_layer = False
-                break
-
-        # Create the Custom Layers layer group
-        if create_custom_layer:
-            custom_layers = self.build_layer_group(
-                id="custom_layers",
-                display_name="Custom Layers",
-                layers=[],
-                layer_control='checkbox',
-                visible=True
-            )
-            layer_groups.append(custom_layers)
-
-        # Override MapView with CesiumMapView if Cesium is the chosen map_type.
-        if self.map_type == "cesium_map_view":
-            map_view = self._build_ceisum_map_view(map_view)
 
         return map_view
 
@@ -433,7 +457,7 @@ class MapLayout(TethysLayout):
         Build an MVLayer object with supplied arguments.
         Args:
             layer_source(str): OpenLayers Source to use for the MVLayer (e.g.: "TileWMS", "ImageWMS", "GeoJSON").
-            layer_name(str): Name of GeoServer layer (e.g.: agwa:3a84ff62-aaaa-bbbb-cccc-1a2b3c4d5a6b7c8d-model_boundaries).
+            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
             layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
             layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
             layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
@@ -447,11 +471,12 @@ class MapLayout(TethysLayout):
             geometry_attribute(str): Name of the geometry attribute. Optional.
             style_map(dict): Style map dictionary. See MVLayer documentation for examples of style maps. Optional.
             show_download(boolean): enable download layer. (only works for geojson layer).
-            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
+            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
+                ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
+                only supported in CesiumMapView.
         Returns:
             MVLayer: the MVLayer object.
-        """  # noqa: E501
-
+        """
         # Derive popup_title if not given
         if not popup_title:
             popup_title = layer_title
@@ -730,7 +755,7 @@ class MapLayout(TethysLayout):
         A jQuery.loads() handler that renders the HTML for a layer group tree item.
 
         status (create/append): create is create a whole new layer group with all the layer items associated with it
-                                append is append an associated layer into an existing layer group
+            append is append an associated layer into an existing layer group
         """
         # Get request parameters
         status = request.POST.get('status', 'create')
@@ -943,8 +968,8 @@ class MapLayout(TethysLayout):
     def convert_geojson_to_shapefile(self, request, *args, **kwargs):
         """
         AJAX handler that converts GeoJSON data into a shapefile for download.
-        credit to:
-        https://github.com/TipsForGIS/geoJSONToShpFile/blob/master/geoJ.py
+            Credit to: https://github.com/TipsForGIS/geoJSONToShpFile/blob/master/geoJ.py
+
         Args:
             request(HttpRequest): The request.
 
@@ -1143,12 +1168,13 @@ class MapLayout(TethysLayout):
         Build an MVLayer object with supplied arguments.
         Args:
             geojson(dict): Python equivalent GeoJSON FeatureCollection.
-            layer_name(str): Name of GeoServer layer (e.g.: agwa:3a84ff62-aaaa-bbbb-cccc-1a2b3c4d5a6b7c8d-model_boundaries).
+            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
             layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
             layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
             layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
             visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
+                Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
             plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
             has_action(bool): Enable "Action" button on pop-up properties. Defaults to False.
@@ -1159,7 +1185,7 @@ class MapLayout(TethysLayout):
 
         Returns:
             MVLayer: the MVLayer object.
-        """  # noqa: E501
+        """
         # Define default styles for layers
         style_map = cls.get_vector_style_map()
 
@@ -1197,14 +1223,15 @@ class MapLayout(TethysLayout):
         Build an WMS MVLayer object with supplied arguments.
         Args:
             endpoint(str): URL to GeoServer WMS interface.
-            layer_name(str): Name of GeoServer layer (e.g.: agwa:3a84ff62-aaaa-bbbb-cccc-1a2b3c4d5a6b7c8d-model_boundaries).
+            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
             layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
             layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
             layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
             viewparams(str): VIEWPARAMS string.
             env(str): ENV string.
             visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
+                Defaults to True.
             tiled(bool): Configure as tiled layer if True. Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
             plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
@@ -1214,10 +1241,12 @@ class MapLayout(TethysLayout):
             excluded_properties(list): List of properties to exclude from feature popups.
             geometry_attribute(str): Name of the geometry attribute. Defaults to "geometry".
             color_ramp_division_kwargs(dict): arguments from MapLayout.generate_custom_color_ramp_divisions
-            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
+            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
+                ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
+                only supported in CesiumMapView.
         Returns:
             MVLayer: the MVLayer object.
-        """  # noqa: E501
+        """
         # Build params
         params = {'LAYERS': layer_name}
 
@@ -1287,14 +1316,15 @@ class MapLayout(TethysLayout):
         Build an AcrGIS Map Server MVLayer object with supplied arguments.
         Args:
             endpoint(str): URL to GeoServer WMS interface.
-            layer_name(str): Name of GeoServer layer (e.g.: agwa:3a84ff62-aaaa-bbbb-cccc-1a2b3c4d5a6b7c8d-model_boundaries).
+            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
             layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
             layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
             layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
             viewparams(str): VIEWPARAMS string.
             env(str): ENV string.
             visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
+                Defaults to True.
             tiled(bool): Configure as tiled layer if True. Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
             plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
@@ -1306,7 +1336,7 @@ class MapLayout(TethysLayout):
 
         Returns:
             MVLayer: the MVLayer object.
-        """  # noqa: E501
+        """
         # Build options
         options = {
             'url': endpoint,
@@ -1352,13 +1382,15 @@ class MapLayout(TethysLayout):
             top_offset (float): offset from top of color ramp (defaults to 0).
             bottom_offset (float): offset from bottom of color ramp (defaults to 0).
             prefix (str): name of division variable prefix (i.e.: 'val' for pattern 'val1').
-            color_ramp (str): color ramp name in COLOR_RAMPS dict. Options are ['Blue', 'Blue and Red', 'Flower Field', 'Galaxy Berries', 'Heat Map', 'Olive Harmony', 'Mother Earth', 'Rainforest Frogs', 'Retro FLow', 'Sunset Fade'].
+            color_ramp (str): color ramp name in COLOR_RAMPS dict. Options are ['Blue', 'Blue and Red',
+                'Flower Field', 'Galaxy Berries', 'Heat Map', 'Olive Harmony', 'Mother Earth',
+                'Rainforest Frogs', 'Retro FLow', 'Sunset Fade'].
             color_prefix (str): name of color variable prefix (i.e.: 'color' for pattern 'color1').
             no_data_value (str): set no data value for the color ramp. (defaults to None).
         
         Returns:
             dict<name, value>: Color ramp division names and values.
-        """  # noqa: E501
+        """
         divisions = {}
 
         # Equation of a Line
