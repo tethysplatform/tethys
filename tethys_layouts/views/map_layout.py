@@ -21,6 +21,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 import shapefile  # PyShp
 
+from tethys_layouts.exceptions import TethysLayoutPropertyException
 from tethys_layouts.utilities import classproperty
 from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission, permission_required
@@ -121,7 +122,7 @@ class MapLayout(TethysLayout):
         geocode_api_key = An Open Cage Geocoding API key. Required to enable address search/geocoding feature.
             See: https://opencagedata.com/api#quickstart
         geoserver_workspace = Name of the GeoServer workspace of layers if applicable. Defaults to None.
-        initial_map_extent = The initial zoom extent for the map. Defaults to [-180, -90, 180, 90].
+        initial_map_extent = The initial zoom extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
         feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is
             enabled. Defaults to False.
         feature_selection_sensitivity (int): Feature selection sensitivity/relative search radius. Defaults to 4.
@@ -152,12 +153,12 @@ class MapLayout(TethysLayout):
 
     # Optional Properties
     cesium_ion_token = None
-    default_center = [-98.583, 39.833]
+    default_center = [-98.583, 39.833]  # USA Center
     default_disable_basemap = False
     default_zoom = 4
     geocode_api_key = None
     geoserver_workspace = ''
-    initial_map_extent = [-180, -90, 180, 90]
+    initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
     feature_selection_mutiselect = False
     feature_selection_sensitivity = 4
     layer_tab_name = 'Layers'
@@ -189,12 +190,15 @@ class MapLayout(TethysLayout):
         return cls._default_view
 
     @classproperty
-    def sds_engine(cls):
+    def sds_setting(cls):
         if not cls.sds_setting_name:
-            return None
-        if not getattr(cls, '_sds_engine', None):
-            cls._sds_engine = cls.app.get_spatial_dataset_engine_setting(cls.sds_setting_name)
-        return cls._sds_engine
+            raise TethysLayoutPropertyException('sds_setting_name', MapLayout)
+        if not cls.app:
+            raise TethysLayoutPropertyException('app', MapLayout)
+        if not getattr(cls, '_sds_setting', None):
+            log.debug(f'MapLayout.app: {cls.app}')
+            cls._sds_setting = cls.app.get_spatial_dataset_service(cls.sds_setting_name)
+        return cls._sds_setting
 
     # Methods to Override  -------------------------------------------------- #
     def compose_layers(self, request, map_view, *args, **kwargs):
@@ -359,15 +363,17 @@ class MapLayout(TethysLayout):
         })
 
         if context.get('show_public_toggle', False):
-            layer_dropdown_toggle = ToggleSwitch(display_text='',
-                                                 name='layer-dropdown-toggle',
-                                                 on_label='Yes',
-                                                 off_label='No',
-                                                 on_style='success',
-                                                 off_style='danger',
-                                                 initial=True,
-                                                 size='small',
-                                                 classes='layer-dropdown-toggle')
+            layer_dropdown_toggle = ToggleSwitch(
+                display_text='',
+                name='layer-dropdown-toggle',
+                on_label='Yes',
+                off_label='No',
+                on_style='success',
+                off_style='danger',
+                initial=True,
+                size='small',
+                classes='layer-dropdown-toggle'
+            )
             context.update({'layer_dropdown_toggle': layer_dropdown_toggle})
 
         # Add plot slide sheet
