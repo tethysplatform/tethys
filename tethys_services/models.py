@@ -153,14 +153,17 @@ class SpatialDatasetService(models.Model):
     def __str__(self):
         return self.name
 
-    def get_engine(self):
+    def get_engine(self, public=False):
         """
-        Retrieves spatial dataset engine
+        Retrieves spatial dataset engine.
+
+        Args:
+            public (bool): Engine bound to public_endpoint if True. Defaults to False.
         """
         engine = None
 
         if self.engine == self.GEOSERVER:
-            engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
+            engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint if not public else self.public_endpoint,
                                                    username=self.username,
                                                    password=self.password)
             engine.public_endpoint = self.public_endpoint
@@ -169,7 +172,10 @@ class SpatialDatasetService(models.Model):
             if self.username and self.password:
                 session_manager.set_session_options(auth=(str(self.username), str(self.password)))
 
-            catalog_endpoint = str(self.endpoint).rstrip('/') + '/catalog.xml'
+            catalog_endpoint = str(self.endpoint if not public else self.public_endpoint)
+            if not catalog_endpoint.endswith('.xml'):
+                catalog_endpoint = catalog_endpoint.rstrip('/') + '/catalog.xml'
+            print(catalog_endpoint)
             engine = TDSCatalog(str(catalog_endpoint))
 
         return engine
