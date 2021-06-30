@@ -21,11 +21,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 import shapefile  # PyShp
 
-from tethys_gizmos.gizmo_options import SlideSheet
 from tethys_layouts.utilities import classproperty
 from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission, permission_required
-from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVLayer, MVView
+from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVLayer, MVView, SlideSheet
 
 log = logging.getLogger(f'tethys.{__name__}')
 
@@ -100,8 +99,10 @@ _DEFAULT_TILE_GRID = {
 
 class MapLayout(TethysLayout):
     """
-    Controller for the MapLayout view. Pass kwargs matching property names to as_controller()
-        to override their values and configure the MapLayout view.
+    Controller for the MapLayout view. Create a class that extends this class and implement the compose_layers method
+        and other properties as desired. In the app.py pass MapLayout.as_controller() as the controller argument to
+        the UrlMap. You may also pass kwargs matching property names of the class to MapLayout.as_controller() to
+        override their values and configure the MapLayout view.
 
     Recommended Properties:
         app (TethysApp): The class of the app contained in app.py.

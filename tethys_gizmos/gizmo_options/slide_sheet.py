@@ -6,7 +6,7 @@
 * Copyright: (c) Aquaveo 2021
 ********************************************************************************
 """
-from tethys_sdk.gizmos import TethysGizmoOptions
+from tethys_gizmos.gizmo_options.base import TethysGizmoOptions
 
 
 class SlideSheet(TethysGizmoOptions):
