@@ -35,7 +35,7 @@ var TETHYS_APP_BASE = (function() {
    *                    PRIVATE FUNCTION DECLARATIONS
    *************************************************************************/
    var apply_app_color_theme, app_entry_handler, check_responsive,
-       no_nav_handler, exit_app, toggle_nav;
+       no_nav_handler, exit_app, toggle_nav, csrf_safe_method;
 
 
    /************************************************************************
@@ -196,6 +196,11 @@ var TETHYS_APP_BASE = (function() {
         $(app_content_selector).removeClass('show-app-content');
    };
 
+    csrf_safe_method = function(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
   /************************************************************************
    *                        DEFINE PUBLIC INTERFACE
    *************************************************************************/
@@ -247,6 +252,20 @@ var TETHYS_APP_BASE = (function() {
         }, 100);
     };
 
+    /*****************************************************************************
+     *
+     * Cross Site Request Forgery Token Configuration
+     *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
+     *
+     *****************************************************************************/
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrf_safe_method(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", document.querySelector('[name=csrfmiddlewaretoken]').value);
+            }
+        }
+    });
 
   // Initialization: jQuery function that gets called when
   // the DOM tree finishes loading
@@ -302,22 +321,3 @@ var TETHYS_APP_BASE = (function() {
 
 
 // Global Functions for App Util
-
-/*****************************************************************************
- *
- * Cross Site Request Forgery Token Configuration
- *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
- *
- *****************************************************************************/
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);  // Note csrftoken is defined in app_base.html
-        }
-    }
-});
