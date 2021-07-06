@@ -46,7 +46,7 @@
     "url": "https://github.com/dagrejs/dagre-d3/issues"
   },
   "dependencies": {
-    "d3": "^4.12.2",
+    "d3": "^7.0.0",
     "dagre": "^0.8.1",
     "graphlib": "^2.1.5",
     "lodash": "^4.17.4"
