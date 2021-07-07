@@ -167,7 +167,7 @@ class MapLayout(TethysLayout):
     min_zoom = 0
     properties_popup_enabled = True
     sds_setting_name = ''
-    show_custom_layer = True
+    show_custom_layer = False
     show_legends = False
 
     COLOR_RAMPS = copy.deepcopy(_COLOR_RAMPS)
@@ -194,11 +194,9 @@ class MapLayout(TethysLayout):
         if not cls.sds_setting_name:
             raise TethysLayoutPropertyException('sds_setting_name', MapLayout)
         if not cls.app:
-            raise TethysLayoutPropertyException('app', MapLayout)
-        if not getattr(cls, '_sds_setting', None):
             log.debug(f'MapLayout.app: {cls.app}')
-            cls._sds_setting = cls.app.get_spatial_dataset_service(cls.sds_setting_name)
-        return cls._sds_setting
+            raise TethysLayoutPropertyException('app', MapLayout)
+        return cls.app.get_spatial_dataset_service(cls.sds_setting_name)
 
     # Methods to Override  -------------------------------------------------- #
     def compose_layers(self, request, map_view, *args, **kwargs):
@@ -1225,7 +1223,8 @@ class MapLayout(TethysLayout):
     def build_wms_layer(cls, endpoint, layer_name, layer_title, layer_variable, viewparams=None, env=None,
                         visible=True, tiled=True, selectable=False, plottable=False, has_action=False, extent=None,
                         public=True, geometry_attribute='geometry', layer_id='', excluded_properties=None,
-                        popup_title=None, color_ramp_division_kwargs=None, times=None):
+                        popup_title=None, color_ramp_division_kwargs=None, times=None, server_type='geoserver',
+                        cross_origin=None, styles=None):
         """
         Build an WMS MVLayer object with supplied arguments.
         Args:
@@ -1251,6 +1250,10 @@ class MapLayout(TethysLayout):
             times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
                 ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
                 only supported in CesiumMapView.
+            server_type (str): One of 'geoserver' or 'thredds'. Defaults to 'geoserver'.
+            cross_origin (str): Value to pass to crossOrigin property. Defaults to None. See:
+                https://openlayers.org/en/latest/apidoc/module-ol_source_TileWMS-TileWMS.html
+            styles (str): Name of style to render the WMS. Defaults to None.
         Returns:
             MVLayer: the MVLayer object.
         """
@@ -1274,8 +1277,8 @@ class MapLayout(TethysLayout):
         options = {
             'url': endpoint,
             'params': params,
-            'serverType': 'geoserver',
-            'crossOrigin': 'anonymous',
+            'serverType': server_type,
+            'crossOrigin': cross_origin,
         }
         if color_ramp_division_kwargs:
             # Create color ramp and add them to ENV
