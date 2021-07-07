@@ -272,7 +272,9 @@
 
 {% block content_dependent_styles %}
   {{ block.super }}
+  {% if wide_nav %}
   <link href="{% static 'tethys_sdk/css/wide_nav.css' %}" rel="stylesheet"/>
+  {% endif %}
   <link href="{% static 'tethys_sdk/css/nav_header.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_sdk/css/nav_tabs.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_layouts/map_layout/flat_map.css' %}" rel="stylesheet"/>
