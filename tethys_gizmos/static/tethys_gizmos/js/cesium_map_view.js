@@ -327,6 +327,22 @@ var CESIUM_MAP_VIEW = (function() {
         }
     }
 
+    // Set Cesium primitives
+    cesium_load_primitives = function()
+    {
+        var $map_element = $('#' + m_map_target);
+        var m_primitives_options = [];
+        var raw_primitives_options = $map_element.data('primitives');
+        if(is_empty_or_undefined(raw_primitives_options))
+        {
+            return;
+        }
+        for (let i = 0; i < raw_primitives_options.length; i++) {
+            var method = string_to_function(Object.keys(raw_primitives_options[i])[0]);
+            var primitives = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(raw_primitives_options[i])[0])));
+        }
+    }
+
     // Set Cesium entities
     cesium_load_entities = function()
     {
