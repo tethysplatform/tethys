@@ -33,7 +33,7 @@ var CESIUM_MAP_VIEW = (function() {
  	*************************************************************************/
  	var cesium_base_map_init, cesium_globe_init, cesium_map_view_init, cesium_initialize_all, cesium_widgets_init,
  	    clock_options_init, cesium_view, cesium_terrain, cesium_image_layers, cesium_load_model, cesium_load_entities,
- 	    cesium_models, update_field, option_checker;
+ 	    cesium_load_primitives, cesium_models, update_field, option_checker;
 
     var cesium_shadow_options, textarea_string_dict, cesium_logging;
 
@@ -300,6 +300,22 @@ var CESIUM_MAP_VIEW = (function() {
         m_viewer.trackedEntity = entity;
     }
 
+    // Set Cesium primitives
+    cesium_load_primitives = function()
+    {
+        var $map_element = $('#' + m_map_target);
+        var m_primitives_options = [];
+        var raw_primitives_options = $map_element.data('primitives');
+        if(is_empty_or_undefined(raw_primitives_options))
+        {
+            return;
+        }
+        for (let i = 0; i < raw_primitives_options.length; i++) {
+            var method = string_to_function(Object.keys(raw_primitives_options[i])[0]);
+            var primitives = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(raw_primitives_options[i])[0])));
+        }
+    }
+
     // Set Cesium entities
     cesium_load_entities = function()
     {
@@ -342,6 +358,7 @@ var CESIUM_MAP_VIEW = (function() {
             else if (curr_entity_options.source.toLowerCase() == 'geojson')
             {
                 var gjson = curr_entity_options.options;
+                var default_point = gjson && gjson['properties'] && gjson['properties']['default_point'] == 'point'
                 var dataSourcePromise = Cesium.GeoJsonDataSource.load(gjson).then(function(source_result) {
                     source_result['tethys_data'] = curr_entity_options.data;
                     source_result['legend_title'] = curr_entity_options.legend_title;
@@ -354,6 +371,16 @@ var CESIUM_MAP_VIEW = (function() {
                     if ('layer_options' in curr_entity_options && curr_entity_options.layer_options &&
                         'visible' in curr_entity_options.layer_options) {
                         source_result.show = curr_entity_options.layer_options.visible;
+                        if (default_point) {
+                            var point = new Cesium.PointGraphics({
+                                color: Cesium.Color.ORANGE,
+                                pixelSize: 8,
+                            });
+                            source_result.entities.values.forEach((value) => {
+                                value.billboard = undefined;
+                                value.point = point;
+                            })
+                        }
                     }
                     return source_result;
                 });
@@ -508,6 +535,9 @@ var CESIUM_MAP_VIEW = (function() {
 
         // Load Cesium entities
         cesium_load_entities();
+
+        // Load Cesium primitives
+        cesium_load_primitives();
 
         // Load the view last
         cesium_view();
