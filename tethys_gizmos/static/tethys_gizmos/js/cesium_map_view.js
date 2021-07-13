@@ -273,24 +273,24 @@ var CESIUM_MAP_VIEW = (function() {
             return;
         }
 
-        for (let m_model of m_models) {
+        for (let model of m_models) {
             // options is where the model data is store.
-            let m_model_option = cesium_options(m_model.options);
-            let m_model_data = m_model.data
-            var name = m_model_option['name'];
+            let model_option = cesium_options(model.options);
+            let model_data = model.data
+            var name = model_option['name'];
             // Map shadows key
-            if ('shadows' in m_model_option['model']) {
-                var shadow_prop = m_model_option['model']['shadows']
-                m_model_option['model']['shadows'] = cesium_shadow_options[shadow_prop.toLowerCase()]
+            if ('shadows' in model_option['model']) {
+                var shadow_prop = model_option['model']['shadows']
+                model_option['model']['shadows'] = cesium_shadow_options[shadow_prop.toLowerCase()]
             }
-            var model = m_model_option['model'];
-            var position = m_model_option['position'];
-            var orientation = m_model_option['orientation'];
-            cesium_load_model(model, model, position, orientation, m_model_data);
+            var cesium_model = model_option['model'];
+            var position = model_option['position'];
+            var orientation = model_option['orientation'];
+            cesium_load_model(name, cesium_model, position, orientation, model_data);
         }
     }
 
-    cesium_load_model = function(name, model, position, orientation, m_model_data)
+    cesium_load_model = function(name, model, position, orientation, model_data)
     {
         // Convert shadow to number using shadow_dict.
         var entity = m_viewer.entities.add({
@@ -299,9 +299,9 @@ var CESIUM_MAP_VIEW = (function() {
                                             orientation : orientation,
                                             model : model,
                                          });
-        entity['layer_name'] = m_model_data.layer_name
-        entity['layer_variable'] = m_model_data.layer_variable
-        entity['layer_id'] = m_model_data.layer_id
+        entity['layer_name'] = model_data.layer_name
+        entity['layer_variable'] = model_data.layer_variable
+        entity['layer_id'] = model_data.layer_id
     }
 
     // Set Cesium primitives
@@ -313,17 +313,17 @@ var CESIUM_MAP_VIEW = (function() {
         {
             return;
         }
-        for (let m_primitive of m_primitives) {
+        for (let primitive of m_primitives) {
             // Cesium Data is stored in options attribute
-            let m_primitive_option = m_primitive.options
+            let primitive_option = primitive.options
 
             // Other data is stored in data attribute
-            let m_primitive_data = m_primitive.data
-            var method = string_to_function(Object.keys(m_primitive_option)[0]);
-            var primitives = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(m_primitive_option)[0])));
-            primitives['layer_name'] = m_primitive_data.layer_name
-            primitives['layer_variable'] = m_primitive_data.layer_variable
-            primitives['layer_id'] = m_primitive_data.layer_id
+            let primitive_data = primitive.data
+            var method = string_to_function(Object.keys(primitive_option)[0]);
+            var cesium_primitive = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(primitive_option)[0])));
+            cesium_primitive['layer_name'] = primitive_data.layer_name
+            cesium_primitive['layer_variable'] = primitive_data.layer_variable
+            cesium_primitive['layer_id'] = primitive_data.layer_id
         }
     }
 

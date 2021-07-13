@@ -318,7 +318,7 @@ class MapView(TethysGizmoOptions):
     local_url = 'tethys_gizmos/vendor/openlayers/{version}/ol.{ext}'
 
     def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], models=[], primitives=[], draw=None, legend=False, attributes={}, classes='',
+                 controls=[], layers=[], draw=None, legend=False, attributes={}, classes='',
                  disable_basemap=False, feature_selection=None):
         """
         Constructor
@@ -332,8 +332,6 @@ class MapView(TethysGizmoOptions):
         self.view = view
         self.controls = controls
         self.layers = layers
-        self.models = models
-        self.primitives = primitives
         self.draw = draw
         self.legend = legend
         self.disable_basemap = disable_basemap
