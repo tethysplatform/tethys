@@ -386,7 +386,7 @@ class CesiumMapView(TethysGizmoOptions):
 
         **Cesium Ion Resource using Assest ID**
 
-        Support loading data from cesium ion.
+        Support loading data from Cesium Ion assets and resources.
 
         For example:
 

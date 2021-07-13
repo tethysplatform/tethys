@@ -20,8 +20,9 @@ var CESIUM_MAP_VIEW = (function() {
         m_view_options,                 // The map view options
         m_terrain_options,              // The map terrain options
         m_image_layer_options,          // The map image layer options
-        m_models_options,               // The map 3D object options
+        m_models,                       // The map 3D object data
         m_entities_options,             // The map entity options
+        m_primitives,                   // The map primitive data
         m_clock,                        // The map clock options
         m_draw;                         // The map drawing option (boolean)
 
@@ -261,9 +262,9 @@ var CESIUM_MAP_VIEW = (function() {
     cesium_models = function()
     {
         var $map_element = $('#' + m_map_target);
-        m_models_options = $map_element.data('models');
+        m_models = $map_element.data('models');
 
-        if(!is_empty_or_undefined(m_models_options))
+        if(!is_empty_or_undefined(m_models))
         {
              cesium_shadow_options = {'disabled': 0, 'enabled': 1, 'cast_only': 2, 'receive_only': 3, 'number_of_shadow_modes': 4}
         }
@@ -272,23 +273,24 @@ var CESIUM_MAP_VIEW = (function() {
             return;
         }
 
-        let m_model_option_properties = cesium_options(m_models_options);
-        for (let m_model_option_property in m_model_option_properties)
-        {
-            var name = m_model_option_properties[m_model_option_property]['name'];
+        for (let m_model of m_models) {
+            // options is where the model data is store.
+            let m_model_option = cesium_options(m_model.options);
+            let m_model_data = m_model.data
+            var name = m_model_option['name'];
             // Map shadows key
-            if ('shadows' in m_model_option_properties[m_model_option_property]['model']) {
-                var shadow_prop = m_model_option_properties[m_model_option_property]['model']['shadows']
-                m_model_option_properties[m_model_option_property]['model']['shadows'] = cesium_shadow_options[shadow_prop.toLowerCase()]
+            if ('shadows' in m_model_option['model']) {
+                var shadow_prop = m_model_option['model']['shadows']
+                m_model_option['model']['shadows'] = cesium_shadow_options[shadow_prop.toLowerCase()]
             }
-            var model = m_model_option_properties[m_model_option_property]['model'];
-            var position = m_model_option_properties[m_model_option_property]['position'];
-            var orientation = m_model_option_properties[m_model_option_property]['orientation'];
-            cesium_load_model(model, model, position, orientation);
+            var model = m_model_option['model'];
+            var position = m_model_option['position'];
+            var orientation = m_model_option['orientation'];
+            cesium_load_model(model, model, position, orientation, m_model_data);
         }
     }
 
-    cesium_load_model = function(name, model, position, orientation)
+    cesium_load_model = function(name, model, position, orientation, m_model_data)
     {
         // Convert shadow to number using shadow_dict.
         var entity = m_viewer.entities.add({
@@ -297,22 +299,31 @@ var CESIUM_MAP_VIEW = (function() {
                                             orientation : orientation,
                                             model : model,
                                          });
-        m_viewer.trackedEntity = entity;
+        entity['layer_name'] = m_model_data.layer_name
+        entity['layer_variable'] = m_model_data.layer_variable
+        entity['layer_id'] = m_model_data.layer_id
     }
 
     // Set Cesium primitives
     cesium_load_primitives = function()
     {
         var $map_element = $('#' + m_map_target);
-        var m_primitives_options = [];
-        var raw_primitives_options = $map_element.data('primitives');
-        if(is_empty_or_undefined(raw_primitives_options))
+        m_primitives = $map_element.data('primitives');
+        if(is_empty_or_undefined(m_primitives))
         {
             return;
         }
-        for (let i = 0; i < raw_primitives_options.length; i++) {
-            var method = string_to_function(Object.keys(raw_primitives_options[i])[0]);
-            var primitives = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(raw_primitives_options[i])[0])));
+        for (let m_primitive of m_primitives) {
+            // Cesium Data is stored in options attribute
+            let m_primitive_option = m_primitive.options
+
+            // Other data is stored in data attribute
+            let m_primitive_data = m_primitive.data
+            var method = string_to_function(Object.keys(m_primitive_option)[0]);
+            var primitives = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(m_primitive_option)[0])));
+            primitives['layer_name'] = m_primitive_data.layer_name
+            primitives['layer_variable'] = m_primitive_data.layer_variable
+            primitives['layer_id'] = m_primitive_data.layer_id
         }
     }
 
@@ -320,16 +331,15 @@ var CESIUM_MAP_VIEW = (function() {
     cesium_load_entities = function()
     {
         var $map_element = $('#' + m_map_target);
-        var m_entities_options = [];
-        var raw_entities_options = $map_element.data('entities');
-        if(is_empty_or_undefined(raw_entities_options))
+        m_entities_options = $map_element.data('entities');
+        if(is_empty_or_undefined(m_entities_options))
         {
             return;
         }
 
         // load entity object.
-        for (let i = 0; i < raw_entities_options.length; i++) {
-            var curr_entity_options  = raw_entities_options[i];
+        for (let i = 0; i < m_entities_options.length; i++) {
+            var curr_entity_options  = m_entities_options[i];
 
             if (!'source' in curr_entity_options) {
                 continue;
@@ -358,7 +368,8 @@ var CESIUM_MAP_VIEW = (function() {
             else if (curr_entity_options.source.toLowerCase() == 'geojson')
             {
                 var gjson = curr_entity_options.options;
-                var default_point = gjson && gjson['properties'] && gjson['properties']['default_point'] == 'point'
+                // In Cesium, point appears as billboards by default. This variable is used to tell tethys to render it as point instead.
+                var point_instead_of_billboard = gjson && gjson['properties'] && gjson['properties']['default_point'] == 'point'
                 var dataSourcePromise = Cesium.GeoJsonDataSource.load(gjson).then(function(source_result) {
                     source_result['tethys_data'] = curr_entity_options.data;
                     source_result['legend_title'] = curr_entity_options.legend_title;
@@ -371,9 +382,9 @@ var CESIUM_MAP_VIEW = (function() {
                     if ('layer_options' in curr_entity_options && curr_entity_options.layer_options &&
                         'visible' in curr_entity_options.layer_options) {
                         source_result.show = curr_entity_options.layer_options.visible;
-                        if (default_point) {
+                        if (point_instead_of_billboard) {
                             var point = new Cesium.PointGraphics({
-                                color: Cesium.Color.ORANGE,
+                                color: Cesium.Color.RED,
                                 pixelSize: 8,
                             });
                             source_result.entities.values.forEach((value) => {
