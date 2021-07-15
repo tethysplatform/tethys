@@ -6,7 +6,7 @@
 * Copyright: (c) Aquaveo 2021
 ********************************************************************************
 """
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import collections
 import copy
 from io import BytesIO
@@ -25,7 +25,7 @@ from tethys_layouts.exceptions import TethysLayoutPropertyException
 from tethys_layouts.utilities import classproperty
 from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission, permission_required
-from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVLayer, MVView, SlideSheet
+from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVLayer, MVView, SlideSheet, SelectInput
 
 log = logging.getLogger(f'tethys.{__name__}')
 
@@ -57,6 +57,19 @@ _COLOR_RAMPS = {
     "Sunset Fade": ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e",
                     "#c5d96d", "#ebdc78"],
 }
+
+_THREDDS_PALETTES = [
+    'boxfill/alg',
+    'boxfill/alg2',
+    'boxfill/ferret',
+    'boxfill/greyscale',
+    'boxfill/ncview',
+    'boxfill/occam',
+    'boxfill/occam_pastel-30',
+    'boxfill/rainbow',
+    'boxfill/redblue',
+    'boxfill/sst_36',
+]
 
 _DEFAULT_TILE_GRID = {
     'resolutions': [
@@ -138,6 +151,7 @@ class MapLayout(TethysLayout):
         show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS
             layers to the Custom Layers layer group dynamically. Defaults to True.
         show_legends (bool): Show the Legend tab. Defaults to False.
+        wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
     """
     __metaclass__ = ABCMeta
 
@@ -169,9 +183,11 @@ class MapLayout(TethysLayout):
     sds_setting_name = ''
     show_custom_layer = False
     show_legends = False
+    wide_nav = False
 
     COLOR_RAMPS = copy.deepcopy(_COLOR_RAMPS)
-    DEFAULT_TILE_GRID = _DEFAULT_TILE_GRID
+    THREDDS_PALETTES = copy.deepcopy(_THREDDS_PALETTES)
+    DEFAULT_TILE_GRID = copy.deepcopy(_DEFAULT_TILE_GRID)
 
     @classproperty
     def map_extent(cls):
@@ -317,10 +333,13 @@ class MapLayout(TethysLayout):
             dict: modified context dictionary.
         """  # noqa: E501
         # Compose the Map
+        log.debug('Building MapView...')
         map_view = self._build_map_view(request, *args, **kwargs)
 
         # Add layers to the Map
+        log.debug('Composing layers...')
         layer_groups = self.compose_layers(request=request, map_view=map_view, *args, **kwargs)
+        log.debug(f'Number of Layers: {len(map_view.layers)}')
 
         # Check if we need to create a blank custom layer group
         create_custom_layer = True
@@ -331,6 +350,7 @@ class MapLayout(TethysLayout):
 
         # Create the Custom Layers layer group
         if create_custom_layer:
+            log.debug('Creating the "Custom Layers" layer group...')
             custom_layers = self.build_layer_group(
                 id="custom_layers",
                 display_name="Custom Layers",
@@ -340,8 +360,25 @@ class MapLayout(TethysLayout):
             )
             layer_groups.append(custom_layers)
 
+        # Build legends
+        log.debug('Building legends for each layer...')
+        legends = []
+        for layer in map_view.layers:
+            legend = self.build_legend(layer)
+            if legend is not None:
+                # Create color ramp selector
+                legend_select_input = SelectInput(
+                    name=f'tethys-color-ramp-picker-{legend["legend_id"]}',
+                    options=legend.get('select_options'),
+                    initial=legend.get('initial_option'),
+                    classes='map-layout-color-ramp-picker',
+                    original=True,
+                )
+                legends.append((legend, legend_select_input))
+
         # Override MapView with CesiumMapView if Cesium is the chosen map_type.
         if self.map_type == "cesium_map_view":
+            log.debug('Converting MapView to CesiumMapView...')
             map_view = self._build_ceisum_map_view(map_view)
 
         # Prepare context
@@ -350,6 +387,7 @@ class MapLayout(TethysLayout):
             'geocode_enabled': self.geocode_api_key is not None,
             'layer_groups': layer_groups,
             'layer_tab_name': self.layer_tab_name,
+            'legends': legends,
             'map_extent': self.map_extent,
             'map_type': self.map_type,
             'map_view': map_view,
@@ -357,6 +395,7 @@ class MapLayout(TethysLayout):
             'nav_title': self.map_title,
             'show_custom_layer': self.show_custom_layer,
             'show_legends': self.show_legends,
+            'wide_nav': self.wide_nav,
             'workspace': self.geoserver_workspace,
         })
 
@@ -382,7 +421,6 @@ class MapLayout(TethysLayout):
         )
 
         context.update({'plot_slide_sheet': plot_slidesheet})
-
         return context
 
     def get_permissions(self, request, permissions, *args, **kwargs):
@@ -1118,19 +1156,22 @@ class MapLayout(TethysLayout):
         Build Legend data for a given layer
 
         Args:
-            layer: result.layer object
-            units: unit for the legend.
-        Returns:
-            Legend data associate with the layer.
-        """
-        legend_info = ""
-        if layer.get('color_ramp_division_kwargs') is not None:
-            legend_key = layer['layer_variable']
-            layer_id = layer['layer_id'] if layer['layer_id'] else layer['layer_name']
-            if ":" in legend_key:
-                legend_key = legend_key.replace(":", "_")
+            layer (MVLayer): An MVLayer object built using MapLayout.build_wms_layer().
+            units (str): unit for the legend.
 
-            div_kwargs = layer['color_ramp_division_kwargs']
+        Returns:
+            dict: Legend data associated with the layer.
+        """
+        legend = None
+        legend_id = layer.data.get('layer_variable')  # TODO: This is not always unique
+        layer_id = layer.data.get('layer_id') if layer.data.get('layer_id') else layer.data.get('layer_name')
+        legend_id = f'legend-for-{layer_id}'  # TODO: This breaks it
+
+        if ":" in legend_id:
+            legend_id = legend_id.replace(":", "_")
+
+        if layer.data.get('color_ramp_division_kwargs') is not None:
+            div_kwargs = layer.data.get('color_ramp_division_kwargs')
             min_value = div_kwargs['min_value']
             max_value = div_kwargs['max_value']
             color_ramp = div_kwargs['color_ramp'] if 'color_ramp' in div_kwargs.keys() else 'Default'
@@ -1138,9 +1179,10 @@ class MapLayout(TethysLayout):
             color_prefix = div_kwargs['color_prefix'] if 'color_prefix' in div_kwargs.keys() else 'color'
             first_division = div_kwargs['first_division'] if 'first_division' in div_kwargs.keys() else 1
 
-            legend_info = {
-                'legend_id': legend_key,
-                'title': layer['layer_title'].replace("_", " "),
+            legend = {
+                'type': 'custom-divisions',
+                'legend_id': legend_id,
+                'title': layer.legend_title,
                 'divisions': dict(),
                 'color_list': cls.COLOR_RAMPS.keys(),
                 'layer_id': layer_id,
@@ -1151,19 +1193,45 @@ class MapLayout(TethysLayout):
                 'color_prefix': color_prefix,
                 'first_division': first_division,
                 'units': units,
+                'select_options': [(c, c) for c in cls.COLOR_RAMPS.keys()],
+                'initial_option': color_ramp,
             }
 
             divisions = cls.generate_custom_color_ramp_divisions(**layer['color_ramp_division_kwargs'])
 
             for label in divisions.keys():
                 if color_prefix in label and int(label.replace(color_prefix, '')) >= first_division:
-                    legend_info['divisions'][float(divisions[label.replace(color_prefix, prefix)])] = divisions[
+                    legend['divisions'][float(divisions[label.replace(color_prefix, prefix)])] = divisions[
                         label]
-            legend_info['divisions'] = collections.OrderedDict(
-                sorted(legend_info['divisions'].items())
+            legend['divisions'] = collections.OrderedDict(
+                sorted(legend['divisions'].items())
             )
 
-        return legend_info
+        elif 'options' in layer and layer.options.get('serverType') == 'thredds':
+            wms_url = layer.options.get('url')
+            wms_params = layer.options.get('params')
+            if not wms_params:
+                log.error(f'No params found for given layer: {layer}')
+                return None
+            wms_layer_name = wms_params.get('LAYERS')
+
+            select_options = [('Default', '')]
+            select_options.extend([(p.replace('boxfill/', '').title(), p) for p in cls.THREDDS_PALETTES])
+            default_palette = wms_params.get('STYLES') or 'Default'
+
+            legend = {
+                'type': 'wms-legend',
+                'legend_id': legend_id,
+                'layer_id': layer_id,
+                'title': layer.legend_title,
+                'palettes': cls.THREDDS_PALETTES,
+                'default_palette': default_palette,
+                'select_options': select_options,
+                'initial_option': default_palette,
+                'url': f'{wms_url}?REQUEST=GetLegendGraphic&LAYER={wms_layer_name}',
+            }
+
+        return legend
 
     @classmethod
     def build_geojson_layer(cls, geojson, layer_name, layer_title, layer_variable, layer_id='', visible=True,
@@ -1268,6 +1336,9 @@ class MapLayout(TethysLayout):
 
         if viewparams:
             params['VIEWPARAMS'] = viewparams
+
+        if styles:
+            params['STYLES'] = styles
 
         if env:
             params['ENV'] = env

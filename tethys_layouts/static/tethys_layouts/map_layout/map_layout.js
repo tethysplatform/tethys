@@ -70,6 +70,10 @@ var MAP_LAYOUT = (function() {
  	    init_remove_controls, init_zoom_to_controls, init_collapse_controls, init_collapse_control,
  	    init_add_layer_controls, init_download_layer_controls, init_dropdown_layer_toggle_controls;
 
+    // Legends tab
+    var init_legends, show_legend, hide_legend, update_legend, update_division_legend_and_layer, update_wms_legend,
+        update_result_layer, update_layer_style;
+
     // Properties pop-up
     var init_properties_pop_up, display_properties, show_properties_pop_up, hide_properties_pop_up,
         close_properties_pop_up, reset_properties_pop_up, append_properties_pop_up_content, reset_ui,
@@ -93,7 +97,7 @@ var MAP_LAYOUT = (function() {
  	var init_draw_controls;
 
  	// Utility Methods
- 	var generate_uuid, load_layers, hide_layers, show_layers, reload_legend, update_result_layer, reload_image_layer;
+ 	var generate_uuid, load_layers, hide_layers, show_layers;
 
  	/************************************************************************
  	*                    PRIVATE FUNCTION IMPLEMENTATIONS
@@ -190,21 +194,19 @@ var MAP_LAYOUT = (function() {
                     } else {
                         $.each(layer_lists, function(layer_index, layer_content) {
                             let layer_id = layer_content.getElementsByClassName('layer-visibility-control')[0].dataset.layerId;
-                            let layer_variable = layer_content.getElementsByClassName('layer-visibility-control')[0].dataset.layerVariable;
-
                             let checked = $(layer_content).find(`[data-layer-id='${layer_id}']`)[0].checked;
                             if (checked) {
-                                $("#legend-" + layer_variable).removeClass('hidden');
+                                show_legend(layer_id);
                             }
                             else {
-                                $("#legend-" + layer_variable).addClass('hidden');
+                                hide_legend(layer_id);
                             }
                         })
                     }
                 }
             }
         });
-    }
+    };
 
     // Map Management
     remove_layer_from_map = function(layer_name) {
@@ -577,7 +579,7 @@ var MAP_LAYOUT = (function() {
             let $layer_visiblity_controls = $layer_list.find('.layer-visibility-control');
 
             $layer_visiblity_controls.each(function(index, item) {
-                // Set disabiled
+                // Set disabled
                 let $item = $(item);
                 $item.prop('disabled', !layer_group_checked);
 
@@ -590,9 +592,9 @@ var MAP_LAYOUT = (function() {
                 }
 
                 if (layer_group_checked && layer_checked) {
-                    $("#legend-" + layer_variable).removeClass('hidden')
+                    show_legend(layer_name);
                 } else {
-                    $("#legend-" + layer_variable).addClass('hidden')
+                    hide_legend(layer_name);
                 }
 
             });
@@ -630,13 +632,13 @@ var MAP_LAYOUT = (function() {
 
             // Set the visibility of legend
             if (checked) {
-                $("#legend-" + layer_variable).removeClass('hidden');
+                show_legend(layer_name);
             }
             else {
-                $("#legend-" + layer_variable).addClass('hidden');
+                hide_legend(layer_name);
             }
 
-            // TODO: Save state to resource - store in attributes?
+            // TODO: Save state to local storage
         });
 
         // Handle radio deselect events
@@ -652,9 +654,9 @@ var MAP_LAYOUT = (function() {
             }
 
             // Set the visibility of legend
-            $("#legend-" + layer_variable).addClass('hidden');
+            hide_legend(layer_name);
 
-            // TODO: Save state to resource - store in attributes?
+            // TODO: Save state to local storage
         });
     };
 
@@ -673,7 +675,7 @@ var MAP_LAYOUT = (function() {
             let layer_name = $target.data('layer-id');
             m_layers[layer_name].setOpacity(val/100);
 
-            // TODO: Save state to resource - store in attributes?
+            // TODO: Save state to local storage
         });
     };
 
@@ -710,7 +712,7 @@ var MAP_LAYOUT = (function() {
                 // Hide the modal
                 hide_action_modal();
 
-                // TODO: Save state to resource - store in attributes?
+                // TODO: Save state to local storage
             });
         });
     };
@@ -783,7 +785,7 @@ var MAP_LAYOUT = (function() {
                 // Hide the modal
                 hide_action_modal();
 
-                // TODO: Save state to resource - store in attributes?
+                // TODO: Save state to local storage
                 // Save state of custom_layers to resource
                 if (remove_type === 'layer') {
                     csrf_token = $('input[name=csrfmiddlewaretoken]').val()
@@ -811,7 +813,7 @@ var MAP_LAYOUT = (function() {
             let $layer_label = $action_button.closest('.layers-context-menu').prev();
             let display_name = $layer_label.find('.display-name').first().html();
 
-            // TODO: Save state to workflow - store in attributes?
+            // TODO: Save state to local storage
         });
     };
 
@@ -953,7 +955,7 @@ var MAP_LAYOUT = (function() {
     };
 
     init_download_layer_controls = function() {
-        // TODO: Implement
+        // TODO: move init download action here...
     };
 
     init_add_layer_controls = function() {
@@ -1063,11 +1065,94 @@ var MAP_LAYOUT = (function() {
                 }).done(function (data) {
 
                 })
-                // TODO: Save state to resource - store in attributes?
+                // TODO: Save state to local storage
             });
         });
 
-        // TODO: Save state to workflow - store in attributes?
+        // TODO: Save state to local storage
+    };
+
+    // Legend tab
+    init_legends = function() {
+        $('.map-layout-color-ramp-picker').each(function(index, select) {
+            $(select).on('change', function(){
+                var selected_style = $(select).find(':selected').val();
+                var legend_wrapper = $(this).closest('.legend-wrapper');
+                var legend_attrs = $(legend_wrapper).data('legend-attrs');
+
+                // Reload layer with new style
+                if (legend_attrs.type === 'wms-legend') {
+                    update_layer_style(legend_attrs.layer_id, selected_style, 'wms-style');
+                    update_wms_legend(legend_wrapper, legend_attrs, selected_style);
+                } else if (legend_attrs.type === 'custom-divisions') {
+                    update_division_legend_and_layer(legend_wrapper, legend_attrs, selected_style);
+                }
+            });
+        });
+    };
+
+    update_layer_style = function(layer_id, new_style, style_type) {
+        const existing_imagery_layer = m_layers[layer_id];
+        const params = existing_imagery_layer.getSource().getParams();
+
+        // Update appropriate parameter based on the style type
+        if (style_type === 'wms-style') {
+            params['STYLES'] = new_style;
+        } else if (style_type === 'geoserver-env-string') {
+            params['ENV'] = new_style;
+        }
+
+        // Apply updated params
+        existing_imagery_layer.getSource().updateParams(params);
+    };
+
+    update_result_layer = function(layer_id, color_ramp) {
+        $.ajax({
+            type: 'POST',
+            url: ".",
+            async: false,
+            data: {
+                'method': 'update_result_layer',
+                'layer_id': JSON.stringify(layer_id),
+                'color_ramp': JSON.stringify(color_ramp),
+            },
+        })
+    };
+
+    update_division_legend_and_layer = function(legend_wrapper, legend_attrs, new_color_ramp) {
+        var color_ramp_component = $(legend_wrapper).find('.color-ramp-component');
+        $.ajax({
+            type: 'POST',
+            url: ".",
+            async: false,
+            data: {
+                'method': 'build_legend_item',
+                'div_id': JSON.stringify(color_ramp_component.id),
+                'minimum': JSON.stringify(legend_attrs.minimum),
+                'maximum': JSON.stringify(legend_attrs.maximum),
+                'color_ramp': JSON.stringify(new_color_ramp),
+                'layer_id': JSON.stringify(legend_attrs.layer_id),
+            },
+        }).done(function(data){
+            update_result_layer(`${data.layer_id}`, `${data.color_ramp}`);  // TODO: What to do with this?
+            update_layer_style(data.layer_id, data.division_string, 'geoserver-env-string');
+            $(`#${data.div_id}`).html(data.response);
+        });
+    };
+
+    update_wms_legend = function(legend_wrapper, legend_attrs, new_style) {
+        var wms_url = legend_attrs.url;
+        var wms_legend_image = $(legend_wrapper).find('.wms-legend-image');
+        wms_url += `&PALETTE=${new_style.replace('boxfill/', '')}`;
+        wms_legend_image.attr('src', wms_url);
+    };
+
+    show_legend = function(layer_id) {
+        $("#legend-for-" + layer_id).removeClass('hidden');
+    };
+
+    hide_legend = function(layer_id) {
+        $("#legend-for-" + layer_id).addClass('hidden');
     };
 
     // Properties pop-up
@@ -1657,109 +1742,13 @@ var MAP_LAYOUT = (function() {
             },
         }).done(function(data){
             if (status == 'create') {
-//                // if the first child has no id, it's something we want to keep in the top (ex: layer or stress period selector).
-//                if (!$('#layers-tab-panel').children().first().id) {
-//                    $('#layers-tab-panel div:eq(0)').after(data.response);
-//                }
-//                else {
                 $('#' + tab_id).prepend(data.response);
-//                }
-
-            }
-            else {
+            } else {
                 $('#' + layer_group_id + '_associated_layers').prepend(data.response);
             }
         });
         init_new_layers_tab(layer_group_id);
-    }
-
-    // Create new layer groups with layers
-    // This method allows user to create tree items and have them linked to the tree items created in this method.
-    load_layers = function (layer_group_name, layer_group_id, layer_data, layer_names, layer_ids, layer_legends) {
-        // layer_group_name: name of the layer group - Ex: My Layer Group
-        // layer_group_id: id of the layer group - Ex: my_layer_group_123456
-        // layer_data: list of openlayer layers
-        // layer_names: list of the name of the openlayer layers
-        // layer_ids: list of the id of the open layer layers
-        // layer_legends: list of the legend name of the open layer layers Ex: my-legend -> your legend id is going to be (#legend-my-legend)
-        // Add layers to map
-        var i = 0;
-        for (i = 0; i < layer_data.length; i++) {
-            m_layers[layer_ids[i]] = layer_data[i];
-            m_map.addLayer(layer_data[i]);
-        }
-        var status = 'create'
-        // If the layer group is already created, we will have the solution added to the same layer groups
-        if ($('#' + layer_group_id).length){
-            status = 'append'
-        }
-        $.ajax({
-            type: 'POST',
-            url: ".",
-            async: false,
-            data: {
-                'method': 'build_layer_group_tree_item',
-                'status': status,
-                'layer_group_id': layer_group_id,
-                'layer_group_name': layer_group_name,
-                'layer_names': JSON.stringify(layer_names),
-                'layer_ids': JSON.stringify(layer_ids),
-                'layer_legends': JSON.stringify(layer_legends),
-            },
-        }).done(function(data){
-            if (status == 'create') {
-                $('#layers-tab-panel').prepend(data.response);
-            }
-            else {
-                $('#' + layer_group_id + '_associated_layers').prepend(data.response);
-            }
-        });
-        init_new_layers_tab(layer_group_id);
-    }
-
-    reload_legend = function (select_legend, minimum, maximum, layer_id) {
-        const div_id = select_legend.id.replace('tethys-color-ramp-picker', 'color-ramp-component');
-        const color_ramp = select_legend.value;
-        $.ajax({
-            type: 'POST',
-            url: ".",
-            async: false,
-            data: {
-                'method': 'build_legend_item',
-                'div_id': JSON.stringify(div_id),
-                'minimum': JSON.stringify(minimum),
-                'maximum': JSON.stringify(maximum),
-                'color_ramp': JSON.stringify(color_ramp),
-                'layer_id': JSON.stringify(layer_id),
-            },
-        }).done(function(data){
-            update_result_layer(`${data.layer_id}`, `${data.color_ramp}`);
-            reload_image_layer(`${data.layer_id}`, data.division_string);
-            $(`#${data.div_id}`).html(data.response);
-        });
-    }
-
-    reload_image_layer = function(id, division_string) {
-        // Get THE layer and create a clone of it with new division string
-        const existing_imagery_layer = m_layers[id];
-        const params = existing_imagery_layer.getSource().getParams()
-        params['ENV'] = division_string
-        // Update division string in the env
-        existing_imagery_layer.getSource().updateParams(params);
-    }
-
-    update_result_layer = function(layer_id, color_ramp) {
-        $.ajax({
-            type: 'POST',
-            url: ".",
-            async: false,
-            data: {
-                'method': 'update_result_layer',
-                'layer_id': JSON.stringify(layer_id),
-                'color_ramp': JSON.stringify(color_ramp),
-            },
-        })
-    }
+    };
 
     hide_layers = function(layer_ids) {
         for (var i=0; i < layer_ids.length; i++) {
@@ -1772,7 +1761,7 @@ var MAP_LAYOUT = (function() {
             $('[data-layer-id="' + layer_ids[i] + '"]').first().closest("li").addClass("hidden");
 
         }
-    }
+    };
 
     show_layers = function(layer_ids) {
         for (var i=0; i < layer_ids.length; i++) {
@@ -1780,7 +1769,7 @@ var MAP_LAYOUT = (function() {
             $('[data-layer-id="' + layer_ids[i] + '"]').first().closest("li").removeClass("hidden")
 
         }
-    }
+    };
 	/************************************************************************
  	*                        DEFINE PUBLIC INTERFACE
  	*************************************************************************/
@@ -1829,7 +1818,7 @@ var MAP_LAYOUT = (function() {
       reset_properties_pop_up: reset_properties_pop_up,
       close_properties_pop_up: close_properties_pop_up,
       load_layers: load_layers,
-      reload_legend: reload_legend,
+      update_legend: update_legend,
       hide_layers: hide_layers,
       show_layers: show_layers,
       remove_layer_from_map: remove_layer_from_map,
@@ -1854,10 +1843,11 @@ var MAP_LAYOUT = (function() {
 
 		// Initialize
 		init_layers_tab();
+		init_legends();
         init_geocode();
         init_plot();
         init_draw_controls();
-        init_download_layer_action()
+        init_download_layer_action();
         sync_layer_visibility();
 	});
 
