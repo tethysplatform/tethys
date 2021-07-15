@@ -214,25 +214,28 @@
 }
 
 /* Legend Tab */
-.legend-group-item:first-child {
-    margin-top: 20px;
-}
-
 .legend-group-item {
-    margin-bottom: 5px;
-}
-
-[id^="form-group-tethys-color-ramp-picker-"] {
-    width: 50%;
-    padding-bottom: 5px;
-    margin-left: 30px !important;
-}
-
-.legend-group-item .flatmark {
+    margin-top: 20px;
     display: inline-block;
     font-weight: 700;
     max-width: 315px;
     overflow: hidden;
+}
+
+.legend-group-item .legend-title {
+    display: inline-block;
+    font-size: 14px;
+    color: #444444;
+    font-weight: 700;
+    margin: 5px 0;
+}
+
+.legend-group-item .form-group {
+    margin 0!important;
+}
+
+.legend-group-item select {
+    width: 100%;
 }
 
 .legend-list {
@@ -276,15 +279,6 @@
     position: absolute;
     left: 5px;
     top: 5px;
-}
-
-.hidden {
-    display: none
-}
-
-.tab-content .form-group {
-    margin-bottom: 0 !important;
-    margin-left: 20px;
 }
 
 .map-tabs .tab-content {

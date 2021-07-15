@@ -9,11 +9,10 @@
 import logging
 
 from django.http import HttpResponseNotFound, HttpResponse
-from django.shortcuts import render, reverse
+from django.shortcuts import render
 
-from tethys_apps.utilities import get_active_app
 from tethys_sdk.base import TethysController
-from tethys_sdk.permissions import has_permission
+from tethys_sdk.permissions import login_required  # TODO: login_required breaks view
 
 log = logging.getLogger(f'tethys.{__name__}')
 
