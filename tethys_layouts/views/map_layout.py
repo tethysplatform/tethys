@@ -8,7 +8,6 @@
 """
 from abc import ABCMeta
 import collections
-import copy
 from io import BytesIO
 import json
 import logging
@@ -22,10 +21,11 @@ from django.shortcuts import render
 import shapefile  # PyShp
 
 from tethys_layouts.exceptions import TethysLayoutPropertyException
+from tethys_layouts.mixins.map_layout import MapLayoutMixin
 from tethys_layouts.utilities import classproperty
 from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission, permission_required
-from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVLayer, MVView, SlideSheet, SelectInput
+from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVView, SlideSheet, SelectInput
 
 log = logging.getLogger(f'tethys.{__name__}')
 
@@ -58,60 +58,8 @@ _COLOR_RAMPS = {
                     "#c5d96d", "#ebdc78"],
 }
 
-_THREDDS_PALETTES = [
-    'boxfill/alg',
-    'boxfill/alg2',
-    'boxfill/ferret',
-    'boxfill/greyscale',
-    'boxfill/ncview',
-    'boxfill/occam',
-    'boxfill/occam_pastel-30',
-    'boxfill/rainbow',
-    'boxfill/redblue',
-    'boxfill/sst_36',
-]
 
-_DEFAULT_TILE_GRID = {
-    'resolutions': [
-        156543.03390625,
-        78271.516953125,
-        39135.7584765625,
-        19567.87923828125,
-        9783.939619140625,
-        4891.9698095703125,
-        2445.9849047851562,
-        1222.9924523925781,
-        611.4962261962891,
-        305.74811309814453,
-        152.87405654907226,
-        76.43702827453613,
-        38.218514137268066,
-        19.109257068634033,
-        9.554628534317017,
-        4.777314267158508,
-        2.388657133579254,
-        1.194328566789627,
-        0.5971642833948135,
-        0.2985821416974068,
-        0.1492910708487034,
-        0.0746455354243517,
-        0.0373227677121758,
-        0.0186613838560879,
-        0.009330691928044,
-        0.004665345964022,
-        0.002332672982011,
-        0.0011663364910055,
-        0.0005831682455027,
-        0.0002915841227514,
-        0.0001457920613757
-    ],
-    'extent': [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-    'origin': [0.0, 0.0],
-    'tileSize': [256, 256]
-}
-
-
-class MapLayout(TethysLayout):
+class MapLayout(TethysLayout, MapLayoutMixin):
     """
     Controller for the MapLayout view. Create a class that extends this class and implement the compose_layers method
         and other properties as desired. In the app.py pass MapLayout.as_controller() as the controller argument to
@@ -159,10 +107,9 @@ class MapLayout(TethysLayout):
     template_name = 'tethys_layouts/map_layout/map_layout.html'
     http_method_names = ['get', 'post']
     _geocode_endpoint = 'http://api.opencagedata.com/geocode/v1/geojson'
-    _default_popup_excluded_properties = ['id', 'type', 'layer_name']
 
     # Required Properties
-    map_subtitle = ''  # TODO: just use layout_title and layout_subtitle?
+    map_subtitle = ''
     map_title = ''
 
     # Optional Properties
@@ -173,7 +120,7 @@ class MapLayout(TethysLayout):
     geocode_api_key = None
     geoserver_workspace = ''
     initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
-    feature_selection_mutiselect = False
+    feature_selection_multiselect = False
     feature_selection_sensitivity = 4
     layer_tab_name = 'Layers'
     map_type = 'tethys_map_view'
@@ -184,10 +131,6 @@ class MapLayout(TethysLayout):
     show_custom_layer = False
     show_legends = False
     wide_nav = False
-
-    COLOR_RAMPS = copy.deepcopy(_COLOR_RAMPS)
-    THREDDS_PALETTES = copy.deepcopy(_THREDDS_PALETTES)
-    DEFAULT_TILE_GRID = copy.deepcopy(_DEFAULT_TILE_GRID)
 
     @classproperty
     def map_extent(cls):
@@ -485,97 +428,11 @@ class MapLayout(TethysLayout):
 
         # Configure feature selection
         map_view.feature_selection = {
-            'multiselect': self.feature_selection_mutiselect,
+            'multiselect': self.feature_selection_multiselect,
             'sensitivity': self.feature_selection_sensitivity,
         }
 
         return map_view
-
-    @classmethod
-    def _build_mv_layer(cls, layer_source, layer_name, layer_title, layer_variable, options, layer_id=None,
-                        extent=None, visible=True, public=True, selectable=False, plottable=False, has_action=False,
-                        excluded_properties=None, popup_title=None, geometry_attribute=None, style_map=None,
-                        show_download=False, times=None):
-        """
-        Build an MVLayer object with supplied arguments.
-        Args:
-            layer_source(str): OpenLayers Source to use for the MVLayer (e.g.: "TileWMS", "ImageWMS", "GeoJSON").
-            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
-            layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
-            layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
-            layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
-            visible(bool): Layer is visible when True. Defaults to True.
-            selectable(bool): Enable feature selection. Defaults to False.
-            plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
-            has_action(bool): Enable "Action" button on pop-up properties. Defaults to False.
-            extent(list): Extent for the layer. Optional.
-            popup_title(str): Title to display on feature popups. Defaults to layer title.
-            excluded_properties(list): List of properties to exclude from feature popups.
-            geometry_attribute(str): Name of the geometry attribute. Optional.
-            style_map(dict): Style map dictionary. See MVLayer documentation for examples of style maps. Optional.
-            show_download(boolean): enable download layer. (only works for geojson layer).
-            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
-                ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
-                only supported in CesiumMapView.
-        Returns:
-            MVLayer: the MVLayer object.
-        """
-        # Derive popup_title if not given
-        if not popup_title:
-            popup_title = layer_title
-
-        data = {
-            'layer_id': str(layer_id) if layer_id else layer_name,
-            'layer_name': layer_name,
-            'popup_title': popup_title,
-            'layer_variable': layer_variable,
-            'toggle_status': public,
-        }
-
-        # Process excluded properties
-        properties_to_exclude = copy.deepcopy(cls._default_popup_excluded_properties)
-
-        if plottable:
-            properties_to_exclude.append('plot')
-
-        if excluded_properties and isinstance(excluded_properties, (list, tuple)):
-            for ep in excluded_properties:
-                if ep not in properties_to_exclude:
-                    properties_to_exclude.append(ep)
-
-        data.update({'excluded_properties': properties_to_exclude})
-
-        if plottable:
-            data.update({'plottable': plottable})
-
-        if has_action:
-            data.update({'has_action': has_action})
-
-        if not extent:
-            extent = cls.map_extent
-
-        # Build layer options
-        layer_options = {"visible": visible, "show_download": show_download}
-
-        if style_map:
-            layer_options.update({'style_map': style_map})
-
-        mv_layer = MVLayer(
-            source=layer_source,
-            options=options,
-            layer_options=layer_options,
-            legend_title=layer_title,
-            legend_extent=extent,
-            legend_classes=[],
-            data=data,
-            feature_selection=selectable,
-            times=times,
-        )
-
-        if geometry_attribute:
-            mv_layer.geometry_attribute = geometry_attribute
-
-        return mv_layer
 
     def _build_ceisum_map_view(self, map_view):
         """
@@ -1093,407 +950,10 @@ class MapLayout(TethysLayout):
         """
         Get the public wms endpoint for GeoServer.
         """
-        wms_endpoint = cls.sds_engine.public_endpoint if public else cls.sds_engine.endpoint
+        wms_endpoint = cls.sds_setting.public_endpoint if public else cls.sds_setting.endpoint
         wms_endpoint = wms_endpoint.replace('rest', 'wms')
 
         # Add trailing slash for consistency.
         if wms_endpoint[-1] != '/':
             wms_endpoint += '/'
         return wms_endpoint
-
-    @classmethod
-    def build_layer_group(cls, id, display_name, layers, layer_control='checkbox', visible=True, public=True):
-        """
-        Build a layer group object.
-
-        Args:
-            id(str): Unique identifier for the layer group.
-            display_name(str): Name displayed in MapView layer selector/legend.
-            layers(list<MVLayer>): List of layers to include in the layer group.
-            layer_control(str): Type of control for layers. Either 'checkbox' or 'radio'. Defaults to checkbox.
-            visible(bool): Whether layer group is initially visible. Defaults to True.
-            public(bool): enable public to see this layer group if True.
-        Returns:
-            dict: Layer group definition.
-        """
-        if layer_control not in ['checkbox', 'radio']:
-            raise ValueError('Invalid layer_control. Must be on of "checkbox" or "radio".')
-
-        layer_group = {
-            'id': id,
-            'display_name': display_name,
-            'control': layer_control,
-            'layers': layers,
-            'visible': visible,
-            'toggle_status': public,
-        }
-        return layer_group
-
-    @classmethod
-    def build_param_string(cls, **kwargs):
-        """
-        Build a VIEWPARAMS or ENV string with given kwargs (e.g.: 'foo:1;bar:baz')
-
-        Args:
-            **kwargs: key-value pairs of paramaters.
-
-        Returns:
-            str: parameter string.
-        """
-        if not kwargs:
-            return ''
-
-        joined_pairs = []
-        for k, v in kwargs.items():
-            joined_pairs.append(':'.join([k, str(v)]))
-
-        param_string = ';'.join(joined_pairs)
-        return param_string
-
-    @classmethod
-    def build_legend(cls, layer, units=""):
-        """
-        Build Legend data for a given layer
-
-        Args:
-            layer (MVLayer): An MVLayer object built using MapLayout.build_wms_layer().
-            units (str): unit for the legend.
-
-        Returns:
-            dict: Legend data associated with the layer.
-        """
-        legend = None
-        legend_id = layer.data.get('layer_variable')  # TODO: This is not always unique
-        layer_id = layer.data.get('layer_id') if layer.data.get('layer_id') else layer.data.get('layer_name')
-        legend_id = f'legend-for-{layer_id}'  # TODO: This breaks it
-
-        if ":" in legend_id:
-            legend_id = legend_id.replace(":", "_")
-
-        if layer.data.get('color_ramp_division_kwargs') is not None:
-            div_kwargs = layer.data.get('color_ramp_division_kwargs')
-            min_value = div_kwargs['min_value']
-            max_value = div_kwargs['max_value']
-            color_ramp = div_kwargs['color_ramp'] if 'color_ramp' in div_kwargs.keys() else 'Default'
-            prefix = div_kwargs['prefix'] if 'prefix' in div_kwargs.keys() else 'val'
-            color_prefix = div_kwargs['color_prefix'] if 'color_prefix' in div_kwargs.keys() else 'color'
-            first_division = div_kwargs['first_division'] if 'first_division' in div_kwargs.keys() else 1
-
-            legend = {
-                'type': 'custom-divisions',
-                'legend_id': legend_id,
-                'title': layer.legend_title,
-                'divisions': dict(),
-                'color_list': cls.COLOR_RAMPS.keys(),
-                'layer_id': layer_id,
-                'min_value': min_value,
-                'max_value': max_value,
-                'color_ramp': color_ramp,
-                'prefix': prefix,
-                'color_prefix': color_prefix,
-                'first_division': first_division,
-                'units': units,
-                'select_options': [(c, c) for c in cls.COLOR_RAMPS.keys()],
-                'initial_option': color_ramp,
-            }
-
-            divisions = cls.generate_custom_color_ramp_divisions(**layer['color_ramp_division_kwargs'])
-
-            for label in divisions.keys():
-                if color_prefix in label and int(label.replace(color_prefix, '')) >= first_division:
-                    legend['divisions'][float(divisions[label.replace(color_prefix, prefix)])] = divisions[
-                        label]
-            legend['divisions'] = collections.OrderedDict(
-                sorted(legend['divisions'].items())
-            )
-
-        elif 'options' in layer and layer.options.get('serverType') == 'thredds':
-            wms_url = layer.options.get('url')
-            wms_params = layer.options.get('params')
-            if not wms_params:
-                log.error(f'No params found for given layer: {layer}')
-                return None
-            wms_layer_name = wms_params.get('LAYERS')
-
-            select_options = [('Default', '')]
-            select_options.extend([(p.replace('boxfill/', '').title(), p) for p in cls.THREDDS_PALETTES])
-            default_palette = wms_params.get('STYLES') or 'Default'
-
-            legend = {
-                'type': 'wms-legend',
-                'legend_id': legend_id,
-                'layer_id': layer_id,
-                'title': layer.legend_title,
-                'palettes': cls.THREDDS_PALETTES,
-                'default_palette': default_palette,
-                'select_options': select_options,
-                'initial_option': default_palette,
-                'url': f'{wms_url}?REQUEST=GetLegendGraphic&LAYER={wms_layer_name}',
-            }
-
-        return legend
-
-    @classmethod
-    def build_geojson_layer(cls, geojson, layer_name, layer_title, layer_variable, layer_id='', visible=True,
-                            public=True, selectable=False, plottable=False, has_action=False, extent=None,
-                            popup_title=None, excluded_properties=None, show_download=False):
-        """
-        Build an MVLayer object with supplied arguments.
-        Args:
-            geojson(dict): Python equivalent GeoJSON FeatureCollection.
-            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
-            layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
-            layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
-            layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
-            visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
-                Defaults to True.
-            selectable(bool): Enable feature selection. Defaults to False.
-            plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
-            has_action(bool): Enable "Action" button on pop-up properties. Defaults to False.
-            extent(list): Extent for the layer. Optional.
-            popup_title(str): Title to display on feature popups. Defaults to layer title.
-            excluded_properties(list): List of properties to exclude from feature popups.
-            show_download(boolean): enable download geojson as shapefile. Default is False.
-
-        Returns:
-            MVLayer: the MVLayer object.
-        """
-        # Define default styles for layers
-        style_map = cls.get_vector_style_map()
-
-        # Bind geometry features to layer via layer name
-        for feature in geojson['features']:
-            feature['properties']['layer_name'] = layer_name
-
-        mv_layer = cls._build_mv_layer(
-            layer_source='GeoJSON',
-            layer_id=layer_id,
-            layer_name=layer_name,
-            layer_title=layer_title,
-            layer_variable=layer_variable,
-            options=geojson,
-            extent=extent,
-            visible=visible,
-            public=public,
-            selectable=selectable,
-            plottable=plottable,
-            has_action=has_action,
-            popup_title=popup_title,
-            excluded_properties=excluded_properties,
-            style_map=style_map,
-            show_download=show_download,
-        )
-
-        return mv_layer
-
-    @classmethod
-    def build_wms_layer(cls, endpoint, layer_name, layer_title, layer_variable, viewparams=None, env=None,
-                        visible=True, tiled=True, selectable=False, plottable=False, has_action=False, extent=None,
-                        public=True, geometry_attribute='geometry', layer_id='', excluded_properties=None,
-                        popup_title=None, color_ramp_division_kwargs=None, times=None, server_type='geoserver',
-                        cross_origin=None, styles=None):
-        """
-        Build an WMS MVLayer object with supplied arguments.
-        Args:
-            endpoint(str): URL to GeoServer WMS interface.
-            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
-            layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
-            layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
-            layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
-            viewparams(str): VIEWPARAMS string.
-            env(str): ENV string.
-            visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
-                Defaults to True.
-            tiled(bool): Configure as tiled layer if True. Defaults to True.
-            selectable(bool): Enable feature selection. Defaults to False.
-            plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
-            has_action(bool): Enable "Action" button on pop-up properties. Defaults to False.
-            extent(list): Extent for the layer. Optional.
-            popup_title(str): Title to display on feature popups. Defaults to layer title.
-            excluded_properties(list): List of properties to exclude from feature popups.
-            geometry_attribute(str): Name of the geometry attribute. Defaults to "geometry".
-            color_ramp_division_kwargs(dict): arguments from MapLayout.generate_custom_color_ramp_divisions
-            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
-                ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
-                only supported in CesiumMapView.
-            server_type (str): One of 'geoserver' or 'thredds'. Defaults to 'geoserver'.
-            cross_origin (str): Value to pass to crossOrigin property. Defaults to None. See:
-                https://openlayers.org/en/latest/apidoc/module-ol_source_TileWMS-TileWMS.html
-            styles (str): Name of style to render the WMS. Defaults to None.
-        Returns:
-            MVLayer: the MVLayer object.
-        """
-        # Build params
-        params = {'LAYERS': layer_name}
-
-        if tiled:
-            params.update({
-                'TILED': True,
-                'TILESORIGIN': '0.0,0.0'
-            })
-
-        if viewparams:
-            params['VIEWPARAMS'] = viewparams
-
-        if styles:
-            params['STYLES'] = styles
-
-        if env:
-            params['ENV'] = env
-        if times:
-            times = json.dumps(times),
-        # Build options
-        options = {
-            'url': endpoint,
-            'params': params,
-            'serverType': server_type,
-            'crossOrigin': cross_origin,
-        }
-        if color_ramp_division_kwargs:
-            # Create color ramp and add them to ENV
-            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(**color_ramp_division_kwargs)
-            if 'ENV' in params.keys():
-                if params['ENV']:
-                    params['ENV'] += ";" + cls.build_param_string(**color_ramp_divisions)
-                else:
-                    params['ENV'] = cls.build_param_string(**color_ramp_divisions)
-            else:
-                params['ENV'] = cls.build_param_string(**color_ramp_divisions)
-        layer_source = 'TileWMS' if tiled else 'ImageWMS'
-
-        if tiled:
-            options['tileGrid'] = cls.DEFAULT_TILE_GRID
-
-        mv_layer = cls._build_mv_layer(
-            layer_id=layer_id,
-            layer_name=layer_name,
-            layer_source=layer_source,
-            layer_title=layer_title,
-            layer_variable=layer_variable,
-            options=options,
-            extent=extent,
-            visible=visible,
-            public=public,
-            selectable=selectable,
-            plottable=plottable,
-            has_action=has_action,
-            popup_title=popup_title,
-            excluded_properties=excluded_properties,
-            geometry_attribute=geometry_attribute,
-            times=times,
-        )
-
-        return mv_layer
-
-    # TODO: clean up kwargs
-    @classmethod
-    def build_arc_gis_layer(cls, endpoint, layer_name, layer_title, layer_variable, viewparams=None, env=None,
-                            visible=True, tiled=True, selectable=False, plottable=False, has_action=False,
-                            extent=None, public=True, geometry_attribute='geometry', layer_id='',
-                            excluded_properties=None, popup_title=None):
-        """
-        Build an AcrGIS Map Server MVLayer object with supplied arguments.
-        Args:
-            endpoint(str): URL to GeoServer WMS interface.
-            layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
-            layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
-            layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
-            layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
-            viewparams(str): VIEWPARAMS string.
-            env(str): ENV string.
-            visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
-                Defaults to True.
-            tiled(bool): Configure as tiled layer if True. Defaults to True.
-            selectable(bool): Enable feature selection. Defaults to False.
-            plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
-            has_action(bool): Enable "Action" button on pop-up properties. Defaults to False.
-            extent(list): Extent for the layer. Optional.
-            popup_title(str): Title to display on feature popups. Defaults to layer title.
-            excluded_properties(list): List of properties to exclude from feature popups.
-            geometry_attribute(str): Name of the geometry attribute. Defaults to "geometry".
-
-        Returns:
-            MVLayer: the MVLayer object.
-        """
-        # Build options
-        options = {
-            'url': endpoint,
-            'serverType': 'geoserver',
-            'crossOrigin': 'anonymous'
-        }
-
-        layer_source = 'TileArcGISRest'
-
-        mv_layer = cls._build_mv_layer(
-            layer_id=layer_id,
-            layer_name=layer_name,
-            layer_source=layer_source,
-            layer_title=layer_title,
-            layer_variable=layer_variable,
-            options=options,
-            extent=extent,
-            visible=visible,
-            public=public,
-            selectable=selectable,
-            plottable=plottable,
-            has_action=has_action,
-            popup_title=popup_title,
-            excluded_properties=excluded_properties,
-            geometry_attribute=geometry_attribute
-        )
-
-        return mv_layer
-
-    @classmethod
-    def generate_custom_color_ramp_divisions(cls, min_value, max_value, num_divisions=10, value_precision=2,
-                                             first_division=1, top_offset=0, bottom_offset=0, prefix='val',
-                                             color_ramp=None, color_prefix='color', no_data_value=None):
-        """
-        Generate custom elevation divisions.
-    
-        Args:
-            min_value (float): minimum value.
-            max_value (float): maximum value.
-            num_divisions (int): number of divisions.
-            value_precision (int): level of precision for legend values.
-            first_division (int): first division number (defaults to 1).
-            top_offset (float): offset from top of color ramp (defaults to 0).
-            bottom_offset (float): offset from bottom of color ramp (defaults to 0).
-            prefix (str): name of division variable prefix (i.e.: 'val' for pattern 'val1').
-            color_ramp (str): color ramp name in COLOR_RAMPS dict. Options are ['Blue', 'Blue and Red',
-                'Flower Field', 'Galaxy Berries', 'Heat Map', 'Olive Harmony', 'Mother Earth',
-                'Rainforest Frogs', 'Retro FLow', 'Sunset Fade'].
-            color_prefix (str): name of color variable prefix (i.e.: 'color' for pattern 'color1').
-            no_data_value (str): set no data value for the color ramp. (defaults to None).
-        
-        Returns:
-            dict<name, value>: Color ramp division names and values.
-        """
-        divisions = {}
-
-        # Equation of a Line
-        max_div = first_division + num_divisions - 1
-        min_div = first_division
-        max_val = float(max_value - top_offset)
-        min_val = float(min_value + bottom_offset)
-        y2_minus_y1 = max_val - min_val
-        x2_minus_x1 = max_div - min_div
-        m = y2_minus_y1 / x2_minus_x1
-        b = max_val - (m * max_div)
-
-        for i in range(min_div, max_div + 1):
-            divisions[f'{prefix}{i}'] = f"{(m * i + b):.{value_precision}f}"
-
-            if color_ramp in cls.COLOR_RAMPS.keys():
-                divisions[f'{color_prefix}{i}'] =\
-                    f"{cls.COLOR_RAMPS[color_ramp][(i - first_division) % len(cls.COLOR_RAMPS[color_ramp])]}"
-            else:
-                # use default color ramp
-                divisions[f'{color_prefix}{i}'] =\
-                    f"{cls.COLOR_RAMPS['Default'][(i - first_division) % len(cls.COLOR_RAMPS['Default'])]}"
-        if no_data_value is not None:
-            divisions['val_no_data'] = no_data_value
-        return divisions
