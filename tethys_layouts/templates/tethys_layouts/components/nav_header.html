@@ -29,7 +29,7 @@ Optional CSS:
 
   {# TITLE #}
   {% block nav_title %}
-    <div id="nav-title">
+    <div id="nav-title"{% if not back_url%} style="margin-left: 0;"{% endif %}>
       <p class="title">{{ nav_title }}</p>
       {% if nav_subtitle %}
       <p class="subtitle">{{ nav_subtitle }}</p>
