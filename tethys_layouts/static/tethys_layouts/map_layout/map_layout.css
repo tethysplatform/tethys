@@ -28,6 +28,10 @@
 }
 
 /* Layer Selector */
+.layers-context-menu .dropdown-menu .form-group {
+    padding-left: 20px;
+}
+
 .layer-group-item:first-child {
     margin-top: 20px;
 }

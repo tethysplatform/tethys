@@ -99,6 +99,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS
             layers to the Custom Layers layer group dynamically. Defaults to True.
         show_legends (bool): Show the Legend tab. Defaults to False.
+        show_public_toggle (bool): Show the "Public/Private" toggle control in the layer context menus.
         wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
     """
     __metaclass__ = ABCMeta
@@ -130,6 +131,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     sds_setting_name = ''
     show_custom_layer = False
     show_legends = False
+    show_public_toggle = False
     wide_nav = False
 
     @classproperty
@@ -381,7 +383,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             'can_download': has_permission(request, 'can_download'),
             'can_use_geocode': has_permission(request, 'use_map_geocode'),
             'can_use_plot': has_permission(request, 'use_map_plot'),
-            'show_public_toggle': has_permission(request, 'toggle_public_layers'),
+            'show_public_toggle': self.show_public_toggle and has_permission(request, 'toggle_public_layers'),
             'show_remove': has_permission(request, 'remove_layers'),
             'show_rename': has_permission(request, 'rename_layers'),
         }
@@ -558,7 +560,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             JsonResponse: success.
         """
-        # TODO: Implement a method that does not require the database. JSON File? Localstorage?
+        # TODO: Implement a method that does not require the database. JSON File? Local storage?
         display_name = request.POST.get('layer_name', '')
         layer_uuid = request.POST.get('uuid', '')
         service_link = request.POST.get('service_link', '')
@@ -593,7 +595,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 for custom_layer in custom_layers:
                     if custom_layer['layer_id'] != layer_id:
                         new_custom_layers.append(custom_layer)
-                # TODO: Implement a method that does not require the database. JSON File? Localstorage?
+                # TODO: Implement a method that does not require the database. JSON File? Local storage?
                 resource.set_attribute(layer_group_type, new_custom_layers)
         session.commit()
         return JsonResponse({'success': True})
