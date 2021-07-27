@@ -46,6 +46,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
     Optional Properties:
         back_url (str): URL that will be added to the back button. No back button if not provided.
+        basemaps (list or str): Name of a basemap or list of basemaps that will be available on the map. Same as the
+            MapView gizmo basemap argument. Does not apply to the Cesium renderer.
         cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view".
             See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
         default_center (2-list<float>): Coordinates of the initial center for the map. Defaults to [-98.583, 39.833].
@@ -63,7 +65,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             to "tethys_map_view".
         max_zoom (int): Maximum zoom level. Defaults to 28.
         min_zoom (int): Minimum zoom level. Defaults to 0.
-        properties_popup_enabled (bool): Set to False to disable the properties popup. Defaults to True.
         sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when
             initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager
                 using the kwarg "sds_engine".
@@ -71,6 +72,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             layers to the Custom Layers layer group dynamically. Defaults to True.
         show_legends (bool): Show the Legend tab. Defaults to False.
         show_map_clicks (bool): Show where the user clicks when they click on the map. Defaults to False.
+        show_map_click_popup (bool): Display a pop-up pointing to the point where user clicks. Defaults to False.
+        show_properties_popup (bool): Show popup with feature properties when True. Defaults to False.
         show_public_toggle (bool): Show the "Public/Private" toggle control in the layer context menus.
         wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
     """
@@ -86,6 +89,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     map_title = ''
 
     # Optional Properties
+    basemaps = [
+        'Stamen',
+        {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
+        'OpenStreetMap',
+        'ESRI',
+    ]
     cesium_ion_token = None
     default_center = [-98.583, 39.833]  # USA Center
     default_disable_basemap = False
@@ -99,11 +108,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     map_type = 'tethys_map_view'
     max_zoom = 28
     min_zoom = 0
-    properties_popup_enabled = True
     sds_setting_name = ''
     show_custom_layer = False
     show_legends = False
     show_map_clicks = False
+    show_map_click_popup = False
+    show_properties_popup = False
     show_public_toggle = False
     wide_nav = False
 
@@ -301,7 +311,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         # Prepare context
         context.update({
-            'enable_properties_popup': self.properties_popup_enabled,
             'geocode_enabled': self.geocode_api_key is not None,
             'layer_groups': layer_groups,
             'layer_tab_name': self.layer_tab_name,
@@ -312,6 +321,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             'nav_subtitle': self.map_subtitle,
             'nav_title': self.map_title,
             'show_custom_layer': self.show_custom_layer,
+            'show_properties_popup': self.show_properties_popup,
+            'show_map_click_popup': self.show_map_click_popup,
             'show_legends': self.show_legends,
             'wide_nav': self.wide_nav,
             'workspace': self.geoserver_workspace,
@@ -386,12 +397,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             ],
             layers=[],
             view=self.default_view,
-            basemap=[
-                'Stamen',
-                {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
-                'OpenStreetMap',
-                'ESRI',
-            ],
+            basemap=self.basemaps,
             legend=False,
             show_clicks=self.show_map_clicks,
         )

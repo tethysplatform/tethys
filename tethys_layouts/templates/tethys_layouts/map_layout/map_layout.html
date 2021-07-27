@@ -226,8 +226,9 @@
        data-layer-groups="{{ layer_groups|jsonify }}"
        data-map-extent="{{ map_extent|jsonify }}"
        data-workspace="{{ workspace }}"
-       data-enable-properties-popup="{% if enable_properties_popup %}true{% else %}false{% endif %}"
        data-map-type="{{ map_type|jsonify }}"
+       data-show-properties-popup="{{ show_properties_popup|jsonify }}"
+       data-show-map-click-popup="{{ show_map_click_popup|jsonify }}"
        style="display: none;"></div>
   <div id="map-layout-permissions"
        data-can-use-geocode="{{ can_use_geocode|jsonify }}"
