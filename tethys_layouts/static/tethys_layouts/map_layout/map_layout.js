@@ -30,7 +30,8 @@ var MAP_LAYOUT = (function() {
  	    m_layer_groups,                 // Layer and layer group metadata
  	    m_workspace,                    // Workspace from SpatialManager
  	    m_extent,                       // Home extent for map
- 	    m_enable_properties_popup,      // Show properties pop-up
+ 	    m_show_properties_popup,        // Show properties pop-up
+ 	    m_show_map_click_popup,         // Show the properties pop-up at the clicked point (instead of the centroid of the selected feature if feature selection is on)
  	    m_select_interaction,           // TethysMap select interaction for vector layers
  	    m_drawing_layer;                // The drawing layer
 
@@ -75,10 +76,10 @@ var MAP_LAYOUT = (function() {
         update_result_layer, update_layer_style;
 
     // Properties pop-up
-    var init_properties_pop_up, display_properties, show_properties_pop_up, hide_properties_pop_up,
-        close_properties_pop_up, reset_properties_pop_up, append_properties_pop_up_content, reset_ui,
-        generate_properties_table_title, generate_properties_table, generate_dataset_row,
-        generate_custom_properties_table_content, initialize_custom_content;
+    var init_pop_up_overlay, init_feature_selection, init_map_clicked_pop_up, display_properties,
+        show_properties_pop_up, hide_properties_pop_up, close_properties_pop_up, reset_properties_pop_up,
+        append_properties_pop_up_content, reset_ui, generate_properties_table_title, generate_properties_table,
+        generate_dataset_row, generate_custom_properties_table_content, initialize_custom_content;
 
  	// Feature selection
  	var init_feature_selection, points_selection_styler, lines_selection_styler, polygons_selection_styler,
@@ -108,7 +109,8 @@ var MAP_LAYOUT = (function() {
         m_layer_groups = $map_attributes.data('layer-groups');
         m_extent = $map_attributes.data('map-extent');
         m_workspace = $map_attributes.data('workspace');
-        m_enable_properties_popup = $map_attributes.data('enable-properties-popup');
+        m_show_properties_popup = $map_attributes.data('show-properties-popup');
+        m_show_map_click_popup = $map_attributes.data('show-map-click-popup');
     };
 
     parse_permissions = function() {
@@ -1156,39 +1158,51 @@ var MAP_LAYOUT = (function() {
     };
 
     // Properties pop-up
-    init_properties_pop_up = function() {
-        m_$props_popup_container = $('#properties-popup');
-        m_$props_popup_content = $('#properties-popup-content');
-        m_$props_popup_closer = $('#properties-popup-close-btn');
+    init_pop_up_overlay = function() {
+        if (m_show_properties_popup || m_show_map_click_popup) {
+          m_$props_popup_container = $('#properties-popup');
+          m_$props_popup_content = $('#properties-popup-content');
+          m_$props_popup_closer = $('#properties-popup-close-btn');
 
-        // Create the overlay
-        m_props_popup_overlay = new ol.Overlay({
+          // Create the overlay
+          m_props_popup_overlay = new ol.Overlay({
             element: m_$props_popup_container.get(0),
             autoPan: true,
             autoPanAnimation: {
                 duration: 250
             }
-        });
+          });
 
-        m_map.addOverlay(m_props_popup_overlay);
+          m_map.addOverlay(m_props_popup_overlay);
 
-        // Handle closer click events
-        m_$props_popup_closer.on('click', function() {
+          // Handle closer click events
+          m_$props_popup_closer.on('click', function() {
             close_properties_pop_up();
             return false;
-        });
+          });
 
-        // Unset Display None
-        m_$props_popup_container.css('display', 'block');
-
-        // Bind wms select method
-        TETHYS_MAP_VIEW.onSelectionChange(on_select_wms_features);
-
-        // Bind vector select methods
-        let select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
-        if (select_interaction){
-            select_interaction.on('select', on_select_vector_features);
+          // Unset Display None
+          m_$props_popup_container.css('display', 'block');
         }
+    };
+
+    init_feature_selection = function() {
+      // Bind wms select method
+      TETHYS_MAP_VIEW.onSelectionChange(on_select_wms_features);
+
+      // Bind vector select methods
+      let select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
+      if (select_interaction){
+        select_interaction.on('select', on_select_vector_features);
+      }
+    };
+
+    init_map_clicked_pop_up = function() {
+      if (m_show_map_click_popup) {
+        $('#' + TETHYS_MAP_VIEW.getTarget()).on('clicked.tethys-map-view', function(event) {
+          show_properties_pop_up(event.coordinate);
+        });
+      }
     };
 
     show_properties_pop_up = function(coordinates) {
@@ -1213,6 +1227,9 @@ var MAP_LAYOUT = (function() {
         m_$props_popup_container.trigger('closing.map-layout.popup');
         hide_properties_pop_up();
         TETHYS_MAP_VIEW.clearSelection();
+        if (m_show_map_click_popup) {
+          TETHYS_MAP_VIEW.clearClickedPoint();
+        }
         m_$props_popup_container.trigger('closed.map-layout.popup');
     };
 
@@ -1227,14 +1244,16 @@ var MAP_LAYOUT = (function() {
 
     on_select_vector_features = function(event) {
         let selected = event.selected;
-        if (selected.length > 0) {
+        if (m_show_properties_popup && selected.length > 0) {
             display_properties(selected);
         }
     };
 
     on_select_wms_features = function(points_layer, lines_layer, polygons_layer) {
         let layers = [points_layer, lines_layer, polygons_layer];
-        display_properties(layers);
+        if (m_show_properties_popup) {
+          display_properties(layers);
+        }
     };
 
     display_properties = function(layers_or_features) {
@@ -1296,11 +1315,13 @@ var MAP_LAYOUT = (function() {
         }
 
         // Compute popup location
-        let popup_location = compute_center(center_points);
+        if (!m_show_map_click_popup) {
+          let popup_location = compute_center(center_points);
 
-        // Show the Popup
-        if (popup_location) {
-            show_properties_pop_up(popup_location);
+          // Show the Popup
+          if (popup_location) {
+              show_properties_pop_up(popup_location);
+          }
         }
 
         // TODO: Add hook to allow apps to customize properties table.
@@ -1313,7 +1334,7 @@ var MAP_LAYOUT = (function() {
         }
 
         // Reset popup
-        if (m_enable_properties_popup) {
+        if (m_show_properties_popup) {
             reset_properties_pop_up();
         }
 
@@ -1478,10 +1499,6 @@ var MAP_LAYOUT = (function() {
         TETHYS_MAP_VIEW.overrideSelectionStyler('points', points_selection_styler);
         TETHYS_MAP_VIEW.overrideSelectionStyler('lines', lines_selection_styler);
         TETHYS_MAP_VIEW.overrideSelectionStyler('polygons', polygons_selection_styler);
-
-        if (m_enable_properties_popup) {
-            init_properties_pop_up();
-        }
     };
 
     points_selection_styler = function(feature, resolution) {
@@ -1849,6 +1866,9 @@ var MAP_LAYOUT = (function() {
         init_draw_controls();
         init_download_layer_action();
         sync_layer_visibility();
+        init_feature_selection();
+        init_pop_up_overlay();
+        init_map_clicked_pop_up();
 	});
 
 	return m_public_interface;

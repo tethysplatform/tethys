@@ -2085,8 +2085,13 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Call the map clicked callback provided by user if defined
     if (m_show_clicks && is_defined(m_custom_map_clicked_callback)) {
+        let clicked_event = $.Event('clicked.tethys-map-view');
+        clicked_event.x = x;
+        clicked_event.y = y;
+        clicked_event.coordinate = event.coordinate
         highlight_clicked_point(x, y);
         m_custom_map_clicked_callback(event.coordinate, event);
+        $('#' + m_map_target).trigger(clicked_event);
     }
 
     // Perform the feature selection if enabled and there are selectable layers
@@ -2399,19 +2404,14 @@ var TETHYS_MAP_VIEW = (function() {
    * NOTE: The functions in the public interface have access to the private
    * functions of the library because of JavaScript function scope.
    */
-
-  function get_map() {
-    return m_map;
-  }
-
-  function get_target() {
-    return m_map_target;
-  }
-
   public_interface = {
-    getMap: get_map,
+    getMap: function() {
+      return m_map;
+    },
     updateLegend: update_legend,
-    getTarget: get_target,
+    getTarget: function() {
+      return m_map_target;
+    },
     jsonResponseHandler: jsonp_response_handler,
     reInitializeMap: ol_initialize_all,
 
