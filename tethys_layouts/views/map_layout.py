@@ -70,6 +70,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS
             layers to the Custom Layers layer group dynamically. Defaults to True.
         show_legends (bool): Show the Legend tab. Defaults to False.
+        show_map_clicks (bool): Show where the user clicks when they click on the map. Defaults to False.
         show_public_toggle (bool): Show the "Public/Private" toggle control in the layer context menus.
         wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
     """
@@ -102,6 +103,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     sds_setting_name = ''
     show_custom_layer = False
     show_legends = False
+    show_map_clicks = False
     show_public_toggle = False
     wide_nav = False
 
@@ -390,7 +392,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 'OpenStreetMap',
                 'ESRI',
             ],
-            legend=False
+            legend=False,
+            show_clicks=self.show_map_clicks,
         )
 
         # Configure initial basemap visibility

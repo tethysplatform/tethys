@@ -34,6 +34,7 @@ class MapView(TethysGizmoOptions):
         controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
         disable_basemap(bool): Render the map without a base map.
         feature_selection(bool): A dictionary of global feature selection options. See below.
+        show_clicks (bool): Show a point on the map where the user clicks if True. Defaults to False. Use the TETHYS_MAP_VIEW.mapClicked() JavaScript API endpoint to provide a callback that will be called each time the map is clicked on. Use the TETHYS_MAP_VIEW.clearClickedPoint() to remove the clicked point.
 
     **Options Dictionaries**
 
@@ -319,7 +320,7 @@ class MapView(TethysGizmoOptions):
 
     def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
-                 feature_selection=None):
+                 feature_selection=None, show_clicks=False):
         """
         Constructor
         """
@@ -336,6 +337,7 @@ class MapView(TethysGizmoOptions):
         self.legend = legend
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
+        self.show_clicks = show_clicks
 
     @classmethod
     def static_url(cls):
@@ -521,13 +523,14 @@ class MVLayer(SecondaryGizmoOptions):
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
         editable (bool): If true the layer will be editable with the tethys_map_view drawing/editing tools.
-        feature_selection (dict): A dictionary with feature selection options (e.g.: {'multiselect': True, 'sensitivity': 4}). Defaults to None.
+        feature_selection (bool): Make the features on this layer selectable.
         geometry_attribute (str): The name of the attribute in the shapefile that describes the geometry
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
         data (dict): Dictionary representation of layer data.
         times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
+
     Example
 
     ::
@@ -682,8 +685,7 @@ class MVLayer(SecondaryGizmoOptions):
     """  # noqa: E501
 
     def __init__(self, source, options, legend_title, layer_options=None, editable=True,
-                 legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326',
+                 legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326',
                  feature_selection=None, geometry_attribute=None, data=None, times=None):
         """
         Constructor

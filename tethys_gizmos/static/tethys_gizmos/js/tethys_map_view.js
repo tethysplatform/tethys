@@ -59,7 +59,8 @@ var TETHYS_MAP_VIEW = (function() {
       LEGEND_ATTRIBUTE = 'data-legend',                     // HTML attribute containing the legend options
       VIEW_ATTRIBUTE = 'data-view',                         // HTML attribute containing the view options
       FEAT_SELECTION_ATTRIBUTE = 'data-feature-selection',  // HTML attribute containing the feature selection options
-      DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
+      DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map', // HTML attribute containing the disable base map option
+      SHOW_CLICKS_DATA = 'show-clicks';                     // Data attribute containing the show clicks value
 
   // Objects
   var public_interface,                                     // Object returned by the module
@@ -82,7 +83,8 @@ var TETHYS_MAP_VIEW = (function() {
       m_custom_map_clicked_callback,                        // A callback function to call when the map is clicked (if provided)
       m_selectable_layers,                                  // The layers that allow for selectable features
       m_selectable_wms_layers,                              // The layers that allow for selectable wms features
-      m_points_clicked_layer,                               // The layer that contains the point click on map by user.
+      m_show_clicks,                                        // Show points where user clicks on map when true
+      m_points_clicked_layer,                               // The layer that contains the point click on map by user
       m_points_selected_layer,                              // The layer that contains the currently selected points
       m_lines_selected_layer,                               // The layer that contains the currently selected lines
       m_polygons_selected_layer,                            // The layer that contains the currently selected polygons
@@ -129,8 +131,10 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Selectable Features Methods
   var select_features_at_location, default_selected_feature_styler, highlight_selected_features, zoom_to_selection,
-      jsonp_response_handler, map_clicked, set_map_on_click, override_selection_styler, selected_features_changed,
-      select_features_by_attribute;
+      jsonp_response_handler, override_selection_styler, selected_features_changed, select_features_by_attribute;
+      
+  // Map Click
+  var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 
   // UI Management Methods
   var update_field;
@@ -1070,7 +1074,13 @@ var TETHYS_MAP_VIEW = (function() {
   
   ol_custom_map_click_init = function()
   {
-    if (is_defined(m_custom_map_clicked_callback)) {
+    if (m_show_clicks && is_defined(m_custom_map_clicked_callback)) {
+      // Initialize layer for drawing clicked point
+      m_points_clicked_layer = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: default_selected_feature_styler,
+      });
+      m_points_clicked_layer.setMap(m_map);
       set_map_on_click();
     }
   };
@@ -1089,6 +1099,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_view_options = $map_element.attr(VIEW_ATTRIBUTE);
     m_disable_base_map = $map_element.attr(DISABLE_BASE_MAP_ATTRIBUTE);
     m_feature_selection_options = $map_element.attr(FEAT_SELECTION_ATTRIBUTE);
+    m_show_clicks = $map_element.data(SHOW_CLICKS_DATA);
 
     // Parse JSON
     if (is_defined(m_attribute_table_options)) {
@@ -2022,30 +2033,6 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
   
-  set_map_on_click = function() {
-    // Un-set the single click binding to map_clicked just in case it is already set to avoid setting multiple
-    m_map.un('singleclick', map_clicked);
-
-    // Re-set/set the single click binding to map_clicked
-    m_map.on('singleclick', map_clicked);
-  };
-
-  map_clicked = function(event) {
-    var x = event.coordinate[0];
-    var y = event.coordinate[1];
-
-    // Call the map clicked callback provided by user if defined
-    if (is_defined(m_custom_map_clicked_callback)) {
-
-        m_custom_map_clicked_callback(event.coordinate, event);
-    }
-
-    // Perform the feature selection if enabled and there are selectable layers
-    if (is_defined(m_feature_selection_options) && m_selectable_wms_layers.length > 0) {
-       select_features_at_location(x, y);
-    }
-  };
-
   select_features_by_attribute =  function(layer_name, attribute_name, attribute_value, zoom_on_selection) {
     if (typeof zoom_on_selection === 'undefined') {
         zoom_on_selection = true;
@@ -2108,7 +2095,60 @@ var TETHYS_MAP_VIEW = (function() {
         });
       }
     }
-  }
+  };
+  
+  // Map Click
+  set_map_on_click = function() {
+    // Un-set the single click binding to map_clicked just in case it is already set to avoid setting multiple
+    m_map.un('singleclick', map_clicked);
+
+    // Re-set/set the single click binding to map_clicked
+    m_map.on('singleclick', map_clicked);
+  };
+
+  map_clicked = function(event) {
+    var x = event.coordinate[0];
+    var y = event.coordinate[1];
+
+    // Call the map clicked callback provided by user if defined
+    if (m_show_clicks && is_defined(m_custom_map_clicked_callback)) {
+        highlight_clicked_point(x, y);
+        m_custom_map_clicked_callback(event.coordinate, event);
+    }
+
+    // Perform the feature selection if enabled and there are selectable layers
+    if (is_defined(m_feature_selection_options) && m_selectable_wms_layers.length > 0) {
+       select_features_at_location(x, y);
+    }
+  };
+
+  clear_clicked_point = function() {
+    // Clear clicked point layer
+    const clicked_points_source = m_points_clicked_layer.getSource();
+    clicked_points_source.clear();
+  };
+  
+  highlight_clicked_point = function(x, y) {
+    // Get the clicked point layer source
+    const clicked_points_source = m_points_clicked_layer.getSource();
+    // Create new point feature
+    const click_point = (new ol.format.GeoJSON()).readFeatures({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [x, y],
+      },
+      properties: {
+
+      }
+    });
+
+    // Clear last clicked point
+    clear_clicked_point();
+
+    // Add new point to clicked point layer
+    clicked_points_source.addFeatures(click_point);
+  };
 
   /***********************************
    * Initialization Methods
@@ -2446,13 +2486,18 @@ var TETHYS_MAP_VIEW = (function() {
     },
 
     getSelectInteraction: function() {
-        return m_select_interaction;
+      return m_select_interaction;
     },
 
     selectFeaturesByAttribute: select_features_by_attribute,
     mapClicked: function(func) {
-        m_custom_map_clicked_callback = func;
-        ol_custom_map_click_init();
+      if (m_show_clicks) {
+          m_custom_map_clicked_callback = func;
+          ol_custom_map_click_init();
+      }
+    },
+    clearClickedPoint: function() {
+      clear_clicked_point();
     },
   };
 

@@ -213,7 +213,14 @@ Provide a callback function to call when the map is clicked on. Only works if `m
          // Custom code to run whenever the map is clicked.
      });
 
+TETHYS_MAP_VIEW.clearClickedPoint()
++++++++++++++++++++++++++++++++++++
 
+Clear the clicked point selected by the user.
+
+::
+
+     TETHYS_MAP_VIEW.clearClickedPoint();
 
 TETHYS_MAP_VIEW.reInitializeMap()
 +++++++++++++++++++++++++++++++++
