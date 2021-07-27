@@ -60,7 +60,7 @@ var MAP_LAYOUT = (function() {
  	var remove_layer_from_map, get_layer_name_from_feature, get_layer_id_from_layer, get_feature_id_from_feature;
 
  	// Action Button
- 	var generate_action_button, bind_action_buttons, load_action
+ 	var generate_action_button, bind_action_buttons, load_action;
 
  	// Plotting
  	var init_plot, generate_plot_button, bind_plot_buttons, load_plot, fit_plot, update_plot, show_plot, hide_plot;
@@ -1811,19 +1811,19 @@ var MAP_LAYOUT = (function() {
 	    action_loader: function(f) {
 	        load_action = f;
 	    },
-      get_layer_name_from_feature: get_layer_name_from_feature,
-      get_layer_id_from_layer: get_layer_id_from_layer,
-      get_feature_id_from_feature: get_feature_id_from_feature,
-      hide_properties_pop_up: hide_properties_pop_up,
-      reset_properties_pop_up: reset_properties_pop_up,
-      close_properties_pop_up: close_properties_pop_up,
-      load_layers: load_layers,
-      update_legend: update_legend,
-      hide_layers: hide_layers,
-      show_layers: show_layers,
-      remove_layer_from_map: remove_layer_from_map,
-      init_layers_tab: init_layers_tab,
-      init_download_layer_action: init_download_layer_action,
+        get_layer_name_from_feature: get_layer_name_from_feature,
+        get_layer_id_from_layer: get_layer_id_from_layer,
+        get_feature_id_from_feature: get_feature_id_from_feature,
+        hide_properties_pop_up: hide_properties_pop_up,
+        reset_properties_pop_up: reset_properties_pop_up,
+        close_properties_pop_up: close_properties_pop_up,
+        load_layers: load_layers,
+        update_legend: update_legend,
+        hide_layers: hide_layers,
+        show_layers: show_layers,
+        remove_layer_from_map: remove_layer_from_map,
+        init_layers_tab: init_layers_tab,
+        init_download_layer_action: init_download_layer_action,
 	};
 
 	/************************************************************************
