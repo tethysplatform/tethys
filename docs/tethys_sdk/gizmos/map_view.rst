@@ -202,6 +202,19 @@ This method applies to the WFS/GeoJSON/KML layer feature selection functionality
 
     });
 
+TETHYS_MAP_VIEW.mapClicked(callback)
+++++++++++++++++++++++++++++++++++++
+
+Provide a callback function to call when the map is clicked on. Only works if `map_click_event` parameter is set to `True` when defining the `MapView`. The function must accept two parameters an array of coordinates (lat, lon) and the click event object.
+
+::
+
+     TETHYS_MAP_VIEW.mapClicked(function(coordinates, event) {
+         // Custom code to run whenever the map is clicked.
+     });
+
+
+
 TETHYS_MAP_VIEW.reInitializeMap()
 +++++++++++++++++++++++++++++++++
 
@@ -298,4 +311,3 @@ Four elements are required:
         });
 
     });
-

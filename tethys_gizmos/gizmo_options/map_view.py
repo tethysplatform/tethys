@@ -521,12 +521,12 @@ class MVLayer(SecondaryGizmoOptions):
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
         editable (bool): If true the layer will be editable with the tethys_map_view drawing/editing tools.
-        feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
+        feature_selection (dict): A dictionary with feature selection options (e.g.: {'multiselect': True, 'sensitivity': 4}). Defaults to None.
         geometry_attribute (str): The name of the attribute in the shapefile that describes the geometry
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
-        data (dict): Dictionary representation of layer data
+        data (dict): Dictionary representation of layer data.
         times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
     Example
 
@@ -684,7 +684,7 @@ class MVLayer(SecondaryGizmoOptions):
     def __init__(self, source, options, legend_title, layer_options=None, editable=True,
                  legend_classes=None, legend_extent=None,
                  legend_extent_projection='EPSG:4326',
-                 feature_selection=False, geometry_attribute=None, data=None, times=None):
+                 feature_selection=None, geometry_attribute=None, data=None, times=None):
         """
         Constructor
         """
