@@ -6,6 +6,14 @@
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 
+ // Backward/forward compatability for OpenLayers
+if (typeof ol.inherits === 'undefined') {
+    ol.inherits = function (child, parent) {
+        child.prototype = Object.create(parent.prototype);
+        child.prototype.constructor = child;
+    }
+}
+
 // Extend Object prototype
 Object.byString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
