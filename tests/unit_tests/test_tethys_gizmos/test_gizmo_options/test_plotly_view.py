@@ -23,10 +23,10 @@ class TestPlotlyView(unittest.TestCase):
 
         result = gizmo_plotly_view.PlotlyView(plot_input)
         # Check Result
-        self.assertIn(', '.join(str(e) for e in trace0.x), result['plotly_div'])
-        self.assertIn(', '.join(str(e) for e in trace0.y), result['plotly_div'])
-        self.assertIn(', '.join(str(e) for e in trace1.x), result['plotly_div'])
-        self.assertIn(', '.join(str(e) for e in trace1.y), result['plotly_div'])
+        self.assertIn(','.join(str(e) for e in trace0.x), result['plotly_div'])
+        self.assertIn(','.join(str(e) for e in trace0.y), result['plotly_div'])
+        self.assertIn(','.join(str(e) for e in trace1.x), result['plotly_div'])
+        self.assertIn(','.join(str(e) for e in trace1.y), result['plotly_div'])
 
         self.assertIn('.js', gizmo_plotly_view.PlotlyView.get_vendor_js()[0])
         self.assertNotIn('.css', gizmo_plotly_view.PlotlyView.get_vendor_js()[0])
