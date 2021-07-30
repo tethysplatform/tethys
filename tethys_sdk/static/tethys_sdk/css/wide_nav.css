@@ -20,3 +20,9 @@
 
 #app-content-wrapper.show-nav #app-content #app-actions {
     padding-right: 415px;
+}
+
+/* Slide Sheet Gizmos */
+#app-content-wrapper.show-nav #app-content .slide-sheet {
+    padding-right: 400px;
+}

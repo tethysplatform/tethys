@@ -65,6 +65,10 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             to "tethys_map_view".
         max_zoom (int): Maximum zoom level. Defaults to 28.
         min_zoom (int): Minimum zoom level. Defaults to 0.
+        permissions (bool): Enables permissions checks when True. Defaults to False.
+        plot_slide_sheet (bool): Enables the Plotly slide sheet when True. Defaults to False. The slide sheet can be
+            opened and populated using the JavaScript API.
+        plotly_version (str): Version of Plotly library to load for Plotly slide sheet. Defaults to "2.3.0".
         sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when
             initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager
                 using the kwarg "sds_engine".
@@ -108,6 +112,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     map_type = 'tethys_map_view'
     max_zoom = 28
     min_zoom = 0
+    permissions = False
+    plot_slide_sheet = False
+    plotly_version = '2.3.0'
     sds_setting_name = ''
     show_custom_layer = False
     show_legends = False
@@ -320,6 +327,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             'map_view': map_view,
             'nav_subtitle': self.map_subtitle,
             'nav_title': self.map_title,
+            'plotly_version': self.plotly_version,
             'show_custom_layer': self.show_custom_layer,
             'show_properties_popup': self.show_properties_popup,
             'show_map_click_popup': self.show_map_click_popup,
@@ -364,12 +372,16 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             dict: modified permissions dictionary.
         """
         permissions = {
-            'can_download': has_permission(request, 'can_download'),
-            'can_use_geocode': has_permission(request, 'use_map_geocode'),
-            'can_use_plot': has_permission(request, 'use_map_plot'),
-            'show_public_toggle': self.show_public_toggle and has_permission(request, 'toggle_public_layers'),
-            'show_remove': has_permission(request, 'remove_layers'),
-            'show_rename': has_permission(request, 'rename_layers'),
+            'can_download': not permissions or has_permission(request, 'can_download'),
+            'can_use_geocode': not permissions or has_permission(request, 'use_map_geocode'),
+            'can_use_plot': self.plot_slide_sheet and (
+                    not permissions or has_permission(request, 'use_map_plot')
+            ),
+            'show_public_toggle': self.show_public_toggle and (
+                    not permissions or has_permission(request, 'toggle_public_layers')
+            ),
+            'show_remove': not permissions or has_permission(request, 'remove_layers'),
+            'show_rename': not permissions or has_permission(request, 'rename_layers'),
         }
         return permissions
 
