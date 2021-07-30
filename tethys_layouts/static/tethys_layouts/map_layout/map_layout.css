@@ -188,7 +188,7 @@
 
 /* Plot Slide Sheet */
 #app-content-wrapper.show-nav #app-content .slide-sheet {
-    padding-right: 400px;
+    padding-right: 300px;
 }
 
 .js-plotly-plot .plotly .modebar {

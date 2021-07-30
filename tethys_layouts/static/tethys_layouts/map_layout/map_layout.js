@@ -76,14 +76,14 @@ var MAP_LAYOUT = (function() {
         update_result_layer, update_layer_style;
 
     // Properties pop-up
-    var init_pop_up_overlay, init_feature_selection, init_map_clicked_pop_up, display_properties,
-        show_properties_pop_up, hide_properties_pop_up, close_properties_pop_up, reset_properties_pop_up,
-        append_properties_pop_up_content, reset_ui, generate_properties_table_title, generate_properties_table,
-        generate_dataset_row, generate_custom_properties_table_content, initialize_custom_content;
+    var init_pop_up_overlay, init_map_clicked_pop_up, display_properties, show_properties_pop_up,
+        hide_properties_pop_up, close_properties_pop_up, reset_properties_pop_up, append_properties_pop_up_content,
+        reset_ui, generate_properties_table_title, generate_properties_table, generate_dataset_row,
+        generate_custom_properties_table_content, initialize_custom_content;
 
  	// Feature selection
- 	var init_feature_selection, points_selection_styler, lines_selection_styler, polygons_selection_styler,
- 	    on_select_vector_features, on_select_wms_features;
+ 	var init_feature_selection, points_selection_styler, lines_selection_styler,
+ 	    polygons_selection_styler, on_select_vector_features, on_select_wms_features;
 
  	// Action modal
  	var init_action_modal, build_action_modal, show_action_modal, hide_action_modal;
@@ -289,10 +289,14 @@ var MAP_LAYOUT = (function() {
             height: 415,
             margin: {l: 80, r: 80, t: 20, b: 80},
             xaxis:  {
-                title: 'X Axis Title',
+                title: {
+                  text: 'X Axis Title',
+                }
             },
             yaxis: {
-                title: 'Y Axis Title',
+                title: {
+                  text: 'Y Axis Title',
+                }
             }
         };
 
@@ -1186,17 +1190,6 @@ var MAP_LAYOUT = (function() {
         }
     };
 
-    init_feature_selection = function() {
-      // Bind wms select method
-      TETHYS_MAP_VIEW.onSelectionChange(on_select_wms_features);
-
-      // Bind vector select methods
-      let select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
-      if (select_interaction){
-        select_interaction.on('select', on_select_vector_features);
-      }
-    };
-
     init_map_clicked_pop_up = function() {
       if (m_show_map_click_popup) {
         $('#' + TETHYS_MAP_VIEW.getTarget()).on('clicked.tethys-map-view', function(event) {
@@ -1496,9 +1489,17 @@ var MAP_LAYOUT = (function() {
 
     // Feature Selection
     init_feature_selection = function() {
-        TETHYS_MAP_VIEW.overrideSelectionStyler('points', points_selection_styler);
-        TETHYS_MAP_VIEW.overrideSelectionStyler('lines', lines_selection_styler);
-        TETHYS_MAP_VIEW.overrideSelectionStyler('polygons', polygons_selection_styler);
+      TETHYS_MAP_VIEW.overrideSelectionStyler('points', points_selection_styler);
+      TETHYS_MAP_VIEW.overrideSelectionStyler('lines', lines_selection_styler);
+      TETHYS_MAP_VIEW.overrideSelectionStyler('polygons', polygons_selection_styler);
+      // Bind wms select method
+      TETHYS_MAP_VIEW.onSelectionChange(on_select_wms_features);
+
+      // Bind vector select methods
+      let select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
+      if (select_interaction){
+        select_interaction.on('select', on_select_vector_features);
+      }
     };
 
     points_selection_styler = function(feature, resolution) {
@@ -1804,29 +1805,26 @@ var MAP_LAYOUT = (function() {
 	    properties_table_generator: function(f) {
 	        generate_properties_table = f;
 	    },
-
 	    custom_properties_generator: function(f) {
 	        generate_custom_properties_table_content = f;
 	    },
-
 	    custom_properties_initializer: function(f) {
 	        initialize_custom_content = f;
 	    },
-
 	    action_button_generator: function(f) {
 	        generate_action_button = f;
 	    },
-
+	    action_loader: function(f) {
+	        load_action = f;
+	    },
+	    show_plot: show_plot,
+	    hide_plot: hide_plot,
+	    update_plot: update_plot,
 	    plot_button_generator: function(f) {
 	        generate_plot_button = f;
 	    },
-
 	    plot_loader: function(f) {
 	        load_plot = f;
-	    },
-
-	    action_loader: function(f) {
-	        load_action = f;
 	    },
         get_layer_name_from_feature: get_layer_name_from_feature,
         get_layer_id_from_layer: get_layer_id_from_layer,
@@ -1866,7 +1864,6 @@ var MAP_LAYOUT = (function() {
         init_draw_controls();
         init_download_layer_action();
         sync_layer_visibility();
-        init_feature_selection();
         init_pop_up_overlay();
         init_map_clicked_pop_up();
 	});

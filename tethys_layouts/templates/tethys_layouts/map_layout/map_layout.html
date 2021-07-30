@@ -3,8 +3,7 @@
 
 {% block import_gizmos %}
   {% import_gizmo_dependency select_input %}
-  <!-- TODO: Why is this here? - remove Hard-coded CDNs? - get via plotly gizmo dependencies? -->
-  <script src="https://cdn.plot.ly/plotly-1.41.3.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
 {% endblock %}
 
 {% block app_navigation_items %}
@@ -275,9 +274,6 @@
 
 {% block content_dependent_styles %}
   {{ block.super }}
-  {% if wide_nav %}
-  <link href="{% static 'tethys_sdk/css/wide_nav.css' %}" rel="stylesheet"/>
-  {% endif %}
   <link href="{% static 'tethys_sdk/css/nav_header.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_sdk/css/nav_tabs.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_layouts/map_layout/flat_map.css' %}" rel="stylesheet"/>
@@ -289,6 +285,9 @@
   <link href="{% static 'tethys_sdk/css/messages.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_sdk/css/flatmark.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_sdk/css/flat-slider.css' %}" rel="stylesheet"/>
+  {% if wide_nav %}
+  <link href="{% static 'tethys_sdk/css/wide_nav.css' %}" rel="stylesheet"/>
+  {% endif %}
 {% endblock %}
 
 {% block scripts %}
