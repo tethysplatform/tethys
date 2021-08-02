@@ -18,6 +18,7 @@ class TestCesiumMapView(unittest.TestCase):
         options = {'options': 'options_value'}
         view = {'view': 'view_value'}
         layers = ['layer1']
+        primitives = ['primitive1']
         entities = ['entities1', 'entities2']
         terrain = {'terrain': 'terrain_value'}
         models = ['model1', 'model2']
@@ -26,7 +27,8 @@ class TestCesiumMapView(unittest.TestCase):
 
         gizmo_map_view.CesiumMapView.cesium_version = '1.51'
         result = gizmo_map_view.CesiumMapView(height=height, width=width, options=options, view=view,
-                                              layers=layers, entities=entities, terrain=terrain, models=models)
+                                              layers=layers, entities=entities, terrain=terrain, models=models,
+                                              primitives=primitives)
 
         # Check Result
         self.assertEqual(height, result['height'])
@@ -37,6 +39,7 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertEqual(entities, result['entities'])
         self.assertEqual(terrain, result['terrain'])
         self.assertEqual(models, result['models'])
+        self.assertEqual(primitives, result['primitives'])
         self.assertFalse(result['draw'])
 
         # Check sources
@@ -52,6 +55,7 @@ class TestCesiumMapView(unittest.TestCase):
         options = {'options': 'options_value'}
         view = {'view': 'view_value'}
         layers = ['layer1']
+        primitives = ['primitive1']
         entities = ['entities1', 'entities2']
         terrain = {'terrain': 'terrain_value'}
         models = ['model1', 'model2']
@@ -59,7 +63,7 @@ class TestCesiumMapView(unittest.TestCase):
         # Set cesium_version to blank to use the build version.
         gizmo_map_view.CesiumMapView.cesium_version = ''
         result = gizmo_map_view.CesiumMapView(options=options, view=view, layers=layers, entities=entities,
-                                              terrain=terrain, models=models, draw=True)
+                                              terrain=terrain, models=models, draw=True, primitives=primitives)
 
         # Check Result
         self.assertEqual('100%', result['height'])
@@ -71,6 +75,7 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertEqual(terrain, result['terrain'])
         self.assertEqual(models, result['models'])
         self.assertTrue(result['draw'])
+        self.assertEqual(primitives, result['primitives'])
 
         # Check sources
         self.assertIn('https://cesium.com/downloads/cesiumjs/releases//Build/Cesium/Cesium.js',
