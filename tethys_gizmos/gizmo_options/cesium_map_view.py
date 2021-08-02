@@ -384,6 +384,16 @@ class CesiumMapView(TethysGizmoOptions):
                 'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
             }}
 
+        **Cesium Ion Resource using Assest ID**
+
+        Support loading data from Cesium Ion assets and resources.
+
+        For example:
+
+        ::
+
+            primitives = [{'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}}]
+
         **Clock**
 
         You can customize the clock on the viewer such as specifying the starting date and time and specifying the time step interval. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
@@ -461,8 +471,9 @@ class CesiumMapView(TethysGizmoOptions):
     # Set Cesium Default Release Version.
     cesium_version = "1.63.1"
 
-    def __init__(self, options={}, globe={}, view={}, layers=[], entities=[], terrain={}, models={}, clock={},
-                 height='100%', width='100%', draw=False, attributes={}, classes='', cesium_ion_token=''):
+    def __init__(self, options=None, globe=None, view=None, layers=None, entities=None, primitives=None, terrain=None,
+                 models=None, clock=None, height='100%', width='100%', draw=False, attributes={}, classes='',
+                 cesium_ion_token=''):
         """
         Constructor
         """
@@ -470,14 +481,15 @@ class CesiumMapView(TethysGizmoOptions):
         super(CesiumMapView, self).__init__(attributes=attributes, classes=classes)
         self.height = height
         self.width = width
-        self.options = options
-        self.globe = globe
-        self.clock = clock
-        self.view = view
-        self.layers = layers
-        self.entities = entities
-        self.terrain = terrain
-        self.models = models
+        self.options = options or {}
+        self.globe = globe or {}
+        self.clock = clock or {}
+        self.view = view or {}
+        self.layers = layers or []
+        self.entities = entities or []
+        self.primitives = primitives or []
+        self.terrain = terrain or {}
+        self.models = models or {}
         self.draw = draw
         self.cesium_ion_token = cesium_ion_token
 
