@@ -313,7 +313,7 @@ class MapView(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "map_view"
     ol_version = '5.3.0'
-    cdn = 'https://cdn.jsdelivr.net/npm/openlayers@{version}/dist/ol{debug}.{ext}'
+    cdn = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v{version}/{folder}/ol{debug}.{ext}'
     alternate_cdn = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{version}/ol{debug}.{ext}'
     local_url = 'tethys_gizmos/vendor/openlayers/{version}/ol.{ext}'
 
@@ -355,6 +355,7 @@ class MapView(TethysGizmoOptions):
         openlayers_library = cls.static_url().format(
             version=cls.ol_version,
             debug=cls.debug(),
+            folder='build',
             ext='js'
         )
 
@@ -378,6 +379,7 @@ class MapView(TethysGizmoOptions):
         openlayers_css = cls.static_url().format(
             version=cls.ol_version,
             debug=cls.debug(),
+            folder='css',
             ext='css'
         )
 
