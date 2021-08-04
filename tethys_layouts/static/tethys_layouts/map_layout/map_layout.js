@@ -318,9 +318,8 @@ var MAP_LAYOUT = (function() {
         let out = Plotly.validate(data, layout);
         if (out) {
             $(out).each(function(index, item) {
-                console.error(item.msg);
+                console.warn(`PlotlyValidationWarning: ${item.msg}`);
             });
-            return;
         }
 
         // Update plot
@@ -1255,6 +1254,7 @@ var MAP_LAYOUT = (function() {
         // TODO: Add hook to allow apps to customize properties table.
 
         // Clear popup
+        // TODO: This hides the pop-up when both Map Click and Properties Pop-up are On...
         reset_ui(false);
 
         for (var i = 0; i < layers_or_features.length; i++) {
@@ -1817,6 +1817,7 @@ var MAP_LAYOUT = (function() {
 	    action_loader: function(f) {
 	        load_action = f;
 	    },
+	    get_plot: () => { return m_plot; },
 	    show_plot: show_plot,
 	    hide_plot: hide_plot,
 	    update_plot: update_plot,
