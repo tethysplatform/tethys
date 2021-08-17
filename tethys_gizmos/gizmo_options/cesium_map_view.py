@@ -489,7 +489,7 @@ class CesiumMapView(TethysGizmoOptions):
         self.entities = entities or []
         self.primitives = primitives or []
         self.terrain = terrain or {}
-        self.models = models or {}
+        self.models = models or []
         self.draw = draw
         self.cesium_ion_token = cesium_ion_token
 
