@@ -254,7 +254,9 @@
       {% gizmo_dependencies css %}
     {% endblock %}
 
-    {% csrf_token %}
+    {% block csrf_token %}
+      {% csrf_token %}
+    {% endblock %}
 
     {% comment "scripts explanation" %}
       Use this block for adding scripts. Call with block.super to include the default

@@ -199,7 +199,7 @@ var TETHYS_APP_BASE = (function() {
     csrf_safe_method = function(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
+    };
 
   /************************************************************************
    *                        DEFINE PUBLIC INTERFACE
@@ -259,13 +259,17 @@ var TETHYS_APP_BASE = (function() {
      *
      *****************************************************************************/
 
-    $.ajaxSetup({
+    var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if(csrftoken){
+          $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrf_safe_method(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", document.querySelector('[name=csrfmiddlewaretoken]').value);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken.value);
             }
         }
-    });
+      });
+    };
+
 
   // Initialization: jQuery function that gets called when
   // the DOM tree finishes loading
