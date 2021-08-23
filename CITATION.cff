@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Tethys Platform"
+version: 3.3
+date-released: 2021-04-16
+url: "https://github.com/tethysplatform/tethys"
+authors:
+- family-names: "Swain"
+  given-names: "Nathan R."
+  orcid: "https://orcid.org/0000-0002-4741-3828"
+- family-names: "Christensen"
+  given-names: "Scott D."
+  orcid: "https://orcid.org/0000-0003-1459-4922"
+- family-names: "Nelson"
+  given-names: "E. James"
+- family-names: "Jones"
+  given-names: "Norman L."
+  orcid: "https://orcid.org/0000-0002-8267-1419"
+- family-names: "Ames"
+  given-names: "Daniel P."
+  orcid: "https://orcid.org/0000-0003-2606-2579"
+doi: 10.5281/zenodo.5228298
