@@ -20,29 +20,6 @@ $(document).ready(function(){
   var local_date_time = getDateandTime();
   var username = document.getElementById('page-attributes').getAttribute('data-username');
 
-  function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-
-  // using jQuery
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-      var cookies = document.cookie.split(';');
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        // Does this cookie string begin with the name we want?
-        if (cookie.substring(0, name.length + 1) == (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-
-  var csrftoken = getCookie('csrftoken');
   var betamodalform = "<form action='/apps/send-beta-feedback/' method='post' enctype='multipart/form-data' id='uploadBetaFeedback' name='uploadBetaFeedback'>"+
                         "<div class='betaForm'>"+
                           "<div>"+
