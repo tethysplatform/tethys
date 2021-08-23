@@ -35,7 +35,7 @@ var TETHYS_APP_BASE = (function() {
    *                    PRIVATE FUNCTION DECLARATIONS
    *************************************************************************/
    var apply_app_color_theme, app_entry_handler, check_responsive,
-       no_nav_handler, exit_app, toggle_nav;
+       no_nav_handler, exit_app, toggle_nav, csrf_safe_method;
 
 
    /************************************************************************
@@ -196,6 +196,11 @@ var TETHYS_APP_BASE = (function() {
         $(app_content_selector).removeClass('show-app-content');
    };
 
+    csrf_safe_method = function(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    };
+
   /************************************************************************
    *                        DEFINE PUBLIC INTERFACE
    *************************************************************************/
@@ -245,6 +250,24 @@ var TETHYS_APP_BASE = (function() {
                 }
             }
         }, 100);
+    };
+
+    /*****************************************************************************
+     *
+     * Cross Site Request Forgery Token Configuration
+     *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
+     *
+     *****************************************************************************/
+
+    var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if(csrftoken){
+          $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrf_safe_method(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken.value);
+            }
+        }
+      });
     };
 
 
@@ -299,3 +322,6 @@ var TETHYS_APP_BASE = (function() {
 }()); // End of package wrapper
 // NOTE: that the call operator (open-closed parenthesis) is used to invoke the library wrapper
 // function immediately after being parsed, returning the public interface object.
+
+
+// Global Functions for App Util
