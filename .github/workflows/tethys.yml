@@ -10,10 +10,10 @@ env:
   CONDA_BUILD_PIN_LEVEL: minor
 
 jobs:
-  test:
-    if: !startsWith(github.ref, 'refs/tags/')
-    runs-on: ${{ matrix.platform }}
+
+  tests:
     name: Tethys Test (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
