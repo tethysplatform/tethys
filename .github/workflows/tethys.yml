@@ -1,0 +1,53 @@
+# Tethys Main CI
+name: Tethys-CI
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  CONDA_BUILD_PIN_LEVEL: minor
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Tethys (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+        python-version: [3.7]
+    steps:
+      # Checkout the source
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      # Install Tethys
+      - name: Install Tethys
+        run: |
+          cd ..
+          bash ./tethys/scripts/install_tethys.sh -h
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
+      # Setup Tethys and Conda
+      - name: Setup Tethys and Conda
+        run: |
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          conda list
+          tethys db start
+          pip install coveralls
+      # Test Tethys
+      - name: Test Tethys
+        run: |
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          tethys test -c -u -v 2
+      # Generate Coverage Report
+      - name: Genearte Coverage Report
+        run: |
+          echo $RUNNER_OS
+          if [ "$RUNNER_OS" == "Linux"]; then
+              . ~/miniconda/etc/profile.d/conda.sh
+              conda activate tethys
+              coveralls
+          fi
