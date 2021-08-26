@@ -11,7 +11,7 @@ env:
 
 jobs:
 
-  tests:
+  tethys-tests:
     name: Tethys Test (${{ matrix.platform }})
     if: ${{ !startsWith(github.ref, 'refs/tags/') }}
     runs-on: ${{ matrix.platform }}
@@ -52,9 +52,9 @@ jobs:
             conda activate tethys
             coveralls
 
-  docker:
+  tethys-docker:
     name: Tethys Docker (${{ matrix.platform }})
-    needs: test
+    needs: tethys-tests
     if:
       contains('
         refs/heads/master
@@ -105,9 +105,9 @@ jobs:
         run: |
           echo "Uploading is skipped for pull requests."
 
-  conda:
+  tethys-conda:
     name: Tethys Conda (${{ matrix.platform }})
-    needs: test
+    needs: tethys-tests
     if:
       contains('
       refs/heads/master
