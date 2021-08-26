@@ -173,7 +173,7 @@ jobs:
           conda activate tethys;
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # Upload Conda No Pull Request With Tag
-      - name: Upload Conda No Tag
+      - name: Upload Conda With Tag
         if: ${{ github.event_name != 'pull_request' }} && startsWith(github.ref, 'refs/tags/')
         run: |
           . ~/miniconda/etc/profile.d/conda.sh;
