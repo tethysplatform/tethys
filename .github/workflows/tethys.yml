@@ -126,7 +126,7 @@ jobs:
       # Setup Tethys
       - name: Setup Tethys
         run: |
-          cd ../
+          cd ..
           bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
@@ -145,6 +145,7 @@ jobs:
       - name: Generate Conda Recipe
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}  # No Tag
         run: |
+          cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           tethys gen metayaml --overwrite;
@@ -152,23 +153,27 @@ jobs:
       - name: Generate Conda Recipe
         if: startsWith(github.ref, 'refs/tags/')  # No Tag
         run: |
+          cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           tethys gen metayaml -p minor --overwrite;
       # Show Tethys Meta
       - name: Show Tethys Meta
         run: |
-          cat ./conda.recipe/meta.yaml
+          cd ..
+          cat ./tethys/conda.recipe/meta.yaml
       # Build Conda
       - name: Build Conda
         run: |
+          cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          conda build -c tethysplatform -c conda-forge ./conda.recipe
+          conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
         if: ${{ github.event_name != 'pull_request' }} && ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: |
+          cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
@@ -176,6 +181,7 @@ jobs:
       - name: Upload Conda With Tag
         if: ${{ github.event_name != 'pull_request' }} && startsWith(github.ref, 'refs/tags/')
         run: |
+          cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
