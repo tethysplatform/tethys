@@ -10,7 +10,7 @@ env:
   CONDA_BUILD_PIN_LEVEL: minor
 
 jobs:
-  tethys-test:
+  tethys_test:
     if: !startsWith(github.ref, 'refs/tags/')
     runs-on: ${{ matrix.platform }}
     name: Tethys Test (${{ matrix.platform }})
@@ -51,9 +51,9 @@ jobs:
             conda activate tethys
             coveralls
 
-  tethys-docker:
+  tethys_docker:
     name: Tethys Docker (${{ matrix.platform }})
-    needs: tethys-test
+    needs: tethys_test
     if:
       contains('
         refs/heads/master
@@ -104,9 +104,9 @@ jobs:
         run: |
           echo "Uploading is skipped for pull requests."
 
-  tethys-conda:
+  tethys_conda:
     name: Tethys Conda (${{ matrix.platform }})
-    needs: tethys-test
+    needs: tethys_test
     if:
       contains('
       refs/heads/master
