@@ -59,7 +59,7 @@ jobs:
       contains('
         refs/heads/master
         refs/heads/release
-      ', github.ref) || ${{ startsWith(github.ref, 'refs/tags/') }}
+      ', github.ref) || ${{ startsWith(github.ref, 'refs/tags/') }} == "True"
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -94,7 +94,7 @@ jobs:
           docker push ${{ secrets.DOCKER_UPLOAD_URL }}:master;
       # Upload docker if pull request and tag
       - name: Upload Docker With Tag
-        if: ${{ github.event_name != 'pull_request' }} && ${{ startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ github.event_name != 'pull_request' }} && ${{ startsWith(github.ref, 'refs/tags/') }} == "True"
         run: |
           echo "Pushing to docker registry";
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
@@ -151,7 +151,7 @@ jobs:
           tethys gen metayaml --overwrite;
       # Generate Conda Recipe With Constrained Dependencies
       - name: Generate Conda Recipe
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}  # No Tag
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}  # Tag
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
@@ -171,7 +171,7 @@ jobs:
           conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
-        if: ${{ github.event_name != 'pull_request' }} && ${{ !startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ github.event_name != 'pull_request' }} && ${{ !startsWith(github.ref, 'refs/tags/') }} == "False"
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
@@ -179,7 +179,7 @@ jobs:
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/aquaveo-tethys-platform*.tar.bz2 --force;
       # Upload Conda No Pull Request With Tag
       - name: Upload Conda With Tag
-        if: ${{ github.event_name != 'pull_request' }} && ${{ startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ github.event_name != 'pull_request' }} && ${{ startsWith(github.ref, 'refs/tags/') }} == "True"
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
