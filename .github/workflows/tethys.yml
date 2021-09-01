@@ -171,7 +171,7 @@ jobs:
           conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') != "true" }} && ${{ github.event_name != 'pull_request' }}
+        if: ${{ startsWith(github.ref, 'refs/tags/') }} != "true"  && ${{ github.event_name != 'pull_request' }}
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
@@ -179,7 +179,7 @@ jobs:
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/aquaveo-tethys-platform*.tar.bz2 --force;
       # Upload Conda No Pull Request With Tag
       - name: Upload Conda With Tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') == "true" }} && ${{ github.event_name != 'pull_request' }}
+        if: ${{ startsWith(github.ref, 'refs/tags/') }} == "true" && ${{ github.event_name != 'pull_request' }}
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
