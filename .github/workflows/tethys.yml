@@ -1,8 +1,12 @@
 # Tethys Main CI
 name: Tethys-CI
 
+# Run on pushes and pull requests but not tags.
 on:
   push:
+    branches:
+      - '*'
+  pull_requests:
     branches:
       - '*'
 
@@ -13,7 +17,6 @@ jobs:
 
   tethys-tests:
     name: Tethys Test (${{ matrix.platform }})
-    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -59,7 +62,7 @@ jobs:
       contains('
         refs/heads/master
         refs/heads/release
-      ', github.ref) || ${{ startsWith(github.ref, 'refs/tags/') }} == "True"
+      ', github.ref)
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -70,35 +73,18 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
-      # Get Tag Name (ONLY RUNS ON TAGS)
-      - name: Get Tag
-        id: gitTag
-        uses: little-core-labs/get-git-tag@v3.0.2
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
       # Build the docker for no tag
       - name: Build Without Tag
         run: |
           docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:master .;
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-      # Build the docker for tag
-      - name: Build With Tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: |
-          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:latest -t ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.gitTag.outputs.tag }} .;
       # Upload docker if pull request no tag
       - name: Upload Docker No Tag
-        if: ${{ github.event_name != 'pull_request' }} && ${{ !startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           echo "Pushing to docker registry";
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
           docker push ${{ secrets.DOCKER_UPLOAD_URL }}:master;
-      # Upload docker if pull request and tag
-      - name: Upload Docker With Tag
-        if: ${{ github.event_name != 'pull_request' }} && ${{ startsWith(github.ref, 'refs/tags/') }} == "True"
-        run: |
-          echo "Pushing to docker registry";
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.gitTag.outputs.tag }};
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
@@ -112,7 +98,7 @@ jobs:
       contains('
       refs/heads/master
       refs/heads/release
-      ', github.ref) || ${{ startsWith(github.ref, 'refs/tags/') }}
+      ', github.ref)
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -149,14 +135,6 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           tethys gen metayaml --overwrite;
-      # Generate Conda Recipe With Constrained Dependencies
-      - name: Generate Conda Recipe
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}  # Tag
-        run: |
-          cd ..
-          . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
-          tethys gen metayaml -p minor --overwrite;
       # Show Tethys Meta
       - name: Show Tethys Meta
         run: |
@@ -177,14 +155,6 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/aquaveo-tethys-platform*.tar.bz2 --force;
-      # Upload Conda No Pull Request With Tag
-      - name: Upload Conda With Tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') == "true" }} && ${{ github.event_name != 'pull_request' }}
-        run: |
-          cd ..
-          . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }} upload -u aquaveo $CONDA_BLD_PATH/noarch/aquaveo-tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
