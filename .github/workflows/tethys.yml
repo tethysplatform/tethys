@@ -147,6 +147,22 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+      
+      # Find .tar.bz2
+      - name: Fetch action
+        id: pl
+        uses: Rishabh510/Path-lister-action@master
+        with:
+          path: "~/conda-bld/"
+          type: ".tar.bz2"
+
+      - name: Output results
+        run: |
+          echo "Found ${{ steps.pl.outputs.path_count }} file(s) with this extension:"
+          for i in ${{ steps.pl.outputs.paths }}; do
+          echo $i
+          done
+      
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
         if: ${{ github.event_name != 'pull_request' }}
