@@ -153,7 +153,7 @@ jobs:
         id: pl
         uses: Rishabh510/Path-lister-action@master
         with:
-          path: "~/conda-bld/"
+          path: "~/"
           type: ".tar.bz2"
 
       - name: Output results
