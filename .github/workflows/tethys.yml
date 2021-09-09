@@ -153,6 +153,8 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
+          cd $CONDA_BLD_PATH;
+          ls;
           conda activate tethys;
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
