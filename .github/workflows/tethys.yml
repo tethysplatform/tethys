@@ -153,8 +153,8 @@ jobs:
         id: pl
         uses: Rishabh510/Path-lister-action@master
         with:
-          path: "."
-          type: ".tar.bz2"
+          path: "/github/"
+          type: ".bz2"
 
       - name: Output results
         run: |
@@ -167,8 +167,7 @@ jobs:
       - name: Upload Conda No Tag
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          cd ..;
-          ls;
+          cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
