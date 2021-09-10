@@ -126,7 +126,7 @@ jobs:
       - name: Set Conda Build Path
         uses: allenevans/set-env@v2.0.0
         with:
-          CONDA_BLD_PATH: '~/conda-bld'
+          CONDA_BLD_PATH: '/home/runner/conda-bld'
       # Generate Conda Recipe Without Constrained Dependencies
       - name: Generate Conda Recipe
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}  # No Tag
@@ -147,22 +147,6 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
-      
-      # Find .tar.bz2
-      - name: Fetch action
-        id: pl
-        uses: Rishabh510/Path-lister-action@master
-        with:
-          path: "/github/"
-          type: ".bz2"
-
-      - name: Output results
-        run: |
-          echo "Found ${{ steps.pl.outputs.path_count }} file(s) with this extension:"
-          for i in ${{ steps.pl.outputs.paths }}; do
-          echo $i
-          done
-      
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
         if: ${{ github.event_name != 'pull_request' }}
@@ -170,7 +154,7 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev /home/runner/conda-bld/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
