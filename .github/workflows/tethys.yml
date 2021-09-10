@@ -170,7 +170,7 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev /home/runner/conda-bld/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
