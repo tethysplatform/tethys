@@ -13,7 +13,6 @@ env:
 jobs:
   tethys-docker:
     name: Tethys Docker (${{ matrix.platform }})
-    needs: tethys-tests
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -43,7 +42,6 @@ jobs:
 
   tethys-conda:
     name: Tethys Conda (${{ matrix.platform }})
-    needs: tethys-tests
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
