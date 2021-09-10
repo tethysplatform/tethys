@@ -95,4 +95,4 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo $CONDA_BLD_PATH/noarch/aquaveo-tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
