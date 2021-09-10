@@ -71,7 +71,7 @@ jobs:
       - name: Set Conda Build Path
         uses: allenevans/set-env@v2.0.0
         with:
-          CONDA_BLD_PATH: '~/conda-bld'
+          CONDA_BLD_PATH: '/home/runner/conda-bld'
       # Generate Conda Recipe With Constrained Dependencies
       - name: Generate Conda Recipe
         run: |
