@@ -77,7 +77,6 @@ jobs:
       - name: Build Without Tag
         run: |
           docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:master .;
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
       # Upload docker if pull request no tag
       - name: Upload Docker No Tag
         if: ${{ github.event_name != 'pull_request' }}
@@ -129,7 +128,6 @@ jobs:
           CONDA_BLD_PATH: '/home/runner/conda-bld'
       # Generate Conda Recipe Without Constrained Dependencies
       - name: Generate Conda Recipe
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}  # No Tag
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
@@ -154,6 +152,7 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
+          ls ~/conda-bld/noarch
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
