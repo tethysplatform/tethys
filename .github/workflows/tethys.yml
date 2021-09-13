@@ -1,0 +1,161 @@
+# Tethys Main CI
+name: Tethys-CI
+
+# Run on pushes and pull requests but not tags.
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+env:
+  CONDA_BUILD_PIN_LEVEL: minor
+
+jobs:
+
+  tests:
+    name: Tests (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+        python-version: [3.7]
+    steps:
+      # Checkout the source
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      # Install Tethys
+      - name: Install Tethys
+        run: |
+          cd ..
+          bash ./tethys/scripts/install_tethys.sh -h
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
+      # Setup Tethys and Conda
+      - name: Setup Tethys and Conda
+        run: |
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          conda list
+          tethys db start
+          pip install coveralls
+      # Test Tethys
+      - name: Test Tethys
+        run: |
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          tethys test -c -u -v 2
+      # Generate Coverage Report
+      - name: Genearte Coverage Report
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+            . ~/miniconda/etc/profile.d/conda.sh
+            conda activate tethys
+            coveralls
+
+  docker-build:
+    name: Docker Build (${{ matrix.platform }})
+    needs: tests
+    if:
+      contains('
+        refs/heads/master
+        refs/heads/release
+      ', github.ref)
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: [3.7]
+    steps:
+      # Checkout the source
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      # Build the docker for no tag
+      - name: Build Without Tag
+        run: |
+          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:master .;
+      # Upload docker if pull request no tag
+      - name: Upload Docker No Tag
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          echo "Pushing to docker registry";
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
+          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:master;
+      # No Upload if Pull Request
+      - name: No Upload
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "Uploading is skipped for pull requests."
+
+  conda-build:
+    name: Conda Build (${{ matrix.platform }})
+    needs: tests
+    if:
+      contains('
+      refs/heads/master
+      refs/heads/release
+      ', github.ref)
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: [3.7]
+    steps:
+      # Checkout the source
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      # Setup Tethys
+      - name: Setup Tethys
+        run: |
+          cd ..
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          hash -r
+          conda config --set always_yes yes --set changeps1 no
+          conda update -q conda
+          conda install conda-build anaconda-client
+          conda config --set anaconda_upload no
+          mkdir -p ~/conda-bld
+      # Export Conda Build Path
+      - name: Set Conda Build Path
+        uses: allenevans/set-env@v2.0.0
+        with:
+          CONDA_BLD_PATH: '/home/runner/conda-bld'
+      # Generate Conda Recipe Without Constrained Dependencies
+      - name: Generate Conda Recipe
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          tethys gen metayaml --overwrite;
+      # Show Tethys Meta
+      - name: Show Tethys Meta
+        run: |
+          cd ..
+          cat ./tethys/conda.recipe/meta.yaml
+      # Build Conda
+      - name: Build Conda
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+      # Upload Conda No Pull Request No Tag
+      - name: Upload Conda No Tag
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          ls ~/conda-bld/noarch
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+      # No Upload if Pull Request
+      - name: No Upload
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "Uploading is skipped for pull requests."
