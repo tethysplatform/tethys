@@ -13,7 +13,7 @@ source:
 
 build:
   number: 0
-  string: {% if GIT_DESCRIBE_NUMBER|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
+  string: {% if environ.get('GIT_DESCRIBE_NUMBER', 0)|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
   noarch: python
   script:  python setup.py install --single-version-externally-managed --record=record.txt
   entry_points:
