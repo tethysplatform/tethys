@@ -57,7 +57,7 @@ jobs:
 
   docker-build:
     name: Docker Build (${{ matrix.platform }})
-    needs: tethys-tests
+    needs: tests
     if:
       contains('
         refs/heads/master
@@ -92,7 +92,7 @@ jobs:
 
   conda-build:
     name: Conda Build (${{ matrix.platform }})
-    needs: tethys-tests
+    needs: tests
     if:
       contains('
       refs/heads/master
