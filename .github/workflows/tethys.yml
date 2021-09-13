@@ -15,8 +15,8 @@ env:
 
 jobs:
 
-  tethys-tests:
-    name: Tethys Test (${{ matrix.platform }})
+  tests:
+    name: Tests (${{ matrix.platform }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -55,8 +55,8 @@ jobs:
             conda activate tethys
             coveralls
 
-  tethys-docker:
-    name: Tethys Docker (${{ matrix.platform }})
+  docker-build:
+    name: Docker Build (${{ matrix.platform }})
     needs: tethys-tests
     if:
       contains('
@@ -90,8 +90,8 @@ jobs:
         run: |
           echo "Uploading is skipped for pull requests."
 
-  tethys-conda:
-    name: Tethys Conda (${{ matrix.platform }})
+  conda-build:
+    name: Conda Build (${{ matrix.platform }})
     needs: tethys-tests
     if:
       contains('
@@ -153,7 +153,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           ls ~/conda-bld/noarch
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u aquaveo -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
