@@ -1493,23 +1493,23 @@ def cesium_map_view(request, type):
                     'mapStyle': 'Aerial',
                 }],
             }}},
-            models={
-                'Cesium_Airplane': {
-                    'model': {
+            models=[
+                {'options':
+                    {'model': {
                         'uri': object1,
                         'show': True,
                         'minimumPixelSize': 128,
                         'maximumScale': 20000,
-                        'shadows': 'enabled',
+                        'shadows': 'enabled'},
+                        'name': 'Cesium_Airplane',
+                        'orientation': {
+                            'Cesium.Transforms.headingPitchRollQuaternion':
+                                [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                                 {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
+                        'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
                     },
-                    'name': object1,
-                    'orientation': {
-                        'Cesium.Transforms.headingPitchRollQuaternion':
-                            [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
-                             {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
-                    'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
-                },
-            },
+                }
+            ],
             clock={'clock': {'Cesium.Clock': {
                 'startTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T00:00:00Z']},
                 'stopTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T24:00:00Z']},
@@ -1521,7 +1521,7 @@ def cesium_map_view(request, type):
             }}}
         )
 
-    # 7. Multiple Models
+    # 7. Multiple Models with data
     if type == 'model2':
         object1 = '/static/tethys_gizmos/cesium_models/CesiumAir/Cesium_Air.glb'
         object2 = '/static/tethys_gizmos/cesium_models/CesiumBalloon/CesiumBalloon.glb'
@@ -1541,43 +1541,48 @@ def cesium_map_view(request, type):
                     'mapStyle': 'Aerial',
                 }]}
             }},
-            models={
-                'Cesium_Airplane': {
-                    'model': {
+            models=[
+                {'options':
+                    {'model': {
                         'uri': object1,
                         'show': True,
                         'minimumPixelSize': 128,
                         'maximumScale': 20000,
-                        'shadows': 'enabled',
+                        'shadows': 'enabled'},
+                        'name': 'Cesium_Airplane',
+                        'orientation': {
+                            'Cesium.Transforms.headingPitchRollQuaternion':
+                                [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                                 {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
+                        'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
                     },
-                    'name': object1,
-                    'orientation': {'Cesium.Transforms.headingPitchRollQuaternion': [
-                            {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
-                            {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}
-                        ]},
-                    'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                'data': {
+                    'layer_id': "cesium_airplane_id",
+                    'layer_name': "Cesium_Airplane",
+                    'popup_title': "Cesium Airplane",
+                }
                 },
-                'Cesium_Ballon': {
-                    'model': {
+                {'options':
+                    {'model': {
                         'uri': object2,
                         'show': True,
                         'minimumPixelSize': 128,
                         'maximumScale': 20000,
-                        'shadows': 'enabled',
+                        'shadows': 'enabled'},
+                        'name': 'Cesium_Ballon',
+                        'orientation': {
+                            'Cesium.Transforms.headingPitchRollQuaternion':
+                                [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                                 {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
+                        'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
                     },
-                    'name': object2,
-                    'orientation': {
-                        'Cesium.Transforms.headingPitchRollQuaternion': [
-                            {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
-                            {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}
-                        ]
-                    },
-                    'position': {
-                        'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]
-                    },
-
-                },
-            },
+                    'data': {
+                        'layer_id': "cesium_ballon_id",
+                        'layer_name': "Cesium_Ballon",
+                        'popup_title': "Cesium Ballon",
+                    }
+                }
+            ],
         )
 
     submitted_geometry = request.POST.get('geometry', None)

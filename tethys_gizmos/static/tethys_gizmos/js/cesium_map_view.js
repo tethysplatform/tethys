@@ -41,7 +41,7 @@ var CESIUM_MAP_VIEW = (function() {
     // Utility Methods
     var is_defined, is_empty_or_undefined, in_array, string_to_object, string_to_function, string_w_arg_to_function,
         build_options, build_options_string, need_to_run, cesium_options, json_parser, clear_data,
-        cesium_time_callback;
+        cesium_time_callback, guid_generator;
 
 
  	/************************************************************************
@@ -299,9 +299,9 @@ var CESIUM_MAP_VIEW = (function() {
                                             orientation : orientation,
                                             model : model,
                                          });
-        entity['layer_name'] = model_data.layer_name
-        entity['layer_variable'] = model_data.layer_variable
-        entity['layer_id'] = model_data.layer_id
+        entity['layer_name'] = model_data?.layer_name || guid_generator()
+        entity['layer_variable'] = model_data?.layer_variable || guid_generator()
+        entity['layer_id'] = model_data?.layer_id || guid_generator()
     }
 
     // Set Cesium primitives
@@ -851,6 +851,13 @@ var CESIUM_MAP_VIEW = (function() {
         return {
             time: Cesium.JulianDate.toIso8601(interval.start)
         };
+    }
+
+    guid_generator = function () {
+        var S4 = function() {
+           return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+        };
+        return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
     }
 
 	/************************************************************************
