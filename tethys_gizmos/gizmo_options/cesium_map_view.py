@@ -332,15 +332,16 @@ class CesiumMapView(TethysGizmoOptions):
             ]
 
         **Primitives**
-        
+
         Support Cesium Primitive such as Cesium Ion
-        
-        You can load a Cessium Ion using the following pattern:  
-        
-        primitives = [{'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 512295}}},
-                      {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 458785}}}
-                      ]
-                      
+
+        You can load a Cessium Ion using the following pattern:
+
+        ::
+
+            primitives = [{'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 512295}}},
+                          {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 458785}}}
+                          ]
         **Terrain**
 
         Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
