@@ -275,9 +275,8 @@ var CESIUM_MAP_VIEW = (function() {
 
         for (let model of m_models) {
             var model_option;
-            // if model has options attribute, it should come from MVLayer.
-            if (model.options) {
-                // options is where the model data is store.
+            if (model.source && model.source === 'CesiumModel') {
+                // The options attribute is where the Cesium model definition is stored in MVLayer objects.
                 model_option = cesium_options(model.options);
             }
             else {
@@ -307,9 +306,7 @@ var CESIUM_MAP_VIEW = (function() {
                                             orientation : orientation,
                                             model : model,
                                          });
-        entity['layer_name'] = model_data?.layer_name || guid_generator()
-        entity['layer_variable'] = model_data?.layer_variable || guid_generator()
-        entity['layer_id'] = model_data?.layer_id || guid_generator()
+        entity['tethys_data'] = model_data;
     }
 
     // Set Cesium primitives
@@ -323,8 +320,8 @@ var CESIUM_MAP_VIEW = (function() {
         }
         for (let primitive of m_primitives) {
             let primitive_option;
-            // Cesium Data is stored in options attribute for MV Layer
-            if (primitive.options) {
+            if (primitive.source && primitive.source === "CesiumPrimitive") {
+                // The options attribute is where the Cesium Primitive definition is stored in MVLayer objects.
                 primitive_option = primitive.options
             }
             else {
@@ -335,10 +332,7 @@ var CESIUM_MAP_VIEW = (function() {
             var cesium_primitive = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(primitive_option)[0])));
 
             // Other data is stored in data attribute
-            let primitive_data = primitive.data
-            cesium_primitive['layer_name'] = primitive_data?.layer_name || guid_generator()
-            cesium_primitive['layer_variable'] = primitive_data?.layer_variable || guid_generator()
-            cesium_primitive['layer_id'] = primitive_data?.layer_id || guid_generator()
+            cesium_primitive['tethys_data'] = primitive.data;
         }
     }
 

@@ -1488,7 +1488,7 @@ def cesium_map_view(request, type):
             },
             primitives=[
                 MVLayer(
-                    source='Cesium3D',
+                    source='CesiumPrimitive',
                     legend_title='Cesium 3D Buildings',
                     options={'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}},
                     data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1}
@@ -1503,7 +1503,7 @@ def cesium_map_view(request, type):
             }}},
             models=[
                 MVLayer(
-                    source='CesiumObject',
+                    source='CesiumModel',
                     legend_title='Cesium Model',
                     options={'model': {'uri': object1,
                                        'show': True,
@@ -1573,7 +1573,7 @@ def cesium_map_view(request, type):
                     'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
                 }},
                 MVLayer(
-                    source='Cesium',
+                    source='CesiumModel',
                     legend_title='Cesium Ballon',
                     options={'model': {
                         'uri': object2,

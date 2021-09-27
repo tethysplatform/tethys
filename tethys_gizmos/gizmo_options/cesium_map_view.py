@@ -18,7 +18,7 @@ class CesiumMapView(TethysGizmoOptions):
             entities(list):: Add one or more entities to the map.
             primitives(list): Add one or more primitives to the map.
             terrain(dict): Add terrain provider to the map.
-            models(list): Add one or more 3D models to map. A list of models in a dictionary.
+            models(list): Add one or more 3D models to the map.
             clock(dict): Define custom clock options for viewer.
             height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '100%'.
             width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
@@ -342,7 +342,7 @@ class CesiumMapView(TethysGizmoOptions):
             primitives=[
                 {'Cesium_Ion_Data': {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 123}}}},
                 MVLayer(
-                    source='Cesium3D',
+                    source='CesiumPrimitive',
                     legend_title='Cesium 3D Buildings',
                     options={'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}},
                     data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1}
@@ -403,7 +403,7 @@ class CesiumMapView(TethysGizmoOptions):
                     'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
                 }},
                 MVLayer(
-                    source='Cesium',
+                    source='CesiumModel',
                     legend_title='Cesium Ballon',
                     options={'model': {
                         'uri': object2,
@@ -418,11 +418,11 @@ class CesiumMapView(TethysGizmoOptions):
                                  {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
                         'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
                      },
-                    data=
-                        {'layer_id': "cesium_ballon_id",
-                         'layer_name': "Cesium_Ballon",
-                         'popup_title': "Cesium Ballon",
-                         }
+                    data={
+                        'layer_id': "cesium_ballon_id",
+                        'layer_name': "Cesium_Ballon",
+                        'popup_title': "Cesium Ballon",
+                    }
                 ),
             ]
 
@@ -435,7 +435,7 @@ class CesiumMapView(TethysGizmoOptions):
         ::
 
             primitives = [{'Cesium_World_Terrain': {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 1}}}},
-                          MVLayer(source='Cesium3D', legend_title='Cesium 3D Buildings',
+                          MVLayer(source='CesiumPrimitive', legend_title='Cesium 3D Buildings',
                                   options={'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}},
                                   data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1})]
 
