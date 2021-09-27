@@ -1,4 +1,8 @@
 FROM continuumio/miniconda3
+###################
+# BUILD ARGUMENTS #
+###################
+ARG PYTHON_VERSION=3.*
 
 ###############
 # ENVIRONMENT #
@@ -91,7 +95,7 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
  && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
- && rm -rf /var/lib/apt/lists/*\
+ && rm -rf /var/lib/apt/lists/*
 
 # Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
@@ -99,7 +103,8 @@ RUN rm -f /etc/nginx/sites-enabled/default
 # Setup Conda Environment
 ADD environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
-RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
+RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
+ && ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
 
 ###########
 # INSTALL #
@@ -164,4 +169,3 @@ WORKDIR ${TETHYS_HOME}
 CMD bash run.sh
 HEALTHCHECK --start-period=240s \
   CMD  ps $(cat $(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')) > /dev/null; && ps $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) > /dev/null;
-
