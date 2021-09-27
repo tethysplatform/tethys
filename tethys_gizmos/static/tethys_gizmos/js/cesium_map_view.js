@@ -274,10 +274,18 @@ var CESIUM_MAP_VIEW = (function() {
         }
 
         for (let model of m_models) {
-            // options is where the model data is store.
-            let model_option = cesium_options(model.options);
+            var model_option;
+            // if model has options attribute, it should come from MVLayer.
+            if (model.options) {
+                // options is where the model data is store.
+                model_option = cesium_options(model.options);
+            }
+            else {
+            // else we will treat it as normal cesium object.
+                model_option = cesium_options(Object.values(model)[0]);
+            }
             let model_data = model.data
-            var name = model_option['name'];
+            var name = model_option.name;
             // Map shadows key
             if ('shadows' in model_option['model']) {
                 var shadow_prop = model_option['model']['shadows']
@@ -314,16 +322,23 @@ var CESIUM_MAP_VIEW = (function() {
             return;
         }
         for (let primitive of m_primitives) {
-            // Cesium Data is stored in options attribute
-            let primitive_option = primitive.options
+            let primitive_option;
+            // Cesium Data is stored in options attribute for MV Layer
+            if (primitive.options) {
+                primitive_option = primitive.options
+            }
+            else {
+                primitive_option = cesium_options(Object.values(primitive)[0]);
+            }
+
+            var method = string_to_function(Object.keys(primitive_option)[0]);
+            var cesium_primitive = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(primitive_option)[0])));
 
             // Other data is stored in data attribute
             let primitive_data = primitive.data
-            var method = string_to_function(Object.keys(primitive_option)[0]);
-            var cesium_primitive = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(primitive_option)[0])));
-            cesium_primitive['layer_name'] = primitive_data.layer_name
-            cesium_primitive['layer_variable'] = primitive_data.layer_variable
-            cesium_primitive['layer_id'] = primitive_data.layer_id
+            cesium_primitive['layer_name'] = primitive_data?.layer_name || guid_generator()
+            cesium_primitive['layer_variable'] = primitive_data?.layer_variable || guid_generator()
+            cesium_primitive['layer_id'] = primitive_data?.layer_id || guid_generator()
         }
     }
 

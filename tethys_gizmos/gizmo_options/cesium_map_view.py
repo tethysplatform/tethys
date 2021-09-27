@@ -13,12 +13,12 @@ class CesiumMapView(TethysGizmoOptions):
             cesium_ion_token(str): Cesium Ion Access Token. See: `Cesium Rest API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
             options(dict): Viewer basic options. One item in dictionary per option.
             globe(dict): Options to set on the Globe of the view.
-            view(dict): Set the initial view of the map using various methods(e.g.: flyTo, setView)
+            view(dict): Set the initial view of the map using various methods(e.g.: flyTo, setView).
             layers(list): Add one or more imagery layers to the map.
             entities(list):: Add one or more entities to the map.
-            primitives(list): Add one or more primitives to the map
+            primitives(list): Add one or more primitives to the map.
             terrain(dict): Add terrain provider to the map.
-            models(list): Add 3D model to map. A list of models in a dictionary.
+            models(list): Add one or more 3D models to map. A list of models in a dictionary.
             clock(dict): Define custom clock options for viewer.
             height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '100%'.
             width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
@@ -339,9 +339,14 @@ class CesiumMapView(TethysGizmoOptions):
 
         ::
 
-            primitives = [{'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 512295}}},
-                          {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 458785}}}
-                          ]
+            primitives=[
+                MVLayer(
+                    source='Cesium3D',
+                    legend_title='Cesium 3D Buildings',
+                    options={'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}},
+                    data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1}
+                )
+            ]
         **Terrain**
 
         Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
@@ -379,25 +384,44 @@ class CesiumMapView(TethysGizmoOptions):
             object = 'link_to.glb'
 
             models=[
-                {'options':
-                    {'model': {
+                {'Cesium_Airplane': {
+                    'model': {
                         'uri': object1,
                         'show': True,
                         'minimumPixelSize': 128,
                         'maximumScale': 20000,
+                        'shadows': 'enabled',
+                    },
+                    'name': 'Cesium Airplane',
+                    'orientation': {
+                        'Cesium.Transforms.headingPitchRollQuaternion': [
+                            {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                            {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}
+                    ]},
+                    'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                }},
+                MVLayer(
+                    source='Cesium',
+                    legend_title='Cesium Ballon',
+                    options={'model': {
+                        'uri': object2,
+                        'show': True,
+                        'minimumPixelSize': 128,
+                        'maximumScale': 20000,
                         'shadows': 'enabled'},
-                        'name': 'Cesium_Airplane',
+                        'name': 'Cesium_Ballon',
                         'orientation': {
                             'Cesium.Transforms.headingPitchRollQuaternion':
                                 [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
                                  {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
                         'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
-                    },
-                'data': {
-                    'layer_id': "cesium_airplane_id",
-                    'layer_name': "Cesium_Airplane",
-                    'popup_title': "Cesium Airplane"}
-                },
+                     },
+                    data=
+                        {'layer_id': "cesium_ballon_id",
+                         'layer_name': "Cesium_Ballon",
+                         'popup_title': "Cesium Ballon",
+                         }
+                ),
             ]
 
         **Cesium Ion Resource using Assest ID**
@@ -408,7 +432,10 @@ class CesiumMapView(TethysGizmoOptions):
 
         ::
 
-            primitives = [{'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}}]
+            primitives = [{'Cesium_World_Terrain': {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 1}}}},
+                          MVLayer(source='Cesium3D', legend_title='Cesium 3D Buildings',
+                                  options={'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}},
+                                  data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1})]
 
         **Clock**
 

@@ -1486,6 +1486,14 @@ def cesium_map_view(request, type):
                 'homeButton': True,
                 'shadows': True,
             },
+            primitives=[
+                MVLayer(
+                    source='Cesium3D',
+                    legend_title='Cesium 3D Buildings',
+                    options={'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}},
+                    data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1}
+                )
+            ],
             layers={'BingMap': {'imageryProvider': {
                 'Cesium.BingMapsImageryProvider': [{
                     'url': 'https://dev.virtualearth.net',
@@ -1494,21 +1502,25 @@ def cesium_map_view(request, type):
                 }],
             }}},
             models=[
-                {'options':
-                    {'model': {
-                        'uri': object1,
-                        'show': True,
-                        'minimumPixelSize': 128,
-                        'maximumScale': 20000,
-                        'shadows': 'enabled'},
-                        'name': 'Cesium_Airplane',
-                        'orientation': {
-                            'Cesium.Transforms.headingPitchRollQuaternion':
-                                [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
-                                 {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
-                        'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
-                     },
-                 }
+                MVLayer(
+                    source='CesiumObject',
+                    legend_title='Cesium Model',
+                    options={'model': {'uri': object1,
+                                       'show': True,
+                                       'minimumPixelSize': 128,
+                                       'maximumScale': 20000,
+                                       'shadows': 'enabled'},
+                             'name': 'Cesium_Airplane',
+                             'orientation': {
+                                 'Cesium.Transforms.headingPitchRollQuaternion':
+                                     [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                                      {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
+                             'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
+                             },
+                    data={'layer_id': "cesium_airplane_id",
+                          'layer_name': "Cesium_Airplane",
+                          'popup_title': "Cesium Airplane"}
+                )
             ],
             clock={'clock': {'Cesium.Clock': {
                 'startTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T00:00:00Z']},
@@ -1541,27 +1553,29 @@ def cesium_map_view(request, type):
                     'mapStyle': 'Aerial',
                 }]}
             }},
-            models=[{'options': {'model': {
-                'uri': object1,
-                'show': True,
-                'minimumPixelSize': 128,
-                'maximumScale': 20000,
-                'shadows': 'enabled'},
-                'name': 'Cesium_Airplane',
-                'orientation': {
-                    'Cesium.Transforms.headingPitchRollQuaternion':
-                        [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
-                         {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
-                'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
-            },
-                'data':
-                    {'layer_id': "cesium_airplane_id",
-                     'layer_name': "Cesium_Airplane",
-                     'popup_title': "Cesium Airplane",
-                     }
-            },
-                {'options':
-                    {'model': {
+            primitives=[
+                {'Cesium_OSM_Buildings': {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 96188}}}}
+            ],
+            models=[
+                {'Cesium_Airplane': {
+                    'model': {
+                        'uri': object1,
+                        'show': True,
+                        'minimumPixelSize': 128,
+                        'maximumScale': 20000,
+                        'shadows': 'enabled',
+                    },
+                    'name': 'Cesium Airplane',
+                    'orientation': {
+                        'Cesium.Transforms.headingPitchRollQuaternion': [
+                            {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                            {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
+                    'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                }},
+                MVLayer(
+                    source='Cesium',
+                    legend_title='Cesium Ballon',
+                    options={'model': {
                         'uri': object2,
                         'show': True,
                         'minimumPixelSize': 128,
@@ -1574,12 +1588,10 @@ def cesium_map_view(request, type):
                                  {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
                         'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]}
                      },
-                    'data':
-                        {'layer_id': "cesium_ballon_id",
-                         'layer_name': "Cesium_Ballon",
-                         'popup_title': "Cesium Ballon",
-                         }
-                 }
+                    data={'layer_id': "cesium_ballon_id",
+                          'layer_name': "Cesium_Ballon",
+                          'popup_title': "Cesium Ballon"}
+                ),
             ],
         )
 
