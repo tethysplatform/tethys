@@ -340,6 +340,7 @@ class CesiumMapView(TethysGizmoOptions):
         ::
 
             primitives=[
+                {'Cesium_Ion_Data': {'Cesium.Cesium3DTileset': {'url': {'Cesium.IonResource.fromAssetId': 123}}}},
                 MVLayer(
                     source='Cesium3D',
                     legend_title='Cesium 3D Buildings',
