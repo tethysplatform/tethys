@@ -348,7 +348,7 @@ class CesiumMapView(TethysGizmoOptions):
                     data={'layer_name': 'Cesium_Buildings', 'layer_variable': 'variable', 'layer_id': 1}
                 )
             ]
-            
+
         **Terrain**
 
         Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
