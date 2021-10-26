@@ -274,10 +274,17 @@ var CESIUM_MAP_VIEW = (function() {
         }
 
         for (let model of m_models) {
-            // options is where the model data is store.
-            let model_option = cesium_options(model.options);
+            var model_option;
+            if (model.source && model.source === 'CesiumModel') {
+                // The options attribute is where the Cesium model definition is stored in MVLayer objects.
+                model_option = cesium_options(model.options);
+            }
+            else {
+            // else we will treat it as normal cesium object.
+                model_option = cesium_options(Object.values(model)[0]);
+            }
             let model_data = model.data
-            var name = model_option['name'];
+            var name = model_option.name;
             // Map shadows key
             if ('shadows' in model_option['model']) {
                 var shadow_prop = model_option['model']['shadows']
@@ -299,9 +306,7 @@ var CESIUM_MAP_VIEW = (function() {
                                             orientation : orientation,
                                             model : model,
                                          });
-        entity['layer_name'] = model_data.layer_name
-        entity['layer_variable'] = model_data.layer_variable
-        entity['layer_id'] = model_data.layer_id
+        entity['tethys_data'] = model_data;
     }
 
     // Set Cesium primitives
@@ -314,16 +319,20 @@ var CESIUM_MAP_VIEW = (function() {
             return;
         }
         for (let primitive of m_primitives) {
-            // Cesium Data is stored in options attribute
-            let primitive_option = primitive.options
+            let primitive_option;
+            if (primitive.source && primitive.source === "CesiumPrimitive") {
+                // The options attribute is where the Cesium Primitive definition is stored in MVLayer objects.
+                primitive_option = primitive.options
+            }
+            else {
+                primitive_option = cesium_options(Object.values(primitive)[0]);
+            }
 
-            // Other data is stored in data attribute
-            let primitive_data = primitive.data
             var method = string_to_function(Object.keys(primitive_option)[0]);
             var cesium_primitive = m_viewer.scene.primitives.add(new method(cesium_options(Object.values(primitive_option)[0])));
-            cesium_primitive['layer_name'] = primitive_data.layer_name
-            cesium_primitive['layer_variable'] = primitive_data.layer_variable
-            cesium_primitive['layer_id'] = primitive_data.layer_id
+
+            // Other data is stored in data attribute
+            cesium_primitive['tethys_data'] = primitive.data;
         }
     }
 
