@@ -1,9 +1,14 @@
 FROM continuumio/miniconda3
+###################
+# BUILD ARGUMENTS #
+###################
+ARG PYTHON_VERSION=3.*
 
 ###############
 # ENVIRONMENT #
 ###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
+     TETHYS_LOG="/var/log/tethys" \
      TETHYS_PERSIST="/var/lib/tethys_persist" \
      TETHYS_APPS_ROOT="${TETHYS_HOME}/apps" \
      TETHYS_PORT=8000 \
@@ -91,7 +96,7 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
  && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
- && rm -rf /var/lib/apt/lists/*\
+ && rm -rf /var/lib/apt/lists/*
 
 # Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
@@ -99,14 +104,21 @@ RUN rm -f /etc/nginx/sites-enabled/default
 # Setup Conda Environment
 ADD environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
-RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
+RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
+ && ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
 
 ###########
 # INSTALL #
 ###########
+# Make dirs
+RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
 
-#Setup Nginx User:
-RUN groupadd www;useradd -r -u 1011 -g www www;sed -i 's/^user.*/user www www;/' /etc/nginx/nginx.conf;
+# Setup www user, run supervisor and nginx processes as www user
+RUN groupadd www \
+  ; useradd -r -u 1011 -g www www \
+  ; sed -i 's/^user.*/user www www;/' /etc/nginx/nginx.conf \
+  ; sed -i "/^\[supervisord\]$/a user=www" /etc/supervisor/supervisord.conf \
+  ; chown -R www: ${TETHYS_LOG} /run /var/log/supervisor /var/log/nginx /var/lib/nginx
 
 # ADD files from repo
 ADD --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
@@ -130,7 +142,6 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop'
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen portal_config'
-RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
 # Install channel-redis
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
@@ -164,4 +175,3 @@ WORKDIR ${TETHYS_HOME}
 CMD bash run.sh
 HEALTHCHECK --start-period=240s \
   CMD  ps $(cat $(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')) > /dev/null; && ps $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) > /dev/null;
-
