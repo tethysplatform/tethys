@@ -874,9 +874,10 @@ var CESIUM_MAP_VIEW = (function() {
 	 */
 
 	public_interface = {
-        getMap: function() {
-            return m_viewer;
-        },
+		getMap: function() {
+		    return m_viewer;
+		},
+		reInitializeMap: cesium_initialize_all,
 	};
 
 	/************************************************************************
