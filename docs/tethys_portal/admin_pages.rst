@@ -2,7 +2,7 @@
 Administrator Pages
 *******************
 
-**Last Updated:** December 2018
+**Last Updated:** October 2021
 
 Tethys Portal includes administration pages that can be used to manage the website (see Figure 1). The administration dashboard is only available to administrator users (staff users). You should have created a default administrator user when you installed Tethys Platform. If you are logged in as an administrator, you will be able to access the administrator dashboard by selecting the "Site Admin" option from the user drop down menu in the top right-hand corner of the page (when you are not in an app).
 
@@ -48,45 +48,64 @@ Assign App Permission Groups
 
 To assign an app permission group to a user, select the desired user and locate the ``Groups`` dialog under the ``Permissions`` heading of the ``Change User`` page. All app permission groups will appear in the ``Available Groups`` list box. Assigning the permission group is done by moving the permission group to the ``Chosen Groups`` list box. Although the permissions may also appear in the ``User Permissions`` list box below, they cannot be properly assigned in the ``Change User`` dialog.
 
-Assign App Permissions
-----------------------
+Assign App Access Permissions
+-----------------------------
 
-There are two ways to assign app permissions to users and groups. The first one is using the ``object permission`` button from the ``Change Tethys App`` page of each individual installed app. The second one is to using the ``Change Group`` page from the ``Group`` section of the administrator dashboard. The second method is recommended over the first one when working with app permissions at the group level because it offers a more responsive interface and it facilitates working with multiple permissions from different apps and groups at the same time. Both methods are described below.
+Administrators of Tethys Portal can control access to each app in the portal. However, this feature is disabled by default. To enable app access control set the following setting in the ``portal_config.yaml``:
 
-To assign a singular app permission to a user using the ``Change Tethys App`` page, go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 4). On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button (see Figure 5). The same method can we used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page.
+```yaml
+settings:
+  TETHYS_PORTAL_CONFIG:
+    ENABLE_RESTRICTED_APP_ACCESS: True
+```
 
-.. figure:: ../images/tethys_portal/tethys_portal_assign_perm1.png
-   :width: 900px
+.. caution::
 
-**Figure 4.** Object Permissions button.
+    The effect of the ``ENABLE_RESTRICTED_APP_ACCESS`` setting is negated if ``ENABLE_OPEN_PORTAL`` is also set to `True`.
 
-.. figure:: ../images/tethys_portal/tethys_portal_assign_perm2.png
-   :width: 900px
+There are two ways to assign app permissions to users and groups. The first method is to use the ``Change Group`` page from the ``Group`` section of the administrator dashboard. The second method is using the ``object permission`` button from the ``Change Tethys App`` page of each individual installed app. The first method is recommended over the second one when working with app permissions at the group level because it offers a more responsive interface and it facilitates working with multiple permissions from different apps and groups at the same time. Both methods are described below.
 
-**Figure 5.** Object Permissions page.
-
-Previously added App permissions can also be edited using this page.
-
-.. figure:: ../images/tethys_portal/tethys_portal_assign_perm3.png
-   :width: 900px
-
-**Figure 6.** Link to edit Object Permissions.
+Change Group Method (Recommended)
++++++++++++++++++++++++++++++++++
 
 To assign app permissions to a user using the ``Change Group`` method, go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. Select the link with the group name from the list. On the ``Change Group`` page you can assign a group permissions to access a specific app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box. Once an app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any. Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated to the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. The ``Change Group`` form then needs to be saved for changes to take effect.
 
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm4.png
    :width: 900px
 
-**Figure 7.** Change Group - Add app access.
+**Figure 4.** Change Group - Add app access.
 
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm5.png
    :width: 900px
 
-**Figure 8.** Change Group - Add permissions from available permissions or groups.
+**Figure 5.** Change Group - Add permissions from available permissions or groups.
 
 .. note::
 
     Since assigning the individual app permissions one by one can be a cumbersome process, we highly recommend that you use the ``Change Group`` page when working with multiple app permissions.
+
+Object Permissions Method
++++++++++++++++++++++++++
+
+To assign a singular app permission to a user using the ``Change Tethys App`` page, go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 4). On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button (see Figure 5). The same method can be used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm1.png
+   :width: 900px
+
+**Figure 6.** Object Permissions button.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm2.png
+   :width: 900px
+
+**Figure 7.** Object Permissions page.
+
+Previously added App permissions can also be edited using this page.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm3.png
+   :width: 900px
+
+**Figure 8.** Link to edit Object Permissions.
+
 
 Anonymous User
 --------------
