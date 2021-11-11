@@ -6,7 +6,7 @@ Manual Production Installation
 
 **Last Updated:** Nov 2021
 
-The following guide can be used to manually install Tethys Platform on a production server.
+The following guide can be used to manually install Tethys Platform on a production server. If you have not performed a manual installation before, we recommend going through the process using a virtual machine on your computer first before attempting to do the installation on the production server.
 
 .. toctree::
     :maxdepth: 2
