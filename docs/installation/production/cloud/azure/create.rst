@@ -182,4 +182,4 @@ Use the following resources to learn more about creating Virtual Machines on Mic
 What's Next?
 ============
 
-Congratulations! You have a Tethys Portal running in Azure. In the next tutorial you will learn how connect to the VM and configure and customize the Tethys Portal.
+Congratulations! You have a Tethys Portal running in Azure. In the next tutorial you will learn how connect to the VM and learn about what is installed on it.
