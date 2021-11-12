@@ -281,6 +281,7 @@ Additional Resources
 * `Psql Command Documentation <https://www.postgresql.org/docs/12/app-psql.html>`_
 * `PostgreSQL Primer for Busy People <https://zaiste.net/posts/postgresql-primer-for-busy-people/>`_
 * `Understanding and Using Systemd <https://www.linux.com/training-tutorials/understanding-and-using-systemd/>`_
+* `xkpasswd <https://xkpasswd.net/s/>`_
 
 What's Next?
 ============
