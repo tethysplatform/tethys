@@ -11,20 +11,12 @@ Tethys Portal provides a mechanism for resetting forgotten passwords that requir
 Third-Party Email Services
 ==========================
 
-If your organization doesn't have an existing email service that you can use, we recommend using a 3rd-party email relay service to enable email capabilities on your Tethys Portal. There are many regulations regarding email that make it much more difficult to deliver email from your own email server without it going straight to the spam folder. Most 3rd-party services take care of all the legal obstacles and they often have a free tier. We don't endorse one service over another, but here are a few services we found with a quick internet search:
-
-* `SocketLabs <https://www.socketlabs.com/email-relay/>`_
-* `SMTP <https://www.smtp.com/>`_
-* `SendGrid <https://sendgrid.com/solutions/email-api/smtp-service/>`_
-* `Mailjet <https://www.mailjet.com/feature/smtp-relay/>`_
-* `Mailgun <https://www.mailgun.com/smtp/>`_
-
-Additionally, the following article contains about ten more that you should consider using: `<https://www.emailvendorselection.com/smtp-relay-deliverability/>`_
+If your organization doesn't have an existing email service that you can use, we recommend using a third party email relay service to enable email capabilities on your Tethys Portal. There are many regulations regarding email that make it much more difficult to deliver email from your own email server without it going straight to the spam folder. Most email relay services take care of the legal obstacles and many of them provide a free tier. An internet search for "email relay service" will yield many options: `Google: email relay service <https://www.google.com/search?q=email+relay+service>`_.
 
 Example with SendGrid
 =====================
 
-The following instructions discuss how to setup emailing capabilities with SendGrid as an example. Setting up email capabilities with other services will be similar.
+Tethys Platform does not endorse one provider over another, however it is helpful to see a concrete example. The following instructions discuss how to setup emailing capabilities with SendGrid as an example. Setting up email capabilities with other services will be similar.
 
 1. Sign up for SendGrid Account
 -------------------------------
@@ -49,7 +41,11 @@ After logging in perform the following steps to create an SMTP relay key:
 4. Choose **SMTP Relay**.
 5. Provide a name for the key.
 6. Press **Create Key**.
-7. Copy the API key and save it to a safe location (Important: you will not be able to copy the API key later).
+7. Copy the API key and save it to a safe location.
+
+.. important::
+
+    You will not be able to copy the key later, so don't forget to save it somewhere safe.
 
 4. Set Email Settings in :file:`portal_config.yml`
 --------------------------------------------------

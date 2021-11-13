@@ -1,3 +1,5 @@
+.. _tutorial_geoserver:
+
 **************************************
 Spatial Dataset Services and GeoServer
 **************************************
