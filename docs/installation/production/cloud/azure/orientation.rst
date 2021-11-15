@@ -8,6 +8,8 @@ Orientation to Azure VM
 
 This tutorial provides an orientation to the Tethys Azure virtual machine (VM). It includes instructions for connecting to the VM, user accounts to use, descriptions of what is installed, and important directories and files.
 
+.. _azure_vm_orientation_ssh:
+
 Connect with SSH
 ================
 
