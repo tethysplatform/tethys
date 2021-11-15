@@ -19,7 +19,7 @@ Create a generic, Azure supplied, domain name as follows:
 4. Enter a **DNS name label**. This is labeled as optional, but it is actually required to enable the generic domain.
 5. Press the **Save** button to enable the domain name.
 
-.. figure:: ../../../../../images/production/azure/configure--generic-domain-name.png
+.. figure:: ../images/configure--generic-domain-name.png
     :width: 800px
     :alt: Screenshot of the domain name configuration page for an Azure VM
 

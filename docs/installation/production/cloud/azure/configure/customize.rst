@@ -10,7 +10,7 @@ Customize the theme and content of the Tethys Portal to reflect your organizatio
 
 Custom images, CSS, and JavaScript should be added to a new directory in the :file:`$TETHYS_HOME/static` directory (e.g.: :file:`$TETHYS_HOME/static/custom_theme`. These can then be referenced in the settings via the name of the new directory (e.g.: :file:`custom_theme/images/custom_logo.png`.
 
-.. figure:: ../../../../../images/production/azure/configure--custom-theme.png
+.. figure:: ../images/configure--custom-theme.png
     :width: 800px
     :alt: Tethys Portal with a custom theme.
 

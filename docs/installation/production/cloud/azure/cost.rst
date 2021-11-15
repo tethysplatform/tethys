@@ -11,6 +11,12 @@ Azure provides a helpful calculator to help prospective users estimate the month
 1. Navigate to Azure Pricing Calculator
 =======================================
 
+.. figure:: images/cost--pricing-calculator.png
+    :width: 800px
+    :alt: Screenshot of Azure Pricing Calculator
+
+    **Figure 1.** Screenshot of Azure Pricing Calculator.
+
 2. Select Products
 ==================
 

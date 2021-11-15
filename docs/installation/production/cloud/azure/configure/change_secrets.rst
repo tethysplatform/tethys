@@ -101,7 +101,7 @@ Create a new portal admin account and delete the default account as follows:
 
 6. Select **Delete selected users** from the **Actions** dropdown and press the **Go** button.
 
-.. figure:: ../../../../../images/production/azure/configure--delete-admin.png
+.. figure:: ../images/configure--delete-admin.png
     :width: 800px
     :alt: Delete the default admin user account
 

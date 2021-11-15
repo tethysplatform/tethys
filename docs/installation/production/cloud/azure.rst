@@ -8,7 +8,7 @@ Microsoft Azure VM Image
 
 `Microsoft Azure <https://azure.microsoft.com/>`_ is a commercial cloud service that provides the full spectrum of cloud computing services, including web hosting services. A virtual machine image was created for Azure that has Tethys Platform installed. Using this image, you can create a virtual machine running Tethys Platform on Azure in a matter of minutes. The Tethys Platform image is free to use, but you will need to pay for the virtual machine services.
 
-.. figure:: ../../../images/production/azure/create--virtual-machine-overview.png
+.. figure:: azure/images/create--virtual-machine-overview.png
     :width: 800px
     :align: left
 

@@ -18,7 +18,7 @@ To connect to the Azure virtual machine via SSH, do the following:
 3. Click on **Connect** from the tools at the top of the page and select SSH.
 4. Follow the instructions to connect to the virtual machine via SSH.
 
-.. figure:: ../../../../images/production/azure/connect--ssh-instructions.png
+.. figure:: images/connect--ssh-instructions.png
     :width: 800px
     :alt: Example connect SSH instructions
 
@@ -102,7 +102,7 @@ List the contents of the TETHYS_HOME directory:
 
     ls -l $TETHYS_HOME
 
-.. figure:: ../../../../images/production/azure/connect--tethys-home-contents.png
+.. figure:: images/connect--tethys-home-contents.png
     :width: 800px
     :alt: Contents of Tethys Home directory as given by ls command
 

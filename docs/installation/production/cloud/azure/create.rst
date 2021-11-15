@@ -11,7 +11,7 @@ Create Azure VM
 
 Navigate to https://azure.microsoft.com/ and Sign In using the **Sign in** link. Open the user dropdown menu and click on the **Azure Portal** link.
 
-.. figure:: ../../../../images/production/azure/create--azure-portal.png
+.. figure:: images/create--azure-portal.png
     :width: 800px
     :alt: Azure Portal link in the user menu
 
@@ -22,7 +22,7 @@ Navigate to https://azure.microsoft.com/ and Sign In using the **Sign in** link.
 
 Use the search bar to search for "Virtual machine" and select the **Virtual machines** link.
 
-.. figure:: ../../../../images/production/azure/create--search-virtual-machines.png
+.. figure:: images/create--search-virtual-machines.png
     :width: 800px
     :alt: Search for virtual machines
 
@@ -33,7 +33,7 @@ Use the search bar to search for "Virtual machine" and select the **Virtual mach
 
 Click on the **Create** button to open the drop-down menu and select **Virtual machine**.
 
-.. figure:: ../../../../images/production/azure/create--create-virtual-machine.png
+.. figure:: images/create--create-virtual-machine.png
     :width: 800px
     :alt: Create a new virtual machine
 
@@ -80,7 +80,7 @@ Licensing
 
 * **License type**: Select **Other**.
 
-.. figure:: ../../../../images/production/azure/create--create-vm-basics.png
+.. figure:: images/create--create-vm-basics.png
     :width: 800px
     :alt: Example of create a virtual machine form
 
@@ -123,7 +123,7 @@ Review the options and make any changes if needed. Then press the **Create** but
 
 It will take a few minutes for the virtual machine and side-car resources to be created. You should be taken to a progress page like the one below that will keep you apprised of the deployment status.
 
-.. figure:: ../../../../images/production/azure/create--deploy-progress.png
+.. figure:: images/create--deploy-progress.png
     :width: 800px
     :alt: Virtual machine deployment progress page
 
@@ -138,7 +138,7 @@ This will bring you to the Overview page of the Virtual Machine. This view provi
 
 Take a few minutes to familiarize yourself with the Overview page. If you are feeling brave you may also want to click through the other links in the navigation on the left to familiarize you with their content.
 
-.. figure:: ../../../../images/production/azure/create--virtual-machine-overview.png
+.. figure:: images/create--virtual-machine-overview.png
     :width: 800px
     :alt: Virtual machine resource overview page
 
@@ -151,7 +151,7 @@ A few minutes after the Virtual Machine starts, Tethys Portal should be viewable
 
 a. Press the **Copy to clipboard** button next to the IP address.
 
-.. figure:: ../../../../images/production/azure/create--copy-public-ip.png
+.. figure:: images/create--copy-public-ip.png
     :width: 800px
     :alt: Copy the public IP address
 
@@ -159,7 +159,7 @@ a. Press the **Copy to clipboard** button next to the IP address.
 
 b. Paste the IP address in the address bar of a new tab in your web browser. A default version of Tethys Portal should be displayed.
 
-.. figure:: ../../../../images/production/azure/create--tethys-portal.png
+.. figure:: images/create--tethys-portal.png
     :width: 800px
     :alt: Tethys Portal running on Azure VM
 
