@@ -119,7 +119,7 @@ Restart ASGI and NGINX services to effect the changes:
 Configure Additional App Settings
 =================================
 
-Set any additional required settings on the app settings page in the Tethys Portal admin pages (see :doc:`../../tethys_portal/admin_pages`).
+Set any additional required settings on the app settings page in the Tethys Portal admin pages (see :ref:`tethys_portal_app_settings`).
 
 Initialize Persistent Stores
 ============================

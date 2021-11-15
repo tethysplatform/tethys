@@ -32,7 +32,7 @@ Add additional storage to the VM as follows:
 
 After attaching the storage to the virtual machine, you will need to format it and add a file system to it:
 
-1. Login to the VM using SSH (see: `Orientation to Azure VM | Connect with SSH <azure_vm_orientation_ssh>`_).
+1. Login to the VM using SSH (see: :ref:`Orientation to Azure VM | Connect with SSH <azure_vm_orientation_ssh>`).
 2. Run `lsblk <https://man7.org/linux/man-pages/man8/lsblk.8.html>`_ to list all storage devices:
 
     .. code-block::

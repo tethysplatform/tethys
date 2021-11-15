@@ -143,6 +143,8 @@ When a new document becomes active, users will be presented with a modal prompti
 
 **Figure 10.** Terms and conditions modal.
 
+.. _tethys_portal_app_settings:
+
 Tethys Apps
 ===========
 
