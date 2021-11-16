@@ -18,3 +18,8 @@ After provisioning the Azure virtual machine (VM), there are several configurati
     configure/forgotten_password
     configure/docker
     configure/storage
+
+What's Next?
+============
+
+Now that the server is configured, it's time to install apps!
