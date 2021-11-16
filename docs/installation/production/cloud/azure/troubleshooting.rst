@@ -6,6 +6,11 @@ Troubleshooting
 
 **Last Updated:** Nov 2021
 
+Unable to Connect after the VM Starts
+=====================================
+
+The most common cause of this issue is that the HTTP/HTTPS ports have not been opened on the Virtual Machine. Step 2 of the :ref:`azure_vm_config_https` tutorial describes how to configure ports for an Azure virtual machine. The process is the same for the HTTP port, just select HTTP instead of HTTPS for the **Service** and name it HTTP.
+
 Error after running `tethys manage start`
 =========================================
 
