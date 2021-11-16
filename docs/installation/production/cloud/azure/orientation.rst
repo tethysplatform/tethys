@@ -26,6 +26,8 @@ To connect to the Azure virtual machine via SSH, do the following:
 
     **Figure 1.** Example connect SSH instructions.
 
+.. _azure_vm_orientation_tethys_account:
+
 Tethys User Account
 ===================
 
@@ -214,13 +216,15 @@ The PostgreSQL logs can be helpful when you encounter database errors, though th
 
 * /var/log/postgresql/postgresql-12-main.log
 
+.. _azure_vm_orientation_start_stop:
+
 Start, Stop, Restart
 ====================
 
 The Daphne, NGINX, and PostgreSQL services are all managed using the ``systemctl`` command. You'll need to restart any of these services any time you make changes to the configuration. Use the following commands to start/stop/restart these services.
 
-Daphne
-------
+Daphne/Tethys
+-------------
 
 .. code-block::
 
