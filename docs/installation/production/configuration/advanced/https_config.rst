@@ -109,8 +109,8 @@ Alternatively, you can manually configure HTTPS as follows:
 
 .. _https_config_sso:
 
-Single Sign On
-==============
+Single Sign On and HTTPS
+========================
 
 If you are using Single Sign On, there is an additional setting you will need to set for Python Social Auth to allow the redirect after login to work properly:
 
