@@ -70,6 +70,10 @@ Certbot
 
 That's it! Certbot will take care of automatically updating the certificates from now on. You shouldn't need to run the certbot command again. For additional help with installing and setting up Certbot, see: `certbot instructions <https://certbot.eff.org/instructions>`_. Choose **Nginx** for the first field and either **Ubuntu 20** or **CentOS 8** for the second field.
 
+.. important::
+
+    If you are using Single Sign On (e.g. Google, Facebook, LinkedIn), there is an additional configuration step that needs to be performed after setting up HTTPS. See :ref:`https_config_sso`.
+
 Manually
 ========
 
@@ -102,3 +106,14 @@ Alternatively, you can manually configure HTTPS as follows:
     .. important::
 
         HTTPS traffic is expected to go through port 443 instead of port 80. hence the server block above listens on 443 instead of 80. Be sure to update your firewall accordingly if applicable (see: :ref:`production_firewall_config`).
+
+.. _https_config_sso:
+
+Single Sign On
+==============
+
+If you are using Single Sign On, there is an additional setting you will need to set for Python Social Auth to allow the redirect after login to work properly:
+
+.. code-block::
+
+    tethys settings --set SOCIAL_AUTH_REDIRECT_IS_HTTPS True
