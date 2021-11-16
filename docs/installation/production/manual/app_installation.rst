@@ -49,7 +49,7 @@ Execute the install command in the app directory to make Python aware of the app
 
     .. code-block:: bash
     
-        cd <APP_SOURCES_ROOT>/<APP_DIR>
+        cd <APP_SOURCES_ROOT>/<REPOSITORY_NAME>
 
     .. code-block:: bash
 
@@ -61,7 +61,7 @@ Execute the install command in the app directory to make Python aware of the app
 
     .. seealso::
     
-        :doc:`../application` for more information on the installation process.
+        :doc:`../../application` for more information on the installation process.
 
 Collect Static Files and Workspaces
 ===================================
@@ -119,7 +119,7 @@ Restart ASGI and NGINX services to effect the changes:
 Configure Additional App Settings
 =================================
 
-Set any additional required settings on the app settings page in the Tethys Portal admin pages (see :ref:`tethys_portal_app_settings`).
+Set any additional required settings on the app settings page in the Tethys Portal admin pages (see :ref:`Admin Pages > Tethys Apps <tethys_portal_app_settings>`).
 
 Initialize Persistent Stores
 ============================

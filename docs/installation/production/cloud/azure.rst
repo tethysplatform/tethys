@@ -22,3 +22,4 @@ The following tutorials will guide you through the process of creating and maint
     azure/configure
     azure/apps
     azure/cost
+    azure/troubleshooting

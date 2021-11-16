@@ -52,7 +52,7 @@ Restart the Tethys service for the new app to be loaded:
 6. Configure App Settings
 =========================
 
-Configure app settings in the Tethys Portal admin pages if required (see: :ref:`tethys_portal_app_settings`).
+Configure app settings in the Tethys Portal admin pages if required (see: :ref:`Admin Pages > Tethys Apps <tethys_portal_app_settings>`).
 
 7. Initialize Persistent Stores
 ===============================

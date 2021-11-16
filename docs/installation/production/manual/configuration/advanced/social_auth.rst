@@ -410,8 +410,9 @@ For more detailed information about using HydroShare social authentication see t
 * `https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support <https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support>`_
 
 .. _social_auth_arcgis:
+
 ArcGIS Online or ArcGIS Enterprise Portal
--------------
+-----------------------------------------
 
 .. note::
 
@@ -426,7 +427,7 @@ ArcGIS Online or ArcGIS Enterprise Portal
     c. In the popup, choose "Application" as the "Type"
     d. For the "Title", type "Tethys Platform" or anything else you choose
     e. Type one or more tags of your choice, such as "Tethys"
-    d. Click "Add Item"
+    f. Click "Add Item"
 
 3. Update the Application Registration metadata
 

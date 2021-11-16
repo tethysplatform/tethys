@@ -6,7 +6,12 @@ Production Installation Guide
 
 **Last Updated:** Nov 2021
 
-A **production installation**, sometimes called **deployment**, is an installation of Tethys Platform that is configured to for being hosted on a live server. Here are the primary differences between the :ref:`development installation <development_installation>` you have been using to develop your apps  and a production installation:
+A **production installation**, sometimes called **deployment**, is an installation of Tethys Platform that is configured to for being hosted on a live server. This guide provides an explanation of the difference between Production and Development installations and provides several methods for installing Tethys Platform in production.
+
+Production vs. Development
+==========================
+
+Here are the primary differences between the :ref:`development installation <development_installation>` you have been using to develop your apps  and a production installation:
 
 * **Production Grade Servers**: The development server (``tethys manage start``) is not efficient nor capable of handling the traffic a production website receives, so a combination of the `NGINX <https://nginx.org/en/>`_ and `Daphne <https://github.com/django/daphne>`_ servers are used for production installations.
 * **Changes Are Not Automatically Loaded**: When changes are made to a production installation, such as installing new apps or changing settings, the Daphne server must be restarted manually to load them. It does not restart automatically like the development server.
@@ -27,7 +32,6 @@ There are several approaches to installing Tethys Platform in a production envir
     production/manual
     production/cloud
     production/docker
-    production/kubernetes
 
 
 Manual Installation
