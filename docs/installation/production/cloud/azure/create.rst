@@ -66,8 +66,12 @@ Administrator account
 Specify the credentials for the administrator account as well. This account will be used to log in to the virtual machine:
 
 * **Authentication type**: We recommend using SSH public keys, but you can use a password if you are not sure what an SSH key is.
-* **Username**: Create a unique username (don't use something generic like "admin").
+* **Username**: See caution below.
 * **SSH public key source** and **Key pair name**: if using SSH keys, you can choose to create a new key pair or use an existing key pair if you have one already.
+
+.. caution::
+
+    Do not use a generic user name like "admin". We also do not recommend that you use the "tethys" username for security reasons. Consider using a tool like `Random Username Generator | Jimpix <https://jimpix.co.uk/words/random-username-generator.asp>`_.
 
 Inbound port rules
 ------------------

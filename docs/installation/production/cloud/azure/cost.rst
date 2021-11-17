@@ -6,7 +6,9 @@ Estimate Azure VM Cost
 
 **Last Updated:** Nov 2021
 
-The cost of a VM on Azure depends on what compute requirements your Tethys Platform installation needs. If your apps do a lot of on-server processing, then you may need more cores and memory, if your apps require a lot of storage, then you'll need more disk space. Fortunately, Azure provides a calculator to help prospective users estimate the monthly cost of use their services. In this tutorial you will learn how to use the Azure Pricing Calculator to estimate the cost of running a single-node Tethys Platform VM on Azure.
+The cost of a VM on Azure depends on what compute requirements your Tethys Platform installation needs. If your apps do a lot of on-server processing, then you may need more cores and memory, if your apps require a lot of storage, then you'll need more disk space. For a quick estimate of cost based on the VM series, see: `Linux Virtual Machines Prices | Microsoft Azure <https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/>`_.
+
+Azure also provides a pricing calculator that can be used to get a more accurate estimate of the cost. In this tutorial you will learn how to use the Azure Pricing Calculator to estimate the cost of running a single-node Tethys Platform VM on Azure.
 
 1. Navigate to Azure Pricing Calculator
 =======================================
