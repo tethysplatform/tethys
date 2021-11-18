@@ -28,9 +28,26 @@
         <a class="btn btn-success" href="{% url 'gizmos:sample_jobs' %}">Create Sample Jobs</a>
     {% endif %}
   </div>
+  {% csrf_token %}
 {% endblock %}
 
 {% block scripts %}
+  <script>
+    csrf_safe_method = function(method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    };
+    var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if(csrftoken){
+          $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrf_safe_method(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken.value);
+            }
+        }
+      });
+    };
+  </script>
   {% gizmo_dependencies css %}
 	{{ block.super }}
   {% gizmo_dependencies js %}

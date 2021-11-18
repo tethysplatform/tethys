@@ -26,6 +26,90 @@ This method returns the Cesium ``Viewer`` instance. You can use the `Cesium.View
 
     });
 
+CESIUM_MAP_VIEW.reInitializeMap()
++++++++++++++++++++++++++++++++++
+
+This method is intended for initializing a map generated from an AJAX request.
+
+.. caution::
+
+    This method assumes there is only one and that there will only ever be one map on the page.
+
+.. note::
+
+    In order to use this you will need to import
+    the JavaScript/CSS libraries in the main html template page using the
+    ``import_gizmo_dependency`` tag in the ``import_gizmos`` block.
+
+    For example:
+    ::
+
+        {% block import_gizmos %}
+            {% import_gizmo_dependency cesium_map_view %}
+        {% endblock %}
+
+Four elements are required:
+
+1) A controller for the AJAX call with a Cesium map view gizmo.
+::
+
+    @login_required()
+    def dam_break_map_ajax(request):
+        """
+        Controller for the dam_break_map ajax request.
+        """
+        if request.GET:
+            ...
+
+            #get layers
+            map_layer_list = ...
+
+            cesium_map_view = CesiumMapView(...)
+
+            context = { 'cesium_map_view': cesium_map_view }
+
+            return render(request, 'dam_break_map_ajax/map_ajax.html', context)
+
+2) A url map to the controller in app.py
+::
+
+    ...
+        UrlMap(name='dam_break_map_ajax',
+               url='dam-break/map/dam_break_map_ajax',
+               controller='dam_break.controllers.dam_break_map_ajax'),
+    ...
+
+3) A template for with the tethys gizmo (e.g. map_ajax.html)
+::
+
+    {% load tethys_gizmos %}
+
+    {% gizmo cesium_map_view %}
+
+
+4) The AJAX call in the javascript
+::
+
+    $(function() { //wait for page to load
+
+        $.ajax({
+            url: ajax_url,
+            method: 'GET',
+            data: ajax_data,
+            success: function(data) {
+                //add new map to map div
+                $('#main_map_div').html(data);
+
+                CESIUM_MAP_VIEW.reInitializeMap();
+            }
+        });
+
+    });
+
+
+
+
+
 .. caution::
 
     When referring to the Cesium documentation, ensure that you are browsing the correct version of documentation.

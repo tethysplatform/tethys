@@ -215,7 +215,7 @@ This method is intended for initializing a map generated from an AJAX request.
 
     In order to use this, you will either need to use a MapView gizmo or import
     the JavaScript/CSS libraries in the main html template page using the 
-    ``register_gizmo_dependency`` tag in the ``register_gizmos`` block. 
+    ``import_gizmo_dependency`` tag in the ``import_gizmos`` block.
 
     For example:
     ::
@@ -248,7 +248,7 @@ Four elements are required:
                 maxZoom=18,
                 minZoom=2,
             )
-        
+
             # Configure the map
             map_options = MapView(height='500px',
                                   width='100%',
