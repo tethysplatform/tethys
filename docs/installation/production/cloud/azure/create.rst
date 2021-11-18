@@ -107,7 +107,7 @@ Disk Options
 Data disks (optional)
 ---------------------
 
-Use this section to attach additional disks to the VM if you'd like.
+Use this section to attach additional disks to the VM if you'd like (see: :ref:`Add Additional Storage <azure_vm_config_storage>`).
 
 6. Review other tabs
 ====================
