@@ -17,21 +17,21 @@ Navigate to https://azure.microsoft.com/ and Sign In using the **Sign in** link.
 
     **Figure 1.** Azure Portal link in the user menu.
 
-2. Navigate to Virtual machines management page
-===============================================
+2. Search for Tethys Platform image
+===================================
 
-Use the search bar to search for "Virtual machine" and select the **Virtual machines** link.
+Use the search bar to search for "Tethys Platform". Then select the **Tethys Platform 3.3 Ubuntu 20.04** item under the **Marketplace** category.
 
-.. figure:: images/create--search-virtual-machines.png
+.. figure:: images/create--search-tethys.png
     :width: 800px
-    :alt: Search for virtual machines
+    :alt: Search for the Tethys Platform image in the Azure Marketplace
 
-    **Figure 2.** Search for "Virtual machine".
+    **Figure 2.** Search for the Tethys Platform image in the Azure Marketplace.
 
 3. Create virtual machine
 =========================
 
-Click on the **Create** button to open the drop-down menu and select **Virtual machine**.
+Click on the **Create** button to create a new virtual machine using the Tethys Platform image.
 
 .. figure:: images/create--create-virtual-machine.png
     :width: 800px
@@ -57,7 +57,7 @@ These are technical details about the virtual machine that will be created.
 
 * **Virtual machine name**: Give the virtual machine a name.
 * **Region**: Select an appropriate region, this is the approximate location of the data center where the virtual machine will be created.
-* **Image**: Search for "tethys-platform" and select the "tethys_platform/tethys-platform-base/latest" image.
+* **Image**: Should be filled with **Tethys Platform 3.3 - Gen1** already.
 * **Size**: Choose the size of hardware for your virtual machine. We recommend a machine with at least 2 cpus (vcpus) and 4 GiB of memory (e.g. Standard_B2s). Click on the **See all sizes** link to see a list of all the sizes to compare costs.
 
 Administrator account
@@ -77,7 +77,10 @@ Inbound port rules
 ------------------
 
 * **Public inbound ports**: Select **Allow selected ports**.
-* **Select inbound ports**: Select **SSH (22)** and either of **HTTP (80)** or **HTTPS (443)**.
+* **Select inbound ports**:
+    * **SSH (22)**
+    * **HTTP (80)**
+    * **HTTPS (443)** (if planning to enable HTTPS)
 
 Licensing
 ---------
