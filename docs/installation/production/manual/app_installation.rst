@@ -8,12 +8,17 @@ Installing Apps in Production
 
 Installing apps in a Tethys Portal configured for production can be challenging. Most of the difficulties arise, because Tethys is served by NGINX in production and all the files need to be owned by the NGINX user. The following instructions for installing apps in a production environment are provided to aid administrators of Tethys Portals.
 
+
+.. _installing_apps_production_activate:
+
 Activate the Tethys Environment
 ===============================
 
     .. code-block:: bash
     
         conda activate tethys
+
+.. _installing_apps_production_app_dir:
 
 Setup App Directory (First Time Only)
 =====================================
@@ -24,6 +29,8 @@ Create the APP_SOURCES_ROOT directory that you decided on in the preparation sec
     
         sudo mkdir -p <APP_SOURCES_ROOT>
         sudo chown $USER <APP_SOURCES_ROOT>
+
+.. _installing_apps_production_app_source:
 
 Download App Source Code
 ========================
@@ -41,6 +48,8 @@ You will need to copy the source code of the app to the server. There are many m
     .. note::
     
         Replace ``<CLONE_URL>`` with the URL for your repository. These URLs generally look something like this: ``https://<host>/<username>/<repository_name>.git``.
+
+.. _installing_apps_production_install_app:
 
 Install the App
 ===============
@@ -62,6 +71,8 @@ Execute the install command in the app directory to make Python aware of the app
     .. seealso::
     
         :doc:`../../application` for more information on the installation process.
+
+.. _installing_apps_production_collect:
 
 Collect Static Files and Workspaces
 ===================================
@@ -107,6 +118,8 @@ You will need to collect the workspaces and static files from the new app to the
         collectall
         tethys_server_own
 
+.. _installing_apps_production_restart:
+
 Restart ASGI and NGINX
 =======================
 
@@ -116,10 +129,14 @@ Restart ASGI and NGINX services to effect the changes:
 
         sudo supervisorctl restart all
 
+.. _installing_apps_production_app_settings:
+
 Configure Additional App Settings
 =================================
 
 Set any additional required settings on the app settings page in the Tethys Portal admin pages (see :ref:`Admin Pages > Tethys Apps <tethys_portal_app_settings>`).
+
+.. _installing_apps_production_persistent_stores:
 
 Initialize Persistent Stores
 ============================

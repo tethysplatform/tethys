@@ -84,6 +84,7 @@ Home Page Template     Path to alternate Home page template (will replace Home p
 Apps Library Template  Path to alternate Apps Library page template (will replace Apps Library page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
 ====================== =================================================================================
 
+.. _production_customize_bypass_home:
 
 Bypass the Home Page
 ====================
@@ -94,6 +95,8 @@ Tethys Portal can also be configured to bypass the home page. When this setting 
 
   TETHYS_PORTAL_CONFIG:
     BYPASS_TETHYS_HOME_PAGE: True
+
+.. _production_customize_enable_open:
 
 Enable Open Signup
 ==================

@@ -4,7 +4,7 @@
 Troubleshooting
 ***************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 Unable to Connect after the VM Starts
 =====================================

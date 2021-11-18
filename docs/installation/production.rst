@@ -4,7 +4,7 @@
 Production Installation Guide
 *****************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 A **production installation**, sometimes called **deployment**, is an installation of Tethys Platform that is configured to for being hosted on a live server. This guide provides an explanation of the difference between Production and Development installations and provides several methods for installing Tethys Platform in production.
 

@@ -4,7 +4,7 @@
 Assign Domain Name (Recommended)
 ********************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 A domain name is the text that users enter in a web browser to visit a website (e.g. google.com). Behind the scenes, this text is mapped to the IP address of the server, which is the unique numeric address that can be used to locate your website (e.g ``20.109.16.186``). VMs on Azure can be assigned a generic, Azure supplied, domain name (e.g.: ``my-first-tethys.westus2.cloudapp.azure.com``) or a custom domain (e.g. ``myfirsttethys.org``). With either option there are a few configuration steps that need to be performed in Tethys assigning the domain name.
 

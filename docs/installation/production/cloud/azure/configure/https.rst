@@ -4,7 +4,7 @@
 Configure HTTPS (Recommended)
 *****************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 HTTPS is the secure way of serving websites that won't compromise the data of the website or your users. Most web browsers will warn users when they are using a site that is not secured with HTTPS, which can be a deterrent for some users. This method involves configuring Nginx on the VM to manage the SSL certificates required for HTTPS. The good news is that using Certbot, this can be completely automated after some initial set up.
 

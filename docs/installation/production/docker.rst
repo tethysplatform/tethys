@@ -4,7 +4,7 @@
 Docker Production Installation
 ******************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 Docker is self-described as "an open platform for developing, shipping, and running applications" (see: `Docker overview | Docker Documentation <https://docs.docker.com/get-started/overview/>`_). To learn more about Docker and how it can be used to deploy a Tethys Portal with your apps, complete the tutorials below:
 

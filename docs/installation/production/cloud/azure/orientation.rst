@@ -4,7 +4,7 @@
 Orientation to Azure VM
 ***********************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 This tutorial provides an orientation to the Tethys Azure virtual machine (VM). It includes instructions for connecting to the VM, user accounts to use, descriptions of what is installed, and important directories and files.
 

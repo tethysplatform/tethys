@@ -4,7 +4,7 @@
 Set up Forgotten Password Recovery (Recommended)
 ************************************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 To use forgotten password recovery feature of Tethys Portal, it needs to be configured with an email service.
 

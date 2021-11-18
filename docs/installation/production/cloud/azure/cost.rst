@@ -4,7 +4,7 @@
 Estimate Azure VM Cost
 **********************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 The cost of a VM on Azure depends on what compute requirements your Tethys Platform installation needs. If your apps do a lot of on-server processing, then you may need more cores and memory, if your apps require a lot of storage, then you'll need more disk space. For a quick estimate of cost based on the VM series, see: `Linux Virtual Machines Prices | Microsoft Azure <https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/>`_.
 

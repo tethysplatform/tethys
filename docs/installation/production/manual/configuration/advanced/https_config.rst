@@ -8,10 +8,14 @@ Configure HTTPS (Recommended)
 
 SSL and TLS are the standard technologies for establishing a secured connection between a web server and a browser. In order to create a secured connection, a certificate and key are needed.
 
+.. important::
+
+    You will need to have assigned a domain name to the ``server_name`` field in the NGINX config.
+
 Certbot
 =======
 
-`Certbot <https://certbot.eff.org/pages/about>`_ is a tool that automatically administers certificates on websites using `Let's Encrypt <https://letsencrypt.org/>`_, a free certificate authority. We recommend using Certbot because it automatically retrieves certificates and updates them regularly. It can also automatically configure NGINX to use the certificates.
+`Certbot <https://certbot.eff.org/pages/about>`_ is a tool that automatically administers certificates on websites using `Let's Encrypt <https://letsencrypt.org/about/>`_, a free certificate authority. We recommend using Certbot because it automatically retrieves certificates and updates them regularly. It can also automatically configure NGINX to use the certificates.
 
 1. Install the Snapcraft (CentOS and Ubuntu < 20 only):
 
@@ -30,13 +34,7 @@ Certbot
 
         sudo snap install --classic certbot
 
-4. Link the ``certbot`` command into :file:`/usr/bin` so it can be called:
-
-    .. code-block::
-
-        sudo ln -s /snap/bin/certbot /usr/bin/certbot
-
-5. Run the ``certbot`` command using the NGINX plugin:
+4. Run the ``certbot`` command using the NGINX plugin:
 
     .. code-block::
 
@@ -44,11 +42,15 @@ Certbot
 
     .. note::
 
-        You will need to have assigned a domain name to the ``server_name`` field in the NGINX config.
+        If the ``certbot`` command is not recognized as a command, you'll need to link it to :file:`/usr/bin`:
 
-6. Follow the on-screen prompts to complete the process of setting up certbot.
+        .. code-block::
 
-7. Review the :file:`tethys_nginx.conf` to see the changes that ``certbot`` made:
+            sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+5. Follow the on-screen prompts to complete the process of setting up certbot.
+
+6. Review the :file:`tethys_nginx.conf` to see the changes that ``certbot`` made:
 
     **Ubuntu**:
 
@@ -62,7 +64,7 @@ Certbot
 
         cat /etc/nginx/conf.d/tethys_nginx.conf
 
-8. Verify that auto-renewal works:
+7. Verify that auto-renewal works:
 
     .. code-block::
 
@@ -81,7 +83,7 @@ Alternatively, you can manually configure HTTPS as follows:
 
 1. Obtain a Certificate
 
-    An SSL certificate can be `self-signed <https://linuxize.com/post/creating-a-self-signed-ssl-certificate/>`_ for testing but should be obtained from a Certificate Authority for a production installation. Search `ssl certificate authorities <https://www.google.com/search?q=ssl+certificate+authorities>`_ for a list of providers. Most certificate authorities charge a fee for their services, however you can obtain free certificates from `Let's Encrypt <https://letsencrypt.org/about/>`_. If your instance of Tethys Portal is part of a larger organization website, contact your IT department to determine if an agreement with one of these authorities already exists.
+    An SSL certificate can be `self-signed <https://linuxize.com/post/creating-a-self-signed-ssl-certificate/>`_ for testing but should be obtained from a Certificate Authority for a production installation. Search `ssl certificate authorities <https://www.google.com/search?q=ssl+certificate+authorities>`_ for a list of providers. Most certificate authorities charge a fee for their services, however you can obtain free certificates from Let's Encrypt. If your instance of Tethys Portal is part of a larger organization website, contact your IT department to determine if an agreement with one of these authorities already exists.
 
 2. Modify NGINX Configuration
 

@@ -1,8 +1,8 @@
 .. _docker_official_image:
 
-*************************************
-Official Tethys Platform Docker Image
-*************************************
+**************************************
+Tethys Platform Docker Image Reference
+**************************************
 
 **Last Updated:** November 2021
 

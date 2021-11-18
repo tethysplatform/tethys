@@ -4,7 +4,7 @@
 Enable Docker (Optional)
 ************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 If you would like to use Docker to start supporting services such as THREDDS or GeoServer, you'll need to start the Docker service and enable it so that it will start automatically in the future. The following tutorial demonstrates how to enable Docker and install THREDDS and GeoServer using the ``tethys docker`` command.
 

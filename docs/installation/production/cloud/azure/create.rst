@@ -4,7 +4,7 @@
 Create Azure VM
 ***************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 1. Login to Azure Portal
 ========================
@@ -150,6 +150,8 @@ Take a few minutes to familiarize yourself with the Overview page. If you are fe
     :alt: Virtual machine resource overview page
 
     **Figure 6.** Virtual machine resource overview page.
+
+.. _azure_vm_create_view_portal:
 
 10. View the Tethys Portal
 ==========================

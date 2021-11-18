@@ -4,7 +4,7 @@
 Cloud Virtual Machine Images
 ****************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 .. toctree::
     :maxdepth: 2

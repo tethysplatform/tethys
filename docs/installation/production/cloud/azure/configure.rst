@@ -4,7 +4,7 @@
 Configure Azure VM
 ******************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 After provisioning the Azure virtual machine (VM), there are several configuration steps you should perform. As a minimum you should complete the `Change Secrets and Passwords <azure_vm_config_change_secrets>`_ tutorial. Complete the other tutorials as needed.
 

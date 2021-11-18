@@ -4,7 +4,7 @@
 Change Secrets and Passwords (Required)
 ***************************************
 
-**Last Updated:** Nov 2021
+**Last Updated:** November 2021
 
 The default secret key and passwords should be changed to secure the VM immediately after provisioning it.
 
