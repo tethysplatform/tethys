@@ -6,7 +6,7 @@ Docker Primer
 
 **Last Updated:** November 2021
 
-This tutorial provides an overview of Docker and the key concepts needed to use it effectively.
+This tutorial provides an overview of Docker and the key concepts needed to use it effectively. For more detailed descriptions of the concepts in this tutorial, please review the articles in the footnotes.
 
 Shipping Analogy
 ================
@@ -32,7 +32,13 @@ Containers are running instances of **container images**, which are "lightweight
 Containers vs. Virtual Machines
 ===============================
 
+Containers and virtual machines have some similar properties, however there are important differences in how they function that make containers more portable and efficient. The primary difference is that containers virtualize the operating system whereas virtual machines virtualize the hardware (see Figure 1). This means that containers share the core OS components (called the kernel), which makes them an order of magnitude smaller than virtual machines (container images are usually tens of MBs vs. virtual machine images that are tens of GBs). Any given server will be able to run many more containers than than virtual machines. [#f2]_
 
+.. figure:: images/primer--containers-vs-vms.png
+    :width: 800px
+    :alt: Illustration of the difference between containers and virtual machines.
+
+    **Figure 1**: Illustration of the difference between containers and virtual machines. [#f2]_
 
 Dockerfile
 ==========
@@ -52,13 +58,13 @@ A **Docker Registry** is a database for Docker images. The command ``docker pull
 Docker Hub
 ==========
 
-**Docker Hub** is a public Docker registry maintained by Docker. It is the default registry that the Docker daemon uses when you attempt to pull/push a container image. The images you push to Docker hub can be made either public or private.
+`Docker Hub <https://hub.docker.com/>`_ is a public Docker registry maintained by Docker. In fact, it is the default registry that the Docker daemon uses when you attempt to pull a container image. Docker Hub hosts over 100,000 container images, including official images for many Linux distributions (e.g.: `Debian <https://hub.docker.com/_/debian>`_, `Ubuntu <https://hub.docker.com/_/ubuntu>`_, and `CentOS <https://hub.docker.com/_/centos>`_)  and application components (e.g.: `PostgreSQL <https://hub.docker.com/_/postgres>`_, `NGINX <https://hub.docker.com/_/nginx>`_, and `Python <https://hub.docker.com/_/python>`_). Docker Hub can also be used to publish your own Docker images and it is free to do so for individuals, education, open source projects, and small businesses. [#f7]_
 
 .. figure:: images/primer--docker-hub.png
     :width: 800px
     :alt: Screenshot of Docker Hub.
 
-    **Figure 1**: Screenshot of Docker Hub.
+    **Figure 2**: Screenshot of Docker Hub.
 
 .. rubric:: Footnotes
 
@@ -68,3 +74,4 @@ Docker Hub
 .. [#f4] See `Dockerfile reference | Docker Documentation <https://docs.docker.com/engine/reference/builder/>`_
 .. [#f5] See `Use the Docker command line | Docker Documentation <https://docs.docker.com/engine/reference/commandline/cli/>`_
 .. [#f6] See `Docker Registry | Docker Documentation <https://docs.docker.com/registry/>`_
+.. [#f7] See `Docker Pricing & Monthly Plan Details | Docker <https://www.docker.com/pricing>`_
