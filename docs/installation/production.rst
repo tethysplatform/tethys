@@ -26,13 +26,6 @@ Production Installation Methods
 
 There are several approaches to installing Tethys Platform in a production environment that are listed below. Read through the brief description of each approach below to learn about their pros and cons.
 
-.. toctree::
-    :maxdepth: 1
-
-    production/manual
-    production/cloud
-    production/docker
-
 
 Manual Installation
 -------------------
@@ -41,7 +34,10 @@ Manual installation means installing Tethys Platform from scratch and performing
 
 If you have not performed a manual installation before, we recommend going through the process using a virtual machine on your computer first before attempting to do the installation on the production server. Even if you don't plan to use the manual installation method, performing a manual installation on a local virtual machine can be very informative and increase your understanding with what is going on behind the scenes in the other methods.
 
-See :ref:`manual_production_installation` guide to get started.
+.. toctree::
+    :maxdepth: 1
+
+    production/manual
 
 Cloud Virtual Machine Images
 ----------------------------
@@ -52,14 +48,21 @@ We currently have images for the following commercial cloud providers:
 
 * :ref:`Microsoft Azure <azure_vm_overview>`
 
-See :ref:`cloud_vm_installation` guide to get started.
+.. toctree::
+    :maxdepth: 1
+
+    production/cloud
+
 
 Docker Deployment
 -----------------
 
-This method involves creating a new Docker image that extends the base Docker image provided by Tethys Platform. The base Docker image contains a full installation of Tethys Platform configured for production, similar to the Cloud Virtual Machine image. You just need to create a new images that adds the steps required to install your apps. The advantage of this approach is that the process of installing Tethys Platform and your apps is fully automated in the Docker image. The other major advantage is portability, the Docker image can be deployed to any Linux server with Docker installed. The disadvantage is that there is a learning curve to get started using Docker for the first time. However, the investment of learning Docker is very much worth your time as most modern web applications are deployed using Docker or a similar container technology.
+This method involves using Docker to package and automate the deployment of a Tethys Portal with that has your apps pre-installed. The advantage of this approach is that the process of installing Tethys Platform and your apps is automated in the Docker image. The other major advantage is portability, the Docker image can be deployed to any Linux server with Docker installed. The disadvantage is that there is a learning curve to get started using Docker for the first time. However, the investment of learning Docker is very much worth your time as most modern web applications are deployed using Docker or a similar container technology.
 
-See :ref:`docker_production_installation` guide to get started.
+.. toctree::
+    :maxdepth: 1
+
+    production/docker
 
 References
 ==========

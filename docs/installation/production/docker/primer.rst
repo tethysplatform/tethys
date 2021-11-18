@@ -1,0 +1,70 @@
+.. _docker_primer:
+
+*************
+Docker Primer
+*************
+
+**Last Updated:** November 2021
+
+This tutorial provides an overview of Docker and the key concepts needed to use it effectively.
+
+Shipping Analogy
+================
+
+Prior to the advent of the shipping container, shipping goods to different parts of the world was a logistical nightmare. Goods came in all different sizes of containers and arranging them on ships was haphazard. The same was true with trains and trucks when it came time to ship them overland. The result was shipping was expensive and slow and goods were often misplaced, broken, or rotted because of the delays.
+
+The shipping container streamlined the shipping process because of its standard size. Merchants could put whatever they wanted in a shipping container. It didn't matter to the shipping companies if they were shipping bananas or cars. Loading the ship became a simple operation of stacking boxes and loading was reduced from days and weeks to hours. In addition containers could be easily transferred to trucks or trains for overland shipping. [#f1]_
+
+.. raw:: html
+
+    <iframe width="200" height="500" src="https://www.youtube.com/embed/DY9VE3i-KcM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Containers
+==========
+
+Like shipping containers, Docker containers have streamlined and standardized the way applications are deployed on the web. Docker describes a **container** as "a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another." [#f2]_ Containers leverage features of Linux that make them lighter weight than virtual machines. The applications inside containers are isolated from the server they are running on, which makes them more secure.
+
+Container Images
+================
+
+Containers are running instances of **container images**, which are "lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings." [#f2]_ A container image is a read-only template or blueprint for a container. [#f3]_ Container images can be exported as archives (i.e. ``.tar``) and they can be easily transferred to a server for deployment.
+
+Containers vs. Virtual Machines
+===============================
+
+
+
+Dockerfile
+==========
+
+A **Dockerfile** is a text document that contains the instructions for building a container image. It can be thought of as a list of commands that a user would call on the commandline to install an application on a server. The Dockerfile spec includes instructions for running commands, adding files to the image, setting environment variables, and defining the command that should be run when the container starts. [#f4]_
+
+Docker Deamon and Client
+========================
+
+The **Docker daemon** is the application that does the work of building container images and running containers from images. You interact with the Docker daemon using the **Docker client**, which is a commandline program. [#f5]_ When you run a command like ``docker build`` with the Docker client it passes the instruction to the Docker daemon, which performs the build operation. [#f3]_
+
+Docker Registries
+=================
+
+A **Docker Registry** is a database for Docker images. The command ``docker pull`` is used to download images from registries and the command ``docker push`` is used to upload images to a registry. You can host your own registry [#f6]_, but most images are hosted on Docker Hub.
+
+Docker Hub
+==========
+
+**Docker Hub** is a public Docker registry maintained by Docker. It is the default registry that the Docker daemon uses when you attempt to pull/push a container image. The images you push to Docker hub can be made either public or private.
+
+.. figure:: images/primer--docker-hub.png
+    :width: 800px
+    :alt: Screenshot of Docker Hub.
+
+    **Figure 1**: Screenshot of Docker Hub.
+
+.. rubric:: Footnotes
+
+.. [#f1] See `Docker and Shipping Containers: An Imperfect Analogy <https://www.ctl.io/developers/blog/post/docker-and-shipping-containers-a-useful-but-imperfect-analogy>`_
+.. [#f2] See `What is a container? | Docker <https://www.docker.com/resources/what-container>`_
+.. [#f3] See `Docker overview | Docker Documentation <https://docs.docker.com/get-started/overview/>`_
+.. [#f4] See `Dockerfile reference | Docker Documentation <https://docs.docker.com/engine/reference/builder/>`_
+.. [#f5] See `Use the Docker command line | Docker Documentation <https://docs.docker.com/engine/reference/commandline/cli/>`_
+.. [#f6] See `Docker Registry | Docker Documentation <https://docs.docker.com/registry/>`_

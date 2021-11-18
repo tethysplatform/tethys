@@ -1,14 +1,15 @@
+.. _docker_official_image:
+
+*************************************
+Official Tethys Platform Docker Image
+*************************************
+
+**Last Updated:** November 2021
+
 .. _`Salt Script`: https://docs.saltstack.com/en/latest/topics/index.html
 .. _`pre_tethys.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/pre_tethys.sls
 .. _`tethyscore.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/tethyscore.sls
 .. _`post_app.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/post_app.sls
-.. _production_official_docker:
-
-*********************
-Official Docker Image
-*********************
-
-**Last Updated:** July 2020
 
 Versions and Tags
 #################
@@ -57,6 +58,8 @@ To build a new docker image with the desired name and tag, run the following in 
 ::
 
     docker build -t tethys-core:latest
+
+Build options - Python Version
 
 Run Image
 #########
