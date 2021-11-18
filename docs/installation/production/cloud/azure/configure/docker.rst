@@ -221,6 +221,29 @@ Create New Docker Container
 
 7. Access the GeoServer server at the following URL: http://<domain_name>/geoserver
 
+Open Port 8181
+--------------
+
+Open port 8181 for the Azure VM as follows:
+
+a. Navigate to the Overview page for the VM Resource.
+b. Click on **Networking** in left navigation panel.
+c. Click on the **Add inbound port rule** button.
+d. Fill out the **Add inbound security rule** form as follows:
+
+    * **Source**: Any
+    * **Source port ranges**: *
+    * **Destination**: Any
+    * **Service**: Custom
+    * **Destination port ranges**: 8181
+    * **Protocol**: TCP
+    * **Action**: Allow
+    * **Priority**: <use_default>
+    * **Name**: GeoServer
+    * **Description**: <leave_blank>
+
+e. Press the **Add** button.
+
 Create Tethys Service
 ---------------------
 
@@ -260,3 +283,8 @@ or the native ``docker`` commmands:
 .. code-block::
 
     docker [start|stop|restart] tethys_geoserver
+
+What about the PostGIS Docker?
+==============================
+
+You may be wondering why there aren't instructions for the PostGIS Docker container? The PostGIS docker container is a PostgreSQL server with the PostGIS extension installed. In the Azure Tethys Platform VM image, the system packages of PostgreSQL and the PostGIS extension are both installed. It should not be necessary to use the PostGIS Docker.

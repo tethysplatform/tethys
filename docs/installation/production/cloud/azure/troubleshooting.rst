@@ -11,6 +11,11 @@ Unable to Connect after the VM Starts
 
 The most common cause of this issue is that the HTTP/HTTPS ports have not been opened on the Virtual Machine. Step 2 of the :ref:`azure_vm_config_https` tutorial describes how to configure ports for an Azure virtual machine. The process is the same for the HTTP port, just select HTTP instead of HTTPS for the **Service** and name it HTTP.
 
+App logo isn't showing up after installing
+==========================================
+
+This is usually happens when you forget to run ``tethys manage collectall`` or ``tethys manage collectstatic``. The ``collectstatic`` command moves the static files like images, JavaScript, and CSS to a location where NGINX can serve them (``collectall`` calls ``collectstatic``). If you forget to run one of those commands, the files won't be able to be served and won't be found.
+
 Error after running `tethys manage start`
 =========================================
 
