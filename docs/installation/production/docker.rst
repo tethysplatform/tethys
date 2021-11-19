@@ -16,8 +16,8 @@ Docker is self-described as "an open platform for developing, shipping, and runn
     :maxdepth: 1
 
     docker/primer
-    docker/install
+    docker/getting_started
     docker/custom_image
     docker/docker_compose
-    docker/official_docker
+    docker/tethys_docker_reference
 
