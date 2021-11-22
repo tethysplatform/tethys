@@ -1,4 +1,5 @@
-from tethys_apps.utilities import get_app_settings
+from django.core.exceptions import ValidationError
+from tethys_apps.utilities import get_app_settings, get_custom_setting
 from tethys_cli.cli_colors import pretty_output, BOLD
 from tethys_cli.cli_helpers import load_apps
 
@@ -12,6 +13,21 @@ def add_app_settings_parser(subparsers):
     app_settings_list_parser = app_settings_subparsers.add_parser('list', help='List all settings for a specified app')
     app_settings_list_parser.add_argument('app', help='The app ("<app_package>") to list the Settings for.')
     app_settings_list_parser.set_defaults(func=app_settings_list_command)
+
+    # tethys app_settings set
+    app_settings_set_parser = app_settings_subparsers.add_parser('set', help='Set the value of a custom setting '
+                                                                             'for a specified app.')
+    app_settings_set_parser.add_argument('app', help='The app ("<app_package>") with the setting to be set.')
+    app_settings_set_parser.add_argument('setting', help='The name of the setting to be set.')
+    app_settings_set_parser.add_argument('value', help='The value to set.')
+    app_settings_set_parser.set_defaults(func=app_settings_set_command)
+
+    # tethys app_settings set
+    app_settings_reset_parser = app_settings_subparsers.add_parser('reset', help='Reset the value of a custom setting '
+                                                                                 'to its default value.')
+    app_settings_reset_parser.add_argument('app', help='The app ("<app_package>") with the setting to be reset.')
+    app_settings_reset_parser.add_argument('setting', help='The name of the setting to be reset.')
+    app_settings_reset_parser.set_defaults(func=app_settings_reset_command)
 
     # tethys app_settings create
     app_settings_create_cmd = app_settings_subparsers.add_parser('create', help='Create a Setting for an app.')
@@ -99,6 +115,39 @@ def app_settings_list_command(args):
 
             with pretty_output() as p:
                 p.write(f'{setting.pk: <10}{setting.name: <40}{get_setting_type(setting): <15}{service_name: <20}')
+
+
+def app_settings_set_command(args):
+    load_apps()
+    setting = get_custom_setting(args.app, args.setting)
+
+    if not setting:
+        print(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
+        return
+
+    try:
+        setting.value = args.value
+        setting.clean()
+        setting.save()
+    except ValidationError as e:
+        print(f'Value was not set: {",".join(e.messages)} "{args.value}" was given.')
+
+    print(f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set to "{args.value}".')
+
+
+def app_settings_reset_command(args):
+    load_apps()
+    setting = get_custom_setting(args.app, args.setting)
+
+    if not setting:
+        print(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
+        return
+
+    setting.value = setting.default
+    setting.save()
+
+    print(f'Success! Custom Setting "{args.setting}" for app "{args.app}" '
+          f'was reset to the default value of "{setting.value}".')
 
 
 def get_setting_type(setting):
