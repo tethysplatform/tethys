@@ -13,6 +13,7 @@ on:
 
 env:
   CONDA_BUILD_PIN_LEVEL: minor
+  github-token: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
 
@@ -49,12 +50,12 @@ jobs:
           conda activate tethys
           tethys test -c -u -v 2
       # Generate Coverage Report
-      - name: Genearte Coverage Report
-        uses: coverallsapp/github-action@master
+      - name: Generate Coverage Report
         if: matrix.platform == 'ubuntu-latest'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./tethys/.coverage/lcov.info
+        run: |
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          coveralls --service=github
 
   docker-build:
     name: Docker Build
