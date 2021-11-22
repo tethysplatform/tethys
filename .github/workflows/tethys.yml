@@ -13,7 +13,7 @@ on:
 
 env:
   CONDA_BUILD_PIN_LEVEL: minor
-  github-token: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
 
@@ -49,6 +49,13 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           tethys test -c -u -v 2
+      # DEBUG
+      - name: Find lcov.info
+        run: |
+          ls -al .
+          ls -al ./tethys
+          ls -al ./tethys/tests
+          find . -type f -name lcov.info
       # Generate Coverage Report
       - name: Generate Coverage Report
         if: matrix.platform == 'ubuntu-latest'
