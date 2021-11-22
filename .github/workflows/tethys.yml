@@ -49,13 +49,6 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           tethys test -c -u -v 2
-      # DEBUG
-      - name: Find lcov.info
-        run: |
-          ls -al .
-          ls -al .coverage
-          ls -al tests
-          find . -type f -name lcov.info
       # Generate Coverage Report
       - name: Generate Coverage Report
         if: matrix.platform == 'ubuntu-latest'
