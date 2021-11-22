@@ -5,7 +5,8 @@ name: Tethys-CI
 on:
   push:
     branches:
-      - '*'
+      - 'master'
+      - 'release*'
   pull_request:
     branches:
       - '*'
@@ -49,14 +50,14 @@ jobs:
           tethys test -c -u -v 2
       # Generate Coverage Report
       - name: Genearte Coverage Report
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-latest'
         run: |
             . ~/miniconda/etc/profile.d/conda.sh
             conda activate tethys
             coveralls
 
   docker-build:
-    name: Docker Build (${{ matrix.platform }})
+    name: Docker Build
     needs: tests
     if:
       contains('
@@ -91,7 +92,7 @@ jobs:
           echo "Uploading is skipped for pull requests."
 
   conda-build:
-    name: Conda Build (${{ matrix.platform }})
+    name: Conda Build
     needs: tests
     if:
       contains('
