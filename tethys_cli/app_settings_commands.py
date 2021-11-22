@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from tethys_apps.utilities import get_app_settings, get_custom_setting
-from tethys_cli.cli_colors import pretty_output, BOLD
+from tethys_cli.cli_colors import pretty_output, BOLD, write_error, write_success
 from tethys_cli.cli_helpers import load_apps
 
 
@@ -122,17 +122,19 @@ def app_settings_set_command(args):
     setting = get_custom_setting(args.app, args.setting)
 
     if not setting:
-        print(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
-        return
+        write_error(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
+        exit(1)
 
     try:
         setting.value = args.value
         setting.clean()
         setting.save()
     except ValidationError as e:
-        print(f'Value was not set: {",".join(e.messages)} "{args.value}" was given.')
+        write_error(f'Value was not set: {",".join(e.messages)} "{args.value}" was given.')
+        exit(1)
 
-    print(f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set to "{args.value}".')
+    write_success(f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set to "{args.value}".')
+    exit(0)
 
 
 def app_settings_reset_command(args):
@@ -140,14 +142,15 @@ def app_settings_reset_command(args):
     setting = get_custom_setting(args.app, args.setting)
 
     if not setting:
-        print(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
-        return
+        write_error(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
+        exit(1)
 
     setting.value = setting.default
     setting.save()
 
-    print(f'Success! Custom Setting "{args.setting}" for app "{args.app}" '
-          f'was reset to the default value of "{setting.value}".')
+    write_success(f'Success! Custom Setting "{args.setting}" for app "{args.app}" '
+                  f'was reset to the default value of "{setting.value}".')
+    exit(0)
 
 
 def get_setting_type(setting):
