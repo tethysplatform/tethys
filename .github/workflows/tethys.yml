@@ -53,8 +53,8 @@ jobs:
       - name: Find lcov.info
         run: |
           ls -al .
-          ls -al ./tethys
-          ls -al ./tethys/tests
+          ls -al .coverage
+          ls -al tests
           find . -type f -name lcov.info
       # Generate Coverage Report
       - name: Generate Coverage Report
