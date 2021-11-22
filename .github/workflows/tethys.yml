@@ -31,8 +31,9 @@ jobs:
       # Install Tethys
       - name: Install Tethys
         run: |
-          bash ./scripts/install_tethys.sh -h
-          bash ./scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
+          cd ..
+          bash ./tethys/scripts/install_tethys.sh -h
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
       # Setup Tethys and Conda
       - name: Setup Tethys and Conda
         run: |
@@ -48,11 +49,12 @@ jobs:
           conda activate tethys
           tethys test -c -u -v 2
       # Generate Coverage Report
-      - name: Generate Coverage Report
+      - name: Genearte Coverage Report
         uses: coverallsapp/github-action@master
         if: matrix.platform == 'ubuntu-latest'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./tethys/.coverage/lcov.info
 
   docker-build:
     name: Docker Build
