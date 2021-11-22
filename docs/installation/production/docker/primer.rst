@@ -6,7 +6,7 @@ Docker Primer
 
 **Last Updated:** November 2021
 
-This tutorial provides an overview of Docker and the key concepts needed to use it effectively. For more detailed descriptions of the concepts in this tutorial, please review the articles in the footnotes.
+This guide provides an overview of Docker and the key concepts needed to use it effectively. For more detailed descriptions of the concepts in this guide, please review the articles in the footnotes.
 
 Shipping Analogy
 ================

@@ -125,6 +125,8 @@ You can build and run your docker image now with:
 
     If you remove or comment out the ``build`` section, it will pull the image from Docker Hub instead of building it locally.
 
+.. _docker_official_image_env:
+
 Environment Variables
 #####################
 
@@ -409,6 +411,8 @@ Here is an example of a dockerfile from a tethys app:
     #######
     CMD bash run.sh
 
+.. _docker_official_run_script:
+
 Run.sh
 ------
 
@@ -439,6 +443,9 @@ Run.sh also has these following optional arguments:
 For example, to only run the salt script you can run.
 
     sudo docker run -it tethysplatform/tethys-core /bin/bash -c '. run.sh --test'
+
+
+.. _docker_official_salt:
 
 ***********
 Salt Script

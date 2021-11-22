@@ -6,7 +6,7 @@ Getting Started with Docker
 
 **Last Updated:** November 2021
 
-To get started using Docker, you'll first need to install it. Docker provide excellent documentation for installation that can be found here: `Get Docker | Docker Documentation <https://docs.docker.com/get-docker/>`_. This tutorial provides shortcuts to installation instructions that are most relevant to Tethys app developers.
+To get started using Docker, you'll first need to install it. Docker provide excellent documentation for installation that can be found here: `Get Docker | Docker Documentation <https://docs.docker.com/get-docker/>`_. This guide provides shortcuts to installation instructions that are most relevant to Tethys app developers.
 
 Install
 =======
