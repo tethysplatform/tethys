@@ -78,6 +78,9 @@ def add_services_parser(subparsers):
     services_create_sd = services_create_subparsers.add_parser('spatial',
                                                                help='Create a Spatial Dataset Service.')
     services_create_sd.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
+    services_create_sd.add_argument('-t', '--type', required=False, type=str, choices=['GeoServer', 'THREDDS'],
+                                    default='GeoServer',
+                                    help='Type of spatial dataset service being created (GeoServer/THREDDS).')
     services_create_sd.add_argument('-c', '--connection', required=True, type=str,
                                     help='The connection of the Service in the form '
                                          '"<username>:<password>@<protocol>//<host>:<port>"')
@@ -93,8 +96,7 @@ def add_services_parser(subparsers):
                                                                     help='Create a CKAN/HydroShare Dataset Service.')
     services_create_dataset.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
     services_create_dataset.add_argument('-t', '--type', required=True, type=str, choices=['CKAN', 'HydroShare'],
-                                         help='Type of dataset service being created (CKAN/HydroShare)'
-                                              '"<username>:<password>@<protocol>//<host>:<port>"')
+                                         help='Type of dataset service being created (CKAN/HydroShare).')
     services_create_dataset.add_argument('-c', '--connection', required=True, type=str,
                                          help='The connection of the Service in the form '
                                               '"<username>:<password>@<protocol>//<host>:<port>"')
@@ -179,6 +181,7 @@ def services_create_spatial_command(args):
         endpoint = parts[1]
         public_endpoint = args.public_endpoint or ''
         apikey = args.apikey or ''
+        service_type = args.type
 
         if 'http' not in endpoint or '://' not in endpoint:
             raise IndexError()
@@ -191,7 +194,7 @@ def services_create_spatial_command(args):
 
         new_persistent_service = SpatialDatasetService(name=name, endpoint=endpoint, public_endpoint=public_endpoint,
                                                        apikey=apikey, username=service_username,
-                                                       password=service_password)
+                                                       password=service_password, engine=service_type)
         new_persistent_service.save()
 
         with pretty_output(FG_GREEN) as p:
@@ -225,18 +228,18 @@ def services_create_dataset_command(args):
         endpoint = parts[1]
         public_endpoint = args.public_endpoint or ''
         apikey = args.apikey or ''
-        serviceType = args.type
+        service_type = args.type
 
         if 'http' not in endpoint or '://' not in endpoint:
             raise IndexError()
 
-        if (public_endpoint != ""):
-            if ('http' not in public_endpoint or '://' not in public_endpoint):
+        if public_endpoint != "":
+            if 'http' not in public_endpoint or '://' not in public_endpoint:
                 raise FormatError()
 
         new_persistent_service = DatasetService(name=name, endpoint=endpoint, public_endpoint=public_endpoint,
                                                 apikey=apikey, username=service_username,
-                                                password=service_password, engine=serviceType)
+                                                password=service_password, engine=service_type)
         new_persistent_service.save()
 
         with pretty_output(FG_GREEN) as p:
@@ -304,7 +307,7 @@ def remove_service(serviceType, args):
     }
 
     service = services.get(serviceType)
-    serviceLabel = str(service)
+    service_label = str(service)
     service_id = None
 
     try:
@@ -320,26 +323,26 @@ def remove_service(serviceType, args):
         if force:
             service.delete()
             with pretty_output(FG_GREEN) as p:
-                p.write('Successfully removed {0} Service {1}!'.format(serviceLabel, service_id))
+                p.write('Successfully removed {0} Service {1}!'.format(service_label, service_id))
             exit(0)
         else:
             proceed = input(
-                'Are you sure you want to delete this {0} Service? [y/n]: '.format(serviceLabel))
+                'Are you sure you want to delete this {0} Service? [y/n]: '.format(service_label))
             while proceed not in ['y', 'n', 'Y', 'N']:
                 proceed = input('Please enter either "y" or "n": ')
 
             if proceed in ['y', 'Y']:
                 service.delete()
                 with pretty_output(FG_GREEN) as p:
-                    p.write('Successfully removed {0} Service {1}!'.format(serviceLabel, service_id))
+                    p.write('Successfully removed {0} Service {1}!'.format(service_label, service_id))
                 exit(0)
             else:
                 with pretty_output(FG_RED) as p:
-                    p.write('Aborted. {0} Service not removed.'.format(serviceLabel))
+                    p.write('Aborted. {0} Service not removed.'.format(service_label))
                 exit(0)
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
-            p.write('A {0} Service with ID/Name "{1}" does not exist.'.format(serviceLabel, service_id))
+            p.write('A {0} Service with ID/Name "{1}" does not exist.'.format(service_label, service_id))
         exit(0)
 
 

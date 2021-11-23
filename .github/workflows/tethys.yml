@@ -5,13 +5,15 @@ name: Tethys-CI
 on:
   push:
     branches:
-      - '*'
+      - 'master'
+      - 'release*'
   pull_request:
     branches:
       - '*'
 
 env:
   CONDA_BUILD_PIN_LEVEL: minor
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
 
@@ -48,21 +50,16 @@ jobs:
           conda activate tethys
           tethys test -c -u -v 2
       # Generate Coverage Report
-      - name: Genearte Coverage Report
-        if: matrix.os == 'ubuntu-latest'
+      - name: Generate Coverage Report
+        if: matrix.platform == 'ubuntu-latest'
         run: |
-            . ~/miniconda/etc/profile.d/conda.sh
-            conda activate tethys
-            coveralls
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          coveralls --service=github
 
   docker-build:
-    name: Docker Build (${{ matrix.platform }})
+    name: Docker Build
     needs: tests
-    if:
-      contains('
-        refs/heads/master
-        refs/heads/release
-      ', github.ref)
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -91,13 +88,8 @@ jobs:
           echo "Uploading is skipped for pull requests."
 
   conda-build:
-    name: Conda Build (${{ matrix.platform }})
+    name: Conda Build
     needs: tests
-    if:
-      contains('
-      refs/heads/master
-      refs/heads/release
-      ', github.ref)
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
