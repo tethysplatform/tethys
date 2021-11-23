@@ -162,14 +162,7 @@ For this image, define environment variables for the various settings for the ap
 
     The ``#`` character is used to denote comments in Dockerfiles.
 
-c. Install system dependencies
-------------------------------
-
-.. todo::
-
-    ???
-
-d. Add files to image
+c. Add files to image
 ---------------------
 
 The `ADD <https://docs.docker.com/engine/reference/builder/#add>`_ and `COPY <https://docs.docker.com/engine/reference/builder/#copy>`_ instructions let you copy files into the docker image. The difference between the two is that ``ADD`` will automatically decompress archive files (e.g.: ``.tar.gz``) and it can take a URL as the source of the copy (though confusingly if the URL is pointing to an archive, it won't decompress it automatically). It is recommended to use ``COPY`` unless you specifically need the extra features of ``ADD``.
@@ -186,6 +179,25 @@ Copy the directories containing the app source code to the ``${TETHYS_HOME}/apps
     COPY tethysapp-earth_engine ${TETHYS_HOME}/apps/tethysapp-earth_engine
     COPY tethysapp-postgis_app ${TETHYS_HOME}/apps/tethysapp-postgis_app
     COPY tethysapp-thredds_tutorial ${TETHYS_HOME}/apps/tethysapp-thredds_tutorial
+
+d. Add files for custom theme
+-----------------------------
+
+Download the following images to use in the custom theme for the Tethys Portal:
+
+* :download:`leaf-logo.png <images/leaf-logo.png>`
+* :download:`favicon.ico <images/favicon.ico>`
+
+Create a new folder called :file:`images` in the :file:`tethys_portal_docker` directory and the images to it.
+
+Add the following lines to the bottom of the Dockefile to add the images to the container image in the static files directory:
+
+.. code-block::
+
+    ###################
+    # ADD THEME FILES #
+    ###################
+    COPY images/* ${STATIC_ROOT}/custom_theme/images/
 
 e. Install apps
 ---------------
@@ -233,6 +245,7 @@ For this image we need to run the ``tethys install`` command for each of our app
         /bin/bash -c . "${CONDA_HOME}/bin/activate tethys && tethys <command>"
 
     The ``-c`` option to the ``bash`` command allows you to specify a command to run. Place the command in quotes as shown above. The ``&&`` operator is used to join commands on one line. If the first command fails, the second will not be executed. Alternatively, you may use ``;`` operator to join commands and all of the commands will be executed regardless of the outcome of the previous commands.
+
 
 f. Expose port 80 (optional)
 ----------------------------
@@ -297,7 +310,8 @@ Create the following empty Salt State files in the :file:`tethys_portal_docker/s
 .. code-block::
 
     cd salt
-    touch tethys_services.sls init_apps.sls portal_theme.sls
+    touch tethys_services.sls init_apps.sls portal_theme.sls top.sls
+    cd ..
 
 c. Set up Tethys Services - tethys_services.sls
 -----------------------------------------------
@@ -348,7 +362,7 @@ The `cmd.run <https://docs.saltproject.io/en/latest/ref/states/all/salt.states.c
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
-Explanation:
+**Explanation:**
 
 * ``Create_PostGIS_Database_Service``: This is the name of the step. It needs to be unique across all the Salt State steps that are run, including those run by the base Tethys Platform image.
 * The ``name`` parameter of the ``cmd.run`` module is where the command to run should be defined.
@@ -365,7 +379,7 @@ Add the following lines to create the THREDDS Tethys Service:
 
     Create_THREDDS_Spatial_Dataset_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
+        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
@@ -391,36 +405,45 @@ The :file:``init_apps.sls`` file will contain the steps required to initialize t
     {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
     {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
     {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
+    {% set DAM_INVENTORY_MAX_DAMS = salt['environ.get']('DAM_INVENTORY_MAX_DAMS') %}
+    {% set EARTH_ENGINE_PRIVATE_KEY_FILE = salt['environ.get']('EARTH_ENGINE_PRIVATE_KEY_FILE') %}
+    {% set EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL = salt['environ.get']('EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL') %}
     {% set THREDDS_SERVICE_NAME = 'tethys_thredds' %}
     {% set POSTGIS_SERVICE_NAME = 'tethys_postgis' %}
 
     Sync_Apps:
       cmd.run:
-        - name: . {{ CONDA_HOME }}/bin/activate tethys && tethys db sync
+        - name: >
+            . {{ CONDA_HOME }}/bin/activate tethys &&
+            tethys db sync
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
-    Link_Persistent_Stores_Database_Dam_Inventory:
+    Set_Custom_Settings:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys link persistent:{{ POSTGIS_SERVICE_NAME }} dam_inventory:ps_database:primary_db"
+        - name: >
+            . {{ CONDA_HOME }}/bin/activate tethys &&
+            tethys app_settings set dam_inventory max_dams {{ DAM_INVENTORY_MAX_DAMS }} &&
+            tethys app_settings set earth_engine service_account_email {{ EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL }} &&
+            tethys app_settings set earth_engine private_key_file {{ EARTH_ENGINE_PRIVATE_KEY_FILE }}
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
-    Link_Persistent_Stores_Database_PostGIS_App:
+    Link_Tethys_Services_to_Apps:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys link persistent:{{ POSTGIS_SERVICE_NAME }} postgis_app:ps_database:flooded_addresses"
-        - shell: /bin/bash
-        - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
-
-    Link_Spatial_Dataset_Service_THREDDS_Tutorial:
-      cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys link spatial:{{ THREDDS_SERVICE_NAME }} thredds_tutorial:ds_spatial:thredds_service"
+        - name: >
+            . {{ CONDA_HOME }}/bin/activate tethys &&
+            tethys link persistent:{{ POSTGIS_SERVICE_NAME }} dam_inventory:ps_database:primary_db &&
+            tethys link persistent:{{ POSTGIS_SERVICE_NAME }} postgis_app:ps_database:flooded_addresses &&
+            tethys link spatial:{{ THREDDS_SERVICE_NAME }} thredds_tutorial:ds_spatial:thredds_service
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
     Sync_App_Persistent_Stores:
       cmd.run:
-        - name: . {{ CONDA_HOME }}/bin/activate tethys && tethys syncstores all
+        - name: >
+            . {{ CONDA_HOME }}/bin/activate tethys &&
+            tethys syncstores all
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
@@ -430,28 +453,134 @@ The :file:``init_apps.sls`` file will contain the steps required to initialize t
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
+**Explanation:**
+
+* **Sync_Apps**: Run the ``tethys sync db`` command to ensure the database is up-to-date with the apps that were installed at build time. See :ref:`tethys_db_cmd` for more details.
+* **Set_Custom_Settings**: Set the values of the custom settings from the corresponding environment variables. Only two of the apps installed have custom settings: Earth Engine and Dam Inventory. See: :ref:`tethys_cli_app_settings` for more details.
+* **Link_Tethys_Services_to_Apps**: Link the PostGIS and THREDDS services with the apps that need them using the ``tethys link`` command. See: :ref:`tethys_cli_link` for more details.
+* **Sync_App_Persistent_Stores**: After linking apps with the PostGIS databases, we now need to initailize the database using the ``tethys syncstores`` command. See: :ref:`tethys_syncstores_cmd` for more details.
+* **Flag_Init_Apps_Setup_Complete**: Add the file that will indicate that the steps have been completed so they don't run everytime the container starts up.
 
 e. Apply custom Tethys Portal theme - portal_theme.sls
 ------------------------------------------------------
 
+The :file:`portal_theme.sls` file will contain the steps required to customize the Tethys Portal theme and content. The :ref:`tethys site <tethys_site_cmd>` command can be used to set Site Settings programmatically. This includes settings such as the portal title, theme colors, and logo. For a complete list of settings that can be set with this command, see :ref:`tethys_site_cmd` and :ref:`tethys_configuration_site_settings`.
+
+Add the following contents to :file:`portal_theme.sls`:
+
+.. code-block::
+
+    {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
+    {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
+
+    Apply_Custom_Theme:
+      cmd.run:
+        - name: >
+            . {{ CONDA_HOME }}/bin/activate tethys &&
+            tethys site
+            --title "My Custom Portal"
+            --tab-title "My Custom Portal"
+            --library-title "Tools"
+            --primary-color "#01200F"
+            --secondary-color "#358600"
+            --background-color "#ffffff"
+            --logo "/custom_theme/images/leaf-logo.png"
+            --favicon "/custom_theme/images/favicon.ico"
+            --copyright "Copyright © 2021 My Organization"
+        - shell: /bin/bash
+        - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/custom_theme_setup_complete" ];"
+
+    Flag_Custom_Theme_Setup_Complete:
+      cmd.run:
+        - name: touch {{ TETHYS_PERSIST }}/custom_theme_setup_complete
+        - shell: /bin/bash
+
+.. note::
+
+    The paths for the ``--logo`` and ``--favicon`` options need to be specified relative to the ``STATIC_ROOT`` directory. Alterntively, you can specify a link to an image host on a different website.
+
+
 f. Create custom Top file
 -------------------------
+
+Finally, the :file:`top.sls` that is included in Tethys Platform image needs to be overridden. This file instructs Salt which Salt State files should be executed and in what order. The default :file:`top.sls` has the following contents:
+
+.. code-block::
+
+    base:
+      '*':
+        - pre_tethys
+        - tethyscore
+        - post_app
+
+The :file:`pre_tethys.sls`, :file:`tethyscore.sls`, and :file:`post_app.sls` Salt States need to be executed to properly initialize Tethys. As the name suggests, the :file:`post_app.sls` should be executed after any of your custom app configuration Salt States. The best approach is to start with the contents of the the original :file:`top.sls` file (above) and add your custom Salt State files  between the ``tethyscore`` and ``post_app`` items.
+
+We've created a new :file:`top.sls` that we'll use to overwrite the :file:`top.sls` provided by the Tethys Platform image. Add the following contents to it:
+
+.. code-block::
+
+    base:
+      '*':
+        - pre_tethys
+        - tethyscore
+        - tethys_services
+        - init_apps
+        - portal_theme
+        - post_app
 
 g. Add Salt State files to image
 --------------------------------
 
+With the Salt State files created, the :file:`Dockerfile` will need to be modified to add them to the image. Add the following lines to the :file:`Dockerfile` after the **INSTALL** section but before the **PORTS** section:
+
+.. code-block::
+
+    ##################
+    # ADD SALT FILES #
+    ##################
+    COPY salt/ /srv/salt/
+
+.. note::
+
+    This ``COPY`` instruction will copy the contents of the local :file:`salt` directory into the :file:`/srv/salt/` directory. Any files with the same names will be replaced. In this case, our :file:`top.sls` will overwrite the :file:`top.sls` placed in :file:`/srv/salt` by the base image.
+
 7. Build Image
 ==============
 
-8. Optimize Build
-=================
+With the :file:`Dockerfile` and Salt State scripts complete, the custom Docker image can now be built. Change back into the :file:`tethys_portal_docker` directory if necessary and run the command:
+
+.. code-block::
+
+    docker build -t tethys-portal-docker .
+
+Run the following command to verify that the image was created:
+
+.. code-block::
+
+    docker images
+
+You should see an image with a repository "tethys-portal-docker" and tag "latest" in the list of images similar to this:
+
+.. code-block::
+
+    REPOSITORY             TAG       IMAGE ID       CREATED          SIZE
+    tethys-portal-docker   latest    426b6a6f36c5   1 minute ago   2.91GB
+
+.. note::
+
+    The ``-t`` option is used name or tag the docker image. The name can have two parts, separated by a ``:``: ``<name>:<tag>``. If a ``<tag>`` isn't given, it defaults to ``latest``.
 
 9. Commit Changes
 =================
 
+Commit the changes to the Dockerfile and salt script as follows:
+
+.. code-block::
+
+    git add .
+    git commit -m "Filled in Dockerfile and added Salt State scripts."
+
 What's Next?
 ============
 
-
-(Run in next tutorial, Docker compose)
-
+With the image built, its now time to run the container. Tethys Portal requires a database to run. The database can be created using a Docker image as well, but that means starting two Docker images with one that depends on the other and the easiest way to manage that is with Docker Compose. Continue to the next tutorial to learn how to run the custom Tethys image with Docker Compose.
