@@ -207,6 +207,31 @@ def get_app_settings(app):
         write_error('Something went wrong. Please try again.')
 
 
+def get_custom_setting(app_package, setting_name):
+    """
+    Get a CustomSetting for a specified TethysApp.
+
+    Args:
+        app_package (str): The name/package of the TethysApp.
+        setting_name (str): The name of the CustomSetting.
+
+    Returns:
+        CustomSetting: The Custom Setting or None if the TethysApp or CustomSetting cannot be found.
+    """
+    from tethys_apps.models import TethysApp, CustomSetting
+    try:
+        app = TethysApp.objects.get(package=app_package)
+    except TethysApp.DoesNotExist:
+        return None
+
+    try:
+        setting = CustomSetting.objects.get(tethys_app=app, name=setting_name)
+    except CustomSetting.DoesNotExist:
+        return None
+
+    return setting
+
+
 def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,
                                spatial=False, dynamic=False):
     from tethys_cli.cli_colors import pretty_output, FG_RED, FG_GREEN
