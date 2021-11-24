@@ -112,7 +112,7 @@ e. Place the ``JSON`` file containing the service account key in the :file:`keys
 .. _`depends_on`: https://docs.docker.com/compose/compose-file/compose-file-v3/#depends_on
 .. _`networks (services)`: https://docs.docker.com/compose/compose-file/compose-file-v3/#networks
 .. _`ports`: https://docs.docker.com/compose/compose-file/compose-file-v3/#ports
-.. _`environment`: https://docs.docker.com/compose/compose-file/compose-file-v3/#environment
+.. _`env_file`: https://docs.docker.com/compose/compose-file/compose-file-v3/#env_file
 .. _`volumes`: https://docs.docker.com/compose/compose-file/compose-file-v3/#volumes
 
 Create a new file called :file:`docker-compose.yml` in the :file:`tethys_portal_docker` directory:
@@ -161,14 +161,10 @@ Add the following definition for the ``db`` service in the :file:`docker-compose
         - "internal"
       ports:
         - "5432:5432"
-      environment:
-        POSTGRES_PASSWORD: "<POSTGRES_PASSWORD>"
+      env_file:
+        - ./env/db.env
       volumes:
         - ./data/db:/var/lib/postgresql/data
-
-.. important::
-
-    Replace ``<POSTGRES_PASSWORD>`` with a secure password (see: :ref:`production_preparation`).
 
 **Explanation**
 
@@ -176,7 +172,7 @@ Add the following definition for the ``db`` service in the :file:`docker-compose
 * `restart`_: Set the restart policy for the container in the event of an outage or error.
 * `networks (services)`_: Networks for the container to join. The database does not need to be accessible externally, so it is only connected to the ``internal`` network.
 * `ports`_: Ports to expose on the container (``<host>:<container>``).
-* `environment`_: Environment variables to add or override if they already exist in the container. In this case, the ``POSTGRES_PASS`` variable is used to set the password of the admin user of the database. Review documentation on Docker Hub for an explanation of all the environment variables that are available (see: `postgis/postgis | Docker Hub`_ and `postgres | Docker Hub`_) .
+* `env_file`_: A file containing the environment variables to create for the container. Environment variables often contain sensitive information that should not be committed with the :file:`docker-compose.yml`. The :file:`db.env` file will be created in Step 7.
 * `volumes`_: Mount directories from the host into the container or create Docker-managed named volumes. Volumes allow you to preserve data that would otherwise be lost when the container is removed. The syntax shown here is: ``<host_dir>:<container_dir>``.
 
     * ``./data/db:/var/lib/postgresql/data``: The primary data directory for PostgreSQL database. This directory contains the data and configuration files for the database.
@@ -200,22 +196,13 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
         - "external"
       ports:
         - "8080:8080"
-      environment:
-        - TDM_PW=<THREDDS_PASSWORD>
-        - TDS_HOST=<SERVER_DOMAIN_NAME>
-        - THREDDS_XMX_SIZE=4G
-        - THREDDS_XMS_SIZE=4G
-        - TDM_XMX_SIZE=6G
-        - TDM_XMS_SIZE=1G
+      env_file:
+        - ./env/thredds.env
       volumes:
         - ./data/thredds/:/usr/local/tomcat/content/thredds
         - ./logs/thredds/tomcat/:/usr/local/tomcat/logs/
         - ./logs/thredds/thredds/:/usr/local/tomcat/content/thredds/logs/
         - ./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml
-
-.. important::
-
-    Replace ``<THREDDS_PASSWORD>`` with a secure password. Also replace ``<SERVER_DOMAIN_NAME>`` with the public hostname of the THREDDS server (e.g. http://thredds.yourhost.net/; see: :ref:`production_preparation`). Also set the memory parameters carefully to fit within the memory constraints of your server.
 
 **Explanation**
 
@@ -223,7 +210,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
 * `restart`_: Set the restart policy for the container in the event of an outage or error.
 * `networks (services)`_: Networks for the container to join. The THREDDS server is a map server and needs to be externally accessible, so it is added to both the ``internal`` and ``external`` networks.
 * `ports`_: Ports to expose on the container (``<host>:<container>``).
-* `environment`_: Environment variables to add or override if they already exist in the container. Review documentation on Docker Hub for an explanation of the environment variables that are available (see: `unidata/thredds-docker | Docker Hub`_) .
+* `env_file`_: A file containing the environment variables to create for the container. Environment variables often contain sensitive information that should not be committed with the :file:`docker-compose.yml`. The :file:`thredds.env` file will be created in Step 7.
 * `volumes`_: Mount directories from the host into the container or create Docker-managed named volumes. Volumes allow you to preserve data that would otherwise be lost when the container is removed. The syntax shown here is: ``<host_dir>:<container_dir>``.
 
     * ``./data/thredds/:/usr/local/tomcat/content/thredds``: Main content directory for THREDDS. This directory will contain the data and XML configuration files for THREDDS.
@@ -279,39 +266,12 @@ Add the following definition for the ``web`` service in the :file:`docker-compos
         - "external"
       ports:
           - "80:80"
-      environment:
-        ALLOWED_HOSTS: "\"[<SERVER_DOMAIN_NAME>]\""
-        ASGI_PROCESSES: 1
-        CHANNEL_LAYERS_BACKEND: "channels_redis.core.RedisChannelLayer"
-        CHANNEL_LAYERS_CONFIG: "\"{\"hosts\": [[\"redis\", 6379]]}\""
-        TETHYS_DB_HOST: "db"
-        TETHYS_DB_PORT: "5432"
-        TETHYS_DB_USERNAME: "<TETHYS_DB_USERNAME>"
-        TETHYS_DB_PASSWORD: "<TETHYS_DB_PASSWORD>"
-        TETHYS_DB_SUPERUSER: "<TETHYS_DB_SUPERUSER>"
-        TETHYS_DB_SUPERUSER_PASS: "<TETHYS_DB_SUPERUSER_PASS>"
-        POSTGRES_PASSWORD: "<POSTGRES_PASSWORD>"
-        PORTAL_SUPERUSER_NAME: "<PORTAL_SUPERUSER_NAME>"
-        PORTAL_SUPERUSER_PASSWORD: "<PORTAL_SUPERUSER_PASSWORD>"
-        PORTAL_SUPERUSER_EMAIL: "<PORTAL_SUPERUSER_EMAIL>"
-        DAM_INVENTORY_MAX_DAMS: "<DAM_INVENTORY_MAX_DAMS>"
-        EARTH_ENGINE_PRIVATE_KEY_FILE: "/var/lib/tethys/keys/gee/<EARTH_ENGINE_JSON_KEYFILE>"
-        EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL: "<EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL>"
-        THREDDS_TUTORIAL_TDS_USERNAME: "admin"
-        THREDDS_TUTORIAL_TDS_PASSWORD: "<THREDDS_PASSWORD>"
-        THREDDS_TUTORIAL_TDS_PROTOCOL: "http"
-        THREDDS_TUTORIAL_TDS_HOST: "thredds"
-        THREDDS_TUTORIAL_TDS_PORT: "8080"
+      env_file:
+        - ./env/web.env
       volumes:
         - ./data/tethys:/var/lib/tethys_persist
         - ./keys/gee:/var/lib/tethys/keys
         - ./logs/tethys:/var/log/tethys
-
-.. note::
-
-    Replace ``<SERVER_DOMAIN_NAME>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_SUPER_USERNAME>``, ``<TETHYS_DB_SUPER_USERNAME>``,  ``<POSTGRES_PASSWORD>``, ``<PORTAL_SUPERUSER_NAME>``, ``<PORTAL_SUPERUSER_PASSWORD>``, and ``<PORTAL_SUPERUSER_EMAIL>`` with appropriate values (see: :ref:`production_preparation`).
-
-    Also set the <DAM_INVENTORY_MAX_DAMS> setting to the desired maximum number of dams for the Dam Inventory app and set the ``<EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL>`` to the email address associated with your Google Earth Engine service account and replace the ``<EARTH_ENGINE_JSON_KEYFILE>`` with the name of the keyfile (see: :ref:`tutorial_google_earth_engine_service_account`). Set the <THREDDS_PASSWORD> to match how you configured the THREDDS service.
 
 **Explanation**
 
@@ -321,13 +281,84 @@ Add the following definition for the ``web`` service in the :file:`docker-compos
 * `depends_on`_: Specify the dependency between services. In this case the ``db``, ``thredds``, and ``redis`` containers will be started before the ``web`` container.
 * `networks (services)`_: Networks for the container to join. The Tethys server needs to be externally accessible, so it is added to both the ``internal`` and ``external`` networks.
 * `ports`_: Ports to expose on the container (``<host>:<container>``).
-* `environment`_: Environment variables to add or override if they already exist in the container. Notice this list includes the custom environment variables that were defined in the :file:`Dockerfile`. For an explanation of all the environment variables provided by the Tethys Platform image see: :ref:`docker_official_image_env`.
+* `env_file`_: A file containing the environment variables to create for the container. Environment variables often contain sensitive information that should not be committed with the :file:`docker-compose.yml`. The :file:`web.env` file will be created in Step 7.
 * `volumes`_: Mount directories from the host into the container or create Docker-managed named volumes. Volumes allow you to preserve data that would otherwise be lost when the container is removed. The syntax shown here is: ``<host_dir>:<container_dir>``.
 
     * ``./data/tethys:/var/lib/tethys_persist``: Main content directory for Tethys Platform. This directory contains the app workspaces, static files, and configuration files including the :file:`portal_config.yml`.
     * ``./log/tethys:/var/log/tethys``: Logs for Tethys.
 
-7. Start Containers
+7. Create Environment Files
+---------------------------
+
+TODO
+
+.. code-block::
+
+    mkdir env
+    touch env/db.env env/thredds.env env/web.env
+
+**db.env**
+
+.. code-block::
+
+    POSTGRES_PASSWORD=please_dont_use_default_passwords
+
+Environment variables to add or override if they already exist in the container. In this case, the ``POSTGRES_PASS`` variable is used to set the password of the admin user of the database. Review documentation on Docker Hub for an explanation of all the environment variables that are available (see: `postgis/postgis | Docker Hub`_ and `postgres | Docker Hub`_).
+
+
+    Replace ``<POSTGRES_PASSWORD>`` with a secure password (see: :ref:`production_preparation`).
+
+**thredds.env**
+
+.. code-block::
+
+    TDM_PW=please_dont_use_default_passwords
+    TDS_HOST=http://localhost
+    THREDDS_XMX_SIZE=4G
+    THREDDS_XMS_SIZE=4G
+    TDM_XMX_SIZE=6G
+    TDM_XMS_SIZE=1G
+
+Environment variables to add or override if they already exist in the container. Review documentation on Docker Hub for an explanation of the environment variables that are available (see: `unidata/thredds-docker | Docker Hub`_) .
+
+
+    Replace ``<THREDDS_PASSWORD>`` with a secure password. Also replace ``<SERVER_DOMAIN_NAME>`` with the public hostname of the THREDDS server (e.g. http://thredds.yourhost.net/; see: :ref:`production_preparation`). Also set the memory parameters carefully to fit within the memory constraints of your server.
+
+**web.env**
+
+.. code-block::
+
+    ALLOWED_HOSTS="\"[localhost]\""
+    ASGI_PROCESSES=1
+    CHANNEL_LAYERS_BACKEND=channels_redis.core.RedisChannelLayer
+    CHANNEL_LAYERS_CONFIG="\"{\"hosts\": [[\"redis\", 6379]]}\""
+    TETHYS_DB_HOST=db
+    TETHYS_DB_PORT=5432
+    TETHYS_DB_USERNAME=tethys_default
+    TETHYS_DB_PASSWORD=please_dont_use_default_passwords
+    TETHYS_DB_SUPERUSER=tethys_super
+    TETHYS_DB_SUPERUSER_PASS=please_dont_use_default_passwords
+    POSTGRES_PASSWORD=please_dont_use_default_passwords
+    PORTAL_SUPERUSER_NAME=admin
+    PORTAL_SUPERUSER_PASSWORD=please_dont_use_default_passwords
+    PORTAL_SUPERUSER_EMAIL=you@email.com
+    DAM_INVENTORY_MAX_DAMS=50
+    EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/some-key.json
+    EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL=you@email.com
+    THREDDS_TUTORIAL_TDS_USERNAME=admin
+    THREDDS_TUTORIAL_TDS_PASSWORD=please_dont_use_default_passwords
+    THREDDS_TUTORIAL_TDS_PROTOCOL=http
+    THREDDS_TUTORIAL_TDS_HOST=thredds
+    THREDDS_TUTORIAL_TDS_PORT=8080
+
+Environment variables to add or override if they already exist in the container. Notice this list includes the custom environment variables that were defined in the :file:`Dockerfile`. For an explanation of all the environment variables provided by the Tethys Platform image see: :ref:`docker_official_image_env`.
+
+
+    Replace ``<SERVER_DOMAIN_NAME>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_SUPER_USERNAME>``, ``<TETHYS_DB_SUPER_USERNAME>``,  ``<POSTGRES_PASSWORD>``, ``<PORTAL_SUPERUSER_NAME>``, ``<PORTAL_SUPERUSER_PASSWORD>``, and ``<PORTAL_SUPERUSER_EMAIL>`` with appropriate values (see: :ref:`production_preparation`).
+
+    Also set the <DAM_INVENTORY_MAX_DAMS> setting to the desired maximum number of dams for the Dam Inventory app and set the ``<EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL>`` to the email address associated with your Google Earth Engine service account and replace the ``<EARTH_ENGINE_JSON_KEYFILE>`` with the name of the keyfile (see: :ref:`tutorial_google_earth_engine_service_account`). Set the <THREDDS_PASSWORD> to match how you configured the THREDDS service.
+
+8. Start Containers
 -------------------
 
 To start the containers run the following command in the directory with the :file:`docker-compose.yml` file (:file:`tethys_portal_docker`):
@@ -340,7 +371,7 @@ To start the containers run the following command in the directory with the :fil
 
     In older version of Docker Compose, use ``docker-compose <command>`` instead of ``docker compose <command>``.
 
-8. Check Status
+9. Check Status
 ---------------
 
 Check the status of the containers by running this command:
@@ -349,8 +380,8 @@ Check the status of the containers by running this command:
 
     docker compose ps
 
-9. Inspect Logs
----------------
+10. Inspect Logs
+----------------
 
 It will take several minutes for the Tethys container to start up the first time as it needs to complete the initialization steps in the Salt State files. Monitor the logs for the Tethys container so that you know when it completes as follows:
 
@@ -401,7 +432,7 @@ The Salt State report can be incredibly useful for debugging issues when somethi
 
 Press ``CTRL-C`` to exit the ``tethys logs`` command.
 
-10. View Running Portal
+11. View Running Portal
 -----------------------
 
 In a web browser, navigate to web address of the running portal (Figure 1). If using the default configuration, it will be accessible at http://localhost on the host machine. You may also want to view the THREDDS server catalog, which will be running at http://localhost:8080/thredds with the default config.
@@ -412,7 +443,7 @@ In a web browser, navigate to web address of the running portal (Figure 1). If u
 
     **Figure 1**: Screenshot of the running Tethys Portal.
 
-11. Review Mounted Directory Contents
+12. Review Mounted Directory Contents
 -------------------------------------
 
 Inspect the contents of the various directories that were mounted into the containers (i.e.: :file:`data`, :file:`logs`, :file:`config`). Notice how the logs for Tethys and THREDDS are easily accessible. As is the :file:`portal_config.yml` (see :file:`data/tehtys/portal_config.yml`). Data can be easily added to the THREDDS server by adding it to the :file:`data/thredds/public` directory and then modifing the :file:`catalog.xml`.
@@ -421,7 +452,7 @@ Inspect the contents of the various directories that were mounted into the conta
 
     Use the contents of these directories to debug and make configuration changes as needed. Be sure to restart the affected container after making changes to configuration (see below).
 
-12. Update README
+13. Update README
 -----------------
 
 Update the contents of the README with the following to provide instructions for how to use the Docker Compose recipe:
@@ -470,7 +501,7 @@ Update the contents of the README with the following to provide instructions for
     docker compose up -d
     ```
 
-13. Commit Changes
+14. Commit Changes
 ------------------
 
 The contents of the :file:`data`, :file:`logs`, and :file:`keys` directories should not be committed into the Git repository because they contain large amounts of instance-specific data and sensitive information. Create a :file:`.gitignore` file with the following contents to omit the contents of these directories from being tracked:

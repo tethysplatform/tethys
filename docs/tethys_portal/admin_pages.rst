@@ -53,11 +53,11 @@ Assign App Access Permissions
 
 Administrators of Tethys Portal can control access to each app in the portal. However, this feature is disabled by default. To enable app access control set the following setting in the ``portal_config.yaml``:
 
-```yaml
-settings:
-  TETHYS_PORTAL_CONFIG:
-    ENABLE_RESTRICTED_APP_ACCESS: True
-```
+.. code-block:: yaml
+
+    settings:
+      TETHYS_PORTAL_CONFIG:
+        ENABLE_RESTRICTED_APP_ACCESS: True
 
 .. caution::
 
