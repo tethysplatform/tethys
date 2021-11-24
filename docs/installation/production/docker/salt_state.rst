@@ -286,36 +286,10 @@ Add the Salt State files and commit changes to the :file:`Dockerfile`:
     git add .
     git commit -m "Added Salt State scripts for runtime initialization."
 
-Build Image
-===========
-
-With the :file:`Dockerfile` and Salt State scripts complete, the custom Docker image can now be built. Change back into the :file:`tethys_portal_docker` directory if necessary and run the command:
-
-.. code-block::
-
-    docker build -t tethys-portal-docker .
-
-.. note::
-
-    The ``-t`` option is used name or tag the docker image. The name can have two parts, separated by a ``:``: ``<name>:<tag>``. If a ``<tag>`` isn't given, it defaults to ``latest``.
-
-Run the following command to verify that the image was created:
-
-.. code-block::
-
-    docker images
-
-You should see an image with a repository "tethys-portal-docker" and tag "latest" in the list of images similar to this:
-
-.. code-block::
-
-    REPOSITORY             TAG       IMAGE ID       CREATED          SIZE
-    tethys-portal-docker   latest    426b6a6f36c5   1 minute ago   2.98GB
-
 Solution
 ========
 
-This concludes this portion of the tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethys_portal_docker/tree/salt-state-solution-3.3>`_ or clone it as follows:
+This concludes this portion of the tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethys_portal_docker>`_ or clone it as follows:
 
 .. parsed-literal::
 
@@ -326,4 +300,4 @@ This concludes this portion of the tutorial. You can view the solution on GitHub
 What's Next?
 ============
 
-Continue to the next tutorial to learn how to run the custom image using Docker Compose.
+Continue to the next tutorial to learn how build the image.

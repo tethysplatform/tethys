@@ -15,6 +15,7 @@ Please ensure you have the following prerequisites before continuing:
 
 * :ref:`Docker Installed <docker_get_started>`
 * `Git Installed <https://git-scm.com/downloads>`_
+* Acquire a :ref:`tutorial_google_earth_engine_service_account`.
 
 Project Setup
 =============
@@ -312,7 +313,7 @@ Add the images to the repository and commit the changes to the :file:`Dockerfile
 Solution
 ========
 
-This concludes this portion of the tutorial. You can view the solution on GitHub at `<>`_ or clone it as follows:
+This concludes this portion of the tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethys_portal_docker>`_ or clone it as follows:
 
 .. parsed-literal::
 

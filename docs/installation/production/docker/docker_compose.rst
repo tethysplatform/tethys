@@ -8,12 +8,6 @@ Run with Docker Compose
 
 With the image built, its now time to run the container. Tethys Portal requires at least a database and a Redis server to run. The custom image that we have built will also require a THREDDS server. Both the database and THREDDS server can be created using a Docker images as well, but that means starting multiple Docker images with one that depends on the others. The easiest way to manage a multi-container deployment like this is with `Docker Compose <https://docs.docker.com/compose/>`_.
 
-Prerequisites
-=============
-
-* Complete the :ref:`Production Preparation <production_preparation>` tutorial.
-* Acquire a :ref:`tutorial_google_earth_engine_service_account`.
-
 Docker Compose Overview
 =======================
 
@@ -71,8 +65,8 @@ Create Docker Compose Recipe
 
 Use the following instructions to create a Docker Compose file for the custom Tethys Portal image that you created in the previous tutorial.
 
-1. Create Directories and Supporting Files
-------------------------------------------
+1. Create Data Directories
+--------------------------
 
 Docker allows directories from the host machine to be mounted into the containers. This is most often used to provide easy access to container data, configuration files, and logs.
 
@@ -318,11 +312,11 @@ c. Add the following contents to each ``.env`` file:
 
     .. tip::
 
-        **Learn More**
-
         Review documentation on Docker Hub for the PostgreSQL and PostGIS images for an explanation of the environment variables that are available (see: `postgis/postgis | Docker Hub`_ and `postgres | Docker Hub`_).
 
-        **Production**
+    .. important::
+
+        **For Production Deployments:**
 
         For a production deployment, set ``POSTGRES_PASSWORD`` with a secure password (see: :ref:`production_preparation`).
 
@@ -351,11 +345,11 @@ c. Add the following contents to each ``.env`` file:
 
     .. tip::
 
-        **Learn More**
-
         Review documentation on Docker Hub for the THREDDS image for an explanation of the environment variables that are available (see: `unidata/thredds-docker | Docker Hub`_).
 
-        **Production Deployment**
+    .. important::
+
+        **For Production Deployments:**
 
         Set ``THREDDS_PASSWORD`` with a secure password and set ``TDS_HOST`` to ``SERVER_DOMAIN_NAME`` (see: :ref:`production_preparation`). Set the memory parameters carefully to fit within the memory constraints of your server.
 
@@ -401,15 +395,89 @@ c. Add the following contents to each ``.env`` file:
 
     .. tip::
 
-        **Learn More**
-
         For an explanation of all the environment variables provided by the Tethys Platform image see: :ref:`docker_official_image_env`.
 
-        **Production Deployment**
+    .. important::
+
+        **For Production Deployments:**
 
         Replace ``localhost`` in the ``ALLOWED_HOSTS`` setting with ``<SERVER_DOMAIN_NAME>`` and set ``TETHYS_DB_USERNAME``, ``TETHYS_DB_PASSWORD``, ``TETHYS_DB_SUPER_USERNAME``, ``TETHYS_DB_SUPERUSER_PASS``,  ``POSTGRES_PASSWORD``, ``PORTAL_SUPERUSER_NAME``, ``PORTAL_SUPERUSER_PASSWORD``, and ``PORTAL_SUPERUSER_EMAIL`` with appropriate values (see: :ref:`production_preparation`).
 
         Also set the ``DAM_INVENTORY_MAX_DAMS`` setting to the desired maximum number of dams for the Dam Inventory app and set the ``EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL`` to the email address associated with your Google Earth Engine service account and replace the ``some-key.json`` with the name of your keyfile in the ``EARTH_ENGINE_PRIVATE_KEY_FILE`` setting (see: :ref:`tutorial_google_earth_engine_service_account`). Set the ``THREDDS_PASSWORD`` should be set to match ``TDM_PW`` in the :file:`thredds.env`.
+
+8. Update README
+----------------
+
+Update the contents of the README with instructions for using the repository and Docker compose recipe by adding the following lines:
+
+.. code-block::
+
+    # Checkout
+
+    ```
+    git clone --recursive-submodules https://github.com/tethysplatform/tethys_portal_docker.git
+    ```
+
+    # Build
+
+    ```
+    docker compose build web
+    ```
+
+    # Run
+
+    1. Create Data Directories
+
+    ```
+    mkdir -p data/db
+    mkdir -p data/tethys
+    mkdir -p data/thredds
+    mkdir -p keys/gee
+    mkdir -p logs/tethys
+    mkdir -p logs/thredds/thredds
+    mkdir -p logs/thredds/tomcat
+    ```
+
+    2. Acquire a Earth Engine Service Account and Key file (see Step 1 of [Google Earth Engine Service Account](http://docs.tethysplatform.org/en/stable/tutorials/google_earth_engine/part_3/service_account.html)).
+
+    3. Add the Google Earth Engine service account JSON key file to the `keys/gee` directory.
+
+    4. Create copies of the `.env` files in the `env` directory and modify the settings appropriately.
+
+    5. Update `env_file` sections in the `docker-compose.yml` to point to your copies of the `.env` files.
+
+    6. Start containers:
+
+    ```
+    docker compose up -d
+    ```
+
+9. Commit Changes
+-----------------
+
+The contents of the :file:`data`, :file:`logs`, and :file:`keys` directories should not be committed into the Git repository because they contain large amounts of instance-specific data and sensitive information.
+
+a. Create a :file:`.gitignore` file:
+
+    .. code-block::
+
+        touch .gitignore
+
+
+b. Add the following contents to the :file:`.gitignore` file to omit the contents of these directories from being tracked:
+
+    .. code-block::
+
+        data/
+        keys/
+        logs/
+
+c. Stage changes and commit the changes as follows:
+
+    .. code-block::
+
+        git add .
+        git commit -m "Added Docker Compose recipe"
 
 Run Docker Compose Recipe
 =========================
@@ -504,85 +572,22 @@ In a web browser, navigate to web address of the running portal (Figure 1). If u
 5. Review Mounted Directory Contents
 ------------------------------------
 
-Inspect the contents of the various directories that were mounted into the containers (i.e.: :file:`data`, :file:`logs`, :file:`config`). Notice how the logs for Tethys and THREDDS are easily accessible. As is the :file:`portal_config.yml` (see :file:`data/tehtys/portal_config.yml`). Data can be easily added to the THREDDS server by adding it to the :file:`data/thredds/public` directory and then modifing the :file:`catalog.xml`.
+Inspect the contents of the various directories that were mounted into the containers (i.e.: :file:`data`, :file:`logs`, :file:`config`). Notice how the logs for Tethys and THREDDS are easily accessible. As is the :file:`portal_config.yml` (see :file:`data/tehtys/portal_config.yml`). Data can be easily added to the THREDDS server by adding it to the :file:`data/thredds/public` directory and then modifying the :file:`catalog.xml`.
 
 .. tip::
 
     Use the contents of these directories to debug and make configuration changes as needed. Be sure to restart the affected container after making changes to configuration (see below).
 
-Wrap Up
-=======
+Solution
+========
 
-Complete the project by updating the :file:`README.md` with instructions on how to use the project and commit changes.
+This concludes this portion of the tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethys_portal_docker>`_ or clone it as follows:
 
-1. Update README
-----------------
+.. parsed-literal::
 
-Update the contents of the README with the following to provide instructions for how to use the Docker Compose recipe:
-
-.. code-block::
-
-    # Demonstration Tethys Portal Docker Project
-
-    This repository demonstrates how to make a Docker image containing a custom Tethys Portal with apps installed. The apps installed are the solutions to several of the Tethys Platform tutorials and include:
-
-    * [Dam Inventory](https://github.com/tethysplatform/tethysapp-dam_inventory.git)
-    * [THREDDS Tutorial](https://github.com/tethysplatform/tethysapp-thredds_tutorial)
-    * [Earth Engine](https://github.com/tethysplatform/tethysapp-earth_engine.git)
-    * [PostGIS App](https://github.com/tethysplatform/tethysapp-postgis_app.git)
-    * [Bokeh Tutorial](https://github.com/tethysplatform/tethysapp-bokeh_tutorial)
-
-    # Build
-
-    ```
-    docker compose build web
-    ```
-
-    # Run
-
-    1. Create Data Directories
-
-    ```
-    mkdir -p data/db
-    mkdir -p data/tethys
-    mkdir -p data/thredds
-    mkdir -p keys/gee
-    mkdir -p logs/tethys
-    mkdir -p logs/thredds/thredds
-    mkdir -p logs/thredds/tomcat
-    ```
-
-    2. Acquire a Earth Engine Service Account and Key file (see Step 1 of [Google Earth Engine Service Account](http://docs.tethysplatform.org/en/stable/tutorials/google_earth_engine/part_3/service_account.html)).
-
-    3. Add the Google Earth Engine service account JSON key file to the `keys/gee` directory.
-
-    4. Create copies of the ``.env`` files in the :file:`env` directory and modify the settings appropriately.
-
-    5. Update ``env_file`` sections in the :file:`docker-compose.yml` to point to your copies of the ``.env`` files.
-
-    6. Start containers:
-
-    ```
-    docker compose up -d
-    ```
-
-2. Commit Changes
------------------
-
-The contents of the :file:`data`, :file:`logs`, and :file:`keys` directories should not be committed into the Git repository because they contain large amounts of instance-specific data and sensitive information. Create a :file:`.gitignore` file with the following contents to omit the contents of these directories from being tracked:
-
-.. code-block::
-
-    data/
-    keys/
-    logs/
-
-Stage changes and commit the changes as follows:
-
-.. code-block::
-
-    git add .
-    git commit -m "Working custom portal"
+    git clone https://github.com/tethysplatform/tethys_portal_docker
+    cd tethys_portal_docker
+    git checkout -b docker-compose-solution docker-compose-solution-|version|
 
 Useful Docker Compose Commands
 ==============================
@@ -658,11 +663,6 @@ The ``down`` command stops the containers if they are running and removes them:
 .. caution::
 
     Be careful with this command. Everything will be removed except for data contained in the directories that were mounted!
-
-Solution
-========
-
-A functioning version of the ``tethys_portal_docker`` project can be accessed at: https://github.com/tethysplatform/tethys_portal_docker
 
 Troubleshooting
 ===============
