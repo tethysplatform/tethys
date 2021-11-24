@@ -154,6 +154,8 @@ For this image, define environment variables for the various settings for the ap
     ENV DAM_INVENTORY_MAX_DAMS="50" \
         EARTH_ENGINE_PRIVATE_KEY_FILE="" \
         EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL="" \
+        THREDDS_TUTORIAL_TDS_USERNAME="admin" \
+        THREDDS_TUTORIAL_TDS_PASSWORD="CHANGEME!" \
         THREDDS_TUTORIAL_TDS_PROTOCOL="http" \
         THREDDS_TUTORIAL_TDS_HOST="localhost" \
         THREDDS_TUTORIAL_TDS_PORT="8080"
@@ -190,14 +192,14 @@ Download the following images to use in the custom theme for the Tethys Portal:
 
 Create a new folder called :file:`images` in the :file:`tethys_portal_docker` directory and the images to it.
 
-Add the following lines to the bottom of the Dockefile to add the images to the container image in the static files directory:
+Add the following lines to the bottom of the Dockefile to add the images to the container image in the tmp directory (they will need to be moved at runtime):
 
 .. code-block::
 
     ###################
     # ADD THEME FILES #
     ###################
-    COPY images/* ${STATIC_ROOT}/custom_theme/images/
+    COPY images/ /tmp/custom_theme/images/
 
 e. Install apps
 ---------------
@@ -334,6 +336,8 @@ Open the new :file:`tethys_services.sls` file and add the following lines to imp
     {% set TETHYS_DB_PORT = salt['environ.get']('TETHYS_DB_PORT') %}
     {% set TETHYS_DB_SUPERUSER = salt['environ.get']('TETHYS_DB_SUPERUSER') %}
     {% set TETHYS_DB_SUPERUSER_PASS = salt['environ.get']('TETHYS_DB_SUPERUSER_PASS') %}
+    {% set THREDDS_TUTORIAL_TDS_USERNAME = salt['environ.get']('THREDDS_TUTORIAL_TDS_USERNAME') %}
+    {% set THREDDS_TUTORIAL_TDS_PASSWORD = salt['environ.get']('THREDDS_TUTORIAL_TDS_PASSWORD') %}
     {% set THREDDS_TUTORIAL_TDS_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PROTOCOL') %}
     {% set THREDDS_TUTORIAL_TDS_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_HOST') %}
     {% set THREDDS_TUTORIAL_TDS_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PORT') %}
@@ -346,7 +350,7 @@ You can also define custom variables in the Salt State files using `Jinja templa
 .. code-block::
 
     {% set THREDDS_SERVICE_NAME = 'tethys_thredds' %}
-    {% set THREDDS_SERVICE_URL = THREDDS_TUTORIAL_TDS_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_HOST + ':' + THREDDS_TUTORIAL_TDS_PORT %}
+    {% set THREDDS_SERVICE_URL = THREDDS_TUTORIAL_TDS_USERNAME + ':' + THREDDS_TUTORIAL_TDS_PASSWORD + '@' + THREDDS_TUTORIAL_TDS_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_HOST + ':' + THREDDS_TUTORIAL_TDS_PORT %}
     {% set POSTGIS_SERVICE_NAME = 'tethys_postgis' %}
     {% set POSTGIS_SERVICE_URL = TETHYS_DB_SUPERUSER + ':' + TETHYS_DB_SUPERUSER_PASS + '@' + TETHYS_DB_HOST + ':' + TETHYS_DB_PORT %}
 
@@ -379,7 +383,7 @@ Add the following lines to create the THREDDS Tethys Service:
 
     Create_THREDDS_Spatial_Dataset_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
+        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }} -p {{ THREDDS_SERVICE_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
@@ -472,6 +476,13 @@ Add the following contents to :file:`portal_theme.sls`:
 
     {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
     {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
+    {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
+
+    Move_Custom_Theme_Files_to_Static_Root:
+      cmd.run:
+        - name: mv /tmp/custom_theme {{ STATIC_ROOT }}
+        - shell: /bin/bash
+        - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/custom_theme_setup_complete" ];"
 
     Apply_Custom_Theme:
       cmd.run:
@@ -580,7 +591,13 @@ Commit the changes to the Dockerfile and salt script as follows:
     git add .
     git commit -m "Filled in Dockerfile and added Salt State scripts."
 
+Solution
+========
+
+A functioning version of the ``tethys_portal_docker`` project can be accessed at: https://github.com/tethysplatform/tethys_portal_docker
+
 What's Next?
 ============
 
-With the image built, its now time to run the container. Tethys Portal requires a database to run. The database can be created using a Docker image as well, but that means starting two Docker images with one that depends on the other and the easiest way to manage that is with Docker Compose. Continue to the next tutorial to learn how to run the custom Tethys image with Docker Compose.
+Continue to the next tutorial to learn how to run the custom image using Docker Compose.
+

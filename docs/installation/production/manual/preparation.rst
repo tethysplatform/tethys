@@ -18,7 +18,7 @@ Server Attributes
 =================
 
 * **SERVER_DOMAIN_NAME**: You will need to obtain a public domain name for the server. Contact your IT department or search the documentation for the hosting provider for how this is to be done.
-* **SSL Certificate**: If you plan to setup SSL on your Tethys Portal installation, you will need to obtain an SSL certficate for your server's domain. An SSL certificate should be purchased from a Certificate Authority for a production installation. Some of the top certificate authorities include: `Digicert <https://www.digicert.com/>`_, `GeoTrust <https://www.geotrust.com/ssl/>`_, `Sectigo (formerly Comodo) <https://sectigo.com/>`_, `Thawte <https://www.thawte.com/>`_, `GoDaddy <https://www.godaddy.com/web-security/ssl-certificate>`_, and `Network Solutions <https://www.networksolutions.com/SSL-certificates/index.jsp>`_. If your instance of Tethys Portal is part of a larger organization, contact your IT department to determine if an agreement with one of these authorities already exists.
+* **SSL Certificate**: Decide on a strategy for obtaining and managing SSL certificates if you plan to set up HTTPS. See the :ref:`Configure HTTPS tutorial <https_config>` for suggested approaches.
 
 Important Directories
 =====================
