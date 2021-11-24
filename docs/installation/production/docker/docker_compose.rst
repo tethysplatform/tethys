@@ -113,6 +113,7 @@ e. Place the ``JSON`` file containing the service account key in the :file:`keys
 .. _`networks (services)`: https://docs.docker.com/compose/compose-file/compose-file-v3/#networks
 .. _`ports`: https://docs.docker.com/compose/compose-file/compose-file-v3/#ports
 .. _`env_file`: https://docs.docker.com/compose/compose-file/compose-file-v3/#env_file
+.. _`environment`: https://docs.docker.com/compose/compose-file/compose-file-v3/#environment
 .. _`volumes`: https://docs.docker.com/compose/compose-file/compose-file-v3/#volumes
 
 Create a new file called :file:`docker-compose.yml` in the :file:`tethys_portal_docker` directory:
@@ -290,75 +291,132 @@ Add the following definition for the ``web`` service in the :file:`docker-compos
 7. Create Environment Files
 ---------------------------
 
-TODO
+Each of the Docker containers can be configured through the environment variables. While it is possible to specify these variables in the :file:`docker-compose.yml` using the `environment`_ key, it is not recommended. This is because environment variables often contain sensitive information like usernames, passwords, and API keys and the :file:`docker-compose.yml` is a file that is often committed to version control repositories. To prevent leaking sensitive information it is recommended that you use environment or ``.env`` files for storing this information and that you do not commit these files.
 
-.. code-block::
+With that said, certain environment variables need to be defined for the custom Tethys Portal Compose recipe to work. This is often the case, so another pattern that is used is to provide default ``.env`` files that users can copy and modify. The default ``.env`` files are committed to the repository and the copies with sensitive information are not. In this step you will create the default ``.env`` files referenced in the `env_file`_ sections of the :file:`docker-compose.yml`.
 
-    mkdir env
-    touch env/db.env env/thredds.env env/web.env
+a. Create a new :file:`env` directory in the :file:`tethys_portal_docker` directory for storing the ``.env`` files:
 
-**db.env**
+    .. code-block::
 
-.. code-block::
+        mkdir env
 
-    POSTGRES_PASSWORD=please_dont_use_default_passwords
+b. Create three new empty files in the :file:`env` directory with the same names as those referenced in the `env_file`_ sections of the :file:`docker-compose.yml`:
 
-Environment variables to add or override if they already exist in the container. In this case, the ``POSTGRES_PASS`` variable is used to set the password of the admin user of the database. Review documentation on Docker Hub for an explanation of all the environment variables that are available (see: `postgis/postgis | Docker Hub`_ and `postgres | Docker Hub`_).
+    .. code-block::
 
+        touch env/db.env env/thredds.env env/web.env
 
-    Replace ``<POSTGRES_PASSWORD>`` with a secure password (see: :ref:`production_preparation`).
+c. Add the following contents to each ``.env`` file:
 
-**thredds.env**
+    **db.env**
 
-.. code-block::
+    .. code-block::
 
-    TDM_PW=please_dont_use_default_passwords
-    TDS_HOST=http://localhost
-    THREDDS_XMX_SIZE=4G
-    THREDDS_XMS_SIZE=4G
-    TDM_XMX_SIZE=6G
-    TDM_XMS_SIZE=1G
+        # Password of the db admin account
+        POSTGRES_PASSWORD=please_dont_use_default_passwords
 
-Environment variables to add or override if they already exist in the container. Review documentation on Docker Hub for an explanation of the environment variables that are available (see: `unidata/thredds-docker | Docker Hub`_) .
+    .. tip::
 
+        **Learn More**
 
-    Replace ``<THREDDS_PASSWORD>`` with a secure password. Also replace ``<SERVER_DOMAIN_NAME>`` with the public hostname of the THREDDS server (e.g. http://thredds.yourhost.net/; see: :ref:`production_preparation`). Also set the memory parameters carefully to fit within the memory constraints of your server.
+        Review documentation on Docker Hub for the PostgreSQL and PostGIS images for an explanation of the environment variables that are available (see: `postgis/postgis | Docker Hub`_ and `postgres | Docker Hub`_).
 
-**web.env**
+        **Production**
 
-.. code-block::
-
-    ALLOWED_HOSTS="\"[localhost]\""
-    ASGI_PROCESSES=1
-    CHANNEL_LAYERS_BACKEND=channels_redis.core.RedisChannelLayer
-    CHANNEL_LAYERS_CONFIG="\"{\"hosts\": [[\"redis\", 6379]]}\""
-    TETHYS_DB_HOST=db
-    TETHYS_DB_PORT=5432
-    TETHYS_DB_USERNAME=tethys_default
-    TETHYS_DB_PASSWORD=please_dont_use_default_passwords
-    TETHYS_DB_SUPERUSER=tethys_super
-    TETHYS_DB_SUPERUSER_PASS=please_dont_use_default_passwords
-    POSTGRES_PASSWORD=please_dont_use_default_passwords
-    PORTAL_SUPERUSER_NAME=admin
-    PORTAL_SUPERUSER_PASSWORD=please_dont_use_default_passwords
-    PORTAL_SUPERUSER_EMAIL=you@email.com
-    DAM_INVENTORY_MAX_DAMS=50
-    EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/some-key.json
-    EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL=you@email.com
-    THREDDS_TUTORIAL_TDS_USERNAME=admin
-    THREDDS_TUTORIAL_TDS_PASSWORD=please_dont_use_default_passwords
-    THREDDS_TUTORIAL_TDS_PROTOCOL=http
-    THREDDS_TUTORIAL_TDS_HOST=thredds
-    THREDDS_TUTORIAL_TDS_PORT=8080
-
-Environment variables to add or override if they already exist in the container. Notice this list includes the custom environment variables that were defined in the :file:`Dockerfile`. For an explanation of all the environment variables provided by the Tethys Platform image see: :ref:`docker_official_image_env`.
+        For a production deployment, set ``POSTGRES_PASSWORD`` with a secure password (see: :ref:`production_preparation`).
 
 
-    Replace ``<SERVER_DOMAIN_NAME>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_SUPER_USERNAME>``, ``<TETHYS_DB_SUPER_USERNAME>``,  ``<POSTGRES_PASSWORD>``, ``<PORTAL_SUPERUSER_NAME>``, ``<PORTAL_SUPERUSER_PASSWORD>``, and ``<PORTAL_SUPERUSER_EMAIL>`` with appropriate values (see: :ref:`production_preparation`).
+    **thredds.env**
 
-    Also set the <DAM_INVENTORY_MAX_DAMS> setting to the desired maximum number of dams for the Dam Inventory app and set the ``<EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL>`` to the email address associated with your Google Earth Engine service account and replace the ``<EARTH_ENGINE_JSON_KEYFILE>`` with the name of the keyfile (see: :ref:`tutorial_google_earth_engine_service_account`). Set the <THREDDS_PASSWORD> to match how you configured the THREDDS service.
+    .. code-block::
 
-8. Start Containers
+        # Password of the TDM admin user
+        TDM_PW=please_dont_use_default_passwords
+
+        # FQDN of the server THREDDS is running on
+        TDS_HOST=http://localhost
+
+        # Maximum Memory for THREDDS
+        THREDDS_XMX_SIZE=4G
+
+        # Minimum Memory for THREDDS
+        THREDDS_XMS_SIZE=4G
+
+        # Maximum Memory for TDM
+        TDM_XMX_SIZE=6G
+
+        # Minimum Memory for TDM
+        TDM_XMS_SIZE=1G
+
+    .. tip::
+
+        **Learn More**
+
+        Review documentation on Docker Hub for the THREDDS image for an explanation of the environment variables that are available (see: `unidata/thredds-docker | Docker Hub`_).
+
+        **Production Deployment**
+
+        Set ``THREDDS_PASSWORD`` with a secure password and set ``TDS_HOST`` to ``SERVER_DOMAIN_NAME`` (see: :ref:`production_preparation`). Set the memory parameters carefully to fit within the memory constraints of your server.
+
+    **web.env**
+
+    .. code-block::
+
+        # Domain name of server should be first in the list if multiple entries added
+        ALLOWED_HOSTS="\"[localhost]\""
+
+        # Don't change these parameters
+        ASGI_PROCESSES=1
+        CHANNEL_LAYERS_BACKEND=channels_redis.core.RedisChannelLayer
+        CHANNEL_LAYERS_CONFIG="\"{\"hosts\": [[\"redis\", 6379]]}\""  # Hostname is the name of the service
+
+        # Database parameters
+        TETHYS_DB_HOST=db  # Hostname is the name of the service
+        TETHYS_DB_PORT=5432
+        TETHYS_DB_USERNAME=tethys_default
+        TETHYS_DB_PASSWORD=please_dont_use_default_passwords
+        TETHYS_DB_SUPERUSER=tethys_super
+        TETHYS_DB_SUPERUSER_PASS=please_dont_use_default_passwords
+
+        # POSTGRES_PASSWORD should be the same as that in the db.env
+        POSTGRES_PASSWORD=please_dont_use_default_passwords
+
+        # Default admin account for Tethys Portal
+        PORTAL_SUPERUSER_NAME=admin
+        PORTAL_SUPERUSER_PASSWORD=please_dont_use_default_passwords
+        PORTAL_SUPERUSER_EMAIL=you@email.com
+
+        # App specific settings
+        DAM_INVENTORY_MAX_DAMS=50
+        EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/some-key.json
+        EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL=you@email.com
+
+        # THREDDS parameters
+        THREDDS_TUTORIAL_TDS_USERNAME=admin
+        THREDDS_TUTORIAL_TDS_PASSWORD=please_dont_use_default_passwords
+        THREDDS_TUTORIAL_TDS_PROTOCOL=http
+        THREDDS_TUTORIAL_TDS_HOST=thredds  # Hostname is the name of the service
+        THREDDS_TUTORIAL_TDS_PORT=8080
+
+    .. tip::
+
+        **Learn More**
+
+        For an explanation of all the environment variables provided by the Tethys Platform image see: :ref:`docker_official_image_env`.
+
+        **Production Deployment**
+
+        Replace ``localhost`` in the ``ALLOWED_HOSTS`` setting with ``<SERVER_DOMAIN_NAME>`` and set ``TETHYS_DB_USERNAME``, ``TETHYS_DB_PASSWORD``, ``TETHYS_DB_SUPER_USERNAME``, ``TETHYS_DB_SUPERUSER_PASS``,  ``POSTGRES_PASSWORD``, ``PORTAL_SUPERUSER_NAME``, ``PORTAL_SUPERUSER_PASSWORD``, and ``PORTAL_SUPERUSER_EMAIL`` with appropriate values (see: :ref:`production_preparation`).
+
+        Also set the ``DAM_INVENTORY_MAX_DAMS`` setting to the desired maximum number of dams for the Dam Inventory app and set the ``EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL`` to the email address associated with your Google Earth Engine service account and replace the ``some-key.json`` with the name of your keyfile in the ``EARTH_ENGINE_PRIVATE_KEY_FILE`` setting (see: :ref:`tutorial_google_earth_engine_service_account`). Set the ``THREDDS_PASSWORD`` should be set to match ``TDM_PW`` in the :file:`thredds.env`.
+
+Run Docker Compose Recipe
+=========================
+
+Use the following steps to run the :file:`docker-compose.yml` and verify that it works.
+
+1. Start Containers
 -------------------
 
 To start the containers run the following command in the directory with the :file:`docker-compose.yml` file (:file:`tethys_portal_docker`):
@@ -371,7 +429,7 @@ To start the containers run the following command in the directory with the :fil
 
     In older version of Docker Compose, use ``docker-compose <command>`` instead of ``docker compose <command>``.
 
-9. Check Status
+2. Check Status
 ---------------
 
 Check the status of the containers by running this command:
@@ -380,8 +438,8 @@ Check the status of the containers by running this command:
 
     docker compose ps
 
-10. Inspect Logs
-----------------
+3. Inspect Logs
+---------------
 
 It will take several minutes for the Tethys container to start up the first time as it needs to complete the initialization steps in the Salt State files. Monitor the logs for the Tethys container so that you know when it completes as follows:
 
@@ -432,8 +490,8 @@ The Salt State report can be incredibly useful for debugging issues when somethi
 
 Press ``CTRL-C`` to exit the ``tethys logs`` command.
 
-11. View Running Portal
------------------------
+4. View Running Portal
+----------------------
 
 In a web browser, navigate to web address of the running portal (Figure 1). If using the default configuration, it will be accessible at http://localhost on the host machine. You may also want to view the THREDDS server catalog, which will be running at http://localhost:8080/thredds with the default config.
 
@@ -443,8 +501,8 @@ In a web browser, navigate to web address of the running portal (Figure 1). If u
 
     **Figure 1**: Screenshot of the running Tethys Portal.
 
-12. Review Mounted Directory Contents
--------------------------------------
+5. Review Mounted Directory Contents
+------------------------------------
 
 Inspect the contents of the various directories that were mounted into the containers (i.e.: :file:`data`, :file:`logs`, :file:`config`). Notice how the logs for Tethys and THREDDS are easily accessible. As is the :file:`portal_config.yml` (see :file:`data/tehtys/portal_config.yml`). Data can be easily added to the THREDDS server by adding it to the :file:`data/thredds/public` directory and then modifing the :file:`catalog.xml`.
 
@@ -452,8 +510,13 @@ Inspect the contents of the various directories that were mounted into the conta
 
     Use the contents of these directories to debug and make configuration changes as needed. Be sure to restart the affected container after making changes to configuration (see below).
 
-13. Update README
------------------
+Wrap Up
+=======
+
+Complete the project by updating the :file:`README.md` with instructions on how to use the project and commit changes.
+
+1. Update README
+----------------
 
 Update the contents of the README with the following to provide instructions for how to use the Docker Compose recipe:
 
@@ -491,18 +554,20 @@ Update the contents of the README with the following to provide instructions for
 
     2. Acquire a Earth Engine Service Account and Key file (see Step 1 of [Google Earth Engine Service Account](http://docs.tethysplatform.org/en/stable/tutorials/google_earth_engine/part_3/service_account.html)).
 
-    3. Add the Google Earth Engine service account key file to the `keys/gee` directory.
+    3. Add the Google Earth Engine service account JSON key file to the `keys/gee` directory.
 
-    4. Modify the environment variables in the `docker-compose.yml` file.
+    4. Create copies of the ``.env`` files in the :file:`env` directory and modify the settings appropriately.
 
-    5. Start containers:
+    5. Update ``env_file`` sections in the :file:`docker-compose.yml` to point to your copies of the ``.env`` files.
+
+    6. Start containers:
 
     ```
     docker compose up -d
     ```
 
-14. Commit Changes
-------------------
+2. Commit Changes
+-----------------
 
 The contents of the :file:`data`, :file:`logs`, and :file:`keys` directories should not be committed into the Git repository because they contain large amounts of instance-specific data and sensitive information. Create a :file:`.gitignore` file with the following contents to omit the contents of these directories from being tracked:
 
@@ -606,6 +671,11 @@ Google Earth Engine imagery is not displaying
 ---------------------------------------------
 
 Check the :file:`tethys.log` (:file:`logs/tethys/tethys.log`). Look for an ``ee.ee_exception.EEException`` and follow the instructions.
+
+THREDDS App is Returning a 500 Error
+------------------------------------
+
+This is because the THREDDS server doesn't have the data expected.
 
 .. rubric:: Footnotes
 
