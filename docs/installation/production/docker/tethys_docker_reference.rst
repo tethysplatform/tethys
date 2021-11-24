@@ -6,13 +6,8 @@ Tethys Platform Docker Image Reference
 
 **Last Updated:** November 2021
 
-.. _`Salt Script`: https://docs.saltstack.com/en/latest/topics/index.html
-.. _`pre_tethys.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/pre_tethys.sls
-.. _`tethyscore.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/tethyscore.sls
-.. _`post_app.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/post_app.sls
-
 Versions and Tags
-#################
+=================
 
 The official Tethys Docker images are located in the `tethysplatform/tethys-core Docker Hub repository <https://hub.docker.com/r/tethysplatform/tethys-core>`_. Images released are tagged using the following format:
 
@@ -27,174 +22,169 @@ The official Tethys Docker images are located in the `tethysplatform/tethys-core
 +---------------+------------------------------------------------------------------------------------------------------+
 
 Pull a Pre-Built Image
-######################
+======================
 
-The following commands will download Tethys image to your machine:
+Use the following commands to download the Tethys image to your machine:
 
-::
+**Latest Release**
 
-    docker pull tethysplatform/tethys-core:latest           # the latest Tethys release
+.. code-block::
 
-::
+    docker pull tethysplatform/tethys-core:latest
 
-    docker pull tethysplatform/tethys-core:v3.0.5           # Tethys version 3.0.5
+**Latest Development Build**
 
-::
+.. code-block::
 
-    docker pull tethysplatform/tethys-core:master           # the latest development build
+    docker pull tethysplatform/tethys-core:master
+
+**Specific Version**
+
+.. code-block::
+
+    docker pull tethysplatform/tethys-core:3.3.0
+
 
 Build From Source
-#################
+=================
 
-Make sure that there isn't already a docker container or docker images with the desired name:
+Make sure that there isn't already a Docker container or Docker images with the desired name:
 
-::
+.. code-block::
 
-    docker rm tethys-core
-    docker rmi tethys-core
+    docker build -t my-tethys-core:latest .
 
-To build a new docker image with the desired name and tag, run the following in the directory containing the Dockerfile:
+Alternatively, specify the Python version to build Tethys with using the ``PYTHON_VERSION`` build arg:
 
-::
+.. code-block::
 
-    docker build -t tethys-core:latest
-
-Build options - Python Version
+    docker build --build-arg PYTHON_VERSION=3.6 -t my-tethys-core:latest .
 
 Run Image
-#########
+=========
 
 When running the docker you can use the ``-e`` flag to set environment variables. A list of available environment variables is given in a table below.
 
-::
+.. code-block::
 
     -e TETHYS_CONDA_ENV='tethys'
 
-.. note::
-
-    Variables in the `Build Arguments`_ table can be used here as well.
-
 Example of Run Command:
 
-::
+.. code-block::
 
-    docker run -p 127.0.0.1:80:80 --name tethys-core \
-        -e TETHYS_DB_SUPERUSER='tethys_super' -e TETHYS_DB_PASSWORD='3x@m9139@$$' \
-        -e TETHYS_DB_PORT='5432' TETHYS_SUPERUSER='admin' \
-        -e TETHYS_SUPERUSER_PASS='admin' tethysplatform/tethys-core
-
-Docker Compose
-##############
-
-A more convenient way is to use a docker-compose.yml file to build and run the image.
-
-::
-
-    version: "3.2"
-    services:
-      tethys:
-        container_name: tethyscore
-        image: tethysplatform/tethys-core
-        build:
-          cache_from:
-            - tethysplatform/tethys-core
-          context: ../
-        ports:
-          - "80:80"
-        environment:
-          TETHYS_DB_SUPERUSER: "tethys_super"
-          TETHYS_DB_SUPERUSER_PASS: "pass"
-          CLIENT_MAX_BODY_SIZE: "75M"
-        links:
-          - db
-        depends_on:
-          - db
-      db:
-        image: postgres
-        restart: always
-        environment:
-          POSTGRES_PASSWORD: pass
-
-You can build and run your docker image now with:
-
-::
-
-    docker-compose up
-
-.. note::
-
-    If you remove or comment out the ``build`` section, it will pull the image from Docker Hub instead of building it locally.
+    docker run -d -p 80:80 --name tethys-core \
+        -e TETHYS_DB_SUPERUSER='tethys_super' \
+        -e TETHYS_DB_PASSWORD='please_dont_use_default_passwords' \
+        -e TETHYS_DB_PORT='5432' \
+        -e TETHYS_SUPERUSER='admin' \
+        -e TETHYS_SUPERUSER_PASS='please_dont_use_default_passwords' \
+        tethysplatform/tethys-core
 
 .. _docker_official_image_env:
 
 Environment Variables
-#####################
+=====================
 
 Tethys uses environment variables to build and initialize the app. These are the environment variables in Tethys:
 
-.. _`Build Arguments`:
+Build Arguments
+---------------
 
-*Build Arguments*
+Use these build arguments with the ``build`` command to customize how the image is built.
 
 +---------------------------+------------------------------------------------------------------------------------------+
 | Environment Variable      | Description                                                                              |
 +===========================+==========================================================================================+
-| TETHYS_HOME               | Path to tethys home directory.  Defaults to "/usr/lib/tethys".                           |
+| PYTHON_VERSION            | The version of Python to build the Tethys environment with. Defaults to "3.*".           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_PERSIST            | Path to tethys persist directory. Mount a drive from the host machine to this location to|
-|                           | persist runtime data. Defaults to "/var/lib/tethys_persist"                              |
+
+Important Paths
+---------------
+
+These environment variables point to important paths in the container. Changing these will probably break the container.
+
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_APPS_ROOT          | Path to tethys apps root directory. Defaults to "${TETHYS_HOME}/apps".                   |
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
+| TETHYS_HOME               | Path to tethys home directory. Defaults to "/usr/lib/tethys".                            |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_PORT               | Tethys' port. Defaults to "8000". Note: this port is only used inside the container.     |
+| TETHYS_LOG                | Path to directory containing the tethys.log. Defaults to "/var/log/tethys".              |
 +---------------------------+------------------------------------------------------------------------------------------+
-| POSTGRES_PASSWORD         | Password of the postgres database. Defaults to "pass".                                   |
+| TETHYS_PERSIST            | Path to tethys_persist directory. Mount a drive from the host machine to this location to|
+|                           | persist runtime data. Defaults to "/var/lib/tethys_persist".                             |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_NAME            | Name for Tethys Database. Defaults to "tethys_platform".                                 |
+| TETHYS_APPS_ROOT          | Path to directory where app source code should be placed.                                |
+|                           | Defaults to "${TETHYS_HOME}/apps".                                                       |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_USERNAME        | Owner's Username for Tethys Database. Defaults to "tethys_default"                       |
+| CONDA_HOME                | Path to the conda installation. Defaults to "/opt/conda".                                |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_PASSWORD        | Owner's Password for Tethys Database. Defaults to "pass"                                 |
+| CONDA_ENV_NAME            | Name of conda environment. Defaults to "tethys".                                         |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_HOST            | Host of Tethys Database. Defaults to "db"                                                |
+| STATIC_ROOT               | Path to the tethys static root folder. This also sets the associated setting in the      |
+|                           | :file:`portal_config.yml`. Defaults to "${TETHYS_PERSIST}/static"                        |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_PORT            | Port of Tethys Database. Defaults to "5432"                                              |
+| WORKSPACE_ROOT            | Path to the tethys workspaces root folder. This also sets the associated setting in the  |
+|                           | :file:`portal_config.yml`. Defaults to "${TETHYS_PERSIST}/workspaces"                    |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_SUPERUSER       | Super User for Tethys Database. Defaults to "tethys_super"                               |
+| TETHYS_MANAGE             | Path to manage.py file. Defaults to "${TETHYS_HOME}/tethys/tethys_portal/manage.py"      |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_SUPERUSER_PASS  | Super User's password for Tethys Database. Defaults to "pass"                            |
+| BASH_PROFILE              | The location of bash profile file. Defaults to ".bashrc"                                 |
 +---------------------------+------------------------------------------------------------------------------------------+
+
+Database Parameters
+-------------------
+
+These environment variables are used to configure the database and database users Tethys Portal will use. If the database doesn't exist, then it will be created using the ``postgres`` user.
+
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
+| POSTGRES_PASSWORD         | Password of the postgres user. Used to initialize the Tethys Portal database.            |
+|                           | Defaults to "pass".                                                                      |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_HOST            | Host of the database server where the primary Tethys Portal database resides.            |
+|                           | Defaults to "db".                                                                        |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_PORT            | Port of the database server where the primary Tethys Portal database resides.            |
+|                           | Defaults to "5432".                                                                      |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_NAME            | Name of the primary Tethys Portal database. Defaults to "tethys_platform".               |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_USERNAME        | Username of the owner of the primary Tethys Portal database.                             |
+|                           | Defaults to "tethys_default".                                                            |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_PASSWORD        | Password of the owner of the primary Tethys Portal database. Defaults to "pass".         |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_SUPERUSER       | Name of the database superuser used by Tethys Portal. Defaults to "tethys_super".        |
++---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_SUPERUSER_PASS  | Password of the database superuser used by Tethys Portal. Defaults to "pass".            |
++---------------------------+------------------------------------------------------------------------------------------+
+
+Tethys Portal Admin User
+------------------------
+
+Use these environment variables to set the username, password, and email of the Tethys Portal admin user that is created by the container.
+
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
 | PORTAL_SUPERUSER_NAME     | Name for the Tethys portal super user. Empty by default.                                 |
 +---------------------------+------------------------------------------------------------------------------------------+
 | PORTAL_SUPERUSER_EMAIL    | Email for the Tethys portal super user. Empty by default.                                |
 +---------------------------+------------------------------------------------------------------------------------------+
 | PORTAL_SUPERUSER_PASSWORD | Password for the Tethys portal super user. Empty by default.                             |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_MANAGE             | Path to manage.py file. Defaults to "${TETHYS_HOME}/tethys/tethys_portal/manage.py"      |
-+---------------------------+------------------------------------------------------------------------------------------+
 
-*Misc Arguments*
+Tethys Settings
+---------------
 
-+---------------------------+------------------------------------------------------------------------------------------+
-| Environment Variable      | Description                                                                              |
-+===========================+==========================================================================================+
-| BASH_PROFILE              | The location of bash profile file. Defaults to ".bashrc"                                 |
-+---------------------------+------------------------------------------------------------------------------------------+
-| CONDA_HOME                | Path of conda home. Defaults to "/opt/conda"                                             |
-+---------------------------+------------------------------------------------------------------------------------------+
-| CONDA_ENV_NAME            | Name of conda environment. Defaults to tethys.                                           |
-+---------------------------+------------------------------------------------------------------------------------------+
-| ASGI_PROCESSES            | The maximum number of asgi worker processes. Defaults to 1.                              |
-+---------------------------+------------------------------------------------------------------------------------------+
-| CLIENT_MAX_BODY_SIZE      | client_max_body_size parameter for nginx config. Defaults to 75M.                        |
-+---------------------------+------------------------------------------------------------------------------------------+
-
-*Tethys Settings Arguments*
+The following environment variables can be used to set some of the Tethys Settings found in the :file:`portal_config.yml`.
 
 +---------------------------+------------------------------------------------------------------------------------------+
 | Environment Variable      | Description                                                                              |
 +===========================+==========================================================================================+
-| DEBUG                     | the Django DEBUG setting. Defaults to False. See :ref:`tethys_configuration`             |
+| DEBUG                     | The Django DEBUG setting. Defaults to False. See :ref:`tethys_configuration`             |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ALLOWED_HOSTS             | The Django ALLOWED_HOSTS setting. Defaults to "\"[localhost, 127.0.0.1]\"".              |
 |                           | See :ref:`tethys_configuration`                                                          |
@@ -209,29 +199,26 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | SESSION_EXPIRE            | Number of seconds in idle until the session expired. Defaults to "1800" (1800 seconds).  |
 +---------------------------+------------------------------------------------------------------------------------------+
-| STATIC_ROOT               | Path to the tethys static root folder. Defaults to "${TETHYS_PERSIST}/static"            |
-+---------------------------+------------------------------------------------------------------------------------------+
-| WORKSPACE_ROOT            | Path to the tethys workspaces root folder. Defaults to "${TETHYS_PERSIST}/workspaces"    |
-+---------------------------+------------------------------------------------------------------------------------------+
-| QUOTA_HANDLERS            | A list of Tethys ResourceQuotaHandler classes to load in this format "\"[RQ1, RQ22]\"".  |
+| QUOTA_HANDLERS            | A list of Tethys ResourceQuotaHandler classes to load in this format "\"[RQ1, RQ2]\"".   |
 |                           | Defaults to "\"[]\"" (Empty).                                                            |
 |                           | See RESOURCE_QUOTA_HANDLERS in :ref:`tethys_configuration`                               |
 +---------------------------+------------------------------------------------------------------------------------------+
-| DJANGO_ANALYTICAL         | the Django Analytical configuration settings for enabling analytics services on the      |
+| DJANGO_ANALYTICAL         | The Django Analytical configuration settings for enabling analytics services on the      |
 |                           | Tethys Portal in this format "\"{CLICKY_SITE_ID:123}\"". Defaults to "\"{}}\"" (Empty).  |
 |                           | Tethys Portal. See ANALYTICS_CONFIGS in :ref:`tethys_configuration`                      |
 +---------------------------+------------------------------------------------------------------------------------------+
-| ADD_BACKENDS              | the Django AUTHENTICATION_BACKENDS setting in this format "\"[Setting1, Setting2]\""     |
+| ADD_BACKENDS              | The Django AUTHENTICATION_BACKENDS setting in this format "\"[Backend1, Backend2]\""     |
 |                           | Defaults to "\"[]\"" (Empty).                                                            |
 |                           | See AUTHENTICATION_BACKENDS in :ref:`tethys_configuration`                               |
 +---------------------------+------------------------------------------------------------------------------------------+
-| OAUTH_OPTIONS             | the OAuth options for Tethys Portal in this format "\"{SOCIAL_AUTH_FACEBOOK_KEY:123}\""  |
+| OAUTH_OPTIONS             | The OAuth options for Tethys Portal in this format "\"{SOCIAL_AUTH_FACEBOOK_KEY:123}\""  |
 |                           | Defaults to "\"{}}\"" (Empty).                                                           |
 |                           | Tethys Portal. See OATH_CONFIGS in :ref:`tethys_configuration`                           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| CHANNEL_LAYERS_BACKEND    | the Django Channel Layers backend. Default to "channels.layers.InMemoryChannelLayer"     |
+| CHANNEL_LAYERS_BACKEND    | The Django Channel Layers backend. Default to "channels.layers.InMemoryChannelLayer"     |
 +---------------------------+------------------------------------------------------------------------------------------+
-| CHANNEL_LAYERS_CONFIG     | the Django Channel Layers configuration if a layer other than the default is being used. |
+| CHANNEL_LAYERS_CONFIG     | The Django Channel Layers configuration if a layer other than the default is being used. |
+|                           | Defaults to "\"{}}\"" (Empty).                                                           |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PRIVATE_KEY     | Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.      |
 |                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                                 |
@@ -240,237 +227,148 @@ Tethys uses environment variables to build and initialize the app. These are the
 |                           | See RECAPTCHA_PUBLIC_KEY in :ref:`tethys_configuration`                                  |
 +---------------------------+------------------------------------------------------------------------------------------+
 
-*Tethys Site Arguments*
+NGINX Settings
+--------------
+
+These settings are used to configure the NGINX process that is running inside the container.
 
 +---------------------------+------------------------------------------------------------------------------------------+
 | Environment Variable      | Description                                                                              |
 +===========================+==========================================================================================+
-| TAB_TITLE                 | title to display in the web browser tab.                                                 |
+| CLIENT_MAX_BODY_SIZE      | client_max_body_size parameter for nginx config. Defaults to 75M.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
-| FAVICON                   | icon to display in the web browser tab.                                                  |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TITLE                     | title of the Tethys Portal.                                                              |
-+---------------------------+------------------------------------------------------------------------------------------+
-| LOGO                      | the logo/brand image of the Tethys Portal.                                               |
-+---------------------------+------------------------------------------------------------------------------------------+
-| LOGO_HEIGHT               | height of logo/brand image.                                                              |
-+---------------------------+------------------------------------------------------------------------------------------+
-| LOGO_WIDTH                | width of logo/brand image.                                                               |
-+---------------------------+------------------------------------------------------------------------------------------+
-| LOGO_PADDING              | padding around logo/brand image.                                                         |
-+---------------------------+------------------------------------------------------------------------------------------+
-| LIBRARY_TITLE             | title of the Apps Library page.                                                          |
-+---------------------------+------------------------------------------------------------------------------------------+
-| PRIMARY_COLOR             | primary color of the Tethys Portal.                                                      |
-+---------------------------+------------------------------------------------------------------------------------------+
-| SECONDARY_COLOR           | secondary color of the Tethys Portal.                                                    |
-+---------------------------+------------------------------------------------------------------------------------------+
-| BACKGROUND_COLOR          | background color of the Tethys Portal.                                                   |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TEXT_COLOR                | primary text color of the Tethys Portal.                                                 |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TEXT_HOVER_COLOR          | primary text color when hovered over.                                                    |
-+---------------------------+------------------------------------------------------------------------------------------+
-| SECONDARY_TEXT_COLOR      | secondary text color of the Tethys Portal.                                               |
-+---------------------------+------------------------------------------------------------------------------------------+
-| SECONDARY_TEXT_HOVER_COLOR| secondary text color when hovered over.                                                  |
-+---------------------------+------------------------------------------------------------------------------------------+
-| COPYRIGHT                 | the copyright text to display in the footer of the Tethys Portal.                        |
-+---------------------------+------------------------------------------------------------------------------------------+
-| HERO_TEXT                 | the hero text on the home page.                                                          |
-+---------------------------+------------------------------------------------------------------------------------------+
-| BLURB_TEXT                | the blurb text on the home page.                                                         |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE1_HEADING          | the home page feature 1 heading.                                                         |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE1_BODY             | the home page feature 1 body text.                                                       |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE1_IMAGE            | the home page feature 1 image.                                                           |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE2_HEADING          | the home page feature 2 heading.                                                         |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE2_BODY             | the home page feature 2 body text.                                                       |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE2_IMAGE            | the home page feature 2 image.                                                           |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE3_HEADING          | the home page feature 3 heading.                                                         |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE3_BODY             | the home page feature 3 body text.                                                       |
-+---------------------------+------------------------------------------------------------------------------------------+
-| FEATURE3_IMAGE            | the home page feature 3 image.                                                           |
-+---------------------------+------------------------------------------------------------------------------------------+
-| ACTION_TEXT               | the action text on the home page.                                                        |
-+---------------------------+------------------------------------------------------------------------------------------+
-| ACTION_BUTTON             | the action button text on the home page.                                                 |
+| TETHYS_PORT               | Internal port Tethys is hosted on. Defaults to "8000".                                   |
+|                           | Note: This port is only used inside the container by NGINX.                              |
 +---------------------------+------------------------------------------------------------------------------------------+
 
-These environment variables can be overwritten in your app docker file.
+Daphne Settings
+---------------
 
-Build Your App with Tethys Docker Image
-#######################################
+These settings are used to configure the Daphne processes that are running inside the container.
 
-You can build your app by extending from the tethys docker image. Include this at the top of your Dockerfile:
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
+| ASGI_PROCESSES            | The maximum number of asgi worker processes. Defaults to 1.                              |
++---------------------------+------------------------------------------------------------------------------------------+
 
-::
+Tethys Portal Site Settings
+---------------------------
 
-    FROM tethysplatform/tethys-core:master
+Use these environment variables to customize the theme and content of the Tethys Portal.
 
-You can overwrite the environment variable of the tethys base image in your app docker file. For example:
-
-::
-
-    ENV ASGI_PROCESSES 4
-
-This line in your docker file will change the environment variable ASGI_PROCESSES from the default value of 1 to 4.
-
-Here is an example of a dockerfile from a tethys app:
-
-::
-
-    # Use our Tethyscore base docker image as a parent image
-    FROM tethysplatform/tethys-core:master
-
-    ###############################
-    # DEFAULT ENVIRONMENT VARIABLES
-    ###############################
-    ENV TETHYS_CLUSTER_IP 172.17.0.1
-    ENV TETHYS_CLUSTER_USERNAME condor
-    ENV TETHYS_CLUSTER_PKEY_FILE ${TETHYS_PERSIST}/keys/condorkey
-    ENV TETHYS_CLUSTER_PKEY_PASSWORD please_dont_use_default_passwords
-    ENV TETHYS_GS_PROTOCOL http
-    ENV TETHYS_GS_HOST 172.17.0.1
-    ENV TETHYS_GS_PORT 8181
-    ENV TETHYS_GS_PROTOCOL_PUB https
-    ENV TETHYS_GS_HOST_PUB 172.17.0.1
-    ENV TETHYS_GS_PORT_PUB 443
-    ENV TETHYS_GS_USERNAME admin
-    ENV TETHYS_GS_PASSWORD geoserver
-    ENV APP_DB_HOST ${TETHYS_DB_HOST}
-    ENV APP_DB_PORT ${TETHYS_DB_PORT}
-    ENV APP_DB_USERNAME ${TETHYS_DB_USERNAME}
-    ENV APP_DB_PASSWORD ${TETHYS_DB_PASSWORD}
-    ENV CONDORPY_HOME ${TETHYS_HOME}/tethys
-
-    ##################################
-    # PRODUCTION ENVIRONMENT VARIABLES
-    ##################################
-    ENV ASGI_PROCESSES 1
-    ENV CHANNEL_LAYERS_BACKEND "channels_redis.core.RedisChannelLayer"
-    ENV CHANNEL_LAYERS_CONFIG "\"{\"hosts\": [[127.0.0.1, 6379]]}\""
-
-    #########
-    # SETUP #
-    #########
-    # Speed up APT installs
-    RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
-     && echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache \
-     && echo "Acquire::Check-Valid-Until false;" > /etc/apt/apt.conf.d/no-check-valid
-    # Install APT Package
-    RUN apt-get update -qq && apt-get -yqq install gcc libgdal-dev g++ libhdf5-dev > /dev/null
-    # Quiet pip installs
-    RUN mkdir -p $HOME/.config/pip && echo "[global]\nquiet = True" > $HOME/.config/pip/pip.conf
-
-    ###########
-    # INSTALL #
-    ###########
-    ADD --chown=www:www tethysapp ${TETHYSAPP_DIR}/tethysapp-my_first_app/tethysapp
-    ADD --chown=www:www *.py ${TETHYSAPP_DIR}/tethysapp-my_first_app/
-    ADD *.ini ${TETHYSAPP_DIR}/tethysapp-my_first_app/
-    ADD *.sh ${TETHYSAPP_DIR}/tethysapp-my_first_app/
-    ADD install.yml ${TETHYSAPP_DIR}/tethysapp-my_first_app/
-
-    RUN /bin/bash -c ". ${CONDA_HOME}/bin/activate tethys \
-      ; cd ${TETHYSAPP_DIR}/tethysapp-my_first_app \
-      ; tethys install -N"
-
-    #########
-    # CHOWN #
-    #########
-    RUN export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
-      ; find ${TETHYSAPP_DIR} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {} \
-      ; find ${WORKSPACE_ROOT} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {} \
-      ; find ${STATIC_ROOT} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {} \
-      ; find ${TETHYS_PERSIST}/keys ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {} \
-      ; find ${TETHYS_HOME}/tethys ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {}
-
-
-    #########################
-    # CONFIGURE ENVIRONMENT #
-    #########################
-    EXPOSE 80
-
-
-    ################
-    # COPY IN SALT #
-    ################
-    ADD docker/salt/ /srv/salt/
-
-
-    #######
-    # RUN #
-    #######
-    CMD bash run.sh
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
+| TAB_TITLE                 | Title to display in the web browser tab.                                                 |
++---------------------------+------------------------------------------------------------------------------------------+
+| FAVICON                   | Icon to display in the web browser tab.                                                  |
++---------------------------+------------------------------------------------------------------------------------------+
+| TITLE                     | Title of the Tethys Portal.                                                              |
++---------------------------+------------------------------------------------------------------------------------------+
+| LOGO                      | The logo/brand image of the Tethys Portal.                                               |
++---------------------------+------------------------------------------------------------------------------------------+
+| LOGO_HEIGHT               | Height of logo/brand image.                                                              |
++---------------------------+------------------------------------------------------------------------------------------+
+| LOGO_WIDTH                | Width of logo/brand image.                                                               |
++---------------------------+------------------------------------------------------------------------------------------+
+| LOGO_PADDING              | Padding around logo/brand image.                                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| LIBRARY_TITLE             | Title of the Apps Library page.                                                          |
++---------------------------+------------------------------------------------------------------------------------------+
+| PRIMARY_COLOR             | Primary color of the Tethys Portal.                                                      |
++---------------------------+------------------------------------------------------------------------------------------+
+| SECONDARY_COLOR           | Secondary color of the Tethys Portal.                                                    |
++---------------------------+------------------------------------------------------------------------------------------+
+| BACKGROUND_COLOR          | Background color of the Tethys Portal.                                                   |
++---------------------------+------------------------------------------------------------------------------------------+
+| TEXT_COLOR                | Primary text color of the Tethys Portal.                                                 |
++---------------------------+------------------------------------------------------------------------------------------+
+| TEXT_HOVER_COLOR          | Primary text color when hovered over.                                                    |
++---------------------------+------------------------------------------------------------------------------------------+
+| SECONDARY_TEXT_COLOR      | Secondary text color of the Tethys Portal.                                               |
++---------------------------+------------------------------------------------------------------------------------------+
+| SECONDARY_TEXT_HOVER_COLOR| Secondary text color when hovered over.                                                  |
++---------------------------+------------------------------------------------------------------------------------------+
+| COPYRIGHT                 | The copyright text to display in the footer of the Tethys Portal.                        |
++---------------------------+------------------------------------------------------------------------------------------+
+| HERO_TEXT                 | The hero text on the home page.                                                          |
++---------------------------+------------------------------------------------------------------------------------------+
+| BLURB_TEXT                | The blurb text on the home page.                                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE1_HEADING          | The home page feature 1 heading.                                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE1_BODY             | The home page feature 1 body text.                                                       |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE1_IMAGE            | The home page feature 1 image.                                                           |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE2_HEADING          | The home page feature 2 heading.                                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE2_BODY             | The home page feature 2 body text.                                                       |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE2_IMAGE            | The home page feature 2 image.                                                           |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE3_HEADING          | The home page feature 3 heading.                                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE3_BODY             | The home page feature 3 body text.                                                       |
++---------------------------+------------------------------------------------------------------------------------------+
+| FEATURE3_IMAGE            | The home page feature 3 image.                                                           |
++---------------------------+------------------------------------------------------------------------------------------+
+| ACTION_TEXT               | The action text on the home page.                                                        |
++---------------------------+------------------------------------------------------------------------------------------+
+| ACTION_BUTTON             | The action button text on the home page.                                                 |
++---------------------------+------------------------------------------------------------------------------------------+
 
 .. _docker_official_run_script:
 
 Run.sh
-------
+======
 
-The bash script ``run.sh`` is executed during run time to startup and initialize the container. Here is what it's trying to accomplish:
+The primary entrypoint for the Tethys Platform container is the `run.sh <https://github.com/tethysplatform/tethys/blob/master/docker/run.sh>`_ bash script. It performs the following tasks:
 
-* Create Salt Config.
-* Set extra ENVs to NGINX.
-* Check if Database is ready.
-* Run Salt Scripts to establish the necessary set up for the docker image.
-* Fix permissions.
-* Start supervisor.
-* Showing the logs for supervisor, nginx and tethys.
+* Checks and waits for the database to be ready
+* Applies Salt State files to initialize Tethys Portal and the apps
+* Sets file permissions
+* Starts supervisor
+* Shows the logs for supervisor, nginx and tethys
 
 Run.sh also has these following optional arguments:
 
 +---------------------------+------------------------------------------------------------------------------------------+
 | Argument                  | Description                                                                              |
 +===========================+==========================================================================================+
-| --background              | run supervisord in background.                                                           |
+| --background              | Run supervisord in background.                                                           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| --skip-perm               | skip fixing permissions step.                                                            |
+| --skip-perm               | Skip fixing permissions step.                                                            |
 +---------------------------+------------------------------------------------------------------------------------------+
-| --db-max-count            | number of attempt to connect to the database. Default is at 24.                          |
+| --db-max-count            | Number of attempt to connect to the database. Default is at 24.                          |
 +---------------------------+------------------------------------------------------------------------------------------+
-| --test                    | only run salt scripts.                                                                   |
+| --test                    | Only run salt scripts and exit.                                                          |
 +---------------------------+------------------------------------------------------------------------------------------+
 
-For example, to only run the salt script you can run.
+For example, to run the :file:`run.sh` script with one of the options, override the default command as follows:
 
-    sudo docker run -it tethysplatform/tethys-core /bin/bash -c '. run.sh --test'
+.. code-block::
+
+    sudo docker run -it tethysplatform/tethys-core /bin/bash -c ". run.sh --test"
 
 
 .. _docker_official_salt:
 
-***********
-Salt Script
-***********
+Salt Scripts
+============
 
-Tethys uses `Salt Script`_ to setup the app when the docker container runs. The file, named ``top.sls``, contains a list of state files to run. These files are ``pre_tethys.sls``, ``tethyscore.sls`` and ``post_app.sls``. You can override this file with your own ``top.sls`` file to insert a salt state file for your app. Here is an example of a ``top.sls`` file in a tethys app:
+.. _`Salt State files`: https://docs.saltstack.com/en/latest/topics/index.html
+.. _`top.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/top.sls
 
-::
-
-    base:
-      '*':
-        - pre_tethys
-        - tethyscore
-        - tethys_app
-        - post_app
-
-In this example, you can put logic needed to initialize your app in the ``tethys_app.sls`` file. The rest of the scripts are coming from tethys-core to help initialize the app setup up. Don't forget to add a line to the Dockerfile to add the new ``tethys_app.sls`` script to the ``/srv/salt`` directory:
-
-::
-
-    ADD tethys_app.sls /srv/salt/
-
+Tethys uses `Salt State files`_ to perform runtime initialization of the container. The file, named `top.sls`_, contains a list of state files to run and the order in which to run them. These files are ``pre_tethys.sls``, ``tethyscore.sls`` and ``post_app.sls``. You can override this file with your own ``top.sls`` file to insert additional salt state files for your app (see: :ref:`docker_salt_state`).
 
 Salt Script Description
-#######################
+-----------------------
+
+.. _`pre_tethys.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/pre_tethys.sls
+.. _`tethyscore.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/tethyscore.sls
+.. _`post_app.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/post_app.sls
 
 `pre_tethys.sls`_:
 
@@ -489,4 +387,12 @@ Salt Script Description
 * Persist workspace and static data of the app.
 * Persist and link NGINX and ASGI for the app.
 
+Source Code
+===========
 
+* `Dockerfile <https://github.com/tethysplatform/tethys/blob/master/Dockerfile>`_
+* `run.sh`_
+* `pre_tethys.sls`_
+* `tethyscore.sls`_
+* `post_app.sls`_
+* `top.sls`_
