@@ -383,7 +383,7 @@ Add the following lines to create the THREDDS Tethys Service:
 
     Create_THREDDS_Spatial_Dataset_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }} -p {{ THREDDS_SERVICE_URL }}"
+        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
