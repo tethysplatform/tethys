@@ -78,16 +78,5 @@ organization. You can change everything on this page from the Home Page settings
 		</div>
 	</div>
 </section>
-<section class="get-started clearfix">
-	<div class="get-started-background"></div>
-	<div class="bucket clearfix">
-		<div class="get-started-message">
-			{% if not user.is_authenticated %}
-			  <h2>{{ site_globals.call_to_action|default:"Ready to get started?" }}</h2>
-			  <a class="action hero-action" href="{% url 'accounts:login' %}">{{ site_globals.call_to_action_button|default:"Start Using Tethys!" }}</a>
-			{% endif %}
-		</div>
-	</div>
-</section>
 <div id="home-page" style="display: none;"></div>
 {% endblock %}

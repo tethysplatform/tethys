@@ -1,0 +1,26 @@
+.site-header .navbar {
+  background-color: #0A62A9;
+}
+
+.site-header .navbar-brand img {
+    height: 60px;
+}
+
+.site-header .btn-group .dropdown-menu .dropdown-item {
+    color:#3f3f3f;
+}
+
+.site-header .btn-group .dropdown-menu .dropdown-item:active {
+    background-color: #0A62A9;
+    color: #dddddd;
+}
+
+.site-header .btn-user-profile {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #dddddd;
+}
+
+.site-header .btn-user-profile:hover {
+    background-color: rgba(255, 255, 255, 0.30);
+}

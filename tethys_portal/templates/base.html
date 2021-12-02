@@ -47,9 +47,8 @@
       {% elif site_globals.brand_text %}
         {{ site_globals.brand_text }}
       {% else %}
-        Tethys
+        {% block title %}Tethys Portal{% endblock %}
       {% endif %}
-      {% block title %}{% endblock %}
     </title>
 
     {% comment "links explanation" %}
@@ -90,16 +89,19 @@
     {% endcomment %}
 
     {% block styles %}
-      <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/{{ tethys.bootstrap.version }}/css/bootstrap.min.css" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
+      <link href="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/css/bootstrap.min.css" rel="stylesheet" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
+      <link href="//cdn.jsdelivr.net/npm/bootstrap-icons@{{ tethys.bootstrap_icons.version }}/font/bootstrap-icons.css" rel="stylesheet" >
       <link href="{% static 'tethys_portal/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" />
       <link href="{% static 'tethys_portal/vendor/bootstrap-social/bootstrap-social.css' %}" rel="stylesheet" />
       <link href="{% static 'tethys_portal/css/tethys_main.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/header.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/footer.css' %}"  rel="stylesheet" />
       {{ site_globals.portal_base_css|load_custom_css|safe }}
     {% endblock %}
 
     {% block global_scripts %}
       <script src="//code.jquery.com/jquery-{{ tethys.jquery.version }}.min.js" integrity="{{ tethys.jquery.integrity }}" crossorigin="anonymous"></script>
-      <script src="//stackpath.bootstrapcdn.com/bootstrap/{{ tethys.bootstrap.version }}/js/bootstrap.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
+      <script src="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/js/bootstrap.bundle.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
     {% endblock %}
 
     {% block session_timeout_modal %}
@@ -119,10 +121,7 @@
     {% analytical_body_top %}
 
     {% comment "page explanation" %}
-      The page block allows you to add content to the page. Most of the time it is
-      recommended that you extend one of the page.html templates in order to get
-      the site header and footer. If you need a clean page then this is the
-      block to use.
+      The page block allows you to add content to the page.
 
       Example:
 
@@ -142,8 +141,8 @@
         {% include "header.html" %}
       {% endblock %}
 
-      {# Use wrapper class to add classes to the content wrapper element #}
       {% block site_wrapper_override %}
+        {# Use wrapper class to add classes to the content wrapper element #}
         <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
           {% block flash %}
             {% if messages %}
@@ -158,12 +157,9 @@
                 {% endcomment %}
 
                 {% for message in messages %}
-                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <span aria-hidden="true">&times;</span>
-                      <span class="sr-only">Close</span>
-                    </button>
+                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
                     {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>
                 {% endfor %}
               </div>
