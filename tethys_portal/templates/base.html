@@ -96,6 +96,7 @@
       <link href="{% static 'tethys_portal/css/tethys_main.css' %}"  rel="stylesheet" />
       <link href="{% static 'tethys_portal/css/header.css' %}"  rel="stylesheet" />
       <link href="{% static 'tethys_portal/css/footer.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/flash.css' %}"  rel="stylesheet" />
       {{ site_globals.portal_base_css|load_custom_css|safe }}
     {% endblock %}
 
@@ -117,7 +118,7 @@
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
-  <body {% block bodytag %}{% endblock %}>
+  <body class="d-flex flex-column h-100"{% block bodytag %}{% endblock %}>
     {% analytical_body_top %}
 
     {% comment "page explanation" %}
@@ -146,7 +147,7 @@
         <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
           {% block flash %}
             {% if messages %}
-              <div class="flash-messages">
+              <div class="flash-messages position-absolute w-100">
                 {% comment "flash_messages explanation" %}
                   Use the flash messages block to display temporary feedback to the user. Pass
                   a list of dictionaries called "flash_messages". Each dictionary should have the
@@ -157,7 +158,7 @@
                 {% endcomment %}
 
                 {% for message in messages %}
-                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show mx-auto w-50" role="alert">
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>

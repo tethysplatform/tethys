@@ -1,9 +1,9 @@
 .site-header .navbar {
-  background-color: #0A62A9;
+    border-radius: 40px;
 }
 
 .site-header .navbar-brand img {
-    height: 60px;
+    height: 26px;
 }
 
 .site-header .btn-group .dropdown-menu .dropdown-item {

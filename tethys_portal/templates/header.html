@@ -60,86 +60,82 @@
   }
 </style>
 
-<div class="header-wrapper" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
-  <header class="site-header">
+<header id="site-header" class="site-header container-fluid">
+  <nav id="header-navbar" class="navbar navbar-expand-md navbar-dark fixed-top px-4 py-3 mx-5 my-3" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
     <div class="container-fluid">
-      <nav class="navbar navbar-expand-md navbar-dark fixed-top" id="header-navbar">
-        <div class="container-fluid">
-          {% block header_brand %}
-            <a class="navbar-brand" href="{% url 'home' %}">
-              {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
-                <img  src="{{ site_globals.brand_image }}">
-              {% elif site_globals.brand_image %}
-                <img  src="{% static site_globals.brand_image %}">
-              {% endif %}
-              {% if site_globals.brand_text %}
-                <span class="h1">{{ site_globals.brand_text }}</span>
-              {% endif %}
-              {% if not site_globals.brand_text and not site_globals.brand_image %}
-                <span class="h1 mb-0">Tethys</span>
-              {% endif %}
-            </a>
-          {% endblock %}
+      {% block header_brand %}
+        <a id="header-brand" class="navbar-brand" href="{% url 'home' %}">
+          {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
+            <img  src="{{ site_globals.brand_image }}" alt="" class="d-inline-block align-text-top">
+          {% elif site_globals.brand_image %}
+            <img  src="{% static site_globals.brand_image %}" alt="" class="d-inline-block align-text-top">
+          {% endif %}
+          {% if site_globals.brand_text %}
+            {{ site_globals.brand_text }}
+          {% endif %}
+          {% if not site_globals.brand_text and not site_globals.brand_image %}
+            Tethys Portal
+          {% endif %}
+        </a>
+      {% endblock %}
 
-          {% block header_navbar_nav %}
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-navbar-nav" aria-controls="header-navbar-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="header-navbar-nav">
-            <ul class="navbar-nav ms-auto">
-              {% block header_nav_items %}
-                {% url 'app_library' as app_library_url %}
-                {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
-                  <li class="nav-item">
-                    <a class="h5 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="Apps">Apps</a>
-                  </li>
-                  {% if user.is_staff or user.is_superuser %}
-                  <li class="nav-item">
-                    <a class="h5 mb-0 nav-link" href="{% url 'developer_home' %}" title="Developer">Developer</a>
-                  </li>
-                  {% endif %}
-                {% endif %}
-              {% endblock %}
-            </ul>
-            {% block user_menu %}
-              {% if user.is_authenticated and user.is_active %}
-                <div class="btn-group ms-3">
-                  <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
-                    <span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} {% if user.email %}{% gravatar user.email 25 %}{% else %}{% gravatar "tethys@example.com" 25 %}{% endif %}</span>
-                  </a>
-                  <button type="button" class="btn btn-light btn-user-profile dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="visually-hidden">Toggle Dropdown</span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <a class="dropdown-item" href="{% url 'user:settings' %}" title="User Settings">
-                        <i class="bi bi-person-fill"></i><span class="ms-2">User Settings</span>
-                      </a>
-                    </li>
-                    {% if user.is_staff %}
-                      <li><hr class="dropdown-divider"></li>
-                      <li>
-                        <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">
-                          <i class="bi bi-gear-wide-connected"></i><span class="ms-2">Site Admin</span>
-                        </a>
-                      </li>
-                    {% endif %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                      <a class="dropdown-item" href="{% url 'accounts:logout' %}" title="Log Out">
-                        <i class="bi bi-door-closed-fill"></i><span class="ms-2">Log Out</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              {% else %}
-                <a class="btn btn-outline-light" role="button" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
+      {% block header_navbar_nav %}
+      <button id="header-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-navbar-nav" aria-controls="header-navbar-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="header-navbar-nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          {% block header_nav_items %}
+            {% url 'app_library' as app_library_url %}
+            {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
+              <li class="nav-item">
+                <a class="h5 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="Apps">Apps</a>
+              </li>
+              {% if user.is_staff or user.is_superuser %}
+              <li class="nav-item">
+                <a class="h5 mb-0 nav-link" href="{% url 'developer_home' %}" title="Developer">Developer</a>
+              </li>
               {% endif %}
-            {% endblock %}
-          </div>
+            {% endif %}
           {% endblock %}
-        </div>
-      </nav>
+        </ul>
+        {% block user_menu %}
+          {% if user.is_authenticated and user.is_active %}
+            <div class="btn-group ms-3">
+              <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
+                <span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} {% if user.email %}{% gravatar user.email 25 %}{% else %}{% gravatar "tethys@example.com" 25 %}{% endif %}</span>
+              </a>
+              <button type="button" class="btn btn-light btn-user-profile dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="{% url 'user:settings' %}" title="User Settings">
+                    <i class="bi bi-person-fill"></i><span class="ms-2">User Settings</span>
+                  </a>
+                </li>
+                {% if user.is_staff %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">
+                      <i class="bi bi-gear-wide-connected"></i><span class="ms-2">Site Admin</span>
+                    </a>
+                  </li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'accounts:logout' %}" title="Log Out">
+                    <i class="bi bi-door-closed-fill"></i><span class="ms-2">Log Out</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          {% else %}
+            <a class="btn btn-outline-light" role="button" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
+          {% endif %}
+        {% endblock %}
+      </div>
+      {% endblock %}
     </div>
-  </header>
-</div>
+  </nav>
+</header>
