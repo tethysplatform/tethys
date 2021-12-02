@@ -42,13 +42,15 @@
     {% endcomment %}
 
     <title>
+      {% block title %}
       {% if site_globals.site_title %}
-         {{ site_globals.site_title }}
+        {{ site_globals.site_title }}
       {% elif site_globals.brand_text %}
         {{ site_globals.brand_text }}
       {% else %}
-        {% block title %}Tethys Portal{% endblock %}
+        Tethys Portal
       {% endif %}
+      {% endblock %}
     </title>
 
     {% comment "links explanation" %}

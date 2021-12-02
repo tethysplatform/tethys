@@ -5,9 +5,6 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-/* ===========================================
-   Less Imports
-   =========================================== */
 /*****************************************************************************
  * FILE: variables
  * DATE: 2014
@@ -15,9 +12,6 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-/* =========
-   Variables
-   ========= */
 /*****************************************************************************
  * FILE: mixins
  * DATE: 2014
@@ -168,39 +162,6 @@ a:hover {
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-/* ===========================================
-   Buttons
-   =========================================== */
-.hero-action {
-  position: absolute;
-  left: 50%;
-  margin-top: 25px;
-  margin-left: -112.5px;
-  display: block;
-  width: 225px;
-  height: 50px;
-  text-align: center;
-  font-weight: 200;
-  font-size: 18px;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  text-decoration: none;
-  line-height: 50px;
-  -webkit-transition: background-color 0.4s, color 0.4s;
-  -moz-transition: background-color 0.4s, color 0.4s;
-  -o-transition: background-color 0.4s, color 0.4s;
-  -ms-transition: background-color 0.4s, color 0.4s;
-  transition: background-color 0.4s, color 0.4s;
-}
-.hero-action:hover {
-  background-color: #fff;
-  color: #0A89CA;
-  -webkit-transition: background-color 0.4s, color 0.4s;
-  -moz-transition: background-color 0.4s, color 0.4s;
-  -o-transition: background-color 0.4s, color 0.4s;
-  -ms-transition: background-color 0.4s, color 0.4s;
-  transition: background-color 0.4s, color 0.4s;
-}
 /*****************************************************************************
  * FILE: alerts
  * DATE: 2014

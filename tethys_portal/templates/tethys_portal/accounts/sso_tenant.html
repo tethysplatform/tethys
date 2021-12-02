@@ -2,7 +2,7 @@
 
 {% load bootstrap3 static %}
 
-{% block title %}- {{ page_title }}{% endblock %}
+{% block title %}{{ block.super }} - {{ page_title }}{% endblock %}
 
 {% block styles %}
   {{ block.super }}

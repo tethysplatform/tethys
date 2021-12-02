@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ block.super }} - 403{% endblock %}
 
 {% block styles %}
   {{ block.super }}

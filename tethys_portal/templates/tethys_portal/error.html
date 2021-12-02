@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ block.super }} - Error{% endblock %}
 
 {% block styles %}
   {{ block.super }}

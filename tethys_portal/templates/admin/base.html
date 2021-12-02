@@ -2,7 +2,7 @@
 
 {% load admin_static %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ block.super }} - Site Admin{% endblock %}
 {% block styles %}
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
   {% block extrastyle %}{% endblock %}

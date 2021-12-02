@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 {% load recaptcha2 %}
 
-{% block title %}- Sign Up{% endblock %}
+{% block title %}{{ block.super }} - Sign Up{% endblock %}
 
 {% block styles %}
   {{ block.super }}

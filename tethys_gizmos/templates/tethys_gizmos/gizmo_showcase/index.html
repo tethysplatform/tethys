@@ -2,7 +2,7 @@
 
 {% load static tethys_gizmos %}
 
-{% block title %}- Gizmo Showcase{% endblock %}
+{% block title %}{{ block.super }} - Gizmo Showcase{% endblock %}
 
 {% block import_gizmos %}
     {% import_gizmo_dependency bokeh_view %}

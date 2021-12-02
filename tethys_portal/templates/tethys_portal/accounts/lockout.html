@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static humanize %}
 
-{% block title %}Locked Out!{% endblock %}
+{% block title %}{{ block.super }} - Locked Out!{% endblock %}
 
 {% block styles %}
 {{ block.super }}

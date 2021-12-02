@@ -3,7 +3,7 @@
 
 {% load static tags site_settings %}
 
-{% block title %}- Apps Library{% endblock %}
+{% block title %}{{ block.super }} - Apps Library{% endblock %}
 
 {% block styles %}
   {{ block.super }}

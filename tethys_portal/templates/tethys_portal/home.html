@@ -2,7 +2,7 @@
 
 {% load static site_settings %}
 
-{% block title %}- Welcome!{% endblock %}
+{% block title %}{{ block.super }} - Welcome!{% endblock %}
 
 {% block styles %}
   {{ block.super }}
