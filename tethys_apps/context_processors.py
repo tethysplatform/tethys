@@ -57,6 +57,9 @@ def tethys_apps_context(request):
             'bootstrap_icons': {
                 'version': '1.7.1',
             },
+            'select2': {
+                'version': '4.1.0',
+            }
         }
     })
 

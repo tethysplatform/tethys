@@ -8,6 +8,7 @@
 {% block styles %}
   {{ block.super }}
   <link href="{% static 'tethys_apps/css/app_library.css' %}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
     body {
       background: {{ site_globals.background_color|default:'#efefef' }};
@@ -16,30 +17,33 @@
   {{ site_globals.apps_library_css|load_custom_css|safe }}
 {% endblock %}
 
+{% block global_scripts %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}
+
 {% block primary_content %}
+  {# Push content below header #}
   <div class="clear-header"></div>
-  <div class="app-libary-wrapper mt-5">
+  <div class="app-libary-wrapper">
     {% if apps.configured or apps.unconfigured %}
-      <div class="container" align="center">
-        <div class="row">
-          <div class="col">
-            <div class="filter-container isotopeFilters">
-              <ul class="list-inline filter">
-                {% if apps|get_tags_from_apps %}
-                    <li><a href="#" data-filter="*" class="tag-button active" >All </a></li>
-                    {% for tag in apps|get_tags_from_apps%}
-                    {% if tag %}
-                    <li><a href="#" data-filter=".{{ tag }}" class="tag-button">{{ tag }}</a></li>
-                    {% endif %}
-                    {% endfor %}
-                {% endif %}
-              </ul>
-            </div>
+      {# Tag Search #}
+      {% if apps|get_tags_from_apps %}
+      <div class="container-xl">
+        <div class="row justify-content-center mt-4">
+          <div class="col-md-6">
+            <select class="tag-search-field" name="tags" multiple="multiple">
+              {% for tag in apps|get_tags_from_apps %}
+              <option value="{{ tag.0 }}">{{ tag.1 }}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
       </div>
-      <div class="container isotopeContainer">
-        <div class="row row-cols-auto">
+      {% endif %}
+      {# App List #}
+      <div class="container-xl">
+        <div class="row row-cols-auto justify-content-center mb-4 mx-4">
           {% for app in apps.configured %}
             <div class="col">
               {% include 'tethys_apps/app_card.html' with app=app unconfigured=False %}
@@ -61,8 +65,5 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static 'tethys_apps/vendor/imagesloaded.min.js' %}" type="text/javascript"></script>
-  <script src="{% static 'tethys_apps/vendor/masonry.min.js' %}" type="text/javascript"></script>
   <script src="{% static 'tethys_apps/js/app_library.js' %}" type="text/javascript"></script>
-  <script src="{% static 'tethys_apps/js/isotope.pkgd.min.js' %}" type="text/javascript"></script>
 {% endblock %}

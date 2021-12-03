@@ -1,6 +1,10 @@
 {% load static tags site_settings %}
 
-<a class="app-container isotopeSelector {{ app|get_tag_class }}{% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}{% if unconfigured %} unconfigured{% endif %}" href="{% if app.proxied %}{{ app.url }}{% else %}{% url app.index %}{% endif %}">
+{% if not unconfigured %}
+<a class="app-container rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" {% if not app.show_in_apps_library %}title="Hidden"{% elif not app.enabled %}title="Disabled"{% else %}title="{{ app.name }}"{% endif %} data-tags="{{ app|get_tag_class }}" href="{% if app.proxied %}{{ app.url }}{% else %}{% url app.index %}{% endif %}">
+{% else %}
+<a class="app-container rounded d-block mt-4 unconfigured" title="Not Configured" data-tags="{{ app|get_tag_class }}" href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
+{% endif %}
     <div class="card app-card text-center">
         <div class="card-body">
         {% if app.proxied %}
@@ -8,7 +12,7 @@
         {% else %}
             <img class="card-img-top" {% if app.icon %}{% if 'http' in app.icon %}src="{{ app.icon }}"{% else %}src="{% static app.icon %}"{% endif %}{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} alt="">
         {% endif %}
-        <h5 class="card-title mt-2 mb-0">{{ app.name }}</h5>
+        <h5 class="card-title app-title mt-2 mb-0">{{ app.name }}</h5>
         {% if app.description %}
             <div class="app-help-icon position-absolute bottom-0 end-0 p-1">
                 <i class="bi bi-info-circle"></i>
