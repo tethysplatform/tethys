@@ -39,24 +39,3 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-@media (max-width: 700px) {
-  .tethys-secondary-header {
-    margin-bottom: 20px;
-  }
-  #developer-content-wrapper {
-    margin: 0 25px;
-  }
-  #developer-content-wrapper .media {
-    height: 150px;
-  }
-  #developer-content-wrapper .media img.media-object {
-    height: 150px;
-    width: 150px;
-  }
-  #developer-content-wrapper .media .media-body .media-heading {
-    font-size: 20px;
-  }
-  #developer-content-wrapper .media .media-body p {
-    height: 83px;
-  }
-}

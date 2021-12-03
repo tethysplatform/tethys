@@ -161,38 +161,20 @@ var TETHYS_APPS_LIBRARY = (function() {
 	    // Apply app theme effects
 	    //app_theme_effects();
 
-		// Apply help-icon event to apps depending on device (touchscreen or not)
-		$('.app-help-info>p').each(function() {
-			if ($(this).text() != '') {
-				if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
-					$(this).parent().prev().on('click', function (e) {
-						e.stopPropagation();
-						$(this).next()
-							.removeClass('hidden')
-							.next().removeClass('hidden');
-					});
-					$(this).parent().next().on('click', function (e) {
-						e.stopPropagation();
-						$(this).addClass('hidden');
-						$(this).prev().addClass('hidden');
-					});
-				} else {
-					$($(this).parent().prev().children([0])).on('mouseenter', function (e) {
-						e.stopPropagation();
-						$(this).parent().next()
-							.removeClass('hidden');
-					});
-					$(this).parent().on('mouseleave', function (e) {
-						e.stopPropagation();
-						$(this)
-							.scrollTop(0)
-							.addClass('hidden')
-					});
-				}
-			} else {
-				$($(this).parent().prev().children()[0]).remove();
-			}
+		// Apply help-icon click event 
+		$('.app-help-icon').each(function(){
+			let info_icon = this;
+			let info_text = $(info_icon).siblings('.app-help-info');
+			$(info_icon).on('click', function(e) {
+				e.stopPropagation();
+				info_text.removeClass('d-none');
+			});
+			$(info_text).children('.btn-close').on('click', function() {
+				e.stopPropagation();
+				info_text.addClass('d-none');
+			});
 		});
+		
 
 	    // The Tethys apps library page uses masonry.js to accomplish the Pinterest-like stacking of the app icons
 	    // Initialize the msnry object if there are any apps in the list.
