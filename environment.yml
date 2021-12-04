@@ -55,7 +55,7 @@ dependencies:
 - django-axes
 - django-filter
 - djangorestframework
-- django-bootstrap3
+- django-bootstrap5
 - django-model-utils
 - django-guardian
 - django-gravatar2
