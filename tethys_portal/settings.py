@@ -213,7 +213,7 @@ REST_FRAMEWORK = {
 ACCEPT_TERMS_PATH = '/terms/accept/'
 TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
 TERMS_EXCLUDE_URL_LIST = {'/'}
-TERMS_BASE_TEMPLATE = 'base.html'
+TERMS_BASE_TEMPLATE = 'termsandconditions_base.html'
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
