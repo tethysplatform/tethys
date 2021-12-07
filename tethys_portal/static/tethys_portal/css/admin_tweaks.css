@@ -5,43 +5,25 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-/*****************************************************************************
- * FILE: mixins
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: variables
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/* =========
-   Variables
-   ========= */
+ul li {
+  list-style-type: none;
+  padding: inherit;
+}
 .dashboard #content {
   width: auto;
 }
 #content h1 {
   font-size: 30px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-transform: capitalize;
 }
 #container {
   width: auto;
   margin: 0 50px;
-  margin-top: 20px;
 }
 div.breadcrumbs {
   background: none;
   border: none;
   font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 div.breadcrumbs a {
   color: #2ca6ed;
@@ -57,8 +39,6 @@ a:hover {
   background: #0A62A9;
   font-weight: 500;
   font-size: 12px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 .object-tools a:link:hover {
   background-color: #1b73ba;
@@ -67,8 +47,6 @@ a:hover {
   background: #0A62A9 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
   font-weight: 500;
   font-size: 12px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   padding: 3px 12px;
 }
 .object-tools a.addlink:hover {
@@ -77,11 +55,13 @@ a:hover {
 .module caption {
   font-size: 16px;
   font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   background: #0a62a9;
   padding: 10px;
   padding-left: 8px;
+  caption-side: top;
+}
+.module table {
+  width: 100%;
 }
 .module tr th,
 .module tr td {
@@ -89,15 +69,11 @@ a:hover {
 }
 .module tr th {
   font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
 }
 .module h2 {
   background: #0A62A9;
   color: white;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
   line-height: 1.5;
   padding: 8px;
@@ -109,8 +85,6 @@ thead th {
 #content-related .module h2 {
   background: #2ca6ed;
   color: white;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
   line-height: 1.5;
   padding: 8px;
@@ -119,8 +93,6 @@ thead th {
 .inline-group h2 {
   background: #0A62A9;
   color: white;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
   line-height: 1.5;
   padding: 8px;
@@ -133,8 +105,6 @@ thead th {
   line-height: 1.5;
   padding: 8px;
   font-weight: 500;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 .inline-group .tabular tr.add-row td {
   background: #ffffff;
@@ -158,8 +128,6 @@ thead th {
 #changelist #changelist-filter h2 {
   background: #0A62A9;
   font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   line-height: 2;
   padding: 8px;
   font-weight: 500;
@@ -167,8 +135,6 @@ thead th {
 }
 #changelist #changelist-filter h3 {
   color: #666666;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
 }
 #changelist #changelist-filter li.selected a {
@@ -221,8 +187,6 @@ input {
 input[type=submit] {
   background: #ffffff;
   border: 1px #888888 solid;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-weight: 500;
   color: #222222;
 }

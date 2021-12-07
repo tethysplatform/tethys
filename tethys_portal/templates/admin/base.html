@@ -62,8 +62,9 @@
 {% block bodytag %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 
 {% block admin_content %}
+  <div class="clear-header"></div>
 
-<!-- Container -->
+  <!-- Container -->
   <div id="container">
       {% if not is_popup %}
         {% block breadcrumbs %}
