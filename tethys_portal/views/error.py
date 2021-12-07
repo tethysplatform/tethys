@@ -10,7 +10,7 @@
 from django.shortcuts import render
 
 
-def handler_400(request, exception, *args, **kwargs):
+def handler_400(request, exception=None, *args, **kwargs):
     """
     Handle 400 errors
     """
@@ -21,7 +21,7 @@ def handler_400(request, exception, *args, **kwargs):
     return render(request, 'tethys_portal/error.html', context, status=400)
 
 
-def handler_403(request, exception, *args, **kwargs):
+def handler_403(request, exception=None, *args, **kwargs):
     """
     Handle 403 errors
     """
@@ -37,7 +37,7 @@ def handler_403(request, exception, *args, **kwargs):
     return render(request, 'tethys_portal/403error.html', context, status=403)
 
 
-def handler_404(request, exception, error_message=None, *args, **kwargs):
+def handler_404(request, exception=None, error_message=None, *args, **kwargs):
     """
     Handle 404 errors
     """
