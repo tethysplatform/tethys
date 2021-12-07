@@ -189,7 +189,10 @@ var TETHYS_APP_BASE = (function() {
         }
 
         // Hide tooltips
-        $('.tooltip').tooltip('hide');
+        $('[data-bs-toggle="tooltip"]').tooltip('hide');
+
+        // Dismiss alerts
+        $('.alert').alert('close');
 
         // Hide by removing "show" classes
         $(app_header_selector).removeClass('show-header');
@@ -313,7 +316,7 @@ var TETHYS_APP_BASE = (function() {
       check_responsive();
 
       // Initialize tooltips
-      $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+      $('[data-bs-toggle="tooltip"]').tooltip({ container: 'body' });
 
   });
 
