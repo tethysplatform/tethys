@@ -3,10 +3,10 @@
 
 {# Allows custom attributes to be added to the html tag #}
 {% block htmltag %}
-<!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
-<!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
+<!--[if IE 7]> <html lang="en" class="ie ie7 h-100"> <![endif]-->
+<!--[if IE 8]> <html lang="en"  class="ie ie8 h-100"> <![endif]-->
+<!--[if IE 9]> <html lang="en"  class="ie9 h-100"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="h-100"> <!--<![endif]-->
 {% endblock %}
 
   {# Allows custom attributes to be added to the head tag #}
@@ -117,7 +117,7 @@
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
-  <body {% block bodytag %}{% endblock %}>
+  <body {% block bodytag %}class="h-100"{% endblock %}>
     {% analytical_body_top %}
 
     {% block app_content_wrapper_override %}
@@ -165,7 +165,7 @@
                   {% endblock %}
                   {% block exit_button_override %}
                     <div class="header-button exit-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit">x</a>
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
                     </div>
                   {% endblock %}
               </div>
