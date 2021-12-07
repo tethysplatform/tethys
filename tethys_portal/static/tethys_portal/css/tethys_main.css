@@ -5,27 +5,6 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-/*****************************************************************************
- * FILE: variables
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: mixins
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: fonts
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
 /* =====
    Fonts
    ===== */
@@ -77,33 +56,12 @@
   font-weight: 700;
   src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxhbnBKKEOwRKgsHDreGcocg.woff) format('woff');
 }
-/*****************************************************************************
- * FILE: base
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-html {
-  height: 100%;
-}
 body {
   position: relative;
   font-family: 'open sans', 'Myriad Pro', 'Lucida Grande', 'Helvetica', sans-serif;
-  background: #ffffff;
-  height: 100%;
 }
 section {
   padding: 0 40px;
-}
-.bucket {
-  position: relative;
-  max-width: 1150px;
-  margin: 0 auto;
-  overflow: auto;
-}
-a.action {
-  border-radius: 5px;
 }
 a {
   color: #2ca6ed;
@@ -130,13 +88,6 @@ a:hover {
   vertical-align: middle;
   width: 200px;
 }
-/*****************************************************************************
- * FILE: page
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
 #content {
   position: relative;
   min-height: 100%;
@@ -148,74 +99,3 @@ a:hover {
 .primary {
   position: relative;
 }
-/*****************************************************************************
- * FILE: sticky_footer
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: buttons
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: alerts
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: header
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: home
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: ckan_tweaks
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: footer
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: account
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: user
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-/*****************************************************************************
- * FILE: secondary_header
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
-

@@ -25,7 +25,7 @@
     {% block profile_header %}
     <div id="profile-header-container" class="row my-3">
       <div class="col">
-        <nav id="profile-header" class="navbar navbar-dark rounded">
+        <nav id="profile-header" class="navbar navbar-light rounded">
           <div class="container-fluid">
             <span class="navbar-brand">
               {% with image_size=30 %}
@@ -34,7 +34,7 @@
               {% endwith %}
             </span>
             {% block edit_button %}
-            <a href="{% url 'user:settings' %}" class="btn btn-outline-light"><i class="bi bi-gear"></i> Settings</a>
+            <a href="{% url 'user:settings' %}" class="btn btn-primary"><i class="bi bi-gear"></i> Settings</a>
             {% endblock %}
           </div>
         </nav>
