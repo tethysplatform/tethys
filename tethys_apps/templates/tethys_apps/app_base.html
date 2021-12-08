@@ -100,6 +100,11 @@
       {% endif %}
       <link href="{% static 'tethys_portal/css/termsandconditions.css' %}"  rel="stylesheet" />
       {% gizmo_dependencies global_css %}
+      <style>
+        #app-content-wrapper #app-content #app-navigation .nav li a.active {
+          background: {{ tethys_app.color|default:'#1b95dc' }};
+        }
+      </style>
     {% endblock %}
 
     {% block global_scripts %}
@@ -121,7 +126,7 @@
     {% analytical_body_top %}
 
     {% block app_content_wrapper_override %}
-      <div id="app-content-wrapper" class="show-nav">
+      <div id="app-content-wrapper" class="{% block show_nav_override %}show-nav{% endblock %}">
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
             <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
