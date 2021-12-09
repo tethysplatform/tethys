@@ -13,7 +13,7 @@
 // Characteristic Variables
 @app-nav-width: 300px;
 @app-content-padding: 15px;
-@app-primary-color: #1b95dc;
+@app-primary-color: none;
 @app-header-height: 50px;
 @app-header-height-max-width-500: 60px;
 @app-header-title-max-offset: 400px;
@@ -35,6 +35,10 @@ html {
 
 body {
   height: 100%;
+}
+
+.nav-link {
+  transition: none;
 }
 
 #app-header {
@@ -224,6 +228,7 @@ body {
         padding-bottom: 40px;
         height: 100%;
         overflow: auto;
+        flex-wrap: nowrap;
 
         &::-webkit-scrollbar {
           display: none;
