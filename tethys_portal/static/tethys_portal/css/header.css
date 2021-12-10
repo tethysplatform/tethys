@@ -1,5 +1,6 @@
 .site-header .navbar {
     border-radius: 40px;
+    transition: all .2s ease-in-out;
 }
 
 .site-header .navbar-brand img {
@@ -25,6 +26,6 @@
     background-color: rgba(255, 255, 255, 0.30);
 }
 
-.clear-header {
-    padding-top: 88px;
+.site-header .navbar.fixed-top {
+    border-radius: 0;
 }

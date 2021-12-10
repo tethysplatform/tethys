@@ -143,6 +143,7 @@
 
       {% block header %}
         {% include "header.html" %}
+        <div class="clear-header"></div>
       {% endblock %}
 
       {% block site_wrapper_override %}
@@ -207,6 +208,7 @@
     {% endcomment %}
 
     {% block scripts %}
+      <script type="text/javascript" src="{% static 'tethys_portal/js/header.js' %}"></script>
     {% endblock %}
 
     {% analytical_body_bottom %}
