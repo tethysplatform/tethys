@@ -1,17 +1,22 @@
 .hero-bg {
     background-color: #0093E9;
     background-image: linear-gradient(345deg, #0a62a9 0%, #0093E9 100%);
-    margin-top: -88px;
+    margin-top: -206px;
 }
 .hero {
-    padding-top: 136px;
+    padding-top: 254px;
     z-index: 100;
 }
 .btn-sign-up {
     display: block;
     width: 150px;
-
 }
+
 .feature-card {
+    background: none;
+    border: none;
+}
+
+.feature-card .card-img-top {
     max-width: 250px;
 }

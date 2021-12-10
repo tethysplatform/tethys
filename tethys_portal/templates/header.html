@@ -81,7 +81,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div id="header-navbar-nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav me-auto">
           {% block header_nav_items %}
             {% url 'app_library' as app_library_url %}
             {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
@@ -98,7 +98,7 @@
         </ul>
         {% block user_menu %}
           {% if user.is_authenticated and user.is_active %}
-            <div class="btn-group ms-3">
+            <div class="btn-group">
               <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
                 <span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} {% if user.email %}{% gravatar user.email 25 %}{% else %}{% gravatar "tethys@example.com" 25 %}{% endif %}</span>
               </a>

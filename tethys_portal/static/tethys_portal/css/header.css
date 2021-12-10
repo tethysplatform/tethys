@@ -29,3 +29,7 @@
 .site-header .navbar.fixed-top {
     border-radius: 0;
 }
+
+.site-header .navbar-toggler {
+    border: none;
+}
