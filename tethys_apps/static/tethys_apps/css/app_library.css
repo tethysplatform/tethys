@@ -21,23 +21,23 @@ body {
 }
 
 /* App Cards */
-.app-container {
+.app-link-wrapper {
   text-decoration: none;
   color:#666666;
 }
-.app-container:hover {
+.app-link-wrapper:hover {
   color: #666666;
 }
-.app-container.unconfigured .app-card {
+.app-link-wrapper.unconfigured .app-card {
   background: #666666;
 }
-.app-container.unconfigured:hover .app-card {
+.app-link-wrapper.unconfigured:hover .app-card {
   background: #555555;
 }
-.app-container.unconfigured .app-card .app-title {
+.app-link-wrapper.unconfigured .app-card .app-title {
   color: #ffffff;
 }
-.app-container.veiled .app-card {
+.app-link-wrapper.veiled .app-card {
   opacity: 0.6;
 }
 .app-card {
@@ -45,4 +45,23 @@ body {
 }
 .app-card:hover {
     background: #dddddd;
+}
+
+.app-help-icon {
+  border-radius: 50%;
+  font-size: 10pt;
+  line-height: 1;
+  margin-top: 3px;
+  margin-right: 3px;
+  background: white;
+}
+
+.app-help-icon:hover {
+    background: #dddddd;
+    cursor: pointer;
+}
+
+.app-help-info .btn-close {
+  width: 0.25em;
+  height: 0.25em;
 }
