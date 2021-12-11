@@ -26,6 +26,9 @@ def tethys_global_settings_context(request):
 
     if not site_globals.get('secondary_color'):
         site_globals['secondary_color'] =  '#a2d6f9'
+    
+    if not site_globals.get('background_color'):
+        site_globals['background_color'] =  '#efefef'
 
     if not site_globals.get('primary_text_color'):
         site_globals['primary_text_color'] =  '#ffffff'

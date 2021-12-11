@@ -4,13 +4,8 @@
 {% block title %}{{ block.super }} - Locked Out!{% endblock %}
 
 {% block styles %}
-{{ block.super }}
-<style>
-    body {
-      background: {{ site_globals.background_color|default:'#ffffff' }};
-    }
-</style>
-<link href="{% static '/tethys_portal/css/lockout.css' %}" type="text/css" rel="stylesheet" />
+  {{ block.super }}
+  <link href="{% static '/tethys_portal/css/lockout.css' %}" type="text/css" rel="stylesheet" />
 {% endblock %}
 
 {% block flash %}{% endblock %}
