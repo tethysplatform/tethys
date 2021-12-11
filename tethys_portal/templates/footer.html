@@ -1,19 +1,5 @@
 {% load static %}
-<style>
-  .copyright {
-    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-  }
-  footer.site-footer .tethys-attribution {
-    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-  }
-  .documents-wrapper .document-link {
-    color: {{ site_globals.primary_text_color|default:'#eeeeff' }};
-  }
-  .documents-wrapper .document-link:hover {
-    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-  }
-</style>
-<footer id="site-footer" class="site-footer mt-auto container-fluid" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
+<footer id="site-footer" class="site-footer mt-auto container-fluid">
   {% block footer_content %}
     <div class="row  align-items-center px-3 py-3">
       <div class="col-md-5 py-3">
