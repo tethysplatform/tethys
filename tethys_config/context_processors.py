@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import datetime as dt
 
 
 def tethys_global_settings_context(request):
@@ -22,6 +23,11 @@ def tethys_global_settings_context(request):
     # Get terms and conditions
     site_globals.update({'documents': TermsAndConditions.get_active_terms_list()})
 
-    context = {'site_globals': site_globals}
+    context = {
+        'site_globals': site_globals,
+        'site_defaults': {
+            'copyright': f'Copyright © {dt.datetime.utcnow():%Y} Your Organization',
+        }
+    }
 
     return context
