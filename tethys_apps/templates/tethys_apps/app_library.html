@@ -7,11 +7,73 @@
 
 {% block styles %}
   {{ block.super }}
-  <link href="{% static 'tethys_apps/css/app_library.css' %}" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#efefef' }};
+  <style id="app-library-styles">
+    .no-apps-loaded-message {
+      width: 50%;
+      margin: 100px auto;
+      margin-bottom: 150px;
+      text-align: center;
+    }
+
+    /* Tag Search */
+    .tag-search-field {
+      width: 100%;
+    }
+
+    .select2 {
+      width: 100%!important;
+    }
+
+    .select2-container .select2-search--inline .select2-search__field {
+      height: 22px!important;
+    }
+
+    /* App Cards */
+    .app-link-wrapper {
+      text-decoration: none;
+      color:#666666;
+    }
+    .app-link-wrapper:hover {
+      color: #666666;
+    }
+    .app-link-wrapper.unconfigured .app-card {
+      background: #666666;
+    }
+    .app-link-wrapper.unconfigured:hover .app-card {
+      background: #555555;
+    }
+    .app-link-wrapper.unconfigured .app-card .app-title {
+      color: #ffffff;
+    }
+    .app-link-wrapper.veiled .app-card {
+      opacity: 0.6;
+    }
+    .app-card {
+        width: 200px;
+    }
+    .app-card:hover {
+        background: #dddddd;
+    }
+
+    /* App Card Description */
+    .app-help-icon {
+      border-radius: 50%;
+      font-size: 10pt;
+      line-height: 1;
+      margin-top: 3px;
+      margin-right: 3px;
+      background: white;
+    }
+
+    .app-help-icon:hover {
+        background: #dddddd;
+        cursor: pointer;
+    }
+
+    .app-help-info .btn-close {
+      width: 0.25em;
+      height: 0.25em;
     }
   </style>
   {{ site_globals.apps_library_css|load_custom_css|safe }}

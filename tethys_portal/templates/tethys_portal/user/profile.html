@@ -6,9 +6,12 @@
 
 {% block styles %}
   {{ block.super }}
-  <link href="{% static 'tethys_portal/css/profile.css' %}"  rel="stylesheet" />
   <link href="{% static 'tethys_portal/css/social_labels.css' %}"  rel="stylesheet" />
-  <style>
+  <style id="profile-styles">
+    #profile-header {
+      background-color: {{ site_globals.secondary_color }};
+    }
+    
     body {
       background: {{ site_globals.background_color|default:'#efefef' }};
     }

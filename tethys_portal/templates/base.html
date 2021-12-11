@@ -98,6 +98,11 @@
       <link href="{% static 'tethys_portal/css/tethys_main.css' %}"  rel="stylesheet" />
       <link href="{% static 'tethys_portal/css/flash.css' %}"  rel="stylesheet" />
       <link href="{% static 'tethys_portal/css/termsandconditions.css' %}"  rel="stylesheet" />
+      <style id="global-styles">
+        body {
+          background: {{ site_globals.background_color|default:'#efefef' }};
+        }
+      </style>
       <style id="header-styles">
         /* Header Styles */
         #header-brand {

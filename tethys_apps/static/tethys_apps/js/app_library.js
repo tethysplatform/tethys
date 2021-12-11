@@ -32,7 +32,7 @@ var TETHYS_APPS_LIBRARY = (function() {
  	filter_apps = function(e) {
 		let selected_tags = $(e.target).select2('data');
 
-		$('.app-container').each(function(index, app_container) {
+		$('.app-card-container').each(function(index, app_container) {
 			// If no selected tags, show all apps
 			if (selected_tags.length <= 0) {
 				$(app_container).parent('.col').removeClass('d-none');
