@@ -8,7 +8,7 @@
   {{ block.super }}
   <style id="header-styles">
     body {
-		background: {{ site_globals.background_color|default:'#efefef' }};
+		background: {{ site_globals.background_color }};
     }
 
 	.hero-container {
@@ -16,8 +16,8 @@
 	}
 
 	.hero-bg {
-		background-color: site_globals.secondary_color|default:'#A2D6F9';
-		background-image: linear-gradient(345deg, {{ site_globals.primary_color|default:'#0a62a9' }} 0%, {{ site_globals.secondary_color|default:'#A2D6F9' }} 100%); 
+		background-color: {{ site_globals.secondary_color }};
+		background-image: linear-gradient(345deg, {{ site_globals.primary_color }} 0%, {{ site_globals.secondary_color }} 100%); 
 	}
 
 	.hero {
@@ -26,11 +26,11 @@
 	}
 
 	.hero .hero-title {
-		color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+		color: {{ site_globals.primary_text_color }};
 	}
 
 	.hero .lead {
-		color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+		color: {{ site_globals.primary_text_color }};
 	}
 
 	.btn-sign-up {
@@ -48,11 +48,11 @@
 	}
 
 	.feature-card .card-title {
-		color: {{ site_globals.secondary_text_color|default:'#212529' }};
+		color: {{ site_globals.secondary_text_color }};
 	}
 
 	.feature-card .card-text {
-		color: {{ site_globals.secondary_text_color|default:'#212529' }};
+		color: {{ site_globals.secondary_text_color }};
 	}
   </style>
 {% endblock %}
