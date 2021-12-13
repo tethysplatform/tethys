@@ -39,7 +39,7 @@
   background-color: #71a43a;
   border-color: rgba(0, 0, 0, 0.2);
 }
-.fa-hydroshare {
+.bi-hydroshare {
   background-image: url(/static/tethys_portal/images/hs-icon-sm.png);
   background-repeat: no-repeat;
   background-size: 75%;
@@ -53,7 +53,7 @@
 .btn-arcgis:hover {
   background-color: #005E95;
 }
-.fa-arcgis {
+.bi-arcgis {
   background-image: url(/static/tethys_portal/images/arcgis-icon-sm.png);
   background-repeat: no-repeat;
   background-size: 75%;
@@ -64,14 +64,14 @@
   color: #555555;
   border-color: rgba(0, 0, 0, 0.2);
 }
-.btn-okta .fa-circle-o {
+.btn-okta .bi-circle {
   color: #007dc1;
 }
 .btn-okta:hover {
   background-color: #007dc1;
   color: #ffffff;
 }
-.btn-okta:hover .fa-circle-o {
+.btn-okta:hover .bi-circle {
   color: #ffffff;
   font-weight: 600;
 }
@@ -79,7 +79,7 @@
   background-color: #007dc1;
   color: #ffffff;
 }
-.btn-okta:focus .fa-circle-o {
+.btn-okta:focus .bi-circle {
   color: #ffffff;
   font-weight: 600;
 }
@@ -88,7 +88,7 @@
   color: #555555;
   border-color: rgba(0, 0, 0, 0.2);
 }
-.btn-onelogin .fa-onelogin {
+.btn-onelogin .bi-onelogin {
   color: #1c1f2a;
   background-image: url(/static/tethys_portal/images/onelogin_black_32.png);
   background-repeat: no-repeat;
@@ -99,14 +99,14 @@
   background-color: #1c1f2a;
   color: #ffffff;
 }
-.btn-onelogin:hover .fa-onelogin {
+.btn-onelogin:hover .bi-onelogin {
   background-image: url(/static/tethys_portal/images/onelogin_white_32.png);
 }
 .btn-onelogin:focus {
   background-color: #1c1f2a;
   color: #ffffff;
 }
-.btn-onelogin:focus .fa-onelogin {
+.btn-onelogin:focus .bi-onelogin {
   background-image: url(/static/tethys_portal/images/onelogin_white_32.png);
 }
 .btn-windows {
@@ -114,78 +114,78 @@
   color: #555555;
   border-color: rgba(0, 0, 0, 0.2);
 }
-.fa-windows {
+.bi-windows {
   color: #3878d4;
 }
 .btn-windows:hover {
   background-color: #3878d4;
   color: #ffffff;
 }
-.btn-windows:hover .fa-windows {
+.btn-windows:hover .bi-windows {
   color: #ffffff;
 }
 .btn-windows:focus {
   background-color: #3878d4;
   color: #ffffff;
 }
-.btn-windows:focus .fa-windows {
+.btn-windows:focus .bi-windows {
   color: #ffffff;
 }
 .btn-google {
   background-color: #ffffff;
   color: #555555;
 }
-.fa-google {
+.bi-google {
   color: #dd4b39;
 }
 .btn-google:hover {
   background-color: #dd4b39;
 }
-.btn-google:hover .fa-google {
+.btn-google:hover .bi-google {
   color: #ffffff;
 }
 .btn-google:focus {
   background-color: #dd4b39;
 }
-.btn-google:focus .fa-google {
+.btn-google:focus .bi-google {
   color: #ffffff;
 }
 .btn-linkedin {
   background-color: #ffffff;
   color: #555555;
 }
-.fa-linkedin {
+.bi-linkedin {
   color: #007bb6;
 }
 .btn-linkedin:hover {
   background-color: #007bb6;
 }
-.btn-linkedin:hover .fa-linkedin {
+.btn-linkedin:hover .bi-linkedin {
   color: #ffffff;
 }
 .btn-linkedin:focus {
   background-color: #007bb6;
 }
-.btn-linkedin:focus .fa-linkedin {
+.btn-linkedin:focus .bi-linkedin {
   color: #ffffff;
 }
 .btn-facebook {
   background-color: #ffffff;
   color: #555555;
 }
-.fa-facebook {
+.bi-facebook {
   color: #3b5998;
 }
 .btn-facebook:hover {
   background-color: #3b5998;
 }
-.btn-facebook:hover .fa-facebook {
+.btn-facebook:hover .bi-facebook {
   color: #ffffff;
 }
 .btn-facebook:focus {
   background-color: #3b5998;
 }
-.btn-facebook:focus .fa-facebook {
+.btn-facebook:focus .bi-facebook {
   color: #ffffff;
 }
 .btn-custom-oauth {
@@ -202,25 +202,43 @@
   background-color: #ffffff;
   color: #555555;
 }
-.fa-unlock-alt {
+.bi-unlock-alt {
   color: #666666;
 }
 .btn-custom-oauth:hover {
   background-color: #666666;
 }
-.btn-custom-oauth:hover .fa-unlock-alt {
+.btn-custom-oauth:hover .bi-unlock-alt {
   color: #ffffff;
 }
 .btn-custom-oauth:focus {
   background-color: #666666;
 }
-.btn-custom-oauth:focus .fa-unlock-alt {
+.btn-custom-oauth:focus .bi-unlock-alt {
   color: #ffffff;
 }
 .btn-social {
+  position: relative;
+  padding-left: 44px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 15px;
   font-weight: 500;
   width: 100%;
+  border-color: rgba(0,0,0,0.2);
+}
+.btn-social>:first-child {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  line-height: 34px;
+  font-size: 1.6em;
+  text-align: center;
+  border-right: 1px solid rgba(0,0,0,0.2);
 }
 .btn-block + .btn-block {
   margin-top: 10px;
