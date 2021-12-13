@@ -1,7 +1,7 @@
 {% if display_text %}
 <label class="form-label" for="{{ name }}">{{ display_text }}</label>
 {% endif %}
-<div class="input-group{% if error %} has-validation{% endif %}">
+<div class="input-group{% if error or success %} has-validation{% endif %}">
     {% if prepend %}
       <div class="input-group-text">{{ prepend }}</div>
     {% elif icon_prepend %}
