@@ -13,6 +13,9 @@ dependencies = {
     },
     'select2': {
         'version': '4.1.0-rc.0',
+    },
+    'datatables': {
+        'version': '1.11.3',
     }
 }
 
