@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from tethys_apps.dependencies import dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['ToggleSwitch']
@@ -82,6 +83,7 @@ class ToggleSwitch(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "toggle_switch"
+    version = dependencies['bootstrap-switch']['version']
 
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
                  size='regular', initial=False, disabled=False, error='', success='', attributes={}, classes=''):
@@ -103,21 +105,21 @@ class ToggleSwitch(TethysGizmoOptions):
         self.error = error
         self.success = success
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js',)
+        return (f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/{cls.version}/js/bootstrap-switch.min.js',)
 
-    @staticmethod
-    def get_vendor_css():
+    @classmethod
+    def get_vendor_css(cls):
         """
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return ('tethys_gizmos/vendor/bootstrap_switch/dist/css/bootstrap3/bootstrap-switch.min.css',)
+        return (f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/{cls.version}/css/bootstrap-switch.min.css',)
 
     @staticmethod
     def get_gizmo_js():

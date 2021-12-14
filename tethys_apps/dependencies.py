@@ -16,6 +16,9 @@ dependencies = {
     },
     'datatables': {
         'version': '1.11.3',
+    },
+    'bootstrap-switch': {
+        'version': '4.0.0-alpha.1',
     }
 }
 
