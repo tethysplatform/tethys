@@ -42,14 +42,7 @@
     {% endcomment %}
 
     <title>
-      {% if site_globals.site_title %}
-         {{ site_globals.site_title }}
-      {% elif site_globals.brand_text %}
-        {{ site_globals.brand_text }}
-      {% else %}
-        Tethys
-      {% endif %}
-      {% block title %}{% endblock %}
+      {% block title %}{{ tethys_app.name }}{% endblock %}
     </title>
 
     {% comment "links explanation" %}
