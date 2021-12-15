@@ -7,9 +7,11 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from .base import TethysGizmoOptions, SecondaryGizmoOptions
-from django.conf import settings
 import logging
+from django.conf import settings
+from tethys_apps.dependencies import dependencies
+from .base import TethysGizmoOptions, SecondaryGizmoOptions
+
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.map_view')
 
 __all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer',
@@ -312,7 +314,7 @@ class MapView(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "map_view"
-    ol_version = '5.3.0'
+    ol_version = dependencies['openlayers']['version']
     cdn = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v{version}/{folder}/ol{debug}.{ext}'
     alternate_cdn = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{version}/ol{debug}.{ext}'
     local_url = 'tethys_gizmos/vendor/openlayers/{version}/ol.{ext}'

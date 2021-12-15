@@ -1,8 +1,4 @@
 dependencies = {
-    'jquery': {
-        'version': '3.6.0',
-        'integrity': 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4='
-    },
     'bootstrap': {
         'version': '5.1.3',
         'css_integrity': 'sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3',
@@ -11,23 +7,30 @@ dependencies = {
     'bootstrap_icons': {
         'version': '1.7.1'
     },
-    'select2': {
-        'version': '4.1.0-rc.0'
+    'bootstrap-switch': {
+        'version': '4.0.0-alpha.1'
     },
     'datatables': {
         'version': '1.11.3'
-    },
-    'bootstrap-switch': {
-        'version': '4.0.0-alpha.1'
     },
     'd3': {
         'version': '3.5.5'  # Current, 7.2.1, breaks plot view
     },
     'd3-tip': {
-        'version': '0.9.1'  # 0.6.3
+        'version': '0.9.1'
     },
     'highcharts': {
         'version': '9.3.2'
-    }
+    },
+    'jquery': {
+        'version': '3.6.0',
+        'integrity': 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4='
+    },
+    'openlayers': {
+        'version': '6.9.0'
+    },
+    'select2': {
+        'version': '4.1.0-rc.0'
+    },
 }
 
