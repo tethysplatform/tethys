@@ -1,3 +1,4 @@
+// out: ../css/admin_tweaks.min.css, compress: true
 /*****************************************************************************
  * FILE: admin_tweaks
  * DATE: 2014
@@ -5,8 +6,12 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-@import "mixins.less";
 @import "variables.less";
+
+ul li {
+  list-style-type: none;
+  padding: inherit;
+}
 
 .dashboard #content {
   width: auto;
@@ -22,7 +27,6 @@
 #container {
   width: auto;
   margin: 0 50px;
-  margin-top: 20px;
 }
 
 div.breadcrumbs {
@@ -74,6 +78,11 @@ a:hover {
     background: #0a62a9;
     padding: 10px;
     padding-left: 8px;
+    caption-side: top;
+  }
+
+  table {
+    width: 100%;
   }
 
   tr {
@@ -357,3 +366,8 @@ input[type=submit] {
   }
 }
 
+.powered-by-tethys {
+  a {
+    color: white;
+  }
+}
