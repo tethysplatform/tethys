@@ -32,11 +32,6 @@
               <li class="nav-item">
                 <a class="h5 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
               </li>
-              {% if user.is_staff or user.is_superuser %}
-              <li class="nav-item">
-                <a class="h5 mb-0 nav-link" href="{% url 'developer_home' %}" title="Developer">Developer</a>
-              </li>
-              {% endif %}
             {% endif %}
           {% endblock %}
         </ul>

@@ -129,13 +129,6 @@ class TestUrls(TethysTestCase):
         self.assertEqual('delete_account', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
-    def test_developer_urls_developer_home(self):
-        url = reverse('developer_home')
-        resolver = resolve(url)
-        self.assertEqual('/developer/', url)
-        self.assertEqual('home', resolver.func.__name__)
-        self.assertEqual('tethys_portal.views.developer', resolver.func.__module__)
-
     def test_developer_urls_gizmos(self):
         url = reverse('gizmos:showcase')
         resolver = resolve(url)
