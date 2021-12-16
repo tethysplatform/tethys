@@ -10,10 +10,6 @@ body {
   font-family: 'open sans', 'Myriad Pro', 'Lucida Grande', 'Helvetica', sans-serif;
 }
 
-section {
-  padding: 0 40px;
-}
-
 a {
 	color: @link-color;
 	
@@ -22,39 +18,9 @@ a {
 	}
 }
 
-/* This parent can be any width and height */
-.center-parent {
-  text-align: center;
-
-  /* The ghost, nudged to maintain perfect centering */
-  &:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em; /* Adjusts for spacing */
-  }
-}
-
-/* The element to be centered, can also be of any width and height */
-.centered {
-  display: inline-block;
-  vertical-align: middle;
-  width: 200px;
-}
-
 #content {
   position: relative;
   min-height: 100%;
-
-  .row {
-    margin-right: 0;
-    margin-left: 0;
-  }
-}
-
-.primary {
-  position: relative;
 }
 
 .flash-messages {
