@@ -91,7 +91,7 @@
       {% if tethys_app.enable_feedback %}
         <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
       {% endif %}
-      <link href="{% static 'tethys_portal/css/termsandconditions.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
       {% gizmo_dependencies global_css %}
       <style>
         #app-content-wrapper #app-content #app-navigation .nav li a.active {
@@ -108,7 +108,7 @@
 
     {% block session_timeout_modal %}
       {% include 'session_security/all.html' %}
-      <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/session_security_override.min.css' %}"  rel="stylesheet" />
     {% endblock %}
 
     {% analytical_head_bottom %}
