@@ -274,26 +274,31 @@ var CESIUM_MAP_VIEW = (function() {
         }
 
         for (let model of m_models) {
-            var model_option;
+            let model_option;
             if (model.source && model.source === 'CesiumModel') {
                 // The options attribute is where the Cesium model definition is stored in MVLayer objects.
                 model_option = cesium_options(model.options);
             }
             else {
-            // else we will treat it as normal cesium object.
+                // else we will treat it as normal cesium object.
                 model_option = cesium_options(Object.values(model)[0]);
             }
             let model_data = model.data
-            var name = model_option.name;
+            let name = model_option.name;
             // Map shadows key
             if ('shadows' in model_option['model']) {
-                var shadow_prop = model_option['model']['shadows']
+                let shadow_prop = model_option['model']['shadows']
                 model_option['model']['shadows'] = cesium_shadow_options[shadow_prop.toLowerCase()]
             }
-            var cesium_model = model_option['model'];
-            var position = model_option['position'];
-            var orientation = model_option['orientation'];
-            cesium_load_model(name, cesium_model, position, orientation, model_data);
+            let cesium_model = model_option['model'];
+            let position = model_option['position'];
+            let orientation = model_option['orientation'];
+            let entity = cesium_load_model(name, cesium_model, position, orientation, model_data);
+            
+            // Set entity as tracked entity if tracked is set
+            if (model_option?.tracked || false) {
+                m_viewer.trackedEntity = entity;
+            }
         }
     }
 
@@ -301,12 +306,13 @@ var CESIUM_MAP_VIEW = (function() {
     {
         // Convert shadow to number using shadow_dict.
         var entity = m_viewer.entities.add({
-                                            name : name,
-                                            position : position,
-                                            orientation : orientation,
-                                            model : model,
-                                         });
+            name : name,
+            position : position,
+            orientation : orientation,
+            model : model,
+        });
         entity['tethys_data'] = model_data;
+        return entity;
     }
 
     // Set Cesium primitives

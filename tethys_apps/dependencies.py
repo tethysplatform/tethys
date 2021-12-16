@@ -10,11 +10,14 @@ dependencies = {
     'bootstrap-switch': {
         'version': '4.0.0-alpha.1'
     },
+    'cesiumjs': {
+        'version': '1.88'
+    },
     'datatables': {
         'version': '1.11.3'
     },
     'd3': {
-        'version': '3.5.5'  # Current, 7.2.1, breaks plot view
+        'version': '3.5.5'  # Current version, 7.2.1, breaks plot view
     },
     'd3-tip': {
         'version': '0.9.1'
