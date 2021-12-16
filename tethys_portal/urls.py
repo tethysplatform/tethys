@@ -82,12 +82,12 @@ oauth2_urls = [
     url(r'^tenant/(?P<backend>[^/]+)/$', tethys_portal_psa.tenant, name='tenant'),
 ]
 
-# development_error_urls = [
-#     url(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
-#     url(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
-#     url(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
-#     url(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
-# ]
+development_error_urls = [
+    url(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
+    url(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
+    url(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
+    url(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
+]
 
 urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
@@ -108,7 +108,7 @@ urlpatterns = [
     url(r'session_security/', include('session_security.urls')),
     url(r'^mfa/', include('mfa.urls')),
     url(r'devices/add$', mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
-    # url(r'^error/', include(development_error_urls)),
+    url(r'^error/', include(development_error_urls)),
 ]
 
 handler400 = tethys_portal_error.handler_400

@@ -5,6 +5,23 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
+/*****************************************************************************
+ * FILE: variables
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+/* =========
+   Variables
+   ========= */
+/*****************************************************************************
+ * FILE: fonts
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 /* =====
    Fonts
    ===== */
@@ -56,6 +73,13 @@
   font-weight: 700;
   src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxhbnBKKEOwRKgsHDreGcocg.woff) format('woff');
 }
+/*****************************************************************************
+ * FILE: base
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 body {
   position: relative;
   font-family: 'open sans', 'Myriad Pro', 'Lucida Grande', 'Helvetica', sans-serif;
@@ -99,3 +123,10 @@ a:hover {
 .primary {
   position: relative;
 }
+/*****************************************************************************
+ * FILE: buttons
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
