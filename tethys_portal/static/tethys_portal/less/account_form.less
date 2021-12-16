@@ -1,3 +1,4 @@
+// out: ../css/account_form.min.css, compress: true
 /*****************************************************************************
  * FILE: account
  * DATE: 2014
@@ -6,23 +7,23 @@
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
  // Styles for the account login and register forms
-
+ @import "variables";
 
 //Colors
 @account-form-header-background: #eeeeee;
 
 // Dimensions
-@account-form-padding-sides: 50px;
-@account-form-border-radius: 5px;
+@account-form-padding-sides: 20px;
+@account-form-border-radius: 10px;
 
 .account-form-wrapper {
   position: relative;
   padding: @account-form-padding-sides;
   margin: 50px 0;
   background: #ffffff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
-  //border-radius: @account-form-border-radius;
+  border: 1px solid #dddddd;
+  border-radius: @account-form-border-radius;
 
   .account-form-header {
     position: absolute;
@@ -31,12 +32,11 @@
     width: 100%;
     padding: 0 @account-form-padding-sides;
     background: @account-form-header-background;
-    //border-radius: @account-form-border-radius @account-form-border-radius 0 0;
+    border-radius: @account-form-border-radius @account-form-border-radius 0 0;
 
     h1 {
       color: @default-header-text-color;
       font-weight: 400;
-      .font-smoothing();
     }
   }
 
@@ -47,7 +47,7 @@
   }
 
   .account-form-body {
-    margin-top: 50px;
+    margin-top: 60px;
   }
 
   .help-block {
@@ -59,16 +59,33 @@
   color: @default-header-text-color;
   background-color: #ffffff;
   border-color: rgba(0,0,0,0.2);
+
+  &:hover {
+    color: #ffffff;
+    background-color: @hydroshare-color;
+    border-color: rgba(0,0,0,0.2);
+  }
 }
 
-.btn-hydroshare:hover {
-  color: #ffffff;
-  background-color: @hydroshare-color;
-  border-color: rgba(0,0,0,0.2);
-}
-
-.fa-hydroshare {
+.bi-hydroshare {
   background-image:url(/static/tethys_portal/images/hs-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+
+.btn-arcgis {
+  color: white;
+  background-color: #0079C1;
+  border-color: rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: #005E95;
+  }
+}
+
+.bi-arcgis {
+  background-image: url(/static/tethys_portal/images/arcgis-icon-sm.png);
   background-repeat: no-repeat;
   background-size: 75%;
   background-position: 4px 5px;
@@ -79,7 +96,7 @@
   color: @default-header-text-color;
   border-color: rgba(0,0,0,0.2);
 
-  .fa-circle-o {
+  .bi-circle {
     color: @okta-color;
   }
 }
@@ -88,7 +105,7 @@
   background-color: @okta-color;
   color: #ffffff;
 
-  .fa-circle-o {
+  .bi-circle {
     color: #ffffff;
     font-weight: 600;
   }
@@ -98,7 +115,7 @@
   background-color: @okta-color;
   color: #ffffff;
 
-  .fa-circle-o {
+  .bi-circle {
     color: #ffffff;
     font-weight: 600;
   }
@@ -109,7 +126,7 @@
   color: @default-header-text-color;
   border-color: rgba(0,0,0,0.2);
 
-  .fa-onelogin {
+  .bi-onelogin {
     color: @onelogin-color;
     background-image:url(/static/tethys_portal/images/onelogin_black_32.png);
     background-repeat: no-repeat;
@@ -122,7 +139,7 @@
   background-color: @onelogin-color;
   color: #ffffff;
 
-  .fa-onelogin {
+  .bi-onelogin {
     background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
   }
 }
@@ -131,7 +148,7 @@
   background-color: @onelogin-color;
   color: #ffffff;
 
-  .fa-onelogin {
+  .bi-onelogin {
     background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
   }
 }
@@ -142,7 +159,7 @@
   border-color: rgba(0,0,0,0.2);
 }
 
-.fa-windows {
+.bi-windows {
   color: @windows-color;
 }
 
@@ -150,7 +167,7 @@
   background-color: @windows-color;
   color: #ffffff;
 
-  .fa-windows {
+  .bi-windows {
     color: #ffffff;
   }
 }
@@ -159,7 +176,7 @@
   background-color: @windows-color;
   color: #ffffff;
 
-  .fa-windows {
+  .bi-windows {
     color: #ffffff;
   }
 }
@@ -169,14 +186,14 @@
   color: @default-header-text-color;
 }
 
-.fa-google {
+.bi-google {
   color: @google-color;
 }
 
 .btn-google:hover {
   background-color: @google-color;
 
-  .fa-google {
+  .bi-google {
     color: #ffffff;
   }
 }
@@ -184,7 +201,7 @@
 .btn-google:focus {
   background-color: @google-color;
 
-  .fa-google {
+  .bi-google {
     color: #ffffff;
   }
 }
@@ -194,14 +211,14 @@
   color: @default-header-text-color;
 }
 
-.fa-linkedin {
+.bi-linkedin {
   color: @linkedin-color;
 }
 
 .btn-linkedin:hover {
   background-color: @linkedin-color;
 
-  .fa-linkedin {
+  .bi-linkedin {
     color: #ffffff;
   }
 }
@@ -209,7 +226,7 @@
 .btn-linkedin:focus {
   background-color: @linkedin-color;
 
-  .fa-linkedin {
+  .bi-linkedin {
     color: #ffffff;
   }
 }
@@ -219,14 +236,14 @@
   color: @default-header-text-color;
 }
 
-.fa-facebook {
+.bi-facebook {
   color: @facebook-color;
 }
 
 .btn-facebook:hover {
   background-color: @facebook-color;
 
-  .fa-facebook {
+  .bi-facebook {
     color: #ffffff;
   }
 }
@@ -234,7 +251,7 @@
 .btn-facebook:focus {
   background-color: @facebook-color;
 
-  .fa-facebook {
+  .bi-facebook {
     color: #ffffff;
   }
 }
@@ -256,14 +273,14 @@
   color: @default-header-text-color;
 }
 
-.fa-unlock-alt {
+.bi-unlock-alt {
   color: @custom-oauth-color;
 }
 
 .btn-custom-oauth:hover {
   background-color: @custom-oauth-color;
 
-  .fa-unlock-alt {
+  .bi-unlock-alt {
     color: #ffffff;
   }
 }
@@ -271,16 +288,34 @@
 .btn-custom-oauth:focus {
   background-color: @custom-oauth-color;
 
-  .fa-unlock-alt {
+  .bi-unlock-alt {
     color: #ffffff;
   }
 }
 
 .btn-social {
+  position: relative;
+  padding-left: 44px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 15px;
   font-weight: 500;
-  .font-smoothing();
-
+  width: 100%;
+  border-color: rgba(0,0,0,0.2);
+  
+  &>:first-child {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 32px;
+    line-height: 34px;
+    font-size: 1.6em;
+    text-align: center;
+    border-right: 1px solid rgba(0,0,0,0.2);
+  }
 }
 
 .btn-block+.btn-block {
@@ -309,7 +344,6 @@
     padding: 0 10px;
     font-size: 20px;
     color: @default-header-text-color;
-    .font-smoothing();
   }
 }
 
