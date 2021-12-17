@@ -53,11 +53,11 @@ Assign App Access Permissions
 
 Administrators of Tethys Portal can control access to each app in the portal. However, this feature is disabled by default. To enable app access control set the following setting in the ``portal_config.yaml``:
 
-```yaml
-settings:
-  TETHYS_PORTAL_CONFIG:
-    ENABLE_RESTRICTED_APP_ACCESS: True
-```
+.. code-block:: yaml
+
+    settings:
+      TETHYS_PORTAL_CONFIG:
+        ENABLE_RESTRICTED_APP_ACCESS: True
 
 .. caution::
 
@@ -119,7 +119,7 @@ Tethys leverages the excellent `Python Social Auth <https://python-social-auth-d
 
 .. tip::
 
-    For more detailed information on using Python Social Auth in Tethys see the :doc:`../installation/production/configuration/advanced/social_auth` documentation.
+    For more detailed information on using Python Social Auth in Tethys see the :doc:`../installation/production/manual/configuration/advanced/social_auth` documentation.
 
 
 .. _tethys_portal_terms_and_conditions:
@@ -142,6 +142,8 @@ When a new document becomes active, users will be presented with a modal prompti
     :width: 675px
 
 **Figure 10.** Terms and conditions modal.
+
+.. _tethys_portal_app_settings:
 
 Tethys Apps
 ===========
