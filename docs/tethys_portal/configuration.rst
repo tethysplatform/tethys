@@ -239,6 +239,13 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
   * **GUARDIAN_TEMPLATE_403**: the Django Guardian `GUARDIAN_TEMPLATE_403 <https://django-guardian.readthedocs.io/en/stable/configuration.html#guardian-template-403>`_ setting.
   * **ANONYMOUS_USER_NAME**: the Django Guardian `ANONYMOUS_USER_NAME <https://django-guardian.readthedocs.io/en/stable/configuration.html#anonymous-user-name>`_ setting.
 
+.. _tethys_configuration_site_settings:
+
+Site Settings
+-------------
+
+The **site_content** Portal Yaml Key is used to specify settings related to customization of the portal theme and content. Here is a comprehensive list of the available settings:
+
 * **site_content**: customize the look and feel of the Tethys Portal with these settings.
 
   * **TAB_TITLE**: title to display in the web browser tab.

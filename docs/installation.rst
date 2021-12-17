@@ -1,3 +1,5 @@
+.. _development_installation:
+
 ***************
 Getting Started
 ***************

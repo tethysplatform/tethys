@@ -1,3 +1,5 @@
+.. _tutorial_google_earth_engine_service_account:
+
 ***********************************
 Google Earth Engine Service Account
 ***********************************
@@ -43,11 +45,13 @@ After you have setup your service account, you will need to create a key that th
 
 4. Click on the email or edit button of the service account you registered to see the account details.
 
-5. Press the **Create Key** button.
+5. Select the **KEYS** tab.
 
-6. Select JSON and press **CREATE**.
+6. Press the **Add Key** button and select **Create new key**.
 
-7. Locate the file that was downloaded an place it in a secure location.
+7. Select JSON and press **CREATE**.
+
+8. Locate the file that was downloaded an place it in a secure location.
 
 .. note::
 
