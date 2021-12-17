@@ -15,9 +15,10 @@ dependencies:
 - pip
 - tethys_dataset_services >=2.0.0
 - django =2.2.*
-- sphinx =2.2.0
+- sphinx
 - sphinx-argparse
 - pbr
 - sphinxcontrib-napoleon
 - pip:
     - sphinx_materialdesign_theme
+    - sphinx-autobuild

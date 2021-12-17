@@ -1,3 +1,5 @@
+.. _tutorial_thredds_primer:
+
 **************
 THREDDS Primer
 **************
