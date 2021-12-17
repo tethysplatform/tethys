@@ -42,7 +42,7 @@ Use the following commands to download the Tethys image to your machine:
 
 .. code-block::
 
-    docker pull tethysplatform/tethys-core:3.3.0
+    docker pull tethysplatform/tethys-core:3.4.0
 
 
 Build From Source
