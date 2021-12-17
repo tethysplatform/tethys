@@ -1,4 +1,7 @@
 dependencies = {
+    'arcgis': {
+        'version': '4.2'  # 4.22 breaks our implementation
+    },
     'bootstrap': {
         'version': '5.1.3',
         'css_integrity': 'sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3',
