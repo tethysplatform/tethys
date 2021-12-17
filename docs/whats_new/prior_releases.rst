@@ -67,7 +67,7 @@ Documentation
 
 * Added documentation that describes how to configure Tethys Platform to use REDIS as a Channels backend for production.
 
-See: :ref:`production_channels_config` and :ref:`production_official_docker`
+See: :ref:`production_channels_config` and Official Docker Image
 
 Bug Fixes
 =========
@@ -139,7 +139,7 @@ Official Docker Image Improvements
 * ``post_app.sls``: runs ``collectstatic`` and ``collectall`` and syncs configuration files to persistent volume location.
 * New documentation for using the Official Docker Image
 
-See: :ref:`production_official_docker`
+See: Official Docker Image
 
 Tethys Portal Configuration
 ---------------------------
@@ -279,7 +279,7 @@ Django Analytical
 * Tethys comes with `Django Analytical <https://django-analytical.readthedocs.io/en/latest/>`_ installed to enable support form a number of analytics and tracking services.
 * You can now enable analytics tracking (e.g. Google Analytics) to every page of your apps and portal with a few settings in the settings file.
 
-See: :doc:`../installation/production/configuration/advanced/webanalytics`
+See: :doc:`../installation/production/manual/configuration/advanced/webanalytics`
 
 Tethys Quotas
 -------------
