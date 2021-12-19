@@ -19,7 +19,7 @@ class TestGizmo(TethysGizmoOptions):
 
     @staticmethod
     def get_vendor_js():
-        return ('tethys_gizmos/vendor/openlayers/ol.js',)
+        return ('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.js',)
 
     @staticmethod
     def get_gizmo_js():
@@ -27,7 +27,7 @@ class TestGizmo(TethysGizmoOptions):
 
     @staticmethod
     def get_vendor_css():
-        return ('tethys_gizmos/vendor/openlayers/ol.css',)
+        return ('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.css',)
 
     @staticmethod
     def get_gizmo_css():
@@ -345,10 +345,10 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         render_js = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_js).\
             render(context=context)
 
-        self.assertIn('openlayers/ol.css', render_globalcss)
+        self.assertIn('ol.min.css', render_globalcss)
         self.assertNotIn('tethys_gizmos.css', render_globalcss)
         self.assertIn('tethys_gizmos.css', render_css)
-        self.assertNotIn('openlayers/ol.css', render_css)
-        self.assertIn('openlayers/ol.js', render_globaljs)
+        self.assertNotIn('ol.min.css', render_css)
+        self.assertIn('ol.min.js', render_globaljs)
         self.assertIn('plotly-load_from_python.js', render_js)
-        self.assertNotIn('openlayers/ol.js', render_js)
+        self.assertNotIn('ol.min.js', render_js)
