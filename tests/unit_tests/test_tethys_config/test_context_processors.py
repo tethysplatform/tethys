@@ -27,7 +27,7 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
         mock_terms.get_active_terms_list.assert_called_once()
         mock_terms.get_active_list.assert_not_called()
         now = dt.datetime.utcnow()
-        
+
         expected_context = {
             'site_defaults': {'copyright': f'Copyright © {now:%Y} Your Organization'},
             'site_globals': {

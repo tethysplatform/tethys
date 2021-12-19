@@ -39,4 +39,3 @@ dependencies = {
         'version': '4.1.0-rc.0'
     },
 }
-

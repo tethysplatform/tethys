@@ -51,14 +51,6 @@ class TestTags(unittest.TestCase):
 
     def test_get_tags_from_apps_dict(self):
         ret_tag_list = t.get_tags_from_apps(self.mock_dict_apps)
-        expected = [
-            ('tag1', 'Tag1'),
-            ('tag_2', 'Tag_2'),
-            ('tag-3', 'Tag 3'),
-            ('tag-four', 'Tag Four'),
-            ('tag-five', 'Tag Five'),
-            ('tag6', 'Tag6'),
-        ]
         self.assertEqual(sorted(self.tag_pairs), sorted(ret_tag_list))
 
     def test_get_tags_from_apps_object_disabled(self):

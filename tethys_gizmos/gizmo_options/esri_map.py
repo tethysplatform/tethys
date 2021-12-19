@@ -26,10 +26,10 @@ class ESRIMap(TethysGizmoOptions):
 
         # Set initial view
         esri_map_view = EMView(
-            center=[-100, 40], 
+            center=[-100, 40],
             zoom=4
         )
-        
+
         # Define layers
         esri_layer = EMLayer(
             type='FeatureLayer',
@@ -42,10 +42,10 @@ class ESRIMap(TethysGizmoOptions):
         )
 
         esri_map = ESRIMap(
-            height='700px', 
-            width='100%', 
+            height='700px',
+            width='100%',
             basemap='topo',
-            view=esri_map_view, 
+            view=esri_map_view,
             layers=[vector_tile, esri_layer]
         )
 
@@ -145,13 +145,13 @@ class EMLayer(SecondaryGizmoOptions):
         # Define ArcGIS FeatureLayer
 
         esri_feature_layer = EMLayer(
-            type='FeatureLayer', 
+            type='FeatureLayer',
             url='http://geoserver.byu.edu/arcgis/rest/services/Alabama_Flood/Flood_45/MapServer/0'
         )
 
         # Define ArcGIS ImageLayer
         esri_image_layer = EMLayer(
-            type='ImageryLayer', 
+            type='ImageryLayer',
             url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer'
         )
 

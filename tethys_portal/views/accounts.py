@@ -8,10 +8,8 @@
 ********************************************************************************
 """
 from django.conf import settings
-from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from mfa.helpers import has_mfa

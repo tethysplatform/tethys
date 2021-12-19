@@ -32,7 +32,7 @@ def handler_403(request, exception=None, *args, **kwargs):
 
     if exception:
         error_title = str(exception)
-        
+
     error_message = kwargs.get('error_message', default_error_message)
 
     context = {'error_code': '403',
@@ -66,6 +66,7 @@ def handler_500(request):
     context = {'error_code': '500',
                'error_color': '#dc5842',
                'error_title': 'Server Error',
-               'error_message': "We're sorry, but we have encountered an unexpected problem. Please, come back later and try again.",
+               'error_message': "We're sorry, but we have encountered an unexpected problem. "
+                                "Please, come back later and try again.",
                'error_image': '/static/tethys_portal/images/error_500.png'}
     return render(request, 'tethys_portal/error.html', context, status=500)

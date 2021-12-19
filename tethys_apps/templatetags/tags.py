@@ -3,6 +3,7 @@ import re
 
 register = template.Library()
 
+
 def parse_tags(app_tags):
     """
     Parse given tags value, standardize, and remove duplicates.
@@ -16,7 +17,7 @@ def parse_tags(app_tags):
         tag = re.sub(r"\s+", '-', tag)
         tag = tag.lower()
         tags.append(tag)
-    
+
     tags = list(set(tags))
     return tags
 
@@ -65,5 +66,3 @@ def get_tag_class(app):
     # Join tags into a single space delimited string
     tags_list = ' '.join(tags)
     return tags_list
-
-

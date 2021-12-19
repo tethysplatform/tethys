@@ -109,9 +109,8 @@ class DataTableView(TethysGizmoOptions):
     #                         'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
     version = dependencies['datatables']['version']
-    
 
-    def __init__(self, rows, column_names, footer=False, hover=False, striped=False, bordered=False, 
+    def __init__(self, rows, column_names, footer=False, hover=False, striped=False, bordered=False,
                  condensed=False, dark=False, attributes={}, classes='', **kwargs):
         """
         Constructor

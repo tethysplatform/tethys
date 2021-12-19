@@ -37,9 +37,9 @@ class BokehView(TethysGizmoOptions):
         {% load tethys_gizmos %}
 
         {% gizmo bokeh_view_input %}
-    
+
     Additional Examples::
-    
+
         from math import pi
         import numpy as np
         import pandas as pd
@@ -52,7 +52,7 @@ class BokehView(TethysGizmoOptions):
         from bokeh.sampledata.stocks import AAPL
         from bokeh.transform import factor_cmap, factor_mark
         from tethys_sdk.gizmos import BokehView
-        
+
         # Scatter plot
         SPECIES = sorted(penguin_data.species.unique())
         MARKERS = ['hex', 'circle_x', 'triangle']
@@ -69,7 +69,7 @@ class BokehView(TethysGizmoOptions):
         scatter_fig.legend.location = "top_left"
         scatter_fig.legend.title = "Species"
         scatter_plot = BokehView(scatter_fig)
-        
+
         # Line plot
         line_x = np.linspace(0, 4*np.pi, 100)
         line_y = np.sin(line_x)
@@ -84,7 +84,7 @@ class BokehView(TethysGizmoOptions):
 
         line_fig.legend.title = 'Example Title'
         line_plot = BokehView(line_fig)
-        
+
         # Pie plot
         pie_x = {
             'United States': 157,
@@ -115,9 +115,9 @@ class BokehView(TethysGizmoOptions):
         pie_fig.axis.axis_label = None
         pie_fig.axis.visible = False
         pie_fig.grid.grid_line_color = None
-        
+
         pie_plot = BokehView(pie_fig)
-        
+
         # Bar chart
         fruits = ['Apples', 'Pears', 'Nectarines', 'Plums', 'Grapes', 'Strawberries']
         years = ['2015', '2016', '2017']
@@ -145,9 +145,9 @@ class BokehView(TethysGizmoOptions):
         bar_fig.xgrid.grid_line_color = None
         bar_fig.legend.location = "top_left"
         bar_fig.legend.orientation = "horizontal"
-        
+
         bar_chart = BokehView(bar_fig)
-        
+
         # Time series
         dates = np.array(AAPL['date'], dtype=np.datetime64)
         source = ColumnDataSource(data=dict(date=dates, close=AAPL['adj_close']))
@@ -172,9 +172,9 @@ class BokehView(TethysGizmoOptions):
         select.ygrid.grid_line_color = None
         select.add_tools(range_tool)
         select.toolbar.active_multi = range_tool
-        
+
         time_series_plot = BokehView(column(time_series_fig, select))
-        
+
         # Hexbin plot
         n = 500
         hex_x = 2 + 2*np.random.standard_normal(n)
@@ -192,7 +192,7 @@ class BokehView(TethysGizmoOptions):
             tooltips=[("count", "@c"), ("(q,r)", "(@q, @r)")],
             mode="mouse", point_policy="follow_mouse", renderers=[hex_r]
         ))
-        
+
         hexbin_plot = BokehView(hex_fig)
 
         context = {
@@ -204,7 +204,7 @@ class BokehView(TethysGizmoOptions):
             'time_series_plot': time_series_plot,
             'hexbin_plot': hexbin_plot,
         }
-    
+
     Template Code::
 
         {% load tethys_gizmos %}

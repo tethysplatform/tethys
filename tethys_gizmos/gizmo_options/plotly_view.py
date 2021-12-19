@@ -52,14 +52,14 @@ class PlotlyView(TethysGizmoOptions):
         {% load tethys_gizmos %}
 
         {% gizmo plotly_view_input %}
-        
+
     More examples::
-    
+
         import numpy as np
         import pandas as pd
-        
+
         np.random.seed(1)
-    
+
         # Scatter
         scatter_plot = PlotlyView([
             go.Scatter(
@@ -73,7 +73,7 @@ class PlotlyView(TethysGizmoOptions):
                 )
             )
         ])
-        
+
         # Line
         N = 100
         random_x = np.linspace(0, 1, N)
@@ -98,7 +98,7 @@ class PlotlyView(TethysGizmoOptions):
                 name='lines'
             )
         ])
-        
+
         # Pie
         pie_plot = PlotlyView([
             go.Pie(
@@ -106,11 +106,11 @@ class PlotlyView(TethysGizmoOptions):
                 values=[4500, 2500, 1053, 500]
             )
         ])
-        
+
         # Bar
         years = [1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-                2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012]
-        
+                 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012]
+
         fig = go.Figure()
         fig.add_trace(go.Bar(
             x=years,
@@ -145,10 +145,16 @@ class PlotlyView(TethysGizmoOptions):
             bargroupgap=0.1 # gap between bars of the same location coordinate.
         )
         bar_chart = PlotlyView(fig)
-        
+
         # Time series
         timeseries_df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
-        timeseries_fig = px.line(timeseries_df, x='Date', y='AAPL.High', title='Time Series with Range Slider and Selectors')
+        timeseries_fig = px.line(
+            timeseries_df,
+            x='Date',
+            y='AAPL.High',
+            title='Time Series with Range Slider and Selectors'
+        )
+
         timeseries_fig.update_xaxes(
             rangeslider_visible=True,
             rangeselector=dict(
@@ -162,7 +168,7 @@ class PlotlyView(TethysGizmoOptions):
             )
         )
         time_series_plot = PlotlyView(timeseries_fig)
-        
+
         # Heat map
         heat_x = np.random.randn(500)
         heat_y = np.random.randn(500)+1
@@ -172,7 +178,7 @@ class PlotlyView(TethysGizmoOptions):
             y=heat_y
         ))
         heat_map = PlotlyView(heat_fig)
-        
+
         context = {
             'scatter_plot': scatter_plot,
             'line_plot': line_plot,
@@ -181,7 +187,7 @@ class PlotlyView(TethysGizmoOptions):
             'time_series_plot': time_series_plot,
             'heat_map': heat_map,
         }
-    
+
     Template Code::
 
         {% load tethys_gizmos %}

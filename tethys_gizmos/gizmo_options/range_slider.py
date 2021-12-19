@@ -91,7 +91,7 @@ class RangeSlider(TethysGizmoOptions):
         {% block styles %} block
         """
         return ('tethys_gizmos/css/range_slider.css',)
-    
+
     @staticmethod
     def get_gizmo_js():
         """
