@@ -27,13 +27,13 @@ def handler_403(request, exception=None, *args, **kwargs):
     Handle 403 errors
     """
     error_title = "Forbidden"
-    error_message = "We're sorry, but you do not have permission to access this page. Please, contact the portal administrator if there is a mistake."
+    default_error_message = "We're sorry, but you do not have permission to access this page. " \
+        "Please, contact the portal administrator if there is a mistake."
 
     if exception:
         error_title = str(exception)
-
-    if 'error_message' in kwargs:
-        error_message = kwargs['error_message']
+        
+    error_message = kwargs.get('error_message', default_error_message)
 
     context = {'error_code': '403',
                'error_color': '#8f61aa',
