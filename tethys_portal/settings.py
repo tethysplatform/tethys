@@ -150,7 +150,6 @@ INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
-    'bootstrap3',  # TODO: Remove
     'django_bootstrap5',
     'termsandconditions',
     'tethys_config',
