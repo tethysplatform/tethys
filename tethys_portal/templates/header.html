@@ -46,8 +46,8 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <a class="dropdown-item" href="{% url 'user:settings' %}" title="User Settings">
-                    <i class="bi bi-person-fill"></i><span class="ms-2">User Settings</span>
+                  <a class="dropdown-item" href="{% url 'user:profile' %}" title="User Settings">
+                    <i class="bi bi-person-fill"></i><span class="ms-2">User Profile</span>
                   </a>
                 </li>
                 {% if user.is_staff %}

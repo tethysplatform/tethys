@@ -2,9 +2,6 @@
 
 {% load django_bootstrap5 %}
 
-{% block edit_button %}
-{% endblock %}
-
 {% block title %}{{ block.super }} - User Settings{% endblock %}
 
 {% block styles %}
@@ -14,6 +11,9 @@
       cursor:pointer;
     }
   </style>
+{% endblock %}
+
+{% block edit_button %}
 {% endblock %}
 
 {% block name_parameters %}
