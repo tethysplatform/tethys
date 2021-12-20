@@ -97,7 +97,7 @@ for setting, value in SESSION_CONFIG.items():
 DATABASES = portal_config_settings.pop('DATABASES', {})
 DATABASES.setdefault('default', {'DIR': 'psql'})
 DEFAULT_DB = DATABASES['default']
-DEFAULT_DB.setdefault('ENGINE', 'django.db.backends.postgresql_psycopg2')
+DEFAULT_DB.setdefault('ENGINE', 'django.db.backends.postgresql')
 DEFAULT_DB.setdefault('NAME', 'tethys_platform')
 DEFAULT_DB.setdefault('USER', 'tethys_default')
 DEFAULT_DB.setdefault('PASSWORD', 'pass')
