@@ -9,7 +9,7 @@
   <td id="jobs-table-status-{{ job.id }}" class="job-status status-col" data-job-id="{{ job_id }}">
     {% if delay_loading_status %}
     <div class="progress" style="margin-bottom: 0;">
-      <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" title="Updating" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%; background-color: #555555;">
+      <div class="progress-bar bg-info progress-bar-striped active" role="progressbar" title="Updating" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%; background-color: #555555;">
         <span class="sr-only">100% Updating</span>
       </div>
     </div>
@@ -23,17 +23,17 @@
           </div>
           {% endif %}
           {% if job_statuses.Error > 0 %}
-          <div class="progress-bar progress-bar-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%">
+          <div class="progress-bar bg-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%">
             <span class="sr-only">{{ job_statuses.Error }}% Error</span>
           </div>
           {% endif %}
           {% if job_statuses.Completed > 0 %}
-          <div class="progress-bar progress-bar-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%">
+          <div class="progress-bar bg-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%">
             <span class="sr-only">{{ job_statuses.Completed }}% Complete</span>
           </div>
           {% endif %}
           {% if job_statuses.Running > 0 %}
-          <div class="progress-bar progress-bar-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%">
+          <div class="progress-bar bg-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%">
             <span class="sr-only">{{ job_statuses.Running }}% Running</span>
           </div>
           {% endif %}

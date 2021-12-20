@@ -13,7 +13,7 @@ function bind_run_button(btn){
         }).done(function (json) {
             status_html =
             '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
                     '<span class="sr-only">100% Complete</span>' +
                 '</div>' +
             '</div>'
@@ -32,7 +32,7 @@ function bind_refresh_button(btn){
         }).done(function (json) {
             status_html =
             '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
                     '<span class="sr-only">100% Complete</span>' +
                 '</div>' +
             '</div>'
