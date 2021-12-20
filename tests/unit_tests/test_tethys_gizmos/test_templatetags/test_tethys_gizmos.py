@@ -340,7 +340,8 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
 
         # Check Vendor JS
         mock_get_plotlyjs.assert_called()
-        self.assertIn('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.js', render_globaljs)
+        self.assertIn('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.js',
+                      render_globaljs)
         self.assertIn('PLOTLY_JAVASCRIPT', render_globaljs)
         self.assertNotIn('tethys_map_view.js', render_globaljs)
 
@@ -360,8 +361,9 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         render_globalcss = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_css).\
             render(context=context)
 
-        # Check Vendor CSS 
-        self.assertIn('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.css', render_globalcss)
+        # Check Vendor CSS
+        self.assertIn('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.css',
+                      render_globalcss)
         self.assertNotIn('tethys_map_view.min.css', render_globalcss)
         self.assertNotIn('tethys_gizmos.css', render_globalcss)
 
@@ -380,7 +382,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         # unless it has the same gizmo name as the predefined one
         render_css = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_css).\
             render(context=context)
-        
+
         # Check Gizmo CSS
         self.assertIn('tethys_map_view.min.css', render_css)
         self.assertIn('tethys_gizmos.css', render_css)
@@ -402,7 +404,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         # unless it has the same gizmo name as the predefined one
         render_js = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_js).\
             render(context=context)
-        
+
         # Check Gizmo JS
         mock_get_plotlyjs.assert_not_called()
         self.assertIn('tethys_map_view.js', render_js)
