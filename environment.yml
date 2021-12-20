@@ -22,24 +22,24 @@ dependencies:
 
 # database dependencies
 - postgresql
-- psycopg2<2.9  # remove pin after upgrading to django 3.
+- psycopg2
 - sqlalchemy
 - geoalchemy2
 
 # plotting dependencies
 - plotly
-- bokeh>=2.0.0*
+- bokeh
 
 # external services dependencies
-- tethys_dataset_services>=2.0.0
+- tethys_dataset_services>=2.0.0  # This needs upgrading
 - hs_restclient
 - owslib
 - requests
 - social-auth-app-django
-- dask=1.2.*
-- tethys_dask_scheduler>=1.0.2
-- channels=2.*
-- daphne=2.5.*
+- dask=1.2.*  # Needs to be unpinned to support newer Python versions (>3.7)
+- tethys_dask_scheduler>=1.0.2  # This needs upgrading
+- channels=3.*  # TODO: Need to upgrade from 2 to 3
+- daphne=2.5.*  # TODO: Which version?
 - service_identity
 - condorpy
 - siphon
@@ -51,7 +51,7 @@ dependencies:
 - isodate
 
 # django/plugin dependencies
-- django=2.2.*
+- django=3.2.*
 - django-axes
 - django-filter
 - djangorestframework
