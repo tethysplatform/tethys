@@ -101,7 +101,7 @@ class TethysQuotasUtilitiesTest(TestCase):
         ret = utilities.get_resource_available(mock.MagicMock(), 'codename')
 
         mock_log.warning.assert_called_with('Invalid Codename: ResourceQuota with codename codename does not exist.')
-        self.assertEquals(None, ret)
+        self.assertEqual(None, ret)
 
     @mock.patch('tethys_quotas.models.ResourceQuota')
     def test_get_quota_rq_inactive(self, mock_rq):
@@ -110,7 +110,7 @@ class TethysQuotasUtilitiesTest(TestCase):
         mock_rq.objects.get.return_value = rq
 
         ret = utilities.get_quota(mock.MagicMock(), 'codename')
-        self.assertEquals(None, ret['quota'])
+        self.assertEqual(None, ret['quota'])
 
     @mock.patch('tethys_quotas.models.ResourceQuota')
     def test_get_quota_bad_entity(self, mock_rq):
@@ -135,7 +135,7 @@ class TethysQuotasUtilitiesTest(TestCase):
         mock_aq.objects.get.return_value = aq
 
         ret = utilities.get_quota(TethysApp(), 'codename')
-        self.assertEquals(100, ret['quota'])
+        self.assertEqual(100, ret['quota'])
 
     @mock.patch('tethys_quotas.models.TethysAppQuota')
     @mock.patch('tethys_quotas.models.ResourceQuota')
@@ -149,7 +149,7 @@ class TethysQuotasUtilitiesTest(TestCase):
         mock_aq.DoesNotExist = TethysAppQuota.DoesNotExist
 
         ret = utilities.get_quota(TethysApp(), 'codename')
-        self.assertEquals(None, ret['quota'])
+        self.assertEqual(None, ret['quota'])
 
     @mock.patch('tethys_quotas.models.TethysAppQuota')
     @mock.patch('tethys_quotas.models.ResourceQuota')
@@ -163,7 +163,7 @@ class TethysQuotasUtilitiesTest(TestCase):
         mock_aq.DoesNotExist = TethysAppQuota.DoesNotExist
 
         ret = utilities.get_quota(TethysApp(), 'codename')
-        self.assertEquals(100, ret['quota'])
+        self.assertEqual(100, ret['quota'])
 
     @mock.patch('tethys_quotas.models.ResourceQuota')
     def test_get_quota_staff(self, mock_rq):
@@ -175,4 +175,4 @@ class TethysQuotasUtilitiesTest(TestCase):
         user.is_staff = True
 
         ret = utilities.get_quota(user, 'codename')
-        self.assertEquals(None, ret['quota'])
+        self.assertEqual(None, ret['quota'])

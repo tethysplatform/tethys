@@ -541,53 +541,6 @@ class TestTethysAppBase(unittest.TestCase):
         mock_jm.return_value = 'test_job_manager'
         self.assertEqual('test_job_manager', self.app.get_job_manager())
 
-    @mock.patch('tethys_apps.base.app_base.TethysWorkspace')
-    def test_get_user_workspace(self, mock_tws):
-        user = self.user
-        self.app.get_user_workspace(user)
-
-        # Check result
-        rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('user_workspaces', rts_call_args[0][0][0])
-        self.assertIn(user.username, rts_call_args[0][0][0])
-
-    @mock.patch('tethys_apps.base.app_base.TethysWorkspace')
-    def test_get_user_workspace_http(self, mock_tws):
-        from django.http import HttpRequest
-        request = HttpRequest()
-        request.user = self.user
-
-        self.app.get_user_workspace(request)
-
-        # Check result
-        rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('user_workspaces', rts_call_args[0][0][0])
-        self.assertIn(self.user.username, rts_call_args[0][0][0])
-
-    @mock.patch('tethys_apps.base.app_base.TethysWorkspace')
-    def test_get_user_workspace_none(self, mock_tws):
-        self.app.get_user_workspace(None)
-
-        # Check result
-        rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('user_workspaces', rts_call_args[0][0][0])
-        self.assertIn('anonymous_user', rts_call_args[0][0][0])
-
-    def test_get_user_workspace_error(self):
-        self.assertRaises(ValueError, self.app.get_user_workspace, user=['test'])
-
-    @mock.patch('tethys_apps.base.app_base.TethysWorkspace')
-    def test_get_app_workspace(self, mock_tws):
-        self.app.get_app_workspace()
-
-        # Check result
-        rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('app_workspace', rts_call_args[0][0][0])
-        self.assertNotIn('user_workspaces', rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_custom_setting(self, mock_ta):

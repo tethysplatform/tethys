@@ -90,7 +90,7 @@ class TestUrlMap(unittest.TestCase):
 
         # Test get size unit conversion
         workspace_size_kb = base_workspace.TethysWorkspace(path=self.test_root).get_size('kb')
-        self.assertEquals(workspace_size/1024, workspace_size_kb)
+        self.assertEqual(workspace_size/1024, workspace_size_kb)
 
         # Test Remove file
         base_workspace.TethysWorkspace(path=self.test_root).remove('test2.txt')
@@ -160,7 +160,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_user_workspace_error(self):
         with self.assertRaises(ValueError) as context:
             _get_user_workspace(self.app, 'test')
-        self.assertEquals(
+        self.assertEqual(
             "Invalid type for argument 'user': must be either an User or HttpRequest object.", str(context.exception))
 
     @mock.patch('tethys_apps.base.workspace.TethysWorkspace')
