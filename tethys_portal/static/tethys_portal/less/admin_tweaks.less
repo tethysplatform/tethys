@@ -10,8 +10,10 @@
 
 ul li {
   list-style-type: none;
-  padding: inherit;
+  font-size: initial;
+  line-height: initial;
 }
+
 
 .dashboard #content {
   width: auto;
@@ -45,6 +47,10 @@ a:link, a:visited {
 
 a:hover {
   color: @link-hover-color;
+}
+
+.button.cancel-link {
+  background-color: transparent;
 }
 
 .object-tools {
@@ -93,6 +99,7 @@ a:hover {
     th {
       font-size: 14px;
       font-weight: 400;
+      width: 100%;
     }
   }
 
