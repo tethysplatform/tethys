@@ -386,6 +386,8 @@ for setting, value in ANALYTICS_CONFIG.items():
 
 ASGI_APPLICATION = "tethys_portal.asgi.application"
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
