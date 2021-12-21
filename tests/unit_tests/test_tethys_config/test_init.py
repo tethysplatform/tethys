@@ -1,4 +1,3 @@
-import datetime as dt
 import unittest
 from unittest import mock
 
@@ -250,7 +249,7 @@ class TestInit(unittest.TestCase):
         mock_copyright_setting = mock.MagicMock(
             content="Copyright © 2019 Your Organization"
         )
-        
+
         # Create a fake "get" method for the mocked Setting
         def setting_get(name):
             if name == "Brand Image":
@@ -259,22 +258,22 @@ class TestInit(unittest.TestCase):
                 return mock_apps_library_setting
             elif name == "Footer Copyright":
                 return mock_copyright_setting
-        
+
         # Bind mocked "get" method
         mock_setting.objects.filter().get = setting_get
-        
+
         # Set now to something that is verifiable
         now = timezone.now()
         mock_timezone.now.return_value = now
-        
+
         # Execute
         tethys4_site_settings(mock.MagicMock(), mock.MagicMock())
-        
+
         # Verify values changed appropriately
         self.assertEqual("/tethys_portal/images/tethys-logo-25.png", mock_brand_setting.content)
         self.assertEqual("Apps", mock_apps_library_setting.content)
         self.assertEqual(f"Copyright © {now:%Y} Your Organization", mock_copyright_setting.content)
-        
+
         # Verify settings saved
         mock_brand_setting.save.assert_called()
         mock_apps_library_setting.save.assert_called()
