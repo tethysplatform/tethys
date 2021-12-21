@@ -22,10 +22,8 @@ hs_restclient
 owslib
 requests
 social-auth-app-django
-dask=1.2.*  # This pin is holding back Python to 3.7
-tethys_dask_scheduler>=1.0.2
-channels=3.*
-daphne=2.5.*
+dask  # The pin to 1.2 is holding back Python to 3.7
+tethys_dask_scheduler>=1.0.2  # Needs to be upgraded to support newer versions of dask
 service_identity
 condorpy
 siphon
@@ -37,7 +35,9 @@ arrow
 isodate
 
 # django/plugin dependencies
-django=3.2.*
+django<4
+channels<4  # NOTE: There is an issue with the channels version 3.0.4 installed from conda. Must install from pip for now.
+daphne
 django-axes
 django-filter
 djangorestframework
@@ -65,7 +65,7 @@ pip
 future
 flake8
 pbr
-git
+# git
 
 # Conda to allow Python API access to Conda Install
 conda

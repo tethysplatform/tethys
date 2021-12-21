@@ -143,6 +143,7 @@ LOGGERS.setdefault('tethys.apps', {
 })
 
 INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -166,10 +167,10 @@ INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'rest_framework',
     'rest_framework.authtoken',
     'analytical',
-    'channels',
     'mfa',
     'axes',
 ])
+
 INSTALLED_APPS = tuple(INSTALLED_APPS + portal_config_settings.pop('INSTALLED_APPS', []))
 
 MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
@@ -182,7 +183,7 @@ MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'tethys_portal.middleware.TethysAppAccessMiddleware',
-    'session_security.middleware.SessionSecurityMiddleware',
+    'session_security.middleware.SessionSecurityMiddleware',  # TODO: Templates need to be upgraded
     'axes.middleware.AxesMiddleware',
 ])
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop('MIDDLEWARE', []))
@@ -383,7 +384,7 @@ ANALYTICS_CONFIG = portal_config_settings.pop('ANALYTICS_CONFIG', {})
 for setting, value in ANALYTICS_CONFIG.items():
     setattr(this_module, setting, value)
 
-ASGI_APPLICATION = "tethys_portal.routing.application"
+ASGI_APPLICATION = "tethys_portal.asgi.application"
 
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():

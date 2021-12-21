@@ -123,9 +123,9 @@ class TethysBase(TethysBaseMixin):
             url_pattern = bokeh_app.url + suffix
             return f'^{url_pattern}$'
 
-        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer,
+        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer.as_asgi(),
                        name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
-        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
+        ws_url = url(urlpattern('/ws'), WSConsumer.as_asgi(), name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
 
         # Append to namespace list
         handler_patterns['http'][namespace].append(http_url)

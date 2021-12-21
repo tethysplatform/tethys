@@ -1,8 +1,8 @@
 from django.conf.urls import url as django_url
+from django.core.asgi import get_asgi_application
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.http import AsgiHandler
 
 from tethys_apps.harvester import SingletonHarvester
 
@@ -30,7 +30,7 @@ for namespace, urls in app_ws_handler_patterns.items():
         ws_routing_patterns.append(url)
 
 application = ProtocolTypeRouter({
-    # 'http' -> django views are added automatically
+    'http': get_asgi_application(),
     'websocket': AuthMiddlewareStack(
         URLRouter(
             ws_routing_patterns
@@ -39,7 +39,6 @@ application = ProtocolTypeRouter({
 })
 
 if http_routing_patterns:
-    http_routing_patterns.append(django_url(r'', AsgiHandler))
     application.application_mapping['http'] = AuthMiddlewareStack(
         URLRouter(
             http_routing_patterns

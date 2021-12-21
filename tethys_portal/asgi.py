@@ -4,9 +4,8 @@ defined in the ASGI_APPLICATION setting.
 """
 
 import os
-import django
-from channels.routing import get_default_application
+from tethys_portal.routing import application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
-django.setup()
-application = get_default_application()
+
+application = application
