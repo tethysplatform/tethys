@@ -35,10 +35,8 @@ dependencies:
 - hs_restclient
 - owslib
 - requests
-- social-auth-app-django
-- dask=1.2.*  # Needs to be unpinned to support newer Python versions (>3.7)
+- dask  # The pin to 1.2 is holding back Python to 3.7
 - tethys_dask_scheduler>=1.0.2  # This needs upgrading
-- daphne=2.5.*  # TODO: Which version?
 - service_identity
 - condorpy
 - siphon
@@ -51,7 +49,7 @@ dependencies:
 
 # django/plugin dependencies
 - django=3.2.*
-- channels=3.*  # TODO: Need to upgrade from 2 to 3  # NOTE: There is an issue with the channels version 3.0.4 installed from conda. Must install from pip for now.
+- daphne
 - django-axes
 - django-filter
 - djangorestframework
@@ -59,16 +57,19 @@ dependencies:
 - django-model-utils
 - django-guardian
 - django-gravatar2
-- django-termsandconditions
-- django-session-security
-- django-analytical
-- django-simple-captcha
-- django-recaptcha2
 - django-mfa2
 - social-auth-app-django
 
 # tests dependencies
-- requests-mock
+- django-axes
+- django-filter
+- djangorestframework
+- django-bootstrap5
+- django-model-utils
+- django-guardian
+- django-gravatar2
+- django-mfa2
+- social-auth-app-djang
 - selenium
 - coverage
 - factory_boy
@@ -83,3 +84,13 @@ dependencies:
 
 # Conda to allow Python API access to Conda Install
 - conda
+
+# Temporarily install from pip to get latests version
+# Move back to installing with conda once packages are on conda-forge
+- pip:
+  - channels=3.*  # NOTE: There is an issue with the channels version 3.0.4 installed from conda-forge. Must install from pip for now.
+  - django-termsandconditions
+  - django-session-security
+  - django-analytical
+  - django-simple-captcha
+  - django-recaptcha2

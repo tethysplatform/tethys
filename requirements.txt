@@ -1,5 +1,3 @@
-python
-
 # system dependencies
 pycrypto
 pyopenssl
@@ -7,7 +5,6 @@ docker-py
 distro
 
 # database dependencies
-postgresql
 psycopg2
 sqlalchemy
 geoalchemy2
@@ -21,7 +18,6 @@ tethys_dataset_services>=2.0.0
 hs_restclient
 owslib
 requests
-social-auth-app-django
 dask  # The pin to 1.2 is holding back Python to 3.7
 tethys_dask_scheduler>=1.0.2  # Needs to be upgraded to support newer versions of dask
 service_identity
@@ -65,7 +61,6 @@ pip
 future
 flake8
 pbr
-# git
 
 # Conda to allow Python API access to Conda Install
 conda
