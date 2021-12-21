@@ -257,21 +257,21 @@ def tethys4_site_settings(apps, schema_editor):
     if brand_image_setting.content == "/tethys_portal/images/tethys-logo-75.png":
         brand_image_setting.content = "/tethys_portal/images/tethys-logo-25.png"
         brand_image_setting.save()
-    
+
     # Update the app library title
     app_library_setting = Setting.objects\
         .filter(category__name="General Settings")\
         .get(name="Apps Library Title")
-    
+
     if app_library_setting.content == "Apps Library":
         app_library_setting.content = "Apps"
         app_library_setting.save()
-        
+
     # Update the copyright if default
     copyright_setting = Setting.objects\
         .filter(category__name="General Settings")\
         .get(name="Footer Copyright")
-        
+
     if copyright_setting.content == "Copyright © 2019 Your Organization":
         now = timezone.now()
         copyright_setting.content = f"Copyright © {now:%Y} Your Organization"
