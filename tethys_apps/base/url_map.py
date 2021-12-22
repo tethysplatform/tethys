@@ -119,10 +119,12 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             # Handle empty string case
             django_url = r'^$'
     elif protocol == 'websocket':
+        # Web socket urls are not post processed like normal http urls
+        # But they still need the same app/<app_root>/<url> path
         if django_url_joined != '':
-            django_url = f'^{root_url}/{django_url_joined}/ws/$'
+            django_url = f'^apps/{root_url}/{django_url_joined}/ws/$'
         else:
             # Handle empty string case
-            django_url = f'^{root_url}/ws/$'
+            django_url = f'^apps/{root_url}/ws/$'
 
     return django_url
