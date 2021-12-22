@@ -1,44 +1,57 @@
-{% extends "page.html" %}
+{% extends "base.html" %}
 {% load static humanize %}
 
-{% block title %}Locked Out!{% endblock %}
+{% block title %}{{ block.super }} - Locked Out!{% endblock %}
 
 {% block styles %}
-{{ block.super }}
-<style>
-    body {
-      background: {{ site_globals.background_color|default:'#ffffff' }};
+  {{ block.super }}
+  <style id="lockout-styles">
+    #site-wrapper {
+      height: 100%;
     }
-</style>
-<link href="{% static '/tethys_portal/css/lockout.css' %}" type="text/css" rel="stylesheet" />
+    #site-wrapper::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: -1;
+      opacity: 0.2;
+      content: "";
+      background-image: url("{% static 'tethys_portal/images/lockout.png' %}");
+      background-position: center;
+      background-size: auto;
+      background-repeat: no-repeat;
+    }
+    #content {
+      height: 100%;
+    }
+    .lockout-message-container {
+      padding: 0;
+      padding-bottom: 100px;
+    }
+    .lockout-message-container p {
+      text-align: justify;
+    }
+  </style>
 {% endblock %}
 
 {% block flash %}{% endblock %}
 
 {% block primary_content %}
-  <div class="lockout-container">
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="lockout-image-container center-parent">
-          {% block lockout_image %}
-            <img class="centered" src="{% static 'tethys_portal/images/lockout.png' %}">
-          {% endblock %}
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="lockout-message-container">
-              <p>You have exceeded the amount of allowed login attempts ({{ failure_limit }}).</p>
-              {% if cooloff_time %}
-                <p>Your account will be unlocked {{ cooloff_time|human_duration }}, at which point you may try again.</p>
-              {% else %}
-                <p>Please contact your system admin for more assistance.</p>
-              {% endif %}
-            </div>
-          </div>
+  <div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+      <div class="col-lg-8">
+        <div class="lockout-message-container">
+          <p class="fs-2">You have exceeded the amount of allowed login attempts ({{ failure_limit }}).</p>
+          {% if cooloff_time %}
+            <p class="fs-2">Your account will be unlocked {{ cooloff_time|human_duration }}, at which point you may try again.</p>
+          {% else %}
+            <p class="fs-2">Please contact your system admin for more assistance.</p>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
+  
 {% endblock %}

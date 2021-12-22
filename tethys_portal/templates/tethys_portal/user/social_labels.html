@@ -1,4 +1,4 @@
-<div class="social-label-container">
+<dd class="col-sm-8 social-label-container">
   {% for backend in backends %}
     {% if 'azuread' in backend or 'azuread' in backend.provider %}
       {% if action == 'disconnect' %}
@@ -110,4 +110,4 @@
       {% endif %}
     {% endif %}
   {% endfor %}
-</div>
+</dd>

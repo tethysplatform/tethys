@@ -18,7 +18,7 @@ from social_django import views as psa_views, urls as psa_urls
 
 from tethys_apps.urls import extension_urls
 
-from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
+from tethys_portal.views import accounts as tethys_portal_accounts, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, \
     admin as tethys_portal_admin, psa as tethys_portal_psa, email as tethys_portal_email
 from tethys_apps import views as tethys_apps_views
@@ -66,7 +66,6 @@ user_urls = [
 ]
 
 developer_urls = [
-    url(r'^$', tethys_portal_developer.home, name='developer_home'),
     url(r'^gizmos/', include(('tethys_gizmos.urls', 'gizmos'), namespace='gizmos')),
     url(r'^services/', include(('tethys_services.urls', 'services'), namespace='services')),
 ]

@@ -3,10 +3,10 @@
 
 {# Allows custom attributes to be added to the html tag #}
 {% block htmltag %}
-<!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
-<!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
+<!--[if IE 7]> <html lang="en" class="ie ie7 h-100"> <![endif]-->
+<!--[if IE 8]> <html lang="en"  class="ie ie8 h-100"> <![endif]-->
+<!--[if IE 9]> <html lang="en"  class="ie9 h-100"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="h-100"> <!--<![endif]-->
 {% endblock %}
 
   {# Allows custom attributes to be added to the head tag #}
@@ -42,14 +42,15 @@
     {% endcomment %}
 
     <title>
+      {% block title %}
       {% if site_globals.site_title %}
-         {{ site_globals.site_title }}
+        {{ site_globals.site_title }}
       {% elif site_globals.brand_text %}
         {{ site_globals.brand_text }}
       {% else %}
-        Tethys
+        Tethys Portal
       {% endif %}
-      {% block title %}{% endblock %}
+      {% endblock %}
     </title>
 
     {% comment "links explanation" %}
@@ -90,21 +91,130 @@
     {% endcomment %}
 
     {% block styles %}
-      <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/{{ tethys.bootstrap.version }}/css/bootstrap.min.css" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
-      <link href="{% static 'tethys_portal/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" />
-      <link href="{% static 'tethys_portal/vendor/bootstrap-social/bootstrap-social.css' %}" rel="stylesheet" />
-      <link href="{% static 'tethys_portal/css/tethys_main.css' %}"  rel="stylesheet" />
+      <link href="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/css/bootstrap.min.css" rel="stylesheet" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
+      <link href="//cdn.jsdelivr.net/npm/bootstrap-icons@{{ tethys.bootstrap_icons.version }}/font/bootstrap-icons.css" rel="stylesheet" >
+      <link href="{% static 'tethys_portal/css/tethys_main.min.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
+      <style id="global-styles">
+        body {
+          background: {{ site_globals.background_color }};
+        }
+      </style>
+      <style id="header-styles">
+        /* Header Styles */
+        #header-brand {
+          color: {{ site_globals.primary_text_color }};
+        }
+      
+        #header-brand:hover {
+          color: {{ site_globals.primary_text_hover_color }};
+        }
+        .site-header .navbar {
+          border-radius: 40px;
+          transition: all .2s ease-in-out;
+        }
+      
+        .site-header .navbar-nav .nav-link {
+          color: {{ site_globals.primary_text_color }};
+        }
+      
+        .site-header .navbar-nav .nav-link:hover {
+          color: {{ site_globals.primary_text_hover_color }};
+        }
+      
+        .site-header .navbar-brand img {
+          height: 26px;
+          {% if site_globals.brand_image_height %}
+          height: {{ site_globals.brand_image_height }};
+          {% endif %}
+          {% if site_globals.brand_image_width %}
+            width: {{ site_globals.brand_image_width }};
+          {% endif %}
+          {% if site_globals.brand_image_padding %}
+            margin-top: {{ site_globals.brand_image_padding }};
+          {% endif %}
+        }
+  
+        .site-header .btn-user-profile {
+          background-color: rgba(255, 255, 255, 0.08);
+          border: none;
+          color: {{ site_globals.primary_text_color }};
+        }
+    
+        .site-header .btn-user-profile:hover {
+          background-color: rgba(255, 255, 255, 0.30);
+        }
+  
+        .site-header .btn-group .dropdown-menu .dropdown-item {
+          color:#3f3f3f;
+        }
+        
+        .site-header .btn-group .dropdown-menu .dropdown-item:active {
+          background-color: {{ site_globals.primary_color }};
+          color: #dddddd;
+        }
+  
+        .site-header .navbar {
+          background-color: {{ site_globals.primary_color }};
+        }
+  
+        .site-header .navbar.fixed-top {
+          border-radius: 0;
+        }
+        
+        .site-header .navbar-toggler {
+          border: none;
+        }
+      </style>
+      <style id="footer-styles">
+        /* Footer Styles */
+        .site-footer {
+          background-color: {{ site_globals.primary_color }};
+          z-index: 100;
+        }
+        .site-footer a {
+          font-size: 20px;
+          color: {{ site_globals.primary_text_color }};
+          text-decoration: none;
+          white-space: nowrap;
+        }
+        .site-footer a:hover {
+          color: {{ site_globals.primary_text_color }};
+          text-decoration: underline;
+        }
+        .site-footer .copyright {
+          display: block;
+          font-size: 16px;
+          white-space: nowrap;
+          color: {{ site_globals.primary_text_color }};
+        }
+        .site-footer .tethys-attribution {
+          color: {{ site_globals.primary_text_color }};
+        }
+        .site-footer .documents-wrapper .document-link {
+          display: inline-block;
+          font-size: 16px;
+          white-space: nowrap;
+          color: {{ site_globals.primary_text_color }};
+        }
+        .site-footer .documents-wrapper .document-link:hover {
+          color: {{ site_globals.primary_text_color }};
+        }
+      </style>
+    {% endblock %}
+
+    {% block custom_styles %}
       {{ site_globals.portal_base_css|load_custom_css|safe }}
     {% endblock %}
 
     {% block global_scripts %}
       <script src="//code.jquery.com/jquery-{{ tethys.jquery.version }}.min.js" integrity="{{ tethys.jquery.integrity }}" crossorigin="anonymous"></script>
-      <script src="//stackpath.bootstrapcdn.com/bootstrap/{{ tethys.bootstrap.version }}/js/bootstrap.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
+      <script src="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/js/bootstrap.bundle.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
     {% endblock %}
 
     {% block session_timeout_modal %}
       {% include 'session_security/all.html' %}
-      <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/session_security_override.min.css' %}"  rel="stylesheet" />
     {% endblock %}
 
     {% block head %}{% endblock %}
@@ -115,14 +225,11 @@
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
-  <body {% block bodytag %}{% endblock %}>
+  <body class="d-flex flex-column h-100"{% block bodytag %}{% endblock %}>
     {% analytical_body_top %}
 
     {% comment "page explanation" %}
-      The page block allows you to add content to the page. Most of the time it is
-      recommended that you extend one of the page.html templates in order to get
-      the site header and footer. If you need a clean page then this is the
-      block to use.
+      The page block allows you to add content to the page.
 
       Example:
 
@@ -140,14 +247,15 @@
 
       {% block header %}
         {% include "header.html" %}
+        <div class="clear-header"></div>
       {% endblock %}
 
-      {# Use wrapper class to add classes to the content wrapper element #}
       {% block site_wrapper_override %}
+        {# Use wrapper class to add classes to the content wrapper element #}
         <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
           {% block flash %}
             {% if messages %}
-              <div class="flash-messages">
+              <div class="flash-messages position-absolute w-100">
                 {% comment "flash_messages explanation" %}
                   Use the flash messages block to display temporary feedback to the user. Pass
                   a list of dictionaries called "flash_messages". Each dictionary should have the
@@ -158,12 +266,9 @@
                 {% endcomment %}
 
                 {% for message in messages %}
-                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <span aria-hidden="true">&times;</span>
-                      <span class="sr-only">Close</span>
-                    </button>
+                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show mx-auto w-50" role="alert">
                     {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>
                 {% endfor %}
               </div>
@@ -207,7 +312,7 @@
     {% endcomment %}
 
     {% block scripts %}
-      <script src="{% static 'tethys_portal/js/tethys_main.js' %}" type="text/javascript"></script>
+      <script type="text/javascript" src="{% static 'tethys_portal/js/header.js' %}"></script>
     {% endblock %}
 
     {% analytical_body_bottom %}

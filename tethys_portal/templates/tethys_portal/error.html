@@ -1,44 +1,52 @@
-{% extends "page.html" %}
+{% extends "base.html" %}
 
 {% load static %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ block.super }} - Error{% endblock %}
 
 {% block styles %}
   {{ block.super }}
-  <link href="{% static '/tethys_portal/css/error.css' %}" type="text/css" rel="stylesheet" />
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#ffffff' }};
+  <style id="error-styles">
+    #site-wrapper {
+      height: 100%;
+    }
+    #site-wrapper::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: -1;
+      opacity: 0.2;
+      content: "";
+      background-image: url("{{ error_image }}");
+      background-position: center;
+      background-size: auto;
+      background-repeat: no-repeat;
+    }
+    #content {
+      height: 100%;
+    }
+    .error-code {
+      color: {{ error_color }};
+    }
+    .error-message-container {
+      padding: 0;
+      padding-bottom: 100px;
+    }
+    .error-message-container p {
+      text-align: justify;
     }
   </style>
 {% endblock %}
 
 {% block primary_content %}
-  <div class="error-container">
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="error-image-container center-parent">
-          {% block error_image %}
-            <img class="centered" src="{{ error_image }}">
-          {% endblock %}
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="error-code-container">
-              <h1>{{ error_code }}</h1>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="error-message-container">
-              <h2>{{ error_title }}</h2>
-              <p>{{ error_message }}</p>
-            </div>
-          </div>
+  <div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+      <div class="col-lg-8">
+        <div class="error-message-container">
+          <h1 class="display-1 fw-bold text-center"><span class="error-code">{{ error_code }}</span> {{ error_title }}</h1>
+          <p class="fs-2">{{ error_message }}</p>
         </div>
       </div>
     </div>

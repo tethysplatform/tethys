@@ -1,149 +1,113 @@
 {% extends "tethys_portal/user/profile.html" %}
 
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 
-{% block edit_button %}
-{% endblock %}
-
-{% block title %}- User Settings{% endblock %}
+{% block title %}{{ block.super }} - User Settings{% endblock %}
 
 {% block styles %}
   {{ block.super }}
   <style>
-    body {
-      background: {{ site_globals.background_color|default:'#efefef' }};
-    }
-
     a:hover {
       cursor:pointer;
     }
   </style>
 {% endblock %}
 
+{% block edit_button %}
+{% endblock %}
+
 {% block name_parameters %}
-  <div class="form-group">
-    <label for="id_first_name" class="control-label col-md-3">First Name:</label>
-    <div class="col-md-6">
-      {{ form.first_name }}
+  <div class="col-xl-8">
+    <div class="row">
+      <div class="col">
+        {% bootstrap_field form.first_name layout='horizontal' label_class='ps-0 fw-bold' horizontal_label_class='col-sm-4' horizontal_field_class='col-sm-8 ps-0' %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        {% bootstrap_field form.last_name layout='horizontal' label_class='ps-0 fw-bold' horizontal_label_class='col-sm-4' horizontal_field_class='col-sm-8 ps-0' %}
+      </div>
     </div>
   </div>
-  <div class="form-group">
-    <label for="id_last_name" class="control-label col-md-3">Last Name:</label>
-    <div class="col-md-6">
-      {{ form.last_name }}
+{% endblock %}
+
+{% block email_parameters %}
+  <div class="col-xl-8">
+    <div class="row">
+      <div class="col">
+        {% bootstrap_field form.email layout='horizontal' label_class='ps-0 fw-bold' horizontal_label_class='col-sm-4' horizontal_field_class='col-sm-8 ps-0' %}
+      </div>
     </div>
   </div>
 {% endblock %}
 
 {% block credential_parameters %}
-  <div class="form-group">
-    <label class="col-md-3 control-label">Username: </label>
-    <div class="col-md-6">
-      <p class="form-control-static">{{ user.username }}</p>
-    </div>
-  </div>
-  {% if user.has_usable_password %}
-    <div class="form-group">
-      <label class="col-md-3 control-label">Password: </label>
-      <div class="col-md-6">
-        <p class="form-control-static"><a href="{% url 'user:change_password' %}" class="btn btn-default">Change Password</a></p>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="col-md-3 control-label">2-Step Verification: </label>
-      <div class="col-md-6">
-        <p class="form-control-static"><a class="btn btn-default" href="{% url 'mfa_home' %}">Configure</a></p>
-      </div>
-    </div>
-  {% endif %}
-
-{% endblock %}
-
-{% block gravatar_parameters %}
-  <div class="form-group {% if form.email.errors %}has-error{% endif %}">
-    <label for="id_email" class="control-label col-md-3">Email:</label>
-    <div class="col-md-6">
-      {{ form.email }}
-    </div>
-    {% if form.email.errors %}
-      {% for error in form.email.errors %}
-        <label for="id_email" class="control-label error-label">{{ error }}</label>
-      {% endfor %}
-    {% endif %}
-  </div>
-{% endblock %}
-
-{% block social_parameters %}
-  <ul>
-    <li><span class="parameter">Connected:</span>
-      {{association.provider}}
-      {% if backends.associated %}
-        {% if user.has_usable_password or backends.associated|length > 1 %}
-          {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated action='disconnect' %}
-        {% else %}
-          {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
-        {% endif %}
-      {% else %}
-        <span>None</span>
-      {% endif %}
-    </span></li>
-    <li><span class="parameter">Not Connected:</span>
-      {% if backends.not_associated %}
-        {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated action='connect' %}
-      {% else %}
-        <span>None</span>
-      {% endif %}
-    </span></li>
-  </ul>
-{% endblock %}
-
-{% block account_parameters %}
-  <div class="profile-section">
-    <div class="row">
-      <div class="col-md-2 col-md-offset-2 profile-section-header">
-        <h3>Account</h3>
-      </div>
-      <div class="col-md-8 profile-parameters">
-        <ul>
-          <li><span class="parameter">Member Since:</span><span class="value">{{ user.date_joined|date:"F j, Y" }}</span></li>
-          <li><span class="parameter">Status:</span><span class="value">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
-          <li><span class="parameter">Delete Account:</span><span class="value button"><a class="btn btn-danger btn-sm" href="{% url 'user:delete' %}">Delete Account</a></span></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-{% endblock %}
-
-{% block workspace_management %}
-<div class="profile-section last">
+<div class="profile-parameters col-xl-8">
   <div class="row">
-    <div class="col-md-2 col-md-offset-2 profile-section-header">
-      <h3>Workspace</h3>
-    </div>
-    <div class="col-md-8 profile-parameters">
-      <ul>
-        <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
-        <li><span class="parameter">Manage Storage:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' %}">Manage Storage</a></span></li>
-      </ul>
+    <div class="col">
+      <div class="row mb-3">
+        <label class="col-sm-4 col-form-label ps-0 fw-bold" for="id_username">Username:</label>
+        <div class="col-sm-8 ps-0"><input class="form-control" type="text" value="{{ user.username }}" aria-label="{{ user.username }}" disabled readonly id="id_username" title="Usernames cannot be changed."></div>
+      </div>
     </div>
   </div>
+  <dl class="row">
+    {% if user.has_usable_password %}
+    <dt class="col-sm-4">Password:</dt>
+    <dd class="col-sm-8"><a href="{% url 'user:change_password' %}" class="btn btn-outline-primary btn-sm">Change Password</a></dd>
+    
+    <dt class="col-sm-4">2-Step Verification: </dt>
+    <dd class="col-sm-8"><a class="btn btn-default btn-outline-primary btn-sm" href="{% url 'mfa_home' %}">Configure</a></dd>
+    {% endif %}
+  </dl>
 </div>
 {% endblock %}
 
+{% block social_parameters %}
+<div class="profile-parameters col-xl-8">
+  <dl class="row">
+    <dt class="col-sm-4">Connected:</dt>
+    {{association.provider}}
+    {% if backends.associated %}
+      {% if user.has_usable_password or backends.associated|length > 1 %}
+        {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated action='disconnect' %}
+      {% else %}
+        {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
+      {% endif %}
+    {% else %}
+      <dd class="col-sm-8">None</dd>
+    {% endif %}
+    </span>
+    <dt class="col-sm-4">Not Connected:</dt>
+    {% if backends.not_associated %}
+      {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated action='connect' %}
+    {% else %}
+      <dd class="col-sm-8">None</dd>
+    {% endif %}
+  </dl>
+</div>
+{% endblock %}
+
+{% block extend_account_parameters %}
+<dt class="col-sm-4">Delete Account:</dt>
+<dd class="col-sm-8"><a class="btn btn-outline-danger btn-sm" href="{% url 'user:delete' %}">Delete Account</a></dd>
+{% endblock %}
+
+{% block extend_storage_parameters %}
+  <dt class="col-sm-4">Manage Storage:</dt>
+  <dd class="col-sm-8"><a class="btn btn-outline-primary btn-sm" href="{% url 'user:manage_storage' %}">Manage Storage</a></dd>
+{% endblock %}
+
 {% block profile_sections %}
-  <form role="form" class="form-horizontal" method="post">
+  <form role="form" class="row" method="post">
     {% csrf_token %}
     {{ block.super }}
     <div class="profile-section last">
       <div id="settings-buttons" class="row">
         <div class="col-md-12">
-          <div class="btn-toolbar pull-right" role="toolbar">
-            <div class="btn-group">
-              <a href="{% url 'user:profile' %}" class="btn btn-default btn-lg">Cancel</a>
-            </div>
-            <div class="btn-group">
-              <button type="submit" id="user-settings-submit" class="btn btn-success btn-lg" name="user-settings-submit">Save</button>
-            </div>
+          <div class="btn-toolbar float-end mb-3" role="toolbar">
+            <a href="{% url 'user:profile' %}" class="btn btn-outline-secondary btn-lg me-2">Cancel</a>
+            <button type="submit" id="user-settings-submit" class="btn btn-outline-success btn-lg" name="user-settings-submit">Save</button>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+// out: ../css/app_base.min.css, compress: true
 /*****************************************************************************
  * FILE: app_base
  * DATE: 2014
@@ -7,12 +8,11 @@
  *****************************************************************************/
 @import "vendor/prefixer";
 @import "mixins";
-@import "app_base_typography";
 
 // Characteristic Variables
 @app-nav-width: 300px;
 @app-content-padding: 15px;
-@app-primary-color: #1b95dc;
+@app-primary-color: none;
 @app-header-height: 50px;
 @app-header-height-max-width-500: 60px;
 @app-header-title-max-offset: 400px;
@@ -34,6 +34,10 @@ html {
 
 body {
   height: 100%;
+}
+
+.nav-link {
+  transition: none;
 }
 
 #app-header {
@@ -140,7 +144,7 @@ body {
           color: #ffffff;
           font-size: 18px;
           font-weight: 400;
-          .font-smoothing();
+          text-decoration: none;
 
           &:hover {
             background: rgba(0, 0, 0, 0.1);
@@ -152,8 +156,7 @@ body {
           a {
             font-size: 20px;
             font-weight: 600;
-            line-height: 1;
-            padding: 3px 11px 8px;
+            padding: 0.5px 7px;
           }
         }
 
@@ -224,6 +227,7 @@ body {
         padding-bottom: 40px;
         height: 100%;
         overflow: auto;
+        flex-wrap: nowrap;
 
         &::-webkit-scrollbar {
           display: none;
@@ -238,6 +242,11 @@ body {
               background: #ffffff;
               text-decoration: none;
             }
+
+            &.active {
+              color: white!important;
+              background: @app-primary-color;
+            }
           }
 
           &.title {
@@ -246,7 +255,6 @@ body {
             font-size: 16px;
             font-weight: 500;
             color: #444444;
-            -webkit-font-smoothing: antialiased;
           }
 
           &.separator {
@@ -319,6 +327,17 @@ body {
 // Styles for modal adjustments
 .modal-dialog {
   top: 25px;
+}
+
+.flash-messages {
+  position: absolute;
+  top: 75px;
+  left: 0;
+  width: 100%;
+
+  .alert {
+    width: 50%;
+  }
 }
 
 @media (max-width: 1900px) {

@@ -150,7 +150,7 @@ INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
-    'bootstrap3',
+    'django_bootstrap5',
     'termsandconditions',
     'tethys_config',
     'tethys_apps',
@@ -212,7 +212,7 @@ REST_FRAMEWORK = {
 ACCEPT_TERMS_PATH = '/terms/accept/'
 TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
 TERMS_EXCLUDE_URL_LIST = {'/'}
-TERMS_BASE_TEMPLATE = 'page.html'
+TERMS_BASE_TEMPLATE = 'termsandconditions_base.html'
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
