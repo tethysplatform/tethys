@@ -107,25 +107,41 @@ class TethysBase(TethysBaseMixin):
         Example:
             self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
         """
-
-        if url_map.url in [r'', r'/', r'^$', r'^/$']:
-            app_endpoint = '/'.join(['apps', self.root_url])
+        base_app_endpoint = '/'.join(['apps', self.root_url])
+        stripped_url = url_map.url.replace("^", "").replace("$", "")
+        
+        # Determine the full URL endpoint for the Bokeh App
+        if stripped_url in [r'', r'/']:
+            bokeh_app_endpoint = base_app_endpoint
         else:
-            stripped_url = url_map.url.replace("^", "").replace("$", "")
             if stripped_url.endswith('/'):
                 stripped_url = stripped_url[:-1]
 
-            app_endpoint = '/'.join(['apps', self.root_url, stripped_url])
-        bokeh_app = autoload(app_endpoint, handler_function)
+            bokeh_app_endpoint = '/'.join([base_app_endpoint, stripped_url])
+            
+        # Create Bokeh app
+        bokeh_app = autoload(bokeh_app_endpoint, handler_function)
         kwargs = dict(app_context=bokeh_app.app_context)
 
         def urlpattern(suffix=""):
+            # Add suffix
             url_pattern = bokeh_app.url + suffix
+            # Strip out the app home endpoint portion for the 
+            # Django URL to be consistent with other app urls
+            url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
             return f'^{url_pattern}$'
 
-        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer.as_asgi(),
-                       name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
-        ws_url = url(urlpattern('/ws'), WSConsumer.as_asgi(), name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
+        http_url = url(
+            urlpattern('/autoload.js'), 
+            AutoloadJsConsumer.as_asgi(**kwargs),
+            name=f'{url_map.name}_bokeh_autoload'
+        )
+
+        ws_url = url(
+            urlpattern('/ws'), 
+            WSConsumer.as_asgi(**kwargs), 
+            name=f'{url_map.name}_bokeh_ws'
+        )
 
         # Append to namespace list
         handler_patterns['http'][namespace].append(http_url)

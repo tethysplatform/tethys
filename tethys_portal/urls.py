@@ -16,7 +16,7 @@ from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfir
     PasswordResetCompleteView
 from social_django import views as psa_views, urls as psa_urls
 
-from tethys_apps.urls import extension_urls, app_http_handler_urls
+from tethys_apps.urls import extension_urls
 
 from tethys_portal.views import accounts as tethys_portal_accounts, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, \
@@ -110,10 +110,6 @@ urlpatterns = [
     url(r'devices/add$', mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
     # url(r'^error/', include(development_error_urls)),
 ]
-
-# Add app handler urls
-# TODO: Remove after adding these to the namespaced set of URLs
-urlpatterns.extend(app_http_handler_urls)
 
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403
