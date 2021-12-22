@@ -8,22 +8,16 @@
 ********************************************************************************
 """
 import logging
-import os
-import sys
 import traceback
-import warnings
 import uuid
 
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.http import HttpRequest
-from django.utils.functional import SimpleLazyObject
 from django.conf.urls import url
 
 from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
 from tethys_apps.base import permissions
 from .handoff import HandoffManager
-from .workspace import TethysWorkspace
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
@@ -109,7 +103,7 @@ class TethysBase(TethysBaseMixin):
         """
         base_app_endpoint = '/'.join(['apps', self.root_url])
         stripped_url = url_map.url.replace("^", "").replace("$", "")
-        
+
         # Determine the full URL endpoint for the Bokeh App
         if stripped_url in [r'', r'/']:
             bokeh_app_endpoint = base_app_endpoint
@@ -118,7 +112,7 @@ class TethysBase(TethysBaseMixin):
                 stripped_url = stripped_url[:-1]
 
             bokeh_app_endpoint = '/'.join([base_app_endpoint, stripped_url])
-            
+
         # Create Bokeh app
         bokeh_app = autoload(bokeh_app_endpoint, handler_function)
         kwargs = dict(app_context=bokeh_app.app_context)
@@ -126,23 +120,23 @@ class TethysBase(TethysBaseMixin):
         def urlpattern(suffix="", include_base=True):
             # Add suffix
             url_pattern = bokeh_app.url + suffix
-            
+
             if not include_base:
-                # Strip out the app home endpoint portion for the 
+                # Strip out the app home endpoint portion for the
                 # Django URL to be consistent with other app urls
                 url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
 
             return f'^{url_pattern}$'
 
         http_url = url(
-            urlpattern('/autoload.js', include_base=False), 
+            urlpattern('/autoload.js', include_base=False),
             AutoloadJsConsumer.as_asgi(**kwargs),
             name=f'{url_map.name}_bokeh_autoload'
         )
 
         ws_url = url(
-            urlpattern('/ws'), 
-            WSConsumer.as_asgi(**kwargs), 
+            urlpattern('/ws'),
+            WSConsumer.as_asgi(**kwargs),
             name=f'{url_map.name}_bokeh_ws'
         )
 
