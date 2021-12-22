@@ -6,91 +6,82 @@
 name: tethys
 
 channels:
-- tethysplatform
-- tethysplatform/label/dev
-- conda-forge
-- defaults
+  - conda-forge
+  - tethysplatform
+  - defaults
 
 dependencies:
-- python
+  - python
 
-# system dependencies
-- pycrypto
-- pyopenssl
-- docker-py
-- distro
+  # system dependencies
+  - pycrypto
+  - pyopenssl
+  - docker-py
+  - distro
 
-# database dependencies
-- postgresql
-- psycopg2
-- sqlalchemy
-- geoalchemy2
+  # database dependencies
+  - postgresql
+  - psycopg2
+  - sqlalchemy
+  - geoalchemy2
 
-# plotting dependencies
-- plotly
-- bokeh
+  # plotting dependencies
+  - plotly
+  - bokeh
 
-# external services dependencies
-- tethys_dataset_services>=2.0.0  # This needs upgrading
-- hs_restclient
-- owslib
-- requests
-- dask  # The pin to 1.2 is holding back Python to 3.7
-- tethys_dask_scheduler>=1.0.2  # This needs upgrading
-- service_identity
-- condorpy
-- siphon
-- python-jose
-- pyjwt<2.0.0
+  # external services dependencies
+  - tethys_dataset_services>=2.0.0  # This needs upgrading
+  - hs_restclient
+  - owslib
+  - requests
+  - dask  # The pin to 1.2 is holding back Python to 3.7
+  - tethys_dask_scheduler>=1.0.2  # This needs upgrading
+  - service_identity
+  - condorpy
+  - siphon
+  - python-jose
+  - pyjwt<2.0.0
 
-# datetime dependencies
-- arrow
-- isodate
+  # datetime dependencies
+  - arrow
+  - isodate
 
-# django/plugin dependencies
-- django=3.2.*
-- daphne
-- django-axes
-- django-filter
-- djangorestframework
-- django-bootstrap5
-- django-model-utils
-- django-guardian
-- django-gravatar2
-- django-mfa2
-- social-auth-app-django
-
-# tests dependencies
-- django-axes
-- django-filter
-- djangorestframework
-- django-bootstrap5
-- django-model-utils
-- django-guardian
-- django-gravatar2
-- django-mfa2
-- social-auth-app-djang
-- selenium
-- coverage
-- factory_boy
-
-# for now
-- pillow
-- pip
-- future
-- flake8
-- pbr
-- git
-
-# Conda to allow Python API access to Conda Install
-- conda
-
-# Temporarily install from pip to get latests version
-# Move back to installing with conda once packages are on conda-forge
-- pip:
-  - channels=3.*  # NOTE: There is an issue with the channels version 3.0.4 installed from conda-forge. Must install from pip for now.
-  - django-termsandconditions
-  - django-session-security
-  - django-analytical
-  - django-simple-captcha
+  # django/plugin dependencies
+  - django=3.2.*
+  # - channels=3.*  # Issue with conda-forge package. See: https://github.com/conda-forge/channels-feedstock/pull/9
+  - daphne=3.*
+  - django-axes
+  - django-filter
+  - djangorestframework
+  - django-bootstrap5
+  - django-model-utils
+  - django-guardian
+  - django-gravatar2
+  - django-mfa2
   - django-recaptcha2
+  - django-simple-captcha
+  - django-session-security
+  - social-auth-app-django
+
+  # tests dependencies
+  - selenium
+  - coverage
+  - factory_boy
+
+  # for now
+  - pillow
+  - pip
+  - future
+  - flake8
+  - pbr
+  - git
+
+  # Conda to allow Python API access to Conda Install
+  - conda
+
+  # Temporarily install from pip to get latests version
+  # Move back to installing with conda once packages are on conda-forge
+  - pip:
+    - django-termsandconditions
+    - django-analytical
+    - channels>=3.0.4,<4
