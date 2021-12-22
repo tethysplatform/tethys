@@ -48,8 +48,9 @@ dependencies:
 
   # django/plugin dependencies
   - django=3.2.*
-  # - channels=3.*  # Issue with conda-forge package. See: https://github.com/conda-forge/channels-feedstock/pull/9
+  - channels=3.*
   - daphne=3.*
+  - django-analytical
   - django-axes
   - django-filter
   - djangorestframework
@@ -61,6 +62,7 @@ dependencies:
   - django-recaptcha2
   - django-simple-captcha
   - django-session-security
+  - django-termsandconditions
   - social-auth-app-django
 
   # tests dependencies
@@ -78,10 +80,3 @@ dependencies:
 
   # Conda to allow Python API access to Conda Install
   - conda
-
-  # Temporarily install from pip to get latests version
-  # Move back to installing with conda once packages are on conda-forge
-  - pip:
-    - django-termsandconditions
-    - django-analytical
-    - channels>=3.0.4,<4
