@@ -1,0 +1,9 @@
+.form-range {
+    width: auto;
+    flex-grow: 2;
+}
+
+.slider-after {
+    text-align: left;
+    padding-left: 10px;
+}

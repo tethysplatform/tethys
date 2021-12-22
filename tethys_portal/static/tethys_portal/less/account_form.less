@@ -1,0 +1,357 @@
+// out: ../css/account_form.min.css, compress: true
+/*****************************************************************************
+ * FILE: account
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+ // Styles for the account login and register forms
+ @import "variables";
+
+//Colors
+@account-form-header-background: #eeeeee;
+
+// Dimensions
+@account-form-padding-sides: 20px;
+@account-form-border-radius: 10px;
+
+.account-form-wrapper {
+  position: relative;
+  padding: @account-form-padding-sides;
+  margin: 50px 0;
+  background: #ffffff;
+  box-sizing: border-box;
+  border: 1px solid #dddddd;
+  border-radius: @account-form-border-radius;
+
+  .account-form-header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 @account-form-padding-sides;
+    background: @account-form-header-background;
+    border-radius: @account-form-border-radius @account-form-border-radius 0 0;
+
+    h1 {
+      color: @default-header-text-color;
+      font-weight: 400;
+    }
+  }
+
+  &.disconnect {
+    p {
+      padding: 20px 0;
+    }
+  }
+
+  .account-form-body {
+    margin-top: 60px;
+  }
+
+  .help-block {
+    margin-top: 10px;
+  }
+}
+
+.btn-hydroshare {
+  color: @default-header-text-color;
+  background-color: #ffffff;
+  border-color: rgba(0,0,0,0.2);
+
+  &:hover {
+    color: #ffffff;
+    background-color: @hydroshare-color;
+    border-color: rgba(0,0,0,0.2);
+  }
+}
+
+.bi-hydroshare {
+  background-image:url(/static/tethys_portal/images/hs-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+
+.btn-arcgis {
+  color: white;
+  background-color: #0079C1;
+  border-color: rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: #005E95;
+  }
+}
+
+.bi-arcgis {
+  background-image: url(/static/tethys_portal/images/arcgis-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+
+.btn-okta {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+  border-color: rgba(0,0,0,0.2);
+
+  .bi-circle {
+    color: @okta-color;
+  }
+}
+
+.btn-okta:hover {
+  background-color: @okta-color;
+  color: #ffffff;
+
+  .bi-circle {
+    color: #ffffff;
+    font-weight: 600;
+  }
+}
+
+.btn-okta:focus {
+  background-color: @okta-color;
+  color: #ffffff;
+
+  .bi-circle {
+    color: #ffffff;
+    font-weight: 600;
+  }
+}
+
+.btn-onelogin {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+  border-color: rgba(0,0,0,0.2);
+
+  .bi-onelogin {
+    color: @onelogin-color;
+    background-image:url(/static/tethys_portal/images/onelogin_black_32.png);
+    background-repeat: no-repeat;
+    background-size: 75%;
+    background-position: 4px 5px;
+  }
+}
+
+.btn-onelogin:hover {
+  background-color: @onelogin-color;
+  color: #ffffff;
+
+  .bi-onelogin {
+    background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
+  }
+}
+
+.btn-onelogin:focus {
+  background-color: @onelogin-color;
+  color: #ffffff;
+
+  .bi-onelogin {
+    background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
+  }
+}
+
+.btn-windows {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.bi-windows {
+  color: @windows-color;
+}
+
+.btn-windows:hover {
+  background-color: @windows-color;
+  color: #ffffff;
+
+  .bi-windows {
+    color: #ffffff;
+  }
+}
+
+.btn-windows:focus {
+  background-color: @windows-color;
+  color: #ffffff;
+
+  .bi-windows {
+    color: #ffffff;
+  }
+}
+
+.btn-google {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.bi-google {
+  color: @google-color;
+}
+
+.btn-google:hover {
+  background-color: @google-color;
+
+  .bi-google {
+    color: #ffffff;
+  }
+}
+
+.btn-google:focus {
+  background-color: @google-color;
+
+  .bi-google {
+    color: #ffffff;
+  }
+}
+
+.btn-linkedin {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.bi-linkedin {
+  color: @linkedin-color;
+}
+
+.btn-linkedin:hover {
+  background-color: @linkedin-color;
+
+  .bi-linkedin {
+    color: #ffffff;
+  }
+}
+
+.btn-linkedin:focus {
+  background-color: @linkedin-color;
+
+  .bi-linkedin {
+    color: #ffffff;
+  }
+}
+
+.btn-facebook {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.bi-facebook {
+  color: @facebook-color;
+}
+
+.btn-facebook:hover {
+  background-color: @facebook-color;
+
+  .bi-facebook {
+    color: #ffffff;
+  }
+}
+
+.btn-facebook:focus {
+  background-color: @facebook-color;
+
+  .bi-facebook {
+    color: #ffffff;
+  }
+}
+
+.btn-custom-oauth {
+  color: @default-header-text-color;
+  background-color: #ffffff;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.btn-custom-oauth:hover {
+  color: #ffffff;
+  background-color: @custom-oauth-color;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.btn-custom-oauth {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.bi-unlock-alt {
+  color: @custom-oauth-color;
+}
+
+.btn-custom-oauth:hover {
+  background-color: @custom-oauth-color;
+
+  .bi-unlock-alt {
+    color: #ffffff;
+  }
+}
+
+.btn-custom-oauth:focus {
+  background-color: @custom-oauth-color;
+
+  .bi-unlock-alt {
+    color: #ffffff;
+  }
+}
+
+.btn-social {
+  position: relative;
+  padding-left: 44px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+  border-color: rgba(0,0,0,0.2);
+  
+  &>:first-child {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 32px;
+    line-height: 34px;
+    font-size: 1.6em;
+    text-align: center;
+    border-right: 1px solid rgba(0,0,0,0.2);
+  }
+}
+
+.btn-block+.btn-block {
+    margin-top: 10px;
+}
+
+.social-divide-or {
+  position: relative;
+  margin: 30px 0;
+  width: 100%;
+  text-align: center;
+
+
+  .line {
+    width: 100%;
+    height: 1px;
+    background-color: #dddddd;
+  }
+
+  .or {
+    position: absolute;
+    left: 50%;
+    top: -15px;
+    margin-left: -20px;
+    background-color: #ffffff;
+    padding: 0 10px;
+    font-size: 20px;
+    color: @default-header-text-color;
+  }
+}
+
+// Mobile styles
+@media(max-width: 992px) {
+
+  .account-form-wrapper {
+    margin: 0;
+  }
+}
+

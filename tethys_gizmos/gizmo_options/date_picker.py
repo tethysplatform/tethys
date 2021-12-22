@@ -77,7 +77,7 @@ class DatePicker(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "date_picker"
-    version = '1.7.1'
+    version = '1.9.0'
 
     @classmethod
     def cdn(cls):

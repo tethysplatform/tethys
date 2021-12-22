@@ -1,91 +1,114 @@
-{% extends "page.html" %}
+{% extends "base.html" %}
 
 {% load static site_settings %}
 
-{% block title %}- Welcome!{% endblock %}
+{% block title %}{{ block.super }} - Welcome!{% endblock %}
 
 {% block styles %}
   {{ block.super }}
-  <style>
+  <style id="header-styles">
     body {
-      background: {{ site_globals.background_color|default:'#efefef' }};
+		background: {{ site_globals.background_color }};
     }
 
-    .blurb h3 {
-      color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-    }
+	.hero-container {
+		margin-top: -206px;
+	}
 
-		.hero-message h2 {
-		  color: {{ site_globals.secondary_text_color|default:'#666666' }};
-		}
+	.hero-bg {
+		background-color: {{ site_globals.secondary_color }};
+		background-image: linear-gradient(345deg, {{ site_globals.primary_color }} 0%, {{ site_globals.secondary_color }} 100%); 
+	}
 
-		.features .feature h4 {
-		  color: {{ site_globals.secondary_text_color|default:'#666666' }};
-		}
+	.hero {
+		padding-top: 254px;
+		z-index: 100;
+	}
 
-		.features .feature span {
-		  color: {{ site_globals.secondary_text_color|default:'#666666' }};
-		}
+	.hero .hero-title {
+		color: {{ site_globals.primary_text_color }};
+	}
 
-		.hero-background {
-		  background-color: {{ site_globals.background_color|default:'#ffffff' }};
-		}
+	.hero .lead {
+		color: {{ site_globals.primary_text_color }};
+	}
 
-		.hero-message a:hover {
-		  background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-		}
+	.btn-sign-up {
+		display: block;
+		width: 150px;
+	}
+	
+	.feature-card {
+		background: none;
+		border: none;
+	}
+	
+	.feature-card .card-img-top {
+		max-width: 250px;
+	}
+
+	.feature-card .card-title {
+		color: {{ site_globals.secondary_text_color }};
+	}
+
+	.feature-card .card-text {
+		color: {{ site_globals.secondary_text_color }};
+	}
   </style>
+{% endblock %}
+
+{% block custom_styles %}
+  {{ block.super }}
   {{ site_globals.home_page_css|load_custom_css|safe }}
 {% endblock %}
 
 {% block content %}
-<section class="hero clearfix">
-	<div class="hero-background"></div>
-	<div class="bucket clearfix">
-		<div class="hero-message" style="margin-top: 0px;">
-			<h2>{% if site_globals.hero_text %}{{ site_globals.hero_text }}{% else %}Welcome to Tethys Portal,
-the hub for your apps.{% endif %}</h2>
-			{% if not user.is_authenticated and ENABLE_OPEN_SIGNUP %}
-			  <a href="{% url 'accounts:register' %}" class="action hero-action">Sign Up</a>
-			{% endif %}
+<div class="container-fluid hero-container hero-bg">
+	<section class="hero clearfix px-5 pb-5 text-center text-white">
+		<div class="row align-items-center">
+			<div class="col-md-7 mx-auto">
+				<h1 class="hero-title mb-3">{% if site_globals.hero_text %}{{ site_globals.hero_text }}{% else %}Welcome to Tethys Portal,
+		the hub for your apps.{% endif %}</h2>
+				<p class="lead mb-4">{% if site_globals.blurb_text %}{{ site_globals.blurb_text }}{% else %}Tethys Portal is designed to be customizable, so that you can host apps for your
+		organization. You can change everything on this page from the Home Page settings.{% endif %}</h3>
+				{% if not user.is_authenticated and ENABLE_OPEN_SIGNUP %}
+					<a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-sign-up mx-auto mt-5 mb-3">Sign Up</a>
+				{% endif %}
+			</div>
 		</div>
-	</div>
-</section>
-
-<section class="blurb clearfix" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
-	<div class="bucket clearfix">
-		<h3>{% if site_globals.blurb_text %}{{ site_globals.blurb_text }}{% else %}Tethys Portal is designed to be customizable, so that you can host apps for your
-organization. You can change everything on this page from the Home Page settings.{% endif %}</h3>
-	</div>
-</section>
+	</section>
+</div>
 
 <section class="features clearfix">
-	<div class="bucket clearfix">
-		<div class="feature one">
-			<img src="{% static site_globals.feature_1_image|default:'tethys_portal/images/placeholder.gif' %}" alt="">
-			<h4>{{ site_globals.feature_1_heading|default:"Feature 1" }}</h4>
-			<span>{{ site_globals.feature_1_body|default:"Use these features to brag about all of the things users can do with your instance of Tethys Portal." }}</span>
-		</div>
-		<div class="feature two">
-			<img src="{% static site_globals.feature_2_image|default:'tethys_portal/images/placeholder.gif' %}" alt="">
-			<h4>{{ site_globals.feature_2_heading|default:"Feature 2" }}</h4>
-			<span>{{ site_globals.feature_2_body|default:"Describe the apps and tools that your Tethys Portal provides and add custom pictures to each feature as a finishing touch." }}</span>
-		</div>
-		<div class="feature three">
-			<img src="{% static site_globals.feature_3_image|default:'tethys_portal/images/placeholder.gif' %}" alt="">
-			<h4>{{ site_globals.feature_3_heading|default:"Feature 3" }}</h4>
-			<span>{{ site_globals.feature_3_body|default:"You can change the color theme and branding of your Tethys Portal in a jiffy. Visit the Site Admin settings from the user menu and select General Settings." }}</span>
-		</div>
-	</div>
-</section>
-<section class="get-started clearfix">
-	<div class="get-started-background"></div>
-	<div class="bucket clearfix">
-		<div class="get-started-message">
-			{% if not user.is_authenticated %}
-			  <h2>{{ site_globals.call_to_action|default:"Ready to get started?" }}</h2>
-			  <a class="action hero-action" href="{% url 'accounts:login' %}">{{ site_globals.call_to_action_button|default:"Start Using Tethys!" }}</a>
-			{% endif %}
+	<div class="container">
+		<div class="row my-5">
+			<div class="col-md">
+				<div class="card feature-card feature-one text-center mb-3 mx-auto">
+					<img src="{% static site_globals.feature_1_image|default:'tethys_portal/images/placeholder.gif' %}" class="card-img-top mx-auto" alt="">
+					<div class="card-body">
+						<h5 class="card-title">{{ site_globals.feature_1_heading|default:"Feature 1" }}</h5>
+						<p class="card-text">{{ site_globals.feature_1_body|default:"Use these features to brag about all of the things users can do with your instance of Tethys Portal." }}</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md">
+				<div class="card feature-card feature-two text-center mb-3 mx-auto">
+					<img src="{% static site_globals.feature_2_image|default:'tethys_portal/images/placeholder.gif' %}" class="card-img-top mx-auto" alt="">
+					<div class="card-body">
+						<h5 class="card-title">{{ site_globals.feature_1_heading|default:"Feature 1" }}</h5>
+						<p class="card-text">{{ site_globals.feature_2_body|default:"Describe the apps and tools that your Tethys Portal provides and add custom pictures to each feature as a finishing touch." }}</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md">
+				<div class="card feature-card feature-three text-center mx-auto">
+					<img src="{% static site_globals.feature_3_image|default:'tethys_portal/images/placeholder.gif' %}" class="card-img-top mx-auto" alt="">
+					<div class="card-body">
+						<h5 class="card-title">{{ site_globals.feature_3_heading|default:"Feature 3" }}</h5>
+						<p class="card-text">{{ site_globals.feature_3_body|default:"You can change the color theme and branding of your Tethys Portal in a jiffy. Visit the Site Admin settings from the user menu and select General Settings." }}</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>

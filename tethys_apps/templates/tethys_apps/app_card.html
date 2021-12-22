@@ -1,0 +1,28 @@
+{% load static tags site_settings %}
+<div class="app-card-container position-relative" data-tags="{{ app|get_tag_class }}">
+    {% if not unconfigured %}
+    <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" {% if not app.show_in_apps_library %}title="Hidden"{% elif not app.enabled %}title="Disabled"{% else %}title="{{ app.name }}"{% endif %} href="{% if app.proxied %}{{ app.url }}{% else %}{% url app.index %}{% endif %}">
+    {% else %}
+    <a class="app-link-wrapper rounded d-block mt-4 unconfigured" title="Not Configured" href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
+    {% endif %}
+        <div class="card app-card text-center">
+            <div class="card-body">
+            {% if app.proxied %}
+                <img class="card-img-top" {% if app.icon %}src="{{ app.icon }}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+            {% else %}
+                <img class="card-img-top" {% if app.icon %}{% if 'http' in app.icon %}src="{{ app.icon }}"{% else %}src="{% static app.icon %}"{% endif %}{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} alt="">
+            {% endif %}
+                <h5 class="card-title app-title mt-2 mb-0">{{ app.name }}</h5>
+            </div>
+        </div>
+    </a>
+    {% if app.description %}
+    <div class="app-help-icon position-absolute top-0 end-0 p-1">
+        <i class="bi bi-info-circle"></i>
+    </div>
+    <div class="app-help-info position-absolute top-0 start-0 w-100 h-100 p-3 text-start rounded overflow-auto bg-white d-none">
+        <button type="button" class="btn-close float-end" aria-label="Close"></button>
+        <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
+    </div>
+    {% endif %}
+</div>

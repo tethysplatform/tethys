@@ -5,151 +5,9 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
- /* ===========================================
-   General and Typography
-   =========================================== */
-
-@import "mixins";
-
-h1, h2, h3, h4, h5, h6 {
-    margin: 10px 0;
-    font-family: inherit;
-    font-weight: bold;
-    line-height: 20px;
-    color: inherit;
-    text-rendering: optimizelegibility;
-}
-
-h1, h2, h3, h4 {
-    line-height: 1.5;
-}
-
-
-h1 {
-	font-size: 28px;
-	display: block;
-}
-
-h2 {
-  font-size: 36px;
-  line-height: 52px;
-  font-weight: 200;
-  .font-smoothing();
-  // text-align: center;
-  color: #666;
-}
-
-h3 {
-  font-size: 24px;
-  line-height: 36px;
-  font-weight: 200;
-  .font-smoothing();
-  // text-align: center;
-  color: #666;
-}
-
-h4 {
-  font-size: 21px;
-  font-weight: 400;
-  color: #666;
-}
-
-h5 {
-	
-}
-
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 10px 0;
-  color: #666666;
-  .font-smoothing();
-}
-
-h1 {
-  font-size: 40px;
-  font-weight: 500;
-  line-height: 60px;
-  color: #666666;
-}
-
-h2 {
-  font-size: 36px;
-  font-weight: 300;
-  line-height: 40px;
-}
-
-h3 {
-  font-size: 28px;
-  font-weight: 300;
-  line-height: 36px;
-}
-
-h4 {
-  font-size: 28px;
-  font-weight: 500;
-  line-height: 36px;
-}
-
-h5 {
-  font-size: 20px;
-  font-weight: 300;
-  line-height: 28px;
-}
-
-h6 {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 28px;
-}
-
-p {
-  font-size: 15px;
-  color: #666666;
-  .font-smoothing();
-}
-
-@media (max-width: 1050px) {
-  h2 {
-    font-size: 28px;
-    line-height: 1.4;
-  }
-}
-@media (max-width: 700px) {
-  h2 {
-    font-size: 24px;
-    line-height: 1.4;
-  }
-}
-
-html {
-  height: 100%;
-}
-
 body {
   position: relative;
   font-family: 'open sans', 'Myriad Pro', 'Lucida Grande', 'Helvetica', sans-serif;
-  background: #ffffff;
-  height: 100%;
-}
-
-section {
-  padding: 0 40px;
-}
-
-.bucket {
-  position: relative;
-  max-width: 1150px;
-  margin: 0 auto;
-  overflow: auto;
-}
-
-a.action {
-  border-radius: 5px;
-} 
-
-a:-webkit-any-link {
-  text-decoration: none;
-  cursor:auto;
 }
 
 a {
@@ -160,23 +18,13 @@ a {
 	}
 }
 
-/* This parent can be any width and height */
-.center-parent {
-  text-align: center;
-
-  /* The ghost, nudged to maintain perfect centering */
-  &:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em; /* Adjusts for spacing */
-  }
+#content {
+  position: relative;
+  min-height: 100%;
 }
 
-/* The element to be centered, can also be of any width and height */
-.centered {
-  display: inline-block;
-  vertical-align: middle;
-  width: 200px;
+.flash-messages {
+  left: 0;
+  top: 104px;
+  z-index: 200;
 }

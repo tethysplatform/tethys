@@ -1,38 +1,19 @@
-{% extends "page.html" %}
+{% extends "tethys_portal/accounts/base.html" %}
 
-{% block title %}- Clear Workspace Confirmation{% endblock %}
+{% load django_bootstrap5 %}
 
-{% block styles %}
-  {{ block.super }}
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#efefef' }};
-    }
+{% block title %}{{ block.super }} - Clear Workspace Confirmation{% endblock %}
 
-    a:hover {
-      cursor:pointer;
-    }
-  </style>
-{% endblock %}
 
-{% load bootstrap3 %}
 {% bootstrap_messages %}
-{% block content %}
-  <div class="row">
-    <div class="col-md-4 col-md-offset-4">
-      <div class="account-form-wrapper disconnect">
-        <div class="account-form-header">
-          <h1>Clear</h1>
-        </div>
-        <div class="account-form-body">
-          <form role="form" method="post" action="">
-            <p>Are you sure you want to clear your workspace in the {{ app_name }} app?</p>
-            {% csrf_token %}
-            <a href="{% url 'user:manage_storage' %}" class="btn btn-default">Cancel</a>
-            <button type="submit" id="clear-workspace-submit" class="btn btn-danger" name="clear-workspace-submit">Clear</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+
+{% block account_form_title %}Clear Workspace{% endblock %}
+
+{% block account_form_body %}
+  <form role="form" method="post" action="">
+    <p>Are you sure you want to clear your workspace in the {{ app_name }} app (this action cannot be undone)?</p>
+    {% csrf_token %}
+    <a href="{% url 'user:manage_storage' %}" class="btn btn-outline-secondary">Cancel</a>
+    <button type="submit" id="clear-workspace-submit" class="btn btn-danger" name="clear-workspace-submit">Clear</button>
+  </form>
 {% endblock %}

@@ -1,41 +1,41 @@
 {% load tethys_gizmos %}
 
-<table class="data_table_gizmo_view display{% if classes %} {{ classes }}{% endif %}" width="100%"
-{% if attributes %}
+<table class="data_table_gizmo_view table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if dark %} table-dark{% endif %}{% if classes %} {{ classes }}{% endif %}" width="100%"
+  {% if attributes %}
     {% for key, value in attributes.items %}
-        {{ key }}="{{ value }}"
+      {{ key }}="{{ value }}"
     {% endfor %}
-{% endif %}
+  {% endif %}
 
-{% if datatable_options %}
+  {% if datatable_options %}
     {% for key, value in datatable_options.items %}
         data-{{ key }}="{{ value }}"
     {% endfor %}
-{% endif %}
->
-<thead>
+  {% endif %}
+  >
+  <thead>
     <tr>
       {% for column_name in column_names %}
       <th>{{ column_name }}</th>
       {% endfor %}
     </tr>
-</thead>
-{% if footer %}
-<tfoot>
-    <tr>
-      {% for column_name in column_names %}
-      <th>{{ column_name }}</th>
-      {% endfor %}
-    </tr>
-</tfoot>
-{% endif %}
-<tbody>
+  </thead>
+  <tbody>
     {% for row in rows %}
-      <tr>
-        {% for column_value in row %}
-          <td>{{ column_value }}</td>
-        {% endfor %}
-      </tr>
+    <tr>
+      {% for column_value in row %}
+        <td>{{ column_value }}</td>
+      {% endfor %}
+    </tr>
     {% endfor %}
-</tbody>
+  </tbody>
+  {% if footer %}
+  <tfoot>
+    <tr>
+      {% for column_name in column_names %}
+      <th>{{ column_name }}</th>
+      {% endfor %}
+    </tr>
+  </tfoot>
+  {% endif %}
 </table>

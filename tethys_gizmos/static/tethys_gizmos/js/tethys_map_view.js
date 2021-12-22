@@ -294,9 +294,9 @@ var TETHYS_MAP_VIEW = (function() {
 //      var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
       if (base_map_labels.length >= 1) {
         var $map_element = $('#' + m_map_target);
-        var html = '<span class="dropdown" id="basemap_dropdown_container">' +
-                   '<button class="btn btn-sm btn-default dropdown-toggle" type="button" id="basemap_dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
-                   'Base Map <span class="caret"></span>' +
+        var html = '<span class="dropdown ol-control" id="basemap_dropdown_container">' +
+                   '<button class="btn btn-sm btn-light dropdown-toggle" title="Basemap" type="button" id="basemap_dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+                   '<i class="bi bi-layers-fill"></i>' +
                    '</button>' +
                    '<ul class="dropdown-menu">' +
                    '<li class="basemap-option" value="None">None <span class="current-basemap-label"></span></li>';
@@ -336,6 +336,9 @@ var TETHYS_MAP_VIEW = (function() {
         // Listen for the basemap change event
         $('.basemap-option').on('click', change_basemap);
 
+        // Add control to the map
+        let basemap_control = new ol.control.Control({element: document.getElementById('basemap_dropdown_container')});
+        m_map.addControl(basemap_control);
       }
     }
   }
@@ -435,11 +438,11 @@ var TETHYS_MAP_VIEW = (function() {
     var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
         INITIAL_STROKE_COLOR = '#ffcc33',
         INITIAL_POINT_FILL_COLOR = '#ffcc33',
-        BUTTON_SPACING = 30,
-        BUTTON_OFFSET_UNITS = 'px';
+        BUTTON_SPACING = 1.75,
+        BUTTON_OFFSET_UNITS = 'em';
 
     var controls_added = [],
-        button_left_offset = 136,
+        button_left_offset = 4.5,
         initial_drawing_mode = 'Point';
 
     var initial_features_obj, projection, format, proj_format, features = [];
@@ -608,8 +611,8 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Bind event
       m_drawing_source.on('addfeature', add_feature_callback);
-	  m_drawing_source.on('removefeature', delete_feature_callback);
-	  m_drawing_source.on('change', change_feature_callback);
+	    m_drawing_source.on('removefeature', delete_feature_callback);
+	    m_drawing_source.on('change', change_feature_callback);
 
       // Set initial drawing interaction
       if (is_defined(m_draw_options.initial) &&
@@ -1566,10 +1569,10 @@ var TETHYS_MAP_VIEW = (function() {
 
     html =  '<li class="legend-item">' +
               '<div class="legend-buttons">' +
-                '<a class="btn btn-default btn-legend-action zoom-control">' + title + '</a>' +
-                '<a class="btn btn-default legend-dropdown-toggle">' +
-                  '<span class="caret"></span>' +
-                  '<span class="sr-only">Toggle Dropdown</span>' +
+                '<a class="btn btn-light btn-legend-action zoom-control" title="' + title + '">' + title + '</a>' +
+                '<a class="btn btn-light legend-dropdown-toggle">' +
+                  '<i class="bi bi-caret-down-fill"></i>' +
+                  '<span class="visually-hidden">Toggle Dropdown</span>' +
                 '</a>' +
                 '<div class="tethys-legend-dropdown">' +
                   '<ul>' +
@@ -2195,8 +2198,8 @@ var TETHYS_MAP_VIEW = (function() {
 
     button = document.createElement('button');
     button.setAttribute('type', 'button');
-    button.setAttribute('data-toggle', 'tooltip');
-    button.setAttribute('data-placement', 'bottom');
+    button.setAttribute('data-bs-toggle', 'tooltip');
+    button.setAttribute('data-bs-placement', 'bottom');
     button.setAttribute('title', options.control_type);
     button_image = document.createElement('div');
     button_image.className = icon_class;
@@ -2219,7 +2222,7 @@ var TETHYS_MAP_VIEW = (function() {
       });
 
       // Set current button to active state
-      $(event.toElement).addClass('active');
+      $(this).children('.tethys-map-view-draw-icon').addClass('active');
     };
 
     // Bind switch action to click and touch events

@@ -108,7 +108,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Brand Image",
-                                    content="/tethys_portal/images/tethys-logo-75.png",
+                                    content="/tethys_portal/images/tethys-logo-25.png",
                                     date_modified=now)
 
         category.setting_set.create(name="Brand Image Height",
@@ -124,7 +124,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Apps Library Title",
-                                    content="Apps Library",
+                                    content="Apps",
                                     date_modified=now)
 
         category.setting_set.create(name="Primary Color",
@@ -156,7 +156,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Footer Copyright",
-                                    content="Copyright © 2019 Your Organization",
+                                    content=f"Copyright © {now:%Y} Your Organization",
                                     date_modified=now)
 
     elif category.name == 'Home Page':
@@ -240,3 +240,39 @@ def setting_defaults(category):
                                     date_modified=now)
 
     category.save()
+
+
+def tethys4_site_settings(apps, schema_editor):
+    """
+    Update the values of Site Settings for a new version of Tethys Platform.
+
+    Args:
+        version (str): Semantic version of Tethys Platform to update values for (e.g. '4.0.0').
+    """
+    # Update the brand image setting if still set at default
+    brand_image_setting = Setting.objects\
+        .filter(category__name="General Settings") \
+        .get(name="Brand Image")
+
+    if brand_image_setting.content == "/tethys_portal/images/tethys-logo-75.png":
+        brand_image_setting.content = "/tethys_portal/images/tethys-logo-25.png"
+        brand_image_setting.save()
+
+    # Update the app library title
+    app_library_setting = Setting.objects\
+        .filter(category__name="General Settings")\
+        .get(name="Apps Library Title")
+
+    if app_library_setting.content == "Apps Library":
+        app_library_setting.content = "Apps"
+        app_library_setting.save()
+
+    # Update the copyright if default
+    copyright_setting = Setting.objects\
+        .filter(category__name="General Settings")\
+        .get(name="Footer Copyright")
+
+    if copyright_setting.content == "Copyright © 2019 Your Organization":
+        now = timezone.now()
+        copyright_setting.content = f"Copyright © {now:%Y} Your Organization"
+        copyright_setting.save()

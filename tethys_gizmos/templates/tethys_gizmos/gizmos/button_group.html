@@ -1,34 +1,10 @@
-<div class="{% if vertical %}btn-group-vertical{% else %}btn-group{% endif %}{% if classes %} {{ classes }}{% endif %}"
+<div class="{% if vertical %}btn-group-vertical{% else %}btn-group{% endif %}{% if classes %} {{ classes }}{% endif %}" role="group"
     {% if attributes %}
          {% for key, value in attributes.items %}
              {{ key }}="{{ value }}"
          {% endfor %}
     {% endif %}>
 {% for button in buttons %}
-  {% if button.submit %}
-  
-  <button {% if button.name %}name="{{ button.name }}"{% endif %} class="btn{% if button.style %} btn-{{ button.style }}{% else %} btn-default{% endif %}{% if button.classes %} {{ button.classes }}{% endif %}" type='submit'
-          {% if button.attributes %}
-              {% for key, value in button.attributes.items %}
-                  {{ key }}="{{ value }}"
-              {% endfor %}
-          {% endif %}
-          {% if button.disabled %} disabled {% endif %}>
-      {% if button.icon %}<span class="{{ button.icon }}" ></span> {% endif %}{{ button.display_text }}
-  </button>
-  
-  {% else %}
-  
-  <a {% if button.name %}name="{{ button.name }}"{% endif %} class="btn{% if button.style %} btn-{{ button.style }}{% else %} btn-default{% endif %}{% if button.classes %} {{ button.classes }}{% endif %}" {% if button.href %} href="{{ button.href }}" {% endif %} role="button"
-          {% if button.attributes %}
-              {% for key, value in button.attributes.items %}
-                  {{ key }}="{{ value }}"
-              {% endfor %}
-          {% endif %}
-          {% if button.disabled %} disabled{% endif %}>
-    {% if button.icon %}<span class="{{ button.icon }}" ></span> {% endif %}{{ button.display_text }}
-  </a>
-  
-  {% endif %}
+  {% include 'tethys_gizmos/gizmos/button.html' with name=button.name display_text=button.display_text href=button.href submit=button.submit style=button.style classes=button.classes attributes=button.attributes disabled=button.disabled icon=button.icon %}
 {% endfor %}
 </div>

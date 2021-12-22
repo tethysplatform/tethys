@@ -17,113 +17,56 @@ var TETHYS_APPS_LIBRARY = (function() {
 	/************************************************************************
  	*                      MODULE LEVEL / GLOBAL VARIABLES
  	*************************************************************************/
- 	var public_interface,   // The public interface object that is returned by the module
- 	    msnry,              // Global masonry object
- 	    app_list_container, // Container with the app items in it
- 	    apps_library_url,    // App library url
- 	    app_item_selector;  // App item selector
-	var $win = $( window ); //For executing tags
+ 	var public_interface;   // The public interface object that is returned by the module
 
 	/************************************************************************
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
- 	var app_theme_effects, app_exit_handler, hex_to_rgb, launch_app;
+ 	var filter_apps;
 
 
  	/************************************************************************
  	*                    PRIVATE FUNCTION IMPLEMENTATIONS
  	*************************************************************************/
 
- 	launch_app = function(element, url) {
- 	    // Declare variables
- 	    var redirect_delay, transition_duration, transition_duration_string, secondary_margin_bottom;
+ 	filter_apps = function(e) {
+		let selected_tags = $(e.target).select2('data');
 
- 	    // Assign variables
- 	    transition_duration = 0.4; // seconds
- 	    redirect_delay = transition_duration * 1000; // milliseconds
- 	    transition_duration_string = transition_duration.toString() + 's';
+		$('.app-card-container').each(function(index, app_container) {
+			// If no selected tags, show all apps
+			if (selected_tags.length <= 0) {
+				$(app_container).parent('.col').removeClass('d-none');
+				return;
+			}
+			
+			// Hide apps with no tags
+			let app_tags_str = $(app_container).data('tags');
+			console.log('app_tags_str:');
+			console.log(app_tags_str);
+			if (app_tags_str.length <= 0) {
+				$(app_container).parent('.col').addClass('d-none');
+				console.log('No tags, hiding app and moving on!')
+				return;
+			}
 
- 	    secondary_margin_bottom = parseInt($('.tethys-secondary-header').css('margin-bottom')) + 300;
+			// Discover which apps have at least one of the selected tags
+			let app_tags_arr = app_tags_str.split(" ");
+			let has_at_least_one_tag = false;
+			for (let selected_tag of selected_tags) {
+				if (app_tags_arr.includes(selected_tag.id)) {
+					has_at_least_one_tag = true;
+					break;
+				}
+			}
 
-
- 	    // Delay loading app to allow transition
-        setTimeout(function(){
-          // Redirect to app home page
-          window.location = url;
-        }, redirect_delay);
-
-        // Hide the headers
-        $('.header-wrapper').addClass('with-transition');
-        $('.tethys-secondary-header').addClass('with-transition');
-
-        // Hide the headers
-        $('.header-wrapper').removeClass('show');
-        $('.tethys-secondary-header').removeClass('show');
-
-        // Drop the curtain
-        $('#app-library-curtain').addClass('show');
- 	};
-
- 	// Handle the app exit transitions in the app
- 	app_exit_handler = function() {
- 	    // Declare vars
- 	    var  referrer_no_protocol, referrer_no_host, transition_duration, transition_duration_string;
-
- 	    // Define transition timing
- 	    transition_duration = 0.4; // seconds
- 	    transition_duration_string = transition_duration.toString() + 's';
-
- 	    // Get the referrer url and strip off protocol
- 	    referrer_no_protocol = document.referrer.split('//')[1];
-
-        // Check if referrer exists and it contains our host
- 	    if (referrer_no_protocol && referrer_no_protocol.contains(location.host)) {
-            referrer_no_host = referrer_no_protocol.replace(location.host, '');
-
-            // If the referrer is not the apps library url but apps library url is included in the referrer
-            // then it is likely we exited from an app
-            if ( referrer_no_host !== apps_library_url && referrer_no_host.contains(apps_library_url) ) {
-                // Do the opposite of the launch app method (i.e.: have headers hidden and slide in)
-                $('.header-wrapper').addClass('with-transition');
-                $('.tethys-secondary-header').addClass('with-transition');
-            }
- 	    }
-
- 	    // Always show headers
- 	    $('.header-wrapper').addClass('show');
- 	    $('.tethys-secondary-header').addClass('show');
- 	};
-
- 	hex_to_rgb = function(hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    };
-
- 	// Apply app theme effects to app icon
- 	app_theme_effects = function() {
- 	    var app_item_selector;
-
- 	    //app_item_selector = '.app-container .color-effect';
- 	    app_item_selector = '.app-container';
-
- 	    $(app_item_selector).each(function() {
-            var alpha, theme_color_rgb, tint_string;
-            alpha = 0.5;
-
-            theme_color_rgb = hex_to_rgb($(this).attr('data-app-theme-color'));
-            tint_string = 'rgba(' + theme_color_rgb.r + ',' + theme_color_rgb.g + ',' + theme_color_rgb.b + ',' + alpha + ')';
-
-            // Apply theme effects
-            $(this).css('background-color', tint_string);
-
-            console.log(tint_string);
- 	    });
-
- 	};
+			// Hide apps that have at least one matching tag and show apps that do
+			if (has_at_least_one_tag) {
+				$(app_container).parent('.col').removeClass('d-none');
+			} else {
+				$(app_container).parent('.col').addClass('d-none');
+			}
+		});
+	};
 
 	/************************************************************************
  	*                        DEFINE PUBLIC INTERFACE
@@ -135,9 +78,7 @@ var TETHYS_APPS_LIBRARY = (function() {
 	 * NOTE: The functions in the public interface have access to the private
 	 * functions of the library because of JavaScript function scope.
 	 */
-	 public_interface = {
-	     launch_app: launch_app
-	 };
+	public_interface = {};
 
 	/************************************************************************
  	*                  INITIALIZATION / CONSTRUCTOR
@@ -153,95 +94,29 @@ var TETHYS_APPS_LIBRARY = (function() {
             };
         }
 
-	    // Get a handle on the app items container
-	    app_list_container = document.getElementById('app-list');
-	    app_item_selector = '.app-container';
-	    apps_library_url = '/apps/';
-
-	    // Apply app theme effects
-	    //app_theme_effects();
-
-		// Apply help-icon event to apps depending on device (touchscreen or not)
-		$('.app-help-info>p').each(function() {
-			if ($(this).text() != '') {
-				if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
-					$(this).parent().prev().on('click', function (e) {
-						e.stopPropagation();
-						$(this).next()
-							.removeClass('hidden')
-							.next().removeClass('hidden');
-					});
-					$(this).parent().next().on('click', function (e) {
-						e.stopPropagation();
-						$(this).addClass('hidden');
-						$(this).prev().addClass('hidden');
-					});
-				} else {
-					$($(this).parent().prev().children([0])).on('mouseenter', function (e) {
-						e.stopPropagation();
-						$(this).parent().next()
-							.removeClass('hidden');
-					});
-					$(this).parent().on('mouseleave', function (e) {
-						e.stopPropagation();
-						$(this)
-							.scrollTop(0)
-							.addClass('hidden')
-					});
-				}
-			} else {
-				$($(this).parent().prev().children()[0]).remove();
-			}
-		});
-
-	    // The Tethys apps library page uses masonry.js to accomplish the Pinterest-like stacking of the app icons
-	    // Initialize the msnry object if there are any apps in the list.
-	    if ( $(app_item_selector).length > 0 ) {
-          msnry = new Masonry( app_list_container, {
-            // options
-            columnWidth: 240,
-            itemSelector: app_item_selector
-          });
-
-          // If the app icon images take some time to load, it may mess up the masonry formatting. This modules uses the
-          // imagesloaded.js project to reformat the masonry after all the images have loaded.
-          imagesLoaded( app_list_container, function() {
-            msnry.layout();
-          });
-        }
-
-        // Check for app exit
-        // This must happen or header of library page will not load appropriately
-        app_exit_handler();
-
-		//Function for executing the filters/tags
-		var isotopeContainer = $('.isotopeContainer');
-		if( !isotopeContainer.length || !jQuery().isotope ) return;
-		$win.on('load', function() {
-			var $isotopeContainer = $('.isotopeContainer').imagesLoaded( function() {
-                isotopeContainer.isotope({
-                    itemSelector: '.isotopeSelector',
-                    animationEngine:'best-available',
-                    animationOptions:{
-                        duration: '800'
-                    },
-                    containerStyle:{
-                        position:'relative',
-                        overflow:'visible'
-                    },
-                });
-            });
-
-		    $('.isotopeFilters').on( 'click', 'a', function(e) {
-				$('.isotopeFilters').find('.active').removeClass('active');
-				$(this).parent().addClass('active');
-				var filterValue = $(this).attr('data-filter');
-				isotopeContainer.isotope({ filter: filterValue });
-				e.preventDefault();
+		// Apply help-icon click event 
+		$('.app-help-icon').each(function(){
+			let info_icon = this;
+			let info_text = $(info_icon).siblings('.app-help-info');
+			$(info_icon).on('click', function(e) {
+				e.stopPropagation();
+				info_text.removeClass('d-none');
+			});
+			$(info_text).children('.btn-close').on('click', function(e) {
+				e.stopPropagation();
+				info_text.addClass('d-none');
 			});
 		});
-	});
 
+		// Initialize tag search select2
+		$('.tag-search-field').select2({
+			placeholder: "Filter by tag",
+		});
+
+		// Bind to the select2 change event
+		$('.tag-search-field').on('change.select2', filter_apps);
+
+	});
 	return public_interface;
 
 }()); // End of package wrapper

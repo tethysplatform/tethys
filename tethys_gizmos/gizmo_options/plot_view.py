@@ -1,4 +1,5 @@
 # coding=utf-8
+from tethys_apps.dependencies import dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
@@ -10,6 +11,9 @@ class PlotViewBase(TethysGizmoOptions):
     Plot view classes inherit from this class.
     """
     gizmo_name = "plot_view"
+    version_d3 = dependencies['d3']['version']
+    version_d3_tip = dependencies['d3-tip']['version']
+    version_highcharts = dependencies['highcharts']['version']
 
     def __init__(self, width='500px', height='500px', engine='d3'):
         """
@@ -27,17 +31,17 @@ class PlotViewBase(TethysGizmoOptions):
         self.engine = engine
         self.plot_object = PlotObject()
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/highcharts/js/highcharts.js',
-                'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
-                'tethys_gizmos/vendor/highcharts/js/modules/exporting.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
-                'tethys_gizmos/vendor/d3_tooltip/d3.tip.v0.6.3.js')
+        return (f'https://cdnjs.cloudflare.com/ajax/libs/highcharts/{cls.version_highcharts}/highcharts.js',
+                f'https://cdnjs.cloudflare.com/ajax/libs/highcharts/{cls.version_highcharts}/highcharts-more.js',
+                f'https://cdnjs.cloudflare.com/ajax/libs/highcharts/{cls.version_highcharts}/modules/exporting.js',
+                f'https://cdnjs.cloudflare.com/ajax/libs/d3/{cls.version_d3}/d3.min.js',
+                f'https://cdnjs.cloudflare.com/ajax/libs/d3-tip/{cls.version_d3_tip}/d3-tip.min.js')
 
     @staticmethod
     def get_gizmo_js():
@@ -159,8 +163,8 @@ class LinePlot(PlotViewBase):
         )
 
         context = {
-                    'line_plot_view': line_plot_view,
-                  }
+            'line_plot_view': line_plot_view,
+        }
 
     **Template Example**
 
@@ -269,8 +273,8 @@ class PolarPlot(PlotViewBase):
         )
 
         context = {
-                    'web_plot': web_plot,
-                  }
+            'web_plot': web_plot,
+        }
 
     **Template Example**
 
@@ -404,8 +408,8 @@ class ScatterPlot(PlotViewBase):
         )
 
         context = {
-                    'scatter_plot_view': scatter_plot_view,
-                  }
+            'scatter_plot_view': scatter_plot_view,
+        }
 
     **Template Example**
 
@@ -494,8 +498,8 @@ class PiePlot(PlotViewBase):
         )
 
         context = {
-                    'pie_plot_view': pie_plot_view,
-                  }
+            'pie_plot_view': pie_plot_view,
+        }
 
     **Template Example**
 
@@ -595,8 +599,8 @@ class BarPlot(PlotViewBase):
         )
 
         context = {
-                    'bar_plot_view': bar_plot_view,
-                  }
+            'bar_plot_view': bar_plot_view,
+        }
 
     **Template Example**
 
@@ -738,8 +742,8 @@ class TimeSeries(PlotViewBase):
         )
 
         context = {
-                    'timeseries_plot': timeseries_plot,
-                  }
+            'timeseries_plot': timeseries_plot,
+        }
 
     **Template Example**
 
@@ -864,8 +868,8 @@ class AreaRange(PlotViewBase):
 
 
         context = {
-                    'area_range_plot_object': area_range_plot_object,
-                  }
+            'area_range_plot_object': area_range_plot_object,
+        }
 
     **Template Example**
 
@@ -984,8 +988,8 @@ class HeatMap(PlotViewBase):
 
 
         context = {
-                    'heat_map_plot': heat_map_plot,
-                  }
+            'heat_map_plot': heat_map_plot,
+        }
 
     **Template Example**
 

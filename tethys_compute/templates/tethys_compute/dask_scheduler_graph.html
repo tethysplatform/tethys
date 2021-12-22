@@ -1,9 +1,9 @@
-{% extends "page.html" %}
+{% extends "base.html" %}
 
 {% load static tethys_gizmos %}
 
 
-{% block title %} - Dask Scheduler{% endblock %}
+{% block title %}{{ block.super }} - Dask Scheduler{% endblock %}
 
 {% block scripts %}
   {{ block.super }}

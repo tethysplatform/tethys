@@ -7,7 +7,16 @@ class TestTags(unittest.TestCase):
     def setUp(self):
         # app_list
         self.app_names = ['app1', 'app2', 'app3', 'app4', 'app5', 'app6']
-        self.tag_names = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6']
+        self.tag_names = ['tag1', 'tag_2', 'tag 3', 'tag four', 'Tag Five', 'tag6']
+        self.tag_classes = ['tag1', 'tag_2', 'tag-3', 'tag-four', 'tag-five', 'tag6']
+        self.tag_pairs = [
+            ('tag1', 'Tag1'),
+            ('tag_2', 'Tag_2'),
+            ('tag-3', 'Tag 3'),
+            ('tag-four', 'Tag Four'),
+            ('tag-five', 'Tag Five'),
+            ('tag6', 'Tag6'),
+        ]
 
         # Object apps
         self.mock_object_apps = {'configured': []}
@@ -27,20 +36,22 @@ class TestTags(unittest.TestCase):
         pass
 
     def test_get_tag_class(self):
-        ret_tag_list = t.get_tag_class(self.mock_object_apps['configured'][-1])
-        self.assertEqual(' '.join(sorted(self.tag_names)), ret_tag_list)
+        ret_tag_str = t.get_tag_class(self.mock_object_apps['configured'][-1])
+        ret_tag_list = ret_tag_str.split(' ')
+        self.assertEqual(sorted(self.tag_classes), sorted(ret_tag_list))
 
     def test_get_tag_class_dict(self):
-        ret_tag_list = t.get_tag_class(self.mock_dict_apps['configured'][-1])
-        self.assertEqual(' '.join(sorted(self.tag_names)), ret_tag_list)
+        ret_tag_str = t.get_tag_class(self.mock_dict_apps['configured'][-1])
+        ret_tag_list = ret_tag_str.split(' ')
+        self.assertEqual(sorted(self.tag_classes), sorted(ret_tag_list))
 
     def test_get_tags_from_apps(self):
         ret_tag_list = t.get_tags_from_apps(self.mock_object_apps)
-        self.assertEqual(sorted(self.tag_names), sorted(ret_tag_list))
+        self.assertEqual(sorted(self.tag_pairs), sorted(ret_tag_list))
 
     def test_get_tags_from_apps_dict(self):
         ret_tag_list = t.get_tags_from_apps(self.mock_dict_apps)
-        self.assertEqual(sorted(self.tag_names), sorted(ret_tag_list))
+        self.assertEqual(sorted(self.tag_pairs), sorted(ret_tag_list))
 
     def test_get_tags_from_apps_object_disabled(self):
         self.mock_object_apps['configured'].append(mock.MagicMock(tags='disabled', enabled=False))

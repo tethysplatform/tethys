@@ -13,16 +13,16 @@
 {{ '{%' }} block app_title {{ '%}' }}{{ '{{' }} tethys_app.name {{ '}}' }}{{ '{%' }} endblock {{ '%}' }}
 
 {{ '{%' }} block app_navigation_items {{ '%}' }}
-  <li class="title">App Navigation</li>
-  <li class="active"><a href="">Home</a></li>
-  <li><a href="">Jobs</a></li>
-  <li><a href="">Results</a></li>
-  <li class="title">Steps</li>
-  <li><a href="">1. The First Step</a></li>
-  <li><a href="">2. The Second Step</a></li>
-  <li><a href="">3. The Third Step</a></li>
-  <li class="separator"></li>
-  <li><a href="">Get Started</a></li>
+  <li class="nav-item title">App Navigation</li>
+  <li class="nav-item active"><a class="nav-link" href="">Home</a></li>
+  <li class="nav-item"><a class="nav-link" href="">Jobs</a></li>
+  <li class="nav-item"><a class="nav-link" href="">Results</a></li>
+  <li class="nav-item title">Steps</li>
+  <li class="nav-item"><a class="nav-link" href="">1. The First Step</a></li>
+  <li class="nav-item"><a class="nav-link" href="">2. The Second Step</a></li>
+  <li class="nav-item"><a class="nav-link" href="">3. The Third Step</a></li>
+  <li class="nav-item separator"></li>
+  <li class="nav-item"><a class="nav-link" href="">Get Started</a></li>
 {{ '{%' }} endblock {{ '%}' }}
 
 {{ '{%' }} block app_content {{ '%}' }}

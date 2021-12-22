@@ -88,7 +88,7 @@ class Button(TethysGizmoOptions):
         display_text(str): Display text that appears on the button.
         name(str): Name of the input element that will be used for form submission.
         style(str): Name of the input element that will be used for form submission.
-        icon(str): Name of a valid Twitter Bootstrap icon class (see the Bootstrap `glyphicon reference <http://getbootstrap.com/components/#glyphicons-glyphs>`_).
+        icon(str): Name of a valid Bootstrap Icon (see `Bootstrap Icons <https://icons.getbootstrap.com>`_).
         href(str): Link for anchor type buttons.
         submit(bool): Set this to true to make the button a submit type button for forms.
         disabled(bool): Set the disabled state.
@@ -105,7 +105,7 @@ class Button(TethysGizmoOptions):
         map_button = Button(
             display_text='',
             name='map-button',
-            icon='glyphicon glyphicon-globe',
+            icon='globe',
             style='info',
             attributes={
                 'data-toggle':'tooltip',
@@ -117,7 +117,7 @@ class Button(TethysGizmoOptions):
         save_button = Button(
             display_text='',
             name='save-button',
-            icon='glyphicon glyphicon-floppy-disk',
+            icon='save',
             style='success',
             attributes={
                 'data-toggle':'tooltip',
@@ -129,7 +129,7 @@ class Button(TethysGizmoOptions):
         edit_button = Button(
             display_text='',
             name='edit-button',
-            icon='glyphicon glyphicon-edit',
+            icon='pen',
             style='warning',
             attributes={
                 'data-toggle':'tooltip',
@@ -141,7 +141,7 @@ class Button(TethysGizmoOptions):
         remove_button = Button(
             display_text='',
             name='remove-button',
-            icon='glyphicon glyphicon-remove',
+            icon='trash',
             style='danger',
             attributes={
                 'data-toggle':'tooltip',

@@ -25,11 +25,11 @@ class TestSelectInput(unittest.TestCase):
         self.assertEqual(options, result['options'])
         self.assertEqual(initial, result['initial'])
 
-        self.assertIn('.js', gizmo_select_input.SelectInput.get_vendor_js()[0])
-        self.assertNotIn('.css', gizmo_select_input.SelectInput.get_vendor_js()[0])
+        self.assertTrue(gizmo_select_input.SelectInput.get_vendor_js()[0].endswith('.js'))
+        self.assertFalse(gizmo_select_input.SelectInput.get_vendor_js()[0].endswith('.css'))
 
-        self.assertIn('.css', gizmo_select_input.SelectInput.get_vendor_css()[0])
-        self.assertNotIn('.js', gizmo_select_input.SelectInput.get_vendor_css()[0])
+        self.assertTrue(gizmo_select_input.SelectInput.get_vendor_css()[0].endswith('.css'))
+        self.assertFalse(gizmo_select_input.SelectInput.get_vendor_css()[0].endswith('.js'))
 
-        self.assertIn('.js', gizmo_select_input.SelectInput.get_gizmo_js()[0])
-        self.assertNotIn('.css', gizmo_select_input.SelectInput.get_gizmo_js()[0])
+        self.assertTrue(gizmo_select_input.SelectInput.get_gizmo_js()[0].endswith('.js'))
+        self.assertFalse(gizmo_select_input.SelectInput.get_gizmo_js()[0].endswith('.css'))

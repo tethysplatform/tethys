@@ -1,28 +1,31 @@
-<div class="form-group {% if error %} has-error {% endif %}">
-  {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
-  <div class="{% if prepend or icon_prepend or append or icon_append %}input-group{% endif %}">
-      {% if prepend %}
-        <div class="input-group-addon">{{ prepend }}</div>
-      {% elif icon_prepend %}
-        <div class="input-group-addon"><span class="{{ icon_prepend }}"></span></div>
-      {% endif %}
-      <input id="{{ name }}" class="form-control{% if classes %} {{ classes }}{% endif %}"
-           name="{{ name }}"
-           {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
-           {% if initial %}value="{{ initial }}"{% endif %}
-           {% if disabled %}disabled{% endif %}
-           {% if attributes %}
-               {% for key, value in attributes.items %}
-                  {{ key }}="{{ value }}"
-               {% endfor %}
-           {% endif %}>
-      {% if append %}
-        <div class="input-group-addon">{{ append }}</div>
-      {% elif icon_append %}
-        <div class="input-group-addon"><span class="{{ icon_append }}"></span></div>
-      {% endif %}
-  </div>
-  {% if error %}
-  <p class="help-block">{{ error }}</p>
-  {% endif %}
+{% if display_text %}
+<label class="form-label" for="{{ name }}">{{ display_text }}</label>
+{% endif %}
+<div class="input-group{% if error or success %} has-validation{% endif %}">
+    {% if prepend %}
+      <div class="input-group-text">{{ prepend }}</div>
+    {% elif icon_prepend %}
+      <div class="input-group-text"><i class="bi bi-{{ icon_prepend }}"></i></div>
+    {% endif %}
+    <input id="{{ name }}" class="form-control{% if error %} is-invalid{% endif %}{% if success %} is-valid{% endif %}{% if classes %} {{ classes }}{% endif %}"
+          name="{{ name }}"
+          {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+          {% if initial %}value="{{ initial }}"{% endif %}
+          {% if disabled %}disabled{% endif %}
+          {% if attributes %}
+              {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+              {% endfor %}
+          {% endif %}>
+    {% if append %}
+      <div class="input-group-text">{{ append }}</div>
+    {% elif icon_append %}
+      <div class="input-group-text"><i class="bi bi-{{ icon_append }}"></i></div>
+    {% endif %}
+    {% if error %}
+    <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="valid-feedback">{{ success }}</div>
+    {% endif %}
 </div>

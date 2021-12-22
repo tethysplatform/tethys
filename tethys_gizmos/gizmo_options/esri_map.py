@@ -1,3 +1,4 @@
+from tethys_apps.dependencies import dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 __all__ = ['ESRIMap', 'EMView', 'EMLayer']
@@ -21,11 +22,37 @@ class ESRIMap(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_sdk.gizmos import ESRIMapView
+        from tethys_sdk.gizmos import EMView, EMLayer, ESRIMap
 
-        esri_map_view_options = {'height': '700px',
-                                   'width': '100%',
-                                   'basemap':'topo'}
+        # Set initial view
+        esri_map_view = EMView(
+            center=[-100, 40],
+            zoom=4
+        )
+
+        # Define layers
+        esri_layer = EMLayer(
+            type='FeatureLayer',
+            url='https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_States_Generalized/FeatureServer'
+        )
+
+        vector_tile = EMLayer(
+            type='ImageryLayer',
+            url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer'
+        )
+
+        esri_map = ESRIMap(
+            height='700px',
+            width='100%',
+            basemap='topo',
+            view=esri_map_view,
+            layers=[vector_tile, esri_layer]
+        )
+
+        context = {
+            'docs_endpoint': docs_endpoint,
+            'esri_map': esri_map
+        }
 
         # TEMPLATE
 
@@ -33,6 +60,7 @@ class ESRIMap(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "esri_map"
+    version = dependencies['arcgis']['version']
 
     def __init__(self, height='100%', width='100%', basemap='topo', view={'center': [-100, 40], 'zoom': 2}, layers=[]):
         """
@@ -47,13 +75,13 @@ class ESRIMap(TethysGizmoOptions):
         self.view = view
         self.layers = layers
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def get_vendor_js(cls):
         """
         Javascript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        esri_javascript_library = 'https://js.arcgis.com/4.2/'
+        esri_javascript_library = f'https://js.arcgis.com/{cls.version}/'
         return (esri_javascript_library,)
 
     @staticmethod
@@ -64,33 +92,33 @@ class ESRIMap(TethysGizmoOptions):
         """
         return ('tethys_gizmos/js/esri_map.js',)
 
-    @staticmethod
-    def get_vendor_css():
+    @classmethod
+    def get_vendor_css(cls):
         """
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return ('https://js.arcgis.com/4.2/esri/css/main.css',)
+        return (f'https://js.arcgis.com/{cls.version}/esri/css/main.css',)
 
 
 class EMView(SecondaryGizmoOptions):
     """
-       EMView objects are used to define the initial view of the ESRI Map View. The initial view is set by specifying a center and a zoom level.
+    EMView objects are used to define the initial view of the ESRI Map View. The initial view is set by specifying a center and a zoom level.
 
-       Attributes:
-           center(list): An array with the coordinates of the center point of the initial view.
-           zoom(int or float): The zoom level for the initial view.
+    Attributes:
+        center(list): An array with the coordinates of the center point of the initial view.
+        zoom(int or float): The zoom level for the initial view.
 
-       Example
+    Example
 
-       ::
+    ::
 
-           view_options = EMView(
-               center=[-100, 40],
-               zoom=3.5,
-           )
+        view_options = EMView(
+            center=[-100, 40],
+            zoom=3.5,
+        )
 
-       """  # noqa: E501
+    """  # noqa: E501
     def __init__(self, center, zoom):
         """
         Constructor
@@ -114,13 +142,18 @@ class EMLayer(SecondaryGizmoOptions):
 
     ::
 
-    #Define ArcGIS FeatureLayer
+        # Define ArcGIS FeatureLayer
 
-    esri_feature_layer = EMLayer(type='FeatureLayer', url='http://geoserver.byu.edu/arcgis/rest/services/Alabama_Flood/Flood_45/MapServer/0')
+        esri_feature_layer = EMLayer(
+            type='FeatureLayer',
+            url='http://geoserver.byu.edu/arcgis/rest/services/Alabama_Flood/Flood_45/MapServer/0'
+        )
 
-    #Define ArcGIS ImageLayer
-
-    esri_image_layer = EMLayer(type='ImageryLayer', url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
+        # Define ArcGIS ImageLayer
+        esri_image_layer = EMLayer(
+            type='ImageryLayer',
+            url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer'
+        )
 
     """  # noqa: E501
     def __init__(self, type, url):

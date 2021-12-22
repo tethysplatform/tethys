@@ -3,10 +3,10 @@
 
 {# Allows custom attributes to be added to the html tag #}
 {% block htmltag %}
-<!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
-<!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
+<!--[if IE 7]> <html lang="en" class="ie ie7 h-100"> <![endif]-->
+<!--[if IE 8]> <html lang="en"  class="ie ie8 h-100"> <![endif]-->
+<!--[if IE 9]> <html lang="en"  class="ie9 h-100"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="h-100"> <!--<![endif]-->
 {% endblock %}
 
   {# Allows custom attributes to be added to the head tag #}
@@ -42,14 +42,7 @@
     {% endcomment %}
 
     <title>
-      {% if site_globals.site_title %}
-         {{ site_globals.site_title }}
-      {% elif site_globals.brand_text %}
-        {{ site_globals.brand_text }}
-      {% else %}
-        Tethys
-      {% endif %}
-      {% block title %}{% endblock %}
+      {% block title %}{{ tethys_app.name }}{% endblock %}
     </title>
 
     {% comment "links explanation" %}
@@ -90,36 +83,43 @@
     {% endcomment %}
 
     {% block styles %}
-      <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/{{ tethys.bootstrap.version }}/css/bootstrap.min.css" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
+      <link href="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/css/bootstrap.min.css" rel="stylesheet" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
+      <link href="//cdn.jsdelivr.net/npm/bootstrap-icons@{{ tethys.bootstrap_icons.version }}/font/bootstrap-icons.css" rel="stylesheet" >
       {% block app_base_styles %}
         <link href="{% static 'tethys_apps/css/app_base.min.css' %}" rel="stylesheet" />
       {% endblock %}
       {% if tethys_app.enable_feedback %}
         <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
       {% endif %}
+      <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
       {% gizmo_dependencies global_css %}
+      <style>
+        #app-content-wrapper #app-content #app-navigation .nav li a.active {
+          background: {{ tethys_app.color|default:'#1b95dc' }};
+        }
+      </style>
     {% endblock %}
 
     {% block global_scripts %}
       <script src="//code.jquery.com/jquery-{{ tethys.jquery.version }}.min.js" integrity="{{ tethys.jquery.integrity }}" crossorigin="anonymous"></script>
-      <script src="//stackpath.bootstrapcdn.com/bootstrap/{{ tethys.bootstrap.version }}/js/bootstrap.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
+      <script src="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/js/bootstrap.bundle.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
       {% gizmo_dependencies global_js %}
     {% endblock %}
 
     {% block session_timeout_modal %}
       {% include 'session_security/all.html' %}
-      <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/session_security_override.min.css' %}"  rel="stylesheet" />
     {% endblock %}
 
     {% analytical_head_bottom %}
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
-  <body {% block bodytag %}{% endblock %}>
+  <body {% block bodytag %}class="h-100"{% endblock %}>
     {% analytical_body_top %}
 
     {% block app_content_wrapper_override %}
-      <div id="app-content-wrapper" class="show-nav">
+      <div id="app-content-wrapper" class="{% block show_nav_override %}show-nav{% endblock %}">
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
             <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
@@ -150,20 +150,20 @@
                   {% block login_button_override %}
                     {% if not request.user.is_authenticated %}
                     <div class="header-button login-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'accounts:login' %}?next={{request.path}}');"data-toggle="tooltip" data-placement="bottom" title="Log In">Log In</a>
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'accounts:login' %}?next={{request.path}}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Log In">Log In</a>
                     </div>
                     {%  endif %}
                   {% endblock %}
                   {% block settings_button_override %}
                       {% if request.user.is_staff %}
                       <div class="header-button settings-button">
-                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-toggle="tooltip" data-placement="bottom" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings"><i class="bi bi-gear"></i></a>
                       </div>
                       {%  endif %}
                   {% endblock %}
                   {% block exit_button_override %}
                     <div class="header-button exit-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-toggle="tooltip" data-placement="bottom" title="Exit">x</a>
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
                     </div>
                   {% endblock %}
               </div>
@@ -173,35 +173,11 @@
         {% endblock %}
         {% block app_content_override %}
           <div id="app-content">
-            {% block flash %}
-              {% if messages %}
-                <div class="flash-messages">
-                  {% comment "flash_messages explanation" %}
-                    Use the flash messages block to display temporary feedback to the user. Pass
-                    a list of dictionaries called "flash_messages". Each dictionary should have the
-                    keys "category" and "text". The category can be any of: "success", "info",
-                    "warning", and "danger". The category is used to style the message. The text is
-                    the text of the message to be displayed. The alerts that will be displayed are
-                    dismissible. To create custom alerts, override the "flash" block.
-                  {% endcomment %}
-
-                  {% for message in messages %}
-                    <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
-                      <button type="button" class="close" data-dismiss="alert">
-                        <span aria-hidden="true">&times;</span>
-                        <span class="sr-only">Close</span>
-                      </button>
-                      {{ message }}
-                    </div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            {% endblock %}
             {# Off canvas navigation menu #}
             {% block app_navigation_override %}
               <div id="app-navigation">
                 {% block app_navigation %}
-                  <ul class="nav nav-pills nav-stacked">
+                  <ul class="nav nav-pills flex-column">
                     {% block app_navigation_items %}{% endblock %}
                   </ul>
                 {% endblock %}
@@ -240,6 +216,28 @@
     {% block after_app_content %}
     {% block modals %}
     {% endblock %}
+    {% endblock %}
+
+    {% block flash %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% comment "flash_messages explanation" %}
+            Use the flash messages block to display temporary feedback to the user. Pass
+            a list of dictionaries called "flash_messages". Each dictionary should have the
+            keys "category" and "text". The category can be any of: "success", "info",
+            "warning", and "danger". The category is used to style the message. The text is
+            the text of the message to be displayed. The alerts that will be displayed are
+            dismissible. To create custom alerts, override the "flash" block.
+          {% endcomment %}
+
+          {% for message in messages %}
+          <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show mx-auto" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endblock %}
 
     {% block terms-of-service-override %}

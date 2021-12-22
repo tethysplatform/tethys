@@ -2,7 +2,7 @@
 Prior Release Notes
 *******************
 
-**Last Updated:** August 2020
+**Last Updated:** December 2021
 
 Information about prior releases is shown here.
 
@@ -10,14 +10,14 @@ Release 3.3
 ===========
 
 Select Input Gizmo
-==================
+------------------
 
 * Add ``id`` attribute to the ``form-group`` of the ``SelectInput`` gizmo to allow it to be selected in custom JavaScript.
 
 See: `Pull Request 616 <https://github.com/tethysplatform/tethys/pull/616>`_
 
 Cesium Map View Gizmo
-=====================
+---------------------
 
 * Add support for time-enabled layers for CesiumMapView gizmo via the ``MVLayer`` specification.
 * This is done by listing timesteps corresponding the times of a time-enabled WMD layer via the ``times`` parameter of ``MVLayer``.
@@ -26,7 +26,7 @@ Cesium Map View Gizmo
 See: :ref:`gizmo_mvlayer`
 
 Single Sign On
-==============
+--------------
 
 * Single Sign On / Social Login via ArcGIS Online / Enterprise Portal now supported. See: :ref:`social_auth_arcgis`.
 * Add clarification and fix typos in documentation for OneLogin SSO. See: :ref:`social_auth_onelogin`.
@@ -34,7 +34,7 @@ Single Sign On
 See: :ref:`single_sign_on_config`
 
 Multi-Tenant SSO
-================
+----------------
 
 * Implemented Multi-Tenant SSO support for providers that support it.
 * Allows Tethys Portals to use authentication from different tenants of the same authentication service.
@@ -44,7 +44,7 @@ Multi-Tenant SSO
 See: :ref:`multi_tenant_sso_config`
 
 User Profile and Settings
-=========================
+-------------------------
 
 * Removed the username from the URL pattern for User Profile and Settings pages to address security concern.
 * Viewing other user's profiles is no longer possible.
@@ -53,7 +53,7 @@ User Profile and Settings
 See: :ref:`tethys_user_pages`
 
 Password Reset
-==============
+--------------
 
 * Changes configuration for Password Reset feature of Tethys Portal to be the same as the configuration for MFA email support.
 * This allows the emails sent by the Password Reset and MFA features to be sent from the same email address and alias.
@@ -61,7 +61,7 @@ Password Reset
 See: :ref:`setup_email_capabilities`
 
 Tethys App Settings
-===================
+-------------------
 
 * Added ``set_custom_setting method`` to ``TethysAppBase`` to allow setting ``CustomSettings`` programmatically.
 * Added a UUID type to ``CustomSetting`` model.
@@ -70,14 +70,14 @@ Tethys App Settings
 See: :ref:`app_base_class_api`
 
 Tethys App Admin Settings
-=========================
+-------------------------
 
 * Adds ``color`` parameter to the App Settings admin page to allow portal admins to change app color.
 
 See: `Issue 656 <https://github.com/tethysplatform/tethys/issues/656>`_
 
 Bug Fixes
-=========
+---------
 
 * Resolves issue with default Gravatar image not displaying for users who haven't defined an email address. See: `Issue 637 <https://github.com/tethysplatform/tethys/issues/637>`_.
 * Fixes an issue where renaming an installed app in the admin pages would cause the app throw 500 errors and no longer be accessible. See: `Issue 653 <https://github.com/tethysplatform/tethys/issues/653>`_.
@@ -92,7 +92,7 @@ Release 3.2
 ===========
 
 Multi-Factor Authentication
-===========================
+---------------------------
 
 * Implemented Multi Factor Authentication via the `Django MFA2 app <https://pypi.org/project/django-mfa2/>`_.
 * Time-based One Time Password (TOTP) method is enabled by default, but users must opt-in.
@@ -103,7 +103,7 @@ Multi-Factor Authentication
 See: :ref:`multi_factor_auth_config`
 
 Additional Single Sign-On Backends
-==================================
+----------------------------------
 
 * Added four new officially supported Single Sign-On/Social Authentication Methods.
 * Renamed Documentation for "Social Authentication" to the more general "Single Sign On".
@@ -112,7 +112,7 @@ Additional Single Sign-On Backends
 See: :ref:`single_sign_on_config`
 
 Automatic Lockout
-=================
+-----------------
 
 * Tethys Portal can now be configured to automatically lockout users after multiple failed login attempts.
 * This feature is opt-in.
@@ -121,7 +121,7 @@ See: :ref:`advanced_config_lockout`
 
 
 Jobs Table
-==========
+----------
 
 * The Status and Actions Columns have been revamped to simplify the Jobs Table.
 * All action buttons (Delete, Resubmit, View Logs, etc.) have been moved into a drop down menu in the actions column.
@@ -133,14 +133,14 @@ Jobs Table
 See: :ref:`jobs-table`
 
 Cesium Map View
-===============
+---------------
 
 * Added support for ENV and VIEWPARAMS when using MVLayer with Cesium Map View.
 
 See: :ref:`cesium-map-view`
 
 jQuery
-======
+------
 
 * Updated jQuery to 3.5.1 to address known vulnerability in previous version.
 
@@ -152,7 +152,7 @@ Documentation
 See: :ref:`production_channels_config` and Official Docker Image
 
 Bug Fixes
-=========
+---------
 
 * Fixed an issue with the tethys command line interface not working on systems without Docker installed.
 * Fixed issue with Add User admin page that would prevent adding additional users after the first user was added.
@@ -321,8 +321,6 @@ Conda Package
 * Tethys has been Conda packaged
 * It can be installed from our `Conda channel <https://anaconda.org/tethysplatform/tethysplatform>`_.
 
-See: :doc:`../installation`
-
 Upgraded JQuery and Bootstrap
 -----------------------------
 
@@ -421,8 +419,6 @@ Improved CLI Documentation
 * The documentation for the command line interface has moved to a new location.
 * The CLI documenation is automatically generated from the code to ensure accuracy.
 
-See: :doc:`../tethys_cli`
-
 Automatic Application Installation
 ----------------------------------
 
@@ -450,8 +446,6 @@ Dask Job Type
 
 * New TethysJob types for submitting and managing Dask Jobs.
 * Dask allows pure Python code to be automagically parallelized and executed accross a distributed cluster of nodes.
-
-See: :doc:`../tethys_sdk/jobs/dask_job_type` API documentation and the :doc:`../tutorials/dask` tutorial
 
 CesiumMapView Gizmo
 -------------------
@@ -561,8 +555,6 @@ Tethys Extensions
 * Create your own gizmos.
 * Centralize app logic that is common to multiple apps in an extension.
 
-See: :doc:`../tethys_sdk/extensions`
-
 Map View Gizmo
 --------------
 
@@ -661,15 +653,11 @@ Cross Platform Support
 * No more virtual machines.
 * Be careful with your paths.
 
-See: :doc:`../installation`
-
 Installation Scripts
 --------------------
 
 * Completely automated installation of Tethys
 * Scripts provided for Mac, Linux, and Windows.
-
-See: :doc:`../installation`
 
 Python 3
 --------
@@ -678,8 +666,6 @@ Python 3
 * Tethys Dataset Services is not completely Python 3 compatible
 * Use ``--python-version 3`` option on the installation script
 * Python 2 support will be dropped in version 2.1
-
-See: :doc:`../installation`
 
 Templating API
 --------------
@@ -722,8 +708,6 @@ Gizmos
 * New way to call them
 * New load dependencies Method
 * Updated select_gizmo to allow Select2 options to be passed in.
-
-See: :doc:`../tethys_sdk/gizmos`
 
 Map View
 --------
@@ -812,7 +796,6 @@ GeoServer
 * The GeoServer docker was updated to version 2.8.3
 * It can be configured to run in clustered mode (multiple instances of GeoServer running inside the container) for greater stability and performance
 * Several extensions are now included:
-
    * `JMS Clustering <http://docs.geoserver.org/2.8.x/en/user/community/jms-cluster/index.html>`_
    * `Flow Control <http://docs.geoserver.org/2.8.x/en/user/extensions/css/index.html>`_
    * `CSS Styles <http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html>`_

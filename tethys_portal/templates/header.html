@@ -1,213 +1,77 @@
 {% load gravatar staticfiles %}
 
-<style>
-  .user-dropdown .user-profile-nav-item a.lit {
-    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-  }
-
-  .user-dropdown .user-profile-nav-item a:hover {
-    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-  }
-
-  .user-dropdown .user-dropdown-menu li a:hover {
-    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-  }
-
-  .site-header .header-nav li.header-action a:hover {
-    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-  }
-
-  .site-header .header-nav li.header-action.lit a {
-    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-  }
-
-  .mobile-nav-button:hover {
-    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
-  }
-
-  .site-header .header-nav li.header-action a {
-    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-  }
-
-  .site-header .header-nav li.header-action a:hover {
-    color: {{ site_globals.primary_text_hover_color|default:'#dddddd' }};
-  }
-
-  .site-header .header-logo .logo-title a {
-    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-  }
-
-  .site-header .header-logo .logo-title a:hover {
-    color: {{ site_globals.primary_text_hover_color|default:'#dddddd' }};
-  }
-
-  .site-header .header-nav li a {
-    color: {{ site_globals.primary_text_color|default:'#dddddd' }};
-  }
-
-  .site-header .header-nav li a:hover {
-    color: {{ site_globals.primary_text_hover_color|default:'#ffffff' }};
-  }
-
-  .site-header .header-logo .logo-image img {
-    height: {{ site_globals.brand_image_height|default:'60px' }};
-    {% if site_globals.brand_image_width %}
-      width: {{ site_globals.brand_image_width }};
-    {% endif %}
-    {% if site_globals.brand_image_padding %}
-      margin-top: {{ site_globals.brand_image_padding }};
-    {% endif %}
-  }
-
-  @media (max-width: 750px) {
-    .site-header .header-logo .logo-image img {
-      height: 40px;
-      {% if site_globals.brand_image_padding %}
-        margin-top: 0;
-      {% endif %}
-    }
-  }
-
-  @media (max-width: 900px) {
-    .site-header .header-logo .logo-image img {
-      height: 40px;
-      {% if site_globals.brand_image_padding %}
-        margin-top: 0;
-      {% endif %}
-    }
-  }
-
-  @media (max-width: 1080px) {
-    .site-header .header-logo .logo-image img {
-      height: 40px;
-      {% if site_globals.brand_image_padding %}
-        margin-top: 0;
-      {% endif %}
-    }
-  }
-
-  .user-dropdown .user-dropdown-menu li a {
-    color: #666666;
-  }
-</style>
-
-{# Mobile site navigation #}
-{% block mobile_nav %}
-  <div class="mobile-nav mobile-nav-links">
-    <ul>
-      {% block mobile_nav_items %}
-        <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
-        {% if user.is_staff or user.is_superuser %}
-        <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
-        {% endif %}
-        {% if user.is_authenticated and user.is_active %}
-          <li>
-            <a href="{% url 'user:profile' %}" title="User Profile">
-              <span>Profile</span>
-            </a>
-          </li>
-          {% if user.is_staff %}
-            <li>
-              <a href="{% url 'admin:index' %}" title="System Admin Settings">
-                <span>Site Admin</span>
-              </a>
-            </li>
+<header id="site-header" class="site-header container-fluid">
+  <div id="header-spacer" class="w-100 my-8"><p></p></div>
+  <nav id="header-navbar" class="navbar navbar-expand-md navbar-dark shadow px-4 py-3 mx-5" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
+    <div class="container-fluid">
+      {% block header_brand %}
+        <a id="header-brand" class="navbar-brand" href="{% url 'home' %}">
+          {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
+            <img  src="{{ site_globals.brand_image }}" alt="" class="d-inline-block align-text-top">
+          {% elif site_globals.brand_image %}
+            <img  src="{% static site_globals.brand_image %}" alt="" class="d-inline-block align-text-top">
           {% endif %}
-
-          <li>
-            <a href="{% url 'accounts:logout' %}" title="Log Out">
-              <span>Log Out</span>
-            </a>
-          </li>
-        {% endif %}
-      {% endblock %}
-    </ul>
-  </div>
-{% endblock %}
-
-<div class="header-wrapper" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
-  <header class="site-header">
-    <div class="header-logo">
-      {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
-        <a class="logo-image" href="{% url 'home' %}"><img  src="{{ site_globals.brand_image }}"></a>
-      {% elif site_globals.brand_image %}
-        <a class="logo-image" href="{% url 'home' %}"><img  src="{% static site_globals.brand_image %}"></a>
-      {% endif %}
-
-      {% if site_globals.brand_text %}
-        <h1 class="logo-title">
-          <a href="{% url 'home' %}">{{ site_globals.brand_text }}</a>
-        </h1>
-      {% endif %}
-
-      {% if not site_globals.brand_text and not site_globals.brand_image %}
-        <h1 class="logo-title">
-          <a href="{% url 'home' %}">Tethys</a>
-        </h1>
-      {% endif %}
-    </div>
-
-    {% block header_nav %}
-    <ul class="header-nav">
-      {% block header_nav_items %}
-        {% if ENABLE_OPEN_PORTAL %}
-          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
-        {% elif user.is_authenticated and user.is_active %}
-          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
-          {% if user.is_staff or user.is_superuser %}
-          <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
+          {% if site_globals.brand_text %}
+            {{ site_globals.brand_text }}
           {% endif %}
-        {% endif %}
+          {% if not site_globals.brand_text and not site_globals.brand_image %}
+            Tethys Portal
+          {% endif %}
+        </a>
       {% endblock %}
 
-      {% if user.is_authenticated and user.is_active %}
-
-        <li class="user-dropdown">
-          <div class="user-profile-nav-item">
-            <a id="user-profile" class="user-profile" href="{% url 'user:profile' %}" class="image" title="User Profile">
-              <span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} {% if user.email %}{% gravatar user.email 25 %}{% else %}{% gravatar "tethys@example.com" 25 %}{% endif %}</span></a>
-            <a id="user-dropdown-toggle" class="user-dropdown-toggle" title="User Menu" href="javascript:void(0);" onclick="toggle_menu('#user-profile', this, '#user-dropdown-menu');">
-              <span class="glyphicon glyphicon-chevron-down"></span></a>
-          </div>
-          <ul id="user-dropdown-menu" class="user-dropdown-menu">
-            <li>
-              <a href="{% url 'user:settings' %}" title="User Settings">
-                <span class="glyphicon glyphicon-user"></span><span>    User Settings</span>
-              </a>
-            </li>
-
-            {% if user.is_staff %}
-              <li class="separator"></li>
-              <li>
-                <a href="{% url 'admin:index' %}" title="System Admin Settings">
-                  <span class="glyphicon glyphicon-cog"></span><span>   Site Admin</span>
-                </a>
+      {% block header_navbar_nav %}
+      <button id="header-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-navbar-nav" aria-controls="header-navbar-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="header-navbar-nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          {% block header_nav_items %}
+            {% url 'app_library' as app_library_url %}
+            {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
+              <li class="nav-item">
+                <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
               </li>
             {% endif %}
-
-            <li class="separator"></li>
-            <li>
-              <a href="{% url 'accounts:logout' %}" title="Log Out">
-                <span class="glyphicon glyphicon-log-out"></span><span>   Log Out</span>
+          {% endblock %}
+        </ul>
+        {% block user_menu %}
+          {% if user.is_authenticated and user.is_active %}
+            <div class="btn-group">
+              <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
+                <span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} {% if user.email %}{% gravatar user.email 25 %}{% else %}{% gravatar "tethys@example.com" 25 %}{% endif %}</span>
               </a>
-            </li>
-          </ul> {# END user-dropdown-menu #}
-        </li> {# END user-dropdown #}
-      {% else %}
-        <li class="action header-action"><a href="{% url 'accounts:login' %}" title="Log In">Log In</a></li>
-      {% endif %}
-
-    </ul>
-    {% endblock %}
-
-    {% if user.is_authenticated and user.is_active %}
-      <a class="mobile-nav-button mobile-links">
-          <div></div>
-          <div></div>
-          <div></div>
-      </a>
-    {% else %}
-      <a class="mobile-nav-button mobile-login" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
-    {% endif %}
-  </header>
-</div>
+              <button type="button" class="btn btn-light btn-user-profile dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="{% url 'user:profile' %}" title="User Settings">
+                    <i class="bi bi-person-fill"></i><span class="ms-2">User Profile</span>
+                  </a>
+                </li>
+                {% if user.is_staff %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">
+                      <i class="bi bi-gear-wide-connected"></i><span class="ms-2">Site Admin</span>
+                    </a>
+                  </li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'accounts:logout' %}" title="Log Out">
+                    <i class="bi bi-door-closed-fill"></i><span class="ms-2">Log Out</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          {% else %}
+            <a class="btn btn-outline-light" role="button" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
+          {% endif %}
+        {% endblock %}
+      </div>
+      {% endblock %}
+    </div>
+  </nav>
+</header>

@@ -1,25 +1,25 @@
 {% if submit %}
 
-  <button {% if name %}name="{{ name }}"{% endif %} class="btn{% if style %} btn-{{ style }}{% else %} btn-default{% endif %}{% if classes %} {{ classes }}{% endif %}" type='submit'
+  <button {% if name %}name="{{ name }}"{% endif %} class="btn{% if style %} btn-{{ style }}{% else %} btn-secondary{% endif %}{% if classes %} {{ classes }}{% endif %}" type='submit'
           {% if attributes %}
               {% for key, value in attributes.items %}
                 {{ key }}="{{ value }}"
               {% endfor %}
           {% endif %}
           {% if disabled %} disabled {% endif %}>
-  	{% if icon %}<span class="{{ icon }}" ></span> {% endif %}{{ display_text }}
+  	{% if icon %}<i class="bi bi-{{ icon }}" ></i> {% endif %}{{ display_text }}
   </button>
 
 {% else %}
 
-  <a {% if name %}name="{{ name }}"{% endif %} class="btn{% if style %} btn-{{ style }}{% else %} btn-default{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if href %} href="{{ href }}" {% endif %} role="button"
+  <a {% if name %}name="{{ name }}"{% endif %} class="btn{% if style %} btn-{{ style }}{% else %} btn-secondary{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if href %} href="{{ href }}" {% endif %} role="button"
           {% if attributes %}
               {% for key, value in attributes.items %}
                 {{ key }}="{{ value }}"
               {% endfor %}
           {% endif %}
           {% if disabled %} disabled{% endif %}>
-    {% if icon %}<span class="{{ icon }}" ></span> {% endif %}{{ display_text }}
+    {% if icon %}<i class="bi bi-{{ icon }}"></i> {% endif %}{{ display_text }}
   </a>
 
 {% endif %}

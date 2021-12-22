@@ -1,51 +1,51 @@
 {% for backend in backends %}
   {% if backend == 'hydroshare' %}
     <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-       <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare
+       <i class="bi bi-hydroshare"></i> {{ action }} with HydroShare
     </a>
   {% elif backend == 'hydroshare_beta' %}
     <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_beta' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare-beta
+      <i class="bi bi-hydroshare"></i> {{ action }} with HydroShare-beta
     </a>
   {% elif backend == 'hydroshare_playground' %}
     <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_playground' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare-playground
+      <i class="bi bi-hydroshare"></i> {{ action }} with HydroShare-playground
     </a>
   {% elif 'arcgis' in backend %}
     <a class="btn btn-block btn-social btn-arcgis" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-arcgis"></i> {{ action }} with ArcGIS {% if 'portal' in backend %}Enterprise Portal{% else %}Online{% endif %}
+      <i class="bi bi-arcgis"></i> {{ action }} with ArcGIS {% if 'portal' in backend %}Enterprise Portal{% else %}Online{% endif %}
     </a>
   {% elif backend == 'google-oauth2' %}
     <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-google"></i> {{ action }} with Google
+      <i class="bi bi-google"></i> {{ action }} with Google
     </a>
   {% elif backend == 'linkedin-oauth2' %}
     <a class="btn btn-block btn-social btn-linkedin" href="{% url 'social:begin' 'linkedin-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-linkedin"></i> {{ action }} with LinkedIn
+      <i class="bi bi-linkedin"></i> {{ action }} with LinkedIn
     </a>
   {% elif backend == 'facebook' %}
     <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-facebook"></i> {{ action }} with Facebook
+      <i class="bi bi-facebook"></i> {{ action }} with Facebook
     </a>
   {% elif 'azuread' in backend %}
     <a class="btn btn-block btn-social btn-windows" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-windows"></i> {{ action }} with Azure AD
+      <i class="bi bi-windows"></i> {{ action }} with Azure AD
     </a>
   {% elif 'adfs' in backend %}
     <a class="btn btn-block btn-social btn-windows" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-windows"></i> {{ action }} with ADFS
+      <i class="bi bi-windows"></i> {{ action }} with ADFS
     </a>
   {% elif 'okta' in backend %}
     <a class="btn btn-block btn-social btn-okta" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-circle-o"></i> {{ action }} with Okta
+      <i class="bi bi-circle"></i> {{ action }} with Okta
     </a>
   {% elif 'onelogin' in backend %}
     <a class="btn btn-block btn-social btn-onelogin" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-onelogin"></i> {{ action }} with OneLogin
+      <i class="bi bi-onelogin"></i> {{ action }} with OneLogin
     </a>
   {% else %}
     <a class="btn btn-block btn-social btn-custom-oauth" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="fa fa-unlock-alt"></i> {{ action }} with {{ backend }}
+      <i class="bi bi-unlock-alt"></i> {{ action }} with {{ backend }}
     </a>
   {% endif %}
 {% endfor %}

@@ -167,7 +167,7 @@ class UserSettingsForm(forms.ModelForm):
     """
     first_name = forms.CharField(
         max_length=30,
-        label='',
+        label='First Name:',
         required=False,
         widget=forms.TextInput(
             attrs={
@@ -180,7 +180,7 @@ class UserSettingsForm(forms.ModelForm):
 
     last_name = forms.CharField(
         max_length=150,
-        label='',
+        label='Last Name:',
         required=False,
         widget=forms.TextInput(
             attrs={

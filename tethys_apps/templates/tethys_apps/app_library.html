@@ -1,95 +1,121 @@
 
-{% extends "page.html" %}
+{% extends "base.html" %}
 
 {% load static tags site_settings %}
 
-{% block title %}- Apps Library{% endblock %}
+{% block title %}{{ block.super }} - {% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
-  <link href="{% static 'tethys_apps/css/app_library.css' %}" rel="stylesheet" />
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#efefef' }};
+  <link href="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}/dist/css/select2.min.css" rel="stylesheet" />
+  <style id="app-library-styles">
+    .no-apps-loaded-message {
+      width: 50%;
+      margin: 100px auto;
+      margin-bottom: 150px;
+      text-align: center;
     }
-    .tethys-secondary-header .secondary-title-wrapper .secondary-title {
-      color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+
+    /* Tag Search */
+    .tag-search-field {
+      width: 100%;
+    }
+
+    .select2 {
+      width: 100%!important;
+    }
+
+    .select2-container .select2-search--inline .select2-search__field {
+      height: 22px!important;
+    }
+
+    /* App Cards */
+    .app-link-wrapper {
+      text-decoration: none;
+      color:#666666;
+    }
+    .app-link-wrapper:hover {
+      color: #666666;
+    }
+    .app-link-wrapper.unconfigured .app-card {
+      background: #666666;
+    }
+    .app-link-wrapper.unconfigured:hover .app-card {
+      background: #555555;
+    }
+    .app-link-wrapper.unconfigured .app-card .app-title {
+      color: #ffffff;
+    }
+    .app-link-wrapper.veiled .app-card {
+      opacity: 0.6;
+    }
+    .app-card {
+        width: 200px;
+    }
+    .app-card:hover {
+        background: #dddddd;
+    }
+
+    /* App Card Description */
+    .app-help-icon {
+      border-radius: 50%;
+      font-size: 10pt;
+      line-height: 1;
+      margin-top: 3px;
+      margin-right: 3px;
+      background: white;
+    }
+
+    .app-help-icon:hover {
+        background: #dddddd;
+        cursor: pointer;
+    }
+
+    .app-help-info .btn-close {
+      width: 0.25em;
+      height: 0.25em;
     }
   </style>
   {{ site_globals.apps_library_css|load_custom_css|safe }}
 {% endblock %}
 
-{% block primary_content %}
-  <div class="tethys-secondary-header narrow clearfix" style="background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};">
-    <div class="secondary-title-wrapper">
-      <span class="secondary-title">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps Library{% endif %}</span>
-    </div>
-  </div>
-  <div class="app-library-wrapper clearfix">
-    {% if apps.configured or apps.unconfigured %}
-        <div class="container" align="center">
-          <div class="row">
-            <div class="col-sm-12 col-xs-12">
-                <div class="filter-container isotopeFilters">
-                    <ul class="list-inline filter">
+{% block global_scripts %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}/dist/js/select2.min.js"></script>
+{% endblock %}
 
-              {% if  apps|get_tags_from_apps %}
-                  <li><a href="#" data-filter="*" class="tag-button active" >All </a></li>
-                    {% for tag in apps|get_tags_from_apps%}
-                        {% if tag %}
-                        <li><a href="#" data-filter=".{{ tag }}" class="tag-button">{{ tag }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-              {% endif %}
-                    </ul>
-                </div>
-                </div>
-            </div>
+{% block primary_content %}
+  {# Push content below header #}
+  <div class="app-libary-wrapper">
+    {% if apps.configured or apps.unconfigured %}
+      {# Tag Search #}
+      {% if apps|get_tags_from_apps %}
+      <div class="container-xl">
+        <div class="row justify-content-center mt-4">
+          <div class="col-md-6">
+            <select class="tag-search-field" name="tags" multiple="multiple">
+              {% for tag in apps|get_tags_from_apps %}
+              <option value="{{ tag.0 }}">{{ tag.1 }}</option>
+              {% endfor %}
+            </select>
           </div>
-      <div id="app-list" class="isotopeContainer">
-        {% for app in apps.configured %}
-          {% if app.proxied %}
-          <a class="app-container isotopeSelector {{ app|get_tag_class }}{% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" href="{{ app.url }}">
-             <div class="app-icon">
-              <img {% if app.icon %}src="{{ app.icon }}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+        </div>
+      </div>
+      {% endif %}
+      {# App List #}
+      <div class="container-xl">
+        <div class="row row-cols-auto justify-content-center mb-4 mx-4">
+          {% for app in apps.configured %}
+            <div class="col">
+              {% include 'tethys_apps/app_card.html' with app=app unconfigured=False %}
             </div>
-          {% else %}
-          <a class="app-container isotopeSelector {{ app|get_tag_class }}{% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
-             <div class="app-icon">
-              <img src="{% if app.icon %}{% if 'http' in app.icon %}{{ app.icon }}{% else %}{% static app.icon %}{% endif %}{% else %}{% static 'tethys_apps/images/default_app_icon.gif' %}{% endif %}" />
+          {% endfor %}
+          {% for app in apps.unconfigured %}
+            <div class="col">
+              {% include 'tethys_apps/app_card.html' with app=app unconfigured=True %}
             </div>
-          {% endif %}
-            <div class="app-title" data-app-theme-color="{{ app.color }}">
-              <span>{{ app.name }}{% if not app.show_in_apps_library and app.enabled %} (hidden){% elif app.show_in_apps_library and not app.enabled %} (disabled){% elif not app.show_in_apps_library and not app.enabled %} (hidden and disabled){% endif %}</span>
-            </div>
-            <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
-            <div class="app-help-icon">
-                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-            </div>
-            <div class="app-help-info hidden">
-                <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
-            </div>
-            <div class="app-help-close hidden">X</div>
-          </a>
-        {% endfor %}
-        {% for app in apps.unconfigured %}
-          <a class="app-container isotopeSelector {{ app|get_tag_class }} unconfigured" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/');" data-app-theme-color="{{ app.color }}">
-            <div class="app-icon">
-              <img src="{% if app.icon %}{% if 'http' in app.icon %}{{ app.icon }}{% else %}{% static app.icon %}{% endif %}{% else %}{% static 'tethys_apps/images/default_app_icon.gif' %}{% endif %}" />
-            </div>
-            <div class="app-title" data-app-theme-color="{{ app.color }}">
-              <span>{{ app.name }}</span>
-            </div>
-            <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
-            <div class="app-help-icon">
-                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-            </div>
-            <div class="app-help-info hidden">
-                <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
-            </div>
-            <div class="app-help-close hidden">X</div>
-          </a>
-        {% endfor %}
+          {% endfor %}
+        </div>
       </div>
     {% else %}
       <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
@@ -100,8 +126,5 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static 'tethys_apps/vendor/imagesloaded.min.js' %}" type="text/javascript"></script>
-  <script src="{% static 'tethys_apps/vendor/masonry.min.js' %}" type="text/javascript"></script>
   <script src="{% static 'tethys_apps/js/app_library.js' %}" type="text/javascript"></script>
-  <script src="{% static 'tethys_apps/js/isotope.pkgd.min.js' %}" type="text/javascript"></script>
 {% endblock %}

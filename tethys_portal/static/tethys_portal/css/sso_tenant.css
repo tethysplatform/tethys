@@ -1,4 +1,0 @@
-/* Remember checkbox hidden by default */
-label[for="id_remember"] {
-  display: none;
-}

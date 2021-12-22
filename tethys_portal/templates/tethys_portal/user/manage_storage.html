@@ -1,37 +1,20 @@
 {% extends "tethys_portal/user/profile.html" %}
 
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 
 {% block edit_button %}
+<a href="{% url 'user:settings' %}" class="btn btn-secondary">Back</a>
 {% endblock %}
 
-{% block title %}- User Settings{% endblock %}
+{% block title %}{{ block.super }} - User Settings{% endblock %}
 
 {% block styles %}
   {{ block.super }}
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#efefef' }};
-    }
-
-    a:hover {
-      cursor:pointer;
-    }
-
-    .parameter {
-      padding-right: 10px;
-      font-size: 18px;
-    }
-
-    .value {
-      font-size: 17px;
-    }
-  </style>
-  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/{{ tethys.datatables.version }}/css/dataTables.bootstrap5.min.css">
 {% endblock %}
 
 {% block profile_sections %}
-<div class="profile-section first last">
+<div class="profile-section">
   <div class="results">
     <table id="app_list" class="table table-striped table-bordered" style="width:100%">
       <thead>
@@ -55,19 +38,29 @@
         {% endfor %}
       </tbody>
     </table>
-    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></div>
+    <div id="storage_summary" style="text-align: center;">
+      <span class="fw-bold">Storage Summary:</span>
+      <span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span>
+    </div>
   </div>
 </div>
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('#app_list').DataTable({
-    "columnDefs": [
-      { "orderable": false, "targets": 2 }
-    ]
-  });
-});
-</script>
+{% endblock %}
 
+{% block global_scripts %}
+  {{ block.super }}
+  <script src="https://cdn.datatables.net/{{ tethys.datatables.version }}/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/{{ tethys.datatables.version }}/js/dataTables.bootstrap5.min.js"></script>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+  $(document).ready(function() {
+    $('#app_list').DataTable({
+      "columnDefs": [
+        { "orderable": false, "targets": 2 }
+      ]
+    });
+  });
+</script>
 {% endblock %}

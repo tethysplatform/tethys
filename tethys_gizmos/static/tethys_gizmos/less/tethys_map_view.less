@@ -1,3 +1,4 @@
+// out: ../css/tethys_map_view.min.css, compress: true
 /*****************************************************************************
  * FILE: tethys_map_view
  * DATE: 2014
@@ -7,6 +8,18 @@
  * NOTE: To modify, make sure you use tethys_map_view.less
  *****************************************************************************/
  // Styles for the Tethys Map View
+
+.ol-mouse-position {
+  top: auto;
+  bottom: 0.5em;
+  left: 0.5em;
+}
+
+.ol-zoomslider {
+  top: 4em;
+  width: 28px;
+}
+
 #map_view_outer_container {
   position: relative;
   height: 100%;
@@ -14,23 +27,29 @@
 
 #basemap_dropdown_container {
   position: absolute;
-  top: 7px;
+  top: 0.5em;
   left: 40px;
   z-index: 1000;
   background-color: rgba(255,255,255,.4);
-  border-radius: 4px;
-  padding: 2px;
+  border-radius: 2px;
 
-  .dropdown-menu {
-    background-color: rgba(255,255,255,.4) !important;
-    color: black !important;
+  #basemap_dropdown {
+    background-color: rgba(0,60,136,.5);
+    color: white;
+    border: none;
+    padding: 0.5px 5px;
+  
+    &::after {
+      display: none;
+    }
+  
+    i::before {
+      margin: 0;
+      font-size: 12px;
+    }
   }
 }
 
-#basemap_dropdown {
-  background-color: rgba(0,60,136,.5);
-  color: white;
-}
 .basemap-option {
     cursor: pointer;
     padding: 5px;
@@ -47,7 +66,7 @@
 }
 
 .tethys-map-view-draw-control {
-  top: 7px;
+  top: 0.5em;
 
   .tethys-map-view-draw-icon {
     display: inline-block;
@@ -139,23 +158,11 @@
   }
 }
 
-.ol-mouse-position {
-  top: auto;
-  bottom: 10px;
-  left: 10px;
-}
-
-.ol-attribution {
-  top: 0.5em;
-  right: 2.75em;
-  bottom: auto;
-}
-
 .tethys-map-view-legend {
-  bottom: 10px;
-  right: 10px;
+  bottom: 2em;
+  right: 0.5em;
   width: 225px;
-  max-height: 90%;  // TODO: SET THE MAX HEIGHT OF LEGEND
+  max-height: 85%;
   overflow-y: auto;
   background: rgba(255, 255, 255, 0.8);
   border: 1px #ddd solid;
@@ -176,13 +183,16 @@
         padding: 5px;
 
         .btn-legend-action {
-          width: 160px;
+          width: 150px;
           text-align: left;
           padding: 2px 5px;
           margin: 0;
           font-weight: 600;
           border: none;
           background: none;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
 
           &:active {
             box-shadow: none;

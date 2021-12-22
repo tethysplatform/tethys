@@ -23,10 +23,11 @@ class TextInput(TethysGizmoOptions):
         placeholder(str): Placeholder text is static text that displayed in the input when it is empty
         prepend(str): Text that is prepended to the text input
         append(str): Text that is appended to the text input
-        icon_prepend(str): The name of a valid Bootstrap v2.3 icon. The icon will be prepended to the input.
-        icon_append(str): The name of a valid Bootstrap v2.3 icon. The icon will be appended to the input.
+        icon_prepend(str): The name of a valid Bootstrap Icon (see `Bootstrap Icons <https://icons.getbootstrap.com>`_). The icon will be prepended to the input.
+        icon_append(str): The name of a valid Bootstrap Icon (see `Bootstrap Icons <https://icons.getbootstrap.com>`_). The icon will be appended to the input.
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
+        success(str): Success message for form validation
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
@@ -36,22 +37,26 @@ class TextInput(TethysGizmoOptions):
 
         from tethys_sdk.gizmos import TextInput
 
-        text_input = TextInput(display_text='Text',
-                               name='inputAmount',
-                               placeholder='e.g.: 10.00',
-                               prepend='$')
+        text_input = TextInput(
+            display_text='Text',
+            name='inputAmount',
+            placeholder='e.g.: 10.00',
+            prepend='$'
+        )
 
-        text_error_input = TextInput(display_text='Text Error',
-                                     name='inputEmail',
-                                     initial='bob@example.com',
-                                     disabled=True,
-                                     icon_append='glyphicon glyphicon-envelope',
-                                     error='Here is my error text')
+        text_error_input = TextInput(
+            display_text='Text Error',
+            name='inputEmail',
+            initial='bob@example.com',
+            disabled=True,
+            icon_append='envelope',
+            error='Here is my error text'
+        )
 
         context = {
-                    'text_input': text_input,
-                    'text_error_input': text_error_input,
-                  }
+            'text_input': text_input,
+            'text_error_input': text_error_input,
+        }
 
     Template Example
 
@@ -64,7 +69,7 @@ class TextInput(TethysGizmoOptions):
     gizmo_name = "text_input"
 
     def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='',
-                 icon_append='', disabled=False, error='', attributes={}, classes=''):
+                 icon_append='', disabled=False, error='', success='', attributes={}, classes=''):
         """
         Constructor
         """
@@ -81,3 +86,4 @@ class TextInput(TethysGizmoOptions):
         self.icon_append = icon_append
         self.disabled = disabled
         self.error = error
+        self.success = success
