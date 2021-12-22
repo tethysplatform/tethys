@@ -29,7 +29,6 @@ var TETHYS_SELECT_INPUT = (function() {
             var options = $(this).data('select2-options');
             $(this).select2(options);
  	    });
-
  	};
 
 	/************************************************************************

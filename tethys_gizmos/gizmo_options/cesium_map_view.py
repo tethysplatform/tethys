@@ -1,5 +1,7 @@
-from .base import TethysGizmoOptions, SecondaryGizmoOptions
 import logging
+from tethys_apps.dependencies import dependencies
+from .base import TethysGizmoOptions, SecondaryGizmoOptions
+
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.cesium_map_view')
 
 
@@ -514,7 +516,7 @@ class CesiumMapView(TethysGizmoOptions):
     gizmo_name = "cesium_map_view"
 
     # Set Cesium Default Release Version.
-    cesium_version = "1.63.1"
+    cesium_version = dependencies['cesiumjs']['version']
 
     def __init__(self, options=None, globe=None, view=None, layers=None, entities=None, primitives=None, terrain=None,
                  models=None, clock=None, height='100%', width='100%', draw=False, attributes={}, classes='',

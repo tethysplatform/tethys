@@ -23,6 +23,7 @@ class TableView(TethysGizmoOptions):
         striped(bool): Stripe rows
         bordered(bool): Add borders and rounded corners
         condensed(bool): A more tightly packed table
+        dark(bool): Style table with dark variant
         editable_columns(list or tuple): A list or tuple with an entry for each column in the table. The entry is either False for non-editable columns or a string that will be used to create identifiers for the input column_fields in that column.
         row_ids(list or tuple): A list or tuple of ids for each row in the table. These will be combined with the string in the editable_columns parameter to create unique identifiers for easy input field in the table. If not specified, each row will be assigned an integer value.
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
@@ -34,30 +35,34 @@ class TableView(TethysGizmoOptions):
 
         from tethys_sdk.gizmos import TableView
 
-        table_view = TableView(column_names=('Name', 'Age', 'Job'),
-                               rows=[('Bill', 30, 'contractor'),
-                                     ('Fred', 18, 'programmer'),
-                                     ('Bob', 26, 'boss')],
-                               hover=True,
-                               striped=False,
-                               bordered=False,
-                               condensed=False)
+        table_view = TableView(
+            column_names=('Name', 'Age', 'Job'),
+            rows=[('Bill', 30, 'contractor'),
+                    ('Fred', 18, 'programmer'),
+                    ('Bob', 26, 'boss')],
+            hover=True,
+            striped=False,
+            bordered=False,
+            condensed=False
+        )
 
-        table_view_edit = TableView(column_names=('Name', 'Age', 'Job'),
-                                    rows=[('Bill', 30, 'contractor'),
-                                          ('Fred', 18, 'programmer'),
-                                          ('Bob', 26, 'boss')],
-                                    hover=True,
-                                    striped=True,
-                                    bordered=False,
-                                    condensed=False,
-                                    editable_columns=(False, 'ageInput', 'jobInput'),
-                                    row_ids=[21, 25, 31])
+        table_view_edit = TableView(
+            column_names=('Name', 'Age', 'Job'),
+            rows=[('Bill', 30, 'contractor'),
+                    ('Fred', 18, 'programmer'),
+                    ('Bob', 26, 'boss')],
+            hover=True,
+            striped=True,
+            bordered=False,
+            condensed=False,
+            editable_columns=(False, 'ageInput', 'jobInput'),
+            row_ids=[21, 25, 31]
+        )
 
         context = {
-                    'table_view': table_view,
-                    'table_view_edit': table_view_edit,
-                  }
+            'table_view': table_view,
+            'table_view_edit': table_view_edit,
+        }
 
     Template Example
 
@@ -72,7 +77,7 @@ class TableView(TethysGizmoOptions):
     gizmo_name = "table_view"
 
     def __init__(self, rows, column_names='', hover=False, striped=False, bordered=False, condensed=False,
-                 editable_columns='', row_ids='', attributes={}, classes=''):
+                 dark=False, editable_columns='', row_ids='', attributes={}, classes=''):
         """
         Constructor
         """
@@ -85,5 +90,6 @@ class TableView(TethysGizmoOptions):
         self.striped = striped
         self.bordered = bordered
         self.condensed = condensed
+        self.dark = dark
         self.editable_columns = editable_columns
         self.row_ids = row_ids

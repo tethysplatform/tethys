@@ -25,6 +25,7 @@ class RangeSlider(TethysGizmoOptions):
         step(int, required): Increment between values in range
         disabled(bool): Disabled state of the slider
         error(str): Error message for form validation
+        success(str): Success message for form validation
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
@@ -66,7 +67,7 @@ class RangeSlider(TethysGizmoOptions):
     gizmo_name = "range_slider"
 
     def __init__(self, name, min, max, initial, step, disabled=False, display_text='', error='',
-                 attributes={}, classes=''):
+                 success='', attributes={}, classes=''):
         """
         Constructor
         """
@@ -81,6 +82,15 @@ class RangeSlider(TethysGizmoOptions):
         self.disabled = disabled
         self.display_text = display_text
         self.error = error
+        self.success = success
+
+    @staticmethod
+    def get_gizmo_css():
+        """
+        CSS specific to gizmo to be placed in the
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/css/range_slider.css',)
 
     @staticmethod
     def get_gizmo_js():

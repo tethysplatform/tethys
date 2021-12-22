@@ -10,7 +10,6 @@
 from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
 from tethys_sdk.permissions import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache

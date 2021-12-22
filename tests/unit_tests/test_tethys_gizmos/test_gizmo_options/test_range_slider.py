@@ -27,3 +27,6 @@ class TestRangeSlider(unittest.TestCase):
 
         self.assertIn('.js', gizmo_range_slider.RangeSlider.get_gizmo_js()[0])
         self.assertNotIn('.css', gizmo_range_slider.RangeSlider.get_gizmo_js()[0])
+
+        self.assertIn('.css', gizmo_range_slider.RangeSlider.get_gizmo_css()[0])
+        self.assertNotIn('.js', gizmo_range_slider.RangeSlider.get_gizmo_css()[0])

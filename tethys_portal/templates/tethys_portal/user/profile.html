@@ -1,12 +1,17 @@
-{% extends "page.html" %}
+{% extends "base.html" %}
 
-{% load gravatar %}
+{% load static gravatar %}
 
-{% block title %}- Profile{% endblock %}
+{% block title %}{{ block.super }} - Profile{% endblock %}
 
 {% block styles %}
   {{ block.super }}
-  <style>
+  <link href="{% static 'tethys_portal/css/social_labels.min.css' %}"  rel="stylesheet" />
+  <style id="profile-styles">
+    #profile-header {
+      background-color: {{ site_globals.secondary_color }};
+    }
+    
     body {
       background: {{ site_globals.background_color|default:'#efefef' }};
     }
@@ -18,201 +23,157 @@
 {% endblock %}
 
 {% block primary_content %}
-  {% block profile_header %}
-    <div class="profile-header" style="background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};">
-      <div class="row">
-        <div class="col-md-3 col-md-offset-2">
-          <div class="profile-image-wrapper">
-            {% if user.email %}{% gravatar user.email 250 %}{% else %}{% gravatar "tethys@example.com" 250 %}{% endif %}
+  <div id="profile-content" class="container">
+    {% block profile_header %}
+    <div id="profile-header-container" class="row my-3">
+      <div class="col">
+        <nav id="profile-header" class="navbar navbar-light rounded">
+          <div class="container-fluid">
+            <span class="navbar-brand">
+              {% with image_size=30 %}
+              <img src="{% if user.email %}{% gravatar_url user.email image_size %}{% else %}{% gravatar_url "tethys@example.com" image_size %}{% endif %}" alt="" width="{{ image_size }}" height="{{ image_size }}" class="d-inline-block align-text-top">
+              {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+              {% endwith %}
+            </span>
+            {% block edit_button %}
+            <a href="{% url 'user:settings' %}" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+            {% endblock %}
           </div>
-        </div>
-        <div class="col-md-7">
-          <span class="profile-name">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</span>
-        </div>
+        </nav>
       </div>
-    </div>
-  {% endblock %}
-
-  {% block edit_button %}
-    <div class="row">
-      <div class="col-md-12">
-        <div class="profile-edit-button">
-          <a href="{% url 'user:settings' %}" class="btn btn-default btn-lg">Edit</a>
-        </div>
-      </div>
-    </div>
-  {% endblock %}
-
-  {% block profile_sections %}
-    <div class="profile-section first">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2 profile-section-header">
+    </div> <!-- #profile-header-container.container -->
+    {% endblock %}
+    {% block profile_sections %}
+    <div id="profile-sections" class="container">
+      <div class="profile-section row mx-2 my-3">
+        <hr>
+        <div class="col-xl-4">
           <h3>Name</h3>
         </div>
-        <div class="col-md-8 profile-parameters">
-          {% block name_parameters %}
-          <ul>
-            <li><span class="parameter">First Name:</span><span class="value">{{ user.first_name|default:"Not Given" }}</span></li>
-            <li><span class="parameter">Last Name:</span><span class="value">{{ user.last_name|default:"Not Given" }}</span></li>
-          </ul>
-          {% endblock %}
-        </div>
-      </div>
-    </div>
+        {% block name_parameters %}
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">First Name:</dt>
+            <dd class="col-sm-8">{{ user.first_name|default:"Not Given" }}</dd>
 
-    <div class="profile-section">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Credentials</h3>
+            <dt class="col-sm-4">Last Name:</dt>
+            <dd class="col-sm-8">{{ user.last_name|default:"Not Given" }}</dd>
+          </dl>
         </div>
-        <div class="col-md-8 profile-parameters">
-          {% block credential_parameters %}
-          <ul>
-            <li><span class="parameter">Username:</span><span class="value">{{ user.username }}</span></li>
-            {% if user.has_usable_password %}
-              <li><span class="parameter">Password:</span><span class="value">********</span></li>
-            {% endif %}
-              <li><span class="parameter">2-Step Verification: </span><span class="value">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</span></li>
-          </ul>
-          {% endblock %}
-        </div>
+        {% endblock %}
+        <hr>
       </div>
-    </div>
-
-    <div class="profile-section">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>API Key</h3>
-        </div>
-        <div class="col-md-8 profile-parameters">
-          <ul>
-            <li>
-              <span class="parameter">Token:</span>
-              {% if show_user_token_mfa %}
-              <span class="value">{{ user_token }}</span>
-              {% else %}
-              <span class="value">Enable 2-Step verification to view token</span>
-              {% endif %}
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <h5> </h5>
-    <div class="profile-section">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2 profile-section-header">
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
           <h3>Email</h3>
         </div>
-        <div class="col-md-8 profile-parameters">
-          {% block gravatar_parameters %}
-          <ul>
-            <li><span class="parameter">Email:</span><span class="value">{{ user.email|default:"Not Given" }}</span></li>
-          </ul>
-          {% endblock %}
+        {% block email_parameters %}
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">Email:</dt>
+            <dd class="col-sm-8">{{ user.email|default:"Not Given" }}</dd>
+          </dl>
         </div>
+        {% endblock %}
+        <hr>
       </div>
-    </div>
-
-    {% if backends.backends %}
-    <div class="profile-section social">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Social</h3>
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
+          <h3>Credentials</h3>
         </div>
-        <div class="col-md-8 profile-parameters">
-          {% block social_parameters %}
-          <ul>
-            <li><span class="parameter">Connected:</span>
-              {% if backends.associated %}
-                {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
-              {% else %}
-                <span>None</span>
-              {% endif %}
-            </span></li>
-            <li><span class="parameter">Not Connected:</span>
-              {% if backends.not_associated %}
-                {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}
-              {% else %}
-                <span>None</span>
-              {% endif %}
-            </span></li>
-          </ul>
-          {% endblock %}
+        {% block credential_parameters %}
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">Username:</dt>
+            <dd class="col-sm-8">{{ user.username }}</dd>
+            {% if user.has_usable_password %}
+            <dt class="col-sm-4">Password:</dt>
+            <dd class="col-sm-8">********</dd>
+            {% endif %}
+            <dt class="col-sm-4">2-Step Verification: </dt>
+            <dd class="col-sm-8">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</dd>
+          </dl>
         </div>
+        {% endblock %}
+        <hr>
       </div>
-    </div>
-    {% endif %}
-
-    {% block account_parameters %}
-      <div class="profile-section">
-      <div class="row">
-        <div class="col-md-2 col-md-offset-2 profile-section-header">
+      {% if backends.backends %}
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
+          <h3>Single Sign On</h3>
+        </div>
+        {% block social_parameters %}
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">Connected:</dt>
+            {% if backends.associated %}
+              {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
+            {% else %}
+              <dd class="col-sm-8">None</dd>
+            {% endif %}
+            <dt class="col-sm-4">Not Connected:</dt>
+            {% if backends.not_associated %}
+              {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}
+            {% else %}
+              <dd class="col-sm-8">None</dd>
+            {% endif %}
+          </dl>
+        </div>
+        {% endblock %}
+        <hr>
+      </div>
+      {% endif %}
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
+          <h3>API Key</h3>
+        </div>
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">Token:</dt>
+            {% if show_user_token_mfa %}
+            <dd class="col-sm-8">{{ user_token }}</dd>
+            {% else %}
+            <dd class="col-sm-8">Enable 2-Step verification to view token</dd>
+            {% endif %}
+          </dl>
+        </div>
+        <hr>
+      </div>
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
           <h3>Account</h3>
         </div>
-        <div class="col-md-8 profile-parameters">
-          <ul>
-            <li><span class="parameter">Member Since:</span><span class="value">{{ user.date_joined|date:"F j, Y" }}</span></li>
-            <li><span class="parameter">Status:</span><span class="value">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
-          </ul>
+        {% block account_parameters %}
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">Member Since:</dt>
+            <dd class="col-sm-8">{{ user.date_joined|date:"F j, Y" }}</dd>
+            <dt class="col-sm-4">Status:</dt>
+            <dd class="col-sm-8">{% if user.is_active %}Active{% else %}Inactive{% endif %}</dd>
+            {% block extend_account_parameters %}
+            {% endblock %}
+          </dl>
         </div>
+        {% endblock %}
+        <hr>
       </div>
-    </div>
-    {% endblock %}
-    {% block workspace_management %}
-      <div class="profile-section last">
-        <div class="row">
-          <div class="col-md-2 col-md-offset-2 profile-section-header">
-            <h3>Workspace</h3>
-          </div>
-          <div class="col-md-8 profile-parameters">
-            <ul>
-              <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
-            </ul>
-          </div>
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
+          <h3>Workspace</h3>
         </div>
+        {% block storage_parameters %}
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dt class="col-sm-4">Storage Summary:</dt>
+            <dd class="col-sm-8">{{ current_use }} of {{ quota|default:"&#8734;" }}</dd>
+            {% block extend_storage_parameters %}
+            {% endblock %}
+          </dl>
+        </div>
+        {% endblock %}
+        <hr>
       </div>
+    </div> <!-- #profile-sections.container -->
     {% endblock %}
-  {% endblock %}
-
-{% endblock %}
-
-{% block scripts %}
-  {{ block.super }}
-  <script>
-
-    function resize_profile_name() {
-      var profile_name_element, name_height, header_height;
-
-
-
-      profile_name_element = $('.profile-header .profile-name');
-      name_height = parseInt(profile_name_element.css('height'));
-      header_height = parseInt($('.profile-header').css('height'));
-
-      if (name_height > 215 && header_height === 250) {
-        profile_name_element.css('padding-top', '46px');
-
-      } else if (name_height <= 215 && header_height === 250) {
-        profile_name_element.css('padding-top', '130px');
-
-      } else if (name_height > 88 && header_height === 125) {
-        profile_name_element.css('padding-top', '12px');
-
-      } else if (name_height <= 88 && header_height === 125) {
-        profile_name_element.css('padding-top', '38px');
-      }
-    }
-
-    // Check when page loads
-    window.onload = function(event){
-      resize_profile_name();
-    }
-
-    // Also check on page resize event
-    window.onresize = function(event) {
-      resize_profile_name();
-    }
-  </script>
+  </div>  <!-- #profile-content.container -->
 {% endblock %}

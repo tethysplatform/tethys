@@ -1,15 +1,15 @@
-{% extends "page.html" %}
+{% extends "base.html" %}
 
 {% load admin_static %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ block.super }} - Site Admin{% endblock %}
 {% block styles %}
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
   {% block extrastyle %}{% endblock %}
   <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static 'tethys_portal/css/admin_tweaks.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'tethys_portal/css/admin_tweaks.min.css' %}" />
   <style>
     .module caption {
       background-color: {{ site_globals.primary_color|default:'#0a62a9' }};
@@ -62,8 +62,7 @@
 {% block bodytag %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 
 {% block admin_content %}
-
-<!-- Container -->
+  <!-- Container -->
   <div id="container">
       {% if not is_popup %}
         {% block breadcrumbs %}

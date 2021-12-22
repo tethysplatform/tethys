@@ -1,7 +1,6 @@
 import unittest
 from unittest import mock
 from django.test import override_settings
-from django.contrib.auth.models import User
 
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
@@ -26,8 +25,7 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
-    @mock.patch('tethys_portal.views.user.User.objects.get')
-    def test_profile(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota, mock_convert_units,
+    def test_profile(self, mock_token_get_create, mock_render, mock_get_quota, mock_convert_units,
                      mock_has_mfa, _):
         mock_request = mock.MagicMock()
 
@@ -93,13 +91,9 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
-    @mock.patch('tethys_portal.views.user.User.objects.get')
-    def test_profile_mfa_required_no_mfa_set(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+    def test_profile_mfa_required_no_mfa_set(self, mock_token_get_create, mock_render, mock_get_quota,
                                              mock_convert_units, mock_has_mfa, _):
         mock_request = mock.MagicMock()
-        mock_user = mock.MagicMock()
-        mock_get_user.return_value = mock_user
-
         mock_user_token = mock.MagicMock()
         mock_token_created = mock.MagicMock()
         mock_token_get_create.return_value = mock_user_token, mock_token_created
@@ -127,13 +121,9 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
-    @mock.patch('tethys_portal.views.user.User.objects.get')
-    def test_profile_mfa_required_mfa_set(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+    def test_profile_mfa_required_mfa_set(self, mock_token_get_create, mock_render, mock_get_quota,
                                           mock_convert_units, mock_has_mfa, _):
         mock_request = mock.MagicMock()
-        mock_user = mock.MagicMock()
-        mock_get_user.return_value = mock_user
-
         mock_user_token = mock.MagicMock()
         mock_token_created = mock.MagicMock()
         mock_token_get_create.return_value = mock_user_token, mock_token_created
@@ -161,13 +151,9 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
-    @mock.patch('tethys_portal.views.user.User.objects.get')
-    def test_profile_mfa_not_required_mfa_set(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+    def test_profile_mfa_not_required_mfa_set(self, mock_token_get_create, mock_render, mock_get_quota,
                                               mock_convert_units, mock_has_mfa, _):
         mock_request = mock.MagicMock()
-        mock_user = mock.MagicMock()
-        mock_get_user.return_value = mock_user
-
         mock_user_token = mock.MagicMock()
         mock_token_created = mock.MagicMock()
         mock_token_get_create.return_value = mock_user_token, mock_token_created
@@ -367,15 +353,13 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch('tethys_quotas.utilities.log')
     @mock.patch('tethys_portal.views.user._get_user_workspace')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
-    @mock.patch('tethys_portal.views.user.User')
     @mock.patch('tethys_portal.views.user.SingletonHarvester')
     @mock.patch('tethys_portal.views.user.render')
-    def test_manage_storage_successful(self, mock_render, mock_harvester, mock_user, mock_convert_storage, _, __):
+    def test_manage_storage_successful(self, mock_render, mock_harvester, mock_convert_storage, _, __):
         mock_request = mock.MagicMock()
         mock_request.user.username = 'ThisIsMe'
         app = TethysApp(name="app_name")
         mock_harvester().apps = [app]
-        mock_user.objects.get.return_value = mock.MagicMock()
         mock_convert_storage.return_value = '0 bytes'
 
         expected_context = {'apps': mock_harvester().apps,
@@ -402,16 +386,14 @@ class TethysPortalUserTests(unittest.TestCase):
 
     @mock.patch('tethys_portal.views.user.get_app_class')
     @mock.patch('tethys_portal.views.user._get_user_workspace')
-    @mock.patch('tethys_portal.views.user.User')
     @mock.patch('tethys_portal.views.user.TethysApp')
     @mock.patch('tethys_portal.views.user.messages.success')
     @mock.patch('tethys_portal.views.user.redirect')
-    def test_clear_workspace_successful(self, mock_redirect, mock_message, mock_app, mock_user, mock_guw,
+    def test_clear_workspace_successful(self, mock_redirect, mock_message, mock_app, mock_guw,
                                         mock_get_app_class):  # noqa: E501
         mock_request = mock.MagicMock(method='POST', POST='clear-workspace-submit')
         mock_request.user.username = 'ThisIsMe'
 
-        mock_user.objects.get.return_value = mock.MagicMock(User(username='ThisIsMe'))
         app = TethysApp(name='app_name')
         mock_app.objects.get.return_value = app
         mock_get_app_class.return_value = app

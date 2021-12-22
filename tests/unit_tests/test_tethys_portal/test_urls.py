@@ -129,29 +129,6 @@ class TestUrls(TethysTestCase):
         self.assertEqual('delete_account', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.user', resolver.func.__module__)
 
-    def test_developer_urls_developer_home(self):
-        url = reverse('developer_home')
-        resolver = resolve(url)
-        self.assertEqual('/developer/', url)
-        self.assertEqual('home', resolver.func.__name__)
-        self.assertEqual('tethys_portal.views.developer', resolver.func.__module__)
-
-    def test_developer_urls_gizmos(self):
-        url = reverse('gizmos:showcase')
-        resolver = resolve(url)
-        self.assertEqual('/developer/gizmos/', url)
-        self.assertEqual('index', resolver.func.__name__)
-        self.assertEqual('tethys_gizmos.views.gizmo_showcase', resolver.func.__module__)
-        self.assertEqual('gizmos', resolver.namespaces[0])
-
-    def test_developer_urls_services(self):
-        url = reverse('services:wps_home')
-        resolver = resolve(url)
-        self.assertEqual('/developer/services/wps/', url)
-        self.assertEqual('wps_home', resolver.func.__name__)
-        self.assertEqual('tethys_services.views', resolver.func.__module__)
-        self.assertEqual('services', resolver.namespaces[0])
-
     def test_urlpatterns_handoff_capabilities(self):
         url = reverse('handoff_capabilities', kwargs={'app_name': 'foo'})
         resolver = resolve(url)

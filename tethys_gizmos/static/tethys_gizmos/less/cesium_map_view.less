@@ -1,0 +1,53 @@
+// out: ../css/cesium_map_view.min.css, compress: true
+.cesium-animation-rectButton .cesium-animation-buttonGlow {
+ filter: url(#animation_blurred);
+}
+.cesium-animation-rectButton .cesium-animation-buttonMain {
+ fill: url(#animation_buttonNormal);
+}
+.cesium-animation-buttonToggled .cesium-animation-buttonMain {
+ fill: url(#animation_buttonToggled);
+}
+.cesium-animation-rectButton:hover .cesium-animation-buttonMain {
+ fill: url(#animation_buttonHovered);
+}
+.cesium-animation-buttonDisabled .cesium-animation-buttonMain {
+ fill: url(#animation_buttonDisabled);
+}
+.cesium-animation-shuttleRingG .cesium-animation-shuttleRingSwoosh {
+ fill: url(#animation_shuttleRingSwooshGradient);
+}
+.cesium-animation-shuttleRingG:hover .cesium-animation-shuttleRingSwoosh {
+ fill: url(#animation_shuttleRingSwooshHovered);
+}
+.cesium-animation-shuttleRingPointer {
+ fill: url(#animation_shuttleRingPointerGradient);
+}
+.cesium-animation-shuttleRingPausePointer {
+ fill: url(#animation_shuttleRingPointerPaused);
+}
+.cesium-animation-knobOuter {
+ fill: url(#animation_knobOuter);
+}
+.cesium-animation-knobInner {
+ fill: url(#animation_knobInner);
+}
+#cesium_map_view_toolbar {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    display: inline;
+    margin: 5px;
+    padding: 0px;
+    background: white;
+    z-index: 10;
+}
+#cesium_map_view_logging {
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+    display: inline;
+    margin: 10px;
+    background: white;
+    z-index: 99;
+}

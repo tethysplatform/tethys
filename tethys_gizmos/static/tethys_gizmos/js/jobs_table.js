@@ -13,7 +13,7 @@ function bind_run_button(btn){
         }).done(function (json) {
             status_html =
             '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
                     '<span class="sr-only">100% Complete</span>' +
                 '</div>' +
             '</div>'
@@ -32,7 +32,7 @@ function bind_refresh_button(btn){
         }).done(function (json) {
             status_html =
             '<div class="progress" style="margin-bottom: 0;">' +
-                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
                     '<span class="sr-only">100% Complete</span>' +
                 '</div>' +
             '</div>'
@@ -49,21 +49,21 @@ function bind_terminate_button(btn){
         $('#tethys_jobs-table-confirm').html('Terminate');
         $('#tethys_jobs-table-confirm').off('click');
         $('#tethys_jobs-table-confirm').on('click', function(){
-            $("#jobs_table_overlay").removeClass('hidden');
+            $("#jobs_table_overlay").removeClass('d-none');
             $('#modal-dialog-jobs-table-confirm').modal('hide');
             var delete_url = '/developer/gizmos/ajax/' + job_id + '/terminate';
             $.ajax({
                 url: delete_url
             }).done(function(json){
-                $("#jobs_table_overlay").addClass('hidden');
+                $("#jobs_table_overlay").addClass('d-none');
                 if(json.success){
                     update_row($('#jobs-table-row-' + job_id));
                 }
                 else{
                     var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                                         '<strong>Error!</strong> Unable to terminate job ' + job_id + '.' +
-                                    '</div>';
+                                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                     '</div>';
                     $('#jobs-table-messages').append(alert_html);
                 }
             });
@@ -78,13 +78,13 @@ function bind_delete_button(btn){
         $('#tethys_jobs-table-confirm').html('Delete');
         $('#tethys_jobs-table-confirm').off('click');
         $('#tethys_jobs-table-confirm').on('click', function(){
-            $("#jobs_table_overlay").removeClass('hidden');
+            $("#jobs_table_overlay").removeClass('d-none');
             $('#modal-dialog-jobs-table-confirm').modal('hide');
             var delete_url = '/developer/gizmos/ajax/' + job_id + '/delete';
             $.ajax({
                 url: delete_url
             }).done(function(json){
-                $("#jobs_table_overlay").addClass('hidden');
+                $("#jobs_table_overlay").addClass('d-none');
                 if(json.success){
                     row = $('#jobs-table-row-' + job_id);
                     row.remove();
@@ -96,9 +96,9 @@ function bind_delete_button(btn){
                 }
                 else{
                     var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                                         '<strong>Error!</strong> Unable to delete job ' + job_id + '.' +
-                                    '</div>';
+                                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                     '</div>';
                     $('#jobs-table-messages').append(alert_html);
                 }
             });
@@ -109,25 +109,25 @@ function bind_delete_button(btn){
 function bind_resubmit_button(btn){
     var job_id = $(btn).data('job-id');
     $(btn).on('click', function(){
-        $("#jobs_table_overlay").removeClass('hidden');
+        $("#jobs_table_overlay").removeClass('d-none');
         var resubmit_url = '/developer/gizmos/ajax/' + job_id + '/resubmit';
         $.ajax({
             url: resubmit_url
         }).done(function(json){
             update_row($(btn).closest('tr'));
             update_workflow_nodes_row($(btn).closest('tr').next('tr'));
-            $("#jobs_table_overlay").addClass('hidden');
+            $("#jobs_table_overlay").addClass('d-none');
             if(json.success){
                 var alert_html = '<div class="alert alert-success alert-dismissible" role="alert">' +
-                                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                                     '<strong>Successfully resubmit job: ' + job_id + '.' +
-                                '</div>';
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                 '</div>';
             }
             else{
                 var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
-                                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                                     '<strong>Error!</strong> Unable to resubmit job ' + job_id + '.' +
-                                '</div>';
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                 '</div>';
             }
             $('#jobs-table-messages').append(alert_html);
         });
@@ -139,7 +139,7 @@ var log_contents = {};
 function load_log_content(job_id) {
     // Clear content
     $('#modal-dialog-jobs-table-log-content').html('')
-    $("#jobs_table_logs_overlay").removeClass('hidden');
+    $("#jobs_table_logs_overlay").removeClass('d-none');
 
     $('#ModalJobLogTitle').html('Logs for Job ID: ' + $('#job_id-' + job_id).html())
     var show_log_url = '/developer/gizmos/ajax/' + job_id + '/show-log';
@@ -160,7 +160,7 @@ function load_log_content(job_id) {
             $('#sub_job_select').trigger('change');
         }
         else{
-          $("#jobs_table_logs_overlay").addClass('hidden');
+          $("#jobs_table_logs_overlay").addClass('d-none');
           $('#modal-dialog-jobs-table-log-content').html(json.error_message);
         }
     });
@@ -187,17 +187,17 @@ function update_log_content(event, use_cache=true){
   }
 
   if(use_cache && content != null){
-    $("#jobs_table_logs_overlay").addClass('hidden');
+    $("#jobs_table_logs_overlay").addClass('d-none');
     $('#modal-dialog-jobs-table-log-content').html(content);
   }
   else{
     $('#modal-dialog-jobs-table-log-content').html('');
-    $("#jobs_table_logs_overlay").removeClass('hidden');
+    $("#jobs_table_logs_overlay").removeClass('d-none');
 
     $.ajax({
         url: log_content_url
     }).done(function(json){
-    $("#jobs_table_logs_overlay").addClass('hidden');
+    $("#jobs_table_logs_overlay").addClass('d-none');
       if(json.success){
         $('#modal-dialog-jobs-table-log-content').html(json.content);
         if (key2 === undefined){
@@ -381,7 +381,7 @@ function update_row(table_elem){
             $(table_elem).html(json.html);
             bind_jobs_table_actions(table_elem);
         }
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-bs-toggle="tooltip"]').tooltip();
     });
 }
 

@@ -68,9 +68,14 @@ body {
 	opacity: 1
 }
 
+#app-content {
+	height: 100%;
+}
+
 #inner-app-content {
 	height: 100%;
-	padding: 20px 15px 10px 15px
+	padding: 10px;
+	overflow: auto;
 }
 
 .modal-dialog {
