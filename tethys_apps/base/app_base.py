@@ -123,16 +123,19 @@ class TethysBase(TethysBaseMixin):
         bokeh_app = autoload(bokeh_app_endpoint, handler_function)
         kwargs = dict(app_context=bokeh_app.app_context)
 
-        def urlpattern(suffix=""):
+        def urlpattern(suffix="", include_base=True):
             # Add suffix
             url_pattern = bokeh_app.url + suffix
-            # Strip out the app home endpoint portion for the 
-            # Django URL to be consistent with other app urls
-            url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
+            
+            if not include_base:
+                # Strip out the app home endpoint portion for the 
+                # Django URL to be consistent with other app urls
+                url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
+
             return f'^{url_pattern}$'
 
         http_url = url(
-            urlpattern('/autoload.js'), 
+            urlpattern('/autoload.js', include_base=False), 
             AutoloadJsConsumer.as_asgi(**kwargs),
             name=f'{url_map.name}_bokeh_autoload'
         )

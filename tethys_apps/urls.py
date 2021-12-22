@@ -28,13 +28,14 @@ app_url_patterns = normal_url_patterns['app_url_patterns']
 http_handler_patterns = handler_url_patterns['http_handler_patterns']
 
 # Combine normal and handler http url patterns from apps
-app_namespaces = set(app_url_patterns.keys()).union(http_handler_patterns.keys())
 combined_app_url_patterns = dict()
+app_namespaces = set(app_url_patterns.keys())\
+    .union(http_handler_patterns.keys())
 
 for namespace in app_namespaces:
     normal_urls = app_url_patterns.get(namespace, [])
-    websocket_urls = http_handler_patterns.get(namespace, [])
-    combined_urls = normal_urls + websocket_urls
+    handler_urls = http_handler_patterns.get(namespace, [])
+    combined_urls = normal_urls + handler_urls
     combined_app_url_patterns[namespace] = combined_urls
 
 # Add combined app url patterns to urlpatterns, namespaced per app appropriately
@@ -54,7 +55,6 @@ app_websocket_url_patterns = normal_url_patterns['ws_url_patterns']
 handler_websocket_url_patterns = handler_url_patterns['ws_handler_patterns']
 
 # Collect all app WebSocket URLs into one list
-# TODO: These need to be namespaced per app
 app_websocket_urls = []
 app_websocket_urls.extend(
     list(
