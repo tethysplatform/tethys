@@ -1,28 +1,28 @@
-<div class="form-group {% if error %} has-error {% endif %}">
-	{% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
-	<div class="input-group">
-    <span class="input-group-addon slider-before">{{ min }}</span>
+
+{% if display_text %}
+<label class="form-label" for="{{ name }}">{{ display_text }}</label>
+{% endif %}
+<div class="input-group mb-3{% if error or success %} has-validation{% endif %}">
     <input id="{{ name }}"
-           class="slider-input form-control{% if classes %} {{ classes }}{% endif %}"
-           name="{{ name }}"
-           type="range" min="{{ min }}"
-           max="{{ max }}"
-           step="{{ step }}"
-           value="{{ initial }}"
-           oninput="updateSliderDisplayValue('{{ name }}', this);"
-           {% if disabled %}disabled{% endif %}
-           {% if attributes %}
-               {% for key, value in attributes.items %}
-                   {{ key }}="{{ value }}"
-               {% endfor %}
-           {% endif %}>
-    <span class="input-group-addon slider-after">{{ max }}</span>
-
-  </div>
-
-  {# <span class="slider-value" for="{{ name }}" style="padding-left:50px;">{{ initial }}</span> #}
-
-	{% if error %}
-	<p class="help-block">{{ error }}</p>
-	{% endif %}
+        class="slider-input form-range{% if error %} is-invalid{% endif %}{% if success %} is-valid{% endif %}{% if classes %} {{ classes }}{% endif %}"
+        name="{{ name }}"
+        type="range"
+        min="{{ min }}"
+        max="{{ max }}"
+        step="{{ step }}"
+        value="{{ initial }}"
+        {% if disabled %}disabled{% endif %}
+        {% if attributes %}
+            {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+            {% endfor %}
+        {% endif %}>
+    <span class="slider-after">{{ initial }}</span>
+    {% if error %}
+    <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="valid-feedback">{{ success }}</div>
+    {% endif %}
 </div>
+

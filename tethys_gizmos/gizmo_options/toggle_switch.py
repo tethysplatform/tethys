@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from tethys_apps.dependencies import dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['ToggleSwitch']
@@ -27,6 +28,7 @@ class ToggleSwitch(TethysGizmoOptions):
         initial(bool): The initial position of the switch (True for "on" and False for "off")
         disabled(bool): Disabled state of the switch
         error(str): Error message for form validation
+        success(str): Success message for form validation
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
@@ -36,34 +38,40 @@ class ToggleSwitch(TethysGizmoOptions):
 
         from tethys_sdk.gizmos import ToggleSwitch
 
-        toggle_switch = ToggleSwitch(display_text='Defualt Toggle',
-                                     name='toggle1')
+        toggle_switch = ToggleSwitch(
+            display_text='Defualt Toggle',
+            name='toggle1'
+        )
 
-        toggle_switch_styled = ToggleSwitch(display_text='Styled Toggle',
-                                            name='toggle2',
-                                            on_label='Yes',
-                                            off_label='No',
-                                            on_style='success',
-                                            off_style='danger',
-                                            initial=True,
-                                            size='large')
+        toggle_switch_styled = ToggleSwitch(
+            display_text='Styled Toggle',
+            name='toggle2',
+            on_label='Yes',
+            off_label='No',
+            on_style='success',
+            off_style='danger',
+            initial=True,
+            size='large'
+        )
 
-        toggle_switch_disabled = ToggleSwitch(display_text='Disabled Toggle',
-                                              name='toggle3',
-                                              on_label='On',
-                                              off_label='Off',
-                                              on_style='success',
-                                              off_style='warning',
-                                              size='mini',
-                                              initial=False,
-                                              disabled=True,
-                                              error='Here is my error text')
+        toggle_switch_disabled = ToggleSwitch(
+            display_text='Disabled Toggle',
+            name='toggle3',
+            on_label='On',
+            off_label='Off',
+            on_style='success',
+            off_style='warning',
+            size='mini',
+            initial=False,
+            disabled=True,
+            error='Here is my error text'
+        )
 
         context = {
-                    'toggle_switch': toggle_switch,
-                    'toggle_switch_styled': toggle_switch_styled,
-                    'toggle_switch_disabled': toggle_switch_disabled,
-                  }
+            'toggle_switch': toggle_switch,
+            'toggle_switch_styled': toggle_switch_styled,
+            'toggle_switch_disabled': toggle_switch_disabled,
+        }
 
     Template Example
 
@@ -75,9 +83,10 @@ class ToggleSwitch(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "toggle_switch"
+    version = dependencies['bootstrap-switch']['version']
 
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
-                 size='regular', initial=False, disabled=False, error='', attributes={}, classes=''):
+                 size='regular', initial=False, disabled=False, error='', success='', attributes={}, classes=''):
         """
         Constructor
         """
@@ -94,22 +103,23 @@ class ToggleSwitch(TethysGizmoOptions):
         self.initial = initial
         self.disabled = disabled
         self.error = error
+        self.success = success
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js',)
+        return (f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/{cls.version}/js/bootstrap-switch.min.js',)
 
-    @staticmethod
-    def get_vendor_css():
+    @classmethod
+    def get_vendor_css(cls):
         """
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return ('tethys_gizmos/vendor/bootstrap_switch/dist/css/bootstrap3/bootstrap-switch.min.css',)
+        return (f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/{cls.version}/css/bootstrap-switch.min.css',)
 
     @staticmethod
     def get_gizmo_js():

@@ -1,3 +1,4 @@
+// out: ../css/admin_tweaks.min.css, compress: true
 /*****************************************************************************
  * FILE: admin_tweaks
  * DATE: 2014
@@ -5,8 +6,14 @@
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
-@import "mixins.less";
 @import "variables.less";
+
+ul li {
+  list-style-type: none;
+  font-size: initial;
+  line-height: initial;
+}
+
 
 .dashboard #content {
   width: auto;
@@ -15,7 +22,6 @@
 #content {
   h1 {
     font-size: 30px;
-    .font-smoothing();
     text-transform: capitalize;
   }
 }
@@ -23,14 +29,12 @@
 #container {
   width: auto;
   margin: 0 50px;
-  margin-top: 20px;
 }
 
 div.breadcrumbs {
   background: none;
   border: none;
   font-size: 16px;
-  .font-smoothing();
 
   a {
     color: #2ca6ed;
@@ -45,12 +49,15 @@ a:hover {
   color: @link-hover-color;
 }
 
+.button.cancel-link {
+  background-color: transparent;
+}
+
 .object-tools {
   a:link {
     background: @primary-color;
     font-weight: 500;
     font-size: 12px;
-    .font-smoothing();
 
     &:hover {
       background-color: @primary-color + #111111;
@@ -61,7 +68,6 @@ a:hover {
     background: @primary-color url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
     font-weight: 500;
     font-size: 12px;
-    .font-smoothing();
     padding: 3px 12px;
 
     &:hover {
@@ -75,10 +81,14 @@ a:hover {
   caption {
     font-size: 16px;
     font-weight: 400;
-    .font-smoothing();
     background: #0a62a9;
     padding: 10px;
     padding-left: 8px;
+    caption-side: top;
+  }
+
+  table {
+    width: 100%;
   }
 
   tr {
@@ -88,15 +98,14 @@ a:hover {
 
     th {
       font-size: 14px;
-      .font-smoothing();
       font-weight: 400;
+      width: 100%;
     }
   }
 
   h2 {
     background: @primary-color;
     color: white;
-    .font-smoothing();
     font-size: 14px;
     line-height: 1.5;
     padding: 8px;
@@ -117,7 +126,6 @@ thead {
     h2 {
       background: @link-color;
       color: white;
-      .font-smoothing();
       font-size: 14px;
       line-height: 1.5;
       padding: 8px;
@@ -130,7 +138,6 @@ thead {
   h2 {
     background: @primary-color;
     color: white;
-    .font-smoothing();
     font-size: 14px;
     line-height: 1.5;
     padding: 8px;
@@ -145,7 +152,6 @@ thead {
       line-height: 1.5;
       padding: 8px;
       font-weight: 500;
-      .font-smoothing();
     }
   }
 
@@ -183,7 +189,6 @@ thead {
     h2 {
       background: @primary-color;
       font-size: 16px;
-      .font-smoothing();
       line-height: 2;
       padding: 8px;
       font-weight: 500;
@@ -192,7 +197,6 @@ thead {
 
     h3 {
       color: #666666;
-      .font-smoothing();
       font-weight: 400;
     }
 
@@ -275,7 +279,6 @@ input[type=submit] {
 
   background: #ffffff;
   border: 1px #888888 solid;
-  .font-smoothing();
   font-weight: 500;
   color: #222222;
 
@@ -370,3 +373,8 @@ input[type=submit] {
   }
 }
 
+.powered-by-tethys {
+  a {
+    color: white;
+  }
+}

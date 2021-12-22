@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}{{ block.super }} - Log In{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static '/tethys_portal/css/account_form.min.css' %}"  rel="stylesheet" />
+  <style>
+    body {
+      background: {{ site_globals.background_color|default:'#ffffff' }};
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% block account_content_top %}
+  {% endblock %}
+  <div class="container-xl">
+    <div class="row justify-content-center">
+      <div class="col-xl-6">
+        <div class="account-form-wrapper">
+          <div class="account-form-header">
+            <h1>{% block account_form_title %}Accounts Form Base{% endblock %}</h1>
+          </div>
+          <div class="account-form-body">
+            {% block account_form_body %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

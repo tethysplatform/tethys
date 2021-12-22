@@ -7,8 +7,9 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from .base import TethysGizmoOptions
 import json
+from tethys_apps.dependencies import dependencies
+from .base import TethysGizmoOptions
 
 __all__ = ['SelectInput']
 
@@ -27,6 +28,7 @@ class SelectInput(TethysGizmoOptions):
         initial(list or str): List of keys or values that represent the initial selected values or a string representing a singular initial selected value.
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
+        success(str): Success message for form validation
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
@@ -93,7 +95,7 @@ class SelectInput(TethysGizmoOptions):
     gizmo_name = "select_input"
 
     def __init__(self, name, display_text='', initial=[], multiple=False, original=False,
-                 select2_options=None, options='', disabled=False, error='',
+                 select2_options=None, options='', disabled=False, error='', success='',
                  attributes={}, classes=''):
         """
         Constructor
@@ -112,6 +114,7 @@ class SelectInput(TethysGizmoOptions):
         self.options = options
         self.disabled = disabled
         self.error = error
+        self.success = success
 
     @staticmethod
     def get_vendor_js():
@@ -119,7 +122,7 @@ class SelectInput(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.full.min.js',)
+        return (f"https://cdn.jsdelivr.net/npm/select2@{dependencies['select2']['version']}/dist/js/select2.min.js",)
 
     @staticmethod
     def get_vendor_css():
@@ -127,7 +130,7 @@ class SelectInput(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.min.css',)
+        return (f"https://cdn.jsdelivr.net/npm/select2@{dependencies['select2']['version']}/dist/css/select2.min.css",)
 
     @staticmethod
     def get_gizmo_js():

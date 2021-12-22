@@ -1,49 +1,33 @@
-{% extends "page.html" %}
+{% extends "tethys_portal/accounts/base.html" %}
 
-{% load bootstrap3 %}
-{% load recaptcha2 %}
+{% load django_bootstrap5 recaptcha2 %}
 
-{% block title %}- Log In{% endblock %}
+{% block title %}{{ block.super }} - Log In{% endblock %}
 
-{% block styles %}
-  {{ block.super }}
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#ffffff' }};
-    }
-  </style>
+{% block account_content_top %}
+  {% recaptcha_init %}
 {% endblock %}
 
-{% block content %}
-  {% recaptcha_init %}
-  <div class="row">
-    <div class="col-md-4 col-md-offset-4">
-      <div class="account-form-wrapper">
-        <div class="account-form-header">
-          <h1>Log In</h1>
-        </div>
-        <div class="account-form-body">
-          <form role="form" method="post">
-            {% if backends.not_associated %}
-              {% include 'tethys_portal/accounts/social_buttons.html' with action='Log in' backends=backends.not_associated %}
-              <div class="social-divide-or">
-                <div class="line"></div>
-                <span class="or">or</span>
-              </div>
-            {% endif %}
 
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <button type="submit" id="login-submit" class="btn btn-default" name="login-submit">Login</button>
-            {% if signup_enabled %}
-              <span class="help-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
-            {% endif %}
-            <span class="help-block"><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></span>
-          </form>
-        </div>
+{% block account_form_title %}Log In{% endblock %}
+
+{% block account_form_body %}
+  <form role="form" method="post">
+    {% if backends.not_associated %}
+      {% include 'tethys_portal/accounts/social_buttons.html' with action='Log in' backends=backends.not_associated %}
+      <div class="social-divide-or">
+        <div class="line"></div>
+        <span class="or">or</span>
       </div>
-    </div>
-  </div>
+    {% endif %}
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button type="submit" id="login-submit" class="btn btn-primary mb-3" name="login-submit">Log In</button>
+    {% if signup_enabled %}
+      <span class="d-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
+    {% endif %}
+    <span class="d-block"><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></span>
+  </form>
 {% endblock %}
 
 {% block terms-of-service-override %}

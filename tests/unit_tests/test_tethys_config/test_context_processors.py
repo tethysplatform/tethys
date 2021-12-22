@@ -1,3 +1,4 @@
+import datetime as dt
 import unittest
 from unittest import mock
 
@@ -25,5 +26,20 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
         mock_setting.as_dict.assert_called_once()
         mock_terms.get_active_terms_list.assert_called_once()
         mock_terms.get_active_list.assert_not_called()
+        now = dt.datetime.utcnow()
 
-        self.assertEqual({'site_globals': {'documents': ['active_terms']}}, ret)
+        expected_context = {
+            'site_defaults': {'copyright': f'Copyright © {now:%Y} Your Organization'},
+            'site_globals': {
+                'background_color': '#fefefe',
+                'documents': ['active_terms'],
+                'primary_color': '#0a62a9',
+                'primary_text_color': '#ffffff',
+                'primary_text_hover_color': '#eeeeee',
+                'secondary_color': '#a2d6f9',
+                'secondary_text_color': '#212529',
+                'secondary_text_hover_color': '#aaaaaa'
+            }
+        }
+
+        self.assertDictEqual(expected_context, ret)

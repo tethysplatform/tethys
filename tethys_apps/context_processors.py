@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from tethys_apps.utilities import get_active_app
+from tethys_apps.dependencies import dependencies
 
 
 def tethys_apps_context(request):
@@ -42,19 +43,6 @@ def tethys_apps_context(request):
                 context['tethys_app']['enable_feedback'] = app.enable_feedback
 
     # Dependency Versions
-    context.update({
-        'tethys': {
-            'jquery': {
-                'version': '3.5.1',
-                'integrity': 'sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=',
-
-            },
-            'bootstrap': {
-                'version': '3.4.1',
-                'css_integrity': 'sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu',
-                'js_integrity': 'sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd'
-            },
-        }
-    })
+    context.update({'tethys': dependencies})
 
     return context

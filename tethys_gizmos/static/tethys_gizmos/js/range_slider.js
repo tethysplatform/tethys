@@ -22,10 +22,14 @@ var TETHYS_RANGE_SLIDER = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// private methods
- 	var initRangeSlider;
+ 	var init_range_sliders;
 
- 	initRangeSlider = function(tag) {
-
+ 	init_range_sliders = function() {
+		document.querySelectorAll('.form-range').forEach(element => {
+			element.addEventListener('input', function(e){
+				element.nextElementSibling.innerHTML = element.value;
+			});
+		});
  	};
 
 	/************************************************************************
@@ -34,27 +38,14 @@ var TETHYS_RANGE_SLIDER = (function() {
 	/*
 	 * Library object that contains public facing functions of the package.
 	 */
-	public_interface = {
-        initRangeSlider: initRangeSlider,
-
-        updateSliderDisplayValue: function(value_for, range_input) {
-            $('span.slider-value[for="' + value_for +'"]').html(range_input['value']);	
-        }
-     };
+	public_interface = {};
 
 	// Initialization: jQuery function that gets called when
 	// the DOM tree finishes loading
 	$(function() {
-
+		init_range_sliders();
 	});
 
 	return public_interface;
 
 }()); // End of package wrapper
-
-/*****************************************************************************
- *                      Public Functions
- *****************************************************************************/
-function updateSliderDisplayValue(value_for, range_input) {
-	TETHYS_RANGE_SLIDER.updateSliderDisplayValue(value_for, range_input);
-}

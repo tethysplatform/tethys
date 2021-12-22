@@ -19,15 +19,16 @@ class TestGizmo(TethysGizmoOptions):
 
     @staticmethod
     def get_vendor_js():
-        return ('tethys_gizmos/vendor/openlayers/ol.js',)
+        return ('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.js',
+                '://plotly-load_from_python.js',)
 
     @staticmethod
     def get_gizmo_js():
-        return ('tethys_gizmos/js/plotly-load_from_python.js',)
+        return ('tethys_gizmos/js/tethys_map_view.js',)
 
     @staticmethod
     def get_vendor_css():
-        return ('tethys_gizmos/vendor/openlayers/ol.css',)
+        return ('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.css',)
 
     @staticmethod
     def get_gizmo_css():
@@ -320,12 +321,33 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_render(self):
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.get_plotlyjs', return_value='PLOTLY_JAVASCRIPT')
+    def test_render_global_js(self, mock_get_plotlyjs):
+        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        output_global_js = 'global_js'
+        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_js)
+
+        # Check result
+        self.assertEqual(output_global_js, result.output_type)
+
+        # TEST render
+        context = Context({'foo': TestGizmo(name='test_render')})
+        context.update({'gizmos_rendered': []})
+
+        # unless it has the same gizmo name as the predefined one
+        render_globaljs = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_js).\
+            render(context=context)
+
+        # Check Vendor JS
+        mock_get_plotlyjs.assert_called()
+        self.assertIn('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.js',
+                      render_globaljs)
+        self.assertIn('PLOTLY_JAVASCRIPT', render_globaljs)
+        self.assertNotIn('tethys_map_view.js', render_globaljs)
+
+    def test_render_global_css(self):
         gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
         output_global_css = 'global_css'
-        output_css = 'css'
-        output_global_js = 'global_js'
-        output_js = 'js'
         result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_css)
 
         # Check result
@@ -335,20 +357,57 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         context = Context({'foo': TestGizmo(name='test_render')})
         context.update({'gizmos_rendered': []})
 
-        #  unless it has the same gizmo name as the predefined one
+        # unless it has the same gizmo name as the predefined one
         render_globalcss = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_css).\
             render(context=context)
+
+        # Check Vendor CSS
+        self.assertIn('https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/ol.min.css',
+                      render_globalcss)
+        self.assertNotIn('tethys_map_view.min.css', render_globalcss)
+        self.assertNotIn('tethys_gizmos.css', render_globalcss)
+
+    def test_render_css(self):
+        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        output_css = 'css'
+        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_css)
+
+        # Check result
+        self.assertEqual(output_css, result.output_type)
+
+        # TEST render
+        context = Context({'foo': TestGizmo(name='test_render')})
+        context.update({'gizmos_rendered': []})
+
+        # unless it has the same gizmo name as the predefined one
         render_css = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_css).\
             render(context=context)
-        render_globaljs = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_js).\
-            render(context=context)
+
+        # Check Gizmo CSS
+        self.assertIn('tethys_map_view.min.css', render_css)
+        self.assertIn('tethys_gizmos.css', render_css)
+        self.assertNotIn('ol.min.css', render_css)
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.get_plotlyjs', return_value='PLOTLY_JAVASCRIPT')
+    def test_render_js(self, mock_get_plotlyjs):
+        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        output_js = 'js'
+        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_js)
+
+        # Check result
+        self.assertEqual(output_js, result.output_type)
+
+        # TEST render
+        context = Context({'foo': TestGizmo(name='test_render')})
+        context.update({'gizmos_rendered': []})
+
+        # unless it has the same gizmo name as the predefined one
         render_js = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_js).\
             render(context=context)
 
-        self.assertIn('openlayers/ol.css', render_globalcss)
-        self.assertNotIn('tethys_gizmos.css', render_globalcss)
-        self.assertIn('tethys_gizmos.css', render_css)
-        self.assertNotIn('openlayers/ol.css', render_css)
-        self.assertIn('openlayers/ol.js', render_globaljs)
-        self.assertIn('plotly-load_from_python.js', render_js)
-        self.assertNotIn('openlayers/ol.js', render_js)
+        # Check Gizmo JS
+        mock_get_plotlyjs.assert_not_called()
+        self.assertIn('tethys_map_view.js', render_js)
+        self.assertIn('tethys_gizmos.js', render_js)
+        self.assertNotIn('ol.min.js', render_js)
+        self.assertNotIn('PLOTLY_JAVASCRIPT', render_js)

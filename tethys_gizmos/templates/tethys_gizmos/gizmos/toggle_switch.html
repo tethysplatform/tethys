@@ -1,6 +1,8 @@
-<div class="form-group {% if error %} has-error {% endif %}">
-  {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
-    <input class="form-control bootstrap-switch{% if classes %} {{ classes }}{% endif %}" id="{{ name }}"
+{% if display_text %}
+<label class="form-label" for="{{ name }}">{{ display_text }}</label>
+{% endif %}
+<div class="input-group{% if error or success %} has-validation{% endif %}">
+    <input class="form-control bootstrap-switch{% if error %} is-invalid{% endif %}{% if success %} is-valid{% endif %}{% if classes %} {{ classes }}{% endif %}" id="{{ name }}"
         name="{{ name }}"
         type="checkbox"
         {% if size %}data-size="{{ size }}"{% endif %}
@@ -16,6 +18,9 @@
             {% endfor %}
         {% endif %}>
   {% if error %}
-  <p class="help-block">{{ error }}</p>
+  <div class="invalid-feedback" style="display: block;">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+  <div class="valid-feedback" style="display: block;">{{ success }}</div>
   {% endif %}
 </div>

@@ -27,6 +27,7 @@ var TETHYS_APP_BASE = (function() {
        tethys_nav_cookie_key,    // Key for the tethys apps nav cookie
        nav_in_value,             // Value of the nav cookie when nav is in
        nav_out_value,            // Value of the nav cookie when nav is out
+       nav_disabled,             // True when the nav is disabled
        app_color;                // App color
 
 
@@ -109,7 +110,7 @@ var TETHYS_APP_BASE = (function() {
           if (nav_cookie_value == nav_out_value) {
             $(wrapper_selector).removeClass('show-nav');
 
-          } else if (nav_cookie_value == nav_in_value) {
+          } else if (nav_cookie_value == nav_in_value && !nav_disabled) {
             $(wrapper_selector).addClass('show-nav');
           }
        }
@@ -119,6 +120,8 @@ var TETHYS_APP_BASE = (function() {
    no_nav_handler = function() {
        // If no nav present...
         if ( !$(app_navigation_selector).length ) {
+            nav_disabled = true;
+
             // Hide the nav area
             $('#app-content').css('transition', 'none');
             $(wrapper_selector).removeClass('show-nav');
@@ -189,7 +192,10 @@ var TETHYS_APP_BASE = (function() {
         }
 
         // Hide tooltips
-        $('.tooltip').tooltip('hide');
+        $('[data-bs-toggle="tooltip"]').tooltip('hide');
+
+        // Dismiss alerts
+        $('.alert').alert('close');
 
         // Hide by removing "show" classes
         $(app_header_selector).removeClass('show-header');
@@ -281,6 +287,7 @@ var TETHYS_APP_BASE = (function() {
       wrapper_selector = '#app-content-wrapper';
       toggle_nav_selector = '.toggle-nav';
       app_navigation_selector = '#app-navigation';
+      nav_disabled = false;
 
       // Cookie globals
       tethys_nav_cookie_key = 'tethysappnav';
@@ -313,7 +320,7 @@ var TETHYS_APP_BASE = (function() {
       check_responsive();
 
       // Initialize tooltips
-      $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+      $('[data-bs-toggle="tooltip"]').tooltip({ container: 'body' });
 
   });
 
