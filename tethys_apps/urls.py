@@ -50,23 +50,21 @@ for namespace, urls in ext_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     extension_urls.append(url(root_pattern, include((urls, namespace), namespace=namespace)))
 
-# Retrieve WebSocket URL patterns
+# Collect all app WebSocket URLs into one list and prepend with "apps/<root-url>"
 app_websocket_url_patterns = normal_url_patterns['ws_url_patterns']
 handler_websocket_url_patterns = handler_url_patterns['ws_handler_patterns']
 
-# Collect all app WebSocket URLs into one list
-app_websocket_urls = []
-app_websocket_urls.extend(
-    list(
-        itertools.chain.from_iterable(
-            app_websocket_url_patterns.values()
-        )
-    )
-)
-app_websocket_urls.extend(
-    list(
-        itertools.chain.from_iterable(
-            handler_websocket_url_patterns.values()
-        )
-    )
-)
+def prepare_websocket_urls(app_websocket_url_patterns):
+    prepared_urls = []
+    for namespace, urls in app_websocket_url_patterns.items():
+        root_url = namespace.replace('_', '-')
+        for u in urls:
+            url_str = str(u.pattern).replace("^", "")
+            namespaced_url_str = f'^apps/{root_url}/{url_str}'
+            namespaced_url = url(namespaced_url_str, u.callback, name=u.name)
+            prepared_urls.append(namespaced_url)
+
+    return prepared_urls
+
+app_websocket_urls = prepare_websocket_urls(app_websocket_url_patterns)
+app_websocket_urls += prepare_websocket_urls(handler_websocket_url_patterns)

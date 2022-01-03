@@ -18,7 +18,7 @@ class TestConsumer(TethysTestCase):
             os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
             settings.CHANNEL_LAYERS = {}
 
-            communicator = WebsocketCommunicator(TestWS, "/ws/test-app/test-app-ws/")
+            communicator = WebsocketCommunicator(TestWS.as_asgi(), "/ws/test-app/test-app-ws/")
             connected, subprotocol = await communicator.connect()
 
             # Test connection

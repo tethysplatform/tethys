@@ -104,7 +104,7 @@ class TethysBase(TethysBaseMixin):
         base_app_endpoint = '/'.join(['apps', self.root_url])
         stripped_url = url_map.url.replace("^", "").replace("$", "")
 
-        # Determine the full URL endpoint for the Bokeh App
+        # Build the full URL endpoint for the Bokeh App
         if stripped_url in [r'', r'/']:
             bokeh_app_endpoint = base_app_endpoint
         else:
@@ -115,28 +115,24 @@ class TethysBase(TethysBaseMixin):
 
         # Create Bokeh app
         bokeh_app = autoload(bokeh_app_endpoint, handler_function)
-        kwargs = dict(app_context=bokeh_app.app_context)
+        asgi_kwargs = dict(app_context=bokeh_app.app_context)
 
-        def urlpattern(suffix="", include_base=True):
+        def urlpattern(suffix=""):
             # Add suffix
             url_pattern = bokeh_app.url + suffix
-
-            if not include_base:
-                # Strip out the app home endpoint portion for the
-                # Django URL to be consistent with other app urls
-                url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
-
+            # Strip out the app root endpoint portion
+            url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
             return f'^{url_pattern}$'
 
         http_url = url(
-            urlpattern('/autoload.js', include_base=False),
-            AutoloadJsConsumer.as_asgi(**kwargs),
+            urlpattern('/autoload.js'),
+            AutoloadJsConsumer.as_asgi(**asgi_kwargs),
             name=f'{url_map.name}_bokeh_autoload'
         )
 
         ws_url = url(
             urlpattern('/ws'),
-            WSConsumer.as_asgi(**kwargs),
+            WSConsumer.as_asgi(**asgi_kwargs),
             name=f'{url_map.name}_bokeh_ws'
         )
 

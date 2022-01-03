@@ -1,15 +1,14 @@
+from types import FunctionType
 import unittest
-import tethys_apps.base.app_base as tethys_app_base
 from unittest import mock
-
 import uuid
 from django.db.utils import ProgrammingError
 from django.test import RequestFactory
-from ... import UserFactory
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
-from types import FunctionType
+import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.permissions import Permission, PermissionGroup
+from ... import UserFactory
 
 
 class TethysAppChild(tethys_app_base.TethysAppBase):
@@ -133,35 +132,54 @@ class TestTethysBase(unittest.TestCase):
     @mock.patch('tethys_apps.base.app_base.url')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_handler_patterns(self, mock_tbm, mock_url):
-        # import pdb; pdb.set_trace()
         app = tethys_app_base.TethysBase()
         app._namespace = 'foo'
         app.root_url = 'test-url'
-        url_map = mock.MagicMock(controller='test_app.controllers.home',
-                                 handler='test_app.controllers.home_handler', handler_type='bokeh', url='')
+        url_map = mock.MagicMock(
+            controller='test_app.controllers.home',
+            handler='test_app.controllers.home_handler', 
+            handler_type='bokeh', 
+            url=''
+        )
         url_map.name = 'home'
 
-        app.url_maps = mock.MagicMock(return_value=[url_map, ])
-        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
+        app.url_maps = mock.MagicMock(return_value=[url_map,])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app',])
 
         # Execute
         result = app.handler_patterns
-        # Check url call at django_url = url...
-        rts_call_args = mock_url.call_args_list
-        self.assertEqual(r'^apps/test-url/autoload.js$', rts_call_args[0][0][0])
-        self.assertEqual(r'^apps/test-url/ws$', rts_call_args[1][0][0])
-        self.assertIn('name', rts_call_args[0][1])
-        self.assertIn('name', rts_call_args[1][1])
-        self.assertEqual('home_bokeh_autoload', rts_call_args[0][1]['name'])
-        self.assertEqual('home_bokeh_ws', rts_call_args[1][1]['name'])
+        
+        # Verify format of return
+        self.assertIn('http', result)
+        self.assertIn('websocket', result)
         self.assertIn('foo', result['http'])
         self.assertIn('foo', result['websocket'])
-        self.assertIsInstance(rts_call_args[0][0][1], type)
-        self.assertIsInstance(rts_call_args[1][0][1], type)
+        
+        # Verify call of url for http endpoint
+        http_url_call = mock_url.call_args_list[0]
+        http_url_call_args = http_url_call[0]
+        http_url_call_kwargs = http_url_call[1]
+        self.assertEqual(r'^autoload.js$', http_url_call_args[0])
+        self.assertIsInstance(http_url_call_args[1], FunctionType)
+        self.assertIn('AutoloadJsConsumer', str(http_url_call_args[1]))
+        self.assertIn('name', http_url_call_kwargs)
+        self.assertEqual('home_bokeh_autoload', http_url_call_kwargs['name'])
+        
+        # Verify call of url for websocket endpoint
+        ws_url_call = mock_url.call_args_list[1]
+        ws_url_call_args = ws_url_call[0]
+        ws_url_call_kwargs = ws_url_call[1]
+        self.assertEqual(r'^ws$', ws_url_call_args[0])
+        self.assertIsInstance(ws_url_call_args[1], FunctionType)
+        self.assertIn('WSConsumer', str(ws_url_call_args[1]))
+        self.assertIn('name', ws_url_call_kwargs)
+        self.assertEqual('home_bokeh_ws', ws_url_call_kwargs['name'])
 
+    @mock.patch('tethys_apps.base.app_base.WSConsumer')
+    @mock.patch('tethys_apps.base.app_base.AutoloadJsConsumer')
     @mock.patch('tethys_apps.base.app_base.url')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
-    def test_handler_patterns_from_function(self, mock_tbm, mock_url):
+    def test_handler_patterns_from_function(self, mock_tbm, mock_url, mock_ajsc, mock_wsc):
         app = tethys_app_base.TethysBase()
         app._namespace = 'foo'
         app.root_url = 'test-url'
@@ -169,21 +187,41 @@ class TestTethysBase(unittest.TestCase):
         def test_func(mock_doc):
             return ''
 
-        url_map = mock.MagicMock(controller='test_app.controllers.home',
-                                 handler=test_func, handler_type='bokeh', url='')
+        url_map = mock.MagicMock(
+            controller='test_app.controllers.home',
+            handler=test_func, 
+            handler_type='bokeh', 
+            url=''
+        )
         url_map.name = 'home'
         app.url_maps = mock.MagicMock(return_value=[url_map, ])
         mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         app.handler_patterns
 
-        rts_call_args = mock_url.call_args_list
-        self.assertEqual(r'^apps/test-url/autoload.js$', rts_call_args[0][0][0])
-        self.assertIn('name', rts_call_args[0][1])
-        self.assertIn('name', rts_call_args[1][1])
-        self.assertEqual('home_bokeh_autoload', rts_call_args[0][1]['name'])
-        self.assertEqual('home_bokeh_ws', rts_call_args[1][1]['name'])
-        self.assertIs(rts_call_args[0][1]['kwargs']['app_context']._application._handlers[0]._func, test_func)
+        # Verify call of url for http endpoint
+        http_url_call = mock_url.call_args_list[0]
+        http_url_call_args = http_url_call[0]
+        http_url_call_kwargs = http_url_call[1]
+        self.assertEqual(r'^autoload.js$', http_url_call_args[0])
+        self.assertEqual(mock_ajsc.as_asgi(), http_url_call_args[1])
+        self.assertIn('name', http_url_call_kwargs)
+        self.assertEqual('home_bokeh_autoload', http_url_call_kwargs['name'])
+        mock_ajsc.as_asgi.assert_called()
+        
+        # Verify call of url for websocket endpoint
+        ws_url_call = mock_url.call_args_list[1]
+        ws_url_call_args = ws_url_call[0]
+        ws_url_call_kwargs = ws_url_call[1]
+        self.assertEqual(r'^ws$', ws_url_call_args[0])
+        self.assertEqual(mock_wsc.as_asgi(), ws_url_call_args[1])
+        self.assertIn('name', ws_url_call_kwargs)
+        self.assertEqual('home_bokeh_ws', ws_url_call_kwargs['name'])
+        mock_wsc.as_asgi.assert_called()
+        self.assertIs(
+            test_func, 
+            mock_wsc.as_asgi.call_args_list[0][1]['app_context']._application._handlers[0]._func
+        )
 
     @mock.patch('tethys_apps.base.app_base.url')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
@@ -195,22 +233,33 @@ class TestTethysBase(unittest.TestCase):
         def test_func(mock_doc):
             return ''
 
-        url_map = mock.MagicMock(controller='test_app.controllers.home',
-                                 handler=test_func, handler_type='bokeh')
+        url_map = mock.MagicMock(
+            controller='test_app.controllers.home',
+            handler=test_func,
+            handler_type='bokeh'
+        )
         url_map.name = 'basename'
         url_map.url = 'basename/'
         app.url_maps = mock.MagicMock(return_value=[url_map, ])
         mock_tbm.return_value = mock.MagicMock(url_maps=['basename/', ])
 
         app.handler_patterns
-
-        rts_call_args = mock_url.call_args_list
-        self.assertEqual(r'^apps/test-url/basename/autoload.js$', rts_call_args[0][0][0])
-        self.assertIn('name', rts_call_args[0][1])
-        self.assertIn('name', rts_call_args[1][1])
-        self.assertEqual('basename_bokeh_autoload', rts_call_args[0][1]['name'])
-        self.assertEqual('basename_bokeh_ws', rts_call_args[1][1]['name'])
-        self.assertIs(rts_call_args[0][1]['kwargs']['app_context']._application._handlers[0]._func, test_func)
+        
+        # Verify call of url for http endpoint
+        http_url_call = mock_url.call_args_list[0]
+        http_url_call_args = http_url_call[0]
+        http_url_call_kwargs = http_url_call[1]
+        self.assertEqual(r'^basename/autoload.js$', http_url_call_args[0])
+        self.assertIn('name', http_url_call_kwargs)
+        self.assertEqual('basename_bokeh_autoload', http_url_call_kwargs['name'])
+        
+        # Verify call of url for websocket endpoint
+        ws_url_call = mock_url.call_args_list[1]
+        ws_url_call_args = ws_url_call[0]
+        ws_url_call_kwargs = ws_url_call[1]
+        self.assertEqual(r'^basename/ws$', ws_url_call_args[0])
+        self.assertIn('name', ws_url_call_kwargs)
+        self.assertEqual('basename_bokeh_ws', ws_url_call_kwargs['name'])
 
     @mock.patch('tethys_apps.base.app_base.tethys_log')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
@@ -230,8 +279,8 @@ class TestTethysBase(unittest.TestCase):
         # Check Error Message
         self.assertRaises(ImportError, test_handler_patterns)
         rts_call_args = mock_error.call_args_list
-        error_message = 'The following error occurred while trying to import' \
-                        ' the handler function "1module.1function"'
+        error_message = 'The following error occurred while trying to import ' \
+                        'the handler function "1module.1function"'
         self.assertIn(error_message, rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.app_base.tethys_log')
@@ -252,8 +301,8 @@ class TestTethysBase(unittest.TestCase):
         # Check Error Message
         self.assertRaises(AttributeError, test_handler_patterns)
         rts_call_args = mock_error.call_args_list
-        error_message = 'The following error occurred while trying to access' \
-                        ' the handler function "test_app.controllers.home_handler1"'
+        error_message = 'The following error occurred while trying to access ' \
+                        'the handler function "test_app.controllers.home_handler1"'
         self.assertIn(error_message, rts_call_args[0][0][0])
 
     def test_sync_with_tethys_db(self):
