@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import itertools
 import logging
 from django.conf.urls import url, include
 from tethys_apps.harvester import SingletonHarvester
@@ -54,6 +53,7 @@ for namespace, urls in ext_url_patterns.items():
 app_websocket_url_patterns = normal_url_patterns['ws_url_patterns']
 handler_websocket_url_patterns = handler_url_patterns['ws_handler_patterns']
 
+
 def prepare_websocket_urls(app_websocket_url_patterns):
     prepared_urls = []
     for namespace, urls in app_websocket_url_patterns.items():
@@ -65,6 +65,7 @@ def prepare_websocket_urls(app_websocket_url_patterns):
             prepared_urls.append(namespaced_url)
 
     return prepared_urls
+
 
 app_websocket_urls = prepare_websocket_urls(app_websocket_url_patterns)
 app_websocket_urls += prepare_websocket_urls(handler_websocket_url_patterns)

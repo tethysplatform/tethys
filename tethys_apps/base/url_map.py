@@ -71,7 +71,7 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
     # Remove last slash if present
     if url.endswith('/'):
         url = url[:-1]
-    
+
     # Remove starting slash if present
     if url.startswith('/'):
         url = url[1:]
@@ -128,6 +128,6 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             django_url = f'^{django_url_joined}/ws/$'
         else:
             # Handle empty string case
-            django_url = f'^ws/$'
+            django_url = r'^ws/$'
 
     return django_url

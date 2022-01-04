@@ -1,5 +1,7 @@
 import unittest
 import tethys_apps.base.url_map as base_url_map
+
+
 class TestUrlMap(unittest.TestCase):
     def setUp(self):
         self.name = 'foo_name'
@@ -22,7 +24,7 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(self.name, result.name)
         self.assertEqual(expected_url, result.url)
         self.assertEqual(self.controller, result.controller)
-    
+
     def test_UrlMap_ending_slash(self):
         url = 'example/resource/{variable_name}/'
         expected_url = r'^example/resource/(?P<variable_name>[0-9A-Za-z-_.]+)/$'
@@ -33,7 +35,7 @@ class TestUrlMap(unittest.TestCase):
         )
         # Check Result
         self.assertEqual(expected_url, result.url)
-    
+
     def test_UrlMap_starting_slash(self):
         url = '/example/resource/{variable_name}'
         expected_url = r'^example/resource/(?P<variable_name>[0-9A-Za-z-_.]+)/$'
@@ -55,7 +57,7 @@ class TestUrlMap(unittest.TestCase):
         )
         # Check Result
         self.assertEqual(expected_url, result.url)
-    
+
     def test_UrlMap_url_with_root(self):
         url = 'foo-app/example/resource/{variable_name}'
         expected_url = r'^example/resource/(?P<variable_name>[0-9A-Za-z-_.]+)/$'
@@ -170,7 +172,8 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(expected_url, result.url)
 
     def test_UrlMap_value_error(self):
-        self.assertRaises(ValueError,
+        self.assertRaises(
+            ValueError,
             self.bound_UrlMap,
             name='1',
             url='2',
