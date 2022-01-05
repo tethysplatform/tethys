@@ -110,9 +110,6 @@ jobs:
           hash -r
           conda config --set always_yes yes --set changeps1 no
           conda update -q conda
-          conda install conda-build anaconda-client
-          conda config --set anaconda_upload no
-          mkdir -p ~/conda-bld
       # Export Conda Build Path
       - name: Set Conda Build Path
         uses: allenevans/set-env@v2.0.0
@@ -135,7 +132,10 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
+          mamba create -y -n conda-build conda-build anaconda-client
+          conda activate conda-build
+          conda config --set anaconda_upload no
+          mkdir -p ~/conda-bld
           conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
@@ -143,8 +143,8 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
           ls ~/conda-bld/noarch
+          conda activate conda-build
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
