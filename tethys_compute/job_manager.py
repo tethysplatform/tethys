@@ -65,7 +65,7 @@ class JobManager:
         # Allow the job class to be passed in as job_type.
         if isinstance(job_type, str):
             job_type = JOB_TYPES[job_type]
-        user_workspace = self.app.get_user_workspace(user)
+        user_workspace = self.app.get_user_workspace(user)  # TODO: Refactor to use the internal _get_user_workspace method
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
         kwrgs.update(kwargs)
         job = job_type(**kwrgs)

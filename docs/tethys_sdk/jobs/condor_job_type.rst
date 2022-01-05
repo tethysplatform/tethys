@@ -18,13 +18,11 @@ To create a job call the ``create_job`` method on the job manager. The required 
 ::
 
     from tethys_sdk.compute import list_schedulers
-    from .app import MyApp as app
+    from tethys_sdk.workspaces import app_workspace
 
-    def some_controller(request):
 
-        # get the path to the app workspace to reference job files
-        app_workspace = app.get_app_workspace().path
-
+    @app_workspace
+    def some_controller(request, app_workspace):
         # create a new job from the job manager
         job = job_manager.create_job(
             name='myjob_{id}',  # required
