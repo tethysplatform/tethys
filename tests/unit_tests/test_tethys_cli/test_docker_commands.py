@@ -222,7 +222,7 @@ class TestDockerCommands(unittest.TestCase):
         mock_port_bindings_prop.return_value = mock_port_bindings
         expected_options = dict(
             name='tethys_geoserver',
-            image='ciwater/geoserver:2.8.2-clustered',
+            image='tethysplatform/geoserver:latest',
             environment=dict(
                 ENABLED_NODES='1',
                 REST_NODES='1',
@@ -443,7 +443,7 @@ class TestDockerCommands(unittest.TestCase):
         mock_port_bindings_prop.return_value = mock_port_bindings
         expected_options = dict(
             name='tethys_thredds',
-            image='unidata/thredds-docker:4.6.13',
+            image='unidata/thredds-docker:4.6.20-SNAPSHOT',
             environment=dict(
                 TDM_PW='CHANGEME!',
                 TDS_HOST='http://localhost',
