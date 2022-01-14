@@ -6,80 +6,77 @@
 name: tethys
 
 channels:
-- tethysplatform
-- tethysplatform/label/dev
-- conda-forge
-- defaults
+  - conda-forge
+  - tethysplatform
+  - defaults
 
 dependencies:
-- python
+  - python
 
-# system dependencies
-- pycrypto
-- pyopenssl
-- docker-py
-- distro
+  # system dependencies
+  - pycrypto
+  - pyopenssl
+  - docker-py
+  - distro
 
-# database dependencies
-- postgresql
-- psycopg2<2.9  # remove pin after upgrading to django 3.
-- sqlalchemy
-- geoalchemy2
+  # database dependencies
+  - postgresql
+  - psycopg2
+  - sqlalchemy
+  - geoalchemy2
 
-# plotting dependencies
-- plotly
-- bokeh>=2.0.0*
+  # plotting dependencies
+  - plotly
+  - bokeh
 
-# external services dependencies
-- tethys_dataset_services>=2.0.0
-- hs_restclient
-- owslib
-- requests
-- social-auth-app-django
-- dask=1.2.*
-- tethys_dask_scheduler>=1.0.2
-- channels=2.*
-- daphne=2.5.*
-- service_identity
-- condorpy
-- siphon
-- python-jose
-- pyjwt<2.0.0
+  # external services dependencies
+  - tethys_dataset_services>=2.0.0  # This needs upgrading
+  - hs_restclient
+  - owslib
+  - requests
+  - dask  # The pin to 1.2 is holding back Python to 3.7
+  - tethys_dask_scheduler>=1.0.2  # This needs upgrading
+  - service_identity
+  - condorpy
+  - siphon
+  - python-jose
+  - pyjwt<2.0.0
 
-# datetime dependencies
-- arrow
-- isodate
+  # datetime dependencies
+  - arrow
+  - isodate
 
-# django/plugin dependencies
-- django=2.2.*
-- django-axes
-- django-filter
-- djangorestframework
-- django-bootstrap5
-- django-model-utils
-- django-guardian
-- django-gravatar2
-- django-termsandconditions
-- django-session-security
-- django-analytical
-- django-simple-captcha
-- django-recaptcha2
-- django-mfa2
-- social-auth-app-django
+  # django/plugin dependencies
+  - django=3.2.*
+  - channels=3.*
+  - daphne=3.*
+  - django-analytical
+  - django-axes
+  - django-filter
+  - djangorestframework
+  - django-bootstrap5
+  - django-model-utils
+  - django-guardian
+  - django-gravatar2
+  - django-mfa2
+  - django-recaptcha2
+  - django-simple-captcha
+  - django-session-security
+  - django-termsandconditions
+  - social-auth-app-django
 
-# tests dependencies
-- requests-mock
-- selenium
-- coverage
-- factory_boy
+  # tests dependencies
+  - selenium
+  - coverage
+  - factory_boy
 
-# for now
-- pillow
-- pip
-- future
-- flake8
-- pbr
-- git
+  # for now
+  - pillow
+  - pip
+  - future
+  - flake8
+  - pbr
+  - git
 
-# Conda to allow Python API access to Conda Install
-- conda
+  # Conda to allow Python API access to Conda Install
+  - conda

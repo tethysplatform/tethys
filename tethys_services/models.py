@@ -269,7 +269,7 @@ class PersistentStoreService(models.Model):
         Returns a Persistent Store URL
         """
         from sqlalchemy.engine.url import URL
-        url = URL(
+        url = URL.create(
             drivername=self.engine,
             host=self.host,
             port=self.port,

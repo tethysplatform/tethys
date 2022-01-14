@@ -9,15 +9,13 @@
 from condorpy import Workflow
 from django.db import models
 
-from django.contrib.postgres.fields import JSONField
-
 
 class CondorPyWorkflow(models.Model):
     """
     Database model for condorpy workflows
     """
     condorpyworkflow_id = models.AutoField(primary_key=True)
-    _max_jobs = JSONField(default=dict, null=True, blank=True)
+    _max_jobs = models.JSONField(default=dict, null=True, blank=True)
     _config = models.CharField(max_length=1024, null=True, blank=True)
 
     @property
