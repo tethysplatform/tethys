@@ -70,9 +70,9 @@ class TestJobManager(unittest.TestCase):
         self.assertEqual(mock_app, ret.app)
         self.assertEqual('test_label', ret.label)
 
-    def test_JobManager_create_job_custom_class(self):
-        self.app_model.get_user_workspace = mock.MagicMock()
-        self.app_model.get_user_workspace().path = 'test_user_workspace'
+    @mock.patch('tethys_compute.job_manager._get_user_workspace')
+    def test_JobManager_create_job_custom_class(self, mock_guw):
+        mock_guw().path = 'test_user_workspace'
 
         # Execute
         ret_jm = JobManager(self.app_model)
@@ -90,15 +90,12 @@ class TestJobManager(unittest.TestCase):
 
         ret_job.delete()
 
+    @mock.patch('tethys_compute.job_manager._get_user_workspace')
     @mock.patch('tethys_compute.job_manager.CondorJob')
-    def test_JobManager_create_job_string(self, mock_cj):
+    def test_JobManager_create_job_string(self, mock_cj, mock_guw):
         mock_app = mock.MagicMock()
         mock_app.package = 'test_label'
-        mock_app.get_app_workspace.return_value = 'test_app_workspace'
-        mock_user_workspace = mock.MagicMock()
-
-        mock_app.get_user_workspace.return_value = mock_user_workspace
-        mock_app.get_user_workspace().path = 'test_user_workspace'
+        mock_guw().path = 'test_user_workspace'
 
         # Execute
         ret_jm = JobManager(mock_app)

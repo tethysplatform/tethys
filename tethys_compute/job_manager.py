@@ -17,6 +17,7 @@ from tethys_compute.models.basic_job import BasicJob
 from tethys_compute.models.dask.dask_job import DaskJob
 from tethys_compute.models.condor.condor_job import CondorJob
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow
+from tethys_apps.base.workspace import _get_user_workspace
 
 log = logging.getLogger('tethys.tethys_compute.job_manager')
 
@@ -65,7 +66,7 @@ class JobManager:
         # Allow the job class to be passed in as job_type.
         if isinstance(job_type, str):
             job_type = JOB_TYPES[job_type]
-        user_workspace = self.app.get_user_workspace(user)
+        user_workspace = _get_user_workspace(self.app, user)
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
         kwrgs.update(kwargs)
         job = job_type(**kwrgs)

@@ -52,5 +52,5 @@ class JobAdmin(admin.ModelAdmin):
                     'status']
     list_display_links = ('name',)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False

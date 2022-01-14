@@ -25,6 +25,7 @@ class TestApp(TethysAppBase):
         """
         Add controllers
         """
+        from .controllers import TestWS
         UrlMap = url_map_maker(self.root_url)
 
         url_maps = (
@@ -38,7 +39,7 @@ class TestApp(TethysAppBase):
             UrlMap(
                 name='ws',
                 url='test-app-ws/',
-                controller='test_app.controllers.TestWS',
+                controller=TestWS.as_asgi(),
                 protocol='websocket'
             ),
         )

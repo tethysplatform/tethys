@@ -11,7 +11,7 @@ import os
 from condorpy import Templates, Job
 from django.db import models
 
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField
 
 
 class CondorPyJob(models.Model):
@@ -19,7 +19,7 @@ class CondorPyJob(models.Model):
     Database model for condorpy jobs
     """
     condorpyjob_id = models.AutoField(primary_key=True)
-    _attributes = JSONField(default=dict, null=True, blank=True)
+    _attributes = models.JSONField(default=dict, null=True, blank=True)
     _num_jobs = models.IntegerField(default=1)
     _remote_input_files = ArrayField(
         models.CharField(max_length=1024, null=True, blank=True),

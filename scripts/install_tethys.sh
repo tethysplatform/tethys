@@ -329,12 +329,16 @@ then
 
     source "${CONDA_HOME}/etc/profile.d/conda.sh"
 
+    # Install mamba
+    echo "Installing mamba..."
+    conda install -y -n base -c conda-forge mamba
+
     if [ -n "${CLONE_REPO}" ]
     then
         # clone Tethys repo
         echo "Cloning the Tethys Platform repo..."
         conda activate
-        conda install --yes git
+        mamba install --yes git
         git clone https://github.com/tethysplatform/tethys.git "${TETHYS_SRC}"
     fi
 
@@ -349,7 +353,7 @@ then
     then
         # create conda env and install Tethys
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
-        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
+        mamba env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
         conda activate ${CONDA_ENV_NAME}
         python "${TETHYS_SRC}/setup.py" develop
     else

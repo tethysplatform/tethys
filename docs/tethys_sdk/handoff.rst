@@ -17,14 +17,14 @@ The first step is to define a Handoff handler. The purpose of the Handoff handle
 
     import os
     import requests
-    from .app import HydrographPlotter
+    from tethys_sdk.workspaces import user_workspace
 
-    def csv(request, csv_url):
+    @user_workspace
+    def csv(request, csv_url, user_workspace):
         """
         Handoff handler for csv files.
         """
         # Get a filename in the current user's workspace
-        user_workspace = HydrographPlotter.get_user_workspace(request.user)
         filename = os.path.join(user_workspace, 'hydrograph.csv')
 
         # Initiate a GET request on the CSV URL
@@ -139,15 +139,13 @@ An example of an internal HandoffHandler:
 
     import os
     import requests
-    from .app import HydrographPlotter
+    from tethys_sdk.workspaces import user_workspace
 
-    def csv_internal(request, path_to_csv):
+    @user_workspace
+    def csv_internal(request, path_to_csv, user_workspace):
         """
         Internal handoff handler for csv files.
         """
-        # Get a filename in the current user's workspace
-        user_workspace = HydrographPlotter.get_user_workspace(request.user)
-
         # Create symbolic link to the csv in the user's workspace
         src = path_to_csv
         dst = os.path.join(user_workspace, 'hydrograph.csv')

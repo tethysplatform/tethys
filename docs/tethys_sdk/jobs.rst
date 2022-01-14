@@ -51,9 +51,6 @@ Any other job attributes can also be passed in as `kwargs`.
 
 ::
 
-    # get the path to the app workspace to reference job files
-    app_workspace = app.get_app_workspace().path
-
     # create a new job from the job manager
     job = job_manager.create_job(
         name='myjob_{id}',  # required

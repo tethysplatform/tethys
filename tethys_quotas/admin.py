@@ -23,7 +23,7 @@ class ResourceQuotaAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
@@ -33,7 +33,7 @@ class TethysQuotasSettingInline(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 

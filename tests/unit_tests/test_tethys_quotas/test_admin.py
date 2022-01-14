@@ -18,8 +18,8 @@ class TethysQuotasAdminTest(TestCase):
         expected_readonly_fields = ('codename', 'name', 'description', 'units', 'applies_to')
         ret = ResourceQuotaAdmin(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
 
     def test_has_delete_permission(self):
         mock_request = mock.MagicMock()
@@ -38,9 +38,9 @@ class TethysQuotasAdminTest(TestCase):
 
         ret = UserQuotasSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     # Need to check
     # def test_UserQuotasSettingInline_get_queryset(self):

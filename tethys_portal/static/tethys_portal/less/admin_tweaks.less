@@ -170,6 +170,10 @@ thead {
     background: #efefef;
     padding: 5px;
 
+    #searchbar {
+      height: 30px;
+    }
+
     form {
       input[type=submit] {
         padding: 4px 6px;
@@ -198,6 +202,7 @@ thead {
     h3 {
       color: #666666;
       font-weight: 400;
+      font-size: 22px;
     }
 
     li {
@@ -345,6 +350,16 @@ input[type=submit] {
           }
         }
       }
+    }
+  }
+
+  .aligned {
+    margin-bottom: 10px;
+
+    label + div.readonly {
+      margin-left: 0;
+      font-size: 34px;
+      color: var(--body-quiet-color);
     }
   }
 }

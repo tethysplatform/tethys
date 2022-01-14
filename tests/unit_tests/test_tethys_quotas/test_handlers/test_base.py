@@ -78,7 +78,7 @@ class ResourceQuotaHandlerTest(TestCase):
                                             email="mike@gmail.com",
                                             password="pass")
             resource_quota_handler = WorkspaceQuotaHandler(user)
-            self.assertEquals("workspace_quota", resource_quota_handler.codename)
+            self.assertEqual("workspace_quota", resource_quota_handler.codename)
             self.assertTrue(resource_quota_handler.check())
 
     @mock.patch('tethys_quotas.utilities.log')

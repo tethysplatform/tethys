@@ -1,9 +1,9 @@
 from tethys_sdk.testing import TethysTestCase
 
-import tethys_portal.routing as routing
+import tethys_portal.asgi as asgi
 
 
-class TestRoutings(TethysTestCase):
+class TestAsgiApplication(TethysTestCase):
 
     def set_up(self):
         pass
@@ -11,7 +11,7 @@ class TestRoutings(TethysTestCase):
     def tear_down(self):
         pass
 
-    def test_routings(self):
-        application = routing.application
+    def test_application(self):
+        application = asgi.application
         self.assertIn('websocket', application.application_mapping)
         self.assertIn('http', application.application_mapping)

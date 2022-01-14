@@ -45,7 +45,7 @@ class CondorJobTest(TethysTestCase):
 
     def tear_down(self):
         self.scheduler.delete()
-        if self.condorjob.condorpyjob_ptr_id == 99:
+        if self.condorjob.condorbase_ptr_id is not None:
             self.condorjob.delete()
 
         if os.path.exists(self.workspace_dir):

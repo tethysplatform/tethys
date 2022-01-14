@@ -151,9 +151,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = TethysAppQuotasSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     # Need to check
     # def test_TethysAppQuotasSettingInline_get_queryset(self):
@@ -205,7 +205,7 @@ class TestTethysAppAdmin(unittest.TestCase):
                 """.format('0 bytes', "&#8734;", url=url))
         actual_html = ret.manage_app_storage(app)
 
-        self.assertEquals(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
+        self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
 
         mock_convert.return_value = '0 bytes'
         mock_get_quota.return_value = {'quota': 5, 'units': 'gb'}
@@ -219,7 +219,7 @@ class TestTethysAppAdmin(unittest.TestCase):
                         """.format('0 bytes', "0 bytes", url=url))
         actual_html = ret.manage_app_storage(app)
 
-        self.assertEquals(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
+        self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
 
     def test_TethysExtensionAdmin(self):
         expected_readonly_fields = ('package', 'name', 'description')

@@ -72,6 +72,10 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
     if url.endswith('/'):
         url = url[:-1]
 
+    # Remove starting slash if present
+    if url.startswith('/'):
+        url = url[1:]
+
     # Split the url into parts
     url_parts = url.split('/')
     django_url_parts = []
@@ -119,10 +123,11 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             # Handle empty string case
             django_url = r'^$'
     elif protocol == 'websocket':
+        # Append the "ws" suffix
         if django_url_joined != '':
-            django_url = f'^{root_url}/{django_url_joined}/ws/$'
+            django_url = f'^{django_url_joined}/ws/$'
         else:
             # Handle empty string case
-            django_url = f'^{root_url}/ws/$'
+            django_url = r'^ws/$'
 
     return django_url

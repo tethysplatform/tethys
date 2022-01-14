@@ -62,10 +62,10 @@ class EntityQuotaTest(TestCase):
 
     def test_query(self):
         eq_user = UserQuota.objects.get(value=100)
-        self.assertEquals('john', eq_user.entity.username)
+        self.assertEqual('john', eq_user.entity.username)
 
         eq_app = TethysAppQuota.objects.get(value=200)
-        self.assertEquals('Test App', eq_app.entity.name)
+        self.assertEqual('Test App', eq_app.entity.name)
 
     def test_rqh_get_current_use(self):
         resource_quota_handler = ResourceQuotaHandler('entity')
