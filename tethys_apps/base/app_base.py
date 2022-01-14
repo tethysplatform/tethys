@@ -850,6 +850,45 @@ class TethysAppBase(TethysBase):
         return job_manager
 
     @classmethod
+    def get_scheduler(cls, name):
+        """
+        Retrieves a Scheduler assigned to the named SchedulerSetting.
+
+        Args:
+            name(str): The name of the SchedulerSetting as defined in the app.py.
+
+        Returns:
+            Scheduler: The Scheduler assigned to the named setting.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            scheduler = app.get_scheduler('primary_condor')
+            job_manager = app.get_job_manager()
+            job_manager.create_job(
+                name='do_the_thing',
+                job_type='CONDORJOB',
+                scheduler=scheduler,
+                ...
+            )
+
+
+        """
+        from tethys_apps.models import TethysApp
+        app = cls()
+        db_app = TethysApp.objects.get(package=app.package)
+        scheduler_settings = db_app.scheduler_settings
+
+        try:
+            scheduler_setting = scheduler_settings.get(name=name)
+            return scheduler_setting.get_value()
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('SchedulerSetting', name, cls.name)
+
+    @classmethod
     def get_custom_setting(cls, name):
         """
         Retrieves the value of a CustomSetting for the app.
