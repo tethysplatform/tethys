@@ -42,7 +42,7 @@ class TethysAppSettingInline(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
@@ -105,7 +105,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def manage_app_storage(self, app):
@@ -135,7 +135,7 @@ class TethysExtensionAdmin(GuardedModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 

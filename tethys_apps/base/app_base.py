@@ -8,22 +8,16 @@
 ********************************************************************************
 """
 import logging
-import os
-import sys
 import traceback
-import warnings
 import uuid
 
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.http import HttpRequest
-from django.utils.functional import SimpleLazyObject
 from django.conf.urls import url
 
 from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
 from tethys_apps.base import permissions
 from .handoff import HandoffManager
-from .workspace import TethysWorkspace
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
@@ -107,25 +101,40 @@ class TethysBase(TethysBaseMixin):
         Example:
             self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
         """
+        base_app_endpoint = '/'.join(['apps', self.root_url])
+        stripped_url = url_map.url.replace("^", "").replace("$", "")
 
-        if url_map.url in [r'', r'/', r'^$', r'^/$']:
-            app_endpoint = '/'.join(['apps', self.root_url])
+        # Build the full URL endpoint for the Bokeh App
+        if stripped_url in [r'', r'/']:
+            bokeh_app_endpoint = base_app_endpoint
         else:
-            stripped_url = url_map.url.replace("^", "").replace("$", "")
             if stripped_url.endswith('/'):
                 stripped_url = stripped_url[:-1]
 
-            app_endpoint = '/'.join(['apps', self.root_url, stripped_url])
-        bokeh_app = autoload(app_endpoint, handler_function)
-        kwargs = dict(app_context=bokeh_app.app_context)
+            bokeh_app_endpoint = '/'.join([base_app_endpoint, stripped_url])
+
+        # Create Bokeh app
+        bokeh_app = autoload(bokeh_app_endpoint, handler_function)
+        asgi_kwargs = dict(app_context=bokeh_app.app_context)
 
         def urlpattern(suffix=""):
+            # Add suffix
             url_pattern = bokeh_app.url + suffix
+            # Strip out the app root endpoint portion
+            url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
             return f'^{url_pattern}$'
 
-        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer,
-                       name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
-        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
+        http_url = url(
+            urlpattern('/autoload.js'),
+            AutoloadJsConsumer.as_asgi(**asgi_kwargs),
+            name=f'{url_map.name}_bokeh_autoload'
+        )
+
+        ws_url = url(
+            urlpattern('/ws'),
+            WSConsumer.as_asgi(**asgi_kwargs),
+            name=f'{url_map.name}_bokeh_ws'
+        )
 
         # Append to namespace list
         handler_patterns['http'][namespace].append(http_url)
@@ -802,99 +811,6 @@ class TethysAppBase(TethysBase):
         app = cls()
         job_manager = JobManager(app)
         return job_manager
-
-    @classmethod
-    def get_user_workspace(cls, user):
-        """
-        Get the file workspace (directory) for the given User.
-
-        Args:
-          user(User or HttpRequest): User or request object.
-
-        Returns:
-          tethys_apps.base.TethysWorkspace: An object representing the workspace.
-
-        **Example:**
-
-        ::
-
-            import os
-            from my_first_app.app import MyFirstApp as app
-
-            def a_controller(request):
-                \"""
-                Example controller that uses get_user_workspace() method.
-                \"""
-                # Retrieve the workspace
-                user_workspace = app.get_user_workspace(request.user)
-                new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
-
-                with open(new_file_path, 'w') as a_file:
-                    a_file.write('...')
-
-                context = {}
-
-                return render(request, 'my_first_app/template.html', context)
-
-        """
-        warnings.warn('@user_workspace decorator is now the preferred method for getting user workspace', DeprecationWarning)  # noqa: E501
-        username = ''
-
-        from django.contrib.auth.models import User
-        if isinstance(user, User) or isinstance(user, SimpleLazyObject):
-            username = user.username
-        elif isinstance(user, HttpRequest):
-            username = user.user.username
-        elif user is None:
-            pass
-        else:
-            raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
-
-        if not username:
-            username = 'anonymous_user'
-
-        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
-        workspace_directory = os.path.join(project_directory, 'workspaces', 'user_workspaces', username)
-        return TethysWorkspace(workspace_directory)
-
-    @classmethod
-    def get_app_workspace(cls):
-        """
-        Get the file workspace (directory) for the app.
-
-        Returns:
-          tethys_apps.base.TethysWorkspace: An object representing the workspace.
-
-        **Example:**
-
-        ::
-
-            import os
-            from my_first_app.app import MyFirstApp as app
-
-            def a_controller(request):
-                \"""
-                Example controller that uses get_app_workspace() method.
-                \"""
-                # Retrieve the workspace
-                app_workspace = app.get_app_workspace()
-                new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
-
-                with open(new_file_path, 'w') as a_file:
-                    a_file.write('...')
-
-                context = {}
-
-                return render(request, 'my_first_app/template.html', context)
-
-        """
-        warnings.warn('@app_workspace decorator is now the preferred method for getting app workspace', DeprecationWarning)  # noqa: E501
-        # Find the path to the app project directory
-        # Hint: cls is a child class of this class.
-        # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
-        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
-        workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
-        return TethysWorkspace(workspace_directory)
 
     @classmethod
     def get_custom_setting(cls, name):

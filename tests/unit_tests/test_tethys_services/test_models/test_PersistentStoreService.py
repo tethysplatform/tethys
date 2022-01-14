@@ -18,8 +18,7 @@ class PersistentStoreServiceTests(TethysTestCase):
         )
         self.assertEqual('test_pss', str(pss))
 
-    @mock.patch('sqlalchemy.engine.url.URL')
-    def test_get_url(self, mock_url):
+    def test_get_url(self):
         pss = service_model.PersistentStoreService(
             name='test_pss',
             username='foo',
@@ -27,11 +26,9 @@ class PersistentStoreServiceTests(TethysTestCase):
         )
 
         # Execute
-        pss.get_url()
+        ret = pss.get_url()
 
-        # Check if called correctly
-        mock_url.assert_called_with(database=None, drivername='postgresql', host='localhost',
-                                    password='pass', port=5435, username='foo')
+        self.assertEqual('postgresql://foo:pass@localhost:5435', str(ret))
 
     @mock.patch('tethys_services.models.PersistentStoreService.get_url')
     @mock.patch('sqlalchemy.create_engine')
