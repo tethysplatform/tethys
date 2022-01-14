@@ -588,6 +588,43 @@ class TethysAppBase(TethysBase):
         """
         return None
 
+    def scheduler_settings(self):
+        """
+        Override this method to define HTCondor and Dask scheduler services for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``SchedulerSetting`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.app_settings import SchedulerSetting
+
+            class MyFirstApp(TethysAppBase):
+
+                def scheduler_settings(self):
+                    \"""
+                    Example scheduler_settings method.
+                    \"""
+                    scheduler_settings = (
+                        SchedulerSetting(
+                            name='primary_condor_scheduler',
+                            description='Scheduler for HTCondor cluster.',
+                            engine=SchedulerSetting.HTCONDOR,
+                            required=False,
+                        ),
+                        SchedulerSetting(
+                            name='primary_dask_scheduler',
+                            description='Scheduler for Dask cluster.',
+                            engine=SchedulerSetting.DASK,
+                            required=True,
+                        ),
+                    )
+
+                    return scheduler_settings
+        """
+
     def handoff_handlers(self):
         """
         Override this method to define handoff handlers for use in your app.
@@ -1352,6 +1389,8 @@ class TethysAppBase(TethysBase):
                 db_app.add_settings(self.web_processing_service_settings())
                 # persistent store settings
                 db_app.add_settings(self.persistent_store_settings())
+                # scheduler settings
+                db_app.add_settings(self.scheduler_settings())
 
                 db_app.save()
 
@@ -1371,6 +1410,9 @@ class TethysAppBase(TethysBase):
                 db_app.add_settings(self.web_processing_service_settings())
                 # persistent store settings
                 db_app.add_settings(self.persistent_store_settings())
+                # scheduler settings
+                db_app.add_settings(self.scheduler_settings())
+
                 db_app.save()
 
                 # In debug mode, update all fields, not just developer priority attributes

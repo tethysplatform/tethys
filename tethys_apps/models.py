@@ -20,6 +20,7 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
 from django.contrib.postgres.fields import ArrayField
 from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
+from tethys_compute.models.scheduler import Scheduler
 from tethys_services.models import validate_url
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
@@ -104,6 +105,11 @@ class TethysApp(models.Model, TethysBaseMixin):
     def wps_services_settings(self):
         return self.settings_set.exclude(webprocessingservicesetting__isnull=True) \
             .select_subclasses('webprocessingservicesetting')
+    
+    @property
+    def scheduler_settings(self):
+        return self.settings_set.exclude(schedulersetting__isnull=True) \
+            .select_subclasses('schedulersetting')
 
     @property
     def persistent_store_connection_settings(self):
@@ -873,6 +879,65 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # Update initialization
         self.initialized = True
         self.save()
+
+
+class SchedulerSetting(TethysAppSetting):
+    """
+    Used to define a Scheduler setting for Job processing services like HTCondor and Dask.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        engine(enum): One of SchedulerSetting.HTCONDOR (default) or SchedulerSetting.DASK.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import SchedulerSetting
+
+        primary_geoserver_setting = SchedulerSetting(
+            name='primary_dask_scheduler',
+            description='spatial dataset service for app to use',
+            engine=SpatialDatasetServiceSetting.GEOSERVER,
+            required=True,
+        )
+
+    """  # noqa: E501
+    HTCONDOR = 'htcondor'
+    DASK = 'dask'
+
+    scheduler_service = models.ForeignKey(
+        Scheduler, 
+        on_delete=models.CASCADE, 
+        blank=True, 
+        null=True
+    )
+
+    engine = models.CharField(
+        max_length=200,
+        choices=(
+            (HTCONDOR, 'HTCondor'), 
+            (DASK, 'Dask')
+        ),
+        default=HTCONDOR
+    )
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.scheduler_service and self.required:
+            raise ValidationError('Required.')
+
+    def get_value(self):
+        if not self.scheduler_service:
+            raise TethysAppSettingNotAssigned(f'Cannot find Scheduler for SchedulerSetting '
+                                              f'"{self.name}" for app "{self.tethys_app.package}": '
+                                              f'no Scheduler assigned.')
+
+        return self.scheduler_service
 
 
 class ProxyApp(models.Model):
