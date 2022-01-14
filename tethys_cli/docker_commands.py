@@ -254,8 +254,8 @@ class GeoServerContainerMetadata(ContainerMetadata):
     input = 'geoserver'
     name = 'tethys_geoserver'
     display_name = 'GeoServer'
-    image_name = 'ciwater/geoserver'
-    tag = '2.8.2-clustered'
+    image_name = 'tethysplatform/geoserver'
+    tag = 'latest'
     host_port = 8181
     container_port = 8080  # only for backwards compatibility with non-clustered containers
 
@@ -305,7 +305,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
 
     @property
     def is_cluster(self):
-        return 'cluster' in self.installed_image
+        return 'cluster' in self.installed_image or 'tethysplatform/geoserver' in self.installed_image
 
     def default_container_options(self):
         options = super().default_container_options()
@@ -495,7 +495,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
     name = 'tethys_thredds'
     display_name = 'THREDDS'
     image_name = 'unidata/thredds-docker'
-    tag = '4.6.13'
+    tag = '4.6.20-SNAPSHOT'
     host_port = 8383
     container_port = 8080
 
