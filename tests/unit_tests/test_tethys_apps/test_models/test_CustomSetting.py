@@ -21,7 +21,7 @@ class CustomSettingTests(TethysTestCase):
         ret = CustomSetting.objects.get(name='default_name')
         ret.value = ''
         ret.clean()
-        self.assertEquals('1', ret.value)
+        self.assertEqual('1', ret.value)
 
     def test_clean_empty_validation_error(self):
         custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
@@ -80,7 +80,7 @@ class CustomSettingTests(TethysTestCase):
 
         ret = CustomSetting.objects.get(name='default_name')
         ret.value = ''
-        self.assertEquals('1', ret.get_value())
+        self.assertEqual('1', ret.get_value())
 
     def test_get_value_empty(self):
         custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')

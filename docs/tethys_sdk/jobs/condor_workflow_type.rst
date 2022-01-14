@@ -21,13 +21,11 @@ Creating a Condor Workflow job involves 3 steps:
 ::
 
     from tethys_sdk.jobs import CondorWorkflowJobNode
-    from .app import MyApp as app
+    from tethys_sdk.workspaces import app_workspace
 
-    def some_controller(request):
 
-        # get the path to the app workspace to reference job files
-        app_workspace = app.get_app_workspace().path
-
+    @app_workspace
+    def some_controller(request, app_workspace):
         workflow = job_manager.create_job(
             name='MyWorkflowABC',
             user=request.user,

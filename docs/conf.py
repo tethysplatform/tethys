@@ -80,7 +80,11 @@ installed_apps = [
     'tethys_compute',
 ]
 
-settings.configure(INSTALLED_APPS=installed_apps)
+settings.configure(
+    INSTALLED_APPS=installed_apps,
+    DEBUG=True,
+    SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs"
+)
 django.setup()
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -98,7 +102,7 @@ django.setup()
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinxcontrib.napoleon',
+    'sphinx.ext.napoleon',
     'sphinx.ext.extlinks',
     'sphinx.ext.todo',
     'sphinxarg.ext'
