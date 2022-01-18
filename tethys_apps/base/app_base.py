@@ -624,6 +624,7 @@ class TethysAppBase(TethysBase):
 
                     return scheduler_settings
         """
+        return None
 
     def handoff_handlers(self):
         """

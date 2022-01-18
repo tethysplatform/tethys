@@ -14,7 +14,7 @@ class CondorScheduler(Scheduler):
     """
     Scheduler for Condor jobs.
     """
-    port = models.IntegerField(default=22, blank=True, null=True)
+    port = models.CharField(default='22', max_length=1024, blank=True, null=True)
     username = models.CharField(max_length=1024, blank=True, null=True)
     password = models.CharField(max_length=1024, blank=True, null=True)
     private_key_path = models.CharField(max_length=1024, blank=True, null=True)

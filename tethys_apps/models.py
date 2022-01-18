@@ -937,7 +937,7 @@ class SchedulerSetting(TethysAppSetting):
                                               f'"{self.name}" for app "{self.tethys_app.package}": '
                                               f'no Scheduler assigned.')
 
-        return self.scheduler_service
+        return Scheduler.objects.select_subclasses().get(pk=self.scheduler_service.pk)
 
 
 class ProxyApp(models.Model):
