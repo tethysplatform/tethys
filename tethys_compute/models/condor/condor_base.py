@@ -49,12 +49,14 @@ class CondorBase(TethysJob):
         condor_object._cluster_id = self.cluster_id
         condor_object._cwd = self.workspace
         if self.scheduler:
-            condor_object.set_scheduler(self.scheduler.host,
-                                        self.scheduler.username,
-                                        self.scheduler.password,
-                                        self.scheduler.private_key_path,
-                                        self.scheduler.private_key_pass
-                                        )
+            condor_object.set_scheduler(
+                host=self.scheduler.host,
+                port=self.scheduler.port,
+                username=self.scheduler.username,
+                password=self.scheduler.password,
+                private_key=self.scheduler.private_key_path,
+                private_key_pass=self.scheduler.private_key_pass
+            )
             self.remote_id = self.remote_id or condor_object._remote_id
             condor_object._remote_id = self.remote_id
         return condor_object

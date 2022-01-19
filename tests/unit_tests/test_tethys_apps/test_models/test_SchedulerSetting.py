@@ -67,7 +67,7 @@ class SchedulerSettingTests(TethysTestCase):
         self.assertIsInstance(ret, CondorScheduler)
         self.assertEqual('test_condor_scheduler', ret.name)
         self.assertEqual('https://example.com', ret.host)
-        self.assertEqual('33', ret.port)
+        self.assertEqual(33, ret.port)
         self.assertEqual('condor', ret.username)
         self.assertEqual('password', ret.password)
         self.assertEqual('/path/to/some/key', ret.private_key_path)
