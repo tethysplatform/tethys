@@ -105,7 +105,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     def wps_services_settings(self):
         return self.settings_set.exclude(webprocessingservicesetting__isnull=True) \
             .select_subclasses('webprocessingservicesetting')
-    
+
     @property
     def scheduler_settings(self):
         return self.settings_set.exclude(schedulersetting__isnull=True) \
@@ -909,16 +909,16 @@ class SchedulerSetting(TethysAppSetting):
     DASK = 'dask'
 
     scheduler_service = models.ForeignKey(
-        Scheduler, 
-        on_delete=models.CASCADE, 
-        blank=True, 
+        Scheduler,
+        on_delete=models.CASCADE,
+        blank=True,
         null=True
     )
 
     engine = models.CharField(
         max_length=200,
         choices=(
-            (HTCONDOR, 'HTCondor'), 
+            (HTCONDOR, 'HTCondor'),
             (DASK, 'Dask')
         ),
         default=HTCONDOR

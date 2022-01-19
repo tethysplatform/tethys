@@ -21,11 +21,11 @@ class SchedulerSettingTests(TethysTestCase):
             private_key_pass='secret'
         )
         self.condor_scheduler.save()
-        
+
         self.condor_setting = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
         self.condor_setting.scheduler_service = self.condor_scheduler
         self.condor_setting.save()
-        
+
         # Create dask scheduler and assign to dask setting
         self.dask_scheduler = DaskScheduler(
             name='test_dask_scheduler',
