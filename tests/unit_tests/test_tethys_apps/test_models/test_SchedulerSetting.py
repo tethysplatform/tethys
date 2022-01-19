@@ -24,6 +24,7 @@ class SchedulerSettingTests(TethysTestCase):
 
         self.condor_setting = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
         self.condor_setting.scheduler_service = self.condor_scheduler
+        self.condor_setting.required = True
         self.condor_setting.save()
 
         # Create dask scheduler and assign to dask setting
@@ -38,23 +39,47 @@ class SchedulerSettingTests(TethysTestCase):
 
         self.dask_setting = self.test_app.settings_set.select_subclasses().get(name='primary_dask')
         self.dask_setting.scheduler_service = self.dask_scheduler
+        self.dask_setting.required = False
         self.dask_setting.save()
 
     def tear_down(self):
         self.condor_setting.scheduler_service = None
+        self.condor_setting.required = True
         self.condor_setting.save()
         self.dask_setting.scheduler_service = None
+        self.dask_setting.required = False
         self.dask_setting.save()
 
-    def test_clean(self):
+    def test_clean_empty_when_required(self):
         ss = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
         ss.scheduler_service = None
+        ss.required = True
         ss.save()
 
         with self.assertRaises(ValidationError) as cm:
             ss.clean()
 
         self.assertEqual("['Required.']", str(cm.exception))
+
+    def test_clean_condor_engine_but_dask_assigned(self):
+        ss = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
+        ss.scheduler_service = self.dask_scheduler
+        ss.save()
+
+        with self.assertRaises(ValidationError) as cm:
+            ss.clean()
+
+        self.assertEqual("['Please select a Condor Scheduler.']", str(cm.exception))
+
+    def test_clean_dask_engine_but_condor_assigned(self):
+        ss = self.test_app.settings_set.select_subclasses().get(name='primary_dask')
+        ss.scheduler_service = self.condor_scheduler
+        ss.save()
+
+        with self.assertRaises(ValidationError) as cm:
+            ss.clean()
+
+        self.assertEqual("['Please select a Dask Scheduler.']", str(cm.exception))
 
     def test_get_value_condor_service(self):
         # Get setting through fresh query

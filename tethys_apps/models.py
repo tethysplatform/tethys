@@ -20,6 +20,8 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
 from django.contrib.postgres.fields import ArrayField
 from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
 from tethys_services.models import validate_url
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
@@ -931,13 +933,23 @@ class SchedulerSetting(TethysAppSetting):
         if not self.scheduler_service and self.required:
             raise ValidationError('Required.')
 
+        # Validate type
+        if self.scheduler_service:
+            scheduler = self.get_value()
+            if self.engine == self.HTCONDOR and not isinstance(scheduler, CondorScheduler):
+                raise ValidationError('Please select a Condor Scheduler.')
+            elif self.engine == self.DASK and not isinstance(scheduler, DaskScheduler):
+                raise ValidationError('Please select a Dask Scheduler.')
+
     def get_value(self):
         if not self.scheduler_service:
             raise TethysAppSettingNotAssigned(f'Cannot find Scheduler for SchedulerSetting '
                                               f'"{self.name}" for app "{self.tethys_app.package}": '
                                               f'no Scheduler assigned.')
 
-        return Scheduler.objects.select_subclasses().get(pk=self.scheduler_service.pk)
+        # Query scheduler manually to get as subclass (ForeignKey fields don't support select_subclasses)
+        scheduler = Scheduler.objects.select_subclasses().get(pk=self.scheduler_service.pk)
+        return scheduler
 
 
 class ProxyApp(models.Model):
