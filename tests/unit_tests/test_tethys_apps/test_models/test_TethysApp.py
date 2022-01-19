@@ -11,6 +11,7 @@ from tethys_apps.models import TethysApp, TethysAppSetting
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_services.models import PersistentStoreService, SpatialDatasetService, DatasetService, WebProcessingService
 
+
 class TethysAppTests(TethysTestCase):
 
     def set_up(self):
@@ -47,7 +48,7 @@ class TethysAppTests(TethysTestCase):
             password='password'
         )
         self.ps.save()
-        
+
         self.ss = CondorScheduler(
             name='test_ss',
             host='localhost',
@@ -208,7 +209,7 @@ class TethysAppTests(TethysTestCase):
         wps_setting = self.test_app.settings_set.select_subclasses().get(name='primary_52n')
         wps_setting.web_processing_service = self.wps
         wps_setting.save()
-        
+
         sched_setting = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
         sched_setting.scheduler_service = self.ss
         sched_setting.save()

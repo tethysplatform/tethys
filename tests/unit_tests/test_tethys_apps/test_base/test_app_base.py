@@ -605,12 +605,12 @@ class TestTethysAppBase(unittest.TestCase):
 
         mock_custom_settings = mock_ta.objects.get().custom_settings.get
         mock_custom_settings.side_effect = ObjectDoesNotExist
-        
+
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.get_custom_setting(name=self.fake_name)
-        
+
         self.assertEqual(
-            'A CustomTethysAppSetting named "fake_name" does not ' \
+            'A CustomTethysAppSetting named "fake_name" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )
@@ -642,12 +642,12 @@ class TestTethysAppBase(unittest.TestCase):
         mock_db_app.return_value = mock.MagicMock()
 
         mock_app.objects.get().custom_settings.get.side_effect = [ObjectDoesNotExist]
-        
+
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.set_custom_setting(name=setting_name, value=True)
-        
+
         self.assertEqual(
-            'A CustomTethysAppSetting named "fake_setting" does not ' \
+            'A CustomTethysAppSetting named "fake_setting" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )
@@ -677,9 +677,9 @@ class TestTethysAppBase(unittest.TestCase):
 
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.get_dataset_service(name=self.fake_name)
-        
+
         self.assertEqual(
-            'A DatasetServiceSetting named "fake_name" does not ' \
+            'A DatasetServiceSetting named "fake_name" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )
@@ -700,9 +700,9 @@ class TestTethysAppBase(unittest.TestCase):
 
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.get_spatial_dataset_service(name=self.fake_name)
-        
+
         self.assertEqual(
-            'A SpatialDatasetServiceSetting named "fake_name" does not ' \
+            'A SpatialDatasetServiceSetting named "fake_name" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )
@@ -722,9 +722,9 @@ class TestTethysAppBase(unittest.TestCase):
 
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.get_web_processing_service(name=self.fake_name)
-        
+
         self.assertEqual(
-            'A WebProcessingServiceSetting named "fake_name" does not ' \
+            'A WebProcessingServiceSetting named "fake_name" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )
@@ -743,9 +743,9 @@ class TestTethysAppBase(unittest.TestCase):
 
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.get_scheduler(name=self.fake_name)
-        
+
         self.assertEqual(
-            'A SchedulerSetting named "fake_name" does not ' \
+            'A SchedulerSetting named "fake_name" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )
@@ -765,9 +765,9 @@ class TestTethysAppBase(unittest.TestCase):
 
         with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
             TethysAppChild.get_persistent_store_connection(name=self.fake_name)
-        
+
         self.assertEqual(
-            'A PersistentStoreConnectionSetting named "fake_name" does not ' \
+            'A PersistentStoreConnectionSetting named "fake_name" does not '
             'exist in the b\'Test App\' app.',
             str(cm.exception)
         )

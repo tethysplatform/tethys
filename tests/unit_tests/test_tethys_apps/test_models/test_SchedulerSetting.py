@@ -1,9 +1,7 @@
-from unittest import mock
 from tethys_sdk.testing import TethysTestCase
-from tethys_apps.models import TethysApp, SchedulerSetting
+from tethys_apps.models import TethysApp
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from django.core.exceptions import ValidationError
-from tethys_compute.models.scheduler import Scheduler
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 
@@ -11,7 +9,7 @@ from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 class SchedulerSettingTests(TethysTestCase):
     def set_up(self):
         self.test_app = TethysApp.objects.get(package='test_app')
-        
+
         # Create condor scheduler and assign to condor setting
         self.condor_scheduler = CondorScheduler(
             name='test_condor_scheduler',
@@ -37,11 +35,11 @@ class SchedulerSettingTests(TethysTestCase):
             dashboard='https://example.com/dashboard'
         )
         self.dask_scheduler.save()
-        
+
         self.dask_setting = self.test_app.settings_set.select_subclasses().get(name='primary_dask')
         self.dask_setting.scheduler_service = self.dask_scheduler
         self.dask_setting.save()
-        
+
     def tear_down(self):
         self.condor_setting.scheduler_service = None
         self.condor_setting.save()
@@ -52,7 +50,7 @@ class SchedulerSettingTests(TethysTestCase):
         ss = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
         ss.scheduler_service = None
         ss.save()
-        
+
         with self.assertRaises(ValidationError) as cm:
             ss.clean()
 
@@ -61,7 +59,7 @@ class SchedulerSettingTests(TethysTestCase):
     def test_get_value_condor_service(self):
         # Get setting through fresh query
         ss = self.test_app.settings_set.select_subclasses().get(name='primary_condor')
-        
+
         # Execute
         ret = ss.get_value()
 
@@ -75,10 +73,10 @@ class SchedulerSettingTests(TethysTestCase):
         self.assertEqual('/path/to/some/key', ret.private_key_path)
         self.assertEqual('secret', ret.private_key_pass)
 
-    def test_get_value_dask_service(self):       
+    def test_get_value_dask_service(self):
         # Get setting through fresh query
         ss = self.test_app.settings_set.select_subclasses().get(name='primary_dask')
-        
+
         # Execute
         ret = ss.get_value()
 
@@ -95,13 +93,13 @@ class SchedulerSettingTests(TethysTestCase):
         ss = self.test_app.settings_set.select_subclasses().get(name='primary_dask')
         ss.scheduler_service = None
         ss.save()
-        
+
         with self.assertRaises(TethysAppSettingNotAssigned) as cm:
             ss.get_value()
-        
+
         self.assertEqual(
-            'Cannot find Scheduler for SchedulerSetting ' \
-            '"primary_dask" for app "test_app": no ' \
+            'Cannot find Scheduler for SchedulerSetting '
+            '"primary_dask" for app "test_app": no '
             'Scheduler assigned.',
             str(cm.exception)
         )
