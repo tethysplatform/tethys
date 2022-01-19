@@ -29,14 +29,4 @@ class Migration(migrations.Migration):
             name='scheduler',
             options={'verbose_name': 'Scheduler', 'verbose_name_plural': 'Schedulers'},
         ),
-        migrations.AlterField(
-            model_name='condorscheduler',
-            name='port',
-            field=models.CharField(blank=True, default='22', max_length=1024, null=True),
-        ),
-        migrations.AlterField(
-            model_name='condorscheduler',
-            name='port',
-            field=models.IntegerField(blank=True, default=22, null=True),
-        ),
     ]
