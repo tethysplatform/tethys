@@ -120,7 +120,7 @@ To retrieve a scheduler, import your :term:`app class` and call the ``get_schedu
 
 .. tip::
 
-    See the :ref:`compute_api` documentation for more details on how to use Schedulers in your apps.
+    See the :ref:`jobs_api` documentation for more details on how to use Schedulers in your apps.
 
 
 API Documentation
