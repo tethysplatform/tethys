@@ -31,6 +31,8 @@ Use the HTCondor Schedulers section to create (register) and manage the HTCondor
     :width: 900px
     :align: center
 
+    **Figure 2.** The form used to create new HTCondor Schedulers.
+
 An explanation of the HTCondor Scheduler parameters follows:
 
 * **Name**: A name to refer to the scheduler. Can be any string, but must be unique among schedulers.
@@ -50,6 +52,8 @@ Use the Dask Schedulers section to create (register) and manage the Dask schedul
     :width: 900px
     :align: center
 
+    **Figure 3.** The form used to create new Dask Schedulers.
+
 An explanation of the Dask Scheduler parameters follows:
 
 * **Name**: A name to refer to the scheduler. Can be any string, but must be unique among schedulers.
@@ -57,6 +61,25 @@ An explanation of the Dask Scheduler parameters follows:
 * **Timeout**: Timeout duration for initial connection to the Dask Scheduler. Setting to 0 will cause the Dask client that is used by Tethys to use the default setting. Defaults to 0.
 * **Heartbeat Interval**: Time in milliseconds between heartbeats to Dask Scheduler. Setting to 0 will cause the Dask client that is used by Tethys to use the default setting. Defaults to 0.
 * **Dashboard**: The fully qualified domain name (FQDN) or the IP address of the Dask Dashboard app. Can optionally contain the port (e.g. localhost:8787).
+
+Embedded Dask Dashboard
++++++++++++++++++++++++
+
+If the Dashboard parameter is provided when creating a Dask Scheduler, a link to the Dashboard titled **Launch Dashboard** will be provided for that Scheduler.
+
+.. figure:: ../images/tethys_compute/tethys_compute_dask_launch_links.png
+    :width: 900px
+    :align: center
+
+    **Figure 4.** Dask Scheduelrs with Dashboard registered display Launch Dashboard links.
+
+Clicking on the **Launch Dashboard** link will take you to an embedded version of the Dask dashboard app.
+
+.. figure:: ../images/tutorial/NewDaskSchedulerPage.png
+    :width: 900px
+    :align: center
+
+    **Figure 5.** The embedded Dask dashboard.
 
 
 .. _jobs-label:
@@ -69,3 +92,5 @@ Tethys Platform stores information about jobs that are created using the :ref:`j
 .. figure:: ../images/tethys_compute/tethys_compute_jobs.png
     :width: 900px
     :align: center
+
+    **Figure 6.** The administration page for Jobs tracked by Tethys Platform.
