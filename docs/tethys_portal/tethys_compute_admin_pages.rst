@@ -75,7 +75,7 @@ If the Dashboard parameter is provided when creating a Dask Scheduler, a link to
 
 Clicking on the **Launch Dashboard** link will take you to an embedded version of the Dask dashboard app.
 
-.. figure:: ../images/tutorial/NewDaskSchedulerPage.png
+.. figure:: ../images/tethys_compute/tethys_compute_dashboard.png
     :width: 900px
     :align: center
 

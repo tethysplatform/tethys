@@ -82,7 +82,7 @@ Select the **Add Dask Scheduler** button. Fill out the following form to create 
 ==========================
 Select the **Launch Dashboard** link to the right of your newly created dashboard to visit your embedded Dashboard. It should look like this.
 
-.. figure:: ../../images/tutorial/NewDaskSchedulerPage.png
+.. figure:: ../../images/tethys_compute/tethys_compute_dashboard.png
     :width: 900px
     :align: center
 
