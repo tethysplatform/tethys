@@ -1,3 +1,5 @@
+.. _dask_tutorial_setup_scheduler:
+
 ***************
 Setup Scheduler
 ***************
@@ -57,17 +59,18 @@ Use the drop down menu in the top right corner near your username to navigate to
 5. Dask Schedulers
 ==================
 
-Scroll down to the **Tethys Computing** sub group and select **Dask Scheduler** to navigate to the **Dask Scheduler** page.
+Scroll down to the **TETHYS COMPUTE** section and select **Dask Schedulers** to navigate to the **Dask Schedulers** page.
 
-.. figure:: ../../images/tutorial/NewTethysCompute.png
+.. figure:: ../../images/tethys_compute/tethys_compute_admin.png
     :width: 900px
     :align: center
 
 6. Add a New Dask Scheduler
 ===========================
+
 Select the **Add Dask Scheduler** button. Fill out the following form to create a new scheduler. Use the name ``dask_localhost`` for this tutorial. For host and port see the scheduler terminal. Use the ``scheduler at`` value (e.g.: 192.168.1.17:8786) for the **Host** field. Use the ``bokeh at`` port with the scheduler at host (e.g.: 192.168.1.17:8787) for **Dashboard** field, using the same host as the scheduler. Select ``Save`` once done.
 
-.. figure:: ../../images/tutorial/NewCreateDaskScheduler.png
+.. figure:: ../../images/tethys_compute/tethys_compute_dask_scheduler.png
     :width: 900px
     :align: center
 
