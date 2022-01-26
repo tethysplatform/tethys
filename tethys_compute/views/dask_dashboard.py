@@ -30,7 +30,7 @@ def dask_dashboard(request, dask_scheduler_id, page='status'):
     script = server_document(url_link)
 
     context = {
-        "scheduler_name": scheduler_name, 
+        "scheduler_name": scheduler_name,
         "the_script": script,
         "status_link": status_link,
         "workers_link": workers_link,
