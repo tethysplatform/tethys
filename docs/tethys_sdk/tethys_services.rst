@@ -1,3 +1,5 @@
+.. _tethys_services_api:
+
 ********************
 Tethys Services APIs
 ********************

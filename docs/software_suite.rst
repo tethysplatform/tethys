@@ -98,9 +98,9 @@ Distributed Computing
    :width: 300px
    :align: right
 
-To facilitate the large-scale computing that is often required by water resources applications, Tethys Platform leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_. HTCondor is both a resource management and a job scheduling software.
+To facilitate the large-scale computing that is often required by water resources applications, Tethys Platform leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_ and `Dask Distributed <http://distributed.dask.org/en/stable/>`_.
 
-To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
+To use the HTCondor or Dask and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs`.
 
 File Dataset Storage
 ====================
@@ -174,8 +174,7 @@ GeoServer                              :doc:`./tethys_sdk/tethys_services/spatia
 THREDDS Data Server                    :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
 52° North WPS                          :doc:`./tethys_sdk/tethys_services/web_processing_services`      Geoprocessing Services
 OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                                       Spatial and Tabular Visualization
-HTCondor                               :doc:`./tethys_sdk/compute` and                                  Computing and Job Management
-                                       :doc:`./tethys_sdk/jobs`
+HTCondor, Dask                         :doc:`./tethys_sdk/jobs`
 CKAN, HydroShare                       :doc:`./tethys_sdk/tethys_services/dataset_services`             Flat File Storage
 =====================================  ===============================================================  ============================================
 

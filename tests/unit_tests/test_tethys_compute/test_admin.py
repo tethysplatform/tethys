@@ -25,7 +25,7 @@ class TestTethysComputeAdmin(unittest.TestCase):
 
     def test_CondorSchedulerAdminForm(self):
         mock_args = mock.MagicMock()
-        expected_fields = ('name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass')
+        expected_fields = ('name', 'host', 'port', 'username', 'password', 'private_key_path', 'private_key_pass')
 
         ret = CondorSchedulerAdminForm(mock_args)
         self.assertEqual(CondorScheduler, ret.Meta.model)
@@ -40,8 +40,10 @@ class TestTethysComputeAdmin(unittest.TestCase):
         mock_admin2 = mock.MagicMock()
 
         sa = CondorSchedulerAdmin(mock_admin, mock_admin2)
-        self.assertListEqual(['name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass'],
-                             sa.list_display)
+        self.assertListEqual(
+            sa.list_display,
+            ['name', 'host', 'port', 'username', 'private_key_path']
+        )
 
     def test_job_admin(self):
         mock_admin = mock.MagicMock()

@@ -2,7 +2,7 @@
 Multiple Leaf Job
 *****************
 
-**Last Updated:** November 2019
+**Last Updated:** January 2022
 
 This section will illustrate how to use the ``dask.distributed`` API with a dask job that ends in multiple leafs. The recommended approach is to create a new ``DaskJob`` for each leaf and track them as though they were separate jobs. A similar approach can be followed using the ``dask.delayed`` API.
 
@@ -42,7 +42,6 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
     from django.http.response import HttpResponseRedirect
     from django.contrib import messages
     from tethys_sdk.gizmos import Button
-    from tethys_sdk.compute import get_scheduler
     from tethys_sdk.gizmos import JobsTable
     from tethys_compute.models.dask.dask_job_exception import DaskJobException
     from tethysapp.dask_tutorial.app import DaskTutorial as app
@@ -115,8 +114,8 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
         """
         Controller for the app home page.
         """
-        # Get test_scheduler app. This scheduler needs to be in the database.
-        scheduler = get_scheduler(name='test_scheduler')
+        # Get scheduler from dask_primary setting.
+        scheduler = app.get_scheduler(name='dask_primary')
 
         if job_type.lower() == 'delayed':
             from tethysapp.dask_tutorial.job_functions import delayed_job

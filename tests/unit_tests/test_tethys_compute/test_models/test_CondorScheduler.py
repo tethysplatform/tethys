@@ -36,6 +36,8 @@ class CondorSchedulerTest(TethysTestCase):
         self.assertEqual('pass', ret.password)
         self.assertEqual('test_path', ret.private_key_path)
         self.assertEqual('test_pass', ret.private_key_pass)
+        self.assertEqual('HTCondor Scheduler', ret._meta.verbose_name)
+        self.assertEqual('HTCondor Schedulers', ret._meta.verbose_name_plural)
 
     def test_CondorScheduler_inheritance(self):
         ret = Scheduler.objects.get_subclass(name='test_scheduler')

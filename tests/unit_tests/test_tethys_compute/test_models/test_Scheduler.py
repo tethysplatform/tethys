@@ -20,3 +20,6 @@ class SchedulerTest(TethysTestCase):
         self.assertIsInstance(ret, Scheduler)
         self.assertEqual('test_scheduler', ret.name)
         self.assertEqual('localhost', ret.host)
+        self.assertEqual('test_scheduler', str(ret))
+        self.assertEqual('Scheduler', ret._meta.verbose_name)
+        self.assertEqual('Schedulers', ret._meta.verbose_name_plural)

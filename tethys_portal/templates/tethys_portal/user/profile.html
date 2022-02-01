@@ -9,7 +9,7 @@
   <link href="{% static 'tethys_portal/css/social_labels.min.css' %}"  rel="stylesheet" />
   <style id="profile-styles">
     #profile-header {
-      background-color: {{ site_globals.secondary_color }};
+      background-color: {{ site_globals.secondary_color|default:'#7ec1f7' }};
     }
     
     body {

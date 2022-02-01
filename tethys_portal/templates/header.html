@@ -2,7 +2,7 @@
 
 <header id="site-header" class="site-header container-fluid">
   <div id="header-spacer" class="w-100 my-8"><p></p></div>
-  <nav id="header-navbar" class="navbar navbar-expand-md navbar-dark shadow px-4 py-3 mx-5" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
+  <nav id="header-navbar" class="navbar navbar-expand-md navbar-dark shadow px-4 py-3 mx-3" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
     <div class="container-fluid">
       {% block header_brand %}
         <a id="header-brand" class="navbar-brand" href="{% url 'home' %}">

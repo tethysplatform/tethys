@@ -1,6 +1,6 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
 from tethys_sdk.app_settings import CustomSetting, PersistentStoreDatabaseSetting, PersistentStoreConnectionSetting, \
-    DatasetServiceSetting, SpatialDatasetServiceSetting, WebProcessingServiceSetting
+    DatasetServiceSetting, SpatialDatasetServiceSetting, WebProcessingServiceSetting, SchedulerSetting
 
 from tethys_sdk.handoff import HandoffHandler
 
@@ -157,6 +157,27 @@ class TestApp(TethysAppBase):
         )
 
         return sds_settings
+
+    def scheduler_settings(self):
+        """
+        Example scheduler_settings method.
+        """
+        scheduler_settings = (
+            SchedulerSetting(
+                name='primary_condor',
+                description='HTCondor scheduler',
+                engine=SchedulerSetting.HTCONDOR,
+                required=True,
+            ),
+            SchedulerSetting(
+                name='primary_dask',
+                description='Dask scheduler',
+                engine=SchedulerSetting.DASK,
+                required=False,
+            ),
+        )
+
+        return scheduler_settings
 
     def web_processing_service_settings(self):
         """

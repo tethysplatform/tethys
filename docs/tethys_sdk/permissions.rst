@@ -1,3 +1,5 @@
+.. _permissions_api:
+
 ***************
 Permissions API
 ***************

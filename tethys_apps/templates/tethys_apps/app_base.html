@@ -95,7 +95,7 @@
       {% gizmo_dependencies global_css %}
       <style>
         #app-content-wrapper #app-content #app-navigation .nav li a.active {
-          background: {{ tethys_app.color|default:'#1b95dc' }};
+          background: {{ tethys_app.color|default:'#7ec1f7' }};
         }
       </style>
     {% endblock %}
@@ -122,7 +122,7 @@
       <div id="app-content-wrapper" class="{% block show_nav_override %}show-nav{% endblock %}">
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
-            <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
+            <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#7ec1f7' }};">
               <div id="nav-title-wrapper">
                   {% block app-navigation-toggle-override %}
                     <a href="javascript:void(0);" class="toggle-nav">

@@ -202,7 +202,7 @@ The links under the ``TETHYS COMPUTE`` heading can be used to manage ``Jobs`` an
 
 .. tip::
 
-    For more information on Tethys Jobs see the :doc:`../tethys_sdk/jobs` and :doc:`../tethys_sdk/compute` documentation.
+    For more information on Tethys Jobs see the :doc:`../tethys_sdk/jobs` documentation.
 
 Tethys Portal
 =============

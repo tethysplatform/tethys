@@ -588,6 +588,44 @@ class TethysAppBase(TethysBase):
         """
         return None
 
+    def scheduler_settings(self):
+        """
+        Override this method to define HTCondor and Dask scheduler services for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``SchedulerSetting`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.app_settings import SchedulerSetting
+
+            class MyFirstApp(TethysAppBase):
+
+                def scheduler_settings(self):
+                    \"""
+                    Example scheduler_settings method.
+                    \"""
+                    scheduler_settings = (
+                        SchedulerSetting(
+                            name='primary_condor_scheduler',
+                            description='Scheduler for HTCondor cluster.',
+                            engine=SchedulerSetting.HTCONDOR,
+                            required=False,
+                        ),
+                        SchedulerSetting(
+                            name='primary_dask_scheduler',
+                            description='Scheduler for Dask cluster.',
+                            engine=SchedulerSetting.DASK,
+                            required=True,
+                        ),
+                    )
+
+                    return scheduler_settings
+        """
+        return None
+
     def handoff_handlers(self):
         """
         Override this method to define handoff handlers for use in your app.
@@ -811,6 +849,45 @@ class TethysAppBase(TethysBase):
         app = cls()
         job_manager = JobManager(app)
         return job_manager
+
+    @classmethod
+    def get_scheduler(cls, name):
+        """
+        Retrieves a Scheduler assigned to the named SchedulerSetting.
+
+        Args:
+            name(str): The name of the SchedulerSetting as defined in the app.py.
+
+        Returns:
+            Scheduler: The Scheduler assigned to the named setting.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            scheduler = app.get_scheduler('primary_condor')
+            job_manager = app.get_job_manager()
+            job_manager.create_job(
+                name='do_the_thing',
+                job_type='CONDORJOB',
+                scheduler=scheduler,
+                ...
+            )
+
+
+        """
+        from tethys_apps.models import TethysApp
+        app = cls()
+        db_app = TethysApp.objects.get(package=app.package)
+        scheduler_settings = db_app.scheduler_settings
+
+        try:
+            scheduler_setting = scheduler_settings.get(name=name)
+            return scheduler_setting.get_value()
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('SchedulerSetting', name, cls.name)
 
     @classmethod
     def get_custom_setting(cls, name):
@@ -1352,6 +1429,8 @@ class TethysAppBase(TethysBase):
                 db_app.add_settings(self.web_processing_service_settings())
                 # persistent store settings
                 db_app.add_settings(self.persistent_store_settings())
+                # scheduler settings
+                db_app.add_settings(self.scheduler_settings())
 
                 db_app.save()
 
@@ -1371,6 +1450,9 @@ class TethysAppBase(TethysBase):
                 db_app.add_settings(self.web_processing_service_settings())
                 # persistent store settings
                 db_app.add_settings(self.persistent_store_settings())
+                # scheduler settings
+                db_app.add_settings(self.scheduler_settings())
+
                 db_app.save()
 
                 # In debug mode, update all fields, not just developer priority attributes

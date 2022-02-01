@@ -14,6 +14,7 @@ from tethys_apps.models import (
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
+    SchedulerSetting,
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting
 )

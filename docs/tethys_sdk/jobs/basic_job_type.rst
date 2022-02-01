@@ -2,7 +2,7 @@
 Basic Job Type
 **************
 
-**Last Updated:** December 27, 2018
+**Last Updated:** January 2022
 
 The Basic Job type is a sample job type for creating dummy jobs. It has all of the basic properties and methods of a job, but it doesn't have any mechanism for running jobs. It's primary purpose is for demonstration. There are no additional attributes for the BasicJob type other than the common set of job attributes.
 
@@ -17,7 +17,7 @@ To create a job call the ``create_job`` method on the job manager. The required 
         name='unique_job_name',
         user=request.user,
         job_type='BASIC',
-        description='This is a sample basic job. It can't actually compute anything.',
+        description="This is a sample basic job. It can't actually compute anything.",
         extended_properties={
             'app_spcific_property': 'default_value',
         }

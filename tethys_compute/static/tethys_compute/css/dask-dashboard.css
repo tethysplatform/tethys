@@ -1,0 +1,11 @@
+#dask-dashboard-header {
+  background-color: #7ec1f7;
+}
+
+#dask-dashboard-content {
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}

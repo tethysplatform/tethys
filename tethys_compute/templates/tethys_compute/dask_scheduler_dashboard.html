@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% load static tethys_gizmos %}
+
+{% block title %}{{ block.super }} - Dask Scheduler{% endblock %}
+
+{% block import_gizmos %}
+    {% import_gizmo_dependency bokeh_view %}
+{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_compute/css/dask-dashboard.css' %}" type="text/css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <nav id="dask-dashboard-header" class="navbar navbar-expand-lg navbar-light mt-2 rounded" style="margin-right: 5.5rem; margin-left: 5.5rem;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">{{ scheduler_name }}</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dask-dashboard-nav" aria-controls="dask-dashboard-nav" aria-expanded="false" aria-label="Toggle Dask dashboard navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="dask-dashboard-nav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a href="/admin/tethys_compute/daskscheduler" class="nav-link{% if 'back' in request.path %} active{% endif %}"><i class="bi bi-chevron-left"></i> Back</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ status_link }}" class="nav-link{% if 'status' in request.path %} active{% endif %}">Status</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ workers_link }}" class="nav-link{% if 'workers' in request.path %} active{% endif %}">Workers</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ tasks_link }}" class="nav-link{% if 'tasks' in request.path %} active{% endif %}">Tasks</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ systems_link }}" class="nav-link{% if 'system' in request.path %} active{% endif %}">System</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ profile_link }}" class="nav-link{% if 'profile' in request.path %} active{% endif %}">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ graph_link }}" class="nav-link{% if 'graph' in request.path %} active{% endif %}">Graph</a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ groups_link }}" class="nav-link{% if 'groups' in request.path %} active{% endif %}">Groups</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a href="{{ dashboard_link }}" class="nav-link" target="_blank">Dask Dashboard <i class="bi bi-box-arrow-up-right"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="dask-dashboard-content">
+    {{ the_script|safe}}
+  </div>
+{% endblock %}

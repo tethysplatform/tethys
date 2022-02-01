@@ -29,6 +29,7 @@ from tethys_apps.models import (TethysApp,
                                 DatasetServiceSetting,
                                 SpatialDatasetServiceSetting,
                                 WebProcessingServiceSetting,
+                                SchedulerSetting,
                                 PersistentStoreConnectionSetting,
                                 PersistentStoreDatabaseSetting,
                                 ProxyApp)
@@ -70,6 +71,12 @@ class WebProcessingServiceSettingInline(TethysAppSettingInline):
     model = WebProcessingServiceSetting
 
 
+class SchedulerSettingInline(TethysAppSettingInline):
+    readonly_fields = ('name', 'description', 'required', 'engine')
+    fields = ('name', 'description', 'scheduler_service', 'engine', 'required')
+    model = SchedulerSetting
+
+
 # TODO: Figure out how to initialize persistent stores with button in admin
 # Consider: https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
 class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
@@ -94,13 +101,16 @@ class TethysAppAdmin(GuardedModelAdmin):
     readonly_fields = ('package', 'manage_app_storage',)
     fields = ('package', 'name', 'description', 'icon', 'color', 'tags', 'enabled', 'show_in_apps_library',
               'enable_feedback', 'manage_app_storage',)
-    inlines = [CustomSettingInline,
-               PersistentStoreConnectionSettingInline,
-               PersistentStoreDatabaseSettingInline,
-               DatasetServiceSettingInline,
-               SpatialDatasetServiceSettingInline,
-               WebProcessingServiceSettingInline,
-               TethysAppQuotasSettingInline]
+    inlines = [
+        CustomSettingInline,
+        PersistentStoreConnectionSettingInline,
+        PersistentStoreDatabaseSettingInline,
+        DatasetServiceSettingInline,
+        SpatialDatasetServiceSettingInline,
+        WebProcessingServiceSettingInline,
+        SchedulerSettingInline,
+        TethysAppQuotasSettingInline
+    ]
 
     def has_delete_permission(self, request, obj=None):
         return False

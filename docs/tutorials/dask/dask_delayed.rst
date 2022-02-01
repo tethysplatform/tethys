@@ -2,7 +2,7 @@
 Dask Delayed
 ************
 
-**Last Updated:** November 2019
+**Last Updated:** January 2022
 
 The ``DaskJob`` can be used with either the ``dask.delayed`` or ``dask.distributed`` APIs. The next three sections will illustrate how to use each Dask API with TethysJobs. This section will illustrate how to use the ``dask.delayed`` API with ``DaskJob`` in Tethys.
 
@@ -138,8 +138,8 @@ Add the ``run_job`` controller to the :file:`controller.py` module as well:
         """
         Controller for the app home page.
         """
-        # Get test_scheduler app. This scheduler needs to be in the database.
-        scheduler = get_scheduler(name='test_scheduler')
+        # Get scheduler from dask_primary setting.
+        scheduler = app.get_scheduler(name='dask_primary')
 
         if job_type.lower() == 'delayed':
             from tethysapp.dask_tutorial.job_functions import delayed_job

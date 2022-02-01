@@ -2,22 +2,24 @@
 Condor Job Type
 ***************
 
-**Last Updated:** December 27, 2018
+**Last Updated:** January 2022
 
 
-The :doc:`condor_job_type` (and :doc:`condor_workflow_type`) enable the real power of the jobs API by combining it with the :doc:`../compute`. This make it possible for jobs to be offloaded from the main web server to a scalable computing cluster, which in turn enables very large scale jobs to be processed.
+The :doc:`condor_job_type` (and :doc:`condor_workflow_type`) are used to create jobs to be run by a pool of cluster resources managed by HTCondor. HTCondor makes it possible for jobs to be offloaded from the main web server to a scalable computing cluster, which in turn enables very large scale jobs to be processed.
 
 .. seealso::
+
     The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
 
 
 Creating a Condor Job
 =====================
+
 To create a job call the ``create_job`` method on the job manager. The required parameters are ``name``, ``user`` and ``job_type``. Any other job attributes can also be passed in as `kwargs`.
 
-::
+.. code-block::
 
-    from tethys_sdk.compute import list_schedulers
+    from tethysapp.my_first_app.app import MyFirstApp as app
     from tethys_sdk.workspaces import app_workspace
 
 
@@ -49,15 +51,14 @@ To create a job call the ``create_job`` method on the job manager. The required 
         job.set_attribute('executable', 'my_script.py')
 
         # get a scheduler for the job
-        my_scheduler = list_schedulers()[0]
-        job.scheduler = my_scheduler
+        job.scheduler = app.get_scheduler('condor_primary')
 
         # save or execute the job
         job.save()
         # or
         job.execute()
 
-Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
+Before a controller returns a response the job must be saved, otherwise, all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to call the controller that executes the job.
 
 API Documentation
 =================

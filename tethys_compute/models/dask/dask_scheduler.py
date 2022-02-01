@@ -57,3 +57,7 @@ class DaskScheduler(Scheduler):
             self._client = client
 
         return self._client
+
+    class Meta:
+        verbose_name = 'Dask Scheduler'
+        verbose_name_plural = 'Dask Schedulers'

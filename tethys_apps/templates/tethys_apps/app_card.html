@@ -17,10 +17,10 @@
         </div>
     </a>
     {% if app.description %}
-    <div class="app-help-icon position-absolute top-0 end-0 p-1">
-        <i class="bi bi-info-circle"></i>
+    <div class="app-help-icon position-absolute top-0 end-0 p-1 m-2 border border-dark">
+        <i class="bi bi-info-lg"></i>
     </div>
-    <div class="app-help-info position-absolute top-0 start-0 w-100 h-100 p-3 text-start rounded overflow-auto bg-white d-none">
+    <div class="app-help-info position-absolute top-0 start-0 w-100 h-100 p-3 text-start border rounded overflow-auto bg-white d-none">
         <button type="button" class="btn-close float-end" aria-label="Close"></button>
         <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
     </div>

@@ -114,7 +114,7 @@ def add_site_parser(subparsers):
     site_parser.add_argument('--primary-color', dest='primary_color',
                              help='The primary color for the portal. Default is #0a62a9.')
     site_parser.add_argument('--secondary-color', dest='secondary_color',
-                             help='The secondary color for the portal. Default is #1b95dc.')
+                             help='The secondary color for the portal. Default is #7ec1f7.')
     site_parser.add_argument('--background-color', dest='background_color', help='The background color for the portal.')
     site_parser.add_argument('--text-color', dest='text_color', help='The primary text color for the portal.')
     site_parser.add_argument('--text-hover-color', dest='text_hover_color', help='The hover text color for the portal.')
