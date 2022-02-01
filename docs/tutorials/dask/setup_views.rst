@@ -118,7 +118,6 @@ Add the jobs button to the ``home`` controller in :file:`controller.py` module s
     from django.http.response import HttpResponseRedirect
     from django.contrib import messages
     from tethys_sdk.gizmos import Button
-    from tethys_sdk.compute import get_scheduler
     from tethys_sdk.gizmos import JobsTable
     from tethys_compute.models.dask.dask_job_exception import DaskJobException
     from tethysapp.dask_tutorial.app import DaskTutorial as app

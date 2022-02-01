@@ -7,8 +7,8 @@ from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
-    PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser, make_gop_app_access_form, \
-    register_custom_group, register_user_keys_admin
+    SchedulerSettingInline, PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser, \
+    make_gop_app_access_form, register_custom_group, register_user_keys_admin
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
@@ -19,6 +19,7 @@ from tethys_apps.models import (TethysApp,
                                 DatasetServiceSetting,
                                 SpatialDatasetServiceSetting,
                                 WebProcessingServiceSetting,
+                                SchedulerSetting,
                                 PersistentStoreConnectionSetting,
                                 PersistentStoreDatabaseSetting,
                                 ProxyApp)
@@ -65,12 +66,12 @@ class TestTethysAppAdmin(unittest.TestCase):
     def test_has_delete_permission(self):
         TethysAppSettingInline.model = mock.MagicMock()
         ret = TethysAppSettingInline(mock.MagicMock(), mock.MagicMock())
-        self.assertFalse(ret.has_delete_permission(mock.MagicMock()))
+        self.assertFalse(ret.has_delete_permission(request=mock.MagicMock(), obj=mock.MagicMock()))
 
     def test_has_add_permission(self):
         TethysAppSettingInline.model = mock.MagicMock()
         ret = TethysAppSettingInline(mock.MagicMock(), mock.MagicMock())
-        self.assertFalse(ret.has_add_permission(mock.MagicMock()))
+        self.assertFalse(ret.has_add_permission(request=mock.MagicMock(), obj=mock.MagicMock()))
 
     def test_CustomSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'type', 'required')
@@ -111,6 +112,17 @@ class TestTethysAppAdmin(unittest.TestCase):
         expected_model = WebProcessingServiceSetting
 
         ret = WebProcessingServiceSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
+
+    def test_SchedulerSettingInline(self):
+        expected_readonly_fields = ('name', 'description', 'required', 'engine')
+        expected_fields = ('name', 'description', 'scheduler_service', 'engine', 'required')
+        expected_model = SchedulerSetting
+
+        ret = SchedulerSettingInline(mock.MagicMock(), mock.MagicMock())
 
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
@@ -171,6 +183,7 @@ class TestTethysAppAdmin(unittest.TestCase):
                             DatasetServiceSettingInline,
                             SpatialDatasetServiceSettingInline,
                             WebProcessingServiceSettingInline,
+                            SchedulerSettingInline,
                             TethysAppQuotasSettingInline]
 
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())

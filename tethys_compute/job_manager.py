@@ -50,7 +50,7 @@ class JobManager:
 
     def create_job(self, name, user, groups=None, job_type=None, **kwargs):
         """
-        Creates a new job from a JobTemplate.
+        Creates a new job of the given type.
 
         Args:
             name (str): The name of the job.

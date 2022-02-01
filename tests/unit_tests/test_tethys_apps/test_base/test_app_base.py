@@ -598,19 +598,22 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ta.objects.get().custom_settings.get().get_value.assert_called()
         self.assertEqual(mock_ta.objects.get().custom_settings.get().get_value(), result)
 
-    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_get_custom_setting_object_not_exist(self, mock_ta, mock_tas_dne):
+    def test_get_custom_setting_object_not_exist(self, mock_ta):
         mock_db_app = mock_ta.objects.get
         mock_db_app.return_value = mock.MagicMock()
 
         mock_custom_settings = mock_ta.objects.get().custom_settings.get
         mock_custom_settings.side_effect = ObjectDoesNotExist
 
-        mock_tas_dne.return_value = TypeError
-        self.assertRaises(TypeError, self.app.get_custom_setting, name='test')
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.get_custom_setting(name=self.fake_name)
 
-        mock_tas_dne.assert_called_with('CustomTethysAppSetting', 'test', '')
+        self.assertEqual(
+            'A CustomTethysAppSetting named "fake_name" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_set_custom_setting(self, mock_app):
@@ -632,18 +635,22 @@ class TestTethysAppBase(unittest.TestCase):
 
         self.assertEqual(5, mock_save.call_count)
 
-    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_set_custom_setting_object_not_exist(self, mock_app, mock_tas_dne):
+    def test_set_custom_setting_object_not_exist(self, mock_app):
         setting_name = 'fake_setting'
         mock_db_app = mock_app.objects.get
         mock_db_app.return_value = mock.MagicMock()
 
         mock_app.objects.get().custom_settings.get.side_effect = [ObjectDoesNotExist]
-        mock_tas_dne.return_value = TypeError
 
-        self.assertRaises(TypeError, self.app.set_custom_setting, name=setting_name, value='test')
-        mock_tas_dne.assert_called_with('CustomTethysAppSetting', setting_name, '')
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.set_custom_setting(name=setting_name, value=True)
+
+        self.assertEqual(
+            'A CustomTethysAppSetting named "fake_setting" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_set_custom_setting_type_not_match(self, mock_app):
@@ -663,16 +670,19 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ta.objects.get().dataset_services_settings.get().\
             get_value.assert_called_with(as_endpoint=False, as_engine=False, as_public_endpoint=False)
 
-    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_get_dataset_service_object_not_exist(self, mock_ta, mock_tas_dne):
+    def test_get_dataset_service_object_not_exist(self, mock_ta):
         mock_dss = mock_ta.objects.get().dataset_services_settings.get
         mock_dss.side_effect = ObjectDoesNotExist
 
-        mock_tas_dne.return_value = TypeError
-        self.assertRaises(TypeError, TethysAppChild.get_dataset_service, name=self.fake_name)
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.get_dataset_service(name=self.fake_name)
 
-        mock_tas_dne.assert_called_with('DatasetServiceSetting', self.fake_name, TethysAppChild.name)
+        self.assertEqual(
+            'A DatasetServiceSetting named "fake_name" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_spatial_dataset_service(self, mock_ta):
@@ -683,16 +693,19 @@ class TestTethysAppBase(unittest.TestCase):
             get_value.assert_called_with(as_endpoint=False, as_engine=False, as_public_endpoint=False,
                                          as_wfs=False, as_wms=False)
 
-    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_get_spatial_dataset_service_object_not_exist(self, mock_ta, mock_tas_dne):
+    def test_get_spatial_dataset_service_object_not_exist(self, mock_ta):
         mock_sdss = mock_ta.objects.get().spatial_dataset_service_settings.get
         mock_sdss.side_effect = ObjectDoesNotExist
 
-        mock_tas_dne.return_value = TypeError
-        self.assertRaises(TypeError, TethysAppChild.get_spatial_dataset_service, name=self.fake_name)
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.get_spatial_dataset_service(name=self.fake_name)
 
-        mock_tas_dne.assert_called_with('SpatialDatasetServiceSetting', self.fake_name, TethysAppChild.name)
+        self.assertEqual(
+            'A SpatialDatasetServiceSetting named "fake_name" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_web_processing_service(self, mock_ta):
@@ -702,16 +715,40 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ta.objects.get().wps_services_settings.objects.get().get_value.\
             assert_called_with(as_public_endpoint=False, as_endpoint=False, as_engine=False)
 
-    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_get_web_processing_service_object_not_exist(self, mock_ta, mock_tas_dne):
+    def test_get_web_processing_service_object_not_exist(self, mock_ta):
         mock_wss = mock_ta.objects.get().wps_services_settings.objects.get
         mock_wss.side_effect = ObjectDoesNotExist
 
-        mock_tas_dne.return_value = TypeError
-        self.assertRaises(TypeError, TethysAppChild.get_web_processing_service, name=self.fake_name)
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.get_web_processing_service(name=self.fake_name)
 
-        mock_tas_dne.assert_called_with('WebProcessingServiceSetting', self.fake_name, TethysAppChild.name)
+        self.assertEqual(
+            'A WebProcessingServiceSetting named "fake_name" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
+
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_get_scheduler(self, mock_ta):
+        TethysAppChild.get_scheduler(name=self.fake_name)
+        mock_ta.objects.get.assert_called_with(package=TethysAppChild.package)
+        mock_ta.objects.get().scheduler_settings.get.assert_called_with(name=self.fake_name)
+        mock_ta.objects.get().scheduler_settings.get().get_value.assert_called()
+
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_get_scheduler_object_not_exist(self, mock_ta):
+        mock_ss = mock_ta.objects.get().scheduler_settings.get
+        mock_ss.side_effect = ObjectDoesNotExist
+
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.get_scheduler(name=self.fake_name)
+
+        self.assertEqual(
+            'A SchedulerSetting named "fake_name" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_persistent_store_connection(self, mock_ta):
@@ -721,16 +758,19 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ta.objects.get().persistent_store_connection_settings.get().get_value.\
             assert_called_with(as_engine=True, as_sessionmaker=False, as_url=False)
 
-    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_get_persistent_store_connection_object_not_exist(self, mock_ta, mock_tas_dne):
+    def test_get_persistent_store_connection_object_not_exist(self, mock_ta):
         mock_sdss = mock_ta.objects.get().persistent_store_connection_settings.get
         mock_sdss.side_effect = ObjectDoesNotExist
 
-        mock_tas_dne.return_value = TypeError
-        self.assertRaises(TypeError, TethysAppChild.get_persistent_store_connection, name=self.fake_name)
+        with self.assertRaises(TethysAppSettingDoesNotExist) as cm:
+            TethysAppChild.get_persistent_store_connection(name=self.fake_name)
 
-        mock_tas_dne.assert_called_with('PersistentStoreConnectionSetting', self.fake_name, TethysAppChild.name)
+        self.assertEqual(
+            'A PersistentStoreConnectionSetting named "fake_name" does not '
+            'exist in the b\'Test App\' app.',
+            str(cm.exception)
+        )
 
     @mock.patch('tethys_apps.base.app_base.tethys_log')
     @mock.patch('tethys_apps.models.TethysApp')
@@ -1029,8 +1069,8 @@ class TestTethysAppBase(unittest.TestCase):
         # Check if save is called 2 times
         self.assertTrue(mock_ta().save.call_count == 2)
 
-        # Check if add_settings is called 5 times
-        self.assertTrue(mock_ta().add_settings.call_count == 5)
+        # Check if add_settings is called 6 times
+        self.assertTrue(mock_ta().add_settings.call_count == 6)
 
     @mock.patch('django.conf.settings')
     @mock.patch('tethys_apps.models.TethysApp')
@@ -1046,8 +1086,8 @@ class TestTethysAppBase(unittest.TestCase):
         # Check if save is called 2 times
         self.assertTrue(mock_app.save.call_count == 2)
 
-        # Check if add_settings is called 5 times
-        self.assertTrue(mock_app.add_settings.call_count == 5)
+        # Check if add_settings is called 6 times
+        self.assertTrue(mock_app.add_settings.call_count == 6)
 
     @mock.patch('django.conf.settings')
     @mock.patch('tethys_apps.models.TethysApp')

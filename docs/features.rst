@@ -79,7 +79,7 @@ The portal also includes landing page that can be used to showcase the capabilit
 Computing
 =========
 
-Tethys Platform includes Python modules that allow you to provision and run computing jobs in distributed computing environments. With CondorPy you can define your computing jobs and submit them to distributed computing environments provided by `HTCondor <http://research.cs.wisc.edu/htcondor/>`_.
+Tethys Platform includes Python modules that allow you to run computing jobs in distributed computing environments. With CondorPy you can define your computing jobs and submit them to distributed computing environments using `HTCondor <http://research.cs.wisc.edu/htcondor/>`_ or `Dask Distributed <http://distributed.dask.org/en/stable/>`_.
 
 .. figure:: images/features/computing_condorpy.png
     :width: 400px
@@ -91,7 +91,7 @@ HTCondor provides a way to make use of the idle computing power that is already 
 
 .. note::
 
-    To learn more, read the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
+    To learn more, read the :doc:`./tethys_sdk/jobs`.
 
 
 Acknowledgements
