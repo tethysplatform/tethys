@@ -31,14 +31,19 @@ admin.site.login = staff_member_required(admin.site.login, redirect_field_name="
 admin.autodiscover()
 admin.site.login = staff_member_required(admin.site.login, redirect_field_name="", login_url='/accounts/login/')
 
-# Add Dask Dashboard Url
-admin_urls = admin.site.urls
-admin_urls[0].append(url(r'^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$',
-                         tethys_dask_views.dask_dashboard, name='dask_dashboard'))
+# Extend admin urls
+admin_url_list = admin.site.urls[0]
+
+# Add dask dashboard url
+admin_url_list.insert(0, url(r'^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$',
+                             tethys_dask_views.dask_dashboard, name='dask_dashboard'))
 
 # Add clear app workspace url
-admin_urls[0].insert(0, url(r'^tethys_apps/tethysapp/(?P<app_id>[0-9]+)/clear-workspace/$',
-                            tethys_portal_admin.clear_workspace, name='clear_workspace'))
+admin_url_list.insert(0, url(r'^tethys_apps/tethysapp/(?P<app_id>[0-9]+)/clear-workspace/$',
+                             tethys_portal_admin.clear_workspace, name='clear_workspace'))
+
+# Recreate admin.site.urls tuple
+admin_urls = (admin_url_list, admin.site.urls[1], admin.site.urls[2])
 
 account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),

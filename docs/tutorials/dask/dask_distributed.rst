@@ -2,7 +2,7 @@
 Dask Distributed
 ****************
 
-**Last Updated:** November 2019
+**Last Updated:** January 2022
 
 This section will illustrate how to use the ``dask.distributed`` API with ``DaskJob`` in Tethys. This example also illustrates how to use a custom process results function.
 
@@ -91,8 +91,8 @@ Additionally update the ``run_job`` controller in :file:`controller.py` to look 
         """
         Controller for the app home page.
         """
-        # Get test_scheduler app. This scheduler needs to be in the database.
-        scheduler = get_scheduler(name='test_scheduler')
+        # Get scheduler from dask_primary setting.
+        scheduler = app.get_scheduler(name='dask_primary')
 
         if job_type.lower() == 'delayed':
             from tethysapp.dask_tutorial.job_functions import delayed_job

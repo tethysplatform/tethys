@@ -2,7 +2,7 @@
 Condor Workflow Job Type
 ************************
 
-**Last Updated:** December 27, 2018
+**Last Updated:** January 2022
 
 A Condor Workflow provides a way to run a group of jobs (which can have hierarchical relationships) as a single (Tethys) job. The hierarchical relationships are defined as parent-child relationships. For example, suppose a workflow is defined with three jobs: ``JobA``, ``JobB``, and ``JobC``, which must be run in that order. These jobs would be defined with the following relationships: ``JobA`` is the parent of ``JobB``, and ``JobB`` is the parent of ``JobC``.
 
@@ -20,6 +20,7 @@ Creating a Condor Workflow job involves 3 steps:
 
 ::
 
+    from tethysapp.my_first_app.app import MyFirstApp as app
     from tethys_sdk.jobs import CondorWorkflowJobNode
     from tethys_sdk.workspaces import app_workspace
 
@@ -30,7 +31,7 @@ Creating a Condor Workflow job involves 3 steps:
             name='MyWorkflowABC',
             user=request.user,
             job_type='CONDORWORKFLOW',
-            scheduler=None,
+            scheduler=app.get_scheduler('condor_primary'),
         )
         workflow.save()
 
@@ -96,7 +97,7 @@ Creating a Condor Workflow job involves 3 steps:
 
     The `CondorWorkflow` object must be saved before the `CondorWorkflowJobNode` objects can be instantiated, and the `CondorWorkflowJobNode` objects must be saved before you can define the relationships.
 
-Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
+Before a controller returns a response the job must be saved, otherwise, the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
 
 API Documentation
 =================

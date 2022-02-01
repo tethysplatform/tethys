@@ -2,7 +2,7 @@
 Dask Job Type
 *************
 
-**Last Updated:** November 2018
+**Last Updated:** January 2022
 
 A Dask Job Type wraps Dask functionality in a Tethys Jobs interface. The Tethys Dask Job type supports two different Dask APIs for creating Dask Tasks: ``dask.delayed`` and ``dask.distributed``.
 
@@ -38,12 +38,11 @@ The example below shows the pattern used to create Dask Jobs using the ``dask.de
 
 ::
 
-    from tethys_sdk.compute import get_scheduler
     from tethysapp.my_first_app.app import MyFirstApp as app
     from tethysapp.my_first_app.job_functions import delayed_job
 
     # 1. Get a Dask Scheduler
-    scheduler = get_scheduler(name='test_scheduler')
+    scheduler = app.get_scheduler(name='dask_primary')
 
     # 2. Get job manager for this app
     job_manager = app.get_job_manager()
@@ -94,12 +93,11 @@ The example below shows the pattern used to create Dask Jobs using the ``dask.di
 
 ::
 
-    from tethys_sdk.compute import get_scheduler
     from tethysapp.my_first_app.app import MyFirstApp as app
     from tethysapp.my_first_app.job_functions import distributed_job, convert_to_dollar_sign
 
     # 1. Get a Dask Scheduler
-    scheduler = get_scheduler(name='test_scheduler')
+    scheduler = app.get_scheduler(name='dask_primary')
 
     # 2. Get job manager for this app
     job_manager = app.get_job_manager()
@@ -156,12 +154,11 @@ The following example shows how to create multiple Dask Jobs to tracke a multi-l
 
 ::
 
-    from tethys_sdk.compute import get_scheduler
     from tethysapp.my_first_app.app import MyFirstApp as app
     from tethysapp.my_first_app.job_functions import muliple_leaf_job
 
     # 1. Get a Dask Scheduler
-    scheduler = get_scheduler(name='test_scheduler')
+    scheduler = app.get_scheduler(name='dask_primary')
 
     # 2. Get job manager for this app
     job_manager = app.get_job_manager()

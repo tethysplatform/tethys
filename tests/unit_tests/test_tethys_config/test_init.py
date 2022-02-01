@@ -124,7 +124,7 @@ class TestInit(unittest.TestCase):
                                                            content="#0a62a9",
                                                            date_modified=now)
         mock_settings().setting_set.create.assert_any_call(name="Secondary Color",
-                                                           content="#1b95dc",
+                                                           content="#7ec1f7",
                                                            date_modified=now)
         mock_settings().setting_set.create.assert_any_call(name="Background Color", content="",
                                                            date_modified=now)

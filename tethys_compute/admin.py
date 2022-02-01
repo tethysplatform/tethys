@@ -33,7 +33,7 @@ class DaskSchedulerAdmin(admin.ModelAdmin):
 class CondorSchedulerAdminForm(forms.ModelForm):
     class Meta:
         model = CondorScheduler
-        fields = ('name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass')
+        fields = ('name', 'host', 'port', 'username', 'password', 'private_key_path', 'private_key_pass')
         widgets = {
             'password': forms.PasswordInput(),
             'private_key_pass': forms.PasswordInput()
@@ -43,7 +43,7 @@ class CondorSchedulerAdminForm(forms.ModelForm):
 @admin.register(CondorScheduler)
 class CondorSchedulerAdmin(admin.ModelAdmin):
     form = CondorSchedulerAdminForm
-    list_display = ['name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass']
+    list_display = ['name', 'host', 'port', 'username', 'private_key_path']
 
 
 @admin.register(TethysJob)

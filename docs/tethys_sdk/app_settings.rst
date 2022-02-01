@@ -2,11 +2,14 @@
 App Settings API
 ****************
 
-**Last Updated:** May 2017
+**Last Updated:** January 2022
 
 The App Settings API allows developers to create settings for their apps that can be configured in the admin interface of the Tethys Portal in which the app is installed. Examples of what App Settings could be used for include enabling or disabling functionality, assigning constant values or assumptions that are used throughout the app, or customizing the look and feel of the app. App Settings are only be accessible by Tethys Portal administrators in production, so they should be thought of as global settings for the app that are not customizable on a user by user basis.
 
 As of Tethys Platform 2.0.0, Tethys Services such as databases and map servers are configured through App Settings. Tethys Service App Settings can be thought of as sockets for a particular type of Tethys Service (e.g. PostGIS database, GeoServer, CKAN). Tethys Portal administrators can "plug-in" the appropriate type of Tethys Service from the pool of Tethys Services during installation and setup of the app in the portal. This slight paradigm shift gives Tethys Portal administrators more control over the resources they manage for a Portal instance and how they are distributed across the apps.
+
+
+.. _app_settings_custom_settings:
 
 Custom Settings
 ===============
@@ -20,6 +23,8 @@ To retrieve the value of a Custom Setting, import your :term:`app class` and cal
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_custom_setting
    :noindex:
+
+.. _app_settings_ps_settings:
 
 Persistent Store Settings
 =========================
@@ -41,6 +46,8 @@ To retrieve a connection to a Persistent Store, import your :term:`app class` an
 
     See the :doc:`./tethys_services/persistent_store` and the :doc:`./tethys_services/spatial_persistent_store` for more details on how to use Persistent Stores in your apps.
 
+.. _app_settings_ds_settings:
+
 Dataset Service Settings
 ========================
 
@@ -57,6 +64,8 @@ To retrieve a connection to a Dataset Service, import your :term:`app class` and
 .. tip::
 
     See the :doc:`./tethys_services/dataset_services` for more details on how to use Dataset Services in your apps.
+
+.. _app_settings_sds_settings:
 
 Spatial Dataset Service Settings
 ================================
@@ -75,6 +84,8 @@ To retrieve a connection to a Spatial Dataset Service, import your :term:`app cl
 
     See the :doc:`./tethys_services/spatial_dataset_services` for more details on how to use Spatial Dataset Services in your apps.
 
+.. _app_settings_wps_settings:
+
 Web Processing Service Settings
 ===============================
 
@@ -91,6 +102,25 @@ To retrieve a connection to a Web Processing Service, import your :term:`app cla
 .. tip::
 
     See the :doc:`./tethys_services/web_processing_services` for more details on how to use Dataset Services in your apps.
+
+.. _app_settings_scheduler_settings:
+
+Scheduler Settings
+==================
+
+Scheduler Settings are used to request connection information that will allow you to schedule processing using one of the job managements systems supported by Tethys Platform (e.g. HTCondor and Dask). Create a Scheduler Setting by implementing the ``scheduler_settings()`` method in your :term:`app class`. This method should return a list or tuple of SchedulerSetting_ objects.
+
+.. automethod:: tethys_apps.base.TethysAppBase.scheduler_settings
+   :noindex:
+
+To retrieve a scheduler, import your :term:`app class` and call the ``get_scheduler()`` class method:
+
+.. automethod:: tethys_apps.base.TethysAppBase.get_scheduler
+   :noindex:
+
+.. tip::
+
+    See the :ref:`jobs_api` documentation for more details on how to use Schedulers in your apps.
 
 
 API Documentation
@@ -123,6 +153,10 @@ Settings Objects
 
 .. autoclass:: tethys_sdk.app_settings.WebProcessingServiceSetting
 
+.. _SchedulerSetting:
+
+.. autoclass:: tethys_sdk.app_settings.SchedulerSetting
+
 Settings Declaration Methods
 ----------------------------
 
@@ -135,6 +169,8 @@ Settings Declaration Methods
 .. automethod:: tethys_apps.base.TethysAppBase.spatial_dataset_service_settings
 
 .. automethod:: tethys_apps.base.TethysAppBase.web_processing_service_settings
+
+.. automethod:: tethys_apps.base.TethysAppBase.scheduler_settings
 
 
 Settings Getter Methods
@@ -151,3 +187,5 @@ Settings Getter Methods
 .. automethod:: tethys_apps.base.TethysAppBase.get_spatial_dataset_service
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_web_processing_service
+
+.. automethod:: tethys_apps.base.TethysAppBase.get_scheduler
