@@ -60,7 +60,14 @@ class CondorBaseTest(TethysTestCase):
         self.assertEqual(mock_co, ret.condor_object)
         self.assertEqual(1, ret.condor_object._cluster_id)
         self.assertEqual('test_machine', ret.condor_object._remote_id)
-        mock_co.set_scheduler.assert_called_with('localhost', 'tethys_super', 'pass', 'test_path', 'test_pass')
+        mock_co.set_scheduler.assert_called_with(
+            host='localhost',
+            port=22,
+            username='tethys_super',
+            password='pass',
+            private_key='test_path',
+            private_key_pass='test_pass'
+        )
 
     def test_condor_obj_abs(self):
         ret = CondorBase.objects.get(name='test_condorbase')._condor_object()

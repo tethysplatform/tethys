@@ -1,27 +1,54 @@
+.. _jobs_api:
+
 ********
 Jobs API
 ********
 
-**Last Updated:** December 27, 2018
+**Last Updated:** January 2022
 
-The Jobs API provides a way for your app to run asynchronous tasks (meaning that after starting a task you don't have to wait for it to finish before moving on). As an example, you may need to run a model that takes a long time (potentially hours or days) to complete. Using the Jobs API you can create a job that will run the model, and then leave it to run while your app moves on and does other stuff. You can check the job's status at any time, and when the job is done the Jobs API will help retrieve the results.
+The Jobs API provides a way for your app to run asynchronous tasks (meaning that after starting a task you don't have to wait for it to finish before moving on). As an example, you may need to run a simulation that takes a long time (potentially hours or days) to complete. Using the Jobs API you can create a job that will submit the simulation run, and then leave it to run while your app moves on and does other stuff. You can check the job's status at any time, and when the job is done the Jobs API will help retrieve the results.
+
+Job Management Software
+=======================
+
+The Jobs API leverages third-party job management systems to perform the actual execution of the jobs, including HTCondor and Dask. HTCondor is well suited for executing long-running executable-like jobs, such as running a simulation. Dask is ideal for converting existing Python logic into efficient, parallel running code, especially logic that uses the SciPy stack to perform the analysis.
+
+To learn more about HTCondor and Dask, review the following resources:
+
+* `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_
+* `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_
+* `Dask Overview <https://docs.dask.org/en/latest/>`_
+* `Dask Distributed <http://distributed.dask.org/en/stable/>`_
 
 
-Key Concepts
-============
-To facilitate interacting with jobs asynchronously, the details of the jobs are stored in a database. The Jobs API provides a job manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The Jobs API supports various types of jobs (see `Job Types`_).
+.. _jobs_api_schedulers:
 
-.. seealso::
-    The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+Schedulers
+==========
 
-    The Dask Job uses the Dask Distributed python library to automatically parallelize your Python code and run them on a distributed cluster of workers. For more information on Dask, see: `Dask <https://docs.dask.org/en/latest/>`_ and `Dask Distributed <https://distributed.dask.org/en/latest/>`_ documentation.
+A scheduler is the part of a job managment system that is responsible for accepting job requests and assigning them to the appropriate computing resources to be executed. The Jobs API needs to know how to connect to the scheduler to be able to submit jobs. This is done by adding Scheduler entries in the Tethys Portal admin pages (see: :ref:`Tethys Compute Admin Pages: Schedulers <schedulers-label>`).
 
+.. note::
+
+    Schedulers can also be created and accessed programmatically using the lower-level compute API. However, this approach is only recommended for experienced developers (see: :ref:`lower_level_scheduler_api`).
+
+Scheduler App Settings
+----------------------
+
+Apps that use either HTCondor or Dask should define one or more app Scheduler Settings in their :term:`app class`. Tethys Portal administrators use this setting to assign an appropriate Scheduler to the app when it is being configured. To access Schedulers assigned to app Scheduler Settings, use the ``get_scheduler()`` method of the :term:`app class`. See :ref:`Scheduler Settings <app_settings_scheduler_settings>` for more details.
 
 .. _job-manager-label:
 
 Job Manager
 ===========
-The Job Manager is used in your app to interact with the jobs database. It facilitates creating and querying jobs.
+
+To facilitate interacting with jobs asynchronously, the details of the jobs are stored in a database. The Jobs API provides a Job Manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The Jobs API supports various types of jobs (see `Job Types`_).
+
+.. .. seealso::
+
+..     The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+
+..     The Dask Job uses the Dask Distributed python library to automatically parallelize your Python code and run them on a distributed cluster of workers. For more information on Dask, see: `Dask <https://docs.dask.org/en/latest/>`_ and `Dask Distributed <https://distributed.dask.org/en/latest/>`_ documentation.
 
 Using the Job Manager in your App
 ---------------------------------
@@ -78,30 +105,25 @@ Any other job attributes can also be passed in as `kwargs`.
     # or
     job.execute()
 
-Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
+Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to call the controller that executes the job in the background.
 
 .. tip::
+
    The `Jobs Table Gizmo`_ has a built-in mechanism for submitting jobs with AJAX. If the `Jobs Table Gizmo`_ is used to submit the jobs then be sure to save the job after it is created.
 
-Job Types
----------
-The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. When creating a new job you must specify its type by passing in the `job_type` argument. Currently the supported job types are:
+Common Attributes
+-----------------
 
-    * 'BASIC'
-    * 'CONDOR' or 'CONDORJOB'
-    * 'CONDORWORKFLOW'
+Job attributes can be passed into the `create_job` method of the job manager or they can be specified after the job is instantiated. All jobs have a common set of attributes, and then each job type may add additional attributes.
 
-Additional job attributes can be passed into the `create_job` method of the job manager or they can be specified after the job is instantiated. All jobs have a common set of attributes, and then each job type may add additional attributes.
-
-The following attributes can be defined for all job types:
+The following attributes can be defined for *all* job types:
 
     * ``name`` (string, required): a unique identifier for the job. This should not be confused with the job template name. The template name identifies a template from which jobs can be created and is set when the template is created. The job ``name`` attribute is defined when the job is created (see `Creating and Executing a Job`_).
     * ``description`` (string): a short description of the job.
     * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job.
     * ``extended_properties`` (dict): a dictionary of additional properties that can be used to create custom job attributes.
 
-
-All job types also have the following read-only attributes:
+All job types also have the following **read-only** attributes:
 
     * ``user`` (User): the user who created the job.
     * ``label`` (string): the package name of the Tethys App used to created the job.
@@ -123,7 +145,17 @@ All job types also have the following read-only attributes:
 
         \*used for job types with multiple sub-jobs (e.g. CondorWorkflow).
 
-Specific job types may define additional attributes. The following job types are available.
+Job Types
+---------
+
+The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. When creating a new job you must specify its type by passing in the `job_type` argument. Supported values for `job_type` are:
+
+    * 'BASIC'
+    * 'CONDOR' or 'CONDORJOB'
+    * 'CONDORWORKFLOW'
+    * 'DASK'
+
+For detailed documentation on each of the job types see:
 
 .. toctree::
    :maxdepth: 1
@@ -206,7 +238,32 @@ This URL can be retrieved from the job manager with the ``get_job_status_callbac
 API Documentation
 =================
 
+.. job_manager_api:
+
+Job Manager
+-----------
+
 .. autoclass:: tethys_compute.job_manager.JobManager
     :members: create_job, list_jobs, get_job, get_job_status_callback_url
 
+.. tethys_job_api:
+
+Tethys Job
+----------
+
 .. autoclass:: tethys_compute.models.TethysJob
+
+.. _lower_level_scheduler_api:
+
+Low-Level Scheduler API
+-----------------------
+
+.. autofunction:: tethys_sdk.compute.list_schedulers
+
+.. autofunction:: tethys_sdk.compute.get_scheduler
+
+.. autofunction:: tethys_sdk.compute.create_scheduler
+
+.. autofunction:: tethys_sdk.compute.create_condor_scheduler
+
+.. autofunction:: tethys_sdk.compute.create_dask_scheduler

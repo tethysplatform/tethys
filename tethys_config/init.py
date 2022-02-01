@@ -132,7 +132,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Secondary Color",
-                                    content="#1b95dc",
+                                    content="#7ec1f7",
                                     date_modified=now)
 
         category.setting_set.create(name="Background Color",

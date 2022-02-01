@@ -46,6 +46,8 @@ class DaskSchedulerTest(TethysTestCase):
         self.assertEqual(10, ret.timeout)
         self.assertEqual(5, ret.heartbeat_interval)
         self.assertEqual('test_dashboard', ret.dashboard)
+        self.assertEqual('Dask Scheduler', ret._meta.verbose_name)
+        self.assertEqual('Dask Schedulers', ret._meta.verbose_name_plural)
 
     def test_DaskScheduler_inheritance(self):
         ret = Scheduler.objects.get_subclass(name='test_dask_scheduler')
