@@ -849,7 +849,7 @@ class ServicesCommandsTest(unittest.TestCase):
             password='pass',
             engine=mock_service.HYDROSHARE
         )
-    
+
     @mock.patch('tethys_cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.DatasetService')
     def test_services_create_dataset_command_ckan(self, mock_service, mock_pretty_output):
