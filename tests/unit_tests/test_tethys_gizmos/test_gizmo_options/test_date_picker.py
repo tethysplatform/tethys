@@ -1,4 +1,3 @@
-from unittest import mock
 import unittest
 import tethys_gizmos.gizmo_options.date_picker as gizmo_date_picker
 
@@ -36,36 +35,14 @@ class TestButton(unittest.TestCase):
         self.assertIn(self.days_of_week_disabled, self.gizmo['days_of_week_disabled'])
         self.assertIn(self.min_view_mode, self.gizmo['min_view_mode'])
 
-    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
-    def test_get_vendor_css_debug(self, mock_settings):
-        mock_settings.DEBUG = True
-
-        result = gizmo_date_picker.DatePicker.get_vendor_css()
-
-        self.assertIn('bootstrap-datepicker3.css', result[0])
-        self.assertNotIn('bootstrap-datepicker.js', result[0])
-
-    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
-    def test_get_vendor_js_debug(self, mock_settings):
-        mock_settings.DEBUG = True
-
-        result = gizmo_date_picker.DatePicker.get_vendor_js()
-
-        self.assertIn('bootstrap-datepicker.js', result[0])
-        self.assertNotIn('bootstrap-datepicker3.css', result[0])
-
-    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
-    def test_get_vendor_css_not_debug(self, mock_settings):
-        mock_settings.DEBUG = False
+    def test_get_vendor_css(self):
 
         result = gizmo_date_picker.DatePicker.get_vendor_css()
 
         self.assertIn('bootstrap-datepicker3.min.css', result[0])
         self.assertNotIn('bootstrap-datepicker.min.js', result[0])
 
-    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
-    def test_get_vendor_js_not_debug(self, mock_settings):
-        mock_settings.DEBUG = False
+    def test_get_vendor_js(self):
 
         result = gizmo_date_picker.DatePicker.get_vendor_js()
 

@@ -11,6 +11,7 @@
 from collections import namedtuple
 import logging
 
+from tethys_portal.dependencies import dependencies
 from tethys_cli.cli_colors import write_warning
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
@@ -239,11 +240,11 @@ class JobsTable(TethysGizmoOptions):
     @staticmethod
     def get_vendor_js():
         return (
-            'https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js',
-            'tethys_gizmos/vendor/lodash/lodash.min.js',
-            'tethys_gizmos/vendor/graphlib/dist/graphlib.core.min.js',
-            'tethys_gizmos/vendor/dagre/dist/dagre.core.min.js',
-            'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js',
+            dependencies['d3'].js_url,
+            dependencies['lodash'].js_url,
+            dependencies['graphlib'].js_url,
+            dependencies['dagre'].js_url,
+            dependencies['dagre-d3'].js_url,
             *SelectInput.get_vendor_js(),
         )
 

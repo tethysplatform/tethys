@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from tethys_apps.utilities import get_active_app
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import dependencies
 
 
 def tethys_apps_context(request):
