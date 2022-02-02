@@ -8,7 +8,8 @@
 ********************************************************************************
 """
 import logging
-from django.conf.urls import url, include
+from django.conf.urls import url, include, re_path
+from channels.routing import URLRouter
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
 
@@ -24,21 +25,15 @@ harvester = SingletonHarvester()
 normal_url_patterns = harvester.get_url_patterns()
 handler_url_patterns = harvester.get_handler_patterns()
 app_url_patterns = normal_url_patterns['app_url_patterns']
-http_handler_patterns = handler_url_patterns['http_handler_patterns']
 
-# Combine normal and handler http url patterns from apps
-combined_app_url_patterns = dict()
-app_namespaces = set(app_url_patterns.keys())\
-    .union(http_handler_patterns.keys())
+# configure handler HTTP routes
+http_handler_patterns = []
+for namespace, urls in handler_url_patterns['http_handler_patterns'].items():
+    root_pattern = r'^apps/{0}/'.format(namespace.replace('_', '-'))
+    http_handler_patterns.append(re_path(root_pattern, URLRouter(urls)))
 
-for namespace in app_namespaces:
-    normal_urls = app_url_patterns.get(namespace, [])
-    handler_urls = http_handler_patterns.get(namespace, [])
-    combined_urls = normal_urls + handler_urls
-    combined_app_url_patterns[namespace] = combined_urls
-
-# Add combined app url patterns to urlpatterns, namespaced per app appropriately
-for namespace, urls in combined_app_url_patterns.items():
+# Add app url patterns to urlpatterns, namespaced per app appropriately
+for namespace, urls in app_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     urlpatterns.append(url(root_pattern, include((urls, namespace), namespace=namespace)))
 
