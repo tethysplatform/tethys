@@ -6,7 +6,7 @@ import os
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-from django.conf.urls import re_path
+from django.urls import re_path
 from tethys_apps.urls import app_websocket_urls, http_handler_patterns
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
