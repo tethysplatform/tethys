@@ -214,40 +214,50 @@ p.loading-error {
 /* Status indicator */
 .status-indicator{
     border-radius: 50%;
-    height: 12px;
-    width: 12px;
+    height: 14px;
+    width: 14px;
     display: inline-block;
     margin-right: 5px;
+    color: white;
+    position: relative;
+    top: 1px;
+}
+
+.status-indicator.error{
+  top: 5px;
+}
+
+.status-indicator i{
+  position: relative;
+  top: -5px;
+  left: -1px;
 }
 
 .status-Pending{
   border: 1px solid black;
-  color: white;
+  color: black;
+  height: 15px;
+  width: 15px;
 }
 
 .status-Submitted{
   background: #f0ad4e;
-  color: #f0ad4e;
 }
 
 .status-Running{
   background: #5bc1df;
-  color: #5bc1df;
 }
 
 .status-Complete{
   background: #5cb85b;
-  color: #5cb85b;
 }
 
 .status-Error{
   background: #d9524f;
-  color: #d9524f;
 }
 
 .status-Aborted{
   background: black;
-  color: black;
 }
 
 .status-info{

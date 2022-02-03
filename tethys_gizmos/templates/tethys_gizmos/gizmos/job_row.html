@@ -9,38 +9,28 @@
   <td id="jobs-table-status-{{ job.id }}" class="job-status status-col" data-job-id="{{ job_id }}">
     {% if delay_loading_status %}
     <div class="progress" style="margin-bottom: 0;">
-      <div class="progress-bar bg-info progress-bar-striped active" role="progressbar" title="Updating" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%; background-color: #555555;">
-        <span class="sr-only">100% Updating</span>
-      </div>
+      <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" title="Updating" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%; background-color: #555555;"></div>
     </div>
     {% else %}
     <div align="left">
       {% if job_status == 'Various' or job_status == 'Various-Complete' %}
         <div class="progress" data-bs-toggle="tooltip" title="{{ job_status }}" data-bs-placement="top" style="margin-bottom: 0;">
           {% if job_statuses.Aborted > 0 %}
-          <div class="progress-bar progress-bar progress-bar" role="progressbar" title="Aborted" aria-valuenow="{{ job_statuses.Aborted }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Aborted }}%; background-color: #555555;">
-            <span class="sr-only">{{ job_statuses.Aborted }}% Aborted</span>
-          </div>
+          <div class="progress-bar" role="progressbar" title="Aborted ({{ job_statuses.Aborted }}%)" aria-valuenow="{{ job_statuses.Aborted }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Aborted }}%; background-color: #555555;"></div>
           {% endif %}
           {% if job_statuses.Error > 0 %}
-          <div class="progress-bar bg-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%">
-            <span class="sr-only">{{ job_statuses.Error }}% Error</span>
-          </div>
+          <div class="progress-bar bg-danger" role="progressbar" title="Error ({{ job_statuses.Error }}%)" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%"></div>
           {% endif %}
           {% if job_statuses.Completed > 0 %}
-          <div class="progress-bar bg-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%">
-            <span class="sr-only">{{ job_statuses.Completed }}% Complete</span>
-          </div>
+          <div class="progress-bar bg-success" role="progressbar" title="Complete ({{ job_statuses.Completed }}%)" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%"></div>
           {% endif %}
           {% if job_statuses.Running > 0 %}
-          <div class="progress-bar bg-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%">
-            <span class="sr-only">{{ job_statuses.Running }}% Running</span>
-          </div>
+          <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" title="Running ({{ job_statuses.Running }}%)" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%"></div>
           {% endif %}
         </div>
       {% else %}
         {% if error_message %}
-          <span class="glyphicon glyphicon-info-sign status-info status-{{ job_status }}" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ error_message }}"></span>
+          <div class="status-indicator status-{{ job_status }} error"><i class="bi bi-info" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ error_message }}"></i></div>
         {% else %}
           <div class="status-indicator status-{{ job_status }}"></div>
         {% endif %}
