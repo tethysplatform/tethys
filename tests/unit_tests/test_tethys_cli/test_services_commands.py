@@ -259,6 +259,7 @@ class ServicesCommandsTest(unittest.TestCase):
         """
         mock_args = mock.MagicMock()
         mock_args.connection = 'IndexError:9876@IndexError'  # No 'http' or '://'
+        mock_args.type = 'GeoServer'
 
         services_create_spatial_command(mock_args)
 
@@ -282,6 +283,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'foo@foo:foo'  # No 'http' or '://'
+        mock_args.type = 'GeoServer'
 
         services_create_spatial_command(mock_args)
 
@@ -305,6 +307,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'http://foo:1234'
+        mock_args.type = 'GeoServer'
         mock_service.side_effect = IntegrityError
 
         services_create_spatial_command(mock_args)
@@ -318,7 +321,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch('tethys_cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
-    def test_services_create_spatial_command(self, mock_service, mock_pretty_output):
+    def test_services_create_spatial_command_geoserver(self, mock_service, mock_pretty_output):
         """
         Test for services_create_spatial_command
         For going through the function and saving
@@ -326,10 +329,13 @@ class ServicesCommandsTest(unittest.TestCase):
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_args = mock.MagicMock()
-        mock_args.connection = 'foo:pass@http:://foo:1234'
-        mock_args.public_endpoint = 'http://foo:1234'
-        mock_service.return_value = mock.MagicMock()
+        mock_args = mock.MagicMock(
+            connection='foo:pass@http://localhost:8181/geoserver/rest/',
+            public_endpoint='https://www.example.com:443/geoserver/rest/',
+            apikey='apikey123',
+            type='GeoServer'
+        )
+        mock_args.name = 'test_geoserver'
 
         services_create_spatial_command(mock_args)
 
@@ -338,6 +344,50 @@ class ServicesCommandsTest(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEqual('Successfully created new Spatial Dataset Service!', po_call_args[0][0][0])
+        mock_service.assert_called_with(
+            name='test_geoserver',
+            endpoint='http://localhost:8181/geoserver/rest/',
+            public_endpoint='https://www.example.com:443/geoserver/rest/',
+            apikey='apikey123',
+            username='foo',
+            password='pass',
+            engine=mock_service.GEOSERVER
+        )
+
+    @mock.patch('tethys_cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_create_spatial_command_thredds(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_spatial_command
+        For going through the function and saving
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            connection='foo:pass@http://localhost:8181/thredds/catalog.xml',
+            public_endpoint='https://www.example.com:443/thredds/catalog.xml',
+            apikey='apikey123',
+            type='THREDDS'
+        )
+        mock_args.name = 'test_thredds'
+
+        services_create_spatial_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Successfully created new Spatial Dataset Service!', po_call_args[0][0][0])
+        mock_service.assert_called_with(
+            name='test_thredds',
+            endpoint='http://localhost:8181/thredds/catalog.xml',
+            public_endpoint='https://www.example.com:443/thredds/catalog.xml',
+            apikey='apikey123',
+            username='foo',
+            password='pass',
+            engine=mock_service.THREDDS
+        )
 
     @mock.patch('tethys_cli.services_commands.pretty_output')
     @mock.patch('tethys_cli.services_commands.exit')
@@ -724,6 +774,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
         mock_args = mock.MagicMock()
         mock_args.connection = 'IndexError:9876@IndexError'  # No 'http' or '://'
+        mock_args.type = 'HydroShare'
 
         services_create_dataset_command(mock_args)
 
@@ -741,6 +792,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'foo@foo:foo'  # No 'http' or '://'
+        mock_args.type = 'HydroShare'
 
         services_create_dataset_command(mock_args)
 
@@ -758,6 +810,7 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'http://foo:1234'
+        mock_args.type = 'HydroShare'
         mock_service.side_effect = IntegrityError
 
         services_create_dataset_command(mock_args)
@@ -771,11 +824,14 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch('tethys_cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.DatasetService')
-    def test_services_create_dataset_command(self, mock_service, mock_pretty_output):
-        mock_args = mock.MagicMock()
-        mock_args.connection = 'foo:pass@http:://foo:1234'
-        mock_args.public_endpoint = 'http://foo:1234'
-        mock_service.return_value = mock.MagicMock()
+    def test_services_create_dataset_command_hydroshare(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock(
+            connection='foo:pass@http://localhost:80',
+            public_endpoint='http://www.example.com:80',
+            apikey='apikey123',
+            type='HydroShare'
+        )
+        mock_args.name = 'test_hydroshare'
 
         services_create_dataset_command(mock_args)
 
@@ -784,6 +840,43 @@ class ServicesCommandsTest(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEqual('Successfully created new Dataset Service!', po_call_args[0][0][0])
+        mock_service.assert_called_with(
+            name='test_hydroshare',
+            endpoint='http://localhost:80',
+            public_endpoint='http://www.example.com:80',
+            apikey='apikey123',
+            username='foo',
+            password='pass',
+            engine=mock_service.HYDROSHARE
+        )
+
+    @mock.patch('tethys_cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.DatasetService')
+    def test_services_create_dataset_command_ckan(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock(
+            connection='foo:pass@http://localhost:80',
+            public_endpoint='http://www.example.com:80',
+            apikey='apikey123',
+            type='CKAN'
+        )
+        mock_args.name = 'test_ckan'
+
+        services_create_dataset_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Successfully created new Dataset Service!', po_call_args[0][0][0])
+        mock_service.assert_called_with(
+            name='test_ckan',
+            endpoint='http://localhost:80',
+            public_endpoint='http://www.example.com:80',
+            apikey='apikey123',
+            username='foo',
+            password='pass',
+            engine=mock_service.CKAN
+        )
 
     @mock.patch('tethys_cli.services_commands.input')
     @mock.patch('tethys_cli.services_commands.pretty_output')
