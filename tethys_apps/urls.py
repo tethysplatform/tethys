@@ -24,7 +24,6 @@ urlpatterns = [
 harvester = SingletonHarvester()
 normal_url_patterns = harvester.get_url_patterns()
 handler_url_patterns = harvester.get_handler_patterns()
-app_url_patterns = normal_url_patterns['app_url_patterns']
 
 # configure handler HTTP routes
 http_handler_patterns = []
@@ -33,7 +32,7 @@ for namespace, urls in handler_url_patterns['http_handler_patterns'].items():
     http_handler_patterns.append(re_path(root_pattern, URLRouter(urls)))
 
 # Add app url patterns to urlpatterns, namespaced per app appropriately
-for namespace, urls in app_url_patterns.items():
+for namespace, urls in normal_url_patterns['app_url_patterns'].items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     urlpatterns.append(re_path(root_pattern, include((urls, namespace), namespace=namespace)))
 

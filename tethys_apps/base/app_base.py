@@ -1085,7 +1085,7 @@ class TethysAppBase(TethysBase):
 
         Args:
           name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
-          as_re_path(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
+          as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
           as_sessionmaker(bool): Returns SessionMaker class bound to the engine if True.  Defaults to False.
 
         Returns:
@@ -1125,7 +1125,7 @@ class TethysAppBase(TethysBase):
 
         Args:
           name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
-          as_re_path(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
+          as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
           as_sessionmaker(bool): Returns SessionMaker class bound to the engine if True.  Defaults to False.
 
         Returns:
