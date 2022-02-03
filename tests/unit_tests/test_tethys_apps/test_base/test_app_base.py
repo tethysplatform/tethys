@@ -36,7 +36,7 @@ class TestTethysBase(unittest.TestCase):
         result = tethys_app_base.TethysBase().url_maps()
         self.assertEqual([], result)
 
-    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.re_path')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_url_patterns(self, mock_tbm, mock_url):
         app = tethys_app_base.TethysBase()
@@ -63,7 +63,7 @@ class TestTethysBase(unittest.TestCase):
         self.assertIsInstance(rts_call_args[0][0][1], FunctionType)
         self.assertIsInstance(rts_call_args[1][0][1], type)
 
-    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.re_path')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_url_patterns_no_str(self, mock_tbm, mock_url):
         app = tethys_app_base.TethysBase()
@@ -128,7 +128,7 @@ class TestTethysBase(unittest.TestCase):
                         ' the controller function "test_app.controllers.home1"'
         self.assertIn(error_message, rts_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.re_path')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_handler_patterns(self, mock_tbm, mock_url):
         app = tethys_app_base.TethysBase()
@@ -176,7 +176,7 @@ class TestTethysBase(unittest.TestCase):
 
     @mock.patch('tethys_apps.base.app_base.WSConsumer')
     @mock.patch('tethys_apps.base.app_base.AutoloadJsConsumer')
-    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.re_path')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_handler_patterns_from_function(self, mock_tbm, mock_url, mock_ajsc, mock_wsc):
         app = tethys_app_base.TethysBase()
@@ -222,7 +222,7 @@ class TestTethysBase(unittest.TestCase):
             mock_wsc.as_asgi.call_args_list[0][1]['app_context']._application._handlers[0]._func
         )
 
-    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.re_path')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_handler_patterns_url_basename(self, mock_tbm, mock_url):
         app = tethys_app_base.TethysBase()

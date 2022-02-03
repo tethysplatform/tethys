@@ -13,7 +13,7 @@ import uuid
 
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.conf.urls import url
+from django.urls import re_path
 
 from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
 from tethys_apps.base import permissions
@@ -124,13 +124,13 @@ class TethysBase(TethysBaseMixin):
             url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
             return f'^{url_pattern}$'
 
-        http_url = url(
+        http_url = re_path(
             urlpattern('/autoload.js'),
             AutoloadJsConsumer.as_asgi(**asgi_kwargs),
             name=f'{url_map.name}_bokeh_autoload'
         )
 
-        ws_url = url(
+        ws_url = re_path(
             urlpattern('/ws'),
             WSConsumer.as_asgi(**asgi_kwargs),
             name=f'{url_map.name}_bokeh_ws'
@@ -205,7 +205,7 @@ class TethysBase(TethysBaseMixin):
 
                 # Create django url object
                 controller_function = self._resolve_ref_function(url_map.controller, 'controller', is_extension)
-                django_url = url(url_map.url, controller_function, name=url_map.name)
+                django_url = re_path(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
                 url_patterns[url_map.protocol][namespace].append(django_url)
