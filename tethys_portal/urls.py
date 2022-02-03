@@ -8,8 +8,7 @@
 ********************************************************************************
 """
 import mfa.TrustedDevice
-from django.conf.urls import include, url
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, include, re_path
 from django.views.decorators.cache import never_cache
 from django.contrib import admin
 from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfirmView, \
@@ -35,85 +34,85 @@ admin.site.login = staff_member_required(admin.site.login, redirect_field_name="
 admin_url_list = admin.site.urls[0]
 
 # Add dask dashboard url
-admin_url_list.insert(0, url(r'^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$',
-                             tethys_dask_views.dask_dashboard, name='dask_dashboard'))
+admin_url_list.insert(0, re_path(r'^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$',
+                                 tethys_dask_views.dask_dashboard, name='dask_dashboard'))
 
 # Add clear app workspace url
-admin_url_list.insert(0, url(r'^tethys_apps/tethysapp/(?P<app_id>[0-9]+)/clear-workspace/$',
-                             tethys_portal_admin.clear_workspace, name='clear_workspace'))
+admin_url_list.insert(0, re_path(r'^tethys_apps/tethysapp/(?P<app_id>[0-9]+)/clear-workspace/$',
+                                 tethys_portal_admin.clear_workspace, name='clear_workspace'))
 
 # Recreate admin.site.urls tuple
 admin_urls = (admin_url_list, admin.site.urls[1], admin.site.urls[2])
 
 account_urls = [
-    url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
-    url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
-    url(r'^register/$', tethys_portal_accounts.register, name='register'),
-    url(r'^password/reset/$', never_cache(tethys_portal_email.TethysPasswordResetView.as_view(
+    re_path(r'^login/$', tethys_portal_accounts.login_view, name='login'),
+    re_path(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
+    re_path(r'^register/$', tethys_portal_accounts.register, name='register'),
+    re_path(r'^password/reset/$', never_cache(tethys_portal_email.TethysPasswordResetView.as_view(
         success_url=reverse_lazy('accounts:password_reset_done'))
     ), name='password_reset'),
-    url(r'^password/reset/done/$', never_cache(PasswordResetDoneView.as_view()), name='password_reset_done'),
-    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', never_cache(PasswordResetConfirmView.as_view(
+    re_path(r'^password/reset/done/$', never_cache(PasswordResetDoneView.as_view()), name='password_reset_done'),
+    re_path(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', never_cache(PasswordResetConfirmView.as_view(
         success_url=reverse_lazy('accounts:password_done'))
     ), name='password_confirm'),
-    url(r'^password/done/$', never_cache(PasswordResetCompleteView.as_view()), name='password_done'),
+    re_path(r'^password/done/$', never_cache(PasswordResetCompleteView.as_view()), name='password_done'),
 ]
 
 user_urls = [
-    url(r'^$', tethys_portal_user.profile, name='profile'),
-    url(r'^settings/$', tethys_portal_user.settings, name='settings'),
-    url(r'^change-password/$', tethys_portal_user.change_password, name='change_password'),
-    url(r'^disconnect/(?P<provider>[\w.@+-]+)/(?P<association_id>[0-9]+)/$', tethys_portal_user.social_disconnect,
-        name='disconnect'),
-    url(r'^delete-account/$', tethys_portal_user.delete_account, name='delete'),
-    url(r'^clear-workspace/(?P<root_url>[\w.@+-]+)/$', tethys_portal_user.clear_workspace, name='clear_workspace'),
-    url(r'^manage-storage/$', tethys_portal_user.manage_storage, name='manage_storage'),
+    re_path(r'^$', tethys_portal_user.profile, name='profile'),
+    re_path(r'^settings/$', tethys_portal_user.settings, name='settings'),
+    re_path(r'^change-password/$', tethys_portal_user.change_password, name='change_password'),
+    re_path(r'^disconnect/(?P<provider>[\w.@+-]+)/(?P<association_id>[0-9]+)/$', tethys_portal_user.social_disconnect,
+            name='disconnect'),
+    re_path(r'^delete-account/$', tethys_portal_user.delete_account, name='delete'),
+    re_path(r'^clear-workspace/(?P<root_url>[\w.@+-]+)/$', tethys_portal_user.clear_workspace, name='clear_workspace'),
+    re_path(r'^manage-storage/$', tethys_portal_user.manage_storage, name='manage_storage'),
 ]
 
 developer_urls = [
-    url(r'^gizmos/', include(('tethys_gizmos.urls', 'gizmos'), namespace='gizmos')),
-    url(r'^services/', include(('tethys_services.urls', 'services'), namespace='services')),
+    re_path(r'^gizmos/', include(('tethys_gizmos.urls', 'gizmos'), namespace='gizmos')),
+    re_path(r'^services/', include(('tethys_services.urls', 'services'), namespace='services')),
 ]
 
 oauth2_urls = [
     # authentication / association
-    url(r'^login/(?P<backend>[^/]+)/$', tethys_portal_psa.auth, name='begin'),
-    url(r'^complete/(?P<backend>[^/]+)/$', tethys_portal_psa.complete, name='complete'),
+    re_path(r'^login/(?P<backend>[^/]+)/$', tethys_portal_psa.auth, name='begin'),
+    re_path(r'^complete/(?P<backend>[^/]+)/$', tethys_portal_psa.complete, name='complete'),
     # disconnection
-    url(r'^disconnect/(?P<backend>[^/]+)/$', psa_views.disconnect, name='disconnect'),
-    url(r'^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$', psa_views.disconnect,
-        name='disconnect_individual'),
+    re_path(r'^disconnect/(?P<backend>[^/]+)/$', psa_views.disconnect, name='disconnect'),
+    re_path(r'^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$', psa_views.disconnect,
+            name='disconnect_individual'),
     # get tenant name for multi-tenant support
-    url(r'^tenant/(?P<backend>[^/]+)/$', tethys_portal_psa.tenant, name='tenant'),
+    re_path(r'^tenant/(?P<backend>[^/]+)/$', tethys_portal_psa.tenant, name='tenant'),
 ]
 
 # development_error_urls = [
-#     url(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
-#     url(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
-#     url(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
-#     url(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
+#     re_path(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
+#     re_path(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
+#     re_path(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
+#     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
 
 urlpatterns = [
-    url(r'^$', tethys_portal_home.home, name='home'),
-    url(r'^admin/', admin_urls),
-    url(r'^accounts/', include((account_urls, 'accounts'), namespace='accounts')),
-    url(r'^captcha/', include('captcha.urls')),
-    url(r'^oauth2/', include((oauth2_urls, psa_urls.app_name), namespace='social')),
-    url(r'^user/', include((user_urls, 'user'), namespace='user')),
-    url(r'^apps/', include('tethys_apps.urls')),
-    url(r'^extensions/', include(extension_urls)),
-    url(r'^developer/', include(developer_urls)),
-    url(r'^handoff/(?P<app_name>[\w-]+)/$', tethys_apps_views.handoff_capabilities, name='handoff_capabilities'),
-    url(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', tethys_apps_views.handoff, name='handoff'),
-    url(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
-    url(r'^update-dask-job-status/(?P<key>[\w-]+)/$', tethys_apps_views.update_dask_job_status,
-        name='update_dask_job_status'),
-    url(r'^terms/', include('termsandconditions.urls')),
-    url(r'session_security/', include('session_security.urls')),
-    url(r'^mfa/', include('mfa.urls')),
-    url(r'devices/add$', mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
-    # url(r'^error/', include(development_error_urls)),
+    re_path(r'^$', tethys_portal_home.home, name='home'),
+    re_path(r'^admin/', admin_urls),
+    re_path(r'^accounts/', include((account_urls, 'accounts'), namespace='accounts')),
+    re_path(r'^captcha/', include('captcha.urls')),
+    re_path(r'^oauth2/', include((oauth2_urls, psa_urls.app_name), namespace='social')),
+    re_path(r'^user/', include((user_urls, 'user'), namespace='user')),
+    re_path(r'^apps/', include('tethys_apps.urls')),
+    re_path(r'^extensions/', include(extension_urls)),
+    re_path(r'^developer/', include(developer_urls)),
+    re_path(r'^handoff/(?P<app_name>[\w-]+)/$', tethys_apps_views.handoff_capabilities, name='handoff_capabilities'),
+    re_path(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', tethys_apps_views.handoff, name='handoff'),
+    re_path(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
+    re_path(r'^update-dask-job-status/(?P<key>[\w-]+)/$', tethys_apps_views.update_dask_job_status,
+            name='update_dask_job_status'),
+    re_path(r'^terms/', include('termsandconditions.urls')),
+    re_path(r'session_security/', include('session_security.urls')),
+    re_path(r'^mfa/', include('mfa.urls')),
+    re_path(r'devices/add$', mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
+    # re_path(r'^error/', include(development_error_urls)),
 ]
 
 handler400 = tethys_portal_error.handler_400
