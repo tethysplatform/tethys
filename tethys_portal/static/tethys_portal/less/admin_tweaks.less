@@ -8,6 +8,11 @@
  *****************************************************************************/
 @import "variables.less";
 
+body {
+  background-color: var(--body-bg);
+  color: var(--body-fg);
+}
+
 ul li {
   list-style-type: none;
   font-size: initial;
@@ -115,7 +120,7 @@ a:hover {
 
 thead {
   th {
-    background: #efefef;
+    background: var(--darkened-bg);
   }
 }
 
@@ -158,7 +163,7 @@ thead {
   .tabular {
     tr.add-row {
       td {
-        background: #ffffff;
+        background: var(--body-bg);
         padding: 8px;
       }
     }
@@ -220,7 +225,7 @@ thead {
 
   #changelist-form {
     .actions {
-      background: #ffffff;
+      background: var(--body-bg);
       border-top: none;
       padding: 5px;
 
@@ -236,13 +241,13 @@ thead {
     }
 
     .paginator {
-      background: #ffffff;
+      background: var(--body-bg);
     }
 
     #result_list {
       thead {
         th {
-          background: #efefef;
+          background: var(--darkened-bg);
           padding: 5px;
 
           &.sorted {
@@ -289,13 +294,13 @@ thead {
 
 input[type=submit] {
 
-  background: #ffffff;
+  background: var(--darkened-bg);
   border: 1px #888888 solid;
   font-weight: 500;
-  color: #222222;
+  color: var(--body-fg);
 
   &:hover {
-    background: #efefef - #111111;
+    background: var(--border-color);
   }
 
   &[name=_save] {
