@@ -183,18 +183,24 @@ def services_create_spatial_command(args):
         apikey = args.apikey or ''
         service_type = args.type
 
+        engines = {
+            'GeoServer': SpatialDatasetService.GEOSERVER,
+            'THREDDS': SpatialDatasetService.THREDDS
+        }
+
         if 'http' not in endpoint or '://' not in endpoint:
             raise IndexError()
         if public_endpoint and 'http' not in public_endpoint or '://' not in public_endpoint:
             raise FormatError()
 
-        endpoint = add_geoserver_rest_to_endpoint(endpoint)
-        if public_endpoint:
-            public_endpoint = add_geoserver_rest_to_endpoint(public_endpoint)
+        if service_type == 'GeoServer':
+            endpoint = add_geoserver_rest_to_endpoint(endpoint)
+            if public_endpoint:
+                public_endpoint = add_geoserver_rest_to_endpoint(public_endpoint)
 
         new_persistent_service = SpatialDatasetService(name=name, endpoint=endpoint, public_endpoint=public_endpoint,
                                                        apikey=apikey, username=service_username,
-                                                       password=service_password, engine=service_type)
+                                                       password=service_password, engine=engines[service_type])
         new_persistent_service.save()
 
         with pretty_output(FG_GREEN) as p:
@@ -230,6 +236,11 @@ def services_create_dataset_command(args):
         apikey = args.apikey or ''
         service_type = args.type
 
+        engines = {
+            'CKAN': DatasetService.CKAN,
+            'HydroShare': DatasetService.HYDROSHARE
+        }
+
         if 'http' not in endpoint or '://' not in endpoint:
             raise IndexError()
 
@@ -239,7 +250,7 @@ def services_create_dataset_command(args):
 
         new_persistent_service = DatasetService(name=name, endpoint=endpoint, public_endpoint=public_endpoint,
                                                 apikey=apikey, username=service_username,
-                                                password=service_password, engine=service_type)
+                                                password=service_password, engine=engines[service_type])
         new_persistent_service.save()
 
         with pretty_output(FG_GREEN) as p:
