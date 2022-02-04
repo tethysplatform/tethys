@@ -38,6 +38,7 @@
 
 .layer-group-item {
     margin-bottom: 5px;
+    list-style: none;
 }
 
 .layer-group-item .flatmark {
@@ -80,6 +81,8 @@
     border: none;
     outline: none;
     margin-left: 5px;
+    padding: 0px 4px;
+    vertical-align: top;
 }
 
 .layers-context-menu.open .layers-btn,
@@ -88,6 +91,7 @@
 .layers-btn:focus {
     border: none;
     outline: none;
+    box-shadow: none;
     background-color: #777777!important;
     color: #ffffff!important;
 }
