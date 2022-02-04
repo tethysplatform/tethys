@@ -6,7 +6,7 @@
   <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
 {% endblock %}
 
-{% block app_navigation_items %}
+{% block app_navigation %}
   {# NAV HEADER #}
   {% block before_nav_header %}
   {% endblock %}
@@ -20,25 +20,29 @@
     {% block map_tabs %}
       <ul class="nav nav-tabs tethys-nav-tabs" role="tablist">
         {# LAYERS TAB #}
-        <li role="presentation" {% block disable_default_tab %}class="active"{% endblock %}>
-          <a id="layers-tab-toggle"
-             href="#layers-tab-panel"
-             aria-controls="layers-tab-panel"
-             aria-selected="true"
-             role="tab"
-             data-toggle="tab">{{ layer_tab_name }}</a>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link{% block disable_default_tab %} active{% endblock %}"
+                  id="layers-tab-toggle"
+                  aria-controls="layers-tab-panel"
+                  aria-selected="true"
+                  type="button"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#layers-tab-panel">{{ layer_tab_name }}</button>
         </li>
         {# LEGEND TAB #}
         {% if show_legends %}
           {% block legend_tab %}
             {% if legends %}
-            <li role="presentation" {% block disable_legend_tab %}{% endblock %}>
-              <a id="legend-tab-toggle"
-                 href="#legend-tab-panel"
-                 aria-controls="legend-tab-panel"
-                 aria-selected="false"
-                 role="tab"
-                 data-toggle="tab">Legend</a>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link{% block disable_legend_tab %}{% endblock %}"
+                      id="legend-tab-toggle"
+                      aria-controls="legend-tab-panel"
+                      aria-selected="false"
+                      type="button"
+                      role="tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#legend-tab-panel">Legend</button>
             </li>
             {% endif %}
           {% endblock %}
@@ -54,7 +58,7 @@
     {% block map_tab_panels %}
       <div class="tab-content">
         {# LAYERS TAB PANEL #}
-        <div role="tabpanel" class="tab-pane{% block disable_default_tab_panel %} active{% endblock %}" id="layers-tab-panel">
+        <div class="tab-pane{% block disable_default_tab_panel %} show active{% endblock %}" id="layers-tab-panel" role="tabpanel" aria-labelledby="layers-tab-toggle">
           {% block layer_tab_panel %}
           {% for layer_group in layer_groups %}
           {% if layer_group.id == 'custom_layers'%}
@@ -170,7 +174,7 @@
         {% if show_legends %}
           {% block legend_panel %}
             {% if legends %}
-            <div role="tabpanel" class="tab-pane{% block disable_legend_tab_panel %}{% endblock %}" id="legend-tab-panel">
+            <div class="tab-pane{% block disable_legend_tab_panel %}{% endblock %}" id="legend-tab-panel" role="tabpanel" aria-labelledby="legend-tab-toggle">
               {% block legend_items %}
               {% for legend, legend_select_input in legends %}
                 <div id="{{ legend.legend_id }}" class="hidden legend-wrapper legend-group-item" data-legend-attrs="{{ legend|jsonify }}">

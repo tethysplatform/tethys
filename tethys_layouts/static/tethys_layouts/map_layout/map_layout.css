@@ -20,11 +20,11 @@
     height: 100%;
 }
 
-
-/* Prevent basemap drop down from getting too long */
-#basemap_dropdown_container .dropdown-menu {
-    max-height: 400px !important;
-    overflow-y: auto !important;
+/* Map Tabs */
+.map-tabs .tab-content {
+    max-height: 700px;
+    overflow-y: auto;
+    height: 700px;
 }
 
 /* Layer Selector */
@@ -235,7 +235,7 @@
 }
 
 .legend-group-item .form-group {
-    margin 0!important;
+    margin: 0!important;
 }
 
 .legend-group-item select {
@@ -283,10 +283,4 @@
     position: absolute;
     left: 5px;
     top: 5px;
-}
-
-.map-tabs .tab-content {
-    max-height: 700px;
-    overflow-y: auto;
-    height: 700px;
 }
