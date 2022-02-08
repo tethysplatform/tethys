@@ -112,7 +112,7 @@
       <div class="col-sm-12">
         <div class="input-group">
           <select name="geocode_select" id="geocode_select" class="geocode-search" multiple></select>
-          <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+          <span class="input-group-addon"><i class="bi bi-search"></i></span>
         </div>
       </div>
     </div>
@@ -156,15 +156,15 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="action-modal-title">Action</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="action-modal-content">
           Action content
         </div>
         <div class="modal-footer">
-          <button id="cancel-action-button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <a id="do-action-button" class="btn" href="javascript:void(0);">Action</a>
+          <button class="btn btn-secondary" id="cancel-action-button" type="button" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn" id="do-action-button" type="button">Action</button>
         </div>
       </div>
     </div>
