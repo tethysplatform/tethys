@@ -137,7 +137,7 @@ var MAP_LAYOUT = (function() {
     setup_map = function() {
         // Change Extent Button from "E" to Extent Symbol
         let $extent_button = $('button[title="Fit to extent"]');
-        $extent_button.html('<span class="glyphicon glyphicon-home"></span>');
+        $extent_button.html('<i class="bi bi-house-fill"></i>');
 
         // Get handle on map
 	    m_map = TETHYS_MAP_VIEW.getMap();
@@ -981,12 +981,12 @@ var MAP_LAYOUT = (function() {
                               + '<input class="form-control" type="text" id="new-name-field" style="margin-bottom:10px" value="New Layer" autofocus onfocus="this.select();">'
                               + '<label class="sr-only" for="service-type">Map Service Type</label>'
                               + '<select class="form-control" style="margin-bottom:10px" id="service-type">'
-                              + '<option value="WMS">WMS</option>'
-                              + '<option value="TileArcGISRest" selected>ArcGIS Map Server</option>'
+                              + '<option value="WMS" selected>WMS</option>'
+                              + '<option value="TileArcGISRest">ArcGIS Map Server</option>'
                               + '</select>'
                               + '<label class="sr-only" for="services-link">Service Link</label>'
-//                              + '<input class="form-control" type="text" id="services-link" value="https://mrdata.usgs.gov/services/sgmc2" placeholder="Service Link (ex: https://mrdata.usgs.gov/services/sgmc2)" autofocus onfocus="this.select();">'
-                              + '<input class="form-control" type="text" id="services-link" value="https://mbmgmap.mtech.edu/arcgis/rest/services/geology_100k/geology_100k_legacy/MapServer" placeholder="Service Link (ex: https://mbmgmap.mtech.edu/arcgis/rest/services/geology_100k/geology_100k_legacy/MapServer)" autofocus onfocus="this.select();">'
+                              + '<input class="form-control" type="text" id="services-link" value="https://mrdata.usgs.gov/services/sgmc2" placeholder="Service Link (ex: https://mrdata.usgs.gov/services/sgmc2)" autofocus onfocus="this.select();">'
+                            //   + '<input class="form-control" type="text" id="services-link" value="https://mbmgmap.mtech.edu/arcgis/rest/services/geology_100k/geology_100k_legacy/MapServer" placeholder="Service Link (ex: https://mbmgmap.mtech.edu/arcgis/rest/services/geology_100k/geology_100k_legacy/MapServer)" autofocus onfocus="this.select();">'
                               + '<label class="sr-only" for="service-layer-name">Layer Name</label>'
                               + '<input class="form-control" type="text" id="service-layer-name" value="Lithology" placeholder="Layer Name (ex: Lithology)" style="margin-top: 10px" autofocus onfocus="this.select();">'
                               + '</div>';
@@ -1003,29 +1003,7 @@ var MAP_LAYOUT = (function() {
                 let service_type = modal.content.find('#service-type').first().val();
                 let service_link =  modal.content.find('#services-link').first().val();
                 let service_layer_name =  modal.content.find('#service-layer-name').first().val();
-                let html_content = '<li class="layer-list-item">';
-                html_content += '<label class="flatmark"><span class="display-name">' + new_name + '</span>';
-                html_content += '<input type="checkbox" class="layer-visibility-control" checked id="' + uuid + '"';
-                html_content += 'data-layer-id="' + uuid + '" data-layer-variable="" name="custom_layers">';
-                html_content += '<span class="checkmark checkbox"></span></label>';
-                html_content += '<div class="dropdown layers-context-menu pull-right">'
-                html_content += '<a id="' + uuid + '--context-menu" class="btn btn-xs dropdown-toggle layers-btn " data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color: rgb(186, 12, 47);">';
-                html_content += '<span class="glyphicon glyphicon-option-vertical"></span></a>';
-                html_content += '<ul class="dropdown-menu dropdown-menu-right" aria-labeledby="' + uuid + '--context-menu">';
-                html_content += '<li><a class="rename-action" href="javascript:void(0);" style="color: rgb(186, 12, 47);"><span class="glyphicon glyphicon-pencil"></span><span class="command-name">Rename</span></a></li>';
-                html_content += '<li><a class="remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="' + uuid + '" style="color: rgb(186, 12, 47);"><span class="glyphicon glyphicon-remove"></span><span class="command-name">Remove</span></a></li>';
-                html_content += '<li role="separator" class="divider"></li>';
-                html_content += '<li><a class="zoom-to-layer-action" href="javascript:void(0);" data-layer-id="' + uuid + '" style="color: rgb(186, 12, 47);"><span class="glyphicon glyphicon-fullscreen"></span><span class="command-name">Zoom to Layer</span></a></li>';
-                html_content += '<li role="separator" class="divider"></li>';
-                html_content += '<li>';
-                html_content += '<div class="flat-slider-container">';
-                html_content += '<label><span class="glyphicon glyphicon-adjust"></span><span class="command-name">Opacity: </span><span class="slider-value">100%</span></label>';
-                html_content += '<div class="flat-slider-container">';
-                html_content += '<input type="range" class="flat-slider layer-opacity-control" min="0" max="100" value="100" data-layer-id="' + uuid + '" data-layer-variable="">';
-                html_content += '</div>';
-                html_content += '</li></ul>';
-                $new_layer.append(html_content);
-                $new_layer.css({'overflow': 'visible'});
+                
                 var append_layer;
                 if (service_type == "TileArcGISRest") {
                     append_layer =
@@ -1048,9 +1026,22 @@ var MAP_LAYOUT = (function() {
                 }
 
                 m_layers[uuid] = append_layer;
+                m_map.addLayer(append_layer);
+
+                // todo: add layer attributes (id, variable, etc.)
+                load_layers(
+                    'layers-tab-panel', 
+                    'Custom Layers', 
+                    'custom_layers', 
+                    [append_layer],
+                    [new_name], 
+                    ['12345'], // todo generate id
+                    ['custom_layer'], // todo variable?
+                    true  // todo show download?
+                ); // todo: extent
+
                 // Hide the modal
                 hide_action_modal();
-                m_map.addLayer(append_layer);
                 init_new_layers_tab(uuid);
 
                 // Save to resource
@@ -1739,18 +1730,18 @@ var MAP_LAYOUT = (function() {
             m_layers[layer_ids[i]] = layer_data[i];
             m_map.addLayer(layer_data[i]);
         }
-        var status = 'create'
+        var operation = 'create'
         // If the layer group is already created, we will have the solution added to the same layer groups
         if ($('#' + layer_group_id).length){
-            status = 'append'
+            operation = 'append'
         }
         $.ajax({
             type: 'POST',
             url: ".",
             async: false,
             data: {
-                'method': 'build_layer_group_tree_item',
-                'status': status,
+                'method': 'build_layer_tree_item',
+                'operation': operation,
                 'layer_group_id': layer_group_id,
                 'layer_group_name': layer_group_name,
                 'layer_names': JSON.stringify(layer_names),
@@ -1759,13 +1750,14 @@ var MAP_LAYOUT = (function() {
                 'show_download': JSON.stringify(show_download),
             },
         }).done(function(data){
-            if (status == 'create') {
+            if (operation == 'create') {
                 $('#' + tab_id).prepend(data.response);
             } else {
                 $('#' + layer_group_id + '_associated_layers').prepend(data.response);
             }
+            init_new_layers_tab(layer_group_id);
         });
-        init_new_layers_tab(layer_group_id);
+        
     };
 
     hide_layers = function(layer_ids) {

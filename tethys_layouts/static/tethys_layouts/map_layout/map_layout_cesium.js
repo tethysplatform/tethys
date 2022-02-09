@@ -1847,18 +1847,18 @@ var MAP_LAYOUT_CESIUM = (function() {
             m_layers[layer_ids[i]] = layer_data[i];
             m_map.addLayer(layer_data[i]);
         }
-        var status = 'create'
+        var operation = 'create'
         // If the layer group is already created, we will have the solution added to the same layer groups
-        if ($('#' + layer_group_id).length){
-            status = 'append'
+        if ($('#' + layer_group_id).length) {
+            operation = 'append'
         }
         $.ajax({
             type: 'POST',
             url: ".",
             async: false,
             data: {
-                'method': 'build_layer_group_tree_item',
-                'status': status,
+                'method': 'build_layer_tree_item',
+                'operation': operation,
                 'layer_group_id': layer_group_id,
                 'layer_group_name': layer_group_name,
                 'layer_names': JSON.stringify(layer_names),
@@ -1866,7 +1866,7 @@ var MAP_LAYOUT_CESIUM = (function() {
                 'layer_legends': JSON.stringify(layer_legends),
             },
         }).done(function(data){
-            if (status == 'create') {
+            if (operation == 'create') {
                 $('#layers-tab-panel').prepend(data.response);
             }
             else {

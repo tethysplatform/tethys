@@ -644,55 +644,59 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         })
         return response
 
-    def build_layer_group_tree_item(self, request, *args, **kwargs):
+    def build_layer_tree_item(self, request, *args, **kwargs):
         """
         A jQuery.loads() handler that renders the HTML for a layer group tree item.
 
-        status (create/append): create is create a whole new layer group with all the layer items associated with it
+        operation (create/append): create is create a whole new layer group with all the layer items associated with it
             append is append an associated layer into an existing layer group
         """
-        # Get request parameters
-        status = request.POST.get('status', 'create')
-        layer_group_name = request.POST.get('layer_group_name')
-        layer_group_id = request.POST.get('layer_group_id')
-        layer_names = json.loads(request.POST.get('layer_names'))
-        layer_ids = json.loads(request.POST.get('layer_ids'))
-        layer_legends = json.loads(request.POST.get('layer_legends'))
-        show_rename = json.loads(request.POST.get('show_rename', 'true'))
-        show_remove = json.loads(request.POST.get('show_remove', 'true'))
-        show_download = json.loads(request.POST.get('show_download', 'false'))
-        layers = []
+        try:
+            # Get request parameters
+            operation = request.POST.get('operation', 'create')
+            layer_group_name = request.POST.get('layer_group_name')
+            layer_group_id = request.POST.get('layer_group_id')
+            layer_names = json.loads(request.POST.get('layer_names'))
+            layer_ids = json.loads(request.POST.get('layer_ids'))
+            layer_legends = json.loads(request.POST.get('layer_legends'))
+            show_rename = json.loads(request.POST.get('show_rename', 'true'))
+            show_remove = json.loads(request.POST.get('show_remove', 'true'))
+            show_download = json.loads(request.POST.get('show_download', 'false'))
+            layers = []
 
-        # Reconstruct the MVLayer objects
-        for i in range(len(layer_names)):
-            layers.append(self._build_mv_layer(
-                layer_source="GeoJSON",
-                layer_name=layer_ids[i],
-                layer_title=layer_names[i],
-                layer_variable=layer_legends[i],
-                options=None,
-            ))
+            # Reconstruct the MVLayer objects
+            for i in range(len(layer_names)):
+                layers.append(self._build_mv_layer(
+                    layer_source="GeoJSON",
+                    layer_name=layer_ids[i],
+                    layer_title=layer_names[i],
+                    layer_variable=layer_legends[i],
+                    options=None,
+                ))
 
-        # Build Layer groups
-        layer_group = self.build_layer_group(layer_group_id, layer_group_name, layers=layers)
-        context = {
-            'layer_group': layer_group,
-            'show_rename': show_rename,
-            'show_remove': show_remove,
-            'show_download': show_download
-        }
+            # Build Layer groups
+            layer_group = self.build_layer_group(layer_group_id, layer_group_name, layers=layers)
+            context = {
+                'layer_group': layer_group,
+                'show_rename': show_rename,
+                'show_remove': show_remove,
+                'show_download': show_download
+            }
 
-        if status == 'create':
-            template = 'tethys_layouts/map_layout/layer_group_content.r'
-        else:
-            # Only works for one layer at a time for now.
-            template = 'tethys_layouts/map_layout/layer_item_content.r'
-            context['layer'] = layers[0]
+            if operation == 'create':
+                template = 'tethys_layouts/map_layout/layer_group_content.html'
+            else:
+                # Only works for one layer at a time for now.
+                template = 'tethys_layouts/map_layout/layer_item_content.html'
+                context['layer'] = layers[0]
 
-        r = render(request, template, context)
+            r = render(request, template, context)
 
-        html_str = str(r.content, 'utf-8')
-        return JsonResponse({'success': True, 'response': html_str})
+            html_str = str(r.content, 'utf-8')
+            return JsonResponse({'success': True, 'response': html_str})
+        except Exception:
+            log.exception('An unexpected error has occurred.')
+            return JsonResponse({'success': False, 'error': 'An unexpected error has occurred.'})
 
     @permission_required('use_map_geocode', raise_exception=True)
     def find_location_by_query(self, request, *args, **kwargs):
