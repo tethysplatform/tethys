@@ -103,6 +103,7 @@ django.setup()
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.extlinks',
     'sphinx.ext.todo',
     'sphinxarg.ext'
