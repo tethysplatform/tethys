@@ -10,23 +10,14 @@
 from django.views.generic import View
 
 import inspect
-from functools import wraps
-from urllib.parse import urlparse
 from collections import OrderedDict
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
-from django.contrib import messages
-from django.urls import reverse
-from django.shortcuts import redirect
-from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from social_core.exceptions import AuthAlreadyAssociated
 
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
 
-from .permissions import has_permission
 from .workspace import (
     app_workspace as app_workspace_decorator,
     user_workspace as user_workspace_decorator,
@@ -39,6 +30,7 @@ from collections.abc import Callable
 
 
 app_controllers_list = list()
+
 
 class TethysController(View):
 
@@ -229,7 +221,7 @@ def controller(
             ...
 
 
-        # Note that when the ``controller`` decorator is applied to a class it applies to all of the HTTP methods that are defined on that class:
+        # Note that when the ``controller`` decorator is applied to a class it applies to all the HTTP methods that are defined on that class:
 
         @controller(
             user_workspace=True,
@@ -241,7 +233,7 @@ def controller(
             def post(self, request, user_workspace, url_arg):
                 ...
 
-    """
+    """  # noqa: E501
     permissions_required = _listify(permissions_required)
     enforce_quota_codenames = _listify(enforce_quotas)
 
@@ -287,7 +279,13 @@ def controller(
             url_name = name or function_or_class.__name__
             final_urls = {f'{url_name}_{i}' if i else url_name: final_url for i, final_url in enumerate(final_urls)}
 
-        controller = function_or_class.as_controller(**kwargs) if inspect.isclass(function_or_class) else function_or_class
+        if inspect.isclass(function_or_class):
+            if protocol == 'websocket':
+                controller = function_or_class.as_asgi()
+            else:
+                controller = function_or_class.as_controller(**kwargs)
+        else:
+            controller = function_or_class
 
         if login_required:
             controller = login_required_decorator(
@@ -330,4 +328,4 @@ def controller(
 def _listify(obj):
     if obj is None:
         return []
-    return obj if isinstance(obj, list) or isinstance(obj, tuple) else [obj]
+    return obj if isinstance(obj, Union[list, tuple]) else [obj]

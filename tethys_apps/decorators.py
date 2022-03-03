@@ -22,7 +22,6 @@ from tethys_portal.views import error as tethys_portal_error
 from .base import has_permission
 
 
-
 def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
     """
     Decorator for Tethys App controllers that checks whether a user has a permission.

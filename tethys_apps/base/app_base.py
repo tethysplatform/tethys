@@ -16,10 +16,11 @@ import uuid
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
+from django.utils.functional import classproperty
 
-from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
+from .testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
 from .url_map import url_map_maker
-from .permissions import Permission, PermissionGroup
+from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
@@ -37,37 +38,62 @@ class TethysBase(TethysBaseMixin):
     Abstract base class of app and extension classes.
     """
     name = ''
+    description = ''
     package = ''
     root_url = ''
-    description = ''
+    index = None
     controllers_root = 'controllers'
 
     def __init__(self):
         self._url_patterns = None
         self._handler_patterns = None
-        self._namespace = None
+        self._registered_url_maps = None
 
-    @staticmethod
-    def _resolve_ref_function(ref, ref_type, is_extension):
+        # TODO remove compatibility code in v4.1
+        if self.index is not None and ':' in self.index:
+            old_index = self.index
+            self.index = self.index.split(':')[-1]
+
+            # print deprecation warning
+            FG_YELLOW = '\033[33m'
+            ALL_OFF = '\033[0m'
+            msg = (
+                f'Deprecation Warning: '
+                f'The app "{self.name}" has an index attribute that includes the URL namespace ("{old_index}").\n'
+                f'  Including the URL namespace as part of the "index" attribute is now deprecated, '
+                f'and support for it will be removed in Tethys v4.1.\n'
+                f'  Please change the "index" attribute to only include the controller name '
+                f'(i.e. index = \'{self.index}\')'
+            )
+            print(f'{FG_YELLOW}{msg}{ALL_OFF}')
+
+    @property
+    def index_url(self):
+        return f'{self.url_namespace}:{self.index}'
+
+    @classproperty
+    def package_namespace(cls):
+        raise NotImplementedError()
+
+    @classmethod
+    def _resolve_ref_function(cls, ref, ref_type):
         """
         This method retrieves a controller or handler function.
 
         Args:
             ref: The function of dot-formatted string path to the function
             ref_type: Handler or controller
-            is_extension: Boolean. True if working with a Tethys Extension
 
         Returns:
             func: If the reference is a string returns the attribute value of the function.
             If the reference is a function returns the referenced function itself.
 
         Example:
-            controller_function = self._resolve_ref_function(url_map.controller, 'controller', is_extension)
+            controller_function = self._resolve_ref_function(url_map.controller, 'controller')
         """
 
         if isinstance(ref, str):
-            root_controller_path = 'tethysext' if is_extension else 'tethysapp'
-            full_controller_path = '.'.join([root_controller_path, ref])
+            full_controller_path = '.'.join([cls.package_namespace, ref])
             controller_parts = full_controller_path.split('.')
             module_name = '.'.join(controller_parts[:-1])
             function_name = controller_parts[-1]
@@ -146,7 +172,7 @@ class TethysBase(TethysBaseMixin):
 
     def url_maps(self):
         """
-        Override this method to manually define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``. Alternatively, Bokeh Server can also be integrated into Tethys using ``Django Channels`` and ``Websockets``. Tethys will automatically set these up for you if a ``handler`` and ``handler_type`` parameters are provided as part of the ``UrlMap``.
+        Only override this method to manually define or extend the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``. Alternatively, Bokeh Server can also be integrated into Tethys using ``Django Channels`` and ``Websockets``. Tethys will automatically set these up for you if a ``handler`` and ``handler_type`` parameters are provided as part of the ``UrlMap``.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -163,10 +189,9 @@ class TethysBase(TethysBaseMixin):
                     \"""
                     Example url_maps method.
                     \"""
-                    # Create UrlMap class that is bound to the root url.
-                    UrlMap = url_map_maker(self.root_url)
 
-                    url_maps = (
+                    url_maps, UrlMap = super().url_maps()
+                    url_maps.extend((
                         UrlMap(
                             name='home',
                             url='my-first-app',
@@ -185,15 +210,21 @@ class TethysBase(TethysBaseMixin):
                             handler='my_first_app.controllers.bokeh_example_handler',
                             handler_type='bokeh'
                         ),
-                    )
+                    ))
 
-                    return url_maps
+                    return url_maps, UrlMap
         """  # noqa: E501
         return register_controllers(
             root_url=self.root_url,
-            module=f'tethysapp.{self.package}.{self.controllers_root}',
+            module=f'{self.package_namespace}.{self.package}.{self.controllers_root}',
             index=self.index,
         )
+
+    @property
+    def registered_url_maps(self):
+        if self._registered_url_maps is None:
+            self._registered_url_maps, _ = self.url_maps()
+        return self._registered_url_maps
 
     @property
     def url_patterns(self):
@@ -201,21 +232,16 @@ class TethysBase(TethysBaseMixin):
         Generate the url pattern lists for  app and namespace them accordingly.
         """
         if self._url_patterns is None:
-            is_extension = isinstance(self, TethysExtensionBase)
-
             url_patterns = {'http': dict(), 'websocket': dict()}
 
-            if hasattr(self, 'url_maps'):
-                url_maps = self.url_maps()
-
-            for url_map in url_maps:
-                namespace = self.namespace
+            for url_map in self.registered_url_maps:
+                namespace = self.url_namespace
 
                 if namespace not in url_patterns[url_map.protocol]:
                     url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
-                controller_function = self._resolve_ref_function(url_map.controller, 'controller', is_extension)
+                controller_function = self._resolve_ref_function(url_map.controller, 'controller')
                 django_url = re_path(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
@@ -230,16 +256,11 @@ class TethysBase(TethysBaseMixin):
         Generate the url pattern lists for  app and namespace them accordingly.
         """
         if self._handler_patterns is None:
-            is_extension = isinstance(self, TethysExtensionBase)
-
             handler_patterns = {'http': dict(), 'websocket': dict()}
 
-            if hasattr(self, 'url_maps'):
-                url_maps = self.url_maps()
-
-            for url_map in url_maps:
+            for url_map in self.registered_url_maps:
                 if url_map.handler:
-                    namespace = self.namespace
+                    namespace = self.url_namespace
 
                     if namespace not in handler_patterns['http']:
                         handler_patterns['http'][namespace] = []
@@ -248,7 +269,7 @@ class TethysBase(TethysBaseMixin):
                         handler_patterns['websocket'][namespace] = []
 
                     # Create django url routing objects
-                    handler_function = self._resolve_ref_function(url_map.handler, 'handler', is_extension)
+                    handler_function = self._resolve_ref_function(url_map.handler, 'handler')
                     if url_map.handler_type == 'bokeh':
                         self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
 
@@ -286,37 +307,9 @@ class TethysExtensionBase(TethysBase):
         """
         return '<TethysApp: {0}>'.format(self.name)
 
-    def url_maps(self):
-        """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
-
-        Returns:
-          iterable: A list or tuple of ``UrlMap`` objects.
-
-        **Example:**
-
-        ::
-
-            from tethys_sdk.base import url_map_maker
-
-            class MyFirstApp(TethysAppBase):
-
-                def url_maps(self):
-                    \"""
-                    Example url_maps method.
-                    \"""
-                    # Create UrlMap class that is bound to the root url.
-                    UrlMap = url_map_maker(self.root_url)
-
-                    url_maps = (UrlMap(name='home',
-                                       url='my-first-app',
-                                       controller='my_first_app.controllers.home',
-                                       ),
-                    )
-
-                    return url_maps
-        """  # noqa: E501
-        return []
+    @classproperty
+    def package_namespace(cls):
+        return 'tethysext'
 
     def sync_with_tethys_db(self):
         """
@@ -392,6 +385,10 @@ class TethysAppBase(TethysBase):
         String representation
         """
         return '<TethysApp: {0}>'.format(self.name)
+
+    @classproperty
+    def package_namespace(cls):
+        return 'tethysapp'
 
     def custom_settings(self):
         """
@@ -739,7 +736,7 @@ class TethysAppBase(TethysBase):
 
             for thing in perms:
                 # Permission Case
-                if isinstance(thing, Permission):
+                if isinstance(thing, TethysPermission):
                     # Name space the permissions and add it to the list
                     permission_codename = perm_codename_prefix + thing.name
                     permission_name = perm_name_prefix + thing.description
@@ -1422,7 +1419,7 @@ class TethysAppBase(TethysBase):
                     description=self.description,
                     enable_feedback=self.enable_feedback,
                     feedback_emails=self.feedback_emails,
-                    index=self.index,
+                    index=self.index_url,
                     icon=self.icon,
                     root_url=self.root_url,
                     color=self.color,
@@ -1448,7 +1445,7 @@ class TethysAppBase(TethysBase):
             # If the app is in the database, update developer priority attributes
             elif len(db_apps) == 1:
                 db_app = db_apps[0]
-                db_app.index = self.index
+                db_app.index = self.index_url
                 db_app.root_url = self.root_url
 
                 # custom settings
@@ -1606,10 +1603,10 @@ def register_controllers(root_url: str, module: str, index: str = None) -> list:
     # in index is provided then set the index controller url to the root_url
     if index:
         url_maps = list()
-        index_name = index.split(':')[-1]
         for kwargs in decorators_module.app_controllers_list:
-            if kwargs['name'] == index_name:
+            if kwargs['name'] == index:
                 kwargs['url'] = root_url
             url_maps.append(UrlMap(**kwargs))
-        return url_maps
-    return [UrlMap(**kwargs) for kwargs in decorators_module.app_controllers_list]
+    else:
+        url_maps = [UrlMap(**kwargs) for kwargs in decorators_module.app_controllers_list]
+    return url_maps, UrlMap

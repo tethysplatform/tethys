@@ -12,7 +12,7 @@ import os
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
-from tethys_apps.harvester import SingletonHarvester
+from .harvester import SingletonHarvester
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -436,3 +436,40 @@ def user_can_access_app(user, app):
         return user.has_perm(f'{app.package}:access_app', app)
     else:
         return True
+
+
+def get_installed_tethys_items(apps=False, extensions=False):
+    harvester = SingletonHarvester()
+    installed_apps = harvester.app_modules
+    install_extensions = harvester.extension_modules
+
+    items = {}
+    if apps:
+        items.update(installed_apps)
+    if extensions:
+        items.update(install_extensions)
+
+    paths = {}
+
+    for name, module in items.items():
+        try:
+            item = __import__(module, fromlist=[''])
+            paths[name] = item.__path__[0]
+        except (IndexError, ImportError):
+            '''DO NOTHING'''
+
+    return paths
+
+
+def get_installed_tethys_apps():
+    """
+    Returns a list apps installed in the tethysapp directory.
+    """
+    return get_installed_tethys_items(apps=True)
+
+
+def get_installed_tethys_extensions():
+    """
+    Get a list of installed extensions
+    """
+    return get_installed_tethys_items(extensions=True)

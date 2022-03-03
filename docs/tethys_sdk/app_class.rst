@@ -107,5 +107,5 @@ Controllers
    :members: TethysController, controller
 
 .. automodule:: tethys_apps.base.app_base
-  :members: register_controllers
+   :members: register_controllers
 

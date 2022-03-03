@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from tethys_sdk.permissions import login_required
+from tethys_sdk.base import controller
 from tethys_sdk.gizmos import Button
 
 from channels.generic.websocket import WebsocketConsumer
@@ -13,7 +13,10 @@ from bokeh.layouts import column
 from bokeh.embed import server_document
 
 
-@login_required()
+@controller(
+    handler='test_app.controllers.home_handler',
+    handler_type='bokeh'
+)
 def home(request):
     """
     Controller for the app home page.
@@ -109,6 +112,11 @@ def home_handler(doc):
     doc.add_root(column(slider, plot))
 
 
+@controller(
+    name='ws',
+    url='test-app-ws/',
+    protocol='websocket',
+)
 class TestWS(WebsocketConsumer):
     def connect(self):
         self.accept()

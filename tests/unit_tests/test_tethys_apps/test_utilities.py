@@ -670,3 +670,38 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         mock_settings.ENABLE_OPEN_PORTAL = True
         result3 = utilities.user_can_access_app(user, app)
         self.assertTrue(result3)
+
+    def test_get_installed_tethys_items_apps(self):
+        # Get list of apps installed in the tethysapp directory
+        result = utilities.get_installed_tethys_items(apps=True)
+        self.assertIn('test_app', result)
+
+    def test_get_installed_tethys_items_extensions(self):
+        # Get list of apps installed in the tethysapp directory
+        result = utilities.get_installed_tethys_items(extensions=True)
+        self.assertIn('test_extension', result)
+
+    def test_get_installed_tethys_items_both(self):
+        # Get list of apps installed in the tethysapp directory
+        result = utilities.get_installed_tethys_items(apps=True, extensions=True)
+        self.assertIn('test_app', result)
+        self.assertIn('test_extension', result)
+
+    @mock.patch('tethys_apps.utilities.SingletonHarvester')
+    def test_get_installed_tethys_items_exception(self, mock_harvester):
+        mock_harvester().app_modules = {'foo_invalid_foo': 'tethys_app.foo_invalid_foo'}
+
+        result = utilities.get_installed_tethys_items(apps=True)
+        self.assertEqual({}, result)
+
+    @mock.patch('tethys_apps.utilities.get_installed_tethys_items')
+    def test_get_installed_tethys_apps(self, mock_get_items):
+        # Get a list of installed extensions
+        utilities.get_installed_tethys_apps()
+        mock_get_items.assert_called_with(apps=True)
+
+    @mock.patch('tethys_apps.utilities.get_installed_tethys_items')
+    def test_get_installed_tethys_extensions(self, mock_get_items):
+        # Get a list of installed extensions
+        utilities.get_installed_tethys_extensions()
+        mock_get_items.assert_called_with(extensions=True)
