@@ -1,12 +1,11 @@
-"""
-********************************************************************************
-* Name: app_base.py
-* Author: Nathan Swain and Scott Christensen
-* Created On: August 19, 2013
-* Copyright: (c) Brigham Young University 2013
-* License: BSD 2-Clause
-********************************************************************************
-"""
+# ********************************************************************************
+# * Name: app_base.py
+# * Author: Nathan Swain and Scott Christensen
+# * Created On: August 19, 2013
+# * Copyright: (c) Brigham Young University 2013
+# * License: BSD 2-Clause
+# ********************************************************************************
+
 import importlib
 import logging
 import pkgutil
@@ -55,9 +54,7 @@ class TethysBase(TethysBaseMixin):
             self.index = self.index.split(':')[-1]
 
             # print deprecation warning
-            FG_YELLOW = '\033[33m'
-            ALL_OFF = '\033[0m'
-            msg = (
+            write_warning(
                 f'Deprecation Warning: '
                 f'The app "{self.name}" has an index attribute that includes the URL namespace ("{old_index}").\n'
                 f'  Including the URL namespace as part of the "index" attribute is now deprecated, '
@@ -65,7 +62,6 @@ class TethysBase(TethysBaseMixin):
                 f'  Please change the "index" attribute to only include the controller name '
                 f'(i.e. index = \'{self.index}\')'
             )
-            print(f'{FG_YELLOW}{msg}{ALL_OFF}')
 
     @property
     def index_url(self):
@@ -1563,6 +1559,12 @@ def get_all_submodules(m):
     return modules
 
 
+def write_warning(msg):
+    FG_YELLOW = '\033[33m'
+    ALL_OFF = '\033[0m'
+    print(f'{FG_YELLOW}{msg}{ALL_OFF}')
+
+
 def register_controllers(root_url: str, module: str, index: str = None) -> list:
     """
     Registers ``UrlMap`` entries for all controllers that have been decorated with the ``@controller`` decorator.
@@ -1570,7 +1572,7 @@ def register_controllers(root_url: str, module: str, index: str = None) -> list:
     Args:
         root_url: The root-url to be used for all registered controllers found in ``module``.
         module: The dot-notation path to the module to search for controllers to register.
-        index: The namespaced index url name (i.e. <app_package>:<url_name>). If this is passed then the URL with <url_name> will be overriden with the ``root_url``.
+        index: The index url name. If passed then the URL with <url_name> will be overridden with the ``root_url``.
 
     Returns:
         A list of `UrlMap` objects.
@@ -1585,28 +1587,48 @@ def register_controllers(root_url: str, module: str, index: str = None) -> list:
 
         register_controllers(
             root_url=app.root_url,
-            module=f'tethysapp.{app.package}.{app.controllers_root}',
+            module=f'{app.package_namespace}.{app.package}.{app.controllers_root}',
             index=app.index,
         )
 
     """
-    decorators_module = importlib.import_module('tethys_apps.base.controller')
+    controllers_module = importlib.import_module('tethys_apps.base.controller')
     if not (isinstance(module, list) or isinstance(module, tuple)):
         module = [module]
     modules = [i for m in module for i in get_all_submodules(importlib.import_module(m))]
-    decorators_module.app_controllers_list = list()
+    controllers_module.app_controllers_list = list()
     for m in modules:
         importlib.reload(m)  # ensure it is loaded again in case it was previously loaded
 
-    UrlMap = url_map_maker(root_url)
+    names = dict()
+    for kwargs in controllers_module.app_controllers_list:
+        name = kwargs['name']
+        if name in names:
+            old_name = name
+            while name in names:
+                name += '_1'
+            kwargs['name'] = name
+            write_warning(
+                f'The controller "{kwargs["controller"].__module__}.{kwargs["controller"].__name__}" cannot be '
+                f'registered with the name "{old_name}" because the controller '
+                f'"{names[old_name]["controller"].__module__}.{names[old_name]["controller"].__name__}" is already '
+                f'registered with that name. It will be registered with the name "{name}" instead. '
+                f'You can make this warning go away by manually specifying a unique name in the controller decorator: '
+                f'e.g. @controller(name=\'{name}\').'
+            )
+        names[name] = kwargs
 
-    # in index is provided then set the index controller url to the root_url
+    # if index is provided then set the index controller url to the root_url
     if index:
-        url_maps = list()
-        for kwargs in decorators_module.app_controllers_list:
-            if kwargs['name'] == index:
-                kwargs['url'] = root_url
-            url_maps.append(UrlMap(**kwargs))
-    else:
-        url_maps = [UrlMap(**kwargs) for kwargs in decorators_module.app_controllers_list]
+        try:
+            index_kwargs = names[index]
+            index_kwargs['url'] = root_url
+        except KeyError:
+            write_warning(
+                f'An index of "{index}" was specified, but there are no controllers registered with that name.'
+            )
+
+    UrlMap = url_map_maker(root_url)
+    url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
+
     return url_maps, UrlMap

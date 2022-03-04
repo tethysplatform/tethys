@@ -108,4 +108,3 @@ Controllers
 
 .. automodule:: tethys_apps.base.app_base
    :members: register_controllers
-

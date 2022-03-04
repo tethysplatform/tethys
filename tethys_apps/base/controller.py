@@ -1,12 +1,11 @@
-"""
-********************************************************************************
-* Name: controller.py
-* Author: Nathan Swain
-* Created On: August 2013
-* Copyright: (c) Brigham Young University 2013
-* License: BSD 2-Clause
-********************************************************************************
-"""
+# ********************************************************************************
+# * Name: controller.py
+# * Author: Nathan Swain
+# * Created On: August 2013
+# * Copyright: (c) Brigham Young University 2013
+# * License: BSD 2-Clause
+# ********************************************************************************
+
 from django.views.generic import View
 
 import inspect
@@ -85,7 +84,7 @@ def controller(
     Args:
         name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the function being decorated.
         url: URL pattern to map the endpoint for the controller or consumer. If a `list` then a seperate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name`_1, `name`_2 ... `name`_n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
-        protocol: 'http' for consumers or 'websocket' for consumers. Default is http.
+        protocol: 'http' for controllers or 'websocket' for consumers. Default is http.
         regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
         handler: Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
         handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
@@ -184,7 +183,7 @@ def controller(
             login_required=False,
         )
         def my_app_controller(request):
-            # Note that ``login_required`` is ``True`` by default.
+            # Note that ``login_required`` is True by default (recommended). However, the login requirement is automatically dropped on all controllers when ``OPEN_PORTAL_MODE`` is enabled on the portal."
             ...
 
         @controller(
@@ -248,7 +247,10 @@ def controller(
             working_url = '/'.join(module_parts)
             working_url = working_url.replace('_', '-')
             if inspect.isclass(function_or_class):
-                controller_func = getattr(function_or_class, function_or_class._allowed_methods(function_or_class)[0].lower())
+                controller_func = getattr(
+                    function_or_class,
+                    function_or_class._allowed_methods(function_or_class)[0].lower()
+                )
                 parameters = OrderedDict(inspect.signature(controller_func).parameters)
                 self_arg = list(parameters.keys())[0]
                 parameters.pop(self_arg)
