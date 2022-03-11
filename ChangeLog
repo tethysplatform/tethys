@@ -1,0 +1,1485 @@
+CHANGES
+=======
+
+* Tethys 3.4.2
+* Fix for #763 Release (#765)
+
+3.4.1
+-----
+
+* Tethys 3.4.1
+* Patch docker cli to use log4j-patched versions of geoserver and thredds (#758)
+
+3.4.0
+-----
+
+* 3.4.0 release
+* Docs of Additional Options for Production Installation (#746)
+* Updates to Services and App Settings CLI (#745)
+* Updates HTTPS docs with Certbot instructions (#741)
+* add docs for cesium reInitializeMap api (#742)
+* Add API to initialize Cesium (#740)
+* Add clarification to App Access Permissions docs (#739)
+* Improvements to Dockerfile (#738)
+* Fixes for Cesium Map View Gizmo Showcase and Documentation (#732)
+* Fixes tests for with\_request and with\_workspaces bokeh handler decorators (#734)
+* Convert CI to GitHub Actions (#729)
+* Create CITATION.cff (#717)
+* Simplify/secure CSRF token ajax handling (#662)
+* CesiumMapView models argument should be list by default. (#715)
+* Updates OpenLayers CDN URL and fixes 1 compatibility issue (#711)
+* Add support cesium ion primitives (#707)
+* Verified that the plotly gizmo is still working. Just needed to update the test. (#709)
+* Remove left over "import mock" statements from tests. (#700)
+* Fix for Issue #698 (#699)
+* Increment development version to 3.4
+
+3.3.0
+-----
+
+* Add comment with dependency of tutorial tag update script for future reference
+* Write What's New for Tethys 3.3.0 Release (#683)
+* - Add check to display cesium geojson point as point instead of billboard. (#684)
+* Pin django and update syntax in docs\_environment.yml
+* Resolves #637 (#682)
+* Pin Channels to 2.\* (#680)
+* Add clarifications and fix typos for onelogin SSO instructions (#679)
+* Add Support for Time-Enabled Layers in Cesium (#677)
+* Fixes issue #653 (#657)
+* Override EXTRA\_DATA to include refresh\_token (#675)
+* remove username from urls (#664)
+* Implements social login for ArcGIS (Online/Portal) (#666)
+* Implements issue #656. (#658)
+* Email enhancement (#647)
+* Fix for "Metadata Information Leakage". Removed EXIF, IPTC, and XMP metadata to address Issue #630 (#648)
+* jobs api bugfixes (#642)
+* Multi-Tenant SSO (#629)
+* Fixes Issue #626 (#627)
+* Custom settings updates (#625)
+* Move TethysJob model import out of module scope in jobs\_table.py. (#618)
+* Add ID to Select Input Gizmo Form Group Element (#616)
+* Master is now 3.3
+
+3.2.0
+-----
+
+* Change recommended upgrade instructions to use conda install instead of conda update. (#614)
+* Remove the User\_Keys switch to auth to prevent erroneous migrations. (#613)
+* Jobs Table Actions (#577)
+* Update What's New for 3.2 Release (#609)
+* Pin Daphne to 2.5.X (#612)
+* Updated kill command for the asgi process so that it quits correctly on centos systems (#608)
+* Fix for #593 (#607)
+* Fix for Issue 592 (#606)
+* added the ability to pass ENV and VIEWPARAMS to WMS layer (#604)
+* CHANNEL\_LAYERS documentation + ASGI processes default 1 (#602)
+* Changes to MFA\_REQUIRED to Account for Token Authenticated API Calls (#601)
+* Tweaks to MFA Recent Implementation (#599)
+* Update to jQuery 3.5.1 (#598)
+* fix for docker client when docker daemon is not running (#597)
+* Adds Lockout Capabilities (#596)
+* Additional Single Sign On Backends (#590)
+* Multi Factor Authentication (#591)
+* Add attribution for the development of the Google Earth Engine and THREDDS tutorials and the Production Installation Guide. (#588)
+* Add new "unit-test" stage in attempt to get test running again
+* Run tests always
+* fix tests stage not running
+* Disable osx and build conda first
+* Change master to version 3.2
+
+3.1.0
+-----
+
+* Add utility script for updating the tutorial solution tags. (#585)
+* Updated the upgrade instructions for 3.X series. (#582)
+* removed 0011\_update\_proxy\_permissions dependency (#584)
+* App access setting (#580)
+* What's New Update for 3.1 (#579)
+* Clarification to Create /run/asgi Dir if Applicable (#575)
+* Settings (#573)
+* Collectstatic Copy App Static Dirs Instead of Link (#572)
+* Additional Production Documentation (#574)
+* Docker Official Image Documentation (#567)
+* Production Installation Documentation Fixes (#571)
+* Use Standard template tags for urls and static files (#569)
+* Improved Production Installation Documentation (#563)
+* Remove Salt pin (version no longer available). (#566)
+* Update Docker Components for Automated Testing and Building (#565)
+* Login compatibility (#561)
+* Google Earth Engine Tutorial Parts 2 and 3 (#562)
+* Various Tethys Jobs Table Improvements (#560)
+* Additional Base Templates for Apps (#559)
+* Custom Home and Apps Library Styles and Templates (#558)
+* Enforced App Permissions (#555)
+* Password Recovery URI fixes (#553)
+* Enable build tests on release branch
+* Test on any branch without tag
+* Broken URIs (#547)
+* Security Updates (#542)
+* use Bokeh AutoloadJsConsumer with cdn (#546)
+* Revert "Security Fixes (#543)"
+* Various Fixes for the Documentation (#532)
+* Security Fixes (#543)
+* add example code for opening ssl port (#529)
+* Bokeh 2.0.0 updates and Scaffold extension fix (#536)
+* Add coveralls call back to CI (#525)
+
+3.0.0
+-----
+
+* Build on tags?
+* Update .travis.yml for 3.0 release
+* Deprecated Code (#523)
+* Adds cesium\_ion\_token parameter to Cesium view to all developers to set the token required to use Cesium APIs. (#522)
+* Last Minute Documentation Updates (#519)
+* Enhance db command (#521)
+* Fixes broken conda upload
+* Dynamic Conda Build and Collect Workspaces Fix (#515)
+* cleanup db migrations (#518)
+* Rename Conda Package (#516)
+* Fix for #504 (#514)
+* Additional Tutorials for NASA SERVIR (#503)
+* updated installation docs (#508) (#509)
+* Fix Production Deployment (#507)
+* THREDDS Integration (#506)
+* Tutorial Review (#501)
+* Settings yaml (#495)
+* Pin salt to 2019.2.0 until they resolve issues with 2019.2.1. (#497)
+* Bug fixes 2019-10 (#496)
+* Added gen command for the conda recipe meta.yaml file (#490)
+* updated docs (#492)
+* fix quotas on admin pages (#494)
+* Minor tweaks to be compatible with Tethys 3
+* Updates the documentation for social auth integration
+* added gizmos to header links (#487)
+* Django bokeh (#475)
+* Docs Theme Option 2: Material Design Theme (#479)
+* Update whats new for Tethys 3.0 (#485)
+* Clean apt-cache before using in Dockerfile (#483)
+* Add check for DB before running salt scripts (#481)
+* Change tethys install method back to develop (#477)
+* Fix travis build (#474)
+* Add normal user to db configure command in salt (#473)
+* Updates to docker, and warning messages (#471)
+* Fix for issue with tethys\_super database not being created with user creation. (#470)
+* Initial build out of automatically generated CLI documentation pages
+* First steps for sphinx-argparse documentation for the CLI
+* Django 2.2, Proxy Apps, and Various Bug Fixes (#463)
+* Automated deployment (#461)
+* Update PostGIS Docker Image (#446)
+* Create CODE\_OF\_CONDUCT.md (#462)
+* windows compatibility fixes (#459)
+
+3.0.0b2
+-------
+
+* db docs fix (#456)
+* overview map control (#455)
+
+3.0.0b1
+-------
+
+* conda package (#443)
+
+3.0.0.b1
+--------
+
+* Fix bugs introduced with the db commands pr. (#442)
+* Upgrade JQuery and Bootstrap (#441)
+* Add CLI DB Command (#425)
+* App installation automation (#419)
+* Fix for Issue 431 and Tweaks to Gen Command (#432)
+* Adds feature selection to the drawing layer of the MapView. (#435)
+* Websockets Integration (#427)
+* Compute utils update (#423)
+* add .idea/ to gitignore scaffold template (#426)
+* New tethys quotas (#421)
+* Implement Analytics Tracking (#389)
+* New MapView Features (#412)
+* Django2 (#409)
+* Changes to Support UIT Job Type (#411)
+* Open Portal (#404)
+* Cesium globe clock (#408)
+* Updates to the advanced tutorial to make more clear
+* Added missing mocked modules to docs conf.py
+* - Only show bokeh at the top of the dask job table. If no task is running, nothing will be shown. - Close all the clients after finished for dask - Update tests for dask job
+* One more instance of PEN to SUB in condor workflow
+* Fix tests for jobs/compute fixes
+* Fixed bug with job table statuses not updating for Dask jobs
+* Update documentation for sds setting
+* Fix Tethys Jobs Table gizmo -- it wasn't updating anymore
+* bufix to parse geoserver input as ints instead of floats
+* remove python 2 code
+* refactor docker commands to work with latest docker client api fix errors with tethys\_src
+* remove test that only applied to python 2
+* fix terms and conditions call to Python 3 api
+* fix terms and conditions call to Python 3 api
+* fix test and coverage
+* fix error from merging in install script
+* Cesium Map View (#362)
+* Remove unnecessary mock.patch line. Mocking harvester out in MOCK\_MODULES instead
+* Fix linting issues
+* Fix linting issues
+* Changes to speed up docs build on RTD and prevent timeouts: \* mock dependencies. \* install minimum required dependencies for docs build
+* fix test
+* Update jobs api docs
+* Remove hardcoded src directory references
+* Added step 5 to upgrade docs
+* Updated update instructions to follow Scott's new install script workflow
+* fix bug in the install script
+* update docs
+* Changes to facilitate upgrading
+* fix some bugs in the install script
+* Preliminary update for the upgrade documentation for 2.0.1. Added Python 2 deprecation warning to home page of docs
+* Updated the What's New page for version 2.1.0
+* Moved 2.0.0 release notes to prior releases docs page
+* Fixed tests that were broken
+* Fixed tethys uninstall command to remove database entry even if there are no files associated with the app
+* Updated Tethys Portal admin pages
+* Fix for #277 - GeoServer port is now correct for tethys docker ip command
+* Dask final (again) (#361)
+* Mimic Python 2 behavior (show help text) in Python 3 when "tethys" command called with no arguments. (#359)
+* add postgis as a dependency
+* update travis build for new install script options
+* remove erroneously committed settings file
+* Deprecate Python 2 fixes #353 fixes #309 fixes #267
+* change \`label\` to \`control\_label\` and handle debug for ol > v5
+* stickler
+* stickler
+* stickler fix debug map view test
+* finish base map options and docs allow OpenLayers version to be specified
+* update openlayers
+* Added first additional basemap option (Stamen)
+* Added missing db migration for python 3 compatibility changes. (#350)
+* legend tweaks
+* basemap options complete still need docs
+* Added first additional basemap option (Stamen)
+
+v2.0.4.r11
+----------
+
+* Input fix (#349)
+* Python 3 Compatibility (#347)
+
+v2.0.4.r10
+----------
+
+* Fix issue with app settings being synced in production mode
+* Namespace SLS commands. Fix typo in warning message
+
+v2.0.4.r9
+---------
+
+* Fix for tethys manage sync command
+* Fix collectstatic issue in Docker container
+* Allow multiple allowed hosts to be specified when generating settings and creating docker container
+* Do not create super user unless TETHYS\_SUPER\_USER is defined
+
+v2.0.4.r8
+---------
+
+* Fixed broken testing environment
+
+v2.0.4.r7
+---------
+
+* Rename select2 class for tethys gizmos to not conflict with select2 naming
+
+v2.0.4.r6
+---------
+
+* Update README.rst
+* Update README.rst
+* Change permissions sync method on each app class to only sync permissions for that app, and not globally
+* More python 3 compatibility fixes
+* Python3-Migrations
+* Python 3 compatibility fixes
+* Python3-Compatibility
+* update install script and docs to provide more flexibility for CI (#339)
+* Update .travis.yml
+* Update .travis.yml
+* Update .travis.yml
+* Update .travis.yml
+* More python 3 compatibility fixes
+* Update .travis.yml
+* Create .travis.yml
+* Python3-Migrations
+* Python 3 compatibility fixes
+* Python3-Compatibility
+* Python3-Compatibility
+
+v2.0.4.r5
+---------
+
+* Fix issues with the tethys manage sync command
+* Added namespace property to tethys apps and context processor
+* Added namespace property for tethys apps
+* Added base TethysController class based view
+* Removed print statements used for debugging
+* Fixed typo in app base, fixed issue with get\_persistent\_store\_setting methods, fixed an issue with function extractor, made has\_permission decorator able to handle methods, fixed several utf encoding issues
+
+v2.0.4.r4
+---------
+
+* Added gitlab-ci
+* Removed the dang prints!@#!@
+* Fixed bug with uninstalling apps and extensions
+* Manually refactoring after merge complete
+* Revert print statement commit..
+* Remove default controllers from extension template
+* Added django model migration for tethys extensions
+* Expanded tethys test command to test extensions. Added default test package back to the scaffold for extensions
+* Removed aquaveo\_static from the directory structure and the docker file
+* Generalized url loading to load urls from apps and extensions separately so that the appropriate namespace could be applied to the controllers (tethysext vs tethysapp). Loading extension urls with "extensions" as the root of the url
+* Finished documentation for Tethys Extensions
+* Finished documentation for Tethys Extensions
+* Added documentation for Tethys Extensions
+* Added support for gizmos in extensions
+* Renamed syncapp command to sync and generalized to sync extensions. Updated list command to list extensions and apps. Updated docs
+* Updated the uninstall and collectstatic commands to work with the new extensions
+* Template and static finders work with extensions installed with "develop" and "install" commands
+* Load templates for extensions
+* Load url maps from extensions
+* Added extensions to the admin portal, and generalized sync db to add extensions
+* Added scaffold for Tethys Extensions and generalized scaffold command and scaffold template, added methods to harvester to handle harvesting extensions, defined Django data model for extensions, replaced django.core.urlresolvers with django.urls (per deprecation warnings)
+* commit
+* commit
+* Changed return exit code to 0 for create scheduler and remove scheduler cli when scheduler already exists or doesn't exist, respectively
+
+v2.0.4.r2
+---------
+
+* Removed dangling print statement
+* Removing services that don't exist returns exit code 0 instead of 1 now...since it is gone, which is what we wanted..
+* Enable threading in Tethys Core run.sls
+* Fix several bugs, deprecation warnings, etc
+
+v2.0.4.r1
+---------
+
+* added first time check to avoid running unecessary steps when restarting and overwriting changes to the settings.py file. Shawn thinks this message is too long for a commit message
+* Add gnupg2 to install/cleanup list
+* add shell
+*  Add missing 
+* Add pv to default packages
+* Add sync stores step
+* split salt states in two
+* Fix git wierdness
+* Rename salt state
+* Rename salt state
+* Start updating Docker documentation
+* Fix python script in salt for creating superuser
+* Use manage.py rather than tethys manage to avoid db conn
+* Run collectall during build
+* Fix permissions
+* Move startup to external script and add HEALTHCHECK
+* Remove (now) unused config file
+* Move salt conf generation into docker runtime
+* Add postgres config for salt
+* Fix salt parsing errors
+* Add salt (Second Pass)
+* Split out ENV groups that depend on eachother
+* Break down some env vars
+* Use bash when activating miniconda
+* Fix Typos
+* Consolidate ENVs
+* Optimize Docker Build Process (First Pass)
+* Use salt for init (First Pass)
+* Ignore swp files from vim
+* Added documentation for SSL with Tethys Portal and Geosever (#324)
+* Added documentation for SSL with Tethys Portal and Geosever (#324)
+* App loading refactor (#319)
+* App loading refactor (#319)
+* Hotfix/handle unset settings (#326)
+* Hotfix/handle unset settings (#326)
+* Add gnupg2 to install/cleanup list
+* add shell
+* Fixed issue where favicon was not loading properly
+*  Add missing 
+* Add pv to default packages
+* Add sync stores step
+* split salt states in two
+* Fix git wierdness
+* Rename salt state
+* Rename salt state
+* Start updating Docker documentation
+* Fix python script in salt for creating superuser
+* Use manage.py rather than tethys manage to avoid db conn
+* Run collectall during build
+* Fix permissions
+* Move startup to external script and add HEALTHCHECK
+* fix bug with test coverage; fix variable name in cli print statement
+* Remove (now) unused config file
+* Move salt conf generation into docker runtime
+* Add postgres config for salt
+* Fix salt parsing errors
+* Add salt (Second Pass)
+* Split out ENV groups that depend on eachother
+* Break down some env vars
+* Use bash when activating miniconda
+* Fix Typos
+* Consolidate ENVs
+* Optimize Docker Build Process (First Pass)
+* Use salt for init (First Pass)
+* Ignore swp files from vim
+* Use python slim
+* add --force args to commands; check if Scheduler w/name exists
+* Added PUBLIC\_HOST setting to settings.py
+* run tethys
+* add startup code
+* Add new file
+* fix bug with "tethys services remove"
+* fix docker volume syntax
+* mount a volume for keys
+* sed out expire and warn for session
+* add app\_settings\_create/remove commands
+* added scheduler commands; added documentation for all recent cli cmds
+* command to sync apps fully implemented
+* remove unnecessary authentication from tethys commands
+* fix bug with global model imports
+* fully implemented
+
+2.0.4
+-----
+
+* Patch that fixes issue with retrieving files from HTCondor jobs submitted to remote schedulers
+* Remove redundant code
+* Fix condorpy remote\_id syncing
+* add app\_settings\_create/remove commands
+* added scheduler commands; added documentation for all recent cli cmds
+* command to sync apps fully implemented
+* remove unnecessary authentication from tethys commands
+* fix bug with global model imports
+* fully implemented
+
+2.0.3
+-----
+
+* Patch that fixes an issue with HTCondor when remote scheduler is used. (with correct version now)
+* Patch that fixes an issue with HTCondor when remote scheduler is used
+* Fix condor job so attributes don't get overwritten
+* recent changes
+* add app\_settings\_create/remove commands
+* added scheduler commands; added documentation for all recent cli cmds
+* command to sync apps fully implemented
+* Add changes
+* remove unnecessary authentication from tethys commands
+* Update README.md
+* fix bug with global model imports
+* fully implemented
+* updates
+* Fix other commands
+* Add static stuff
+* fully implemented - needs review/approval
+* Update readme for create stuff
+* Update base Docker
+* another pass
+* Move adds in docker to help cache
+* Another pass..
+* Try another pass at username stuff
+* revert back to old
+* update if statement for users (again)
+* update if statement for users (again)
+* update if statement for users
+* update if statement for users
+* Fix check for user in database
+* Add docker stuff
+* resolve conflicts
+* fixed conflicts
+* get feature layer from group layer on wfs requests
+* minor cleanup
+* remove unused changes
+* remove temp troubleshoot prints
+* fixed issues with testing framework
+* ignore rmtree errors on condor folders delete
+
+2.0.2
+-----
+
+* remove print statments
+* fix issue 290-hydroshare-oauth
+
+2.0.1
+-----
+
+* Fix Installation (#303)
+* Fix Installation (#302)
+* Fix pip versions issues
+* Froze requirements for release
+
+2.0.0
+-----
+
+* Fix pip versions issues
+* Froze requirements for release
+* Version in setup.py set to 2.0.0
+* Minor docs fix
+* Validated advanced solution
+* Validated intermediate solution
+* Validated beginner solution and create new environment tutorial. Also, updated the what's new page
+* Removed reference to Tethys Cluster in Features documentation. Also added warnings to the update documentation, which has not been completed yet
+* Removed old tethys\_conda\_env.yml and removed old scaffold\_command function that got merged during a rebase
+* production install script updates
+* added imports to testing sdk
+* Trying static and workspaces in tethys\_home
+* Docs update
+* Production install (#2)
+* Removed old getting started tutorial and references
+* Stubbed out advanced tutorial. Need to fill in still
+* Added dynamic plotting in popups tutorial to advanced tutorial. Also, fixed popup bug with setTimeout
+* Adding file upload example to Advanced tutorial
+* Polishing the advanced tutorial
+* Fixed issue with settings loading multiple times
+* Outlined the advanced tutorial
+* Added style to Dam map layer in intermediate tutorial. Further polishing
+* Finished polishing the intermediate tutorial. Also, added custom CSS to map in the beginner tutorial
+* Added TODOs that need to be addressed to fix syncing with settings
+* Filled out narrative and explanations for the Beginner Tutorial
+* Revising tutorials
+* Squash migrations
+* Trying static and workspaces in tethys\_home
+* Docs update
+* Production install (#2)
+* Trying static and workspaces in tethys\_home
+* Added what's new entry for MVLayer styles
+* merge with remote and conflict fixes
+* bugfix: postgis extension can now be enabled
+* bugfix: postgis extension was not being enabled
+* Docs update
+* added example modifying point style
+* testing environment functions isolated
+* made stable
+* added style modification ability from mapview gizmo
+* Enable symbolic link on windows. Only works for admin
+* Tethys 256 scaffolding (#284)
+* Production install (#2)
+* Production install (#2)
+* Migrated Django to 1.11.X (#275)
+* Finished pull request. Closes #283
+* Fixed issues with base map switcher: needed to add new styles to tethys\_map\_view.less and regenerate tethys\_map\_view.min.css
+* Fixed issue with circular import with testing environment, also fixed issue with tethys gen command not working properly with upgrade to Django 1.11
+* fixed testing environment issues with Tethys 2.0 code
+* fixed unresolved merge conflict
+* merge to latest dev; conflicts resolved; aqua-tethys featueres added;
+* added enable to script so it starts up again when computer restarts (#280)
+* remove sessionmaker class var
+* Removed get\_session
+* modify query to only return one feature unles multiselect is true by COUNT parameter
+* tethys-261 tethys docker intit -c postgis geoserver Fix for issue #261. Remove conflicting "already installed" messages
+* tethys-264 MapView - ServerVector does not exist
+* Tethys Skin Update (#265)
+* Python 2/3 compatible code (#263)
+* update function calls for changed default
+* fixes #259 tethys-259 Syncstores command failing
+* Enhance Install scripts (#255)
+* Reviewed and updated Gizmo documentation
+* Fixed some issues with the new tutorials and changed the default directory for the geoserver data dir mount location
+* Tethys services documentation has been overhauled to illustrate new use patterns
+* Persistent store docs updated. Also, fixed some merge anomaly in tethys\_apps.models
+* Added link to the geoserver\_app solution github repo
+* Fixed a few issues with docs..
+* GeoServer tutorial updated
+* Minor fixes for new tutorials after a test run
+* Fix for #244
+* Bug fix for get\_manage\_path issue
+* fixes for docs and quick fix for curses import error on Windows. (#254)
+* Minor fixes on quick start tutorial
+* Removed a todo
+* Added a "tethys list" command to list all installed apps
+* Uninstall command now removes app from app database
+* Filled out advanced tutorial
+* fix for paths with spaces on Windows and activate scripts
+* Stubbed out advanced tutorial
+* Stubbed out intermediate tutorial
+* App Settings!!! (#236)
+* Stubbed out beginner tutorial and finished about half of intermediate
+* modified getting session to be inside app to prevent errors when loading appwithout settings initialized
+* modified print to warning log
+* fix name for spatial\_dataset\_service\_settings; catch exception when no database in setting to allow Tethys to startup
+* cleanup docker commands file
+* updated console printing for pulling dockers fixes #247
+* fix docker init command and console printing for pulling dockers
+* Added migrations for App Settings. Updated the persistent store documentation as well
+* Added migrations for App Settings. Updated the persistent store documentation as well
+* VIEWPARAMS option added to select\_features\_by\_attribute func
+* Documentation: Added docs for App Settings, added What's New section for App Settings, and began Tethys Services docs updates
+* Addressed ~40 issues with the docs build in preparation for refactoring docs for settings
+* Restructured tabular inline admin forms so that errors appear at the end of the line, rather than on top of it
+* Removed persistent\_store.py again after rebasing onto dev
+* Updated doc strings for AppBase class. Added Persistent Store exceptions and did some persistent store permissions error catching. Exposed "initialized" field of PersistentStoreDatabaseSettings in admin page. Squashed a few bugs
+* Refactored and unified persistent store initialization code and centralized it as methods on the PersistentStoreDatabaseSetting model class. This included refactoring the persistent store methods in the AppBase class to use the new centralized methods for creating and dropping persistent stores. It also included refactoring the syncstores command to use these centralized methods. If we decide to create the "initialize" button in the admin interface for persistent store databases, then we may want to consider dropping the syncstores command
+* Added types to the CustomSetting with validation and a custom getter that will caste the value to the appropriate type. Properly enforcing required field. Removed old persistent store stuff and moved the TethysFunctionExtractor to it's own module
+* Fixed issue where settings properties were not filtering by subclass appropriately
+* Refactored initial persistent store app settings implementation. Apps can create PersistentStoreConnectionSettings and PersistentStoreDatabaseSettings. Both must have a PersistentStoreService assigned to them, which provides the connection to a database server (service). PersistentStoreServices are created in the Tethys Services section of the admin site. Removed the TETHYS\_DATABASES setting from the settings template. Updated app methods for handling persistent stores dynamically. Need to rewrite documentation and create a way to initialize the persistent store databases through the admin interface, rather than commandline. Then at that point commandline should be ripped out
+* Progress on persistent store service. Models and admin forms complete. Need to update all persistent store methods to use new models rather than old PersistentStore objects
+* Revert "added migrations"
+* A few more updates on the persistent store service setting
+* added migrations
+* added methods for intialization
+* updated example doc string
+* Added initial implementation of persistent store service configured through admin portal using app settings. Also fixed a few miscellaneous documentation warnings/errors
+* removed migrations
+* fixed getting app custom setting
+* removed duplicate field
+* additional fixes to migrate from general setting to custom setting
+* added option to add need for services in app
+* Install scripts update (#245)
+* small tweaks to install scripts and basic docs for Windows. Set \`html\_use\_smartypants\` to False in conf.py to prevent -- from being rendered as an en-dash
+* Updated doc strings for AppBase class. Added Persistent Store exceptions and did some persistent store permissions error catching. Exposed "initialized" field of PersistentStoreDatabaseSettings in admin page. Squashed a few bugs
+* cleanup and bugfixes
+* bug fix on wget/curl command
+* Added windows install batch added option to specify environment name changed TETHYS\_HOME default to user home dir handle relative paths check if MIniconda is already installed
+* Update install\_tethys.bat
+* Update environment\_py2.yml
+* Update install\_tethys.bat
+* Update install\_tethys.bat
+* Update environment\_py2.yml
+* Refactored and unified persistent store initialization code and centralized it as methods on the PersistentStoreDatabaseSetting model class. This included refactoring the persistent store methods in the AppBase class to use the new centralized methods for creating and dropping persistent stores. It also included refactoring the syncstores command to use these centralized methods. If we decide to create the "initialize" button in the admin interface for persistent store databases, then we may want to consider dropping the syncstores command
+* Added types to the CustomSetting with validation and a custom getter that will caste the value to the appropriate type. Properly enforcing required field. Removed old persistent store stuff and moved the TethysFunctionExtractor to it's own module
+* Fixed issue where settings properties were not filtering by subclass appropriately
+* made compatible with ie
+* Fix some typos and clarify usage messages
+* updated css
+* fixed css
+* bug fix gen html in js; modified CSS in less file; minified map view css
+* Refactored initial persistent store app settings implementation. Apps can create PersistentStoreConnectionSettings and PersistentStoreDatabaseSettings. Both must have a PersistentStoreService assigned to them, which provides the connection to a database server (service). PersistentStoreServices are created in the Tethys Services section of the admin site. Removed the TETHYS\_DATABASES setting from the settings template. Updated app methods for handling persistent stores dynamically. Need to rewrite documentation and create a way to initialize the persistent store databases through the admin interface, rather than commandline. Then at that point commandline should be ripped out
+* refined installation script; installation documentation; dynamic version and branch substitutions in the docs
+* mod: silk library only in develop mode
+* silk library only in develop mode
+* Progress on persistent store service. Models and admin forms complete. Need to update all persistent store methods to use new models rather than old PersistentStore objects
+* allow for empty ALLOWED\_HOSTS in settings
+* updated gen settings command so installation script can customize it
+* updates to install script
+* update gen settings command to accept db port
+* cli options fixes docker installation
+* modified geoserver legend to not show by default
+* command line options fix in dependencies for TethysCluster
+* changes to test from github
+* working install script for Linux/Mac start of install script for Windows new environment file small bug fix in TethysFunctionExtractor
+* Revert "added migrations"
+* A few more updates on the persistent store service setting
+* added migrations
+* added methods for intialization
+* updated example doc string
+* Added initial implementation of persistent store service configured through admin portal using app settings. Also fixed a few miscellaneous documentation warnings/errors
+* removed migrations
+* fixed getting app custom setting
+* removed duplicate field
+* additional fixes to migrate from general setting to custom setting
+* added option to add need for services in app
+* modify readthedocs build to use pip and only one conda file
+* Added new social auth dependencies to docs yml
+* Added text to point to documentation
+* added documentation for REST API with examples in scaffold
+* added esri map to doctree
+* Fixes Aquaveo bug 9474
+* remove redundant each loop
+* added the ability to specify select2 options in the select gizmo
+* added the ability to specify select2 options in the select gizmo
+* update API to use Token in Authorization HTTP header
+* reset gizmo\_name in TethysGizmoIncludeNode in case the same node gets rendered again. PEP 8 fixes
+* Added token authentication functionality (cherry picked from commit 02f5df2)
+* fix default draw layer styles on map view
+* tethys-221 Update OpenLayers to version 4.0 - Made drawing layer always editable
+* tethys-221 Update OpenLayers to version 4.0 - Added statement to What's New page
+* tethys-221 Update OpenLayers to version 4.0 - Updated documentation links and references from version 3.10.1 to 4.0.1
+* tethys-221 Update OpenLayers to version 4.0 - Updated OpenLayers dependency to 4.0.1
+* Added a few notes on the new features in MapView
+* Added placeholders for What's New entries for new features
+* Updated documentation to match code and removed commented out code
+* Fixing small documentation deviations
+* Made changes for pull request
+* Corrected an error to ensure that layer properties persisted to the map object from controller
+* Added editable tag to MVLayer object and included checks in editing tools for modifying existing objects
+* added auto sizing attribute to input table to prevent input from becoming too small
+* added comments about customizing the colors
+* Gave user controls over the colors
+* Revert "Revert "Dev: A simple ESRI Map View GIzmo""
+* Revert "Dev: A simple ESRI Map View GIzmo"
+* tethys-201 Upgrade Python Social Auth - First pass at Python social auth upgrade
+* added testing environment check to sdk
+* added modals block; modified testing module
+* Modified Documentation and added an example in Gizmo Showcase for the ESRI Map Gizmo
+* Documentation for ESRI Map Gizmo
+* bugfix: jobs\_table parse delete boolean from post (#218)
+* Esri Map Gizmo
+* Esri map gizmo
+* Update README.rst
+* pointed README to docs
+* fixed named link error
+* removed comment for parsing purposes
+* update comments
+* modified readthedocs to use conda yml
+* Updated select\_feature\_by\_attribute function to allow both single and multiple values. It is backwards compatible. Multiple values are passed in as a single string with commas separating values without spaces between (ie - 'val1,val2,val3')
+* Added captcha to generated settings
+* removed label for captcha in form
+* added CAPTCHA to login and account creation for protection against brute force attacks
+* security updates; make password requirements more secure; hide admin login page if not logged in with permissions
+* modified modal example to use after\_app\_content block
+* updated bootstrap to 3.3.7; added after\_app\_content block
+* updated dependency list for new gizmos
+* rebased with master after conda env merge
+* modified select2 to use full.min.js and min.css
+* made table footer optional
+* fixed testing framework bugs, pt2
+* added period
+* Added instructions for plotly ajax
+* space
+* added ajax examples
+* removed depricated javascript
+* Added SelectInput ajax instructions
+* added instructions for bokeh view ajax
+* fixed examples
+* moved gizmo specific js to individual gizmo
+* fixed select input example
+* bug fix initializing plot function
+* updated gizmo doc strings
+* updated example to import gizmo
+* modified to import\_gizmos
+* updated documentation
+* added check to see if entered gizmo name is valid
+* modifed name for gizmo base class dependency methods; modified name for import gizmo dependencies
+* fixed name in file
+* updated instructions
+* added instructions for using new gizmo methods
+* improved gizmo dependency loading; removed depricated gizmos
+* updated numbering
+* added installation instructions using anaconda for Ubuntu 16 to docs
+* updated docs for the register\_gizmo\_dependency tag
+* modified yml to include plotly and bokeh in requirements
+* updated requirements to add bokeh and plotly
+* Added documentation for DataTables, Plotly, and Bokeh Gizmos. Added Gizmo Showcase Examples
+* fixes bug for when gizmo not loaded
+* space
+* used inheritance to remove duplicate code
+* added note for render\_context
+* bug fix loading duplicate global\_css and removed deprecation warning
+* updated example for datatable gizmo
+* added datatable gizmo
+* added filter for global dependencies for backwards compatibility
+* moved script tag after div
+* removed print statements
+* added gizmo dependency pre-loading, added gizmo global js/css, and bokeh & plotly plot gizmos
+* updated instructions to add pandas dataframe example
+* added option to not load in JS if using AJAX
+* modified code to only load plotly js once and to hide link
+* updated example for plot
+* initial plotly addition
+* added conda environment config file
+* finished production installation docs
+* Update installation.rst
+* production installation docs updates
+* production installation with conda
+* production installation docs updates
+* documentation updates
+* django version fix
+* new documentation for conda env
+* Preparing dev branch for 1.4.0 release
+* finished production installation docs
+* Update installation.rst
+* production installation docs updates
+* production installation with conda
+* production installation docs updates
+* documentation updates
+* django version fix
+* new documentation for conda env
+* update doc whats new
+* update doc phase-1.1
+* update doc phase-1
+* full implementation
+* 1 min to respond to session warning
+* new line added to eof
+* Custom styling for session\_security modal
+* Simple ESRI Map Gizmo
+* Manually merged branch 'fix-testing-issue' into dev. Conflicts fixed
+* successfully implemented
+* initial implementation complete
+* add test code for hydroshare backend
+* removed unnecessary import
+* made a testing environmental variable
+* update diconnect template
+* update templeates to fit new hydroshare backends
+* merge 1.4 release dev
+
+1.4.0
+-----
+
+* Release 1.4.0
+* Feedback bug fix. Also modified settings.py (cherry picked from commit a0ab8c2)
+* Feedback bug fix. Also modified settings.py
+* documented test coverage (cherry picked from commit 7b74fef)
+* added setting to timeout session on browser close (cherry picked from commit add01ce)
+* fixed testing framework bugs, pt2 (cherry picked from commit c3dfbd5)
+* Preparing dev branch for 1.4.0 release
+* Fixed PasteScript dependency issue
+* hydroshare backend works with latest python-social-auth now
+* documented test coverage
+* added setting to timeout session on browser close
+* handle refresh\_token
+* fixed testing framework bugs, pt2
+* encode url in 'next' part to preserve query string
+* redriect user to custom url (next=url) once oauth process is done
+* fixed testing framework bugs
+* fix bugs in hydroshare-beta
+* address multiple social auth objects issue
+* change hydroshare\_beta to inherit hydroshare
+* add hs\_restclient to requirements.txt
+* update hydroshare oauth backend
+* Changed update instructions to read 1.3 to 1.4 instead of 1.2 to 1.3
+* Added link to Ubuntu 16 installation instructions in Whats New
+* Fixed syncstores bug and added additional documentation for testing framework
+* Fixed syncstores bug and added additional documentation for testing framework
+* changed way test stores are destroyed (cherry picked from commit 305db64)
+* added argv import to settings template (cherry picked from commit 3fb8326)
+* fixed error message (cherry picked from commit 3b446b7)
+* modified import (cherry picked from commit 053504d)
+* app testing framework implemented (cherry picked from commit 8421db3)
+* added app testing framework additional files (cherry picked from commit 2fea95a)
+* added app testing framework (cherry picked from commit 915570c)
+* Update workflow documentation
+* changed way test stores are destroyed
+* added argv import to settings template
+* fixed error message
+* modified import
+* app testing framework implemented
+* added app testing framework additional files
+* added app testing framework
+* Removed straggling fetch climate references
+* Added a new geoserver tutorial based on the video tutorial
+* Updated the Getting Started tutorial to be compatible with 1.4.0
+* Removed debugging statement... oops
+* Better way to handle multi-initial-select
+* Expanded the acceptable values of select input gizmo to include lists of things for multiple initial selected items
+* Fixed substring bug in select\_input
+* Advanced the requirement for tethys\_dataset\_services
+* Added Image Pyramid to GeoServer Plugin docs
+* Documentation for terms and conditions feature
+* Added tags to the What's New page
+* Fixed error produced by tag JS and restyled tags to better match Tethys theme
+* Switched to official version of django-termsandconditions with merged changes
+* Removed fetchclimate gizmo
+* Restored the tethys\_main.css file
+* Updated settings template for an additional terms and conditions template
+* Integrated a custom version of django-termsandconditions
+* Evaluation of django-termsofservice... not too impressed at this point..
+* Modified the text input to allow overriding the type using the gizmo attributes property
+* Accepted pull request. Merge branch 'astraiophos-dev' into origin-dev
+* Modified has\_permission to be able to check permissions on non-request users. Request object is still required though to derive the app
+* Made the textarea update with each delete call
+* Working on integrating the Delete button into the showcase documentation
+* Created Delete tool for Map View gizmo in addition to adding tooltips for each tool and initialized tooltips in the gizmo
+* Merged branch upstream-dev into origin-dev
+* create testing framework
+* Testing Framework
+* tethys-170 SubfieldBase deprecation warning
+* Update tethys\_development.rst
+* Delete linux.rst
+* Delete releases.rst
+* Delete overview.rst
+* Delete installation.rst
+* Delete docker.rst
+* Update tethys\_development.rst
+* Change logging level for no default cluster error. Closes #190
+* Fixed a bug that was introduced with tags that caused the header of the app library not to load
+* Added API to title of Permission documentation
+* Added Installation Instructions for Ubuntu 16.04
+* Added Public Method for Update Legend
+* Added warning to the installation page about using the correct version of Ubuntu
+* Reverse select feature finished
+* Update linux.rst
+* Stamped out select by attribute feature for tethys\_map\_view
+* Added CSS styles from tags to less
+* Merged tags capabilities with app db approach
+* Docs and Deprecation Warnings
+* Update geoserver.rst
+* Update geoserver.rst
+* Updating GeoServer docs
+* Added GDAL to list of plugins added to GeoServer Docker
+* Made changes as suggested byt the development team. The tags only show up after 6 apps have been installed in the portal
+* updated gizmo docs to include necessary js imports for AJAX
+* Updating Docs for 1.4.0
+* Initial value of select can take value
+* Upgraded Select2 to 4.0.2
+* minor sintax fixes
+* added info for map AJAX javascript
+* gitignore update
+* Merged branch upstream-dev into origin-dev
+* minor styling changes
+* added docs for legend image classes
+* modified to support functions passed as strings
+* modified url to use format option
+* made the directories based on cli directory path
+* added documentation for AJAX initHighChartsPlot
+* Added select interaction documentation and wait function for other JS functions
+* Added Documentation for the new GeoServer Docker
+* fixed error when syncing db with tethys\_app db changes
+* The tags can now be separated by commas and you can use multiple words for tags
+* pop instead of get
+* Added minimal documenation on using permissions from an app development standpoint. Need to add docs on how to assign permissions and groups for the portal admin
+* Added ability to pass multiple permissions as arguments to permission required decorator and specify whether to use an AND or OR comparison. Also can override the default message that is displayed when permission is denied. Fixed a few bugs that arise when trying to makemigrations and setup DB initially
+* Tags for apps
+* Added has\_permission method for checking permissions
+* Added redirect behavior with warning message to the Tethys permission\_required decorator, rather than throwing a 403 by default. Added optional argument for throwing 403
+* Added a decorator for Tethys Controllers that checks object level permissions
+* Formalized the mechanism for creating app permissions
+* Database model for apps implemented including refactoring methods that use SingletonAppHarvester to get a list of apps to use DB lookup instead. However, could not refactor cases that use the SingletonAppHarvester to call methods on the App class ( e.g. app.url\_maps() )
+* First pass at database model for apps. Experiments with object level permissions
+* Fixed bugs with Tethys CLI docker commands and commented out the restart policy that causes problems with new version of docker
+* Fixed minor bug in Tethys Docker CLI with the new geoserver options
+* made legend image class and geoserver legend image sub-class
+* added legend options for raster in GeoServer
+* added select interaction for non-wms layers and modified to allow gizmo ajax
+* modified to allow highcharts gizmo to use ajax
+* Fixed a bug with the tethys docker commands
+
+1.3.3
+-----
+
+* Hotfix 1.3.3
+
+1.3.2
+-----
+
+* Hotfix 1.3.2
+* Added link to Alan's tutorial to the docs
+* Fixed a bug with the new docker start command that prevents geoserver 2.7.0 from starting properly
+* Workflow Documentation start
+* Inconsequential change to test pushing to git.aquaveo.com
+* Changed erroneous version in deprecation warning
+* update condorpy dependency version
+* Jobs table run\_time enhancements
+* WorkflowJobTemplate bug fix, so error is not raised when \`parents\` is not defined
+* Minimal documentation update added discussing new features of the GeoServer Docker and the changes to the CLI
+* Refactored docker cli to work with new clustered GeoServer docker container
+* Modifying docker commands to work with new GeoServer
+* TethysJobs run\_time fix
+* condorjob\_refactor
+* jobs\_table update
+* Change to plot view that allows them to have more control over the legend on highcharts plots
+* Fixes and optimization of the jobs table statuses
+* Start of WorkflowNodeTemplates
+* app description populated in app.py from the scoffold command
+* tethys-178 Add description to app.py when creating an app using the scaffold command. Issue #178
+* InheritanceManager, Workflow implementation
+
+1.3.1
+-----
+
+* patch 1.3.1
+* update author email
+* advanced version number
+* update condorpy depency
+* condorjob\_refactor migrations and reverse migrations working
+* condorjob\_refactor migrations
+* condorjob\_refactor migrations
+* condorjob\_refactor
+* condorjob\_refactor
+* tethys-177 Error catching on URL loading is masking true errors
+* Update to gitignore to enforce ignoring the settings.py file
+* docs bugfix
+* compute docs update
+* compute docs update
+* Updated TethysCluster link
+
+1.3.0
+-----
+
+* css and job tweeks
+* added get\_cluster\_manager method to compute SDK
+* Bug fixes for CondorPy jobs
+* Updated documentation for logout in installation docs
+* Updated documentation for merge conflict in upgrade
+* changed tap event back to click event as it requires jquery mobile
+* fixed minor spacing conflict with dev
+* fixed conflict with current dev branch
+* recompiled app\_library.less to produce app\_library.css
+* changed click event to tap event for touch devices
+* modified .less file, changed events and layout for app-info button
+* handle NotAllowedToDisconnect exception
+* Bug fix for feedback forms
+* A few docs updated to include description and changes to app class
+* Styling tweaks to app feedback form and added additional information that is automatically collected about the operating system and browser
+* Modified feedback form to provide information about the client the user is using
+* bootstrap info icon; dont show if no description available
+* Docs updates for new persistent stores features
+* fixed merge with dev issues
+* Added methods for listing and checking for existing persistent stores
+* Proposing a few additions to "Apps Library" landing page
+* Added methods for listing and checking existing persistent stores
+* Created a method on app class that allows for creating persistent stores dynamically (at runtime)
+* Set  default value for geometry attribute on map
+* Bug fix for select layers with geometry attribute
+* Updated documentation for merge conflict in upgrade
+* Updated documentation for merge conflict in upgrade
+* Admin styling tweaks to account for updated version of admin site
+* Made it possible to override the chart options for plot gizmos objects
+* Slight tweak to the feedback button styling
+* A couple of tweaks to the documentation for upgrading Tethys
+* Additional documenation updates to the installation process
+* Generated official migrations for 1.3.0
+* Updated the development upgrade from 1.2 documentation
+* A few minor fixes for bugs encountered when installing from scratch
+* animations bug fixes
+* OAuth Documentation finished
+* Documentation
+* #116 Updating OAuth Documentation
+* #116 Updating OAuth Documentation
+* Reverted some changes that should not have been included in this release
+* Added the App Feedback feature. Added documentation under Tethys Portal and under What's New on the Tethys Docs
+* Added documentation that describes procedures for performing a new release
+* Moved older release notes to a separate page and updated the version number references throughout the documentation
+* Updated the version on the main page of the documentation
+* Updated  the What's New Page to include a description of the bugs fixed
+* Upgraded Django from 1.7 to 1.9 and fixed any issues that were encountered. See issue #168
+* Fix for issue # 154
+* Fix for issue #149:
+* tethys-156 Update the What's New Page Prior to Release of 1.3 Issue #156
+* Fix for Issue #150:  Some of the Autodoc Documentation is not being produced
+* Fix for Issue #158: Mixed content issues when running behind https
+* tethys-153 Configurable update interval for jobs table Issue #153
+* #116 Updating OAuth Documentation
+* Compute docs update
+* Normalize Controllers
+* #116 Updating OAuth Documentation
+* #163 Updated Documentation
+* #163 Add Initial Value parameter to select and select2 input gizmos as a list. Closed
+* #114 Attr with Spaces Documentation
+* #114 Attr with Spaces
+* tethys-164 Tethys Dataset Services Dependency Problem Issue #164
+* update urls to hydroshare.org
+* tethys-138 Jobs Table - pending jobs breaks run\_time Issue #138
+* tethys-138 Jobs Table - pending jobs breaks run\_time Issue #138
+* tethys-155 Production Error Handeling Issue #155
+* tethys-138 Jobs Table - pending jobs breaks run\_time Issue #138
+* Changed supported version of tethys\_dataset\_services module
+* A better explanation of the Gridset is provided in the MVLayer example for TileWMS
+* Added a clarification to the documentation of feature\_selection for MVLayers
+* Added feature selection support to TileWMS layers and added the ability to create a custom tile grid / gridset and set the origin to use for the gridset
+*  Security patch to prevent internal handoff handlers from being called externally.  #Issue 139
+* tethys-139 Normalizing References to Controllers Issue #139
+* Hydroshare OAuth backend configuration
+* Added a sensitivity parameter to the feature selection options
+* Added migrations for adding the public endpoint to the services models
+* tethys\_compute migration fix
+* tethys\_compute migration fix
+* tethys\_compute migration
+* tethys-77: Update Compute Docs
+* A few minor tweaks to new settings defaults
+* Added a bunch of settings that allow more control over the theme of the Tethys Portal. Settings include text color, background color on the apps home page, and the size of the brand/logo image
+* Internal Handoff Handlers
+* Internal Handoff Handlers
+* Internal Handoff Handlers
+* Added docstrings. Issue # 139
+* Added a public endpoint parameter to all Tethys services to allow the use of an internal facing address to GeoServer and an external facing address for the browser access. This will require migrations
+* Added docstrings. Issue # 139
+* Added https:// to service endpoint URL validation
+* Added https:// to service endpoint URL validation
+*  Configuration update
+* Hydroshare OAuth
+* Fixed bug where condition to check for shift key with single click for mulitselection of features was not working properly in production
+* Added docstrings. Issue # 139
+* css header fix
+* Updated documentation reference from openlayers 3.5.0 to 3.10.1
+* The open account signup ability is now configurable. It is off by default for security considerations. The ENABLE\_OPEN\_SIGNUP setting must be set to True in settings.py to enable open account signup
+* tethys-139 Normalizing References to Controllers Issue #139 Everything but docstrings
+* Removed rouge print statement
+* Refactored the way the onSelectionChange callback operates (now it maintains an array of callback functions to call instead of a singular callback function)
+* tethys-151 Update less files to reflect style changes Issue #151
+* initial changes
+* tethys-152 Job Manager Security Issue #152
+* Added a multi selection functionality to the feature selection capabilities.
+* Implemented a generic method of selecting features on ImageWMS layers to support EPANET app
+* style change fix
+* Modified tethys manage start to accept a host and a  port
+* Removed a console.log and updated a dependency
+* Added the ability to specify layer options (like visiblity) with MVLayer objects as per tethys#113
+* Added the ability to disable the base map  in map view as per tethys#113
+* Most recent updates
+* Hotfix 1.2.4
+* Change Styles - allow app styles to override gizmo styles. Changes to JavaScript to allow map to resize properly
+* Changes for HydroShare Oauth
+* HandoffManager
+* HydroShare OAuth branch
+* HydroShare OAuth branch
+* Hotfix 1.2.3 - tethys\_compute migration
+* compute hotfix (cherry picked from commit a21ed2a)
+* Hotfix 1.2.2
+* compute hotfix
+* compute hotfix
+* app\_installation documentation fix
+* tethys-132 Tutorial documentation - persistent stores Issue #132
+* tethys-132 Tutorial documentation - persistent stores Issue #132
+* tethys-133 Production Installation Docs - file ownership Issue #133
+* tethys-77 Update Tethys Compute Docs Issue #77
+* Cloud computing docs updated
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys-77 Update Tethys Compute Docs Issue #77
+* Update plot\_view.js
+* hot fix 1.2.1
+* hot fix for d3 plots to allow user height and width input and auto resizing of plot when window size changes
+* hot fix for d3 plots to allow user height and width input and auto resizing of plot when window size changes
+* Jobs Table doc update
+
+1.2.0
+-----
+
+* 1.2.0
+* Release 1.2.0
+* Final docs tweaks
+* Bug squashing
+* Minor tweak to gizmos\_showcase
+* tethys #59 App Interaction: Finished preliminary work on handoff
+* Workspaces in Jobs
+* D3 Plots added:   Line Plot   Pie Plot   Scatter Plot   Bar Plot   Timeseries Plot
+* Fixes for the d3 rebase
+* tethys #59 App Interaction: Added a view that returns JSON with the names of handlers and the arguments expected
+* tethys #59 App Interaction: Locked down developer tools pages to require login
+* tethys #59 App Interaction: A skeleton of the handoff feature is in place
+* tethys #59 App Interaction: Initial stab at app interactions via handoff
+* Jobs table gizmo update row working
+* Jobs table gizmo update row cleanup and docs
+* Jobs table gizmo update row working
+* tethys #127 Add Update from 1.1 to 1.2 documentation: Validated installation instructions and update instructions
+* tethys #127 Add Update from 1.1 to 1.2 documentation: Documented new command and updated the web admin setup documentation
+* tethys #127 Add Update from 1.1 to 1.2 documentation: New createsuperuser command in CLI to account for change in syncdb
+* tethys #127 Add Update from 1.1 to 1.2 documentation: Tweaking the update and installation documentation to be clearer
+* Fixes for the d3 rebase
+* tethys #127 Add Update from 1.1 to 1.2 documentation: Fixing some bugs in the commands to streamline documentation
+* tethys #127 Add Update from 1.1 to 1.2 documentation: Added new instructions for installing apps on a production system, updated the update and installation docs for production and development. Also, change reference to new GitHub repository
+* tethys #127 Add Update from 1.1 to 1.2 documentation: Added new instructions for installing apps on a production system, updated the update and installation docs for production and development. Also, change reference to new GitHub repository
+* Tweaked the docs for map view and fetchclimate and changed the docs links in the gizmo showcase to match
+* Docs updated for plot view
+* Restructured the Gizmo Options Object API documentation and started in on updating plot view docs
+* Fixes for the d3 rebase
+* cherry picking
+* cherry picking
+* Jobs table complete with update status (pre update row)
+* Fixes for the d3 rebase
+* Rebasing d3\_stuff branch prior to docs work
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* The latest
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* tethys #125 Move the get\_persistent\_store method to the app base class and deprecate the old method: Done
+* tethys-121: Renamed tethys\_sdk/geoprocessing to tethys\_sdk/web\_processing\_services
+* tethys-121: Updated docs to reference new tethys\_sdk module
+* tethys-121: Created a new module called tethys\_sdk
+* d3 files
+* tethys-119: Added code headers to LESS, CSS and JavaScript files
+* tethys-119: Headers added to tethys\_compute and all python files. Now need to add headers to JavaScript, LESS, and CSS files
+* tethys-119: Headers added to all tethys\_services and tethys\_portal modules
+* tethys-119: Headers added to all tethys\_gizmos and tethys\_config modules
+* tethys-119: Headers added to all tethys\_apps
+* tethys #120 Add Links to the Video Tutorials and GitHub Repositories with Solutions to Docs: Done
+* tethys #30 Formalize Workspaces for Apps: Added a new tethys CLI command to collect all the workspaces into a centralized directory defined by the TETHYS\_WORKSPACES\_ROOT setting. Documentation as well
+* tethys #30 Formalize Workspaces for Apps: Fixed the great "\_url" blunder
+* tethys #30 Formalize Workspaces for Apps: Added workspace directories to the scaffold
+* d3 files
+* d3 files
+* tethys #30 Formalize Workspaces for Apps: Documentation completed for workspaces
+* tethys #30 Formalize Workspaces for Apps: Workspace methods implemented. Only documentation remaining to complete workspace support
+* tethys #30 Formalize Workspaces for Apps: Implemented get\_user\_workspace() and get\_app\_workspace() as class methods on the app base class. To use, developers import the class and call the methods on the class
+* tethys#117: Added the login\_required() decorator to the scaffold template to suggest to new developers how to restrict access to their controllers to users who are logged in
+* tethys#117: restricted access to the apps library to authenticated users only
+* tethys#1: Added documentation about the ensure\_oauth2 decorator usage for HydroShare
+* tethys#1: Finished most of the documentation for Social Auth
+* d3 files
+* tethys#1: Half way done with Social Auth documentation
+* tethys#1: Updating Tethys Portal documentation and adding documentation for social auth features
+* d3 files
+* tethys#1: Added settings to the gen settings template
+* tethys#1: Added logic to handle the Social Auth cancel and already associated exceptions
+* tethys#1: Added the ability to connect and disconnect social accounts to user profile and settings. Also made it possible to delete accounts
+* tethys#1: Added social signup buttons to the sign up page and made the buttons on both pages dynamic such that they will only display if the corresponding backend is listed in the AUTHENTICATION\_BACKENDS setting of settings.py
+* tethys#1: Added social login links to the login screen
+* tethys#1: Added a shell for a custom HydroShare OAuth provider that needs to be adjusted when there is a HydroShare OAuth service. Set an exception for hydroshare use without the decorator that suggests a solution to use the decorator
+* d3 files
+* tethys#1: Added a base level  '/oauth2/' for the social auth url patterns. Also, made the redirect url in the ensure\_oauth2 decorator dynamic to allow for changing the url patterns of social auth in the future without many headaches
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* The latest
+* d3 files
+* d3 files
+* d3 files
+* d3 files
+* Added a doc string to the decorator demonstrating it's usage
+* tethys#1 initial implementation of Oauth2 support for HydroShare (tested using Google's OAuth service)
+* Fixed issue with the WPS developer tool to allow for .'s, -'s, and \_'s in process names
+* jobs\_table gizmo initial implementation without testing
+* Release 1.1.1: Fixed typos in docs Fixed issue with gizmo showcase layer on map demo not showing up Fixed issue with map view where drawing buttons would cause form to submit Fixed version conflict with owslib
+* tethys #88 OWSLIB version conflict: Locked in owslib version to >=0.8.0 and <0.9.0
+* tethys #94 Spatial Dataset Services Docs Typo: Fixed the typo
+* tethys #84 GeoServer Layer on the MapView Gizmo is hard coded to mac docker GeoServer: A little more robust to validate the engine
+* tethys #84 GeoServer Layer on the MapView Gizmo is hard coded to mac docker GeoServer: Replaced hard coded geoserver url with derived endpoint from registered spatial dataset services
+* tethys #84 GeoServer Layer on the MapView Gizmo is hard coded to mac docker GeoServer: Hard coded to ciwmap.chpc.utah.edu:8080/geoserver/wms
+* tethys #89 Drawing Buttons on Map View Submit Forms: Added type="button" to the drawing buttons so that they will not behave as submit buttons forms
+* tethys-103 Does job\_templates method in app.py need to be a class method? Issue #103
+* Commented out troublesome line to fix scale issues on the HighChartsTimeSeries plot view options object. This closes tethys#100
+
+1.1.0
+-----
+
+* Docs Fixes
+* tethys#92 - Updated the map images in the Getting Started tutorial
+* tethys#91 - Fixed type on Gizmo Options documentation where plot\_view should be highcharts\_plot\_view
+* tethys#85 - Resolved documentation typo with DatePickerOptions that should have been DatePicker
+* Added a .gitattributes with linguist attributes that will make the language stats more accurate
+* Version 1.1.0
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys-77 Update Tethys Compute Docs Issue #77
+* Docs Tweaks in preparation for 1.1.0
+* tethys-81 Clear Out Tethys Compute Settings If They Already Exist Issue #81
+* Docs Tweaks in preparation for 1.1.0
+* Docs Tweaks in preparation for 1.1.0
+* tethys-54 Job Management System
+* tethys-54 Job Management System
+* tethys-54 Job Management System
+* Docs Tweaks in preparation for 1.1.0
+* tethys #63 Fix Issues with Mac Installation Instructions: This issue has been resolved
+* tethys #63 Fix Issues with Mac Installation Instructions: Found a potential fix to the OpenSSL mac issue:
+* tethys #63 Fix Issues with Mac Installation Instructions: Found a potential fix to the OpenSSL mac issue:
+* tethys #63 Fix Issues with Mac Installation Instructions: Made changes to support docker-py version 1.2.2
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys #56 - Update installation instructions to archive approach: added a tip after repository pull that describes how to checkout tagged versions as a means for installing other versions of Tethys Platform. This closes #56
+* tethys #27 Improve Production Installation Instructions: This closes #27
+* tethys #27 Improve Production Installation Instructions: Almost done..
+* tethys #27 Improve Production Installation Instructions: Almost done..
+* tethys-7  .tethyscluster Directory Creation causes Error in Production Issue #7
+* tethys-7  .tethyscluster Directory Creation causes Error in Production Issue #7
+* tethys-77 Update Tethys Compute Docs Issue #77
+* tethys #27 Improve Production Installation Instructions: Better fix
+* tethys #27 Improve Production Installation Instructions: stash
+* tethys #78 Broken CLI command: tethys manage collectstatic: closed
+* tethys #70 Upgrade HighCharts: Upgraded Highcharts libraries to 4.1.5
+* tethys #45 Add attributes option to all gizmos: Cleaned up plot view docs and added documentation for new highcharts objects
+* tethys #45 Add attributes option to all gizmos: Reviewed and cleaned up documentation for Map View. Also refactored Map View objects, removing the title "Options" and shortening "MapViewXxxx" to "MVXxxx"  on supporting objects to make them more readable. Also removed "Options" designation from Date Picker title
+* tethys #45 Add attributes option to all gizmos: Added attributes and classes features to date picker, google map view, highcharts, map view, message box, range slider, select input, table view, text input, and toggle switch gizmos
+* tethys #45 Add attributes option to all gizmos: Added attributes and classes features to Button Group. Added a new Gizmo for single buttons. Added a module in the sdk that can be used to import gizmos: tethys\_apps.sdk.gizmos
+* Added a list of changes and updates to the new What's New page
+* Docs tweak
+* Updated the Tethys Portal documentation to include new bypass the home page capability and other updates
+* tethys-76 Tethys cluster breaks dev install - remove duplicate package
+* tethys-76 Tethys cluster breaks dev install
+* tethys #72 Add Admin Parameter to Disable the Home Page: Done and done
+* tethys #72 Add Admin Parameter to Disable the Home Page: Done and done
+* tethys #75 Fix GeoJSON Layer to account for CRS: Fixed some issues in the installation docs
+* tethys #75 Fix GeoJSON Layer to account for CRS:
+* tethys-54 Job Management System
+* tethys #74 Clean up the Gizmo Docs: Updated the Gizmo Showcase by removing all documentation and code examples and providing reference links to the API documentation instead
+* tethys #74 Clean up the Gizmo Docs: Updated the tutorial to use the Map View Gizmo. Cleaned up generally
+* tethys #74 Clean up the Gizmo Docs: Updated the Template Gizmos API docs to reference new options objects instead of dictionaries
+* tethys #57 Add Software Suite Documentation:
+* tethys #66 Add Pan and Zoom (Hand) control to drawing controls:
+* tethys #71 Enable ArcREST services in Map View Gizmo: Added example in gizmo\_showcase
+* tethys #71 Enable ArcREST services in Map View Gizmo: Added example in gizmo\_showcase
+* tethys #65 Upgrade OpenLayers:
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys #24 Engine Validators: Done. This finishes #24 and #12
+* tethys #24 Engine Validators: Added deprecation warnings to app.py service configurations
+* tethys #53 Combine mobile menus into a single mobile menu: Done. Mobile menus combined into a single menu. The resolves #53
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys #33 Add Legend Support to Map View: Updated autodocs for MapView
+* tethys #33 Add Legend Support to Map View: Final. This resolves tethys #33
+* tethys #33 Add Legend Support to Map View: Checkpoint. Dropdown menus replaced with slidedown menus for more stability
+* tethys #33 Add Legend Support to Map View: Checkpoint. Drop down menus now pop out of legend for better look and account for bottom of the map (drop up)
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys #33 Add Legend Support to Map View: Checkpoint. Zoom to layer control working and KML layers from URL are working
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys #33 Add Legend Support to Map View: Checkpoint. Display toggle and opacity controls working with layers being displayed with titles
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys-47 Subclass HighCharts Gizmo for specific Plot types
+* tethys - # 61: Fixed Typo "text\_input\_options" to "test\_input\_options"
+* tethys #33 Add Legend Support to Map View: Checkpoint
+* tethys-28 Object Interfaces for Tethys Gizmos
+* tethys-28 Object Interfaces for Tethys Gizmos
+* tethys #33 Add Legend Support to Map View: Checkpoint. Changed layer loading mechanism to be more generic to support a wider range of layers. This is in preparation for the new legend mechanism
+* tethys #33 Add Legend Support to Map View: Added new control to map view that is the legend overlay
+* Debugging migrations
+* Debugging migrations
+* Removed social\_auth from installed apps in generated settings file and fixed a few bugs in docs
+* Removed social\_auth from installed apps in generated settings file and fixed a few bugs in docs
+* Removed social\_auth from installed apps in generated settings file and fixed a few bugs in docs
+* tethys #26 Update Command: Fixing bug introduced with update command
+* tethys #26 Update Command: Fixing bug introduced with update command
+* tethys #26 Update Command: Porting data from old services models to the new unified one. Debugging
+* tethys #26 Update Command: Porting data from old services models to the new unified one. Debugging
+* tethys #26 Update Command: Porting data from old services model to the new unified one. Debugging
+* tethys #26 Update Command: Porting data from old services model to the new unified one
+* tethys #26 Update Command: Attempt at handling the database migration elegantly
+* tethys #26 Update Command: Initial really horrible instructions for updating
+* tethys #14 Custom "collectstatic" CLI command: Debugging
+* tethys #14 Custom "collectstatic" CLI command: Debugging
+* tethys #14 Custom "collectstatic" CLI command: Debugging
+* tethys #14 Custom "collectstatic" CLI command: Debugging
+* tethys #14 Custom "collectstatic" CLI command: Debugging
+* tethys #14 Custom "collectstatic" CLI command: Updated docs to include references to the new command
+* tethys #14 Custom "collectstatic" CLI command: Added new command:
+* tethys #19 App Base Footer Size when Empty:
+* tethys #18 Forgot Password Capabilities: Finished the forgot password capabilities functionality
+* tethys #18 Forgot Password Capabilities: Added some documentation for setting up Postfix and email settings in Django
+* tethys #18 Forgot Password Capabilities: Debugging
+* tethys #18 Forgot Password Capabilities: Debugging
+* tethys-28 Object Interfaces for Tethys Gizmos
+* tethys #27 Improve Production Installation Instructions: fixed some typos and improved installation docs
+* tethys #18 Forgot Password Capabilities: Working forget password capabilities on localhost. Test on full environment
+* tethys #18 Forgot Password Capabilities: Working forget password capabilities on localhost. Test on full environment
+* tethys-9 System Requirements Docs. Added system requirements docs. This closes tethys #9
+* tethys-9 System Requirements Docs
+* tethys-41 Expand Production Docs to Include Docker Remote Deploy. Resolve ciwater/tethys #41
+* Fixed issue with psycopg2 requirement
+* tethys-28 Object Interfaces for Tethys Gizmos
+* A few tweaks
+* tethys-22 App Library Title Setting
+* Constrained the docker image versions
+* tethys-51 Lock in Django version on 1.0
+* tethys-49 One Repository to Rule them All: Merged tethys\_wps and tethys\_datasets into tethys\_services. Merged tethys\_services, tethys\_compute, and tethys\_gizmos into main tethys project
+* tethys-49 One Repository to Rule them All: Merged tethys\_wps and tethys\_datasets into tethys\_services. Merged tethys\_services, tethys\_compute, and tethys\_gizmos into main tethys project
+* Made the scaffolding more robust. Proper names supplied by the user are now validated and sanitized, because they are used to generate the app class name. This resolves issue #48
+* Added a new Adobe Illustrator project for the map view drawing icons
+* added images for docs
+* update to computing section of features docs
+* adding images for docs
+* update to computing section of features docs
+* Added attribution for Tethys Platform to the footer of Tethys Portal. This resolves #11
+* Fixed Issue #23
+* Removed generated files for docs from the git repository
+* Closed Issue #8:
+* Issue #13: Made header of Tethys Portal more responsive to long titles, which prevents the header wrapping and covering up controls
+* Changed login redirect from user profile to the apps library page
+* Fixed Bug #17
+* Close Issue #25
+* Added installation documentation for Tethys Development in Ubuntu
+* Added version constraints for dependencies
+* Adjusted a few styles to float button groups to the right in the app actions area
+* Added the \_\_init\_\_.py file from the tethysapp directory into the git repository. It wasn't included when it should have been
+* Version 1.0.0
+
+1.0.0
+-----
+
+* Version 1.0.0
+* Merged with Scotts docs
+* distributed computing docs
+* Made footer of Tethys Portal more generic and added a setting for the footer copyright
+* Docs merge with Scott's compute stuff. Also changed the home page of Tethys Portal to be more generic and different than the Tethys home page. Added a few settings including color theme options
+* HTCondor installtion instructions
+* Pulled tethys\_apps back into the main tethys project
+* Lots of docs updates
+* Tweaked the docs
+* Updated the dates
+* Included new screenshots
+* Updated the docs to show how to configure external dataset services using the web admin instead of settings.py
+* Renamed the Tethys Portal config settings on admin to read "Tethys Portal" instead of "Tethys\_Config"
+* Updated the tutorial for to include docker start instructions
+* Updating the docs
+* Preliminary mac installation docs
+* Preliminary mac installation docs
+* Preliminary mac installation docs
+* Updating Linux Installation Docs
+* Updating Linux Installation Docs
+* Updating Linux Installation Docs
+* Added WPS link. Now work on the docs
+* Docs Update: Added cautions on the home page and feature page about the unstable nature of Tethys Platform and added a new page with links to the source code
+* Updated production documentation to use the tethys gen apache command
+* Preliminary production installation documentation finished
+* Added basic documentation for the Tethys Portal
+* Completed the Spatial Persistent Stores API documentation and added a favicon
+* Updated the features page to reflect new Django version features
+* Slimmed down the "The View and Templating" tutorial by referencing the new App Templating API documentation
+* Finished the App Templating API documentation
+* Started the templating API documentation
+* Added a tutorial for how to use PGAdmin to connect to the Tethys databases
+* Updated the app class documentation and moved it to be included in the SDK documentation
+* Removed the warning
+* Added Tethys Command Line Interface documentation
+* Persistent Store API documentation is completed
+* Persistent Store API documentation is completed
+* Updated the tutorial to include new persistent store functionality
+* Added some persistent store API docs
+* Added some persistent store API docs
+* Added some persistent store API docs
+* Tutorial Update completed for the Django version of Tethys
+* Updated the installation tutorial
+* Added API docs for Gizmos
+* Updated the glossary page
+* Updated the docs some more
+* Updated the App Project Structure supplementary documentation
+* Updated the installation tutorial with a link to a command line tutorial
+* Updated the installation instructions with a few tweaks
+* Tutorial is now ready for final testing
+* Docs update
+* Update the key concepts docs
+* Updated the URL mapping tutorial and added an MVC review tutorial
+* Updated the controller portion of the tutorial
+* Preliminary view documentation updated for the tutorial
+* Completed the update for the model tutorial
+* Updating the tutorial
+* Version 0.5.3. Added 'spatial' parameter to PersistentStore. The 'postgis' parameter will eventually be deprecated
+* Updated the scaffold portion of the getting started tutorial
+* Some voodoo for docs..
+* Added docs for the Dataset Service API
+* Updating the docs
+* Added a README
+* Added a couple of images
+* Added error pages to handle HTTP errors: 400, 403, 404, and 500
+* Modified the menu names to User Settings and Site Admin
+* Added global settings for all of the content on the home page
+* Admin side of the site settings created. Now to read those settings in to a context processor so they are accessible to the templates
+* Added a favicon to the site
+* Django automatic admin page styled to match the Tethys theme
+* Added icons for the Developer tool page
+* Added Tethys logo image and removed App library and Developer tools logos (too much conflicting there
+* Added images for featurettes on the front page
+* Updated installation instructions. Basic installation can now be done
+* Changed the name of the TETHYS\_APPS\_SUPERUSER setting to TETHYS\_APPS\_SUPERUSER\_URL
+* Changed name of django site from "tethys\_site" to "tethys\_portal" and refactored accordingly
+* Checkpoint: Change git cloning option to clone into directory named src
+* Checkpoint: Change git cloning option to clone into directory named src
+* Started the installation documentation
+* Copied the documentation from ckanext-tethys\_apps to django tethys
+* Removed the settings.py file
+* Removed the settings.py file
+* Minor styling changes
+* Working on developer page..
+* Added setting for the Tethys Gizmos
+* Added developer url patterns to link up with Tethys Gizmos
+* Finally wired up the apps library to the header links
+* Finally wired up the apps library to the header links
+* Finally wired up the apps library to the header links
+* Finally wired up the apps library to the header links
+* Updated styles to be compatible with Firefox
+* Some changes to styling
+* Generalized the secondary header styling with a new set of styles
+* Url mapping to Django complete :D
+* Finished the basics on the base site. Time for fun. :D
+* Added a password change form as part of the settings workflow. Also, added email as an input to the registration process
+* Old change password form
+* Working user settings form added. Still need to work on the change password form part of it..
+* Added a nice looking profile page for users
+* Added signup and login forms as well as enabled messaging with bootstrap styles
+* Added gravatar support. Easy as pie
+* Added sticky footer
+* Cleaned up
+* First commit
