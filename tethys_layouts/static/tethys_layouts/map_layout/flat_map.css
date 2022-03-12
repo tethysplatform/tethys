@@ -5,20 +5,20 @@
  * Copyright: (c) Aquaveo 2018
  * License:
  ********************************************************************************/
-/* Controls */
+ /* Controls */
 .ol-control {
-    background-color: #bbbbbb;
+    background-color: var(--app-primary-color, #777777);
     border-radius: 5px;
     padding: 0;
 }
 
 .ol-control:hover {
-    background-color: #bbbbbb;
+    background-color: var(--app-primary-color, #777777);
 }
 
 .ol-control button {
     color: #ffffff;
-    background-color: #bbbbbb;
+    background-color: var(--app-primary-color, #777777);
     height: 2.25em;
     width: 2.25em;
     margin: 0;
@@ -27,7 +27,7 @@
 
 .ol-control button:focus,
 .ol-control button:hover {
-    background-color: #aaaaaa;
+    background-color: var(--app-secondary-color, #999999);
     outline-color: transparent;
 }
 
@@ -73,46 +73,46 @@
     height: 2.15em;
 }
 
+
+
 #basemap_dropdown_container {
     top: 0.5em;
-    left: 4em;
+    left: 3.5em;
     padding: 0;
     border-radius: 5px;
-    background-color: #bbbbbb;
+    background-color: var(--app-primary-color, #777777);
 }
 
 #basemap_dropdown_container button {
     height: 2.25em;
-    padding: 0 0.75em;
+    padding: 0 0.75em!important;
     font-size: 1.14em;
     letter-spacing: 1px;
     color: #ffffff;
-    background-color: #bbbbbb;
+    background-color: var(--app-primary-color, #777777)!important;
     line-height: 0.4em;
     border-radius: 5px;
-    border: none;
+    border: none!important;
 }
 
 #basemap_dropdown_container button:hover {
-    background-color: #aaaaaa!important;
+    background-color: var(--app-secondary-color, #999999)!important;
 }
 
 #basemap_dropdown_container .dropdown-menu {
-    background-color: #bbbbbb!important;
+    background-color: var(--app-primary-color, #777777)!important;
     color: #ffffff!important;
     letter-spacing: 1px;
 }
 
 .basemap-option:hover {
-    background-color: #aaaaaa;
+    background-color: var(--app-secondary-color, #999999);
 }
 
 .input-group-addon {
-    background-color: #bbbbbb;
+    background-color: var(--app-primary-color, #777777);
     color: #ffffff;
     border-right: 0;
     border-top: 0;
     border-bottom: 0;
 }
-
-

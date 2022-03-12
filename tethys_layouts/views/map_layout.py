@@ -255,6 +255,30 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         return self.default_disable_basemap
 
+    def save_custom_layers(self, request, *args, **kwargs):
+        """
+        Implement this method to handle AJAX method that persists custom layers added to map by user.
+
+        Args:
+            request(HttpRequest): The request.
+
+        Returns:
+            JsonResponse: success.
+        """
+        return JsonResponse({'success': True, 'message': 'Not Implemented.'})
+
+    def remove_custom_layer(self, request, *args, **kwargs):
+        """
+        Implement this method to handle AJAX method that persists custom layers added to map by user.
+
+        Args:
+            request(HttpRequest): The request.
+
+        Returns:
+            JsonResponse: success.
+        """
+        return JsonResponse({'success': True, 'message': 'Not Implemented.'})
+
     # TethysLayout Method Implementations ----------------------------------- #
     def get_context(self, request, context, *args, **kwargs):
         """
@@ -541,56 +565,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         title, data, layout = self.get_plot_for_layer_feature(layer_name, feature_id)
 
         return JsonResponse({'title': title, 'data': data, 'layout': layout})
-
-    def save_custom_layers(self, request, *args, **kwargs):
-        """
-        An AJAX handler method that persists custom layers added to map by user.
-
-        Args:
-            request(HttpRequest): The request.
-
-        Returns:
-            JsonResponse: success.
-        """
-        # TODO: Implement a method that does not require the database. JSON File? Local storage?
-        display_name = request.POST.get('layer_name', '')
-        layer_uuid = request.POST.get('uuid', '')
-        service_link = request.POST.get('service_link', '')
-        service_type = request.POST.get('service_type', 'WMS')
-        service_layer_name = request.POST.get('service_layer_name', '')
-        custom_layer = [{'layer_id': layer_uuid, 'display_name': display_name, 'service_link': service_link,
-                         'service_type': service_type, 'service_layer_name': service_layer_name}]
-        custom_layers = resource.get_attribute('custom_layers')
-        if custom_layers is None:
-            custom_layers = []
-        custom_layers.extend(custom_layer)
-        # TODO: Should use self._build_mv_layer or at the very least MVLayer
-        resource.set_attribute('custom_layers', custom_layers)
-        session.commit()
-        return JsonResponse({'success': True})
-
-    def remove_custom_layer(self, request, *args, **kwargs):
-        """
-        An AJAX handler method that removes persisted custom layers removed by user.
-        Args:
-            request(HttpRequest): The request.
-
-        Returns:
-            JsonResponse: success.
-        """
-        layer_id = request.POST.get('layer_id', '')
-        layer_group_type = request.POST.get('layer_group_type', '')
-        if layer_group_type == 'custom_layers':
-            custom_layers = resource.get_attribute(layer_group_type)
-            if custom_layers is not None:
-                new_custom_layers = []
-                for custom_layer in custom_layers:
-                    if custom_layer['layer_id'] != layer_id:
-                        new_custom_layers.append(custom_layer)
-                # TODO: Implement a method that does not require the database. JSON File? Local storage?
-                resource.set_attribute(layer_group_type, new_custom_layers)
-        session.commit()
-        return JsonResponse({'success': True})
 
     def build_legend_item(self, request, *args, **kwargs):
         """

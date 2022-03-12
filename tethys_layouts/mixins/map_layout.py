@@ -99,7 +99,7 @@ class MapLayoutMixin:
 
     @classmethod
     def get_vector_style_map(cls):
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def _build_mv_layer(cls, layer_source, layer_name, layer_title, layer_variable, options, layer_id=None,
