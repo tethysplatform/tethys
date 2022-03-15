@@ -420,7 +420,7 @@ def handler(
         )
         def my_app_handler(document):
             ...
-    
+
         ------------
 
         from bokeh.embed import server_document
