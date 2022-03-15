@@ -55,7 +55,7 @@ def get_app_workspace(request, app_workspace):
 
 
 def _get_bokeh_controller(template=None, app_package=None):
-    template = template or 'tethys_apps/bokeh_base.html' if app_package is None else 'tethys_apps/bokeh_default.html'
+    template = template or 'tethys_apps/bokeh_default.html' if app_package is None else 'tethys_apps/bokeh_base.html'
     extends_template = f'{app_package}/base.html' if app_package else None
 
     def bokeh_controller(request):

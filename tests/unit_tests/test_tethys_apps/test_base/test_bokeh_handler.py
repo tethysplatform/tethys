@@ -71,7 +71,7 @@ class TestBokehHandler(unittest.TestCase):
         mock_server_doc.assert_called_once()
         args = mock_render.call_args_list[0][0]
         template = args[1]
-        self.assertEqual(template, 'tethys_apps/bokeh_base.html')
+        self.assertEqual(template, 'tethys_apps/bokeh_default.html')
 
     @mock.patch('tethys_apps.base.bokeh_handler.render')
     @mock.patch('tethys_apps.base.bokeh_handler.server_document')
@@ -93,6 +93,6 @@ class TestBokehHandler(unittest.TestCase):
         mock_server_doc.assert_called_once()
         args = mock_render.call_args_list[0][0]
         template = args[1]
-        self.assertEqual(template, 'tethys_apps/bokeh_default.html')
+        self.assertEqual(template, 'tethys_apps/bokeh_base.html')
         context = args[2]
         self.assertEqual(context['extends_template'], 'app_package/base.html')
