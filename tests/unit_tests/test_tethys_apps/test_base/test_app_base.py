@@ -52,13 +52,33 @@ class TestTethysBase(unittest.TestCase):
         mock_print.assert_called_once()
 
     @mock.patch('tethys_apps.base.app_base.register_controllers')
-    def test_url_maps(self, mock_rc):
+    def test_register_url_maps(self, mock_rc):
         app = tethys_app_base.TethysAppBase()
         app.package = 'package'
         app.root_url = 'root_url'
         app.index = 'index'
-        app.url_maps()
-        mock_rc.assert_called_with(root_url='root_url', module='tethysapp.package.controllers', index='index')
+        app.register_url_maps()
+
+        kwargs = mock_rc.call_args_list[0][1]
+        modules = [f'tethysapp.package.{name}' for name in tethys_app_base.DEFAULT_CONTROLLER_MODULES]
+        self.assertEqual(app.root_url, kwargs['root_url'])
+        for m in kwargs['modules']:
+            self.assertIn(m, modules)
+        self.assertIn(app.index, kwargs['index'])
+
+    @mock.patch('tethys_apps.base.app_base.write_warning')
+    @mock.patch('tethys_apps.base.app_base.register_controllers')
+    def test_register_url_maps_deprecation(self, mock_rc, mock_warning):
+        app = tethys_app_base.TethysAppBase()
+        app.package = 'package'
+        app.root_url = 'root_url'
+        app.index = 'index'
+
+        app.url_maps = mock.MagicMock(return_value=['test'])
+        result = app.registered_url_maps
+        self.assertEqual(app.url_maps(), result)
+        mock_rc.assert_called_once()
+        mock_warning.assert_called_once()
 
     @mock.patch('tethys_apps.base.app_base.re_path')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
@@ -69,7 +89,7 @@ class TestTethysBase(unittest.TestCase):
         url_map.name = 'home'
         url_map_ws = mock.MagicMock(controller='test_app.controllers.TestWS', url='test-url-ws', protocol='websocket')
         url_map_ws.name = 'ws'
-        app.url_maps = mock.MagicMock(return_value=([url_map, url_map_ws], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map, url_map_ws])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
 
         # Execute
@@ -97,7 +117,7 @@ class TestTethysBase(unittest.TestCase):
 
         url_map = mock.MagicMock(controller=test_func, url='test-app', protocol='http')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
 
         # Execute
@@ -117,7 +137,7 @@ class TestTethysBase(unittest.TestCase):
         app = tethys_app_base.TethysAppBase()
         url_map = mock.MagicMock(controller='1module.1function', url='test-app', protocol='http')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
 
         # assertRaises needs a callable, not a property
@@ -138,7 +158,7 @@ class TestTethysBase(unittest.TestCase):
         app = tethys_app_base.TethysAppBase()
         url_map = mock.MagicMock(controller='test_app.controllers.home1', url='test-app', protocol='http')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
 
         # assertRaises needs a callable, not a property
@@ -158,14 +178,14 @@ class TestTethysBase(unittest.TestCase):
         app = tethys_app_base.TethysAppBase()
         app.root_url = 'test-url'
         url_map = mock.MagicMock(
-            controller='test_app.controllers.home',
-            handler='test_app.controllers.home_handler',
+            controller='test_app.controllers.home_controller',
+            handler='test_app.controllers.home',
             handler_type='bokeh',
             url=''
         )
         url_map.name = 'home'
 
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         # Execute
@@ -216,7 +236,7 @@ class TestTethysBase(unittest.TestCase):
             url=''
         )
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         app.handler_patterns
@@ -262,7 +282,7 @@ class TestTethysBase(unittest.TestCase):
         )
         url_map.name = 'basename'
         url_map.url = 'basename/'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps=['basename/', ])
 
         app.handler_patterns
@@ -291,7 +311,7 @@ class TestTethysBase(unittest.TestCase):
         url_map = mock.MagicMock(controller='test_app.controllers.home',
                                  handler='1module.1function', handler_type='bokeh', url='')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         # assertRaises needs a callable, not a property
@@ -313,7 +333,7 @@ class TestTethysBase(unittest.TestCase):
         url_map = mock.MagicMock(controller='test_app.controllers.home',
                                  handler='test_app.controllers.home_handler1', handler_type='bokeh', url='')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=([url_map], None))
+        app.register_url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
 
         # assertRaises needs a callable, not a property
@@ -355,8 +375,13 @@ class TestTethysExtensionBase(unittest.TestCase):
         ext.package = 'package'
         ext.root_url = 'root_url'
         ext.index = 'index'
-        ext.url_maps()
-        mock_rc.assert_called_with(root_url='root_url', module='tethysext.package.controllers', index='index')
+        ext.register_url_maps()
+        kwargs = mock_rc.call_args_list[0][1]
+        modules = [f'tethysext.package.{name}' for name in tethys_app_base.DEFAULT_CONTROLLER_MODULES]
+        self.assertEqual(ext.root_url, kwargs['root_url'])
+        for m in kwargs['modules']:
+            self.assertIn(m, modules)
+        self.assertIn(ext.index, kwargs['index'])
 
     @mock.patch('tethys_apps.models.TethysExtension')
     def test_sync_with_tethys_db(self, mock_te):
@@ -1181,8 +1206,11 @@ class TestTethysAppBase(unittest.TestCase):
 
     @mock.patch('tethys_apps.base.app_base.importlib.import_module')
     @mock.patch('tethys_apps.base.app_base.get_all_submodules')
-    def test_resister_controllers(self, mock_submodules, mock_import):
-        result, _ = tethys_apps.base.app_base.register_controllers('root', 'controllers')
+    def test_register_controllers(self, mock_submodules, mock_import):
+        mock_controllers_module = mock.MagicMock()
+        mock_controllers_module._listify.return_value = ['controllers']
+        mock_import.side_effect = [mock_controllers_module, None]
+        result = tethys_apps.base.app_base.register_controllers('root', 'controllers')
         mock_submodules.assert_called_once()
         self.assertEqual(
             [mock.call('tethys_apps.base.controller'), mock.call('controllers')],
@@ -1195,13 +1223,13 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch('tethys_apps.base.app_base.importlib')
     @mock.patch('tethys_apps.base.app_base.write_warning')
     @mock.patch('tethys_apps.base.app_base.list')
-    def test_resister_controllers_duplicate_name(self, mock_list, mock_warning, _, __, ___):
+    def test_register_controllers_duplicate_name(self, mock_list, mock_warning, _, __, ___):
         mock_controller = mock.MagicMock(__module__='module', __name__='name')
         mock_list.return_value = [
                 {'name': 'name', 'url': 'url', 'controller': mock_controller},
                 {'name': 'name', 'url': 'url', 'controller': mock_controller},
             ]
-        result, _ = tethys_apps.base.app_base.register_controllers('root', 'controllers')
+        tethys_apps.base.app_base.register_controllers('root', 'controllers')
         mock_warning.assert_called_once()
 
     @mock.patch('tethys_apps.base.app_base.isinstance')
@@ -1209,11 +1237,11 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch('tethys_apps.base.app_base.importlib')
     @mock.patch('tethys_apps.base.app_base.url_map_maker')
     @mock.patch('tethys_apps.base.app_base.list')
-    def test_resister_controllers_with_index(self, mock_list, _, __, ___, ____):
+    def test_register_controllers_with_index(self, mock_list, _, __, ___, ____):
         mock_list.return_value = [
                 {'name': 'index', 'url': 'url'},
             ]
-        result, _ = tethys_apps.base.app_base.register_controllers('root', 'controllers', 'index')
+        tethys_apps.base.app_base.register_controllers('root', 'controllers', 'index')
 
     @mock.patch('tethys_apps.base.app_base.isinstance')
     @mock.patch('tethys_apps.base.app_base.get_all_submodules')
@@ -1221,9 +1249,22 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch('tethys_apps.base.app_base.url_map_maker')
     @mock.patch('tethys_apps.base.app_base.write_warning')
     @mock.patch('tethys_apps.base.app_base.list')
-    def test_resister_controllers_with_index_error(self, mock_list, mock_warning, _, __, ___, ____):
+    def test_register_controllers_with_index_error(self, mock_list, mock_warning, _, __, ___, ____):
         mock_list.return_value = [
                 {'name': 'name', 'url': 'url'},
             ]
-        result, _ = tethys_apps.base.app_base.register_controllers('root', 'controllers', 'index')
+        tethys_apps.base.app_base.register_controllers('root', 'controllers', 'index')
+        mock_warning.assert_called_once()
+
+    @mock.patch('tethys_apps.base.app_base.isinstance')
+    @mock.patch('tethys_apps.base.app_base.get_all_submodules')
+    @mock.patch('tethys_apps.base.app_base.url_map_maker')
+    @mock.patch('tethys_apps.base.app_base.list')
+    @mock.patch('tethys_apps.base.app_base.write_warning')
+    @mock.patch('tethys_apps.base.app_base.importlib')
+    def test_register_controllers_with_import_error(self, mock_importlib, mock_warning, _, __, ___, ____):
+        mock_controllers_module = mock.MagicMock()
+        mock_controllers_module._listify.return_value = ['controllers', 'not_found']
+        mock_importlib.import_module.side_effect = [mock_controllers_module, ImportError, ImportError]
+        tethys_apps.base.app_base.register_controllers('root', 'controllers')
         mock_warning.assert_called_once()

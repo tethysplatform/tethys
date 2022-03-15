@@ -28,7 +28,7 @@ import django
 MOCK_MODULES = [
     'bokeh', 'bokeh.core.templates', 'bokeh.document', 'bokeh.embed', 'bokeh.embed.elements', 'bokeh.embed.util',
     'bokeh.resources', 'bokeh.server.django', 'bokeh.server.django.consumers', 'bokeh.util.compiler',
-    'channels',
+    'channels', 'channels.consumer',
     'conda', 'conda.cli', 'conda.cli.python_api',
     'condorpy',
     'django_gravatar',

@@ -29,7 +29,12 @@ from bokeh.server.django import autoload
 
 from bokeh.server.django.consumers import AutoloadJsConsumer
 
+# import for type hinting
+from typing import Union
+
 tethys_log = logging.getLogger('tethys.app_base')
+
+DEFAULT_CONTROLLER_MODULES = ['controllers', 'consumers', 'handlers']
 
 
 class TethysBase(TethysBaseMixin):
@@ -41,7 +46,7 @@ class TethysBase(TethysBaseMixin):
     package = ''
     root_url = ''
     index = None
-    controllers_root = 'controllers'
+    controller_modules = []
 
     def __init__(self):
         self._url_patterns = None
@@ -166,7 +171,7 @@ class TethysBase(TethysBaseMixin):
         handler_patterns['http'][namespace].append(http_url)
         handler_patterns['websocket'][namespace].append(ws_url)
 
-    def url_maps(self):
+    def register_url_maps(self):
         """
         Only override this method to manually define or extend the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``. Alternatively, Bokeh Server can also be integrated into Tethys using ``Django Channels`` and ``Websockets``. Tethys will automatically set these up for you if a ``handler`` and ``handler_type`` parameters are provided as part of the ``UrlMap``.
 
@@ -177,16 +182,18 @@ class TethysBase(TethysBaseMixin):
 
         ::
 
-            from tethys_sdk.base import url_map_maker
+            from tethys_sdk.routing import url_map_maker
 
             class MyFirstApp(TethysAppBase):
 
-                def url_maps(self):
+                def register_url_maps(self):
                     \"""
-                    Example url_maps method.
+                    Example register_url_maps method.
                     \"""
+                    
+                    UrlMap = url_map_maker(root_url)
 
-                    url_maps, UrlMap = super().url_maps()
+                    url_maps = super().register_url_maps()
                     url_maps.extend((
                         UrlMap(
                             name='home',
@@ -208,18 +215,33 @@ class TethysBase(TethysBaseMixin):
                         ),
                     ))
 
-                    return url_maps, UrlMap
+                    return url_maps
         """  # noqa: E501
+        controller_modules = [f'{self.package_namespace}.{self.package}.{module_name}' for module_name in
+                              set(DEFAULT_CONTROLLER_MODULES + self.controller_modules)]
         return register_controllers(
             root_url=self.root_url,
-            module=f'{self.package_namespace}.{self.package}.{self.controllers_root}',
+            modules=controller_modules,
             index=self.index,
         )
 
     @property
     def registered_url_maps(self):
         if self._registered_url_maps is None:
-            self._registered_url_maps, _ = self.url_maps()
+            self._registered_url_maps = self.register_url_maps()
+
+            # TODO remove deprecation code
+            try:
+                self._registered_url_maps = self.url_maps()
+                write_warning(
+                    f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
+                    'This method is now deprecated. '
+                    'Please use the new controller decorator to register URL maps (see docs:  '
+                    'http://docs.tethysplatform.org/en/stable/tethys_sdk/app_class.html#controllers) '
+                )
+            except AttributeError:
+                pass
+
         return self._registered_url_maps
 
     @property
@@ -1565,13 +1587,13 @@ def write_warning(msg):
     print(f'{FG_YELLOW}{msg}{ALL_OFF}')
 
 
-def register_controllers(root_url: str, module: str, index: str = None) -> list:
+def register_controllers(root_url: str, modules: Union[str, list, tuple], index: str = None) -> list:
     """
     Registers ``UrlMap`` entries for all controllers that have been decorated with the ``@controller`` decorator.
 
     Args:
         root_url: The root-url to be used for all registered controllers found in ``module``.
-        module: The dot-notation path to the module to search for controllers to register.
+        modules: The dot-notation path(s) to the module to search for controllers to register.
         index: The index url name. If passed then the URL with <url_name> will be overridden with the ``root_url``.
 
     Returns:
@@ -1581,24 +1603,37 @@ def register_controllers(root_url: str, module: str, index: str = None) -> list:
 
     ::
 
-        from tethys_sdk.base import register_controllers
+        from tethys_sdk.routing import register_controllers
 
         # app = TethysAppBase instance
 
         register_controllers(
             root_url=app.root_url,
-            module=f'{app.package_namespace}.{app.package}.{app.controllers_root}',
+            module=[f'{app.package_namespace}.{app.package}.controllers'],
             index=app.index,
         )
 
     """
     controllers_module = importlib.import_module('tethys_apps.base.controller')
-    if not (isinstance(module, list) or isinstance(module, tuple)):
-        module = [module]
-    modules = [i for m in module for i in get_all_submodules(importlib.import_module(m))]
+    modules = controllers_module._listify(modules)
+    all_modules = list()
+    for module in modules:
+        try:
+            module = importlib.import_module(module)
+        except ImportError:
+            module_name = module.split(".")[-1]
+            if module_name not in DEFAULT_CONTROLLER_MODULES:
+                write_warning(
+                    f'Warning: The app with root_url "{root_url}" specified a controller module '
+                    f'"{module_name}" but the module "{module}" could not be imported. '
+                    f'Any controllers in that module will not be registered.'
+                )
+        else:
+            all_modules.extend(get_all_submodules(module))
+
     controllers_module.app_controllers_list = list()
-    for m in modules:
-        importlib.reload(m)  # ensure it is loaded again in case it was previously loaded
+    for module in all_modules:
+        importlib.reload(module)  # load again to register controllers
 
     names = dict()
     for kwargs in controllers_module.app_controllers_list:
@@ -1609,6 +1644,7 @@ def register_controllers(root_url: str, module: str, index: str = None) -> list:
                 name += '_1'
             kwargs['name'] = name
             write_warning(
+                f'Warning: Controller name conflict! '
                 f'The controller "{kwargs["controller"].__module__}.{kwargs["controller"].__name__}" cannot be '
                 f'registered with the name "{old_name}" because the controller '
                 f'"{names[old_name]["controller"].__module__}.{names[old_name]["controller"].__name__}" is already '
@@ -1625,10 +1661,11 @@ def register_controllers(root_url: str, module: str, index: str = None) -> list:
             index_kwargs['url'] = root_url
         except KeyError:
             write_warning(
-                f'An index of "{index}" was specified, but there are no controllers registered with that name.'
+                f'Warning: The app with root_url "{root_url}" specifies an index of "{index}", '
+                f'but there are no controllers registered with that name.'
             )
 
     UrlMap = url_map_maker(root_url)
     url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
 
-    return url_maps, UrlMap
+    return url_maps

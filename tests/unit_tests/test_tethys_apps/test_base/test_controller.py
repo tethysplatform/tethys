@@ -38,6 +38,19 @@ class TestController(unittest.TestCase):
 
         self.check_url_map_kwargs(name=TestTethysController.__name__)
 
+    @mock.patch('tethys_apps.base.controller.issubclass', return_value=True)
+    def test_controller_protocol_websocket(self, _):
+
+        @tethys_controller.controller(
+            protocol='websocket',
+        )
+        class TestConsumer:
+            @classmethod
+            def as_asgi(cls):
+                return ''
+
+        self.check_url_map_kwargs(name=TestConsumer.__name__)
+
     def test_controller_url_arg(self):
         @tethys_controller.controller
         def controller_func(request, url_arg):
@@ -112,8 +125,8 @@ class TestController(unittest.TestCase):
             name=name,
             url=url,
             protocol=protocol,
-            handler=handler,
-            handler_type=handler_type,
+            _handler=handler,
+            _handler_type=handler_type,
         )
         def controller_func(request):
             pass
@@ -122,3 +135,17 @@ class TestController(unittest.TestCase):
         self.assertEqual(protocol, kwargs['protocol'])
         self.assertEqual(handler, kwargs['handler'])
         self.assertEqual(handler_type, kwargs['handler_type'])
+
+    @mock.patch('tethys_apps.base.controller.with_request_decorator')
+    def test_handler_with_request(self, mock_with_request):
+        function = mock.MagicMock(__name__='test')
+        mock_with_request.return_value = function
+        tethys_controller.handler(with_request=True)(function)
+        mock_with_request.assert_called_with(function)
+
+    @mock.patch('tethys_apps.base.controller.with_workspaces_decorator')
+    def test_handler_with_workspaces(self, mock_with_request):
+        function = mock.MagicMock(__name__='test')
+        mock_with_request.return_value = function
+        tethys_controller.handler(with_workspaces=True)(function)
+        mock_with_request.assert_called_with(function)
