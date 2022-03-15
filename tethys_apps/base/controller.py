@@ -68,10 +68,10 @@ def consumer(
     ::
 
         from tethys_sdk.routing import consumer
-        
+
         from channels.generic.websocket import AsyncWebsocketConsumer
-        
-        
+
+
         @consumer
         class MyConsumer(AsyncWebsocketConsumer):
             pass
@@ -157,13 +157,13 @@ def controller(
         permissions_use_or: When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
         permissions_message: Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
         permissions_raise_exception: Raise 403 error if True. Defaults to False.
-        
-        
+
+
     **NOTE:** The :ref:`handler-decorator` should be used in favor of using the following arguments directly.
 
     Args:
-        _handler: Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server. 
-        _handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported. 
+        _handler: Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
+        _handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
 
     **Example:**
 
@@ -281,15 +281,15 @@ def controller(
         )
         def my_app_controller(request):
             ...
-        
+
         ------------
-    
+
         @controller(
             enforce_quotas=['my_quota1', 'my_quota2'],
         )
         def my_app_controller(request):
             ...
-            
+
         ------------
 
         # The ``controller`` decorator can also be used to decorate ``TethysController`` subclasses.
@@ -402,50 +402,50 @@ def handler(
         @handler
         def my_app_handler(document):
             ...
-    
+
         ------------
-        
+
         @handler(
             name='home',
             app_package='my_app',
         )
         def my_app_handler(document):
             ...
-        
+
         ------------
-        
+
         @handler(
             name='home',
             template='my_app/home.html',
         )
         def my_app_handler(document):
             ...
-            
+    
         ------------
-        
+
         from bokeh.embed import server_document
         from django.shortcuts import render
-          
+
         def home_controller(request):
             # custom logic here
             custom_value = ...
-            
+
             script = server_document(request.build_absolute_uri())
             context = {
                 'script': script,
                 'custom_key': custom_value,
             }
             return render(request, 'my_app/home.html', context)
-            
+
         @handler(
             name='home',
             controller=home_controller,
         )
         def my_app_handler(document):
             ...
-        
+
         ------------
-        
+
         @handler(
             with_request=True
         )
@@ -453,9 +453,9 @@ def handler(
             # attribute available when using "with_request" argument
             request = doc.request
             ...
-        
+
         ------------
-    
+
         @handler(
             with_workspaces=True
         )

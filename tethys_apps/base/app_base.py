@@ -190,7 +190,7 @@ class TethysBase(TethysBaseMixin):
                     \"""
                     Example register_url_maps method.
                     \"""
-                    
+
                     UrlMap = url_map_maker(root_url)
 
                     url_maps = super().register_url_maps()
