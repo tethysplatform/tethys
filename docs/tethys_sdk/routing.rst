@@ -53,6 +53,18 @@ which will result in the following ``UrlMap``::
     controller='my_first_app.controllers.my_demo_controller',
   )
 
+.. note::
+  The ``index`` attribute of your app class (defined in ``app.py``) specifies the name of the URL that should serve as the index route for your app. When the URL whose ``name`` attribute matches the ``index`` is registered, the ``url`` attribute of the ``UrlMap`` is overridden to be the ``root_url`` of your app.
+
+  For example, normally the full URL endpoint for the ``'demo'`` URL above would be::
+
+    http://my-tethys-portal.com/apps/my-first-app/demo/url/
+
+  However, if the ``index`` attribute in ``app.py`` were set to ``'demo'`` then the ``url`` would be overridden and the endpoint would be::
+
+    http://my-tethys-portal.com/apps/my-first-app/
+
+
 The ``controller`` decorator also accepts many other arguments that modify the behavior of the controller. For example the ``permissions_required`` argument lets you specify permissions that a user is required to have to access the URL. Or the ``app_workspace`` argument will pass in a reference to the app's workspace directory as an argument to the function. The full list of arguments that the ``controller`` decorator accepts are documented below.
 
 .. automodule:: tethys_apps.base.controller
