@@ -24,8 +24,9 @@ class TestJobsTable(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch('tethys_gizmos.gizmo_options.jobs_table.write_warning')
     @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
-    def test_JobsTable_init(self, mock_set):
+    def test_JobsTable_init(self, mock_set, _):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]
@@ -75,8 +76,9 @@ class TestJobsTable(unittest.TestCase):
         self.assertIn('results', ret.actions)
         self.assertEqual('results', ret.results_url)
 
+    @mock.patch('tethys_gizmos.gizmo_options.jobs_table.write_warning')
     @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
-    def test_JobsTable_init_no_delete_btn(self, mock_set):
+    def test_JobsTable_init_no_delete_btn(self, mock_set, _):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]
@@ -157,7 +159,8 @@ class TestJobsTable(unittest.TestCase):
         self.assertIn('jobs_table.js', gizmo_js[0])
         self.assertNotIn('.css', gizmo_js[0])
 
-    def test_depricated_exception(self):
+    @mock.patch('tethys_gizmos.gizmo_options.jobs_table.write_warning')
+    def test_deprecated_exception(self, _):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]
@@ -167,8 +170,9 @@ class TestJobsTable(unittest.TestCase):
         self.assertTrue(ret.actions['delete'])
         self.assertFalse(ret.actions['run'])
 
+    @mock.patch('tethys_gizmos.gizmo_options.jobs_table.write_warning')
     @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
-    def test_deprecated_status_actions(self, mock_set):
+    def test_deprecated_status_actions(self, mock_set, _):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]

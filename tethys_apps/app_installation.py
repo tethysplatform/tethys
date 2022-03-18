@@ -21,8 +21,14 @@ def find_resource_files(directory, relative_to=None):
     return paths
 
 
-def get_tethysapp_directory():
-    """
-    Return the absolute path to the tethysapp directory.
-    """
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
+def find_resource_files_of_type(resource_type, app_package, app_root):
+    relative_to = f'{app_root}/{app_package}'
+    resources = find_resource_files(f'{relative_to}/{resource_type}', relative_to)
+    return resources
+
+
+def find_all_resource_files(app_package, app_root):
+    resources = find_resource_files_of_type('templates', app_package, app_root)
+    resources += find_resource_files_of_type('public', app_package, app_root)
+    resources += find_resource_files_of_type('workspaces', app_package, app_root)
+    return resources

@@ -9,7 +9,6 @@
 """
 from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
-from tethys_sdk.permissions import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
@@ -21,6 +20,7 @@ from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 from tethys_apps.models import TethysApp
 from tethys_apps.base.workspace import _get_user_workspace
 from tethys_apps.utilities import get_app_class
+from tethys_apps.decorators import login_required
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_quotas.utilities import get_quota, _convert_storage_units
 

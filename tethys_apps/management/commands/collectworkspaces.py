@@ -13,7 +13,7 @@ import shutil
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from tethys_apps.helpers import get_installed_tethys_apps
+from tethys_apps.utilities import get_installed_tethys_items
 
 
 class Command(BaseCommand):
@@ -43,7 +43,7 @@ class Command(BaseCommand):
         workspaces_root = settings.TETHYS_WORKSPACES_ROOT
 
         # Get a list of installed apps
-        installed_apps = get_installed_tethys_apps()
+        installed_apps = get_installed_tethys_items(apps=True)
 
         # Provide feedback to user
         print(f'INFO: Moving workspace directories of apps to "{workspaces_root}" and linking back.')

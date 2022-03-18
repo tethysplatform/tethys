@@ -13,7 +13,7 @@ Add `UrlMaps` for each view to :file:`app.py` in the url_maps function so that i
 
 ::
 
-    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.base import TethysAppBase
 
     class DaskTutorial(TethysAppBase):
         """
@@ -30,37 +30,6 @@ Add `UrlMaps` for each view to :file:`app.py` in the url_maps function so that i
         tags = ''
         enable_feedback = False
         feedback_emails = []
-
-        def url_maps(self):
-            """
-            Add controllers
-            """
-            UrlMap = url_map_maker(self.root_url)
-
-            url_maps = (
-                UrlMap(
-                    name='home',
-                    url='dask-tutorial',
-                    controller='dask_tutorial.controllers.home'
-                ),
-                UrlMap(
-                    name='jobs-table',
-                    url='dask-tutorial/dask/jobs_table',
-                    controller='dask_tutorial.controllers.jobs_table'
-                ),
-                UrlMap(
-                    name='result',
-                    url='dask-tutorial/dask/result/{job_id}',
-                    controller='dask_tutorial.controllers.result'
-                ),
-                UrlMap(
-                    name='error_message',
-                    url='dask-tutorial/dask/error',
-                    controller='dask_tutorial.controllers.error_message'
-                ),
-            )
-
-            return url_maps
 
 
 2. Add Job Functions

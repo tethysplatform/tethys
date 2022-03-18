@@ -15,7 +15,8 @@ import warnings
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission, Group
-from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
+from tethys_apps.utilities import get_installed_tethys_items
+from tethys_apps.base import TethysAppBase, TethysExtensionBase
 
 
 class Command(BaseCommand):
@@ -34,12 +35,23 @@ class Command(BaseCommand):
         Remove the app from disk and in the database
         """
         from tethys_apps.models import TethysApp, TethysExtension
-        app_or_extension = "App" if not options['is_extension'] else 'Extension'
-        PREFIX = 'tethysapp' if not options['is_extension'] else 'tethysext'
+
+        if options['is_extension']:
+            TethysModel = TethysExtension
+            TethysBaseClass = TethysExtensionBase
+        else:
+            TethysModel = TethysApp
+            TethysBaseClass = TethysAppBase
+
+        verbose_name = TethysModel._meta.verbose_name
+        PREFIX = TethysBaseClass.package_namespace
         item_name = options['app_or_extension'][0]
 
         # Check for app files installed
-        installed_items = get_installed_tethys_extensions() if options['is_extension'] else get_installed_tethys_apps()
+        installed_items = get_installed_tethys_items(
+            apps=not options['is_extension'],
+            extensions=options['is_extension']
+        )
 
         if PREFIX in item_name:
             prefix_length = len(PREFIX) + 1
@@ -50,7 +62,6 @@ class Command(BaseCommand):
             module_found = False
 
         # Check for app/extension in database
-        TethysModel = TethysApp if not options['is_extension'] else TethysExtension
         db_app = None
         db_found = True
 
@@ -60,23 +71,25 @@ class Command(BaseCommand):
             db_found = False
 
         if not module_found and not db_found:
-            warnings.warn('WARNING: {0} with name "{1}" cannot be uninstalled, because it is not installed or'
-                          ' not an {0}.'.format(app_or_extension, item_name))
+            warnings.warn(
+                f'WARNING: {verbose_name} with name "{item_name}" cannot be uninstalled, '
+                f'because it is not installed or not an {verbose_name}.'
+            )
             exit(0)
 
         # Confirm
-        item_with_prefix = '{0}-{1}'.format(PREFIX, item_name)
+        item_with_prefix = f'{PREFIX}-{item_name}'
 
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
 
+        confirmation_message = f'Are you sure you want to uninstall "{item_with_prefix}"? (y/n): '
+
         if not options['is_forced']:
-            overwrite_input = input(
-                'Are you sure you want to uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
+            overwrite_input = input(confirmation_message).lower()
 
             while overwrite_input not in valid_inputs:
-                overwrite_input = input('Invalid option. Are you sure you want to '
-                                        'uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
+                overwrite_input = input(f'Invalid option. {confirmation_message}').lower()
 
             if overwrite_input in no_inputs:
                 self.stdout.write('Uninstall cancelled by user.')
@@ -88,8 +101,8 @@ class Command(BaseCommand):
 
             # Get the TethysApp content type
             app_content_type = ContentType.objects.get(
-                app_label='tethys_apps',
-                model='tethysapp' if not options['is_extension'] else 'tethysextension'
+                app_label=TethysModel._meta.app_label,
+                model=TethysModel._meta.model_name
             )
 
             # Remove any permissions associated to the app/extension
@@ -110,7 +123,7 @@ class Command(BaseCommand):
                 db_app_group.delete()
 
         # Uninstall using pip
-        process = ['pip', 'uninstall', '-y', '{0}-{1}'.format(PREFIX, item_name)]
+        process = ['pip', 'uninstall', '-y', item_with_prefix]
 
         try:
             subprocess.Popen(process, stderr=subprocess.STDOUT, stdout=subprocess.PIPE).communicate()[0]
@@ -120,8 +133,8 @@ class Command(BaseCommand):
         # Remove the namespace package file if applicable.
         for site_package in site.getsitepackages():
             try:
-                os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_', '-'))))
+                os.remove(os.path.join(site_package, f'{PREFIX}-{item_name.replace("_", "-")}-nspkg.pth'))
             except Exception:
                 continue
 
-        self.stdout.write('{} "{}" successfully uninstalled.'.format(app_or_extension, item_with_prefix))
+        self.stdout.write(f'{verbose_name} "{item_with_prefix}" successfully uninstalled.')
