@@ -20,7 +20,7 @@ MANAGE_GET_PATH = 'path'
 
 TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, 
                   MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
-DJANGO_COMMANDS = [i for i in get_manage_commands()if i not in TETHYS_COMMANDS]
+DJANGO_COMMANDS = [i for i in get_manage_commands() if i not in TETHYS_COMMANDS]
 
 def add_manage_parser(subparsers):
     # Setup start server command
