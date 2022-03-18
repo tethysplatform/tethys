@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import django
+from django.core.management import ManagementUtility
 
 from tethys_apps.base.testing.environment import set_testing_environment
 from tethys_apps.utilities import get_tethys_src_dir
@@ -38,6 +39,12 @@ def get_manage_path(args):
 
     return manage_path
 
+def get_manage_commands():
+    manage_utils = ManagementUtility()
+    manage_commands = manage_utils.main_help_text(commands_only=True).split('\n')
+    
+    return manage_commands
+    
 
 def run_process(process):
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
