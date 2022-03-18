@@ -13,7 +13,7 @@ Add the URL for the ``run-dask`` command to the url map in the :file:`app.py` mo
 
 ::
 
-    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.base import TethysAppBase
 
     class DaskTutorial(TethysAppBase):
         """
@@ -30,42 +30,6 @@ Add the URL for the ``run-dask`` command to the url map in the :file:`app.py` mo
         tags = ''
         enable_feedback = False
         feedback_emails = []
-
-        def url_maps(self):
-            """
-            Add controllers
-            """
-            UrlMap = url_map_maker(self.root_url)
-
-            url_maps = (
-                UrlMap(
-                    name='home',
-                    url='dask-tutorial',
-                    controller='dask_tutorial.controllers.home'
-                ),
-                UrlMap(
-                    name='run-dask',
-                    url='dask-tutorial/dask/add/{job_type}',
-                    controller='dask_tutorial.controllers.run_job'
-                ),
-                UrlMap(
-                    name='jobs-table',
-                    url='dask-tutorial/dask/jobs_table',
-                    controller='dask_tutorial.controllers.jobs_table'
-                ),
-                UrlMap(
-                    name='result',
-                    url='dask-tutorial/dask/result/{job_id}',
-                    controller='dask_tutorial.controllers.result'
-                ),
-                UrlMap(
-                    name='error_message',
-                    url='dask-tutorial/dask/error',
-                    controller='dask_tutorial.controllers.error_message'
-                ),
-            )
-
-            return url_maps
 
 2. Add Job Function
 ===================

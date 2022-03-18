@@ -7,17 +7,19 @@
 * License:
 ********************************************************************************
 """
+from functools import wraps
 from urllib.parse import urlparse
 
 from django.http import HttpRequest
 from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
-from django.utils.functional import wraps
-from tethys_portal.views import error as tethys_portal_error
-from tethys_apps.base import has_permission
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
+
+from tethys_portal.views import error as tethys_portal_error
+
+from .base import has_permission
 
 
 def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
@@ -29,14 +31,14 @@ def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login
 
             if not getattr(settings, 'ENABLE_OPEN_PORTAL', False):
                 from django.contrib.auth.decorators import login_required as lr
-                dec = lr(function=function, redirect_field_name=redirect_field_name, login_url=login_url)
+                dec = lr(redirect_field_name=redirect_field_name, login_url=login_url)
                 controller = dec(controller_func)
                 return controller(request, *args, **kwargs)
             else:
                 return controller_func(request, *args, **kwargs)
 
         return wraps(controller_func)(wrapper)
-    return decorator
+    return decorator if function is None else decorator(function)
 
 
 def permission_required(*args, **kwargs):

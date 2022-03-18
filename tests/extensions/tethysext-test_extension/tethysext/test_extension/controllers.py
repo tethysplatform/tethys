@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from tethys_sdk.permissions import login_required
+from tethys_sdk.routing import controller
 
 
-@login_required()
+@controller(
+    url='test-extension/{var1}/{var2}',
+)
 def home(request, var1, var2):
     """
     Controller for the app home page.
