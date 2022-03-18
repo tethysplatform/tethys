@@ -9,7 +9,7 @@
 """
 
 import os
-from tethys_cli.cli_helpers import get_manage_path, run_process
+from tethys_cli.cli_helpers import get_manage_path, get_manage_commands, run_process
 
 MANAGE_START = 'start'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -18,13 +18,15 @@ MANAGE_COLLECT = 'collectall'
 MANAGE_CREATESUPERUSER = 'createsuperuser'
 MANAGE_GET_PATH = 'path'
 
+TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, 
+                  MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
+DJANGO_COMMANDS = [i for i in get_manage_commands()if i not in TETHYS_COMMANDS]
 
 def add_manage_parser(subparsers):
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
-                               choices=[MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_GET_PATH])
+                               choices=[*TETHYS_COMMANDS, *DJANGO_COMMANDS])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str,
                                help='Host and/or port on which to bind the development server.')
@@ -99,6 +101,9 @@ def manage_command(args):
         
     elif args.command == MANAGE_GET_PATH:
         primary_process = ['python', '-c', f'print("{manage_path}")']
+
+    elif args.command in DJANGO_COMMANDS:
+        primary_process = ['python', manage_path, args.command]
 
     if primary_process:
         run_process(primary_process)
