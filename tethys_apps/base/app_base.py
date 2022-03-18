@@ -26,8 +26,6 @@ from bokeh.server.django import autoload
 
 from bokeh.server.django.consumers import AutoloadJsConsumer
 
-# import for type hinting
-
 tethys_log = logging.getLogger('tethys.app_base')
 
 DEFAULT_CONTROLLER_MODULES = ['controllers', 'consumers', 'handlers']
