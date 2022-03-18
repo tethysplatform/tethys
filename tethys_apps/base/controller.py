@@ -5,6 +5,7 @@
 # * Copyright: (c) Brigham Young University 2013
 # * License: BSD 2-Clause
 # ********************************************************************************
+import importlib
 import inspect
 from collections import OrderedDict
 
@@ -13,8 +14,11 @@ from django.views.generic import View
 from django.http import HttpRequest
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
+from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
+from . import url_map_maker
+from .app_base import DEFAULT_CONTROLLER_MODULES
 
 from .bokeh_handler import (
     _get_bokeh_controller,
@@ -26,6 +30,7 @@ from .workspace import (
     user_workspace as user_workspace_decorator,
 )
 from ..decorators import login_required as login_required_decorator, permission_required
+from ..utilities import get_all_submodules
 
 # imports for type hinting
 from typing import Union, Any
@@ -392,6 +397,8 @@ def handler(
         template: The namespaced template file file (e.g. my_app/my_template.html). Use as an alternative to `controller` to automatically create a controller function that renders provided template.
         app_package: The app_package name from the `app.py` file. Used as an alternative to `controller` and `template` to automatically create a controller and template that extends the app's "base.html" template. If none of `controller`, `template` and `app_package` are provided then a default controller and template will be created.
         handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
+        with_request: If `True` then the ``HTTPRequest`` object will be added to the `Bokeh Document`.
+        with_workspaces: if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
 
     **Example:**
 
@@ -451,7 +458,7 @@ def handler(
         )
         def my_app_handler(document):
             # attribute available when using "with_request" argument
-            request = doc.request
+            request = document.request
             ...
 
         ------------
@@ -461,9 +468,9 @@ def handler(
         )
         def my_app_handler(document):
             # attributes available when using "with_workspaces" argument
-            request = doc.request
-            user_workspace = doc.user_workspace
-            app_workspace = doc.app_workspace
+            request = document.request
+            user_workspace = document.user_workspace
+            app_workspace = document.app_workspace
             ...
 
 
@@ -569,3 +576,88 @@ def _listify(obj):
     if obj is None:
         return []
     return obj if isinstance(obj, Union[list, tuple]) else [obj]
+
+
+def register_controllers(root_url: str, modules: Union[str, list, tuple], index: str = None) -> list:
+    """
+    Registers ``UrlMap`` entries for all controllers that have been decorated with the ``@controller`` decorator.
+
+    Args:
+        root_url: The root-url to be used for all registered controllers found in ``module``.
+        modules: The dot-notation path(s) to the module to search for controllers to register.
+        index: The index url name. If passed then the URL with <url_name> will be overridden with the ``root_url``.
+
+    Returns:
+        A list of `UrlMap` objects.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.routing import register_controllers
+
+        # app = TethysAppBase instance
+
+        register_controllers(
+            root_url=app.root_url,
+            module=[f'{app.package_namespace}.{app.package}.controllers'],
+            index=app.index,
+        )
+
+    """
+    global app_controllers_list
+
+    modules = _listify(modules)
+    all_modules = list()
+    for module in modules:
+        try:
+            module = importlib.import_module(module)
+        except ImportError:
+            module_name = module.split(".")[-1]
+            if module_name not in DEFAULT_CONTROLLER_MODULES:
+                write_warning(
+                    f'Warning: The app with root_url "{root_url}" specified a controller module '
+                    f'"{module_name}" but the module "{module}" could not be imported. '
+                    f'Any controllers in that module will not be registered.'
+                )
+        else:
+            all_modules.extend(get_all_submodules(module))
+
+    app_controllers_list = list()
+    for module in all_modules:
+        importlib.reload(module)  # load again to register controllers
+
+    names = dict()
+    for kwargs in app_controllers_list:
+        name = kwargs['name']
+        if name in names:
+            old_name = name
+            while name in names:
+                name += '_1'
+            kwargs['name'] = name
+            write_warning(
+                f'Warning: Controller name conflict! '
+                f'The controller "{kwargs["controller"].__module__}.{kwargs["controller"].__name__}" cannot be '
+                f'registered with the name "{old_name}" because the controller '
+                f'"{names[old_name]["controller"].__module__}.{names[old_name]["controller"].__name__}" is already '
+                f'registered with that name. It will be registered with the name "{name}" instead. '
+                f'You can make this warning go away by manually specifying a unique name in the controller decorator: '
+                f'e.g. @controller(name=\'{name}\').'
+            )
+        names[name] = kwargs
+
+    # if index is provided then set the index controller url to the root_url
+    if index:
+        try:
+            index_kwargs = names[index]
+            index_kwargs['url'] = root_url
+        except KeyError:
+            write_warning(
+                f'Warning: The app with root_url "{root_url}" specifies an index of "{index}", '
+                f'but there are no controllers registered with that name.'
+            )
+
+    UrlMap = url_map_maker(root_url)
+    url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
+
+    return url_maps

@@ -149,3 +149,63 @@ class TestController(unittest.TestCase):
         mock_with_request.return_value = function
         tethys_controller.handler(with_workspaces=True)(function)
         mock_with_request.assert_called_with(function)
+
+    @mock.patch('tethys_apps.base.controller.importlib.import_module')
+    @mock.patch('tethys_apps.base.controller.get_all_submodules')
+    def test_register_controllers(self, mock_submodules, mock_import):
+        mock_controllers_module = mock.MagicMock()
+        mock_controllers_module._listify.return_value = ['controllers']
+        mock_import.side_effect = [mock_controllers_module, None]
+        result = tethys_controller.register_controllers('root', 'controllers')
+        mock_submodules.assert_called_once()
+        mock_import.assert_called_with('controllers')
+
+        self.assertEqual([], result)
+
+    @mock.patch('tethys_apps.base.controller.isinstance')
+    @mock.patch('tethys_apps.base.controller.get_all_submodules')
+    @mock.patch('tethys_apps.base.controller.importlib')
+    @mock.patch('tethys_apps.base.controller.write_warning')
+    @mock.patch('tethys_apps.base.controller.list')
+    def test_register_controllers_duplicate_name(self, mock_list, mock_warning, _, __, ___):
+        mock_controller = mock.MagicMock(__module__='module', __name__='name')
+        mock_list.return_value = [
+                {'name': 'name', 'url': 'url', 'controller': mock_controller},
+                {'name': 'name', 'url': 'url', 'controller': mock_controller},
+            ]
+        tethys_controller.register_controllers('root', 'controllers')
+        mock_warning.assert_called_once()
+
+    @mock.patch('tethys_apps.base.controller.isinstance')
+    @mock.patch('tethys_apps.base.controller.get_all_submodules')
+    @mock.patch('tethys_apps.base.controller.importlib')
+    @mock.patch('tethys_apps.base.controller.url_map_maker')
+    @mock.patch('tethys_apps.base.controller.list')
+    def test_register_controllers_with_index(self, mock_list, _, __, ___, ____):
+        mock_list.return_value = [
+                {'name': 'index', 'url': 'url'},
+            ]
+        tethys_controller.register_controllers('root', 'controllers', 'index')
+
+    @mock.patch('tethys_apps.base.controller.isinstance')
+    @mock.patch('tethys_apps.base.controller.get_all_submodules')
+    @mock.patch('tethys_apps.base.controller.importlib')
+    @mock.patch('tethys_apps.base.controller.url_map_maker')
+    @mock.patch('tethys_apps.base.controller.write_warning')
+    @mock.patch('tethys_apps.base.controller.list')
+    def test_register_controllers_with_index_error(self, mock_list, mock_warning, _, __, ___, ____):
+        mock_list.return_value = [
+                {'name': 'name', 'url': 'url'},
+            ]
+        tethys_controller.register_controllers('root', 'controllers', 'index')
+        mock_warning.assert_called_once()
+
+    @mock.patch('tethys_apps.base.controller.get_all_submodules')
+    @mock.patch('tethys_apps.base.controller.url_map_maker')
+    @mock.patch('tethys_apps.base.controller._listify', return_value=['non_existent_module'])
+    @mock.patch('tethys_apps.base.controller.write_warning')
+    @mock.patch('tethys_apps.base.controller.importlib')
+    def test_register_controllers_with_import_error(self, mock_importlib, mock_warning, _, __, ___):
+        mock_importlib.import_module.side_effect = ImportError
+        tethys_controller.register_controllers('root', 'controllers')
+        mock_warning.assert_called_once()

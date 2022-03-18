@@ -7,8 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import importlib
 import logging
 import os
+import pkgutil
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
@@ -473,3 +475,19 @@ def get_installed_tethys_extensions():
     Get a list of installed extensions
     """
     return get_installed_tethys_items(extensions=True)
+
+
+def get_all_submodules(m):
+    """
+    Gets all submodules of `m` including submodules that are not directly imported under m.
+    """
+    modules = [m]
+    try:
+        for sm in pkgutil.iter_modules(m.__path__):
+            nm = importlib.import_module(f'.{sm.name}', m.__name__)
+            modules.append(nm)
+            if sm.ispkg:
+                modules.extend(get_all_submodules(nm))
+    except AttributeError:
+        pass
+    return modules

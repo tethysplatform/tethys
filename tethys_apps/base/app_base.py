@@ -6,9 +6,7 @@
 # * License: BSD 2-Clause
 # ********************************************************************************
 
-import importlib
 import logging
-import pkgutil
 import traceback
 import uuid
 
@@ -18,7 +16,6 @@ from django.urls import re_path
 from django.utils.functional import classproperty
 
 from .testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
-from .url_map import url_map_maker
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
@@ -30,7 +27,6 @@ from bokeh.server.django import autoload
 from bokeh.server.django.consumers import AutoloadJsConsumer
 
 # import for type hinting
-from typing import Union
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -59,6 +55,7 @@ class TethysBase(TethysBaseMixin):
             self.index = self.index.split(':')[-1]
 
             # print deprecation warning
+            from tethys_cli.cli_colors import write_warning
             write_warning(
                 f'Deprecation Warning: '
                 f'The app "{self.name}" has an index attribute that includes the URL namespace ("{old_index}").\n'
@@ -217,6 +214,9 @@ class TethysBase(TethysBaseMixin):
 
                     return url_maps
         """  # noqa: E501
+        # import function here to prevent circular imports
+        from .controller import register_controllers
+
         controller_modules = [f'{self.package_namespace}.{self.package}.{module_name}' for module_name in
                               set(DEFAULT_CONTROLLER_MODULES + self.controller_modules)]
         return register_controllers(
@@ -233,6 +233,7 @@ class TethysBase(TethysBaseMixin):
             # TODO remove deprecation code
             try:
                 self._registered_url_maps = self.url_maps()
+                from tethys_cli.cli_colors import write_warning
                 write_warning(
                     f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
                     'This method is now deprecated. '
@@ -1563,109 +1564,3 @@ class TethysAppBase(TethysBase):
         """
         Override this method to post-process the app workspace after it is emptied
         """
-
-
-def get_all_submodules(m):
-    """
-    Gets all submodules of `m` including submodules that are not directly imported under m.
-    """
-    modules = [m]
-    try:
-        for sm in pkgutil.iter_modules(m.__path__):
-            nm = importlib.import_module(f'.{sm.name}', m.__name__)
-            modules.append(nm)
-            if sm.ispkg:
-                modules.extend(get_all_submodules(nm))
-    except AttributeError:
-        pass
-    return modules
-
-
-def write_warning(msg):
-    FG_YELLOW = '\033[33m'
-    ALL_OFF = '\033[0m'
-    print(f'{FG_YELLOW}{msg}{ALL_OFF}')
-
-
-def register_controllers(root_url: str, modules: Union[str, list, tuple], index: str = None) -> list:
-    """
-    Registers ``UrlMap`` entries for all controllers that have been decorated with the ``@controller`` decorator.
-
-    Args:
-        root_url: The root-url to be used for all registered controllers found in ``module``.
-        modules: The dot-notation path(s) to the module to search for controllers to register.
-        index: The index url name. If passed then the URL with <url_name> will be overridden with the ``root_url``.
-
-    Returns:
-        A list of `UrlMap` objects.
-
-    **Example:**
-
-    ::
-
-        from tethys_sdk.routing import register_controllers
-
-        # app = TethysAppBase instance
-
-        register_controllers(
-            root_url=app.root_url,
-            module=[f'{app.package_namespace}.{app.package}.controllers'],
-            index=app.index,
-        )
-
-    """
-    controllers_module = importlib.import_module('tethys_apps.base.controller')
-    modules = controllers_module._listify(modules)
-    all_modules = list()
-    for module in modules:
-        try:
-            module = importlib.import_module(module)
-        except ImportError:
-            module_name = module.split(".")[-1]
-            if module_name not in DEFAULT_CONTROLLER_MODULES:
-                write_warning(
-                    f'Warning: The app with root_url "{root_url}" specified a controller module '
-                    f'"{module_name}" but the module "{module}" could not be imported. '
-                    f'Any controllers in that module will not be registered.'
-                )
-        else:
-            all_modules.extend(get_all_submodules(module))
-
-    controllers_module.app_controllers_list = list()
-    for module in all_modules:
-        importlib.reload(module)  # load again to register controllers
-
-    names = dict()
-    for kwargs in controllers_module.app_controllers_list:
-        name = kwargs['name']
-        if name in names:
-            old_name = name
-            while name in names:
-                name += '_1'
-            kwargs['name'] = name
-            write_warning(
-                f'Warning: Controller name conflict! '
-                f'The controller "{kwargs["controller"].__module__}.{kwargs["controller"].__name__}" cannot be '
-                f'registered with the name "{old_name}" because the controller '
-                f'"{names[old_name]["controller"].__module__}.{names[old_name]["controller"].__name__}" is already '
-                f'registered with that name. It will be registered with the name "{name}" instead. '
-                f'You can make this warning go away by manually specifying a unique name in the controller decorator: '
-                f'e.g. @controller(name=\'{name}\').'
-            )
-        names[name] = kwargs
-
-    # if index is provided then set the index controller url to the root_url
-    if index:
-        try:
-            index_kwargs = names[index]
-            index_kwargs['url'] = root_url
-        except KeyError:
-            write_warning(
-                f'Warning: The app with root_url "{root_url}" specifies an index of "{index}", '
-                f'but there are no controllers registered with that name.'
-            )
-
-    UrlMap = url_map_maker(root_url)
-    url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
-
-    return url_maps

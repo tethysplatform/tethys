@@ -705,3 +705,15 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         # Get a list of installed extensions
         utilities.get_installed_tethys_extensions()
         mock_get_items.assert_called_with(extensions=True)
+
+    @mock.patch('tethys_apps.utilities.importlib.import_module')
+    @mock.patch('tethys_apps.utilities.pkgutil.iter_modules')
+    def test_get_all_submodules(self, mock_iter_modules, mock_import):
+        mock_sub_module = mock.MagicMock()
+        mock_sub_module.ispkg.return_value = True
+        mock_iter_modules.side_effect = [[mock_sub_module], []]
+
+        m = mock.MagicMock(__path__='path', __name__='name')
+        mock_import.return_value = m
+        result = utilities.get_all_submodules(m)
+        self.assertEqual([m]*3, result)
