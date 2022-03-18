@@ -7,7 +7,6 @@ from django.test import RequestFactory
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 import tethys_apps.base.app_base
-import tethys_apps.base.controller
 from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.permissions import Permission, PermissionGroup
