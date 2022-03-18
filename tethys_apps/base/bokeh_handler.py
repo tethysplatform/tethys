@@ -11,9 +11,11 @@ from functools import wraps
 
 # Third Party Imports
 from bokeh.document import Document
+from bokeh.embed import server_document
 
 # Django Imports
 from django.http.request import HttpRequest
+from django.shortcuts import render
 
 # Tethys Imports
 from tethys_sdk.workspaces import user_workspace, app_workspace
@@ -50,3 +52,16 @@ def get_user_workspace(request, user_workspace):
 @app_workspace
 def get_app_workspace(request, app_workspace):
     return app_workspace
+
+
+def _get_bokeh_controller(template=None, app_package=None):
+    template = template or 'tethys_apps/bokeh_default.html' if app_package is None else 'tethys_apps/bokeh_base.html'
+    extends_template = f'{app_package}/base.html' if app_package else None
+
+    def bokeh_controller(request):
+        script = server_document(request.build_absolute_uri())
+        context = {'script': script}
+        if extends_template:
+            context['extends_template'] = extends_template
+        return render(request, template, context)
+    return bokeh_controller

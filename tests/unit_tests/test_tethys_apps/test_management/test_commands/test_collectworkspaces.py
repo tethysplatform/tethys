@@ -44,7 +44,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.move')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.makedirs')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_no_force_not_dir(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                        mock_os_makedirs, mock_shutil_move, mock_print):
@@ -73,7 +73,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.islink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_no_force_is_link(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                        mock_os_path_islink, mock_print):
@@ -97,7 +97,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.exists')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.islink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_not_exists(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                  mock_os_path_islink, mock_os_path_exists, mock_shutil_move,
@@ -136,7 +136,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.exists')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.islink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_exists_no_force(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                       mock_os_path_islink, mock_os_path_exists, mock_shutil_move,
@@ -185,7 +185,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.exists')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.islink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_exists_force_exception(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                              mock_os_path_islink, mock_os_path_exists, mock_shutil_move,

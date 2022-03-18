@@ -93,7 +93,7 @@ Add the ``scheduler_settings()`` method to the app class. Return a single ``Sche
 
 .. code-block::
 
-    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.base import TethysAppBase
     from tethys_sdk.app_settings import SchedulerSetting
 
 

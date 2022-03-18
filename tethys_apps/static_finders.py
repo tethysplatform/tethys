@@ -13,7 +13,7 @@ from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
-from tethys_apps.utilities import get_directories_in_tethys
+from .utilities import get_directories_in_tethys
 
 
 class TethysStaticFinder(BaseFinder):

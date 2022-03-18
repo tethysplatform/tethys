@@ -7,28 +7,12 @@ class {{class_name}}(TethysAppBase):
     """
 
     name = '{{proper_name}}'
-    index = '{{project}}:home'
-    icon = '{{project}}/images/icon.gif'
-    package = '{{project}}'
+    description = '{{description|default("Place a brief description of your app here.")}}'
+    package = '{{project}}'  # WARNING: Do not change this value
+    index = 'home'
+    icon = f'{package}/images/icon.gif'
     root_url = '{{project_url}}'
     color = '{{color}}'
-    description = '{{description|default("Place a brief description of your app here.")}}'
     tags = '{{tags}}'
     enable_feedback = False
     feedback_emails = []
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='{{project_url}}',
-                controller='{{project}}.controllers.home'
-            ),
-        )
-
-        return url_maps

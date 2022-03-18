@@ -13,7 +13,7 @@ import shutil
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
+from tethys_apps.utilities import get_installed_tethys_items
 
 
 class Command(BaseCommand):
@@ -40,8 +40,7 @@ class Command(BaseCommand):
         static_root = settings.STATIC_ROOT
 
         # Get a list of installed apps and extensions
-        installed_apps_and_extensions = get_installed_tethys_apps()
-        installed_apps_and_extensions.update(get_installed_tethys_extensions())
+        installed_apps_and_extensions = get_installed_tethys_items(apps=True, extensions=True)
 
         # Provide feedback to user
         print('INFO: Collecting static and public directories of apps and extensions to "{0}".'.format(static_root))

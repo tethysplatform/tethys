@@ -19,16 +19,15 @@ class ListCommandTests(unittest.TestCase):
         pass
 
     @mock.patch('tethys_cli.list_command.print')
-    @mock.patch('tethys_cli.list_command.get_installed_tethys_extensions')
-    @mock.patch('tethys_cli.list_command.get_installed_tethys_apps')
-    def test_list_command_installed_apps(self, mock_installed_apps, mock_installed_extensions, mock_print):
+    @mock.patch('tethys_cli.list_command.get_installed_tethys_items')
+    def test_list_command_installed_apps(self, mock_installed_items, mock_print):
         mock_args = mock.MagicMock()
-        mock_installed_apps.return_value = {'foo': '/foo', 'bar': "/bar"}
-        mock_installed_extensions.return_value = {}
+        mock_installed_items.side_effect = [{'foo': '/foo', 'bar': "/bar"}, {}]
 
         list_command(mock_args)
 
-        mock_installed_apps.assert_called_once()
+        self.assertEqual(mock.call(apps=True), mock_installed_items.call_args_list[0])
+        self.assertEqual(mock.call(extensions=True), mock_installed_items.call_args_list[1])
 
         # Check if print is called correctly
         rts_call_args = mock_print.call_args_list
@@ -42,12 +41,10 @@ class ListCommandTests(unittest.TestCase):
         self.assertIn('  bar', check_list)
 
     @mock.patch('tethys_cli.list_command.print')
-    @mock.patch('tethys_cli.list_command.get_installed_tethys_extensions')
-    @mock.patch('tethys_cli.list_command.get_installed_tethys_apps')
-    def test_list_command_installed_extensions(self, mock_installed_apps, mock_installed_extensions, mock_print):
+    @mock.patch('tethys_cli.list_command.get_installed_tethys_items')
+    def test_list_command_installed_extensions(self, mock_installed_items, mock_print):
         mock_args = mock.MagicMock()
-        mock_installed_apps.return_value = {}
-        mock_installed_extensions.return_value = {'baz': '/baz'}
+        mock_installed_items.side_effect = [{}, {'baz': '/baz'}]
 
         list_command(mock_args)
 
@@ -61,12 +58,10 @@ class ListCommandTests(unittest.TestCase):
         self.assertIn('  baz', check_list)
 
     @mock.patch('tethys_cli.list_command.print')
-    @mock.patch('tethys_cli.list_command.get_installed_tethys_extensions')
-    @mock.patch('tethys_cli.list_command.get_installed_tethys_apps')
-    def test_list_command_installed_both(self, mock_installed_apps, mock_installed_extensions, mock_print):
+    @mock.patch('tethys_cli.list_command.get_installed_tethys_items')
+    def test_list_command_installed_both(self, mock_installed_items, mock_print):
         mock_args = mock.MagicMock()
-        mock_installed_apps.return_value = {'foo': '/foo', 'bar': "/bar"}
-        mock_installed_extensions.return_value = {'baz': '/baz'}
+        mock_installed_items.side_effect = [{'foo': '/foo', 'bar': '/bar'}, {'baz': '/baz'}]
 
         list_command(mock_args)
 

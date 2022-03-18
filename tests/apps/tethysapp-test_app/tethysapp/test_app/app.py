@@ -1,4 +1,4 @@
-from tethys_sdk.base import TethysAppBase, url_map_maker
+from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import CustomSetting, PersistentStoreDatabaseSetting, PersistentStoreConnectionSetting, \
     DatasetServiceSetting, SpatialDatasetServiceSetting, WebProcessingServiceSetting, SchedulerSetting
 
@@ -11,7 +11,7 @@ class TestApp(TethysAppBase):
     """
 
     name = 'Test App'
-    index = 'test_app:home'
+    index = 'home'
     icon = 'test_app/images/icon.gif'
     package = 'test_app'
     root_url = 'test-app'
@@ -20,31 +20,6 @@ class TestApp(TethysAppBase):
     tags = ''
     enable_feedback = False
     feedback_emails = []
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        from .controllers import TestWS
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='test-app/',
-                controller='test_app.controllers.home',
-                handler='test_app.controllers.home_handler',
-                handler_type='bokeh'
-            ),
-            UrlMap(
-                name='ws',
-                url='test-app-ws/',
-                controller=TestWS.as_asgi(),
-                protocol='websocket'
-            ),
-        )
-
-        return url_maps
 
     def custom_settings(self):
         """

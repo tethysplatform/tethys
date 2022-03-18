@@ -25,9 +25,7 @@ Use these properties to set things like the display name, icon/logo, and theme c
 Override Methods
 ----------------
 
-Override these methods (add them to your app class) to define objects that are used by the app such as :ref:`UrlMaps <url_maps_api>`, :ref:`Permissions <permissions_api>`, :ref:`CustomSettings <app_settings_custom_settings>`, and settings for :ref:`Tethys Services <tethys_services_api>` that are required by your app.
-
-.. automethod:: tethys_apps.base.TethysAppBase.url_maps
+Override these methods (add them to your app class) to define objects that are used by the app such as :ref:`Permissions <permissions_api>`, :ref:`CustomSettings <app_settings_custom_settings>`, and settings for :ref:`Tethys Services <tethys_services_api>` that are required by your app.
 
 .. automethod:: tethys_apps.base.TethysAppBase.permissions
 
@@ -58,6 +56,8 @@ Override these methods (add them to your app class) to define objects that are u
 .. automethod:: tethys_apps.base.app_base.TethysAppBase.pre_delete_user_workspace
 
 .. automethod:: tethys_apps.base.app_base.TethysAppBase.post_delete_user_workspace
+
+.. automethod:: tethys_apps.base.TethysAppBase.register_url_maps
 
 Class Methods
 -------------

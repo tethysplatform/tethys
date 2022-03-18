@@ -33,7 +33,7 @@ def tethys_apps_context(request):
             'color': app.color,
             'tags': app.tags,
             'description': app.description,
-            'namespace': app.namespace
+            'namespace': app.url_namespace
         }
 
         if hasattr(app, 'feedback_emails') and len(app.feedback_emails) > 0:

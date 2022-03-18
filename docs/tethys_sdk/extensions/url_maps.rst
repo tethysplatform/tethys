@@ -9,7 +9,7 @@ Although ``UrlMaps`` and controllers defined in extensions are loaded, it is not
 ::
 
     from tethys_sdk.base import TethysExtensionBase
-    from tethys_sdk.base import url_map_maker
+    from tethys_sdk.routing import url_map_maker
 
 
     class MyFirstExtension(TethysExtensionBase):

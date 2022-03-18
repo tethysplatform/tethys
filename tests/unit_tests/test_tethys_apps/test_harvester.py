@@ -220,7 +220,7 @@ class HarvesterTest(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=io.StringIO)
     @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    @mock.patch('tethysapp.test_app.app.TestApp.url_maps')
+    @mock.patch('tethysapp.test_app.app.TestApp.registered_url_maps', new_callable=mock.PropertyMock)
     def test_harvest_app_instances_load_url_patterns_exception(self, mock_url_maps, mock_logexception, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
@@ -231,8 +231,7 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        list_apps = {'test_app': 'tethysapp.test_app'}
-        mock_args = list_apps
+        mock_args = {'test_app': 'tethysapp.test_app'}
         mock_url_maps.side_effect = ImportError
 
         shv = SingletonHarvester()
@@ -244,7 +243,7 @@ class HarvesterTest(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=io.StringIO)
     @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    @mock.patch('tethysapp.test_app.app.TestApp.url_maps')
+    @mock.patch('tethysapp.test_app.app.TestApp.registered_url_maps', new_callable=mock.PropertyMock)
     def test_harvest_app_instances_load_handler_patterns_exception(self, mock_url_maps, mock_logexception, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
@@ -255,8 +254,7 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        list_apps = {'test_app': 'tethysapp.test_app'}
-        mock_args = list_apps
+        mock_args = {'test_app': 'tethysapp.test_app'}
         mock_url_maps.side_effect = ['', ImportError]
 
         shv = SingletonHarvester()
@@ -264,6 +262,7 @@ class HarvesterTest(unittest.TestCase):
 
         mock_logexception.assert_called()
         mock_url_maps.assert_called()
+        # raise RuntimeError(str(mock_url_maps.call_args_list))
         self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
 
     @mock.patch('sys.stdout', new_callable=io.StringIO)

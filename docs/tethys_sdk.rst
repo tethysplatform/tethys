@@ -21,5 +21,5 @@ The Tethys Platform provides a Python Software Development Kit (SDK) to make it 
    tethys_sdk/extensions
    tethys_sdk/tethys_quotas
    tethys_sdk/tethys_services
-   tethys_sdk/url_maps
+   tethys_sdk/routing
    tethys_sdk/workspaces

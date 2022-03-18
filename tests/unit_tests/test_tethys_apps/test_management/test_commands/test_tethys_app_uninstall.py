@@ -30,12 +30,10 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
-    def test_tethys_app_uninstall_handle_apps_cancel(self, mock_installed_apps, mock_installed_extensions, mock_input,
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_items')
+    def test_tethys_app_uninstall_handle_apps_cancel(self, mock_installed_items, mock_input,
                                                      mock_stdout, mock_exit):
-        mock_installed_apps.return_value = ['foo_app']
-        mock_installed_extensions.return_value = {}
+        mock_installed_items.return_value = ['foo_app']
         mock_input.side_effect = ['foo', 'no']
         mock_exit.side_effect = SystemExit
 
@@ -43,10 +41,10 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         self.assertRaises(SystemExit, cmd.handle, app_or_extension=[
                           'tethysapp.foo_app'], is_extension=False, is_forced=False)
 
-        mock_installed_apps.assert_called_once()
-        mock_installed_extensions.assert_not_called()
+        mock_installed_items.assert_called_with(apps=True, extensions=False)
         self.assertIn('Uninstall cancelled by user.', mock_stdout.getvalue())
 
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.ContentType')
     @mock.patch('site.getsitepackages', return_value='foo')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.Group.objects')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.Permission.objects')
@@ -56,23 +54,21 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch('warnings.warn')
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_items')
     @mock.patch('tethys_apps.models.TethysExtension')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_tethys_app_uninstall_handle_apps_delete_rmtree_Popen_remove_exceptions(self, mock_app, mock_extension,
-                                                                                    mock_installed_apps,
-                                                                                    mock_installed_extensions,
+                                                                                    mock_installed_items,
                                                                                     mock_input, mock_stdout,
                                                                                     mock_warnings, mock_popen,
                                                                                     mock_os_remove, mock_join,
-                                                                                    mock_permissions, mock_groups, _):
+                                                                                    mock_permissions, mock_groups, _,
+                                                                                    __):
         mock_app.objects.get.return_value = mock.MagicMock()
         mock_app.objects.get().delete.return_value = True
         mock_extension.objects.get.return_value = mock.MagicMock()
         mock_extension.objects.get().delete.return_value = True
-        mock_installed_apps.return_value = {'foo_app': '/foo/foo_app'}
-        mock_installed_extensions.return_value = {}
+        mock_installed_items.return_value = {'foo_app': '/foo/foo_app'}
         mock_input.side_effect = ['yes']
         mock_popen.side_effect = KeyboardInterrupt
         mock_os_remove.side_effect = [True, Exception]
@@ -85,10 +81,9 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         cmd = tethys_app_uninstall.Command()
         cmd.handle(app_or_extension=['tethysapp.foo_app'], is_extension=False, is_forced=False)
 
-        mock_installed_apps.assert_called_once()
+        mock_installed_items.assert_called_with(apps=True, extensions=False)
         mock_permission.delete.assert_called_once()
         mock_group.delete.assert_called_once()
-        mock_installed_extensions.assert_not_called()
         self.assertIn('successfully uninstalled', mock_stdout.getvalue())
         mock_warnings.assert_not_called()  # Don't do the TethysModel.DoesNotExist exception this test
         mock_app.objects.get.assert_called()
@@ -101,12 +96,11 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch('warnings.warn')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
     @mock.patch('sys.stdout', new_callable=StringIO)
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_items')
     @mock.patch('tethys_apps.models.TethysExtension')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_tethys_app_uninstall_handle_module_and_db_not_found(self, mock_app, mock_extension, mock_installed_apps,
-                                                                 mock_installed_extensions, mock_stdout,
+    def test_tethys_app_uninstall_handle_module_and_db_not_found(self, mock_app, mock_extension, mock_installed_items,
+                                                                 mock_stdout,
                                                                  mock_exit, mock_warn):
         # Raise DoesNotExist on db query
         mock_app.objects.get.return_value = mock.MagicMock()
@@ -117,14 +111,12 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_extension.objects.get.side_effect = TethysExtension.DoesNotExist
 
         # No installed apps or extensions returned
-        mock_installed_apps.return_value = {}
-        mock_installed_extensions.return_value = {}
+        mock_installed_items.return_value = {}
         mock_exit.side_effect = SystemExit
 
         cmd = tethys_app_uninstall.Command()
         self.assertRaises(SystemExit, cmd.handle, app_or_extension=[
                           'tethysext.foo_extension'], is_extension=True, is_forced=False)
 
-        mock_installed_apps.assert_not_called()
-        mock_installed_extensions.assert_called()
+        mock_installed_items.assert_called_with(apps=False, extensions=True)
         mock_warn.assert_called_once()

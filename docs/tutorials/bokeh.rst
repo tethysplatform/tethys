@@ -73,7 +73,7 @@ The home controller can now load the time series plot from (a) using the Bokeh `
 
 .. code-block:: Python
 
-    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.base import TethysAppBase
 
 
     class BokehTutorial(TethysAppBase):
@@ -91,24 +91,6 @@ The home controller can now load the time series plot from (a) using the Bokeh `
         tags = ''
         enable_feedback = False
         feedback_emails = []
-
-        def url_maps(self):
-            """
-            Add controllers
-            """
-            UrlMap = url_map_maker(self.root_url)
-
-            url_maps = (
-                UrlMap(
-                    name='home',
-                    url='bokeh-tutorial',
-                    controller='bokeh_tutorial.controllers.home',
-                    handler='bokeh_tutorial.controllers.home_handler',
-                    handler_type='bokeh'
-                ),
-            )
-
-            return url_maps
 
 4. Clear the default ``home.html`` template and add the following code to it.
 

@@ -8,16 +8,17 @@
 ********************************************************************************
 """
 import logging
-from tethys_sdk.permissions import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
-from tethys_apps.base.app_base import TethysAppBase
-from tethys_apps.models import TethysApp
-from tethys_apps.utilities import get_active_app, user_can_access_app
 from tethys_compute.models import TethysJob, DaskJob
-from tethys_apps.models import ProxyApp
 from tethys_config.models import Setting
+
+from .base.app_base import TethysAppBase
+from .models import TethysApp
+from .utilities import get_active_app, user_can_access_app
+from .models import ProxyApp
+from .decorators import login_required
 
 log = logging.getLogger('tethys.' + __name__)
 
