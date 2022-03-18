@@ -7,7 +7,8 @@ from tethys_cli.manage_commands import (
     MANAGE_COLLECTSTATIC,
     MANAGE_COLLECTWORKSPACES,
     MANAGE_COLLECT,
-    MANAGE_CREATESUPERUSER
+    MANAGE_CREATESUPERUSER,
+    MANAGE_GET_PATH
 )
 
 
@@ -199,3 +200,19 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual('python', process_call_args[0][0][0][0])
         self.assertIn('manage.py', process_call_args[0][0][0][1])
         self.assertEqual('createsuperuser', process_call_args[0][0][0][2])
+        
+    @mock.patch('tethys_cli.manage_commands.run_process')
+    def test_manage_command_manage_path(self, mock_run_process):
+        # mock the input args
+        args = mock.MagicMock(manage='', command=MANAGE_GET_PATH)
+
+        # call the testing method with the mock args
+        manage_commands.manage_command(args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # check the values from the argument list
+        self.assertEqual('python', process_call_args[0][0][0][0])
+        self.assertEqual('-c', process_call_args[0][0][0][1])
+        self.assertIn('manage.py', process_call_args[0][0][0][2])
