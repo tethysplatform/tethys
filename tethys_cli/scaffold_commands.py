@@ -6,10 +6,11 @@ import shutil
 
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
+from tethys_apps.base.app_base import TethysAppBase, TethysExtensionBase
 
 # Constants
-APP_PREFIX = 'tethysapp'
-EXTENSION_PREFIX = 'tethysext'
+APP_PREFIX = TethysAppBase.package_namespace
+EXTENSION_PREFIX = TethysExtensionBase.package_namespace
 SCAFFOLD_TEMPLATES_DIR = 'scaffold_templates'
 EXTENSION_TEMPLATES_DIR = 'extension_templates'
 APP_TEMPLATES_DIR = 'app_templates'

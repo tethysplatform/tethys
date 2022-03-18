@@ -25,7 +25,7 @@ class UrlMapBase:
           name (str): Name of the url map. Letters and underscores only (_). Must be unique within the app.
           url (str): Url pattern to map the endpoint for the controller or consumer.
           controller (str): Dot-notation path to the controller function or consumer class.
-          protocol (str): 'http' for consumers or 'websocket' for consumers. Default is http.
+          protocol (str): 'http' for controllers or 'websocket' for consumers. Default is http.
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
           handler (str): Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
           handler_type (str): Tethys supported handler type. 'bokeh' is the only handler type currently supported.

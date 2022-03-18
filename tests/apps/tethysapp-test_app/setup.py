@@ -1,16 +1,16 @@
 from setuptools import setup, find_namespace_packages
-from tethys_apps.app_installation import find_resource_files
+from tethys_apps.app_installation import find_all_resource_files
+from tethys_apps.base.app_base import TethysAppBase
 
 # -- Apps Definition -- #
 app_package = 'test_app'
-release_package = 'tethysapp-' + app_package
+release_package = f'{TethysAppBase.package_namespace}-{app_package}'
 
 # -- Python Dependencies -- #
 dependencies = []
 
 # -- Get Resource File -- #
-resource_files = find_resource_files('tethysapp/' + app_package + '/templates', 'tethysapp/' + app_package)
-resource_files += find_resource_files('tethysapp/' + app_package + '/public', 'tethysapp/' + app_package)
+resource_files = find_all_resource_files(app_package, TethysAppBase.package_namespace)
 
 setup(
     name=release_package,

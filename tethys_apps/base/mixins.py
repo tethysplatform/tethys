@@ -5,14 +5,8 @@ class TethysBaseMixin:
     root_url = ''
 
     @property
-    def namespace(self):
+    def url_namespace(self):
         """
         Get the namespace for the app or extension.
         """
-        if not hasattr(self, '_namespace'):
-            self._namespace = None
-
-        if self._namespace is None:
-            self._namespace = self.root_url.replace('-', '_')
-
-        return self._namespace
+        return self.root_url.replace('-', '_')
