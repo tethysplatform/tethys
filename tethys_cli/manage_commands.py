@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 
+import os
 from tethys_cli.cli_helpers import get_manage_path, run_process
 
 MANAGE_START = 'start'
@@ -15,7 +16,7 @@ MANAGE_COLLECTSTATIC = 'collectstatic'
 MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
 MANAGE_COLLECT = 'collectall'
 MANAGE_CREATESUPERUSER = 'createsuperuser'
-MANAGE_SHELL = 'shell'
+MANAGE_GET_PATH = 'path'
 
 
 def add_manage_parser(subparsers):
@@ -23,7 +24,7 @@ def add_manage_parser(subparsers):
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
                                choices=[MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
+                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_GET_PATH])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str,
                                help='Host and/or port on which to bind the development server.')
@@ -95,6 +96,9 @@ def manage_command(args):
 
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
+        
+    elif args.command == MANAGE_GET_PATH:
+        primary_process = ['python', '-c', f'print("{manage_path}")']
 
     if primary_process:
         run_process(primary_process)
