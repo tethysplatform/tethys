@@ -9,7 +9,7 @@
 """
 
 import os
-from tethys_cli.cli_helpers import get_manage_path, get_manage_commands, run_process
+from tethys_cli.cli_helpers import get_manage_path, get_django_manage_commands, run_process
 
 MANAGE_START = 'start'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -20,7 +20,7 @@ MANAGE_GET_PATH = 'path'
 
 TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, 
                   MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
-DJANGO_COMMANDS = [i for i in get_manage_commands() if i not in TETHYS_COMMANDS]
+DJANGO_COMMANDS = [i for i in get_django_manage_commands() if i not in TETHYS_COMMANDS]
 
 def add_manage_parser(subparsers):
     # Setup start server command
@@ -38,10 +38,13 @@ def add_manage_parser(subparsers):
     manage_parser.add_argument('-l', '--link', required=False, action='store_true',
                                help='Only used with collectstatic command. Link static directory to STATIC_ROOT '
                                     'instead of copying it. Not recommended.')
-    manage_parser.set_defaults(func=manage_command)
+    manage_parser.add_argument('--django-help', action='store_true',
+                               help='Display the help for specific scommands coming from Django. '
+                               'E.g. "tethys manage <django command> --django-help"')
+    manage_parser.set_defaults(func=manage_command, which='tethys_manage_command')
 
 
-def manage_command(args):
+def manage_command(args, django_args=""):
     """
     Management commands.
     """
@@ -103,7 +106,10 @@ def manage_command(args):
         primary_process = ['python', '-c', f'print("{manage_path}")']
 
     elif args.command in DJANGO_COMMANDS:
-        primary_process = ['python', manage_path, args.command]
+        if args.django_help:
+            primary_process = ['python', manage_path, args.command, '--help']
+        else:
+            primary_process = ['python', manage_path, args.command, *django_args]
 
     if primary_process:
         run_process(primary_process)
