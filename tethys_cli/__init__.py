@@ -62,5 +62,8 @@ def tethys_command_parser():
 def tethys_command():
     parser = tethys_command_parser()
     # Parse the args and call the default function
-    args = parser.parse_args()
-    args.func(args)
+    args, django_args = parser.parse_known_args()
+    if "tethys_manage_command" in str(args):
+        args.func(args, django_args)
+    else:
+        args.func(args)
