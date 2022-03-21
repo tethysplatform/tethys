@@ -216,3 +216,54 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual('python', process_call_args[0][0][0][0])
         self.assertEqual('-c', process_call_args[0][0][0][1])
         self.assertIn('manage.py', process_call_args[0][0][0][2])
+
+    @mock.patch('tethys_cli.manage_commands.run_process')
+    def test_manage_command_django_commands_help(self, mock_run_process):
+        # mock the input args
+        args = mock.MagicMock(manage='', command='shell', django_help=True)
+
+        # call the testing method with the mock args
+        manage_commands.manage_command(args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # check the values from the argument list
+        self.assertEqual('python', process_call_args[0][0][0][0])
+        self.assertIn('manage.py', process_call_args[0][0][0][1])
+        self.assertEqual('shell', process_call_args[0][0][0][2])
+        self.assertEqual('--help', process_call_args[0][0][0][3])
+
+    @mock.patch('tethys_cli.manage_commands.run_process')
+    def test_manage_command_django_commands(self, mock_run_process):
+        # mock the input args
+        args = mock.MagicMock(manage='', command='shell', django_help=False)
+
+        # call the testing method with the mock args
+        manage_commands.manage_command(args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # check the values from the argument list
+        self.assertEqual('python', process_call_args[0][0][0][0])
+        self.assertIn('manage.py', process_call_args[0][0][0][1])
+        self.assertIn('shell', process_call_args[0][0][0][2])
+    
+    @mock.patch('tethys_cli.manage_commands.run_process')
+    def test_manage_command_django_commands_with_options(self, mock_run_process):
+        # mock the input args
+        args = mock.MagicMock(manage='', command='check', django_help=False)
+        django_args = ['--version']
+
+        # call the testing method with the mock args
+        manage_commands.manage_command(args, django_args=django_args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # check the values from the argument list
+        self.assertEqual('python', process_call_args[0][0][0][0])
+        self.assertIn('manage.py', process_call_args[0][0][0][1])
+        self.assertEqual('check', process_call_args[0][0][0][2])
+        self.assertEqual(django_args[0], process_call_args[0][0][0][3])
