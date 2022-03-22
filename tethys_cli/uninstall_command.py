@@ -14,7 +14,7 @@ def add_uninstall_parser(subparsers):
     uninstall_parser.set_defaults(func=uninstall_command)
 
 
-def uninstall_command(args):
+def uninstall_command(args, unknown_args=""):
     """
     Uninstall an app command.
     """
