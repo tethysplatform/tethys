@@ -40,6 +40,18 @@ class TestCliHelper(unittest.TestCase):
         # check whether the response has manage
         self.assertIn('manage.py', ret)
 
+    @mock.patch('tethys_cli.cli_helpers.get_commands')
+    def test_django_manage_commands(self, mock_get_commands):
+        # mock return value
+        mock_get_commands.return_value = {'arg2': 'val2', 'arg1': 'val1', 'arg4': 'val4', 'arg3': 'val3'}
+        expected_output = ['arg1', 'arg2', 'arg3', 'arg4']
+
+        # call the method
+        ret = cli_helper.get_django_manage_commands()
+
+        # check whether the response matches the expected output
+        self.assertEqual(expected_output, ret)
+
     @mock.patch('tethys_cli.cli_helpers.subprocess.call')
     @mock.patch('tethys_cli.cli_helpers.set_testing_environment')
     def test_run_process(self, mock_te_call, mock_subprocess_call):

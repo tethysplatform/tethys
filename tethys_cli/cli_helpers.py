@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import django
+from django.core.management import get_commands
 
 from tethys_apps.base.testing.environment import set_testing_environment
 from tethys_apps.utilities import get_tethys_src_dir
@@ -40,7 +41,6 @@ def get_manage_path(args):
 
 
 def get_django_manage_commands():
-    from django.core.management import get_commands
     manage_commands = sorted(list(get_commands().keys()))
 
     return manage_commands
