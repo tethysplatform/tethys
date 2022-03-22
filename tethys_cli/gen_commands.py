@@ -333,7 +333,7 @@ GEN_COMMANDS = {
 }
 
 
-def generate_command(args):
+def generate_command(args, unknow_args=""):
     """
     Generate a settings file for a new installation.
     """

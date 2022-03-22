@@ -380,6 +380,6 @@ DB_COMMANDS = dict(
 )
 
 
-def db_command(args):
+def db_command(args, unknown_args=""):
     options = process_args(args)
     DB_COMMANDS[args.command](**options)

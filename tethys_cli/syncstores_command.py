@@ -26,7 +26,7 @@ def add_syncstores_parser(subparsers):
     syncstores_parser.set_defaults(func=syncstores_command, refresh=False, firstime=False)
 
 
-def syncstores_command(args):
+def syncstores_command(args, unknown_args=""):
     """
     Sync persistent stores.
     """
