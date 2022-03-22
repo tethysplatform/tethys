@@ -21,3 +21,4 @@ dependencies:
 - pip:
     - sphinx_materialdesign_theme
     - sphinx-autobuild
+    - sphinx_autodoc_typehints
