@@ -38,11 +38,13 @@ def get_manage_path(args):
 
     return manage_path
 
+
 def get_django_manage_commands():
     from django.core.management import get_commands
     manage_commands = sorted(list(get_commands().keys()))
-    
+
     return manage_commands
+
 
 def run_process(process):
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens

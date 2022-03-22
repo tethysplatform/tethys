@@ -200,7 +200,7 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual('python', process_call_args[0][0][0][0])
         self.assertIn('manage.py', process_call_args[0][0][0][1])
         self.assertEqual('createsuperuser', process_call_args[0][0][0][2])
-        
+
     @mock.patch('tethys_cli.manage_commands.run_process')
     def test_manage_command_manage_path(self, mock_run_process):
         # mock the input args
@@ -249,7 +249,7 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual('python', process_call_args[0][0][0][0])
         self.assertIn('manage.py', process_call_args[0][0][0][1])
         self.assertIn('shell', process_call_args[0][0][0][2])
-    
+
     @mock.patch('tethys_cli.manage_commands.run_process')
     def test_manage_command_django_commands_with_options(self, mock_run_process):
         # mock the input args

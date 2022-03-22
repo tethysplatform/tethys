@@ -8,7 +8,6 @@
 ********************************************************************************
 """
 
-import os
 from tethys_cli.cli_helpers import get_manage_path, get_django_manage_commands, run_process
 
 MANAGE_START = 'start'
@@ -18,8 +17,8 @@ MANAGE_COLLECT = 'collectall'
 MANAGE_CREATESUPERUSER = 'createsuperuser'
 MANAGE_GET_PATH = 'path'
 
-TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, 
-                  MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
+TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT,
+                   MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
 DJANGO_COMMANDS = [i for i in get_django_manage_commands() if i not in TETHYS_COMMANDS]
 
 def add_manage_parser(subparsers):
@@ -101,7 +100,7 @@ def manage_command(args, django_args=""):
 
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
-        
+
     elif args.command == MANAGE_GET_PATH:
         primary_process = ['python', '-c', f'print("{manage_path}")']
 
