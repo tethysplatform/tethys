@@ -52,11 +52,8 @@ def run_process(process):
         set_testing_environment(False)
 
 
-def load_apps(silent=False):
-    if silent:
-        stdout = sys.stdout
-        sys.stdout = open(os.devnull, 'w')
-        django.setup()
-        sys.stdout = stdout
-    else:
-        django.setup()
+def load_apps():
+    stdout = sys.stdout
+    sys.stdout = open(os.devnull, 'w')
+    django.setup()
+    sys.stdout = stdout

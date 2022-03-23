@@ -140,7 +140,7 @@ SETTINGS_COMMANDS = dict(
 )
 
 
-def settings_command(args, unknown_args=None):
+def settings_command(args):
     tethys_settings = read_settings()
     if args.set_kwargs:
         set_settings(tethys_settings, args.set_kwargs)
