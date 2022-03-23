@@ -180,7 +180,7 @@ def add_site_parser(subparsers):
     site_parser.set_defaults(func=gen_site_content, restore_defaults=False, from_file=True)
 
 
-def gen_site_content(args, unknown_args=""):
+def gen_site_content(args, unknown_args=None):
     load_apps()
 
     from tethys_config.models import Setting, SettingsCategory

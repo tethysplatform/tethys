@@ -9,7 +9,7 @@ def add_list_parser(subparsers):
     list_parser.set_defaults(func=list_command)
 
 
-def list_command(args, unknown_args=""):
+def list_command(args, unknown_args=None):
     """
     List installed apps.
     """
