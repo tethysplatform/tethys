@@ -156,7 +156,7 @@ def dask_scheduler_create_command(args):
     exit(0)
 
 
-def schedulers_list_command(args, unknown_args=None):
+def schedulers_list_command(args):
     load_apps()
     schedule_type = args.type.lower()
     if schedule_type == 'condor':

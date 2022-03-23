@@ -70,7 +70,3 @@ class TestCliHelper(unittest.TestCase):
     def test_load_apps(self, mock_django_setup):
         cli_helper.load_apps()
         mock_django_setup.assert_called()
-
-        # test silent case
-        cli_helper.load_apps(silent=True)
-        self.assertEqual(mock_django_setup.call_count, 2)  # check django.setup is called a second time

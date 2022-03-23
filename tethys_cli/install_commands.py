@@ -410,7 +410,7 @@ def install_packages(conda_config, update_installed=False):
             write_error('Warning: Packages installation ran into an error. Please try again or a manual install')
 
 
-def install_command(args, unknown_args=None):
+def install_command(args):
     """
     install Command
     """

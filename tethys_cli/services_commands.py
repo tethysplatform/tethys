@@ -127,7 +127,7 @@ def add_services_parser(subparsers):
     services_list_parser.set_defaults(func=services_list_command)
 
 
-def services_create_persistent_command(args, unknown_args=None):
+def services_create_persistent_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
@@ -268,7 +268,7 @@ def services_create_dataset_command(args):
             p.write('Dataset Service with name "{0}" already exists. Command aborted.'.format(name))
 
 
-def services_create_wps_command(args, unknown_args=None):
+def services_create_wps_command(args):
     """
     Interact with Tethys Services (WPS) to create them and/or link them to existing apps
     """
@@ -357,23 +357,23 @@ def remove_service(serviceType, args):
         exit(0)
 
 
-def services_remove_spatial_command(args, unknown_args=None):
+def services_remove_spatial_command(args):
     remove_service('spatial', args)
 
 
-def services_remove_dataset_command(args, unknown_args=None):
+def services_remove_dataset_command(args):
     remove_service('dataset', args)
 
 
-def services_remove_persistent_command(args, unknown_args=None):
+def services_remove_persistent_command(args):
     remove_service('persistent', args)
 
 
-def services_remove_wps_command(args, unknown_args=None):
+def services_remove_wps_command(args):
     remove_service('wps', args)
 
 
-def services_list_command(args, unknown_args=None):
+def services_list_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """

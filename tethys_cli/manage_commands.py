@@ -24,7 +24,7 @@ def add_manage_parser(subparsers):
     # sub-command choices
     TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT,
                        MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
-    load_apps(silent=True)
+    load_apps()
     DJANGO_COMMANDS = [i for i in sorted(list(get_commands().keys())) if i not in TETHYS_COMMANDS]
     # Setup sub-commands
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
@@ -44,7 +44,7 @@ def add_manage_parser(subparsers):
     manage_parser.add_argument('--django-help', action='store_true',
                                help='Display the help for specific commands coming from Django. '
                                'E.g. "tethys manage <django command> --django-help"')
-    manage_parser.set_defaults(func=manage_command)
+    manage_parser.set_defaults(func=manage_command, parsing_method='accepts_unknown_args')
 
 
 def manage_command(args, unknown_args=[]):

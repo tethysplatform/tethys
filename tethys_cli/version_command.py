@@ -7,5 +7,5 @@ def add_version_parser(subparsers):
     version_parser.set_defaults(func=version_command)
 
 
-def version_command(args, unknown_args=None):
+def version_command(args):
     print(__version__)

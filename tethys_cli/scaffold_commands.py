@@ -117,7 +117,7 @@ def render_path(path, context):
     return path
 
 
-def scaffold_command(args, unknown_args=None):
+def scaffold_command(args):
     """
     Create a new Tethys app projects in the current directory.
     """

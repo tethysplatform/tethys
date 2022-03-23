@@ -769,7 +769,7 @@ def docker_ip(containers=None):
         write_pretty_output(msg.format(name=container_metadata.display_name))
 
 
-def docker_command(args, unknown_args=None):
+def docker_command(args):
     """
     Docker management commands.
     """
