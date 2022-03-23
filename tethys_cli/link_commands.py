@@ -17,7 +17,7 @@ def add_link_parser(subparsers):
     link_parser.set_defaults(func=link_command)
 
 
-def link_command(args, unknown_args=""):
+def link_command(args, unknown_args=None):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """

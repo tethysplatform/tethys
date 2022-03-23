@@ -8,7 +8,9 @@
 ********************************************************************************
 """
 
-from tethys_cli.cli_helpers import get_manage_path, get_django_manage_commands, run_process
+from django.core.management import get_commands
+
+from tethys_cli.cli_helpers import get_manage_path, load_apps, run_process
 
 MANAGE_START = 'start'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -17,13 +19,14 @@ MANAGE_COLLECT = 'collectall'
 MANAGE_CREATESUPERUSER = 'createsuperuser'
 MANAGE_GET_PATH = 'path'
 
-TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT,
-                   MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
-DJANGO_COMMANDS = [i for i in get_django_manage_commands() if i not in TETHYS_COMMANDS]
-
 
 def add_manage_parser(subparsers):
-    # Setup start server command
+    # sub-command choices
+    TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT,
+                       MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
+    load_apps(silent=True)
+    DJANGO_COMMANDS = [i for i in sorted(list(get_commands().keys())) if i not in TETHYS_COMMANDS]
+    # Setup sub-commands
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
                                choices=[*TETHYS_COMMANDS, *DJANGO_COMMANDS])
@@ -39,12 +42,12 @@ def add_manage_parser(subparsers):
                                help='Only used with collectstatic command. Link static directory to STATIC_ROOT '
                                     'instead of copying it. Not recommended.')
     manage_parser.add_argument('--django-help', action='store_true',
-                               help='Display the help for specific scommands coming from Django. '
+                               help='Display the help for specific commands coming from Django. '
                                'E.g. "tethys manage <django command> --django-help"')
     manage_parser.set_defaults(func=manage_command)
 
 
-def manage_command(args, django_args=""):
+def manage_command(args, unknown_args=[]):
     """
     Management commands.
     """
@@ -105,11 +108,11 @@ def manage_command(args, django_args=""):
     elif args.command == MANAGE_GET_PATH:
         primary_process = ['python', '-c', f'print("{manage_path}")']
 
-    elif args.command in DJANGO_COMMANDS:
+    else:
         if args.django_help:
             primary_process = ['python', manage_path, args.command, '--help']
         else:
-            primary_process = ['python', manage_path, args.command, *django_args]
+            primary_process = ['python', manage_path, args.command, *unknown_args]
 
     if primary_process:
         run_process(primary_process)
