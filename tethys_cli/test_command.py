@@ -47,7 +47,7 @@ def check_and_install_prereqs(tests_path):
         subprocess.call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
 
 
-def test_command(args, unknown_args=""):
+def test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
