@@ -175,7 +175,6 @@ class SpatialDatasetService(models.Model):
             catalog_endpoint = str(self.endpoint if not public else self.public_endpoint)
             if not catalog_endpoint.endswith('.xml'):
                 catalog_endpoint = catalog_endpoint.rstrip('/') + '/catalog.xml'
-            print(catalog_endpoint)
             engine = TDSCatalog(str(catalog_endpoint))
 
         return engine

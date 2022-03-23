@@ -4,7 +4,10 @@
 Slide Sheet
 ***********
 
-**Last Updated:** June 2021
+**Last Updated:** March 2022
+
+Python API
+--------------
 
 .. autoclass:: tethys_sdk.gizmos.SlideSheet
 
@@ -25,7 +28,7 @@ Open the slide sheet gizmo with the given ID.
     });
 
 SLIDE_SHEET.close(id)
-++++++++++++++++++++
++++++++++++++++++++++
 
 Close the slide sheet gizmo with the given ID.
 
