@@ -7,7 +7,6 @@ from tethys_cli.manage_commands import (
     MANAGE_COLLECTSTATIC,
     MANAGE_COLLECTWORKSPACES,
     MANAGE_COLLECT,
-    MANAGE_CREATESUPERUSER,
     MANAGE_GET_PATH
 )
 
@@ -185,37 +184,17 @@ class TestManageCommands(unittest.TestCase):
         self.assertIn('manage.py', process_call_args[2][0][0][1])
         self.assertEqual('collectworkspaces', process_call_args[2][0][0][2])
 
-    @mock.patch('tethys_cli.manage_commands.run_process')
-    def test_manage_command_manage_manage_create_super_user(self, mock_run_process):
-        # mock the input args
-        args = mock.MagicMock(manage='', command=MANAGE_CREATESUPERUSER, port='8080')
-
-        # call the testing method with the mock args
-        manage_commands.manage_command(args)
-
-        # get the call arguments for the run process mock method
-        process_call_args = mock_run_process.call_args_list
-
-        # check the values from the argument list
-        self.assertEqual('python', process_call_args[0][0][0][0])
-        self.assertIn('manage.py', process_call_args[0][0][0][1])
-        self.assertEqual('createsuperuser', process_call_args[0][0][0][2])
-
-    @mock.patch('tethys_cli.manage_commands.run_process')
-    def test_manage_command_manage_path(self, mock_run_process):
+    @mock.patch('tethys_cli.manage_commands.get_manage_path', return_value='foo/manage.py')
+    @mock.patch('builtins.print')
+    def test_manage_command_manage_path(self, mock_print, _):
         # mock the input args
         args = mock.MagicMock(manage='', command=MANAGE_GET_PATH)
 
         # call the testing method with the mock args
         manage_commands.manage_command(args)
 
-        # get the call arguments for the run process mock method
-        process_call_args = mock_run_process.call_args_list
-
-        # check the values from the argument list
-        self.assertEqual('python', process_call_args[0][0][0][0])
-        self.assertEqual('-c', process_call_args[0][0][0][1])
-        self.assertIn('manage.py', process_call_args[0][0][0][2])
+        # check print called
+        mock_print.assert_called_with('foo/manage.py')
 
     @mock.patch('tethys_cli.manage_commands.run_process')
     def test_manage_django_commands_help(self, mock_run_process):
