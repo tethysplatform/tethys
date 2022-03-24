@@ -16,14 +16,12 @@ MANAGE_START = 'start'
 MANAGE_COLLECTSTATIC = 'collectstatic'
 MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
 MANAGE_COLLECT = 'collectall'
-MANAGE_CREATESUPERUSER = 'createsuperuser'
 MANAGE_GET_PATH = 'path'
 
 
 def add_manage_parser(subparsers):
     # sub-command choices
-    TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT,
-                       MANAGE_CREATESUPERUSER, MANAGE_GET_PATH]
+    TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_GET_PATH]
     load_apps()
     DJANGO_COMMANDS = [i for i in sorted(list(get_commands().keys())) if i not in TETHYS_COMMANDS]
     # Setup sub-commands
@@ -47,10 +45,13 @@ def add_manage_parser(subparsers):
     manage_parser.set_defaults(func=manage_command, parsing_method='accepts_unknown_args')
 
 
-def manage_command(args, unknown_args=[]):
+def manage_command(args, unknown_args=None):
     """
     Management commands.
     """
+    if not unknown_args:
+        unknown_args = []
+
     # Get the path to manage.py
     manage_path = get_manage_path(args)
 
@@ -102,11 +103,8 @@ def manage_command(args, unknown_args=[]):
         # Run collectworkspaces command
         primary_process = ['python', manage_path, 'collectworkspaces']
 
-    elif args.command == MANAGE_CREATESUPERUSER:
-        primary_process = ['python', manage_path, 'createsuperuser']
-
     elif args.command == MANAGE_GET_PATH:
-        primary_process = ['python', '-c', f'print("{manage_path}")']
+        print(manage_path)
 
     else:
         if args.django_help:
