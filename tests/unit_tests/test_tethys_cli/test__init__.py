@@ -52,6 +52,15 @@ class TethysCommandTests(unittest.TestCase):
         mock_exit.assert_called_with(0)
         self.assert_returns_help(mock_stdout.getvalue())
 
+    @mock.patch('tethys_cli.argparse.ArgumentParser.error')
+    def test_tethys_with_unrecognized_args(self, mock_error):
+        testargs = ['tethys', 'list', '--unrecognized_arg']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            tethys_command()
+
+        self.assertEqual('unrecognized arguments: --unrecognized_arg', mock_error.call_args_list[0][0][0])
+
     @mock.patch('tethys_cli.scaffold_commands.scaffold_command')
     def test_scaffold_subcommand(self, mock_scaffold_command):
         testargs = ['tethys', 'scaffold', 'foo']
@@ -247,21 +256,6 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].noinput)
         self.assertEqual(None, call_args[0][0][0].port)
 
-    @mock.patch('tethys_cli.manage_commands.manage_command')
-    def test_manage_subcommand_createsuperuser(self, mock_manage_command):
-        testargs = ['tethys', 'manage', 'createsuperuser']
-
-        with mock.patch.object(sys, 'argv', testargs):
-            tethys_command()
-
-        mock_manage_command.assert_called()
-        call_args = mock_manage_command.call_args_list
-        self.assertEqual('createsuperuser', call_args[0][0][0].command)
-        self.assertEqual(False, call_args[0][0][0].force)
-        self.assertEqual(None, call_args[0][0][0].manage)
-        self.assertEqual(False, call_args[0][0][0].noinput)
-        self.assertEqual(None, call_args[0][0][0].port)
-
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_cli.argparse._sys.exit')
     @mock.patch('tethys_cli.manage_commands.manage_command')
@@ -280,6 +274,20 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--port', mock_stdout.getvalue())
         self.assertIn('--noinput', mock_stdout.getvalue())
         self.assertIn('--force', mock_stdout.getvalue())
+
+    @mock.patch('tethys_cli.manage_commands.manage_command')
+    def test_manage_subcommand_with_unknown_args(self, mock_manage_command):
+        unknown_args = ['-c', 'print("test")']
+        testargs = ['tethys', 'manage', 'shell', *unknown_args]
+
+        with mock.patch.object(sys, 'argv', testargs):
+            tethys_command()
+
+        mock_manage_command.assert_called()
+        call_args = mock_manage_command.call_args_list
+        self.assertEqual('accepts_unknown_args', call_args[0][0][0].parsing_method)
+        self.assertEqual('shell', call_args[0][0][0].command)
+        self.assertEqual(unknown_args, call_args[0][0][1])
 
     @mock.patch('tethys_cli.scheduler_commands.condor_scheduler_create_command')
     def test_scheduler_create_condor_command_options(self, mock_scheduler_create_command):
