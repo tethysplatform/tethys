@@ -132,7 +132,7 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          mamba create -y -n conda-build conda-build anaconda-client
+          conda create -y -n conda-build conda-build anaconda-client
           conda activate conda-build
           conda config --set anaconda_upload no
           mkdir -p ~/conda-bld
