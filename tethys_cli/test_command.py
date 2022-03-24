@@ -86,7 +86,11 @@ def test_command(args):
         primary_process = ['coverage', 'run', config_opt, manage_path, 'test']
 
     if args.file:
-        primary_process.append(args.file)
+        if os.path.isfile(args.file):
+            path, file_name = os.path.split(args.file)
+            primary_process.extend([path, '--pattern', file_name])
+        else:
+            primary_process.append(args.file)
     elif args.unit:
         primary_process.append(os.path.join(tests_path, 'unit_tests'))
     elif args.gui:
