@@ -62,11 +62,5 @@ def tethys_command_parser():
 def tethys_command():
     parser = tethys_command_parser()
     # Parse the args and call the default function
-    args, unknown_args = parser.parse_known_args()
-    if not unknown_args:
-        args.func(args)
-    elif 'accepts_unknown_args' in str(args):
-        args.func(args, unknown_args)
-    else:
-        msg = 'unrecognized arguments: %s'
-        parser.error(msg % ' '.join(unknown_args))
+    args = parser.parse_args()
+    args.func(args)

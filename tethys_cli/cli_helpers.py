@@ -1,5 +1,4 @@
 import os
-import sys
 import subprocess
 
 import django
@@ -53,7 +52,4 @@ def run_process(process):
 
 
 def load_apps():
-    stdout = sys.stdout
-    sys.stdout = open(os.devnull, 'w')
     django.setup()
-    sys.stdout = stdout
