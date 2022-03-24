@@ -10,7 +10,7 @@
 
 from django.core.management import get_commands
 
-from tethys_cli.cli_helpers import get_manage_path, load_apps, run_process
+from tethys_cli.cli_helpers import get_manage_path, run_process
 
 MANAGE_START = 'start'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -22,12 +22,13 @@ MANAGE_GET_PATH = 'path'
 def add_manage_parser(subparsers):
     # sub-command choices
     TETHYS_COMMANDS = [MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_GET_PATH]
-    load_apps()
     DJANGO_COMMANDS = [i for i in sorted(list(get_commands().keys())) if i not in TETHYS_COMMANDS]
-    # Setup sub-commands
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
-    manage_parser.add_argument('command', help='Management command to run.',
-                               choices=[*TETHYS_COMMANDS, *DJANGO_COMMANDS])
+    manage_parser.add_argument(
+        'command', help='Management command to run.'
+        f'\n{{{", ".join(e for e in [*TETHYS_COMMANDS, *DJANGO_COMMANDS])}}}'
+        '\n Also accepts any valid manage.py command from Django (see --django-help).'
+    )
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str,
                                help='Host and/or port on which to bind the development server.')
