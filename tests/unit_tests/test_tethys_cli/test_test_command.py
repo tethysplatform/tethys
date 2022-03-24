@@ -18,10 +18,32 @@ class TestCommandTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch('tethys_cli.test_command.os.path.isfile', return_value=True)
     @mock.patch('tethys_cli.test_command.run_process')
     @mock.patch('tethys_cli.test_command.os.path.join')
     @mock.patch('tethys_cli.test_command.get_manage_path')
-    def test_test_command_no_coverage_file(self, mock_get_manage_path, mock_join, mock_run_process):
+    def test_test_command_no_coverage_file_path(self, mock_get_manage_path, mock_join, mock_run_process, _):
+        mock_args = mock.MagicMock()
+        mock_args.coverage = False
+        mock_args.coverage_html = False
+        mock_args.file = 'foo/bar_file'
+        mock_args.unit = False
+        mock_args.gui = False
+        mock_args.verbosity = None
+        mock_get_manage_path.return_value = '/foo/manage.py'
+        mock_join.return_value = '/foo'
+        mock_run_process.return_value = 0
+
+        self.assertRaises(SystemExit, test_command, mock_args)
+        mock_get_manage_path.assert_called()
+        mock_join.assert_called()
+        mock_run_process.assert_called_once()
+        mock_run_process.assert_called_with(['python', '/foo/manage.py', 'test', 'foo', '--pattern', 'bar_file'])
+
+    @mock.patch('tethys_cli.test_command.run_process')
+    @mock.patch('tethys_cli.test_command.os.path.join')
+    @mock.patch('tethys_cli.test_command.get_manage_path')
+    def test_test_command_no_coverage_file_dot_notation(self, mock_get_manage_path, mock_join, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False
         mock_args.coverage_html = False
