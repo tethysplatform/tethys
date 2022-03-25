@@ -132,11 +132,11 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda create -y -n conda-build conda-build anaconda-client
+          mamba create -y -c conda-forge -n conda-build boa anaconda-client 
           conda activate conda-build
           conda config --set anaconda_upload no
           mkdir -p ~/conda-bld
-          conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+          conda mambabuild -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
         if: ${{ github.event_name != 'pull_request' }}
