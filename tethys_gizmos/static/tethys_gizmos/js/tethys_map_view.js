@@ -1735,7 +1735,7 @@ var TETHYS_MAP_VIEW = (function() {
       if (!layer.getVisible()) { continue; }
       // Check for undefined source or non-WMS layers before proceeding
       source = layer.getSource();
-      if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
+      if (!(source && ('getGetFeatureInfoUrl' in source || 'getFeatureInfoUrl' in source))) { continue; }
 
       //get geometry_attribute from the layer
       geometry_attribute = layer.getProperties().geometry_attribute;
@@ -2023,7 +2023,7 @@ var TETHYS_MAP_VIEW = (function() {
       if (!layer.getVisible()) { continue; }
       // Check for undefined source or non-WMS layers before proceeding
       source = layer.getSource();
-      if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
+      if (!(source && ('getGetFeatureInfoUrl' in source || 'getFeatureInfoUrl' in source))) { continue; }
       source_params = source.getParams();
       if (source_params.LAYERS == layer_name) {
         if (source instanceof ol.source.ImageWMS) {
