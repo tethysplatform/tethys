@@ -324,6 +324,7 @@ class MapLayoutMixin:
                             popup_title=None, excluded_properties=None, show_download=False):
         """
         Build an MVLayer object with supplied arguments.
+
         Args:
             geojson(dict): Python equivalent GeoJSON FeatureCollection.
             layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
@@ -331,8 +332,7 @@ class MapLayoutMixin:
             layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
             layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
             visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
-                Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
             plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
             has_action(bool): Enable "Action" button on pop-up properties. Defaults to False.
@@ -343,7 +343,7 @@ class MapLayoutMixin:
 
         Returns:
             MVLayer: the MVLayer object.
-        """
+        """ # noqa: E501
         # Define default styles for layers
         style_map = cls.get_vector_style_map()
 
@@ -380,6 +380,7 @@ class MapLayoutMixin:
                         cross_origin=None, styles=None, legend_image_url=None):
         """
         Build an WMS MVLayer object with supplied arguments.
+    
         Args:
             endpoint(str): URL to GeoServer WMS interface.
             layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
@@ -389,8 +390,7 @@ class MapLayoutMixin:
             viewparams(str): VIEWPARAMS string.
             env(str): ENV string.
             visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
-                Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
             tiled(bool): Configure as tiled layer if True. Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
             plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
@@ -400,17 +400,15 @@ class MapLayoutMixin:
             excluded_properties(list): List of properties to exclude from feature popups.
             geometry_attribute(str): Name of the geometry attribute. Defaults to "geometry".
             color_ramp_division_kwargs(dict): arguments from MapLayout.generate_custom_color_ramp_divisions
-            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
-                ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
-                only supported in CesiumMapView.
+            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently only supported in CesiumMapView.
             server_type (str): One of 'geoserver' or 'thredds'. Defaults to 'geoserver'.
-            cross_origin (str): Value to pass to crossOrigin property. Defaults to None. See:
-                https://openlayers.org/en/latest/apidoc/module-ol_source_TileWMS-TileWMS.html
+            cross_origin (str): Value to pass to crossOrigin property. Defaults to None. See: https://openlayers.org/en/latest/apidoc/module-ol_source_TileWMS-TileWMS.html
             styles (str): Name of style to render the WMS. Defaults to None.
             legend_image_url (str): URL for a legend image for the layer.
+
         Returns:
             MVLayer: the MVLayer object.
-        """
+        """  # noqa: E501
         # Build params
         params = {'LAYERS': layer_name}
 
@@ -480,6 +478,7 @@ class MapLayoutMixin:
                             excluded_properties=None, popup_title=None):
         """
         Build an AcrGIS Map Server MVLayer object with supplied arguments.
+
         Args:
             endpoint(str): URL to GeoServer WMS interface.
             layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
@@ -489,8 +488,7 @@ class MapLayoutMixin:
             viewparams(str): VIEWPARAMS string.
             env(str): ENV string.
             visible(bool): Layer is visible when True. Defaults to True.
-            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True.
-                Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
             tiled(bool): Configure as tiled layer if True. Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
             plottable(bool): Enable "Plot" button on pop-up properties. Defaults to False.
@@ -548,9 +546,7 @@ class MapLayoutMixin:
             top_offset (float): offset from top of color ramp (defaults to 0).
             bottom_offset (float): offset from bottom of color ramp (defaults to 0).
             prefix (str): name of division variable prefix (i.e.: 'val' for pattern 'val1').
-            color_ramp (str): color ramp name in COLOR_RAMPS dict. Options are ['Blue', 'Blue and Red',
-                'Flower Field', 'Galaxy Berries', 'Heat Map', 'Olive Harmony', 'Mother Earth',
-                'Rainforest Frogs', 'Retro FLow', 'Sunset Fade'].
+            color_ramp (str): color ramp name in COLOR_RAMPS dict. Options are 'Blue', 'Blue and Red', 'Flower Field', 'Galaxy Berries', 'Heat Map', 'Olive Harmony', 'Mother Earth', 'Rainforest Frogs', 'Retro FLow', or 'Sunset Fade'.
             color_prefix (str): name of color variable prefix (i.e.: 'color' for pattern 'color1').
             no_data_value (str): set no data value for the color ramp. (defaults to None).
 

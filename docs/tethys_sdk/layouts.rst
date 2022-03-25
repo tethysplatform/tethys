@@ -6,11 +6,12 @@ Layouts API
 
 **Last Updated:** March 2022
 
+A Layout is...
 
-Gizmos Options Objects
-======================
+Supported Layouts
+=================
 
-This section provides explanations of each of the Gizmo Options Objects available for configuring Gizmos. It also provides code and usage examples for each object.
+Here is a list of Layouts provided by Tethys Platform.
 
 .. toctree::
    :maxdepth: 1
@@ -18,4 +19,7 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    layouts/map_layout
 
 
+Tethys Layout
+=============
 
+.. autoclass:: tethys_layouts.views.tethys_layout.TethysLayout

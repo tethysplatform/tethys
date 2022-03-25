@@ -32,54 +32,40 @@ log = logging.getLogger(f'tethys.{__name__}')
 
 class MapLayout(TethysLayout, MapLayoutMixin):
     """
-    Controller for the MapLayout view. Create a class that extends this class and implement the compose_layers method
-        and other properties as desired. In the app.py pass MapLayout.as_controller() as the controller argument to
-        the UrlMap. You may also pass kwargs matching property names of the class to MapLayout.as_controller() to
-        override their values and configure the MapLayout view.
+    Controller for the MapLayout view. Create a class that extends this class and implement the ``compose_layers`` method and other properties as desired. Decorate the class using the ``controller`` decorator to map it to a URL.
 
-    Recommended Properties:
+    Attributes:
         app (TethysApp): The class of the app contained in app.py.
-        base_template (str): Template to use as base template. Recommend overriding this to be your app's base
-            template. Defaults to "tethys_layouts/tethys_layout.html".
-        map_subtitle (str): The subtitle to display on the MapLayout view.
-        map_title (str): The title to display on the MapLayout view.
-
-    Optional Properties:
         back_url (str): URL that will be added to the back button. No back button if not provided.
-        basemaps (list or str): Name of a basemap or list of basemaps that will be available on the map. Same as the
-            MapView gizmo basemap argument. Does not apply to the Cesium renderer.
-        cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view".
-            See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
+        basemaps (list or str): Name of a basemap or list of basemaps that will be available on the map. Same as the MapView gizmo basemap argument. Does not apply to the Cesium renderer.
+        base_template (str): Template to use as base template. Recommend overriding this to be your app's base template. Defaults to "tethys_layouts/tethys_layout.html".
+        cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view". See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
         default_center (2-list<float>): Coordinates of the initial center for the map. Defaults to [-98.583, 39.833].
         default_disable_basemap (bool) Set to True to disable the basemap.
         default_zoom (int): Default zoom level. Defaults to 4.
-        geocode_api_key = An Open Cage Geocoding API key. Required to enable address search/geocoding feature.
-            See: https://opencagedata.com/api#quickstart
-        geoserver_workspace = Name of the GeoServer workspace of layers if applicable. Defaults to None.
+        geocode_api_key (str): An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
+        geoserver_workspace (str): Name of the GeoServer workspace of layers if applicable. Defaults to None.
         initial_map_extent = The initial zoom extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
-        feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is
-            enabled. Defaults to False.
+        feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
         feature_selection_sensitivity (int): Feature selection sensitivity/relative search radius. Defaults to 4.
         layer_tab_name (str) Name of the "Layers" tab. Defaults to "Layers".
-        map_type (str): Type of map gizmo to use. One of "tethys_map_view" or "cesium_map_view". Defaults
-            to "tethys_map_view".
+        map_subtitle (str): The subtitle to display on the MapLayout view.
+        map_title (str): The title to display on the MapLayout view.
+        map_type (str): Type of map gizmo to use. One of "tethys_map_view" or "cesium_map_view". Defaults to "tethys_map_view".
         max_zoom (int): Maximum zoom level. Defaults to 28.
         min_zoom (int): Minimum zoom level. Defaults to 0.
         permissions (bool): Enables permissions checks when True. Defaults to False.
-        plot_slide_sheet (bool): Enables the Plotly slide sheet when True. Defaults to False. The slide sheet can be
-            opened and populated using the JavaScript API.
+        plot_slide_sheet (bool): Enables the Plotly slide sheet when True. Defaults to False. The slide sheet can be opened and populated using the JavaScript API.
         plotly_version (str): Version of Plotly library to load for Plotly slide sheet. Defaults to "2.3.0".
-        sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when
-            initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager
-                using the kwarg "sds_engine".
-        show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS
-            layers to the Custom Layers layer group dynamically. Defaults to True.
+        sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager using the kwarg "sds_engine".
+        show_custom_layer (bool): Show the "Custom Layers" item in the Layers tree when True. Users can add WMS layers to the Custom Layers layer group dynamically. Defaults to True.
         show_legends (bool): Show the Legend tab. Defaults to False.
         show_map_clicks (bool): Show where the user clicks when they click on the map. Defaults to False.
         show_map_click_popup (bool): Display a pop-up pointing to the point where user clicks. Defaults to False.
         show_properties_popup (bool): Show popup with feature properties when True. Defaults to False.
         show_public_toggle (bool): Show the "Public/Private" toggle control in the layer context menus.
         wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
+
     """
     __metaclass__ = ABCMeta
 
@@ -126,6 +112,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
     @classproperty
     def map_extent(cls):
+        """4-list<float>: Returns the default map extent (e.g.: [-180, 180, -90, 90])."""
         if not getattr(cls, '_map_extent', None):
             view, extent = cls._get_map_extent_and_view()
             cls._map_extent = extent
@@ -134,6 +121,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
     @classproperty
     def default_view(cls):
+        """MVView: Returns the default view for the map."""
         if not getattr(cls, '_default_view', None):
             view, extent = cls._get_map_extent_and_view()
             cls._map_extent = extent
@@ -152,9 +140,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     # Methods to Override  -------------------------------------------------- #
     def compose_layers(self, request, map_view, *args, **kwargs):
         """
-        Compose layers and layer groups for the MapLayout and add to the given MapView. Use the built-in
-            utility methods to build the MVLayer objects and layer group dictionaries. Returns a list of
-            layer group dictionaries.
+        Compose layers and layer groups for the MapLayout and add to the given MapView. Use the built-in utility methods to build the MVLayer objects and layer group dictionaries. Returns a list of layer group dictionaries.
 
         Args:
             request(HttpRequest): A Django request object.

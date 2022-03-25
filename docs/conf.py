@@ -39,6 +39,7 @@ MOCK_MODULES = [
     'mfa', 'mfa.models',
     'model_utils', 'model_utils.managers',
     'plotly', 'plotly.offline',
+    'shapefile',
     'siphon', 'siphon.catalog', 'siphon.http_util',
     'social_core', 'social_core.exceptions',
     'social_django',
