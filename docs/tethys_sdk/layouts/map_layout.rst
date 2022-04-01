@@ -58,7 +58,10 @@ While the ``MapView`` Gizmo will be able to accept any ``MVLayer`` object, the `
 
 In addition, the ``compose_layers()`` method needs to return a ``list`` of at least one Layer Group. A Layer Group contains a list of layers and is used by the Layer Tree of ``MapLayout`` to organize layers. In addition, a control type is specified for each Layer Group (``'check' or 'radio'``), and can be used to control whether all the layers in a Layer Group can be viewed simultaneously (``'check'``) or only one at a time (``'radio'``). Create Layer Groups using the :ref:`map_layout_build_layer_group` helper method.
 
-The following examples demonstrates how to add WMS layers to a ``MapLayout``.
+WMS Layer
+---------
+
+The following example demonstrates how to add WMS layers to a ``MapLayout`` using the ``build_wms_layer`` method:
 
 .. code-block:: python
 
@@ -77,18 +80,17 @@ The following examples demonstrates how to add WMS layers to a ``MapLayout``.
             # WMS Layer
             usa_population = self.build_wms_layer(
                 endpoint='http://localhost:8181/geoserver/wms',
-                layer_name='topp:states',
-                layer_title="USA Population",
-                layer_variable='population',
-                geometry_attribute='the_geom',
-                visible=True,  # Set to False if the layer should be hidden initially
                 server_type='geoserver',
+                layer_name='topp:states',
+                layer_title='USA Population',
+                layer_variable='population',
+                visible=True,  # Set to False if the layer should be hidden initially
             )
 
-            # Add layers to map
+            # Add layer to map
             map_view.layers.append(usa_population)
 
-            # Define the layer groups
+            # Add layer to layer group
             layer_groups = [
                 self.build_layer_group(
                     id='usa-layer-group',
@@ -105,37 +107,331 @@ The following examples demonstrates how to add WMS layers to a ``MapLayout``.
 
 .. caution::
 
-    The ellipsis (`...`) in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
+    The ellipsis (`...`) in code examples indicate code that is not shown for brevity. **DO NOT COPY VERBATIM**.
 
-Add Legends
-===========
+GeoJSON Layers
+--------------
 
-Coming Soon...
+The following example demonstrates how to add a GeoJSON layer to a ``MapLayout`` using the ``build_geojson_layer`` method:
+
+.. code-block:: python
+
+    @controller(
+        name="map",
+        url="my_first-app/map"
+    )
+    class MyMapLayout(MapLayout):
+
+        ...
+
+        def compose_layers(self, request, map_view, *args, **kwargs):
+            """
+            Add layers to the MapLayout and create associated layer group objects.
+            """
+            # Load GeoJSON From File
+            us_states_path = Path(app_workspace.path) / 'my_first_app' / 'us-states.json'
+            with open(us_states_path) as gj:
+                us_states_geojson = json.loads(gj.read())
+
+            # GeoJSON Layer
+            us_states_layer = self.build_geojson_layer(
+                geojson=us_states_geojson,
+                layer_name='us-states',
+                layer_title='U.S. States',
+                layer_variable='reference',
+                visible=True,
+            )
+
+            # Add layer to map
+            map_view.layers.append(us_states_layer)
+
+            # Add layer to layer group
+            ...
+
+Vector Layer Styles
++++++++++++++++++++
+
+Use the ``get_vector_style_map`` method of ``MapLayout`` to define custom styles for GeoJSON layers. The method expects a dictionary to be returned containing keys that coorespond to feature types (e.g.: "Point", "LineString", "Polygon") and values that are the style definition. The style definitions are created using a Python dictionary syntax that mirrors the `OpenLayers Style API <https://openlayers.org/en/latest/examples/geojson.html>`_. The For example:
+
+.. code-block:: python
+
+    @controller(
+        name="map",
+        url="my_first-app/map"
+    )
+    class MyMapLayout(MapLayout):
+
+        ...
+        @classmethod
+        def get_vector_style_map(cls):
+            return {
+                'Point': {'ol.style.Style': {
+                    'image': {'ol.style.Circle': {
+                        'radius': 5,
+                        'fill': {'ol.style.Fill': {
+                            'color': 'red',
+                        }},
+                        'stroke': {'ol.style.Stroke': {
+                            'color': 'red',
+                            'width': 2
+                        }}
+                    }}
+                }},
+                'LineString': {'ol.style.Style': {
+                    'stroke': {'ol.style.Stroke': {
+                        'color': 'green',
+                        'width': 3
+                    }}
+                }},
+                'MultiPolygon': {'ol.style.Style': {
+                    'stroke': {'ol.style.Stroke': {
+                        'color': 'blue',
+                        'width': 3
+                    }}
+                }},
+                'Polygon': {'ol.style.Style': {
+                    'stroke': {'ol.style.Stroke': {
+                        'color': 'blue',
+                        'width': 3
+                    }}
+                }},
+            }
+
+ArcGIS REST Layer
+-----------------
+
+The following example demonstrates how to add an ArcGIS REST layer to a ``MapLayout`` using the ``build_arc_gis_layer`` method:
+
+.. code-block:: python
+
+    @controller(
+        name="map",
+        url="my_first-app/map"
+    )
+    class MyMapLayout(MapLayout):
+
+        ...
+
+        def compose_layers(self, request, map_view, *args, **kwargs):
+            """
+            Add layers to the MapLayout and create associated layer group objects.
+            """
+            # ArcGIS Layer
+            us_highways_layer = self.build_arc_gis_layer(
+                endpoint='https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer',
+                layer_name='ESRI_StateCityHighway',
+                layer_title='US Highways',
+                layer_variable='highways',
+                visible=False,
+                extent=[-173, 17, -65, 72],
+            )
+
+            # Add layer to map
+            map_view.layers.append(us_highways_layer)
+
+            # Add layer to layer group
+            ...
+
+.. _map_layout_feature_selection:
 
 Feature Selection
 =================
 
+The ``MapLayout`` layout supports two modes of feature selection: Feature Selection for Vector Layers and Feature Selection for WMS Layers. Although similar in functionality, the selection is handled differently and mixing the two is not recommended.
 
+Vector Layers
+-------------
 
+Feature Selection for Vector Layers, such as GeoJSON layers, can be enabled on a layer-by-layer basis by setting the ``selectable`` argument to ``True``. Select features by clicking on the feature and select multiple layers by holding the ``SHIFT`` key while clicking on features.
+
+.. code-block:: python
+
+    # Load GeoJSON From File
+    us_states_path = Path(app_workspace.path) / 'my_first_app' / 'us-states.json'
+    with open(us_states_path) as gj:
+        us_states_geojson = json.loads(gj.read())
+
+    # GeoJSON Layer
+    us_states_layer = self.build_geojson_layer(
+        geojson=us_states_geojson,
+        layer_name='us-states',
+        layer_title='U.S. States',
+        layer_variable='reference',
+        visible=True,
+        selectable=True
+    )
+
+.. note::
+
+    Clicking inside a polygon feature will not select it. Instead, click on the border of the polygon to select it.
+
+JavaScript
+++++++++++
+
+Use the ``getSelectInteraction()`` method of the underlying ``MapView`` Gizmo to bind functions to the Vector feature selection event:
+
+.. code-block:: javascript
+
+    window.addEventListener('load', function() { // wait for page to load
+        let selection_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
+
+        // Called each time the select interaction's list of features changes
+        selection_interaction.getFeatures().on('change:length', function(e) {
+            // Check if there is at least 1 feature selected
+            if (e.target.getLength() > 0) {
+                // Do something with the feature
+                let selected_feature = e.target.item(0); // 1st feature in Collection
+                console.log(`Selected State: ${selected_feature.get('name')}`);
+            }
+        });
+    });
+
+.. tip::
+
+    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+
+WMS Layers
+----------
+
+``MapLayout`` also supports feature selection for WMS layers that are hosted by a GeoServer and are derived from a vector source (e.g. created from a Shapefile or SQLView). Enabling feature selection is done on a layer by layer basis by setting the ``selectable`` argument to ``True`` as shown in the example below:
+
+.. code-block:: python
+
+    # WMS Layer
+    usa_population = self.build_wms_layer(
+        endpoint='http://localhost:8181/geoserver/wms',
+        server_type='geoserver',
+        layer_name='topp:states',
+        layer_title='USA Population',
+        layer_variable='population',
+        visible=True,  # Set to False if the layer should be hidden initially
+        selectable=True
+    )
+
+Geometry attribute
+++++++++++++++++++
+
+The ``build_wms_layer`` method takes an additional feature-selection related argument that is sometimes necessary: ``geometry attribute``. Use this argument to specify a different value if the partiuclar layer uses a different naming convention for the feature attribute that stores the geometry. The default value for ``geometry_attribute`` is ``"the_geom"``. For example:
+
+.. code-block:: python
+
+    # WMS Layer
+    usa_population = self.build_wms_layer(
+        endpoint='http://localhost:8181/geoserver/wms',
+        server_type='geoserver',
+        layer_name='topp:states',
+        layer_title='USA Population',
+        layer_variable='population',
+        visible=True,  # Set to False if the layer should be hidden initially
+        selectable=True,
+        geometry_attribute='geometry',  # Defaults to "the_geom"
+    )
+
+Class Properties
+++++++++++++++++
+
+There are two class properties that can be used to modify the behavior of the WMS feature selection: ``feature_selection_multiselect`` and ``feature_selection_sensitivity``.
+
+Set ``feature_selection_multiselect`` to ``True`` to allow selecting multiple features from WMS layers that have feature selection enabled. This is done by holding the ``SHIFT`` key while selecting. The default behavior is to allow only one feature to be selected at a time.
+
+set the ``feature_selection_sensitivty`` to adjust the relative search radius around the clicked point of the selection algorithm. The default value is 4.
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        feature_selection_multiselect = True
+        feature_selection_sensitivty = 8
 
 Property Popups
 ===============
+
+Enable pop-ups displaying the properties of selected features by setting the ``show_properties_popup`` to ``True``:
+
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        show_properties_popup = True
+
+.. note::
+    
+    This feature only works for the layer types supported by :ref:`map_layout_feature_selection`. 
+
+Exclude properties from being displayed in the properties pop-ups using the ``excluded_properties`` argument of the build methods. The ``id``, ``type``, ``geometry``, ``the_geom``, and ``layer_name`` properties are automatically excluded.
+
+.. code-block:: python
+
+    # WMS Layer
+    usa_population = self.build_wms_layer(
+        endpoint='http://localhost:8181/geoserver/wms',
+        server_type='geoserver',
+        layer_name='topp:states',
+        layer_title='USA Population',
+        layer_variable='population',
+        visible=True,  # Set to False if the layer should be hidden initially
+        selectable=True,
+        geometry_attribute='geometry',  # Defaults to "the_geom"
+        excluded_properties=['STATE_FIPS', 'SUB_REGION'],
+    )
+
+.. note::
+
+    Names of properties displayed in pop-ups have been reformatted by replacing any underscores (``_``) or hyphens (``-``) with spaces and changing the case to title case. For example, a property called ``STATE_FIPS`` would be displayed as ``State Fips``. You must specify the pre-formatted/original version of the property name for the ``excluded_properties`` argument.
+
+Map Clicks
+==========
+
 
 
 Click and Plot
 ==============
 
 
+
 Drawing Tools
 =============
+
 
 
 Enable GeoCoding
 ================
 
 
+
+Add Legends
+===========
+
+Coming Soon...
+
+.. _map_layout_custom_template:
+
+Custom Template
+===============
+
+The HTML template for the ``MapLayout`` can be customized by creating an HTML document that extends ``tethys_layouts/map_layout/map_layout.html``. This is most often done to add custom CSS or JavaScript to the template as shown in this example:
+
+.. code-block:: html+django
+
+    {% extends "tethys_layouts/map_layout/map_layout.html" %}
+    {% load static %}
+
+    {% block scripts %}
+      {{ block.super }}
+      <script src="{% static 'layout_showcase/js/map.js' %}" type="text/javascript"></script>
+    {% endblock %}
+
+Tell the ``MapLayout`` to use the custom template using the ``template_name`` property:
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        template_name = 'my_first_app/custom_map_layout.html'
+        ...
+
 API Documentation
 =================
+
+.. _map_layout_class:
 
 MapLayout Class
 ---------------
