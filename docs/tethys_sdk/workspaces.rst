@@ -11,7 +11,7 @@ The Workspaces API makes it easy for you to create directories for storing files
 Get a Workspace
 ===============
 
-The Workspaces API adds two decorators, that can be used to retrieve with the global app workspace and the user workspaces, respectively. To use the Workspace API methods, import the appropriate method from `tethys_sdk.workspaces`. Explanations of the decorators and example usage follows.
+The Workspaces API adds two decorators, that can be used to retrieve the global app workspace and the user workspaces, respectively. To use the Workspace API methods, import the appropriate method from `tethys_sdk.workspaces`. Explanations of the decorators and example usage follows.
 
 .. _app_workspace:
 
