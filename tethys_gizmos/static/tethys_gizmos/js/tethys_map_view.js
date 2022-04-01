@@ -1696,7 +1696,7 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Selectable Features Methods
    ***********************************/
-  select_features_at_location = function(x, y) {
+  select_features_at_location = function(x, y, event = null) {
     var urls, tolerance, multiselect, sensitivity;
     urls = [];
     sensitivity = DEFAULT_SENSITIVITY;
@@ -1712,7 +1712,7 @@ var TETHYS_MAP_VIEW = (function() {
     if (is_defined(m_feature_selection_options) &&
         'multiselect' in m_feature_selection_options &&
         m_feature_selection_options.multiselect &&
-        ol.events.condition.shiftKeyOnly(event)) {
+        event && ol.events.condition.shiftKeyOnly(event)) {
         multiselect = true;
     }
 
@@ -2099,7 +2099,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Perform the feature selection if enabled and there are selectable layers
     if (is_defined(m_feature_selection_options) && m_selectable_wms_layers.length > 0) {
-       select_features_at_location(x, y);
+       select_features_at_location(x, y, event);
     }
   };
 
