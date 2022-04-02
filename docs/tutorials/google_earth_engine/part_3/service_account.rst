@@ -96,6 +96,12 @@ The app needs to be configured to use the service account key that you downloade
 
     Until now, the app has not had service account credentials, so it has been using the logic in the ``else`` clause of the conditional statement.
 
+.. note::
+    
+    Please make sure you are using the latest version of the earthengine-api when authenticating with your service account for the first time.
+    Using an old version in the first authetication can cause a 404 error. After the initial authetication older version of the earthengine-api can be used.
+
+
 3. Test App Functionality with Service Account
 ==============================================
 
