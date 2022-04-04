@@ -1822,6 +1822,7 @@ var MAP_LAYOUT = (function() {
         get_layer_name_from_feature: get_layer_name_from_feature,
         get_layer_id_from_layer: get_layer_id_from_layer,
         get_feature_id_from_feature: get_feature_id_from_feature,
+        show_properties_pop_up: show_properties_pop_up,
         hide_properties_pop_up: hide_properties_pop_up,
         reset_properties_pop_up: reset_properties_pop_up,
         close_properties_pop_up: close_properties_pop_up,

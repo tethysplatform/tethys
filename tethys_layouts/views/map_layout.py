@@ -167,7 +167,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         Args:
             layer_name(str): Name/id of layer.
-            feature_id(str): PostGIS Feature ID of feature.
+            feature_id(str): Feature ID of feature.
 
         Returns:
             str, list<dict>, dict: plot title, data series, and layout options, respectively.
@@ -667,7 +667,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             request(HttpRequest): The request.
         """
         if not self.geocode_api_key:
-            raise RuntimeError('Can not run GeoCode query because no API token was supplied. Please provide the '
+            raise RuntimeError('Cannot run GeoCode query because no API token was supplied. Please provide the '
                                'API key via the "geocode_api_key" attribute of the MapLayoutView.')
 
         query = request.POST.get('q', None)

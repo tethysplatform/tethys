@@ -1,10 +1,10 @@
 .. _map_layout:
 
-**************
-Map Layout API
-**************
+**********
+Map Layout
+**********
 
-**Last Updated:** March 2022
+**Last Updated:** April 2022
 
 The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
 
@@ -237,7 +237,7 @@ The following example demonstrates how to add an ArcGIS REST layer to a ``MapLay
 Feature Selection
 =================
 
-The ``MapLayout`` layout supports two modes of feature selection: Feature Selection for Vector Layers and Feature Selection for WMS Layers. Although similar in functionality, the selection is handled differently and mixing the two is not recommended.
+The ``MapLayout`` layout supports two modes of feature selection: Feature Selection for Vector Layers and Feature Selection for WMS Layers.
 
 Vector Layers
 -------------
@@ -343,7 +343,7 @@ set the ``feature_selection_sensitivty`` to adjust the relative search radius ar
         feature_selection_sensitivty = 8
 
 Property Popups
-===============
+---------------
 
 Enable pop-ups displaying the properties of selected features by setting the ``show_properties_popup`` to ``True``:
 
@@ -378,20 +378,255 @@ Exclude properties from being displayed in the properties pop-ups using the ``ex
 
     Names of properties displayed in pop-ups have been reformatted by replacing any underscores (``_``) or hyphens (``-``) with spaces and changing the case to title case. For example, a property called ``STATE_FIPS`` would be displayed as ``State Fips``. You must specify the pre-formatted/original version of the property name for the ``excluded_properties`` argument.
 
+.. caution::
+
+    The Feature Selection Property Popup feature and the Map Clicks Popup feature cannot not be used together. When both are enabled, neither popup is displayed.
+
+.. _map_layout_popup_javascript_api:
+
+JavaScript
+----------
+
+The ``MapLayout`` JavaScript API provides several methods for controlling the properties popup:
+
+**MAP_LAYOUT.show_properties_popup(coordinates)**
+
+    Show the properties popup at the location given.
+
+    **Parameters**
+
+    * **coordinates** (*ol.geom.Point*|*Array*): An ``ol.goem.Point`` or an ``Array`` of length 2 (e.g. ``[-11981657.512845377, 4615036.7485996075]``). Coordinates should be specified in the ``EPSG:3857`` coordinate system.
+
+**MAP_LAYOUT.close_properties_popup()** 
+
+    Hides the properties popup and clears the features selected.
+
+**MAP_LAYOUT.hide_properties_popup()**
+
+    Hides the properties popup without clearing selection.
+
+**MAP_LAYOUT.reset_properties_popup()**
+
+    Empties content of properties popup and then hides it.
+
+**MAP_LAYOUT.properties_table_generator(f)**
+
+    Override the default function that is used to generate the properties table that is displayed in the feature selection properties popup.
+
+    **Parameters**
+
+    * **function**: Provide a function that accepts two arguments, ``feature`` and ``layer``, and returns a string containing the HTML markup to insert into the popup.
+
+**MAP_LAYOUT.custom_properties_generator(f)**
+
+    Define a function that is used to generate content to display in the popup after the properties table.
+
+    **Parameters**
+
+    * **f** (function): Provide a function that accepts two arguments, ``feature`` and ``layer``, and returns a string containing the HTML markup to insert in the popup after the properties table.
+
+**MAP_LAYOUT.custom_properties_initializer(f)**
+
+    Define a function that performs initialization operations for custom content after the custom content markup is rendered (e.g. initialize a plot).
+
+    **Parameters**
+
+    * **f** (function): Provide a function that accepts no arguments and performs the initialization of custom content in the popup.
+
+.. tip::
+
+    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+
 Map Clicks
 ==========
 
+The Map Clicks feature of ``MapLayout`` will display a point at the location on the map where the user clicked. Enable Map Clicks by setting the ``show_map_clicks`` property of ``MapLayout`` to ``True``:
 
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        show_map_clicks = True
+
+Map Clicks Popups
+-----------------
+
+The Map Clicks Popups feature displays a popup pointing to the point at the location on the map where the user clicked. The popup is empty by default, but content can be added using JavaScript and the selector ``#properties-popup-content`` (see JavaScript section below). 
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        show_map_clicks = True
+        show_map_click_popup = True
+
+.. caution::
+
+    The Map Clicks Popup feature and the Feature Selection Properties Popup feature cannot not be used together. When both are enabled, neither popup is displayed.
+
+JavaScript
+----------
+
+Use the ``TETHYS_MAP_VIEW.mapClicked()`` method to respond to Map Click events. Pass a callback function that takes the coordinates of the clicked point as an argument:
+
+.. code-block:: javascript
+
+    // Map Click Event Handler
+    TETHYS_MAP_VIEW.mapClicked(function(coords) {
+        let popup_content = document.querySelector("#properties-popup-content");
+        let lat_lon = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
+        let rounded_lat = Math.round(lat_lon[1] * 1000000) / 1000000;
+        let rounded_lon = Math.round(lat_lon[0] * 1000000) / 1000000;
+        popup_content.innerHTML = `<b>Coordinates:</b><p>${rounded_lat}, ${rounded_lon}</p>`;
+    });
+
+The ``show_properties_popup``, ``close_properties_popup``, ``hide_properties_popup``, and ``reset_properties_popup`` methods can be used to manipulate the Map Click popup (see: :ref:`Feature Selection > JavaScript <map_layout_popup_javascript_api>`).
+
+.. tip::
+
+    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
 Click and Plot
 ==============
 
+The Click and Plot capability of ``MapLayout`` can be used to plot data associated with individual features of a layer. The plots are powered by `PlotlyJS <https://plotly.com/javascript/>`_ and are displayed on a slide sheet that slides from the bottom of the map window.
 
+Enable the Plot Slide Sheet by setting the ``plot_slide_sheet`` property to ``True``:
 
-Drawing Tools
-=============
+.. code-block:: python
 
+    class MyMapLayout(MapLayout):
+        plot_slide_sheet = True
 
+Then enable the plot capability on one or more layers by setting the ``plottable`` argument to ``True``:
+
+.. code-block:: python
+
+    # WMS Layer
+    usa_population = self.build_wms_layer(
+        endpoint='http://localhost:8181/geoserver/wms',
+        server_type='geoserver',
+        layer_name='topp:states',
+        layer_title='USA Population',
+        layer_variable='population',
+        visible=True,  # Set to False if the layer should be hidden initially
+        selectable=True,
+        plottable=True,
+    )
+
+.. note::
+    
+    This feature only works for the layer types supported by :ref:`map_layout_feature_selection`.
+
+Finally, override the ``get_plot_for_layer_feature`` method of the ``MapLayout`` class. This method is called to retrive the plot data for a particular feature. The name of the layer and the id of the feature are given as arguments to allow for looking up the data dynamically.
+
+The ``get_plot_for_layer_feature`` method should return three things:
+
+* **title*** (str): The title of the plot slide sheet.
+* **data** (list<dict>): A list of dictionaries containing the data series.
+* **layout** (dict): A dictionary with layout options for the plot.
+
+The data series and layout objects should be the Python equivalent of the Plotly JSON objects (see: `JavaScript Figure Reference | Plotly <https://plotly.com/javascript/reference/index/>`_).
+
+In this example, the plot data is hard-coded for simplicity:
+
+.. code-block:: python
+
+    def get_plot_for_layer_feature(self, layer_name, feature_id):
+        """
+        Retrieves plot data for given feature on given layer.
+
+        Args:
+            layer_name (str): Name/id of layer.
+            feature_id (str): ID of feature.
+
+        Returns:
+            str, list<dict>, dict: plot title, data series, and layout options, respectively.
+        """
+        # Define data
+        month = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                'August', 'September', 'October', 'November', 'December']
+        high_2000 = [32.5, 37.6, 49.9, 53.0, 69.1, 75.4, 76.5, 76.6, 70.7, 60.6, 45.1, 29.3]
+        low_2000 = [13.8, 22.3, 32.5, 37.2, 49.9, 56.1, 57.7, 58.3, 51.2, 42.8, 31.6, 15.9]
+        
+        layout = {
+            'xaxis': {
+                'title': 'Month'
+            },
+            'yaxis': {
+                'title': 'Temperature (degrees F)'
+            }
+        }
+
+        data = [
+            {
+                'name': 'High 2000',
+                'mode': 'lines',
+                'x': month,
+                'y': high_2000,
+                'line': {
+                    'dash': 'dot',
+                    'width': 4,
+                    'color': 'red'
+                }
+            }, {
+                'name': 'Low 2000',
+                'mode': 'lines',
+                'x': month,
+                'y': low_2000,
+                'line': {
+                    'dash': 'dot',
+                    'width': 4,
+                    'color': 'blue'
+                }
+            }
+        ]
+        return 'Average High and Low Temperatures', data, layout
+
+JavaScript
+----------
+
+The plot slide sheet can be manipulated for more general purposes via the JavaScript API for ``MapLayout``. Ensure that the ``plot_slide_sheet`` property of the ``MapLayout`` class is set to ``True`` to enable this functionality.
+
+**MAP_LAYOUT.get_plot()**
+
+    Return the selector for the Plotly plot element for use in Plotly functions.
+
+**MAP_LAYOUT.show_plot()**
+
+    Open/show the slide sheet containing the plot.
+
+**MAP_LAYOUT.hide_plot()**
+
+    Close/hide the slide sheet containing the plot.
+
+**MAP_LAYOUT.update_plot(title, data, layout)**
+
+    Update the Plotly plot and slide sheet with the given title, data, and layout objects. Uses the ``Plotly.react()`` method to do this efficiently.
+
+    **Parameters**
+
+    * **title** (str): Title of the plot slide sheet.
+    * **data** (array<object>): JavaScript array of objects, one for each data series.
+    * **layout** (object): JavaScript object with Layout options for the plot.
+
+**MAP_LAYOUT.plot_loader(f)**
+
+    Override the default plot loading function.
+
+    **Parameters**
+
+    * **f** (function): A JavaScript function to be called whenever plot data needs to be loaded. Must accept three arguments: ``plot_button``, ``layer_name``, and ``feature_id``.
+
+**MAP_LAYOUT.plot_button_generator(f)**
+
+    Override the default plot button generator function. Useful for customizing the appearance, title, or behavior of the Plot button.
+
+    **Parameters**
+
+    * **f** (function): A JavaScript function to be called whenever the plot button needs to be generated. Must accept two arguments: ``feature`` and ``layer`` and return a string with HTML markup for the custom button.
+
+.. tip::
+
+    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
 Enable GeoCoding
 ================
@@ -405,8 +640,8 @@ Coming Soon...
 
 .. _map_layout_custom_template:
 
-Custom Template
-===============
+Custom Template and JavaScript
+==============================
 
 The HTML template for the ``MapLayout`` can be customized by creating an HTML document that extends ``tethys_layouts/map_layout/map_layout.html``. This is most often done to add custom CSS or JavaScript to the template as shown in this example:
 
