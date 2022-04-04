@@ -16,6 +16,7 @@ import requests
 import uuid
 from zipfile import ZipFile
 
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 import shapefile  # PyShp
@@ -24,7 +25,7 @@ from tethys_layouts.exceptions import TethysLayoutPropertyException
 from tethys_layouts.mixins.map_layout import MapLayoutMixin
 from tethys_layouts.utilities import classproperty
 from tethys_layouts.views.tethys_layout import TethysLayout
-from tethys_sdk.permissions import has_permission, permission_required
+from tethys_sdk.permissions import has_permission
 from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVView, SlideSheet, SelectInput
 
 log = logging.getLogger(f'tethys.{__name__}')
@@ -43,8 +44,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         default_center (2-list<float>): Coordinates of the initial center for the map. Defaults to [-98.583, 39.833].
         default_disable_basemap (bool) Set to True to disable the basemap.
         default_zoom (int): Default zoom level. Defaults to 4.
+        enforce_permissions (bool): Enables permissions checks when True. Defaults to False.
         geocode_api_key (str): An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
-        geocode_extent (list): Bounding box defining search area for address search feature (e.g.: [-65.69, 23.81, -129.17, 49.38]). Alternatively, set to 'map-extent' to use map extent.
+        geocode_extent (4-list): Bounding box defining search area for address search feature (e.g.: [-65.69, 23.81, -129.17, 49.38]). Alternatively, set to 'map-extent' to use map extent.
         geoserver_workspace (str): Name of the GeoServer workspace of layers if applicable. Defaults to None.
         initial_map_extent = The initial zoom extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
         feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
@@ -55,7 +57,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         map_type (str): Type of map gizmo to use. One of "tethys_map_view" or "cesium_map_view". Defaults to "tethys_map_view".
         max_zoom (int): Maximum zoom level. Defaults to 28.
         min_zoom (int): Minimum zoom level. Defaults to 0.
-        permissions (bool): Enables permissions checks when True. Defaults to False.
         plot_slide_sheet (bool): Enables the Plotly slide sheet when True. Defaults to False. The slide sheet can be opened and populated using the JavaScript API.
         plotly_version (str): Version of Plotly library to load for Plotly slide sheet. Defaults to "2.3.0".
         sds_setting_name (str): Name of a Spatial Dataset Service Setting in the app to pass to MapManager when initializing. The SDS will be retrieved as an engine and passed to the constructor of the MapManager using the kwarg "sds_engine".
@@ -91,6 +92,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     default_disable_basemap = False
     default_zoom = 4
     geocode_api_key = None
+    enforce_permissions = False
     geocode_extent = None
     geoserver_workspace = ''
     initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
@@ -100,7 +102,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     map_type = 'tethys_map_view'
     max_zoom = 28
     min_zoom = 0
-    permissions = False
     plot_slide_sheet = False
     plotly_version = '2.3.0'
     sds_setting_name = ''
@@ -383,19 +384,19 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             dict: modified permissions dictionary.
         """
-        permissions = {
-            'can_download': not permissions or has_permission(request, 'can_download'),
-            'can_use_geocode': not permissions or has_permission(request, 'use_map_geocode'),
+        map_permissions = {
+            'can_download': not self.enforce_permissions or has_permission(request, 'can_download'),
+            'can_use_geocode': not self.enforce_permissions or has_permission(request, 'use_map_geocode'),
             'can_use_plot': self.plot_slide_sheet and (
-                    not permissions or has_permission(request, 'use_map_plot')
+                    not self.enforce_permissions or has_permission(request, 'use_map_plot')
             ),
             'show_public_toggle': self.show_public_toggle and (
-                    not permissions or has_permission(request, 'toggle_public_layers')
+                    not self.enforce_permissions or has_permission(request, 'toggle_public_layers')
             ),
-            'show_remove': not permissions or has_permission(request, 'remove_layers'),
-            'show_rename': not permissions or has_permission(request, 'rename_layers'),
+            'show_remove': not self.enforce_permissions or has_permission(request, 'remove_layers'),
+            'show_rename': not self.enforce_permissions or has_permission(request, 'rename_layers'),
         }
-        return permissions
+        return map_permissions
 
     # Private View Helpers -------------------------------------------------- #
     def _build_map_view(self, request, *args, **kwargs):
@@ -660,7 +661,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             log.exception('An unexpected error has occurred.')
             return JsonResponse({'success': False, 'error': 'An unexpected error has occurred.'})
 
-    @permission_required('use_map_geocode', raise_exception=True)
     def find_location_by_query(self, request, *args, **kwargs):
         """"
         An AJAX handler that performs geocoding queries.
@@ -668,6 +668,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Args:
             request(HttpRequest): The request.
         """
+        if self.enforce_permissions and not has_permission(request, 'use_map_geocode'):
+            return PermissionDenied()
+
         if not self.geocode_api_key:
             raise RuntimeError('Cannot run GeoCode query because no API token was supplied. Please provide the '
                                'API key via the "geocode_api_key" attribute of the MapLayoutView.')
@@ -680,8 +683,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             'key': self.geocode_api_key
         }
 
-        if isinstance(self.geocode_extent, list):
-            params['bounds'] = ', '.join(self.geocode_extent)
+        if isinstance(self.geocode_extent, (list, tuple)):
+            geocode_extent = [str(i) for i in self.geocode_extent]
+            params['bounds'] = ','.join(geocode_extent)
 
         response = requests.get(
             url=self._geocode_endpoint,

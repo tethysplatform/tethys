@@ -628,10 +628,38 @@ The plot slide sheet can be manipulated for more general purposes via the JavaSc
 
     See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
-Enable GeoCoding
-================
+Address Search (Geocoding)
+==========================
+
+The Geocoding feature allows users to search for locations by street address or name. It is powered by the `OpenCage Geocoding API <https://opencagedata.com/>`_. You will need to `create an account on OpenCage <https://opencagedata.com/users/sign_up>`_ and `obtain an API key <https://opencagedata.com/api>`_. Then set the ``geocode_api_key`` to the value of your OpenCage API key:
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        geocode_api_key = 'mY-@pI-k3y'
 
 
+.. tip::
+
+    Rather than store the API Key in plain text in your source code, you can store it as an app setting and retrieve it using this pattern:
+
+    .. code-block:: python
+
+        class MyMapLayout(MapLayout):
+
+            @property
+            def geocode_api_key(self):
+                return self.app.get_custom_setting('open_cage_api_key')
+
+Once the API key is set, a search box will appear on the ``MapLayout`` page. The search requires a minimum of 3 characters to be entered and no activity for 2 seconds before it attempts to search.
+
+The search extent can be limited by providing setting the ``geocode_extent`` property:
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        geocode_api_key = 'mY-@pI-k3y'
+        geocode_extent = [-127.26563,23.56399,-66.09375,50.51343]
 
 Add Legends
 ===========
@@ -662,6 +690,74 @@ Tell the ``MapLayout`` to use the custom template using the ``template_name`` pr
     class MyMapLayout(MapLayout):
         template_name = 'my_first_app/custom_map_layout.html'
         ...
+
+Permissions
+===========
+
+Some of the features of ``MapView`` can be restricted to users with certain permissions. To enable permissions enforcement, first set the ``enforce_permissions`` property to ``True``:
+
+.. code-block:: python
+
+    class MyMapLayout(MapLayout):
+        enforce_permissions = True
+
+
+Define the following permissions in the ``permissions()`` method of your app class (located in the :file:`app.py`):
+
+.. code-block:: python
+
+    from tethys_sdk.permissions import Permission, PermissionGroup
+
+
+    class MyFirstApp(TethysAppBase):
+
+        ...
+
+        def permissions(self)
+            # Define Permissions
+            can_use_map_geocode = Permission(
+                name='use_map_geocode',
+                description='Can use the address search feature.'
+            )
+
+            can_use_map_plot = Permission(
+                name='use_map_plot',
+                description='Can use the click and plot capability.'
+            )
+
+            can_remove_layers = Permission(
+                name='remove_layers',
+                description='Can remove layerss'
+            )
+
+            can_rename_layers = Permission(
+                name='rename_layers',
+                description='Can rename layers.'
+            )
+
+            can_toggle_public_layer = Permission(
+                name='toggle_public_layer',
+                description='Can toggle the public toggle for layers.'
+            )
+
+            can_download = Permission(
+                name='can_download',
+                description='Can download layers.'
+            )
+
+            # Create map admin permission group
+            map_admin_group = PermissionGroup(
+                name='map_admin',
+                permissions=(
+                    can_use_map_geocode, can_use_map_plot, can_remove_layers,
+                    can_rename_layers, can_toggle_public_layer, can_download
+                )
+            )
+
+            return (map_admin_group,)
+
+Finally, use the admin pages to assign individual permissions to users, create additional permissions groups, and assign them to users (see: :ref:`tethys_portal_auth_admin`).
+
 
 API Documentation
 =================

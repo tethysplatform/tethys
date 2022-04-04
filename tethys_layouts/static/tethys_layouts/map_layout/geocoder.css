@@ -80,3 +80,11 @@
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     display: none;
 }
+
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+    border: none;
+}
+
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove {
+    display: none;
+}
