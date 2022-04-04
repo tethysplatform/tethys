@@ -43,7 +43,7 @@ class TethysLayout(TethysController):
         the_method = self.request_to_method(request)
 
         if the_method is not None:
-            return the_method(request=request, *args, **kwargs)
+            return the_method(request, *args, **kwargs)
 
         # Initialize context
         context = dict()
@@ -65,13 +65,13 @@ class TethysLayout(TethysController):
         permissions = dict()
 
         # Permissions hook
-        permissions = self.get_permissions(request=request, permissions=permissions, *args, **kwargs)
+        permissions = self.get_permissions(request, permissions, *args, **kwargs)
 
         # Add permissions to context
         context.update(permissions)
 
         # Context hook
-        context = self.get_context(request=request, context=context, *args, **kwargs)
+        context = self.get_context(request, context, *args, **kwargs)
 
         return render(request, self.template_name, context)
 
@@ -84,7 +84,7 @@ class TethysLayout(TethysController):
         if the_method is None:
             return HttpResponseNotFound()
 
-        return the_method(request=request, *args, **kwargs)
+        return the_method(request, *args, **kwargs)
 
     def request_to_method(self, request):
         """

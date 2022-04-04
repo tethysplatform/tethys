@@ -3,6 +3,7 @@
 
 {% block import_gizmos %}
   {% import_gizmo_dependency select_input %}
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
 {% endblock %}
 
@@ -107,13 +108,10 @@
 {% block app_content %}
   {# ADDRESS SEARCH/GEOCODE #}
   {% if geocode_enabled and can_use_geocode %}
-  <div id="map-geocode-wrapper">
+  <div id="map-geocode-wrapper" class="ol-unselectable ol-control">
     <div class="row">
-      <div class="col-sm-12">
-        <div class="input-group">
-          <select name="geocode_select" id="geocode_select" class="geocode-search" multiple></select>
-          <span class="input-group-addon"><i class="bi bi-search"></i></span>
-        </div>
+      <div class="col">
+        <select name="geocode_select" id="geocode_select" class="geocode-search form-control" multiple></select>
       </div>
     </div>
   </div>

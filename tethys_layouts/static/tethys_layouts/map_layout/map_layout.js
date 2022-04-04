@@ -1547,7 +1547,7 @@ var MAP_LAYOUT = (function() {
         ];
     };
 
- 	  // Geocode Methods
+ 	// Geocode Methods
     init_geocode = function() {
         if (p_can_geocode) {
             // Add Geocode Control to OpenLayers controls container
@@ -1558,6 +1558,8 @@ var MAP_LAYOUT = (function() {
             // Initialize select2 search field
             var $geocoder = $('#geocode_select');
             $geocoder.select2({
+                theme: "bootstrap-5",
+                dropdownParent: $("#geocode_select").parent(),
                 minimumInputLength: 3,
                 placeholder: "Search",
                 allowClear: true,
@@ -1570,7 +1572,6 @@ var MAP_LAYOUT = (function() {
                         return {
                             'method': 'find-location-by-query',
                             'q': params.term, // search term
-                            'extent': m_extent.join()
                         };
                     },
                     processResults: function (data, params) {
@@ -1590,7 +1591,7 @@ var MAP_LAYOUT = (function() {
 
     do_geocode = function(event) {
       // Add classes For styling
-      var $search_field = $("li.select2-search.select2-search--inline");
+      var $search_field = $(".select2-search.select2-search--inline");
       var i;
 
       $search_field.addClass("geocode-item-selected");
@@ -1653,7 +1654,7 @@ var MAP_LAYOUT = (function() {
 
     clear_geocode = function(event) {
         // Remove classes For styling
-        var $search_field = $("li.select2-search.select2-search--inline");
+        var $search_field = $(".select2-search.select2-search--inline");
         $search_field.removeClass("geocode-item-selected");
 
         // Clear the map

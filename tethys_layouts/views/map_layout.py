@@ -44,6 +44,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         default_disable_basemap (bool) Set to True to disable the basemap.
         default_zoom (int): Default zoom level. Defaults to 4.
         geocode_api_key (str): An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
+        geocode_extent (list): Bounding box defining search area for address search feature (e.g.: [-65.69, 23.81, -129.17, 49.38]). Alternatively, set to 'map-extent' to use map extent.
         geoserver_workspace (str): Name of the GeoServer workspace of layers if applicable. Defaults to None.
         initial_map_extent = The initial zoom extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
         feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
@@ -90,6 +91,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     default_disable_basemap = False
     default_zoom = 4
     geocode_api_key = None
+    geocode_extent = None
     geoserver_workspace = ''
     initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
     feature_selection_multiselect = False
@@ -678,89 +680,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             'key': self.geocode_api_key
         }
 
-        if extent:
-            params['bounds'] = extent
-
-        response = requests.get(
-            url=self._geocode_endpoint,
-            params=params
-        )
-
-        if response.status_code != 200:
-            json = {'success': False,
-                    'error': response.text}
-            return JsonResponse(json)
-
-        # Construct friendly name for address select
-        r_json = response.json()
-
-        # Construct success json and parse out needed info
-        json = {'success': True,
-                'results': []}
-
-        for address in r_json['features']:
-            point = address['geometry']['coordinates']
-            scale = 0.001
-
-            if 'bounds' in address['properties']:
-                bounds = address['properties']['bounds']
-
-                minx = float(bounds['southwest']['lng'])
-                maxx = float(bounds['northeast']['lng'])
-                miny = float(bounds['southwest']['lat'])
-                maxy = float(bounds['northeast']['lat'])
-
-                diffx = maxx - minx
-
-                if diffx < scale:
-                    minx -= scale
-                    miny -= scale
-                    maxx += scale
-                    maxy += scale
-
-            else:
-                minx = point[0] - scale
-                maxx = point[0] + scale
-                miny = point[1] - scale
-                maxy = point[1] + scale
-
-            bbox = [minx, miny, maxx, maxy]
-
-            max_name_length = 40
-            display_name = address['properties']['formatted']
-            if len(display_name) > max_name_length:
-                display_name = display_name[:max_name_length] + '...'
-
-            geocode_id = uuid.uuid4()
-
-            json['results'].append({
-                'text': display_name,
-                'point': point,
-                'bbox': bbox,
-                'id': 'geocode-' + str(geocode_id)
-            })
-
-        return JsonResponse(json)
-
-    @permission_required('use_map_geocode', raise_exception=True)
-    def find_location_by_advanced_query(self, request, *args, **kwargs):
-        """"
-        An AJAX handler that performs an advanced address search.
-
-        Args:
-            request(HttpRequest): The request.
-        """
-        if not self.geocode_api_key:
-            raise RuntimeError('Can not run GeoCode query because no API token was supplied. Please provide the '
-                               'API key via the "geocode_api_key" attribute of the MapLayoutView.')
-
-        query = request.POST.get('q', None)
-        # location = request.POST.get('l', None)
-
-        params = {
-            'query': query,
-            'key': self.geocode_api_key
-        }
+        if isinstance(self.geocode_extent, list):
+            params['bounds'] = ', '.join(self.geocode_extent)
 
         response = requests.get(
             url=self._geocode_endpoint,
