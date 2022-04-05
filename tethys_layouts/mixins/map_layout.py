@@ -343,7 +343,7 @@ class MapLayoutMixin:
 
         Returns:
             MVLayer: the MVLayer object.
-        """ # noqa: E501
+        """  # noqa: E501
         # Define default styles for layers
         style_map = cls.get_vector_style_map()
 
@@ -380,7 +380,7 @@ class MapLayoutMixin:
                         cross_origin=None, styles=None, legend_image_url=None):
         """
         Build an WMS MVLayer object with supplied arguments.
-    
+
         Args:
             endpoint(str): URL to GeoServer WMS interface.
             layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
@@ -472,7 +472,7 @@ class MapLayoutMixin:
         return mv_layer
 
     @classmethod
-    def build_arc_gis_layer(cls, endpoint, layer_name, layer_title, layer_variable, layer_id=None, visible=True, 
+    def build_arc_gis_layer(cls, endpoint, layer_name, layer_title, layer_variable, layer_id=None, visible=True,
                             selectable=False, extent=None, public=True):
         """
         Build an AcrGIS Map Server MVLayer object with supplied arguments.
@@ -528,7 +528,7 @@ class MapLayoutMixin:
 
         Returns:
             dict<name, value>: Color ramp division names and values.
-        """
+        """  # noqa:E501
         divisions = {}
 
         # Equation of a Line

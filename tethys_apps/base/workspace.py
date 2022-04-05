@@ -284,7 +284,7 @@ def user_workspace(controller):
 
             return render(request, 'my_first_app/template.html', context)
 
-    """
+    """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
         from tethys_quotas.models import ResourceQuota
@@ -391,7 +391,7 @@ def app_workspace(controller):
 
             return render(request, 'my_first_app/template.html', context)
 
-    """
+    """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
         from tethys_quotas.models import ResourceQuota

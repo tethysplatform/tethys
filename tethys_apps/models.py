@@ -497,7 +497,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
 
             if as_wfs:
                 raise ValueError('THREDDS does not support the WFS interface.')
-        
+
         if as_endpoint or as_public_endpoint:
             return endpoint
 

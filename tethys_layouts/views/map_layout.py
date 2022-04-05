@@ -68,7 +68,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         show_public_toggle (bool): Show the "Public/Private" toggle control in the layer context menus.
         wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
 
-    """
+    """  # noqa:E501
     __metaclass__ = ABCMeta
 
     # Changing these will likely break the MapLayout
@@ -151,7 +151,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         Returns:
             list<LayerGroupDicts>: The MapView, extent, and list of LayerGroup dictionaries.
-        """
+        """  # noqa:E501
         return []
 
     @classmethod
@@ -685,7 +685,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                                'API key via the "geocode_api_key" attribute of the MapLayoutView.')
 
         query = request.POST.get('q', None)
-        extent = request.POST.get('extent', None)
 
         params = {
             'query': query,
