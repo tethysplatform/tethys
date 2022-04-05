@@ -200,7 +200,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             dict: the style map.
         """
-        color = 'gold'
+        color = 'navy'
         style_map = {
             'Point': {'ol.style.Style': {
                 'image': {'ol.style.Circle': {
@@ -225,7 +225,16 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                     'width': 2
                 }},
                 'fill': {'ol.style.Fill': {
-                    'color': 'rgba(255, 215, 0, 0.1)'
+                    'color': 'rgba(0, 0, 255, 0.1)'
+                }}
+            }},
+            'MultiPolygon': {'ol.style.Style': {
+                'stroke': {'ol.style.Stroke': {
+                    'color': color,
+                    'width': 2
+                }},
+                'fill': {'ol.style.Fill': {
+                    'color': 'rgba(0, 0, 255, 0.1)'
                 }}
             }},
         }

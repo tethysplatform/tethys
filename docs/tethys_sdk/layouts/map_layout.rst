@@ -8,6 +8,12 @@ Map Layout
 
 The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
 
+.. figure:: ./images/map_layout/map_layout.png
+    :width: 800px
+    :align: left
+
+    **Figure 1**: Example map view created using Map Layout.
+
 Setup
 =====
 
@@ -109,6 +115,12 @@ The following example demonstrates how to add WMS layers to a ``MapLayout`` usin
 
     The ellipsis (`...`) in code examples indicate code that is not shown for brevity. **DO NOT COPY VERBATIM**.
 
+.. figure:: ./images/map_layout/map_layout_wms_layer.png
+    :width: 800px
+    :align: left
+
+    **Figure 2**: Example of a WMS layer displayed in a Map Layout.
+
 GeoJSON Layers
 --------------
 
@@ -148,6 +160,13 @@ The following example demonstrates how to add a GeoJSON layer to a ``MapLayout``
             # Add layer to layer group
             ...
 
+
+.. figure:: ./images/map_layout/map_layout_geojson_layer.png
+    :width: 800px
+    :align: left
+
+    **Figure 3**: Example of a GeoJSON layer displayed in a Map Layout.
+
 Vector Layer Styles
 +++++++++++++++++++
 
@@ -185,17 +204,30 @@ Use the ``get_vector_style_map`` method of ``MapLayout`` to define custom styles
                 }},
                 'MultiPolygon': {'ol.style.Style': {
                     'stroke': {'ol.style.Stroke': {
-                        'color': 'blue',
+                        'color': 'orange',
                         'width': 3
+                    }},
+                    'fill': {'ol.style.Fill': {
+                        'color': 'rgba(255, 140, 0, 0.1)'
                     }}
                 }},
                 'Polygon': {'ol.style.Style': {
                     'stroke': {'ol.style.Stroke': {
-                        'color': 'blue',
+                        'color': 'green',
                         'width': 3
+                    }},
+                    'fill': {'ol.style.Fill': {
+                        'color': 'rgba(0, 255, 0, 0.1)'
                     }}
                 }},
             }
+
+
+.. figure:: ./images/map_layout/map_layout_styled_geojson_layer.png
+    :width: 800px
+    :align: left
+
+    **Figure 4**: Example of a GeoJSON layer with custom styles displayed in a Map Layout.
 
 ArcGIS REST Layer
 -----------------
@@ -232,6 +264,12 @@ The following example demonstrates how to add an ArcGIS REST layer to a ``MapLay
             # Add layer to layer group
             ...
 
+.. figure:: ./images/map_layout/map_layout_arcgis_layer.png
+    :width: 800px
+    :align: left
+
+    **Figure 5**: Example of a ArcGIS layer displayed in a Map Layout.
+
 .. _map_layout_feature_selection:
 
 Feature Selection
@@ -265,6 +303,12 @@ Feature Selection for Vector Layers, such as GeoJSON layers, can be enabled on a
 
     Clicking inside a polygon feature will not select it. Instead, click on the border of the polygon to select it.
 
+.. figure:: ./images/map_layout/map_layout_vector_feature_selection.png
+    :width: 800px
+    :align: left
+
+    **Figure 6**: Vector layer feature selection in Map Layout.
+
 JavaScript
 ++++++++++
 
@@ -272,7 +316,7 @@ Use the ``getSelectInteraction()`` method of the underlying ``MapView`` Gizmo to
 
 .. code-block:: javascript
 
-    window.addEventListener('load', function() { // wait for page to load
+    $(function() { // Wait for page to load
         let selection_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
 
         // Called each time the select interaction's list of features changes
@@ -307,6 +351,13 @@ WMS Layers
         visible=True,  # Set to False if the layer should be hidden initially
         selectable=True
     )
+
+
+.. figure:: ./images/map_layout/map_layout_wms_feature_selection.png
+    :width: 800px
+    :align: left
+
+    **Figure 7**: WMS layer feature selection in Map Layout.
 
 Geometry attribute
 ++++++++++++++++++
@@ -345,8 +396,7 @@ set the ``feature_selection_sensitivty`` to adjust the relative search radius ar
 Property Popups
 ---------------
 
-Enable pop-ups displaying the properties of selected features by setting the ``show_properties_popup`` to ``True``:
-
+Enable pop-ups displaying the properties of selected features by setting the ``show_properties_popup`` to ``True``.
 
 .. code-block:: python
 
@@ -355,7 +405,13 @@ Enable pop-ups displaying the properties of selected features by setting the ``s
 
 .. note::
     
-    This feature only works for the layer types supported by :ref:`map_layout_feature_selection`. 
+    This feature only works for the layer types supported by :ref:`map_layout_feature_selection`.
+
+.. figure:: ./images/map_layout/map_layout_properties_popup.png
+    :width: 800px
+    :align: left
+
+    **Figure 8**: Example of properties popup on a selected feature from a WMS layer.
 
 Exclude properties from being displayed in the properties pop-ups using the ``excluded_properties`` argument of the build methods. The ``id``, ``type``, ``geometry``, ``the_geom``, and ``layer_name`` properties are automatically excluded.
 
@@ -440,7 +496,15 @@ The ``MapLayout`` JavaScript API provides several methods for controlling the pr
 Map Clicks
 ==========
 
-The Map Clicks feature of ``MapLayout`` will display a point at the location on the map where the user clicked. Enable Map Clicks by setting the ``show_map_clicks`` property of ``MapLayout`` to ``True``:
+The Map Clicks feature of ``MapLayout`` will display a point at the location on the map where the user clicked. 
+
+.. figure:: ./images/map_layout/map_layout_map_click.png
+    :width: 800px
+    :align: left
+
+    **Figure 9**: Map clicks adds a point on the map at the location where the user last clicked on the map.
+
+Enable Map Clicks by setting the ``show_map_clicks`` property of ``MapLayout`` to ``True``:
 
 .. code-block:: python
 
@@ -469,14 +533,22 @@ Use the ``TETHYS_MAP_VIEW.mapClicked()`` method to respond to Map Click events. 
 
 .. code-block:: javascript
 
-    // Map Click Event Handler
-    TETHYS_MAP_VIEW.mapClicked(function(coords) {
-        let popup_content = document.querySelector("#properties-popup-content");
-        let lat_lon = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
-        let rounded_lat = Math.round(lat_lon[1] * 1000000) / 1000000;
-        let rounded_lon = Math.round(lat_lon[0] * 1000000) / 1000000;
-        popup_content.innerHTML = `<b>Coordinates:</b><p>${rounded_lat}, ${rounded_lon}</p>`;
+    $(function() {  // Wait for page to load
+        // Map Click Event Handler
+        TETHYS_MAP_VIEW.mapClicked(function(coords) {
+            let popup_content = document.querySelector("#properties-popup-content");
+            let lat_lon = ol.proj.transform(coords, 'EPSG:3857', 'EPSG:4326');
+            let rounded_lat = Math.round(lat_lon[1] * 1000000) / 1000000;
+            let rounded_lon = Math.round(lat_lon[0] * 1000000) / 1000000;
+            popup_content.innerHTML = `<b>Coordinates:</b><p>${rounded_lat}, ${rounded_lon}</p>`;
+        });
     });
+
+.. figure:: ./images/map_layout/map_layout_map_click_popup.png
+    :width: 800px
+    :align: left
+
+    **Figure 10**: Example of custom content generated from JavaScript in the Map Click popup.
 
 The ``show_properties_popup``, ``close_properties_popup``, ``hide_properties_popup``, and ``reset_properties_popup`` methods can be used to manipulate the Map Click popup (see: :ref:`Feature Selection > JavaScript <map_layout_popup_javascript_api>`).
 
@@ -488,6 +560,12 @@ Click and Plot
 ==============
 
 The Click and Plot capability of ``MapLayout`` can be used to plot data associated with individual features of a layer. The plots are powered by `PlotlyJS <https://plotly.com/javascript/>`_ and are displayed on a slide sheet that slides from the bottom of the map window.
+
+.. figure:: ./images/map_layout/map_layout_click_n_plot.png
+    :width: 800px
+    :align: left
+
+    **Figure 11**: The Click and Plot feature can be used to plot data associated with selected features.
 
 Enable the Plot Slide Sheet by setting the ``plot_slide_sheet`` property to ``True``:
 
@@ -631,7 +709,15 @@ The plot slide sheet can be manipulated for more general purposes via the JavaSc
 Address Search (Geocoding)
 ==========================
 
-The Geocoding feature allows users to search for locations by street address or name. It is powered by the `OpenCage Geocoding API <https://opencagedata.com/>`_. You will need to `create an account on OpenCage <https://opencagedata.com/users/sign_up>`_ and `obtain an API key <https://opencagedata.com/api>`_. Then set the ``geocode_api_key`` to the value of your OpenCage API key:
+The Geocoding feature allows users to search for locations by street address or name. 
+
+.. figure:: ./images/map_layout/map_layout_geocoding.png
+    :width: 800px
+    :align: left
+
+    **Figure 12**: Use the Geocoding capability of Map Layout to perform address and location search.
+
+The geocoding capability is powered by the `OpenCage Geocoding API <https://opencagedata.com/>`_. You will need to `create an account on OpenCage <https://opencagedata.com/users/sign_up>`_ and `obtain an API key <https://opencagedata.com/api>`_. Then set the ``geocode_api_key`` to the value of your OpenCage API key:
 
 .. code-block:: python
 
@@ -660,11 +746,6 @@ The search extent can be limited by providing setting the ``geocode_extent`` pro
     class MyMapLayout(MapLayout):
         geocode_api_key = 'mY-@pI-k3y'
         geocode_extent = [-127.26563,23.56399,-66.09375,50.51343]
-
-Add Legends
-===========
-
-Coming Soon...
 
 .. _map_layout_custom_template:
 
@@ -772,7 +853,7 @@ MapLayout Class
 Properties
 ++++++++++
 
-The following properties can be overridden customize the behavior of the ``MapLayout`` view. It is recommended that the following properties be overridden everytime: ``app``, ``base_template``, ``map_subtitle``, and ``map_title``.
+The following properties can be overridden customize the behavior of the ``MapLayout``. It is recommended that the following properties be overridden everytime: ``app``, ``base_template``, ``map_subtitle``, and ``map_title``.
 
 .. autoclass:: tethys_layouts.views.map_layout.MapLayout
 
