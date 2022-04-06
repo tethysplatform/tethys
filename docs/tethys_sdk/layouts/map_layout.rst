@@ -67,6 +67,12 @@ In addition, the ``compose_layers()`` method needs to return a ``list`` of at le
 WMS Layer
 ---------
 
+.. figure:: ./images/map_layout/map_layout_wms_layer.png
+    :width: 800px
+    :align: left
+
+    **Figure 2**: Example of a WMS layer displayed in a Map Layout.
+
 The following example demonstrates how to add WMS layers to a ``MapLayout`` using the ``build_wms_layer`` method:
 
 .. code-block:: python
@@ -115,14 +121,14 @@ The following example demonstrates how to add WMS layers to a ``MapLayout`` usin
 
     The ellipsis (`...`) in code examples indicate code that is not shown for brevity. **DO NOT COPY VERBATIM**.
 
-.. figure:: ./images/map_layout/map_layout_wms_layer.png
+GeoJSON Layers
+--------------
+
+.. figure:: ./images/map_layout/map_layout_geojson_layer.png
     :width: 800px
     :align: left
 
-    **Figure 2**: Example of a WMS layer displayed in a Map Layout.
-
-GeoJSON Layers
---------------
+    **Figure 3**: Example of a GeoJSON layer displayed in a Map Layout.
 
 The following example demonstrates how to add a GeoJSON layer to a ``MapLayout`` using the ``build_geojson_layer`` method:
 
@@ -160,15 +166,14 @@ The following example demonstrates how to add a GeoJSON layer to a ``MapLayout``
             # Add layer to layer group
             ...
 
+Vector Layer Styles
++++++++++++++++++++
 
-.. figure:: ./images/map_layout/map_layout_geojson_layer.png
+.. figure:: ./images/map_layout/map_layout_styled_geojson_layer.png
     :width: 800px
     :align: left
 
-    **Figure 3**: Example of a GeoJSON layer displayed in a Map Layout.
-
-Vector Layer Styles
-+++++++++++++++++++
+    **Figure 4**: Example of a GeoJSON layer with custom styles displayed in a Map Layout.
 
 Use the ``get_vector_style_map`` method of ``MapLayout`` to define custom styles for GeoJSON layers. The method expects a dictionary to be returned containing keys that coorespond to feature types (e.g.: "Point", "LineString", "Polygon") and values that are the style definition. The style definitions are created using a Python dictionary syntax that mirrors the `OpenLayers Style API <https://openlayers.org/en/latest/examples/geojson.html>`_. The For example:
 
@@ -222,15 +227,14 @@ Use the ``get_vector_style_map`` method of ``MapLayout`` to define custom styles
                 }},
             }
 
+ArcGIS REST Layer
+-----------------
 
-.. figure:: ./images/map_layout/map_layout_styled_geojson_layer.png
+.. figure:: ./images/map_layout/map_layout_arcgis_layer.png
     :width: 800px
     :align: left
 
-    **Figure 4**: Example of a GeoJSON layer with custom styles displayed in a Map Layout.
-
-ArcGIS REST Layer
------------------
+    **Figure 5**: Example of a ArcGIS layer displayed in a Map Layout.
 
 The following example demonstrates how to add an ArcGIS REST layer to a ``MapLayout`` using the ``build_arc_gis_layer`` method:
 
@@ -264,23 +268,25 @@ The following example demonstrates how to add an ArcGIS REST layer to a ``MapLay
             # Add layer to layer group
             ...
 
-.. figure:: ./images/map_layout/map_layout_arcgis_layer.png
-    :width: 800px
-    :align: left
-
-    **Figure 5**: Example of a ArcGIS layer displayed in a Map Layout.
-
 .. _map_layout_feature_selection:
 
 Feature Selection
 =================
 
-The ``MapLayout`` layout supports two modes of feature selection: Feature Selection for Vector Layers and Feature Selection for WMS Layers.
+The ``MapLayout`` layout supports two modes of feature selection: Feature Selection for Vector Layers and Feature Selection for WMS Layers. Select features by clicking on the feature and select multiple layers by holding the ``SHIFT`` key while clicking on features.
 
 Vector Layers
 -------------
 
-Feature Selection for Vector Layers, such as GeoJSON layers, can be enabled on a layer-by-layer basis by setting the ``selectable`` argument to ``True``. Select features by clicking on the feature and select multiple layers by holding the ``SHIFT`` key while clicking on features.
+Vector layers, like GeoJSON layers, support Feature selection.
+
+.. figure:: ./images/map_layout/map_layout_vector_feature_selection.png
+    :width: 800px
+    :align: left
+
+    **Figure 6**: Vector layer feature selection in Map Layout.
+
+Feature Selection for Vector Layers, such as GeoJSON layers, can be enabled on a layer-by-layer basis by setting the ``selectable`` argument to ``True``:
 
 .. code-block:: python
 
@@ -302,12 +308,6 @@ Feature Selection for Vector Layers, such as GeoJSON layers, can be enabled on a
 .. note::
 
     Clicking inside a polygon feature will not select it. Instead, click on the border of the polygon to select it.
-
-.. figure:: ./images/map_layout/map_layout_vector_feature_selection.png
-    :width: 800px
-    :align: left
-
-    **Figure 6**: Vector layer feature selection in Map Layout.
 
 JavaScript
 ++++++++++
@@ -337,7 +337,15 @@ Use the ``getSelectInteraction()`` method of the underlying ``MapView`` Gizmo to
 WMS Layers
 ----------
 
-``MapLayout`` also supports feature selection for WMS layers that are hosted by a GeoServer and are derived from a vector source (e.g. created from a Shapefile or SQLView). Enabling feature selection is done on a layer by layer basis by setting the ``selectable`` argument to ``True`` as shown in the example below:
+``MapLayout`` also supports feature selection for WMS layers that are hosted by a GeoServer and are derived from a vector source (e.g. created from a Shapefile or SQLView).
+
+.. figure:: ./images/map_layout/map_layout_wms_feature_selection.png
+    :width: 800px
+    :align: left
+
+    **Figure 7**: WMS layer feature selection in Map Layout.
+
+Enabling feature selection is done on a layer by layer basis by setting the ``selectable`` argument to ``True`` as shown in the example below:
 
 .. code-block:: python
 
@@ -351,13 +359,6 @@ WMS Layers
         visible=True,  # Set to False if the layer should be hidden initially
         selectable=True
     )
-
-
-.. figure:: ./images/map_layout/map_layout_wms_feature_selection.png
-    :width: 800px
-    :align: left
-
-    **Figure 7**: WMS layer feature selection in Map Layout.
 
 Geometry attribute
 ++++++++++++++++++
@@ -396,6 +397,14 @@ set the ``feature_selection_sensitivty`` to adjust the relative search radius ar
 Property Popups
 ---------------
 
+As the name suggestions, properties popups can be enabled to display properties of selected features in a popup dialog.
+
+.. figure:: ./images/map_layout/map_layout_properties_popup.png
+    :width: 800px
+    :align: left
+
+    **Figure 8**: Example of properties popup on a selected feature from a WMS layer.
+
 Enable pop-ups displaying the properties of selected features by setting the ``show_properties_popup`` to ``True``.
 
 .. code-block:: python
@@ -406,12 +415,6 @@ Enable pop-ups displaying the properties of selected features by setting the ``s
 .. note::
     
     This feature only works for the layer types supported by :ref:`map_layout_feature_selection`.
-
-.. figure:: ./images/map_layout/map_layout_properties_popup.png
-    :width: 800px
-    :align: left
-
-    **Figure 8**: Example of properties popup on a selected feature from a WMS layer.
 
 Exclude properties from being displayed in the properties pop-ups using the ``excluded_properties`` argument of the build methods. The ``id``, ``type``, ``geometry``, ``the_geom``, and ``layer_name`` properties are automatically excluded.
 
@@ -443,51 +446,7 @@ Exclude properties from being displayed in the properties pop-ups using the ``ex
 JavaScript
 ----------
 
-The ``MapLayout`` JavaScript API provides several methods for controlling the properties popup:
-
-**MAP_LAYOUT.show_properties_popup(coordinates)**
-
-    Show the properties popup at the location given.
-
-    **Parameters**
-
-    * **coordinates** (*ol.geom.Point*|*Array*): An ``ol.goem.Point`` or an ``Array`` of length 2 (e.g. ``[-11981657.512845377, 4615036.7485996075]``). Coordinates should be specified in the ``EPSG:3857`` coordinate system.
-
-**MAP_LAYOUT.close_properties_popup()** 
-
-    Hides the properties popup and clears the features selected.
-
-**MAP_LAYOUT.hide_properties_popup()**
-
-    Hides the properties popup without clearing selection.
-
-**MAP_LAYOUT.reset_properties_popup()**
-
-    Empties content of properties popup and then hides it.
-
-**MAP_LAYOUT.properties_table_generator(f)**
-
-    Override the default function that is used to generate the properties table that is displayed in the feature selection properties popup.
-
-    **Parameters**
-
-    * **function**: Provide a function that accepts two arguments, ``feature`` and ``layer``, and returns a string containing the HTML markup to insert into the popup.
-
-**MAP_LAYOUT.custom_properties_generator(f)**
-
-    Define a function that is used to generate content to display in the popup after the properties table.
-
-    **Parameters**
-
-    * **f** (function): Provide a function that accepts two arguments, ``feature`` and ``layer``, and returns a string containing the HTML markup to insert in the popup after the properties table.
-
-**MAP_LAYOUT.custom_properties_initializer(f)**
-
-    Define a function that performs initialization operations for custom content after the custom content markup is rendered (e.g. initialize a plot).
-
-    **Parameters**
-
-    * **f** (function): Provide a function that accepts no arguments and performs the initialization of custom content in the popup.
+The ``MapLayout`` JavaScript API provides several methods for controlling the properties popup. See: :ref:`map_layout_js_show_properties_popup`, :ref:`map_layout_js_close_properties_popup`, :ref:`map_layout_js_hide_properties_popup`, :ref:`map_layout_js_reset_properties_popup`, :ref:`map_layout_js_properties_table_generator`, :ref:`map_layout_js_custom_properties_generator`, and :ref:`map_layout_js_custom_properties_initializer`.
 
 .. tip::
 
@@ -662,45 +621,7 @@ In this example, the plot data is hard-coded for simplicity:
 JavaScript
 ----------
 
-The plot slide sheet can be manipulated for more general purposes via the JavaScript API for ``MapLayout``. Ensure that the ``plot_slide_sheet`` property of the ``MapLayout`` class is set to ``True`` to enable this functionality.
-
-**MAP_LAYOUT.get_plot()**
-
-    Return the selector for the Plotly plot element for use in Plotly functions.
-
-**MAP_LAYOUT.show_plot()**
-
-    Open/show the slide sheet containing the plot.
-
-**MAP_LAYOUT.hide_plot()**
-
-    Close/hide the slide sheet containing the plot.
-
-**MAP_LAYOUT.update_plot(title, data, layout)**
-
-    Update the Plotly plot and slide sheet with the given title, data, and layout objects. Uses the ``Plotly.react()`` method to do this efficiently.
-
-    **Parameters**
-
-    * **title** (str): Title of the plot slide sheet.
-    * **data** (array<object>): JavaScript array of objects, one for each data series.
-    * **layout** (object): JavaScript object with Layout options for the plot.
-
-**MAP_LAYOUT.plot_loader(f)**
-
-    Override the default plot loading function.
-
-    **Parameters**
-
-    * **f** (function): A JavaScript function to be called whenever plot data needs to be loaded. Must accept three arguments: ``plot_button``, ``layer_name``, and ``feature_id``.
-
-**MAP_LAYOUT.plot_button_generator(f)**
-
-    Override the default plot button generator function. Useful for customizing the appearance, title, or behavior of the Plot button.
-
-    **Parameters**
-
-    * **f** (function): A JavaScript function to be called whenever the plot button needs to be generated. Must accept two arguments: ``feature`` and ``layer`` and return a string with HTML markup for the custom button.
+The plot slide sheet can be manipulated for more general purposes via the JavaScript API for ``MapLayout``. Ensure that the ``plot_slide_sheet`` property of the ``MapLayout`` class is set to ``True`` to enable this functionality. See: :ref:`map_layout_js_get_plot`, :ref:`map_layout_js_show_plot`, :ref:`map_layout_js_hide_plot`, :ref:`map_layout_js_update_plot`, :ref:`map_layout_js_plot_loader`, and :ref:`map_layout_js_plot_button_generator`.
 
 .. tip::
 
@@ -815,8 +736,8 @@ Define the following permissions in the ``permissions()`` method of your app cla
 Finally, use the admin pages to assign individual permissions to users, create additional permissions groups, and assign them to users (see: :ref:`tethys_portal_auth_admin`).
 
 
-API Documentation
-=================
+Python API Documentation
+========================
 
 .. _map_layout_class:
 
@@ -841,33 +762,33 @@ Override these methods to customize the behavior of the ``MapLayout`` for your a
 
 .. _map_layout_compose_layers:
 
-MapLayout.compose_layers
-++++++++++++++++++++++++
+compose_layers
+^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.compose_layers
 
-MapLayout.get_plot_for_layer_feature
-++++++++++++++++++++++++++++++++++++
+get_plot_for_layer_feature
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.get_plot_for_layer_feature
 
-MapLayout.get_vector_style_map
-++++++++++++++++++++++++++++++
+get_vector_style_map
+^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.get_vector_style_map
 
-MapLayout.should_disable_basemap
-++++++++++++++++++++++++++++++++
+should_disable_basemap
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.should_disable_basemap
 
-MapLayout.save_custom_layers
-++++++++++++++++++++++++++++
+save_custom_layers
+^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.save_custom_layers
 
-MapLayout.remove_custom_layer
-+++++++++++++++++++++++++++++
+remove_custom_layer
+^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.remove_custom_layer
 
@@ -878,60 +799,230 @@ Helper Methods and Properties
 
 These methods and properties simplify common workflows that are used in ``MapLayout`` implementations. Don't override these unless you know what you are doing.
 
-MapView.map_extent
-++++++++++++++++++
+map_extent
+^^^^^^^^^^
 
-.. autoproperty:: tethys_layouts.views.map_layout.MapLayout.map_extent
+**property MapLayout.map_extent**
 
-MapView.default_view
-++++++++++++++++++++
+    Returns the default map extent (e.g.: [-180, 180, -90, 90]).
 
-.. autoproperty:: tethys_layouts.views.map_layout.MapLayout.default_view
+default_view
+^^^^^^^^^^^^
 
-MapLayout.get_initial_map_extent
-++++++++++++++++++++++++++++++++
+**property MapLayout.default_view**
+
+    Returns the default view for the map.
+
+get_initial_map_extent
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.get_initial_map_extent
 
 .. _map_layout_build_wms_layer:
 
-MapLayout.build_wms_layer
-+++++++++++++++++++++++++
+build_wms_layer
+^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_wms_layer
 
 .. _map_layout_build_geojson_layer:
 
-MapLayout.build_geojson_layer
-+++++++++++++++++++++++++++++
+build_geojson_layer
+^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_geojson_layer
 
 .. _map_layout_build_arc_gis_layer:
 
-MapLayout.build_arc_gis_layer
-+++++++++++++++++++++++++++++
+build_arc_gis_layer
+^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_arc_gis_layer
 
 .. _map_layout_build_layer_group:
 
-MapLayout.build_layer_group
-+++++++++++++++++++++++++++
+build_layer_group
+^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_layer_group
 
-MapLayout.build_legend
-++++++++++++++++++++++
+build_legend
+^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_legend
 
-MapLayout.generate_custom_color_ramp_divisions
-++++++++++++++++++++++++++++++++++++++++++++++
+generate_custom_color_ramp_divisions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.generate_custom_color_ramp_divisions
 
-MapLayout.build_param_string
-++++++++++++++++++++++++++++
+build_param_string
+^^^^^^^^^^^^^^^^^^
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_param_string
+
+JavaScript API Documentation
+============================
+
+In addition to providing it's own JavaScript API, the ``MapLayout`` uses the ``MapView`` gizmo under the covers which means, many of the ``MapView`` gizmo JavaScript capabilities are applicable.
+
+MapLayout
+---------
+
+Properties Popups
++++++++++++++++++
+
+.. _map_layout_js_show_properties_popup:
+
+show_properties_popup
+^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.show_properties_popup(coordinates)**
+
+    Show the properties popup at the location given.
+
+    **Parameters**
+
+    * **coordinates** (*ol.geom.Point*|*Array*): An ``ol.goem.Point`` or an ``Array`` of length 2 (e.g. ``[-11981657.512845377, 4615036.7485996075]``). Coordinates should be specified in the ``EPSG:3857`` coordinate system.
+
+.. _map_layout_js_close_properties_popup:
+
+close_properties_popup
+^^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.close_properties_popup()** 
+
+    Hides the properties popup and clears the features selected.
+
+.. _map_layout_js_hide_properties_popup:
+
+hide_properties_popup
+^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.hide_properties_popup()**
+
+    Hides the properties popup without clearing selection.
+
+.. _map_layout_js_reset_properties_popup:
+
+reset_properties_popup
+^^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.reset_properties_popup()**
+
+    Empties content of properties popup and then hides it.
+
+.. _map_layout_js_properties_table_generator:
+
+properties_table_generator
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.properties_table_generator(f)**
+
+    Override the default function that is used to generate the properties table that is displayed in the feature selection properties popup.
+
+    **Parameters**
+
+    * **function**: Provide a function that accepts two arguments, ``feature`` and ``layer``, and returns a string containing the HTML markup to insert into the popup.
+
+.. _map_layout_js_custom_properties_generator:
+
+custom_properties_generator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.custom_properties_generator(f)**
+
+    Define a function that is used to generate content to display in the popup after the properties table.
+
+    **Parameters**
+
+    * **f** (function): Provide a function that accepts two arguments, ``feature`` and ``layer``, and returns a string containing the HTML markup to insert in the popup after the properties table.
+
+.. _map_layout_js_custom_properties_initializer:
+
+custom_properties_initializer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.custom_properties_initializer(f)**
+
+    Define a function that performs initialization operations for custom content after the custom content markup is rendered (e.g. initialize a plot).
+
+    **Parameters**
+
+    * **f** (function): Provide a function that accepts no arguments and performs the initialization of custom content in the popup.
+
+Plot Slide Sheet
+++++++++++++++++
+
+.. _map_layout_js_get_plot:
+
+get_plot
+^^^^^^^^
+
+**MAP_LAYOUT.get_plot()**
+
+    Return the selector for the Plotly plot element for use in Plotly functions.
+
+.. _map_layout_js_show_plot:
+
+show_plot
+^^^^^^^^^
+
+**MAP_LAYOUT.show_plot()**
+
+    Open/show the slide sheet containing the plot.
+
+.. _map_layout_js_hide_plot:
+
+hide_plot
+^^^^^^^^^
+
+**MAP_LAYOUT.hide_plot()**
+
+    Close/hide the slide sheet containing the plot.
+
+.. _map_layout_js_update_plot:
+
+update_plot
+^^^^^^^^^^^
+
+**MAP_LAYOUT.update_plot(title, data, layout)**
+
+    Update the Plotly plot and slide sheet with the given title, data, and layout objects. Uses the ``Plotly.react()`` method to do this efficiently.
+
+    **Parameters**
+
+    * **title** (str): Title of the plot slide sheet.
+    * **data** (array<object>): JavaScript array of objects, one for each data series.
+    * **layout** (object): JavaScript object with Layout options for the plot.
+
+.. _map_layout_js_plot_loader:
+
+plot_loader
+^^^^^^^^^^^
+
+**MAP_LAYOUT.plot_loader(f)**
+
+    Override the default plot loading function.
+
+    **Parameters**
+
+    * **f** (function): A JavaScript function to be called whenever plot data needs to be loaded. Must accept three arguments: ``plot_button``, ``layer_name``, and ``feature_id``.
+
+.. _map_layout_js_plot_button_generator:
+
+plot_button_generator
+^^^^^^^^^^^^^^^^^^^^^
+
+**MAP_LAYOUT.plot_button_generator(f)**
+
+    Override the default plot button generator function. Useful for customizing the appearance, title, or behavior of the Plot button.
+
+    **Parameters**
+
+    * **f** (function): A JavaScript function to be called whenever the plot button needs to be generated. Must accept two arguments: ``feature`` and ``layer`` and return a string with HTML markup for the custom button.
+
+MapView Gizmo
+-------------
+
+See: :ref:`MapView Gizmo JavaScript API <map_view_gizmo_js>`

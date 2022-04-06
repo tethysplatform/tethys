@@ -38,6 +38,9 @@ MVView
 
 .. autoclass:: tethys_sdk.gizmos.MVView
 
+
+.. _map_view_gizmo_js:
+
 JavaScript API
 --------------
 
