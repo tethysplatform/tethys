@@ -49,7 +49,7 @@ The following example demonstrates how to create a new ``MapLayout`` view:
             {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
         ]
         default_center = [-98.583, 39.833]  # USA Center
-        initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
+        initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
         default_zoom = 5
         max_zoom = 16
         min_zoom = 2
@@ -332,7 +332,7 @@ Use the ``getSelectInteraction()`` method of the underlying ``MapView`` Gizmo to
 
 .. tip::
 
-    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+    See the :ref:`layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
 WMS Layers
 ----------
@@ -491,7 +491,7 @@ The ``MapLayout`` JavaScript API provides several methods for controlling the pr
 
 .. tip::
 
-    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+    See the :ref:`layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
 Map Clicks
 ==========
@@ -554,7 +554,7 @@ The ``show_properties_popup``, ``close_properties_popup``, ``hide_properties_pop
 
 .. tip::
 
-    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+    See the :ref:`layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
 Click and Plot
 ==============
@@ -704,7 +704,7 @@ The plot slide sheet can be manipulated for more general purposes via the JavaSc
 
 .. tip::
 
-    See the :ref:`map_layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+    See the :ref:`layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
 
 Address Search (Geocoding)
 ==========================
@@ -746,31 +746,6 @@ The search extent can be limited by providing setting the ``geocode_extent`` pro
     class MyMapLayout(MapLayout):
         geocode_api_key = 'mY-@pI-k3y'
         geocode_extent = [-127.26563,23.56399,-66.09375,50.51343]
-
-.. _map_layout_custom_template:
-
-Custom Template and JavaScript
-==============================
-
-The HTML template for the ``MapLayout`` can be customized by creating an HTML document that extends ``tethys_layouts/map_layout/map_layout.html``. This is most often done to add custom CSS or JavaScript to the template as shown in this example:
-
-.. code-block:: html+django
-
-    {% extends "tethys_layouts/map_layout/map_layout.html" %}
-    {% load static %}
-
-    {% block scripts %}
-      {{ block.super }}
-      <script src="{% static 'layout_showcase/js/map.js' %}" type="text/javascript"></script>
-    {% endblock %}
-
-Tell the ``MapLayout`` to use the custom template using the ``template_name`` property:
-
-.. code-block:: python
-
-    class MyMapLayout(MapLayout):
-        template_name = 'my_first_app/custom_map_layout.html'
-        ...
 
 Permissions
 ===========

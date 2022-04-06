@@ -1,3 +1,5 @@
+.. _gizmos_api:
+
 *******************
 Template Gizmos API
 *******************
