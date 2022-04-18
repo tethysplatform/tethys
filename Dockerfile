@@ -85,6 +85,7 @@ ENV  TAB_TITLE="" \
 #########
 # SETUP #
 #########
+USER root
 RUN mkdir -p "${TETHYS_HOME}/tethys"
 WORKDIR ${TETHYS_HOME}
 
