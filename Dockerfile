@@ -30,6 +30,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
 ENV  BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
+     ENV_NAME=tethys \
      ASGI_PROCESSES=1 \
      CLIENT_MAX_BODY_SIZE="75M"
 
@@ -140,14 +141,12 @@ ADD --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
 ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; pip install -e .'
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen portal_config'
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
+RUN pip install -e .
+RUN tethys gen portal_config
 
 # Install channel-redis
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; pip install channels_redis'
+RUN pip install channels_redis
 
 ############
 # CLEAN UP #
