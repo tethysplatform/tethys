@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+FROM mambaorg/micromamba
 ###################
 # BUILD ARGUMENTS #
 ###################
@@ -102,10 +102,11 @@ RUN rm -rf /var/lib/apt/lists/*\
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Setup Conda Environment
-ADD environment.yml ${TETHYS_HOME}/tethys/
+COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
 RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
- && ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
+ && micromamba create -n "${CONDA_ENV_NAME}" --yes --file "environment.yml" \
+ && micromamba clean --all --yes
 
 ###########
 # INSTALL #
