@@ -621,7 +621,7 @@ def register_controllers(root_url: str, modules: Union[str, list, tuple], index:
                     f'"{module_name}" but the module "{module}" could not be imported. '
                     f'Any controllers in that module will not be registered.'
                 )
-           
+
             if not isinstance(e, ModuleNotFoundError):
                 write_warning(
                     f'Warning: Found controller module "{module}", but it could not be imported '
@@ -629,7 +629,7 @@ def register_controllers(root_url: str, modules: Union[str, list, tuple], index:
                 )
                 tb = traceback.format_exc()
                 write_warning(tb)
-            
+
         else:
             all_modules.extend(get_all_submodules(module))
 
