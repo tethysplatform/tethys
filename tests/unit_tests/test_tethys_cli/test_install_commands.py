@@ -656,9 +656,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
-        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[3][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[1][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[2][1][0])
 
         mock_exit.assert_called_with(0)
 
@@ -689,9 +688,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
 
         # Verify that the application install still happens
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[0][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[1][1][0])
 
         mock_exit.assert_called_with(0)
 
@@ -750,8 +748,7 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[1][1][0])
 
         mock_exit.assert_called_with(0)
 

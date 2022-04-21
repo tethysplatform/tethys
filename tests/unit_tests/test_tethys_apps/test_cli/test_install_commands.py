@@ -356,9 +356,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
-        self.assertEqual(['tethys', 'manage', 'sync'], mock_call.mock_calls[3][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[1][1][0])
+        self.assertEqual(['tethys', 'manage', 'sync'], mock_call.mock_calls[2][1][0])
 
         mock_exit.assert_called_with(0)
 
