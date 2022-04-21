@@ -140,8 +140,6 @@ version = '.'.join(release.split('.')[:2])
 # available in every file.
 
 git_directory = Path(__file__).parent.parent
-print(git_directory)
-breakpoint()
 ret = subprocess.run(['git', '-C', git_directory, 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True)
 branch = ret.stdout.decode().strip() if ret.returncode == 0 else 'release'
 
