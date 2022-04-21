@@ -1,12 +1,10 @@
 from importlib import reload
-from importlib.metadata import PackageNotFoundError
 import unittest
-from unittest import mock
 
 import tethys_portal
 
 
-class VersionCommandTests(unittest.TestCase):
+class TethysPortalInitTests(unittest.TestCase):
 
     def setUp(self):
         pass

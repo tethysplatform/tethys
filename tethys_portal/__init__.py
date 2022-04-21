@@ -7,6 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from setuptools_scm import get_version
-
-__version__ = get_version()
+try:
+    from ._version import version as __version__
+    from ._version import version_tuple  # noqa: F401
+except ImportError:
+    print("WARNING: Unable to find version for package tethys-platform")
+    __version__ = None
+    version_tuple = None

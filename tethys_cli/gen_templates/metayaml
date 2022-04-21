@@ -23,11 +23,12 @@ build:
 requirements:
   build:
     - python
-    - pbr
+    - setuptools
+    - setuptools_scm
   run:
     {% for requirement in run_requirements -%}
     - {{ requirement }}
-    {% endfor -%}
+    {% endfor %}
 
 test:
   imports:

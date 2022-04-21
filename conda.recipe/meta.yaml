@@ -5,7 +5,7 @@
 
 package:
   name: tethys-platform
-  version: 3.4.1.dev23+gb132c698.d20220421
+  version: 3.4.1.dev24+gb092a0af.d20220421
 
 source:
   path: ..
@@ -75,7 +75,9 @@ requirements:
     - setuptools_scm
     - openssl<3.0.0
     - conda
-    test:
+    
+
+test:
   imports:
     - tethys_apps
     - tethys_cli
