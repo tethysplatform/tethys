@@ -7,6 +7,9 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import pbr.version
+from importlib.metadata import version, PackageNotFoundError
 
-__version__ = pbr.version.VersionInfo('tethys_platform').release_string()
+try:
+    __version__ = version("tethys-platform")
+except PackageNotFoundError:
+    print('Whoops')

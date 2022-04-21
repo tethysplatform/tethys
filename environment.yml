@@ -75,7 +75,6 @@ dependencies:
   - pip
   - future
   - flake8
-  - pbr
   - git
   - openssl<3.0.0  # Pin until openssl issue is resolved by conda
 

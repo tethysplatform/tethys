@@ -7,13 +7,8 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import os
+# For the time being, setuptools requires setup.py when 
+# using pyproject.toml to support editable installs
+# See: https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 from setuptools import setup
-
-# allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
-
-setup(
-    setup_requires=['pbr'],
-    pbr=True,
-)
+setup()
