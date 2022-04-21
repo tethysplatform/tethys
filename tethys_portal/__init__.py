@@ -12,4 +12,5 @@ from importlib.metadata import version, PackageNotFoundError
 try:
     __version__ = version("tethys-platform")
 except PackageNotFoundError:
-    print('Whoops')
+    print("WARNING: Unable to find version for package tethys-platform")
+    __version__ = None
