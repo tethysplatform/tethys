@@ -473,17 +473,16 @@ def install_command(args):
 
     # Install Python Package
     write_msg("Running application install....")
-    
-    if args.verbose:
-        if args.develop:
-            call(['pip', 'install', '-e', '.'], stderr=STDOUT)
-        else:
-            call(['pip', 'install', '.'], stderr=STDOUT)
+
+    if args.develop:
+        cmd = ['pip', 'install', '-e', '.']
     else:
-        if args.develop:
-            call(['pip', 'install', '-e', '.'], stdout=FNULL, stderr=STDOUT)
-        else:
-            call(['pip', 'install', '.'], stdout=FNULL, stderr=STDOUT)
+        cmd = ['pip', 'install', '.']
+
+    if args.verbose:
+        call(cmd, stderr=STDOUT)
+    else:
+        call(cmd, stdout=FNULL, stderr=STDOUT)
 
     if args.no_db_sync:
         successful_exit(app_name)

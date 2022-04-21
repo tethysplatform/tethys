@@ -539,7 +539,7 @@ class TestInstallCommands(TestCase):
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
-        self.assertEqual(3, len(mock_call.call_args_list))
+        self.assertEqual(2, len(mock_call.call_args_list))
 
         mock_exit.assert_called_with(0)
 
@@ -677,7 +677,7 @@ class TestInstallCommands(TestCase):
         mock_conda_run.assert_not_called()
 
         # Make sure 'pip install' isn't in any of the calls
-        self.assertFalse(any(['pip install' in ' '.join(mc[1][0]) for mc in mock_call.mock_calls]))
+        self.assertFalse(any(['pip install see' in ' '.join(mc[1][0]) for mc in mock_call.mock_calls]))
 
         # Validate output displayed to the user
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
