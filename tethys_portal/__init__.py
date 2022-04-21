@@ -7,10 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from importlib.metadata import version, PackageNotFoundError
+from setuptools_scm import get_version
 
-try:
-    __version__ = version("tethys-platform")
-except PackageNotFoundError:
-    print("WARNING: Unable to find version for package tethys-platform")
-    __version__ = None
+__version__ = get_version()

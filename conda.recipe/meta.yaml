@@ -1,11 +1,11 @@
 # Conda Recipe for Tethys Platform
 # WARNING: THIS IS A GENERATED FILE. DO NOT EDIT.
 # TO CHANGE THIS FILE, SEE $TETHYS_SRC/tethys_cli/gen_templates/meta yaml
-{% set data = load_setup_py_data() %}
+
 
 package:
   name: tethys-platform
-  version: {{ data['version'] }}
+  version: 3.4.1.dev23+gb132c698.d20220421
 
 source:
   path: ..
@@ -72,10 +72,10 @@ requirements:
     - future
     - flake8
     - git
+    - setuptools_scm
     - openssl<3.0.0
     - conda
-    
-test:
+    test:
   imports:
     - tethys_apps
     - tethys_cli
@@ -88,14 +88,14 @@ test:
     - tethys_services
 
 about:
-  home: {{ data['url'] }}
   license: BSD-2-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: {{ data['description'] }}
+  summary: Primary Tethys Platform Django Site Project
   description: |
     Tethys Platform provides both a development environment
-    and a hosting environment for earth science web apps.
+    and a hosting environment for scientific web applications.
+  home: https://www.tethysplatform.org
   doc_url: http://docs.tethysplatform.org
   dev_url: https://github.com/tethysplatform/tethys
 
