@@ -17,7 +17,6 @@ dependencies:
 - django =3.2.*
 - sphinx
 - sphinx-argparse
-- pbr
 - pip:
     - sphinx_materialdesign_theme
     - sphinx-autobuild
