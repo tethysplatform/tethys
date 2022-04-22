@@ -35,7 +35,7 @@ def check_and_install_prereqs(tests_path):
     except ImportError:
         write_warning("Test App not found. Installing.....")
         setup_path = os.path.join(tests_path, 'apps', 'tethysapp-test_app')
-        subprocess.call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
+        subprocess.call(['pip', 'install', '-e', '.'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
 
     try:
         import tethysext.test_extension  # noqa: F401
@@ -44,7 +44,7 @@ def check_and_install_prereqs(tests_path):
     except ImportError:
         write_warning("Test Extension not found. Installing.....")
         setup_path = os.path.join(tests_path, 'extensions', 'tethysext-test_extension')
-        subprocess.call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
+        subprocess.call(['pip', 'install', '-e', '.'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
 
 
 def test_command(args):

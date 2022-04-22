@@ -29,6 +29,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Install Tethys
       - name: Install Tethys
         run: |
@@ -70,6 +72,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Build the docker for no tag
       - name: Build Without Tag
         run: |
@@ -100,6 +104,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Setup Tethys
       - name: Setup Tethys
         run: |

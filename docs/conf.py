@@ -11,16 +11,15 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
-import sys
+from importlib.metadata import version
 import os
+from pathlib import Path
+import subprocess
+import sys
 from unittest import mock
 
-import pbr.version
-import pbr.git
-
-from django.conf import settings
 import django
+from django.conf import settings
 
 # Mock Dependencies
 # NOTE: No obvious way to automatically anticipate all the sub modules without
@@ -123,30 +122,26 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Tethys Platform'
-copyright = u'2019, Tethys Platform'
+copyright = u'2022, Tethys Platform'
+
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
-pbr_version_info = pbr.version.VersionInfo('tethys_platform')
-# The full version, including alpha/beta/rc tags.
-release = pbr_version_info.version_string_with_vcs()
-version_tuple = pbr_version_info.semantic_version().version_tuple()
-# IMPORTANT: version NEEDS TO BE X.Y FOR TUTORIAL SOLUTIONS TO RESOLVED CORRECTLY!!!
-version = f'{version_tuple[0]}.{version_tuple[1]}'
+release = version('tethys-platform')
+
+# major/minor
+version = '.'.join(release.split('.')[:2])
 
 # A string of reStructuredText that will be included at the end of every source
 # file that is read. This is the right place to add substitutions that should be
 # available in every file.
-branch = pbr.git._run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'], pbr.git._get_git_directory())
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
-if on_rtd:
-    # Hack to try to get the branch name if possible, otherwise assume 'release'
-    branch = pbr.git._run_git_command(['branch'], pbr.git._get_git_directory()).split('*')[-1].split('\n')[0].\
-        strip(')').split('/')
-    branch = branch[-1] if len(branch) == 2 else 'release'
-    print(branch)
+
+git_directory = Path(__file__).parent.parent
+ret = subprocess.run(['git', '-C', git_directory, 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True)
+branch = ret.stdout.decode().strip() if ret.returncode == 0 else 'release'
 
 rst_epilog = """
 .. |branch| replace:: {branch}
@@ -213,9 +208,6 @@ texinfo_documents = [
    u'Nathan Swain', 'TethysPlatform', 'One line description of project.',
    'Miscellaneous'),
 ]
-
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 # If this is True, todo and todolist produce output, else they produce nothing. The default is False.
 todo_include_todos = True
