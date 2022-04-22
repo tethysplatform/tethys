@@ -134,7 +134,7 @@ LOGGERS.setdefault('tethys', {
     'handlers': ['console_verbose'],
     'level': 'INFO',
 })
-LOGGERS.setdefault('tethysapps', {
+LOGGERS.setdefault('tethysapp', {
     'handlers': ['console_verbose'],
     'level': 'INFO',
 })
