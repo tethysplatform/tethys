@@ -94,8 +94,25 @@ var TETHYS_APPS_LIBRARY = (function() {
             };
         }
 
+		// Display help info icon on hover of the app tile
+		$('.app-card-container').each(function() {
+			let card_container = this;
+			let help_icon = $(card_container).children('.app-help-icon');
+
+			if (help_icon.length) {
+				$(card_container).hover(
+					function() {
+						help_icon.removeClass('d-none');
+					}, 
+					function() {
+						help_icon.addClass('d-none');
+					}
+				);
+			}
+		});
+
 		// Apply help-icon click event 
-		$('.app-help-icon').each(function(){
+		$('.app-help-icon').each(function() {
 			let info_icon = this;
 			let info_text = $(info_icon).siblings('.app-help-info');
 			$(info_icon).on('click', function(e) {
