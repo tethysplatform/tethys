@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tethys-platform"
+description =  "Primary Tethys Platform Django Site Project"
+readme = "README.rst"
+license = {file = "LICENSE"}
+keywords = ["web app", "scientific", "geospatial"]
+authors = [
+    {name = "Nathan Swain", email = "nswain@aquaveo.com"},
+    {name = "Scott Christensen", email="ScottyChristensen@gmail.com"},
+]
+classifiers = [
+     "Environment :: Web Environment",
+     "Framework :: Django",
+     "Intended Audience :: Developers",
+     "License :: OSI Approved :: BSD License",
+     "Operating System :: OS Independent",
+     "Programming Language :: Python",
+     "Programming Language :: Python :: 3",
+     "Programming Language :: Python :: 3.10",
+     "Topic :: Internet :: WWW/HTTP",
+     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+dynamic = ["version"]
+
+[project.urls]
+homepage = "http://tethysplatform.org/"
+documentation = "http://docs.tethysplatform.org/en/stable/"
+repository = "https://github.com/tethysplatform/tethys"
+
+[project.scripts]
+tethys = "tethys_cli:tethys_command"
+
+[project.optional-dependencies]
+test = [
+    "requests_mock"
+]
+
+[tool.setuptools_scm]
+write_to = "tethys_portal/_version.py"

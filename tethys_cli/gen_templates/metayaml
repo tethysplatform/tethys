@@ -1,21 +1,21 @@
 # Conda Recipe for Tethys Platform
 # WARNING: THIS IS A GENERATED FILE. DO NOT EDIT.
 # TO CHANGE THIS FILE, SEE $TETHYS_SRC/tethys_cli/gen_templates/meta yaml
-{% raw -%}
-{% set data = load_setup_py_data() %}
+
 
 package:
   name: tethys-platform
-  version: {{ data['version'] }}
+  version: {{ tethys_version }}
 
 source:
   path: ..
 
+{% raw -%}
 build:
   number: 0
   string: {% if environ.get('GIT_DESCRIBE_NUMBER', 0)|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
   noarch: python
-  script:  python setup.py install --single-version-externally-managed --record=record.txt
+  script:  python -m pip install --no-deps --ignore-installed .
   entry_points:
     - tethys = tethys_cli:tethys_command
 {%- endraw %}
@@ -23,14 +23,13 @@ build:
 requirements:
   build:
     - python
-    - pbr
+    - setuptools
+    - setuptools_scm
   run:
     {% for requirement in run_requirements -%}
     - {{ requirement }}
-    {% endfor -%}
+    {% endfor %}
 
-
-{%- raw %}
 test:
   imports:
     - tethys_apps
@@ -44,14 +43,14 @@ test:
     - tethys_services
 
 about:
-  home: {{ data['url'] }}
   license: BSD-2-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: {{ data['description'] }}
+  summary: Primary Tethys Platform Django Site Project
   description: |
     Tethys Platform provides both a development environment
-    and a hosting environment for earth science web apps.
+    and a hosting environment for scientific web applications.
+  home: https://www.tethysplatform.org
   doc_url: http://docs.tethysplatform.org
   dev_url: https://github.com/tethysplatform/tethys
 
@@ -59,5 +58,3 @@ extra:
   recipe-maintainers:
     - sdc50
     - swainn
-
-{%- endraw %}

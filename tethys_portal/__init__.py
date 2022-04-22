@@ -7,6 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import pbr.version
-
-__version__ = pbr.version.VersionInfo('tethys_platform').release_string()
+try:
+    from ._version import version as __version__
+    from ._version import version_tuple  # noqa: F401
+except ImportError:
+    print("WARNING: Unable to find version for package tethys-platform")
+    __version__ = None
+    version_tuple = None
