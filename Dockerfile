@@ -139,7 +139,7 @@ ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; python setup.py develop'
+  ; pip install -e .'
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen portal_config'
 

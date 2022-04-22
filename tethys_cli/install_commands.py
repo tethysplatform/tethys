@@ -25,7 +25,7 @@ def add_install_parser(subparsers):
 
     application_install_parser = subparsers.add_parser('install', help='Install and Initialize Applications')
     application_install_parser.add_argument('-d', '--develop',
-                                            help='Will run setup.py develop instead of setup.py install',
+                                            help='Will run pip install with editable option.',
                                             action='store_true')
     application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Install file. ')
     application_install_parser.add_argument('-s', '--services-file', type=str,
@@ -471,20 +471,18 @@ def install_command(args):
     if args.only_dependencies:
         successful_exit(app_name, "installed dependencies for")
 
-    # Run Setup.py
+    # Install Python Package
     write_msg("Running application install....")
-    if args.verbose:
-        call(['python', 'setup.py', 'clean', '--all'], stderr=STDOUT)
-        if args.develop:
-            call(['python', 'setup.py', 'develop'], stderr=STDOUT)
-        else:
-            call(['python', 'setup.py', 'install'], stderr=STDOUT)
+
+    if args.develop:
+        cmd = ['pip', 'install', '-e', '.']
     else:
-        call(['python', 'setup.py', 'clean', '--all'], stdout=FNULL, stderr=STDOUT)
-        if args.develop:
-            call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=STDOUT)
-        else:
-            call(['python', 'setup.py', 'install'], stdout=FNULL, stderr=STDOUT)
+        cmd = ['pip', 'install', '.']
+
+    if args.verbose:
+        call(cmd, stderr=STDOUT)
+    else:
+        call(cmd, stdout=FNULL, stderr=STDOUT)
 
     if args.no_db_sync:
         successful_exit(app_name)
