@@ -14,10 +14,10 @@ Settings for Tethys Platform
 This file contains default Django and other settings for the Tethys Platform.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.9/topics/settings/
+https://docs.djangoproject.com/en/3.2/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.9/ref/settings/
+https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -50,9 +50,6 @@ except Exception:
     log.exception('There was an error while attempting to read the settings from the portal_config.yml file.')
 
 bokeh_settings.resources = portal_config_settings.pop('BOKEH_RESOURCES', 'cdn')
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = portal_config_settings.pop('SECRET_KEY', generate_secret_key())
@@ -104,8 +101,7 @@ DEFAULT_DB.setdefault('PASSWORD', 'pass')
 DEFAULT_DB.setdefault('HOST', 'localhost')
 DEFAULT_DB.setdefault('PORT', 5436)
 
-LOGGING_CONFIG = portal_config_settings.pop('LOGGING_CONFIG', {})
-# See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
+# See https://docs.djangoproject.com/en/3.2/ref/settings/#logging-config for more logging configuration options.
 LOGGING = portal_config_settings.pop('LOGGING', {})
 LOGGING.setdefault('version', 1)
 LOGGING.setdefault('disable_existing_loggers', False)
@@ -137,7 +133,7 @@ LOGGERS.setdefault('tethys', {
     'handlers': ['console_verbose'],
     'level': 'INFO',
 })
-LOGGERS.setdefault('tethys.apps', {
+LOGGERS.setdefault('tethysapp', {
     'handlers': ['console_verbose'],
     'level': 'INFO',
 })
@@ -218,8 +214,6 @@ TERMS_BASE_TEMPLATE = 'termsandconditions_base.html'
 ROOT_URLCONF = 'tethys_portal.urls'
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.9/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -264,8 +258,6 @@ TEMPLATES = [
 ]
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
