@@ -8,6 +8,7 @@
 import importlib
 import inspect
 from collections import OrderedDict
+import traceback
 
 from channels.consumer import AsyncConsumer
 from django.views.generic import View
@@ -612,7 +613,7 @@ def register_controllers(root_url: str, modules: Union[str, list, tuple], index:
     for module in modules:
         try:
             module = importlib.import_module(module)
-        except ImportError:
+        except ImportError as e:
             module_name = module.split(".")[-1]
             if module_name not in DEFAULT_CONTROLLER_MODULES:
                 write_warning(
@@ -620,6 +621,15 @@ def register_controllers(root_url: str, modules: Union[str, list, tuple], index:
                     f'"{module_name}" but the module "{module}" could not be imported. '
                     f'Any controllers in that module will not be registered.'
                 )
+
+            if not isinstance(e, ModuleNotFoundError):
+                write_warning(
+                    f'Warning: Found controller module "{module}", but it could not be imported '
+                    f'because of the following error: {e}'
+                )
+                tb = traceback.format_exc()
+                write_warning(tb)
+
         else:
             all_modules.extend(get_all_submodules(module))
 
@@ -652,8 +662,8 @@ def register_controllers(root_url: str, modules: Union[str, list, tuple], index:
             index_kwargs = names[index]
             index_kwargs['url'] = root_url
         except KeyError:
-            write_warning(
-                f'Warning: The app with root_url "{root_url}" specifies an index of "{index}", '
+            raise RuntimeError(
+                f'The app with root_url "{root_url}" specifies an index of "{index}", '
                 f'but there are no controllers registered with that name.'
             )
 
