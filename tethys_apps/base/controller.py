@@ -662,8 +662,8 @@ def register_controllers(root_url: str, modules: Union[str, list, tuple], index:
             index_kwargs = names[index]
             index_kwargs['url'] = root_url
         except KeyError:
-            write_warning(
-                f'Warning: The app with root_url "{root_url}" specifies an index of "{index}", '
+            raise RuntimeError(
+                f'The app with root_url "{root_url}" specifies an index of "{index}", '
                 f'but there are no controllers registered with that name.'
             )
 

@@ -197,8 +197,8 @@ class TestController(unittest.TestCase):
         mock_list.return_value = [
                 {'name': 'name', 'url': 'url'},
             ]
-        tethys_controller.register_controllers('root', 'controllers', 'index')
-        mock_warning.assert_called_once()
+        with self.assertRaises(RuntimeError):
+            tethys_controller.register_controllers('root', 'controllers', 'index')
 
     @mock.patch('tethys_apps.base.controller.get_all_submodules')
     @mock.patch('tethys_apps.base.controller.url_map_maker')
