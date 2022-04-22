@@ -102,7 +102,6 @@ DEFAULT_DB.setdefault('HOST', 'localhost')
 DEFAULT_DB.setdefault('PORT', 5436)
 
 # See https://docs.djangoproject.com/en/3.2/ref/settings/#logging-config for more logging configuration options.
-LOGGING_CONFIG = portal_config_settings.pop('LOGGING_CONFIG', 'logging.config.dictConfig')
 LOGGING = portal_config_settings.pop('LOGGING', {})
 LOGGING.setdefault('version', 1)
 LOGGING.setdefault('disable_existing_loggers', False)
