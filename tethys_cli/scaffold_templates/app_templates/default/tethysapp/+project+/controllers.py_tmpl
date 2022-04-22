@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from tethys_sdk.base import controller
+from tethys_sdk.routing import controller
 from tethys_sdk.gizmos import Button
 
 @controller
