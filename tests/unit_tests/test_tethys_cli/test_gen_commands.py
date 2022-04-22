@@ -412,7 +412,8 @@ class CLIGenCommandsTest(unittest.TestCase):
                 'foo=1.2.*',
                 'bar=4.5',
                 'goo=7.8'
-            ]
+            ],
+            'tethys_version': mock.ANY
         }
         self.assertDictEqual(expected_context, render_context)
         mock_file.assert_called()
@@ -438,7 +439,15 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_dvfce.assert_called_with('foo', level='minor')
 
         expected_context = {
-            'run_requirements': [mock_dvfce(), 'foo=1.2.3', 'foo>=1.2.3', 'foo<=1.2.3', 'foo>1.2.3', 'foo<1.2.3']
+            'run_requirements': [
+                mock_dvfce(),
+                'foo=1.2.3',
+                'foo>=1.2.3',
+                'foo<=1.2.3',
+                'foo>1.2.3',
+                'foo<1.2.3'
+            ],
+            'tethys_version': mock.ANY
         }
         self.assertDictEqual(expected_context, ret)
 

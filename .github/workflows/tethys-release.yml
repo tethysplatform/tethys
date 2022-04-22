@@ -23,6 +23,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Get Tag Name
       - name: Get Tag
         id: gitTag
@@ -50,6 +52,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Setup Tethys
       - name: Setup Tethys
         run: |

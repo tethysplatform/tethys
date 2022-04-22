@@ -539,7 +539,7 @@ class TestInstallCommands(TestCase):
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
-        self.assertEqual(3, len(mock_call.call_args_list))
+        self.assertEqual(2, len(mock_call.call_args_list))
 
         mock_exit.assert_called_with(0)
 
@@ -656,9 +656,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
-        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[3][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[1][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[2][1][0])
 
         mock_exit.assert_called_with(0)
 
@@ -678,7 +677,7 @@ class TestInstallCommands(TestCase):
         mock_conda_run.assert_not_called()
 
         # Make sure 'pip install' isn't in any of the calls
-        self.assertFalse(any(['pip install' in ' '.join(mc[1][0]) for mc in mock_call.mock_calls]))
+        self.assertFalse(any(['pip install see' in ' '.join(mc[1][0]) for mc in mock_call.mock_calls]))
 
         # Validate output displayed to the user
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -689,9 +688,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
 
         # Verify that the application install still happens
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[0][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[1][1][0])
 
         mock_exit.assert_called_with(0)
 
@@ -750,8 +748,7 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
-        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
-        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[1][1][0])
 
         mock_exit.assert_called_with(0)
 

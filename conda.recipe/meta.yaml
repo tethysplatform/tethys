@@ -1,11 +1,11 @@
 # Conda Recipe for Tethys Platform
 # WARNING: THIS IS A GENERATED FILE. DO NOT EDIT.
 # TO CHANGE THIS FILE, SEE $TETHYS_SRC/tethys_cli/gen_templates/meta yaml
-{% set data = load_setup_py_data() %}
+
 
 package:
   name: tethys-platform
-  version: {{ data['version'] }}
+  version: 3.4.1.dev24+gb092a0af.d20220421
 
 source:
   path: ..
@@ -14,7 +14,7 @@ build:
   number: 0
   string: {% if environ.get('GIT_DESCRIBE_NUMBER', 0)|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
   noarch: python
-  script:  python setup.py install --single-version-externally-managed --record=record.txt
+  script:  python -m pip install --no-deps --ignore-installed .
   entry_points:
     - tethys = tethys_cli:tethys_command
 
@@ -29,20 +29,17 @@ requirements:
     - docker-py
     - distro
     - postgresql
-    - psycopg2<2.9
+    - psycopg2
     - sqlalchemy
     - geoalchemy2
     - plotly
-    - bokeh>=2.0.0*
+    - bokeh
     - tethys_dataset_services>=2.0.0
     - hs_restclient
     - owslib
     - requests
-    - social-auth-app-django
-    - dask=1.2.*
+    - dask
     - tethys_dask_scheduler>=1.0.2
-    - channels=2.*
-    - daphne=2.5.*
     - service_identity
     - condorpy
     - siphon
@@ -50,7 +47,10 @@ requirements:
     - pyjwt<2.0.0
     - arrow
     - isodate
-    - django=2.2.*
+    - django=3.2.*
+    - channels=3.*
+    - daphne=3.*
+    - django-analytical
     - django-axes
     - django-filter
     - djangorestframework
@@ -58,14 +58,12 @@ requirements:
     - django-model-utils
     - django-guardian
     - django-gravatar2
-    - django-termsandconditions
-    - django-session-security
-    - django-analytical
-    - django-simple-captcha
-    - django-recaptcha2
     - django-mfa2
+    - django-recaptcha2
+    - django-simple-captcha
+    - django-session-security
+    - django-termsandconditions
     - social-auth-app-django
-    - requests-mock
     - selenium
     - coverage
     - factory_boy
@@ -73,10 +71,12 @@ requirements:
     - pip
     - future
     - flake8
-    - pbr
     - git
+    - setuptools_scm
+    - openssl<3.0.0
     - conda
     
+
 test:
   imports:
     - tethys_apps
@@ -90,14 +90,14 @@ test:
     - tethys_services
 
 about:
-  home: {{ data['url'] }}
   license: BSD-2-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: {{ data['description'] }}
+  summary: Primary Tethys Platform Django Site Project
   description: |
     Tethys Platform provides both a development environment
-    and a hosting environment for earth science web apps.
+    and a hosting environment for scientific web applications.
+  home: https://www.tethysplatform.org
   doc_url: http://docs.tethysplatform.org
   dev_url: https://github.com/tethysplatform/tethys
 

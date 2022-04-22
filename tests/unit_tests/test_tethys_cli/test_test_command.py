@@ -258,10 +258,10 @@ class TestCommandTests(unittest.TestCase):
         setup_path = os.path.join(tests_path, 'apps', 'tethysapp-test_app')
         extension_setup_path = os.path.join(tests_path, 'extensions', 'tethysext-test_extension')
 
-        mock_run_process.assert_any_call(['python', 'setup.py', 'develop'],
+        mock_run_process.assert_any_call(['pip', 'install', '-e', '.'],
                                          stdout=mock.ANY, stderr=mock.ANY, cwd=setup_path)
 
-        mock_run_process.assert_any_call(['python', 'setup.py', 'develop'], stdout=mock.ANY,
+        mock_run_process.assert_any_call(['pip', 'install', '-e', '.'], stdout=mock.ANY,
                                          stderr=mock.ANY, cwd=extension_setup_path)
 
         mock_write_warning.assert_called()

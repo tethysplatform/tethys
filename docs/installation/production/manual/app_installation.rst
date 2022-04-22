@@ -66,7 +66,7 @@ Execute the install command in the app directory to make Python aware of the app
     
     .. important::
     
-        Installing your app in development mode on a production server (i.e.: ``tethys install -d`` or ``python setup.py develop``) is not recommended. Doing so has implications on file permissions that are not accounted for in these instructions. Do so at your own risk.
+        Installing your app in development mode on a production server (i.e.: ``tethys install -d`` or ``pip install -e .``) is not recommended. Doing so has implications on file permissions that are not accounted for in these instructions. Do so at your own risk.
 
     .. seealso::
     

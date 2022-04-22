@@ -7,6 +7,9 @@
 *.idea
 *.sqlite3
 *.db
+*.whl
+build/
+dist/
 docs/_build
 *~
 tethys_gizmos/static/tethys_gizmos/less/bower_components/*
@@ -25,3 +28,4 @@ tests/extensions/*/build/*
 tests/apps/*/build/*
 tests/extensions/*/dist/*
 tests/apps/*/dist/*
+tethys_portal/_version.py

@@ -355,7 +355,7 @@ then
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
         mamba env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
         conda activate ${CONDA_ENV_NAME}
-        python "${TETHYS_SRC}/setup.py" develop
+        pip install -e ${TETHYS_SRC}
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
         conda activate ${CONDA_ENV_NAME}

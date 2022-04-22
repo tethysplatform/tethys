@@ -75,8 +75,8 @@ dependencies:
   - pip
   - future
   - flake8
-  - pbr
   - git
+  - setuptools_scm
   - openssl<3.0.0  # Pin until openssl issue is resolved by conda
 
   # Conda to allow Python API access to Conda Install

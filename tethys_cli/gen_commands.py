@@ -19,6 +19,7 @@ from jinja2 import Template
 
 from django.conf import settings
 
+import tethys_portal
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
 from tethys_cli.cli_colors import write_error, write_info, write_warning
 
@@ -242,7 +243,10 @@ def gen_meta_yaml(args):
         else:
             run_requirements.append(dependency)
 
-    context = dict(run_requirements=run_requirements)
+    context = dict(
+        run_requirements=run_requirements,
+        tethys_version=tethys_portal.__version__
+    )
     return context
 
 
