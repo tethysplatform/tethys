@@ -195,7 +195,7 @@ def gen_site_content(args):
 
         home_category = SettingsCategory.objects.get(name="Home Page")
         setting_defaults(home_category)
-        
+
         custom_styles_category = SettingsCategory.objects.get(name="Custom Styles")
         setting_defaults(custom_styles_category)
 
