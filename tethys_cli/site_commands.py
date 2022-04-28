@@ -196,6 +196,12 @@ def gen_site_content(args):
         home_category = SettingsCategory.objects.get(name="Home Page")
         setting_defaults(home_category)
 
+        custom_styles_category = SettingsCategory.objects.get(name="Custom Styles")
+        setting_defaults(custom_styles_category)
+
+        custom_templates_category = SettingsCategory.objects.get(name="Custom Templates")
+        setting_defaults(custom_templates_category)
+
     if args.from_file:
         portal_yaml = Path(get_tethys_home_dir()) / 'portal_config.yml'
         if portal_yaml.exists():
