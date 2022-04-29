@@ -519,7 +519,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_tethys_home_dir__default_env_name__tethys_home_not_defined(self, mock_os):
         env_tethys_home = None
         conda_default_env = 'tethys'  # Default Tethys environment name
-        default_tethys_home = '/home/tethys/.tethys'
+        default_tethys_home = '/home/tethys'
 
         mock_os.environ.get.side_effect = [env_tethys_home, conda_default_env]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
         mock_os.path.expanduser.return_value = default_tethys_home
@@ -528,7 +528,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         mock_os.environ.get.assert_any_call('TETHYS_HOME')
         mock_os.environ.get.assert_any_call('CONDA_DEFAULT_ENV')
-        mock_os.path.expanduser.assert_called_with('~/.tethys')
+        mock_os.path.join.assert_called_with(default_tethys_home, '.tethys')
 
         # Returns default tethys home environment
         self.assertEqual(default_tethys_home, ret)
