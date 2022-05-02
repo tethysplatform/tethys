@@ -78,6 +78,14 @@ def get_random_color():
         '#f39c12',  # Orange
         '#c0392b',  # Pomegranate
         '#16a085',  # Green Sea
+        '#2d3436',  # Dracula Orchid
+        '#5f27cd',  # NASU Purple
+        '#192a56',  # Pico Void
+        '#2f3640',  # Electromagnetic
+        '#718093',  # Chain Gang Grey
+        '#c23616',  # Harley Davidson Orange
+        '#045c34',  # Dark Green
+        '#273c75',  # Mazarine Blue
     )
 
     return random.choice(default_colors)

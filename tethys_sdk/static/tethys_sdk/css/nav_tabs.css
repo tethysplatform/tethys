@@ -1,0 +1,34 @@
+/* Nav Tab */
+#app-content-wrapper #app-content #app-navigation .nav-tabs {
+    padding-bottom: 0;
+    padding-top: 5px;
+}
+
+#app-content-wrapper #app-content #app-navigation .nav li a {
+    color: #666666!important;
+    background-color: transparent!important;
+}
+
+.nav-tabs {
+    overflow: visible!important;
+    border-bottom: 1px solid #777777;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    background-color: #efefef;
+    border-color: #777777 #777777 #efefef;
+}
+
+.nav-tabs .nav-item.show .nav-link:hover,
+.nav-tabs .nav-link.active:hover {
+    border-color: #777777 #777777 #efefef;
+}
+
+.nav-tabs .nav-link:focus {
+    border-color: #777777 #777777 #efefef;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #efefef #efefef #777777;
+}
