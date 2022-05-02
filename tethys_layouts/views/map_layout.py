@@ -19,11 +19,11 @@ from zipfile import ZipFile
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.utils.functional import classproperty
 import shapefile  # PyShp
 
 from tethys_layouts.exceptions import TethysLayoutPropertyException
 from tethys_layouts.mixins.map_layout import MapLayoutMixin
-from tethys_layouts.utilities import classproperty
 from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission
 from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVView, SlideSheet, SelectInput

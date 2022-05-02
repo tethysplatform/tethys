@@ -6,7 +6,7 @@ Map Layout
 
 **Last Updated:** April 2022
 
-The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
+The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds. It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
 
 .. figure:: ./images/map_layout/map_layout.png
     :width: 800px
@@ -394,6 +394,8 @@ set the ``feature_selection_sensitivty`` to adjust the relative search radius ar
         feature_selection_multiselect = True
         feature_selection_sensitivty = 8
 
+.. _map_layout_feature_selection_popups:
+
 Property Popups
 ---------------
 
@@ -439,7 +441,7 @@ Exclude properties from being displayed in the properties pop-ups using the ``ex
 
 .. caution::
 
-    The Feature Selection Property Popup feature and the Map Clicks Popup feature cannot not be used together. When both are enabled, neither popup is displayed.
+    The Feature Selection Property Popup feature and the :ref:`map_layout_map_clicks_popups`feature cannot not be used together. When both are enabled, neither popup is displayed.
 
 .. _map_layout_popup_javascript_api:
 
@@ -451,6 +453,8 @@ The ``MapLayout`` JavaScript API provides several methods for controlling the pr
 .. tip::
 
     See the :ref:`layout_custom_template` section for how to define a custom template for a ``MapLayout`` and add custom JavaScript.
+
+.. _map_layout_map_clicks:
 
 Map Clicks
 ==========
@@ -470,6 +474,8 @@ Enable Map Clicks by setting the ``show_map_clicks`` property of ``MapLayout`` t
     class MyMapLayout(MapLayout):
         show_map_clicks = True
 
+.. _map_layout_map_clicks_popups:
+
 Map Clicks Popups
 -----------------
 
@@ -483,7 +489,7 @@ The Map Clicks Popups feature displays a popup pointing to the point at the loca
 
 .. caution::
 
-    The Map Clicks Popup feature and the Feature Selection Properties Popup feature cannot not be used together. When both are enabled, neither popup is displayed.
+    The Map Clicks Popup feature and the Feature Selection :ref:`map_layout_feature_selection_popups` feature cannot not be used together. When both are enabled, neither popup is displayed.
 
 JavaScript
 ----------
@@ -749,7 +755,7 @@ MapLayout Class
 Properties
 ++++++++++
 
-The following properties can be overridden customize the behavior of the ``MapLayout``. It is recommended that the following properties be overridden everytime: ``app``, ``base_template``, ``map_subtitle``, and ``map_title``.
+The following properties can be overridden customize the behavior of the ``MapLayout``. It is recommended that the following properties be overridden every time: ``app``, ``base_template``, ``map_subtitle``, and ``map_title``.
 
 .. autoclass:: tethys_layouts.views.map_layout.MapLayout
 

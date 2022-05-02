@@ -106,7 +106,7 @@ Some customization of Layouts is done by overriding methods of the class in a su
 Easy REST Endpoints
 -------------------
 
-The ``TethysLayout`` provides a mechanism for easily setting up REST endpoints without the need to define additionaly URLs. This is one of the features that allows complex dynamic behavior of some Layouts to be contained in a single class. You can leverage this capability in your own Layout views to create custom REST endpoints.
+The ``TethysLayout`` provides a mechanism for easily setting up REST endpoints without the need to define additional URLs. This is one of the features that allows complex dynamic behavior of some Layouts to be contained in a single class. You can leverage this capability in your own Layout views to create custom REST endpoints.
 
 First, create a new method on the subclass:
 
@@ -147,7 +147,7 @@ In the JavaScript for the view, use AJAX to call the URL of the view ('.') and a
 Custom Template and JavaScript
 ------------------------------
 
-The HTML template for any Layout can be customized by creating an HTML document that extends template of the Layout. This is most often done to add custom CSS or JavaScript to the template as shown in this example for a Map Layout:
+The HTML template for any Layout can be customized by creating an HTML document that extends the template of the Layout. This is most often done to add custom CSS or JavaScript to the template as shown in this example for a Map Layout:
 
 .. code-block:: html+django
 
