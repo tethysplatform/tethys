@@ -550,8 +550,8 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         mock_os.environ.get.assert_any_call('TETHYS_HOME')
         mock_os.environ.get.assert_any_call('CONDA_DEFAULT_ENV')
         os_join_call_args = mock_os.path.join.call_args_list
-        self.assertEqual([os_join_call_args[0][0]], [expand_user_path, '.tethys'])
-        self.assertEqual([os_join_call_args[1][0]], [default_tethys_home, conda_default_env])
+        self.assertEqual([os_join_call_args[0][0]], [(expand_user_path, '.tethys')])
+        self.assertEqual([os_join_call_args[1][0]], [(default_tethys_home, conda_default_env)])
         mock_os.path.join.assert_called_with(default_tethys_home, conda_default_env)
 
         # Returns joined path of default tethys home path and environment name
@@ -588,8 +588,8 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         mock_os.environ.get.assert_any_call('TETHYS_HOME')
         mock_os.environ.get.assert_any_call('CONDA_DEFAULT_ENV')
         os_join_call_args = mock_os.path.join.call_args_list
-        self.assertEqual([os_join_call_args[0][0]], [expand_user_path, '.tethys'])
-        self.assertEqual([os_join_call_args[1][0]], [default_tethys_home, conda_default_env])
+        self.assertEqual([os_join_call_args[0][0]], [(expand_user_path, '.tethys')])
+        self.assertEqual([os_join_call_args[1][0]], [(default_tethys_home, conda_default_env)])
         mock_tethys_log.warning.assert_called()
 
         # Returns default tethys home environment path
