@@ -92,7 +92,7 @@ _DEFAULT_TILE_GRID = {
 class MapLayoutMixin:
     """
     Provides helper methods for creating MVLayer objects with the extra attributes that are needed by the MapLayout. Use this Mixin to add this functionality to classes that may be used outside of the MapLayout scope (e.g. processing workflows that need to create layer objects for MapLayouts).
-    """
+    """  # noqa: E501
     COLOR_RAMPS = copy.deepcopy(_COLOR_RAMPS)
     THREDDS_PALETTES = copy.deepcopy(_THREDDS_PALETTES)
     DEFAULT_TILE_GRID = copy.deepcopy(_DEFAULT_TILE_GRID)
