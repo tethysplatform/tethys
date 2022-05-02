@@ -257,10 +257,10 @@ def _get_user_workspace(app_class, user_or_request):
 
 def user_workspace(controller):
     """
-    **Decorator:** Get the file workspace (directory) for the given User.
+    **Decorator:** Get the file workspace (directory) for the given User. Add an argument named "user_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
 
     Returns:
-      tethys_apps.base.TethysWorkspace: An object representing the workspace.
+      TethysWorkspace: An object representing the workspace.
 
     **Example:**
 
@@ -284,7 +284,7 @@ def user_workspace(controller):
 
             return render(request, 'my_first_app/template.html', context)
 
-    """
+    """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
         from tethys_quotas.models import ResourceQuota
@@ -317,7 +317,7 @@ def user_workspace(controller):
 
         the_workspace = _get_user_workspace(app, user)
 
-        return controller(*args, the_workspace, **kwargs)
+        return controller(*args, user_workspace=the_workspace, **kwargs)
     return wrapper
 
 
@@ -364,10 +364,10 @@ def _get_app_workspace(app_class):
 
 def app_workspace(controller):
     """
-    **Decorator:** Get the file workspace (directory) for the app.
+    **Decorator:** Get the file workspace (directory) for the app. Add an argument named "app_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
 
     Returns:
-      tethys_apps.base.TethysWorkspace: An object representing the workspace.
+      TethysWorkspace: An object representing the workspace.
 
     **Example:**
 
@@ -391,7 +391,7 @@ def app_workspace(controller):
 
             return render(request, 'my_first_app/template.html', context)
 
-    """
+    """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
         from tethys_quotas.models import ResourceQuota
@@ -421,5 +421,5 @@ def app_workspace(controller):
 
         the_workspace = _get_app_workspace(app)
 
-        return controller(*args, the_workspace, **kwargs)
+        return controller(*args, app_workspace=the_workspace, **kwargs)
     return wrapper

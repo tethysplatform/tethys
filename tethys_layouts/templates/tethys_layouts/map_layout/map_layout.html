@@ -1,0 +1,207 @@
+{% extends base_template %}
+{% load tethys_gizmos static %}
+
+{% block import_gizmos %}
+  {% import_gizmo_dependency select_input %}
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
+{% endblock %}
+
+{% block app_navigation %}
+  {# NAV HEADER #}
+  {% block before_nav_header %}
+  {% endblock %}
+  {% include 'tethys_layouts/components/nav_header.html' %}
+  {% block after_nav_header %}
+  {% endblock %}
+
+  {# TABS #}
+  <div class="map-tabs">
+    <!-- Nav tabs -->
+    {% block map_tabs %}
+      <ul class="nav nav-tabs tethys-nav-tabs" role="tablist">
+        {# LAYERS TAB #}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link{% block disable_default_tab %} active{% endblock %}"
+                  id="layers-tab-toggle"
+                  aria-controls="layers-tab-panel"
+                  aria-selected="true"
+                  type="button"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#layers-tab-panel">{{ layer_tab_name }}</button>
+        </li>
+        {# LEGEND TAB #}
+        {% if show_legends %}
+          {% block legend_tab %}
+            {% if legends %}
+            <li class="nav-item" role="presentation">
+              <button class="nav-link{% block disable_legend_tab %}{% endblock %}"
+                      id="legend-tab-toggle"
+                      aria-controls="legend-tab-panel"
+                      aria-selected="false"
+                      type="button"
+                      role="tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#legend-tab-panel">Legend</button>
+            </li>
+            {% endif %}
+          {% endblock %}
+        {% endif %}
+
+        {# CUSTOM TABS #}
+        {% block custom_map_tabs %}
+        {% endblock %}
+      </ul>
+    {% endblock %}
+
+    {# TAB PANELS #}
+    {% block map_tab_panels %}
+      <div class="tab-content">
+        {# LAYERS TAB PANEL #}
+        <div class="tab-pane{% block disable_default_tab_panel %} show active{% endblock %}" id="layers-tab-panel" role="tabpanel" aria-labelledby="layers-tab-toggle">
+          {% block layer_tab_panel %}
+          {% for layer_group in layer_groups %}
+            {% if layer_group.id == 'custom_layers' and not show_custom_layer %}
+              {# PASS #}
+            {% else %}
+              {% include 'tethys_layouts/map_layout/layer_group_content.html' %}
+            {% endif %}
+          {% endfor %}
+          {% endblock %}
+        </div>
+
+
+        {# LEGEND TAB PANEL #}
+        {% if show_legends %}
+          {% block legend_panel %}
+            {% if legends %}
+            <div class="tab-pane{% block disable_legend_tab_panel %}{% endblock %}" id="legend-tab-panel" role="tabpanel" aria-labelledby="legend-tab-toggle">
+              {% block legend_items %}
+              {% for legend, legend_select_input in legends %}
+                <div id="{{ legend.legend_id }}" class="hidden legend-wrapper legend-group-item" data-legend-attrs="{{ legend|jsonify }}">
+                  <span class="legend-title">{{ legend.title|title }}{% if legend.units %} ({{ legend.units }}){% endif %}</span>
+                  {% gizmo legend_select_input %}
+                  {% if legend.type == 'custom-divisions' %}
+                    <div id="color-ramp-component-{{ legend.legend_id }}" class="color-ramp-component">
+                      {% include "tethys_layouts/map_layout/color_ramp_component.html" %}
+                    </div>
+                  {% elif legend.type == 'wms-legend' %}
+                    <img class="wms-legend-image" src="{{ legend.url }}">
+                  {% endif %}
+                </div>
+              {% endfor %}
+              {% endblock %}
+            </div>
+            {% endif %}
+          {% endblock %}
+        {% endif %}
+
+        {# CUSTOM TAB PANELS #}
+        {% block custom_map_tab_panels %}
+        {% endblock %}
+      </div>
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block app_content %}
+  {# ADDRESS SEARCH/GEOCODE #}
+  {% if geocode_enabled and can_use_geocode %}
+  <div id="map-geocode-wrapper" class="ol-unselectable ol-control">
+    <div class="row">
+      <div class="col">
+        <select name="geocode_select" id="geocode_select" class="geocode-search form-control" multiple></select>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# MAP #}
+  {% block map %}
+    {% gizmo map_view %}
+  {% endblock %}
+
+  {# MAP ATTRIBUTES #}
+  <div id="vr-button-container"></div>
+  <div id="map-layout-attributes"
+       data-layer-groups="{{ layer_groups|jsonify }}"
+       data-map-extent="{{ map_extent|jsonify }}"
+       data-workspace="{{ workspace }}"
+       data-map-type="{{ map_type|jsonify }}"
+       data-show-properties-popup="{{ show_properties_popup|jsonify }}"
+       data-show-map-click-popup="{{ show_map_click_popup|jsonify }}"
+       style="display: none;"></div>
+  <div id="map-layout-permissions"
+       data-can-use-geocode="{{ can_use_geocode|jsonify }}"
+       data-can-use-plot="{{ can_use_plot|jsonify }}"
+       style="display: none;"></div>
+
+  {% if can_use_plot %}
+    {# PLOT SLIDE SHEET #}
+    {% gizmo plot_slide_sheet %}
+  {% endif %}
+
+  {% csrf_token %}
+{% endblock %}
+
+{% block app_actions %}
+{% endblock %}
+
+{% block after_app_content %}
+  {# Action Modal #}
+  <div class="modal fade" id="action-modal" tabindex="-1" role="dialog" aria-labelledby="action-modal-title">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="action-modal-title">Action</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="action-modal-content">
+          Action content
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancel-action-button" type="button" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn" id="do-action-button" type="button">Action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Properties Pop-up #}
+  <div id="properties-popup" class="ol-popup">
+    <a href="javascript:void(0);" id="properties-popup-close-btn" class="ol-popup-close-btn">&times;</a>
+    <div id="properties-popup-content" class="ol-popup-content"></div>
+  </div>
+{% endblock %}
+
+{% block content_dependent_styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_sdk/css/nav_header.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/nav_tabs.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_layouts/map_layout/flat_map.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_layouts/map_layout/map_layout.css' %}" rel="stylesheet"/>
+  {% if map_type == "cesium_map_view" %}
+  <link href="{% static 'tethys_layouts/map_layout/map_layout_cesium.css' %}" rel="stylesheet"/>
+  {% endif %}
+  <link href="{% static 'tethys_layouts/map_layout/geocoder.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/messages.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/flatmark.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_sdk/css/flat-slider.css' %}" rel="stylesheet"/>
+  {% if wide_nav %}
+  <link href="{% static 'tethys_sdk/css/wide_nav.css' %}" rel="stylesheet"/>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'tethys_sdk/js/check_ie.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_sdk/js/utilities.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_sdk/js/collapse.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_sdk/js/csrf.js' %}" type="text/javascript"></script>
+  {% if map_type == "cesium_map_view" %}
+    <script src="{% static 'tethys_layouts/map_layout/map_layout_cesium.js' %}" type="module"></script>
+  {% else %}
+    <script src="{% static 'tethys_layouts/map_layout/map_layout.js' %}" type="text/javascript"></script>
+  {% endif %}
+{% endblock %}

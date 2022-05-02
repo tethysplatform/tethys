@@ -1,0 +1,40 @@
+#app-content-wrapper #app-content #app-navigation {
+  padding: 0;
+  padding-top: 80px;
+  padding-bottom: 20px;
+  box-shadow: inset -2px 0 0 #e5e5e5;
+}
+
+#app-content-wrapper #app-content #app-navigation p {
+  padding: 0 20px;
+  text-align: justify;
+}
+
+.nav>li>a {
+  padding: 10px 25px;
+}
+
+.nav-pills>li>a {
+  border-radius: 0;
+}
+
+.nav-stacked>li+li {
+  margin-top: 0;
+}
+
+#app-content-wrapper #app-content #app-navigation .nav li a {
+  font-size: 14px;
+  margin-right: 2px;
+  letter-spacing: 0.5pt;
+}
+
+#app-content-wrapper #app-content #app-navigation .nav li a:hover {
+  background-color: #f7f7f7;
+}
+
+#app-content-wrapper #app-content #app-navigation .nav li.active a {
+  box-shadow: inset 4px 0 0 #4b72aa;
+  background-color: #fcfcfc!important;
+  font-weight: 600;
+  color: #4b72aa;
+}

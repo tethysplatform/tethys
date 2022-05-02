@@ -13,6 +13,9 @@ channels:
 dependencies:
   - python
 
+  # spatial dependencies
+  - PyShp
+
   # system dependencies
   - pycrypto
   - pyopenssl

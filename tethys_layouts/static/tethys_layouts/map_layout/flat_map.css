@@ -1,0 +1,118 @@
+/********************************************************************************
+ * Name: flat_map.css
+ * Author: nswain
+ * Created On: October 19, 2018
+ * Copyright: (c) Aquaveo 2018
+ * License:
+ ********************************************************************************/
+ /* Controls */
+.ol-control {
+    background-color: var(--app-primary-color, #777777);
+    border-radius: 5px;
+    padding: 0;
+}
+
+.ol-control:hover {
+    background-color: var(--app-primary-color, #777777);
+}
+
+.ol-control button {
+    color: #ffffff;
+    background-color: var(--app-primary-color, #777777);
+    height: 2.25em;
+    width: 2.25em;
+    margin: 0;
+    border-radius: 5px;
+}
+
+.ol-control button:focus,
+.ol-control button:hover {
+    background-color: var(--app-secondary-color, #999999);
+    outline-color: transparent;
+}
+
+/* Control Positions */
+.ol-attribution {
+    bottom: 0.5em;
+    right: 0.5em;
+    top: auto;
+}
+
+.ol-attribution:not(.ol-collapsed) {
+    background: #efefef;
+}
+
+.ol-rotate {
+    top: 3.75em;
+}
+
+.ol-zoom {
+  background: #ffffff;
+}
+
+.ol-zoom:hover {
+  background: #ffffff;
+}
+
+.ol-zoom .ol-zoom-in {
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 2.25em;
+}
+
+.ol-zoom .ol-zoom-out {
+    border-radius: 0 0 5px 5px;
+}
+
+.ol-zoom-extent {
+    top: 45px;
+    border-radius: 0;
+}
+
+.ol-zoom-extent button {
+    border-radius: 0;
+    height: 2.15em;
+}
+
+
+
+#basemap_dropdown_container {
+    top: 0.5em;
+    left: 3.5em;
+    padding: 0;
+    border-radius: 5px;
+    background-color: var(--app-primary-color, #777777);
+}
+
+#basemap_dropdown_container button {
+    height: 2.25em;
+    padding: 0 0.75em!important;
+    font-size: 1.14em;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background-color: var(--app-primary-color, #777777)!important;
+    line-height: 0.4em;
+    border-radius: 5px;
+    border: none!important;
+}
+
+#basemap_dropdown_container button:hover {
+    background-color: var(--app-secondary-color, #999999)!important;
+}
+
+#basemap_dropdown_container .dropdown-menu {
+    background-color: var(--app-primary-color, #777777)!important;
+    color: #ffffff!important;
+    letter-spacing: 1px;
+}
+
+.basemap-option:hover {
+    background-color: var(--app-secondary-color, #999999);
+}
+
+.input-group-addon {
+    background-color: var(--app-primary-color, #777777);
+    color: #ffffff;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+}

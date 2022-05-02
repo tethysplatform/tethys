@@ -1,4 +1,4 @@
-{% load static tethys_gizmos terms_tags analytical%}
+{% load static app_theme tethys_gizmos terms_tags analytical %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -93,9 +93,38 @@
       {% endif %}
       <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
       {% gizmo_dependencies global_css %}
+    {% endblock %}
+
+    {% block app_styles %}
       <style>
-        #app-content-wrapper #app-content #app-navigation .nav li a.active {
-          background: {{ tethys_app.color|default:'#7ec1f7' }};
+        :root {
+          --app-primary-color: {{ tethys_app.color }};
+          --app-secondary-color: {{ tethys_app.color|lighten:20 }};
+        }
+
+        #app-header .tethys-app-header {
+          background: var(--app-primary-color, '#7ec1f7');
+        }
+
+        #app-header .tethys-app-header .icon-wrapper img {
+          background: var(--app-primary-color, '#7ec1f7');
+        }
+
+        #app-navigation .nav li a {
+          color: var(--app-primary-color, '#7ec1f7');
+        }
+
+        #app-navigation .nav li.active a {
+          color: var(--app-primary-color, '#7ec1f7');
+        }
+
+        #app-navigation .nav li a.active {
+          background: var(--app-primary-color, '#7ec1f7');
+          color: white;
+        }
+
+        #app-content-wrapper #app-content #app-actions {
+          background: var(--app-secondary-color);
         }
       </style>
     {% endblock %}
@@ -122,7 +151,7 @@
       <div id="app-content-wrapper" class="{% block show_nav_override %}show-nav{% endblock %}">
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
-            <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#7ec1f7' }};">
+            <div class="tethys-app-header">
               <div id="nav-title-wrapper">
                   {% block app-navigation-toggle-override %}
                     <a href="javascript:void(0);" class="toggle-nav">

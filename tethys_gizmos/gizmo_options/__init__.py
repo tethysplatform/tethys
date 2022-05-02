@@ -24,3 +24,4 @@ from .bokeh_view import BokehView
 from .datatable_view import DataTableView
 from .esri_map import *
 from .cesium_map_view import *
+from .slide_sheet import SlideSheet

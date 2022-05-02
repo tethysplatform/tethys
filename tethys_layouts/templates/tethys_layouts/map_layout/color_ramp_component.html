@@ -1,0 +1,10 @@
+<ul class="legend-list" data-collapsed="false">
+  {% for value, color in legend.divisions.items  %}
+    <div class="legend-item">
+      <li class="legend-list-item">
+        <p>{{ value }} </p>
+        <div class="color-box" style="background-color: {{ color }};"></div>
+      </li>
+    </div>
+  {% endfor %}
+</ul>

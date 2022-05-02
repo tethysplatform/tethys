@@ -144,9 +144,6 @@ Class-Based Controllers
    :members: TethysController
    :noindex:
 
-.. automodule:: tethys_apps.base.app_base
-   :members: register_controllers
-
 .. _URL Maps:
 
 URL Maps
@@ -171,4 +168,11 @@ Register URL Maps Method
 The ``register_url_maps`` method is tightly related to the App Base Class API.
 
 .. automethod:: tethys_apps.base.app_base.TethysBase.register_url_maps
+   :noindex:
+
+Register Controllers
+--------------------
+
+.. automodule:: tethys_apps.base.controller
+   :members: register_controllers
    :noindex:
