@@ -473,31 +473,33 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
         if as_engine:
             return self.spatial_dataset_service.get_engine()
 
-        if as_endpoint:
-            return self.spatial_dataset_service.endpoint
+        endpoint = self.spatial_dataset_service.endpoint
 
         if as_public_endpoint:
-            return self.spatial_dataset_service.public_endpoint
+            endpoint = self.spatial_dataset_service.public_endpoint
 
         if self.engine == self.GEOSERVER:
             if as_wms:
-                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
+                return endpoint.split('/rest')[0] + '/wms'
 
             if as_wfs:
-                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
+                return endpoint.split('/rest')[0] + '/ows'
 
             if as_wcs:
-                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wcs'
+                return endpoint.split('/rest')[0] + '/wcs'
 
         elif self.engine == self.THREDDS:
             if as_wms:
-                return self.spatial_dataset_service.endpoint.rstrip('/') + '/wms'
+                return endpoint.rstrip('/') + '/wms'
 
             if as_wcs:
-                return self.spatial_dataset_service.endpoint.rstrip('/') + '/wcs'
+                return endpoint.rstrip('/') + '/wcs'
 
             if as_wfs:
                 raise ValueError('THREDDS does not support the WFS interface.')
+
+        if as_endpoint or as_public_endpoint:
+            return endpoint
 
         return self.spatial_dataset_service
 

@@ -1,0 +1,49 @@
+/* Map Header */
+#nav-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+#nav-header #back-button {
+    display: block;
+    width: 25px;
+}
+
+#nav-header a {
+    display: block;
+    height: 56px;
+    border-radius: 5px 0 0 5px;
+    color: #666666;
+    padding: 0 5px;
+}
+
+#nav-header a .bi {
+    line-height: 56px;
+}
+
+#nav-header a:hover {
+    color: white;
+    background-color: #777777;
+}
+
+#nav-header #nav-title {
+    display: inline-block;
+    max-width: 320px;
+    margin-left: 15px;
+    overflow: hidden;
+}
+
+#nav-header #nav-title p {
+    margin: 0;
+}
+
+#nav-header #nav-title .title {
+    font-size: 18pt;
+}
+
+#nav-header #nav-title .subtitle {
+    font-size: 12pt;
+}

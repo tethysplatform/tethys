@@ -1,0 +1,60 @@
+<li class="layer-list-item">
+  {# LAYER VISIBILITY CONTROL #}
+  <label class="flatmark"><span class="display-name">{{ layer.legend_title }}</span>
+    <input type="{{ layer_group.control }}"
+           class="layer-visibility-control"
+           {% if layer.layer_options.visible %}checked="checked"{% endif %}
+           {% if not layer_group.visible %}disabled{% endif %}
+           data-layer-id="{{ layer.data.layer_id }}"
+           data-layer-variable="{{ layer.data.layer_variable }}"
+           name="{{ layer_group.id }}">
+    <span class="checkmark {{ layer_group.control }}"></span>
+  </label>
+
+  {# LAYER CONTEXT MENU #}
+  <div class="dropdown layers-context-menu float-end">
+    <button id="{{ layer.data.layer_id }}--context-menu"
+            class="btn btn-sm layers-btn {% if not layer_group.visible %}disabled{% endif %}"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labeledby="{{ layer.data.layer_id }}--context-menu">
+      {% if show_rename %}
+        <li><a class="dropdown-item rename-action" href="javascript:void(0);"><i class="bi bi-pencil"></i><span class="command-name">Rename</span></a></li>
+      {% endif %}
+      {% if show_remove %}
+        <li><a class="dropdown-item remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="{{ layer.data.layer_id }}"><i class="bi bi-trash"></i><span class="command-name">Remove</span></a></li>
+      {% endif %}
+      {% if show_public_toggle %}
+        <div class="form-group">
+            <input class="form-control bootstrap-switch layer-dropdown-toggle" type="checkbox" data-size="small" data-on-text="Public"
+                data-off-text="Private" data-on-color='success' data-off-color='danger'
+                {% if layer_group.toggle_status %} checked {% endif %}>
+        </div>
+      {% endif %}
+      {% if show_public_toggle or show_remove or show_rename %}
+        <li><hr class="dropdown-divider"></li>
+      {% endif %}
+      <li><a class="dropdown-item zoom-to-layer-action" href="javascript:void(0);" data-layer-id="{{ layer.data.layer_id }}"><i class="bi bi-fullscreen"></i><span class="command-name">Zoom to Layer</span></a></li>
+      {% if layer.layer_options.show_download or show_download %}
+        {% if can_download %}
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item download-layer" href="javascript:void(0);"><i class="bi bi-cloud-arrow-down"></i><span class="command-name">Download</span></a></li>
+        {% endif %}
+      {% endif %}
+      <li><hr class="dropdown-divider"></li>
+      <li>
+        <div class="flat-slider-container">
+          <label><i class="bi bi-circle-half"></i><span class="command-name">Opacity: </span><span class="slider-value">100%</span></label>
+          <input type="range"
+                 class="flat-slider layer-opacity-control"
+                 min="0" max="100"
+                 value="100"
+                 data-layer-id="{{ layer.data.layer_id }}"
+                 data-layer-variable="{{ layer.data.variable }}">
+        </div>
+      </li>
+    </ul>
+  </div>
+</li>

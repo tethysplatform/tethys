@@ -31,6 +31,9 @@ Tethys REST API tokens for individual users can be managed using the ``Tokens`` 
 
 **Figure 2.** Auth Token management page for Tethys Portal.
 
+
+.. _tethys_portal_auth_admin:
+
 Authentication and Authorization
 ================================
 

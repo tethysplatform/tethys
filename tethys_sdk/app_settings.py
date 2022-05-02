@@ -16,5 +16,6 @@ from tethys_apps.models import (
     WebProcessingServiceSetting,
     SchedulerSetting,
     PersistentStoreConnectionSetting,
-    PersistentStoreDatabaseSetting
+    PersistentStoreDatabaseSetting,
+    TethysAppSettingNotAssigned
 )

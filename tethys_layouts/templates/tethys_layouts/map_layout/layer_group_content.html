@@ -1,0 +1,53 @@
+<li id="{{ layer_group.id }}" class="layer-group-item">
+  {# LAYER GROUP VISIBILITY CONTROL #}
+  <label class="flatmark"><span class="display-name">{{ layer_group.display_name }}</span>
+    <input type="checkbox"
+           class="layer-group-visibility-control"
+           {% if layer_group.visible %}checked="checked"{% endif %}
+           data-layer-group-id="{{ layer_group.id }}">
+    <span class="checkmark checkbox"></span>
+  </label>
+
+  {# LAYER GROUP CONTEXT MENU #}
+  {% if show_public_toggle or show_remove or show_rename %}
+    <div class="dropdown layers-context-menu float-end">
+      <button id="{{ layer_group.id }}--context-menu"
+              class="btn btn-sm layers-btn"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labeledby="{{ layer_group.id }}--context-menu">
+        {% if show_rename %}
+          <li><a class="dropdown-item rename-action" href="javascript:void(0);"><i class="bi bi-pencil"></i><span class="command-name">Rename</span></a></li>
+        {% endif %}
+        {% if show_remove %}
+          <li><a class="dropdown-item remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="{{ layer.data.layer_name }}"><i class="bi bi-trash"></i><span class="command-name">Remove</span></a></li>
+        {% endif %}
+        {% if show_public_toggle %}
+          <div class="form-group">
+              <input class="form-control bootstrap-switch layer-dropdown-toggle" type="checkbox" data-size="small" data-on-text="Public"
+                  data-off-text="Private" data-on-color='success' data-off-color='danger'
+                  {% if layer_group.toggle_status %} checked {% endif %}>
+          </div>
+        {% endif %}
+        {% if layer_group.id == 'custom_layers' %}
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item add-layer-to-layer-group" href="javascript:void(0);"><i class="bi bi-plus"></i><span class="command-name">Add Layer</span></a></li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+  <a id="{{ layer_group.id }}--collapse"
+     class="collapse-action btn btn-sm layers-btn float-end"
+     data-collapsed="false">
+    <i class="bi bi-chevron-down"></i>
+  </a>
+</li>
+
+<ul class="layer-list" id="{{ layer_group.id }}_associated_layers" {% if layer_group.collapsed %} data-collapsed="true" style="overflow:hidden; height: 0px;" {% else %} data-collapsed="false"{% endif %}>
+{% for layer in layer_group.layers %}
+  {% include 'tethys_layouts/map_layout/layer_item_content.html' %}
+{% endfor %}
+</ul>
+
