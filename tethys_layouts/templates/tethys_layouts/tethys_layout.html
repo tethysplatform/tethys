@@ -1,0 +1,26 @@
+{% extends "tethys_apps/app_base.html" %}
+
+{% load static tethys_gizmos %}
+
+{# import tethys_gizmos.css for centering of loading gif #}
+{% block import_gizmos %}
+    {% import_gizmo_dependency tethys_gizmo_options %}
+{% endblock %}
+
+{# The name you provided in your app.py is accessible through the tethys_app.name context variable #}
+{% block app_title %}{{ tethys_app.name }}{% endblock %}
+
+{% block app_navigation_items %}
+{% endblock %}
+
+{% block app_content %}
+{% endblock %}
+
+{% block app_actions %}
+{% endblock %}
+
+{% block content_dependent_styles %}
+    {{ block.super }}
+    <!-- TODO: Why is this here - remove Hard-coded CDNs? -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+{% endblock %}

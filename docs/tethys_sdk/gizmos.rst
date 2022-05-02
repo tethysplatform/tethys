@@ -1,8 +1,10 @@
+.. _gizmos_api:
+
 *******************
 Template Gizmos API
 *******************
 
-**Last Updated:** May 2017
+**Last Updated:** March 2022
 
 Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app pages with minimal coding. This article provides an overview of how to use Gizmos.
 
@@ -188,7 +190,7 @@ Gizmos Options Objects
 This section provides explanations of each of the Gizmo Options Objects available for configuring Gizmos. It also provides code and usage examples for each object.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    gizmos/button
    gizmos/date_picker
@@ -197,6 +199,7 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/text_input
    gizmos/toggle_switch
    gizmos/message_box
+   gizmos/slide_sheet
    gizmos/table_view
    gizmos/datatable_view
    gizmos/plot_view
