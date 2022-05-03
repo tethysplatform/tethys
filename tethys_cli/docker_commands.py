@@ -869,8 +869,9 @@ class UserInputHelper:
         while True:
             value = input('{}{}'.format(pre_prompt, prompt)) or str(default)
 
-            if len(value) > 0 and value[0] != '/':
-                value = '/' + value
+            if os.path.abspath(__file__).startswith('/'):
+                if len(value) > 0 and value[0] != '/':
+                    value = '/' + value
 
             if not os.path.isdir(value):
                 try:
