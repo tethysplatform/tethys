@@ -44,7 +44,7 @@ def get_tethys_home_dir():
         return env_tethys_home
 
     # Initialize to default TETHYS_HOME
-    tethys_home = os.path.expanduser('~/.tethys')
+    tethys_home = os.path.join(os.path.expanduser('~'), '.tethys')
 
     try:
         conda_env_name = os.environ.get('CONDA_DEFAULT_ENV')

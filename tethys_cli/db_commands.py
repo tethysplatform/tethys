@@ -9,6 +9,7 @@
 """
 from pathlib import Path
 import shutil
+import argparse
 
 from django.conf import settings
 from django.db.utils import IntegrityError
@@ -20,7 +21,8 @@ from tethys_apps.utilities import get_tethys_home_dir
 
 def add_db_parser(subparsers):
     # DB COMMANDS
-    db_parser = subparsers.add_parser('db', help='Tethys Database Server utility commands.')
+    db_parser = subparsers.add_parser('db', help='Tethys Database Server utility commands.',
+                                      formatter_class=argparse.RawTextHelpFormatter)
 
     # Setup db commands
     db_parser.add_argument('command',
