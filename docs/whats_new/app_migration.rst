@@ -1,18 +1,60 @@
+.. _migrate_3_to_4:
+
+*********************************
+Migrating Apps from Tethys 3 to 4
+*********************************
+
+**Last Updated:** May 2022
+
+This guide describes how to migrate Tethys 3 apps to work in Tethys 4. There are several "breaking" changes that were introduced in Tethys 4 that may cause apps developed in Tethys 3 to not load properly or not look or behave correctly. Use the tips below to help you make the changes necessary for the app to function properly in Tethys 4.
+
+.. note::
+
+    To migrate an app developed for Tethys 2 to Tethys 4, you will need to first complete the steps found in the :ref:`migrate_2_to_3` guide.
+
+Controllers, Consumers, and Handlers
+====================================
+
+
+
+Theme and Styles
+================
+
+Bootstrap Icons
+---------------
+
+App Navigation
+--------------
+
+Buttons
+-------
+
+Tooltips
+--------
+
+Modals
+------
+
+Gizmos
+------
+
+Schedulers
+==========
+
 .. _migrate_2_to_3:
 
-****************************
-Migrating Apps from Tethys 2
-****************************
+Migrating Apps from Tethys 2 to 3
+=================================
 
 Porting your App to Python 3.6+
-===============================
+-------------------------------
 
 Porting Python 2 apps to Python 3 can be done in a systematic way, and is usually less complicated than expected. We
 recommend using the `2to3 <https://docs.python.org/2/library/2to3.html>`_ Python program to translate your Python 2 apps
 into Python 3 automatically.
 
 New Tethys App Installation
-===========================
+---------------------------
 
 Tethys 3 facilitates app installation by providing a new ``install`` command. This command replaces the previous
 `Python setup.py <install/develop>`. Some of the main changes to the app installation process are updates to the
@@ -29,7 +71,7 @@ below:
     from tethysapp import test_app
 
 Init.py
--------
++++++++
 
 The ``__init__.py`` files in the file structure of old tethys apps need to be slightly modified to work with the new
 ``install`` command.
@@ -59,7 +101,7 @@ Remove the following contents from ``tethysapp-my_first_app/tethysapp/my_first_a
 
 
 Setup.py
---------
+++++++++
 
 The setup.py file has been simplified. In addition, the ``find_packages`` function has been replaced with the
 ``find_namespace_packages``. A new function ``find_resource_files`` is used to carry additional package data such as
@@ -105,7 +147,7 @@ Example of new ``setup.py`` file:
     (see :doc:`../installation/application`).
 
 App Base Template
------------------
++++++++++++++++++
 
 If you'd like your app to support setting the app icon to use an image from an external source (e.g. "http://example.com/example.jpg"), you'll need to update the `base.html` located in your templates directory. Either remove the `app_icon` block or change it to:
 
@@ -117,7 +159,7 @@ If you'd like your app to support setting the app icon to use an image from an e
     {% endblock %}
 
 App Installation
-----------------
+++++++++++++++++
 
 Tethys apps are now installed using the ``install`` command. See :doc:`../installation/application` for an example of
 how to use the ``install`` command, how to use ``yml`` files in combination with the ``install`` command, and a list of
@@ -138,6 +180,6 @@ available parameters.
     tethys install -d -f install.yml
 
 Presentation
-============
+------------
 
 Use this presentation in workshops and training courses to provide an overview of the app migration process: `Migrate Apps from Tethys 2 to Tethys 3 Presentation <https://docs.google.com/presentation/d/16C9Lx4wB84aNrpzW_-PxOwzU_KGgAg54d_g6yfpLdEk/edit>`_.
