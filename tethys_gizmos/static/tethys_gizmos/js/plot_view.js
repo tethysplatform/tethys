@@ -25,25 +25,8 @@ var TETHYS_PLOT_VIEW = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot, initHighChartsPlot,
- 	    initD3BarPlot, initD3TimeSeriesPlot;
-
- 	functionReviver = function(k, v) {
- 		if (typeof v === 'string' && v.indexOf('function') !== -1) {
- 			var fn;
- 			// Pull out the 'function()' portion of the string
- 			v = v.replace('function ()', '');
- 			v = v.replace('function()', '');
-
- 			// Create a function from the string passed in
- 			fn = Function(v);
-
- 			// Return the handle to the function that was created
- 			return fn;
- 		} else {
- 			return v;
- 		}
- 	};
+ 	var initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot, initHighChartsPlot,
+ 	    initD3BarPlot, initD3TimeSeriesPlot, processFormatters;
 
 	initD3Plot = function(element, json) {
 	    var chart_type;
@@ -832,12 +815,47 @@ var TETHYS_PLOT_VIEW = (function() {
             json_string = $(element).attr('data-json');
 
             // Parse the json_string with special reviver
-            json = JSON.parse(json_string, functionReviver);
+            json = JSON.parse(json_string);
+
+            // Handle fornatter functions
+            json = processFormatters(json);
+
             $(element).highcharts(json);
         }
         else if (plot_type === 'line' || plot_type === 'spline') {
             initLinePlot(element, plot_type);
         }
+    };
+
+    processFormatters = function(json) {
+        if ('xAxis' in json && 'labels' in json.xAxis && 'units' in json.xAxis.labels) {
+            const {units, ...labels} = json.xAxis.labels;
+            labels.formatter = function() {
+                return this.value + " " + units;
+            };
+            json.xAxis.labels = labels;
+        }
+
+        if ('yAxis' in json && 'labels' in json.yAxis && 'units' in json.yAxis.labels) {
+            const {units, ...labels} = json.yAxis.labels;
+            labels.formatter = function() {
+                return this.value + " " + units;
+            };
+            json.yAxis.labels = labels;
+        }
+
+        if ('tooltip' in json && 'phrase_one' in json.tooltip && 'phrase_two' in json.tooltip) {
+            const {phrase_one, phrase_two, ...tooltip} = json.tooltip;
+            tooltip.formatter = function() {
+                return "<b>" 
+                    + this.series.xAxis.categories[this.point.x] 
+                    + "</b> " + phrase_one + " <br><b>" + this.point.value 
+                    + "</b> " + phrase_two + " <br><b>" + this.series.yAxis.categories[this.point.y] 
+                    + "</b>";
+            };
+            json.tooltip = tooltip;
+        }
+        return json;
     };
 
 	/************************************************************************
@@ -863,7 +881,10 @@ var TETHYS_PLOT_VIEW = (function() {
                 json_string = $(this).attr('data-json');
 
                 // Parse the json_string with special reviver
-                json = JSON.parse(json_string, functionReviver);
+                json = JSON.parse(json_string);
+
+                // Handle fornatter functions
+                json = processFormatters(json);
 
 		        initD3Plot(this, json);
 		    }
@@ -891,7 +912,10 @@ var TETHYS_PLOT_VIEW = (function() {
                     json_string = $(this).attr('data-json');
 
                     // Parse the json_string with special reviver
-                    json = JSON.parse(json_string, functionReviver);
+                    json = JSON.parse(json_string);
+
+                    // Handle fornatter functions
+                    json = processFormatters(json);
 
                     initD3Plot(this, json);
 		        }
