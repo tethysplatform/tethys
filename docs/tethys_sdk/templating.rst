@@ -183,7 +183,7 @@ Change title for the page. The title is used as metadata for the site and shows 
 
 .. code-block:: html+django
 
-    {% block title %}{{ block.super }} - My Sub Title{% endblock %}
+    {% block title %}My Sub Title{% endblock %}
 
 links
 -----
@@ -390,7 +390,19 @@ app_navigation_items
 app_navigation_items
 --------------------
 
-Override or append to the app navigation list. These should be ``<li>`` elements.
+Override or append to the app navigation list. These should be ``<li>`` elements according to the `Boostrap Vertical Nav <https://getbootstrap.com/docs/5.0/components/navs-tabs/#vertical>`_ structure. In addition, Tethys Platform provides the ``title`` and ``separator`` classes that can be used to split the navigation items into sections.
+
+Example:
+
+.. code-block:: html+django
+
+    {% block app_navigation_items %}
+      <li class="nav-item title">App Navigation</li>
+      <li class="nav-item"><a class="nav-link active" href="">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="">Jobs</a></li>
+      <li class="nav-item separator"></li>
+      <li class="nav-item"><a class="nav-link" href="">Get Started</a></li>
+    {% endblock %}
 
 app_content
 -----------
@@ -433,8 +445,8 @@ Override or append actions to the action area. These are typically buttons or li
 .. code-block:: html+django
 
     {% block app_actions %}
-      <a href="" class="btn btn-default">Next</a>
-      <a href="" class="btn btn-default">Back</a>
+      <a href="" class="btn btn-secondary">Next</a>
+      <a href="" class="btn btn-secondary">Back</a>
     {% endblock %}
 
 scripts
@@ -466,12 +478,7 @@ See the `Blocks`_ section for an explanation of each block.
 
     {% load static %}
 
-    {% block title %}- {{ tethys_app.name }}{% endblock %}
-
-    {% block styles %}
-      {{ block.super }}
-      <link href="{% static 'new_template_app/css/main.css' %}" rel="stylesheet"/>
-    {% endblock %}
+    {% block title %}{{ tethys_app.name }}{% endblock %}
 
     {% block app_icon %}
       {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
@@ -482,16 +489,16 @@ See the `Blocks`_ section for an explanation of each block.
     {% block app_title %}{{ tethys_app.name }}{% endblock %}
 
     {% block app_navigation_items %}
-      <li class="title">App Navigation</li>
-      <li class="active"><a href="">Home</a></li>
-      <li><a href="">Jobs</a></li>
-      <li><a href="">Results</a></li>
-      <li class="title">Steps</li>
-      <li><a href="">1. The First Step</a></li>
-      <li><a href="">2. The Second Step</a></li>
-      <li><a href="">3. The Third Step</a></li>
-      <li class="separator"></li>
-      <li><a href="">Get Started</a></li>
+      <li class="nav-item title">App Navigation</li>
+      <li class="nav-item"><a class="nav-link active" href="">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="">Jobs</a></li>
+      <li class="nav-item"><a class="nav-link" href="">Results</a></li>
+      <li class="nav-item title">Steps</li>
+      <li class="nav-item"><a class="nav-link" href="">1. The First Step</a></li>
+      <li class="nav-item"><a class="nav-link" href="">2. The Second Step</a></li>
+      <li class="nav-item"><a class="nav-link" href="">3. The Third Step</a></li>
+      <li class="nav-item separator"></li>
+      <li class="nav-item"><a class="nav-link" href="">Get Started</a></li>
     {% endblock %}
 
     {% block app_content %}
@@ -500,9 +507,14 @@ See the `Blocks`_ section for an explanation of each block.
     {% block app_actions %}
     {% endblock %}
 
+    {% block content_dependent_styles %}
+      {{ block.super }}
+      <link href="{% static 'my_first_app/css/main.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
     {% block scripts %}
       {{ block.super }}
-      <script src="{% static 'new_template_app/js/main.js' %}" type="text/javascript"></script>
+      <script src="{% static 'my_first_app/js/main.js' %}" type="text/javascript"></script>
     {% endblock %}
 
 app_base.html
