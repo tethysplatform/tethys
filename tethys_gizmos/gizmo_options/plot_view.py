@@ -198,11 +198,11 @@ class LinePlot(PlotViewBase):
                     'enabled': True,
                     'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
                 },
-                'labels': {'formatter': 'function () { return this.value + " %s"; }' % x_axis_units}
+                'labels': {'units': x_axis_units}
             }
         else:
             x_axis = {
-                'labels': {'formatter': 'function () { return this.value + " %s"; }' % x_axis_units}
+                'labels': {'units': x_axis_units}
             }
 
         if y_axis_title:
@@ -211,11 +211,11 @@ class LinePlot(PlotViewBase):
                     'enabled': True,
                     'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
                 },
-                'labels': {'formatter': 'function () { return this.value + " %s"; }' % y_axis_units}
+                'labels': {'units': y_axis_units}
             }
         else:
             y_axis = {
-                'labels': {'formatter': 'function () { return this.value + " %s"; }' % y_axis_units}
+                'labels': {'units': y_axis_units}
             }
 
         tooltip_format = {
@@ -1028,9 +1028,8 @@ class HeatMap(PlotViewBase):
         }
 
         tooltip_format = {
-            'formatter': 'function() {return "<b>" + this.series.xAxis.categories[this.point.x] + "</b> %s <br><b>" + '
-                         'this.point.value + "</b> %s <br><b>" + this.series.yAxis.categories[this.point.y] + "</b>";'
-                         % (tooltip_phrase_one, tooltip_phrase_two)
+            'phrase_one': tooltip_phrase_one,
+            'phrase_two': tooltip_phrase_two
         }
 
         # Initialize super class
