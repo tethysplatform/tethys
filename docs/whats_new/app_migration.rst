@@ -306,6 +306,12 @@ change the value of ``icon`` (without the ``bi`` portion) of the Bootstrap Icon:
 Schedulers
 ==========
 
+In Tethys 4, job :ref:`jobs_api_schedulers` should be assigned to apps using :ref:`Scheduler app settings <jobs_api_scheduler_app_settings>`. If your app uses job schedulers: 
+
+1. Create a Scheduler app setting by defining the ``scheduler_settings()`` method on the app class. See :ref:`app_settings_scheduler_settings`. 
+2. Define a Scheduler Service and assign it to the app setting. See :ref:`Scheduler Service <schedulers-label>`.
+3. Use the ``get_scheduler()`` app class method to get the Scheduler from the setting. See :ref:`app_settings_get_scheduler`.
+
 .. _app_migration_older_apps:
 
 Upgrade Older Apps
