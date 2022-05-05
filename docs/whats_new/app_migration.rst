@@ -121,21 +121,165 @@ should be changed to this:
       <li class="nav-item"><a class="nav-link" href="">Get Started</a></li>
     {% endblock %}
 
+.. _app_migration_bs5_data_attrs: 
+
+Data Attributes
+---------------
+
+All Boostrap related data attributes on HTML elements now include a ``bs`` namespace. For example, ``data-target`` needs to be changed to ``data-bs-target``. Use the following tips to help you migrate data attributes appropriately:
+
+1. Perform a project-wide search on your app source code for ``"data-"`` to find instances of data attributes.
+2. Review the tips below for Tooltips, Dropdowns, and Modals.
+3. Review the `Bootstrap 5 documentation <https://getbootstrap.com/docs/5.0/components/accordion/>`_ for details about changes to other components that your app uses that are not listed below.
+
 Buttons
 -------
 
-The ``btn-default`` class no longer exists in Bootstrap 5. Change it to ``btn-outline-secondary`` for a similar looking button. Alternatively, choose from several new options that can be found here: `Boostrap Buttons <https://getbootstrap.com/docs/5.0/components/buttons/>`_.
+The ``btn-default`` class no longer exists in Bootstrap 5. Change it to ``btn-outline-secondary`` for a similar looking button. Alternatively, choose from several new styles of buttons that can be found here: `Boostrap Buttons <https://getbootstrap.com/docs/5.0/components/buttons/>`_.
 
 Tooltips
 --------
 
+Bootstrap Tooltip components have the following data attributes that need to be updated:
+
+* ``data-toggle``: ``data-bs-toggle``
+* ``data-placement``: ``data-bs-placement``
+
+For example, this button with an old-style tooltip:
+
+.. code-block:: html
+    :emphasize-lines: 1
+
+    <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">
+      Tooltip on bottom
+    </button>
+
+needs to be updated to this:
+
+.. code-block:: html
+    :emphasize-lines: 1
+
+    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tooltip on bottom">
+      Tooltip on bottom
+    </button>
+
+Dropdowns
+---------
+
+Bootstrap Dropdown components have the following data attributes that need to be updated:
+
+* ``data-toggle``: ``data-bs-toggle``
+
+In addition, the `<span>` element with class `carot` should be removed.
+
+For example, this old-style dropdown:
+
+.. code-block:: html
+    :emphasize-lines: 2,4
+
+    <div class="dropdown">
+      <button id="dLabel" type="button" data-toggle="dropdown" aria-expanded="false">
+        Dropdown trigger
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dLabel">
+        ...
+      </ul>
+    </div>
+
+needs to be updated to this:
+
+.. code-block:: html
+    :emphasize-lines: 2
+
+    <div class="dropdown">
+      <button id="dLabel" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Dropdown trigger
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dLabel">
+        ...
+      </ul>
+    </div>
+
 Modals
 ------
 
+Bootstrap Modal components have the following data attributes that need to be updated:
+
+* ``data-dismiss``: ``data-bs-dismiss``
+* ``data-toggle``: ``data-bs-toggle``
+* ``data-target``: ``data-bs-target``
+
+In addition the class of the close button should be changed from ``close`` to ``btn-close`` and the ``&times;`` should be removed. The modal title and close button also need to be reordered (title first, button second).
+
+For example, the following old-style modal:
+
+.. code-block:: html
+    :emphasize-lines: 2,11,12,18
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal">
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          </div>
+          <div class="modal-body">
+            <p>Modal body text goes here.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+needs to be updated to this:
+
+.. code-block:: html
+    :emphasize-lines: 2,11,12,18
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Modal body text goes here.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 Gizmos
 ------
 
-Although Gizmos have been updated to use Bootstrap 5, some arguments passed to them may include Bootstrap 3 references. For example, the Button and TextInput Gizmos accept the names of icons to be displayed on them. Other arguments to check are ``attributes``, ``classes``, and ``style`` that may have old Bootstrap 3 values that need to be updated.
+Although Gizmos have been updated to use Bootstrap 5, some arguments passed to them may include Bootstrap 3 values. For example, the ``Button`` and ``TextInput`` Gizmos have arguments that accept the names of icons to be displayed on them that need to be updated to Boostrap Icons values. Other arguments to check are ``attributes``, ``classes``, and ``style`` that may have old Bootstrap 3 values that need to be updated to use Bootstrap 5 values. Use the following tips to help you migrate:
+
+1. Do a project-wide search for ``"glphyicon"`` and update any icon arguments for Gizmos to the name of equivalent Bootstrap Icons (without the ``bi``).
+2. Check for old Bootstrap data attributes in the ``attributes`` arguments of Gizmos (see: :ref:`app_migration_bs5_data_attrs`).
+3. Check for old Bootstrap classes in the ``classes`` arguments of Gizmos (e.g. ``btn-default``).
+4. Check for old Bootstrap values in the ``style`` arguments of some Gizmos (e.g.: ``default``).
+
 
 For example, to update this Button Gizmo to have the equivalent style and icon:
 

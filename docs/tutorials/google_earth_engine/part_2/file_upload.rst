@@ -42,7 +42,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
     set_boundary_button = Button(
         name='set_boundary',
         display_text='Set Boundary',
-        style='default',
+        style='outline-secondary',
         attributes={
             'id': 'set_boundary',
         }
@@ -119,7 +119,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
     set_boundary_button = Button(
         name='set_boundary',
         display_text='Set Boundary',
-        style='default',
+        style='outline-secondary',
         attributes={
             'id': 'set_boundary',
             'data-toggle': 'modal',
