@@ -11,6 +11,29 @@ CSS
 
 Use the CSS resources to apply different styles to your app or provide additional functionality.
 
+flat_nav.css
+------------
+
+Use this stylesheet to apply a flat style to the navigation pane.
+
+flat-slider.css
+---------------
+
+flatmark.css
+------------
+
+messages.css
+------------
+
+nav_header.css
+--------------
+
+nav_tabs.css
+------------
+
+wide_nav.css
+------------
+
 Usage
 -----
 
@@ -25,11 +48,20 @@ Include any of the CSS files using a ``<link>`` tag in your HTML template like s
         <link href="{% static 'tethys_sdk/css/flat_nav.css' %}" rel="stylesheet">
     {% endblock %}
 
-
-
-
 JavaScript
 ==========
+
+check_id.js
+-----------
+
+collapse.js
+-----------
+
+csrf.js
+-------
+
+utilities.js
+------------
 
 Usage
 -----
