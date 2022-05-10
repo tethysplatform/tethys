@@ -296,6 +296,13 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         # Add layers to the Map
         log.debug('Composing layers...')
         layer_groups = self.compose_layers(request=request, map_view=map_view, *args, **kwargs)
+        
+        # Add layers to map view if not already added
+        for layer_group in layer_groups:
+            for layer in layer_group['layers']:
+                if layer not in map_view.layers:
+                    map_view.layers.append(layer)
+
         log.debug(f'Number of Layers: {len(map_view.layers)}')
 
         # Check if we need to create a blank custom layer group
