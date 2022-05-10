@@ -706,7 +706,6 @@ class MVLayer(SecondaryGizmoOptions):
         self.geometry_attribute = geometry_attribute
         self.data = data or dict()
         self.times = times
-        
         if source == 'GeoJSON':
             self.geometry_attribute = 'geometry'
 

@@ -131,7 +131,6 @@ class TestMapView(unittest.TestCase):
 
         mock_log.assert_called_with("geometry_attribute not defined for layer 'Park City Watershed' "
                                     "-using default value 'the_geom'")
-    
     def test_MVLayer_geojson_source_geometry_attribute(self):
         source = 'GeoJSON'
         legend_title = 'GeoJSON Layer'
