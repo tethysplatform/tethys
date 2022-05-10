@@ -708,9 +708,9 @@ class MVLayer(SecondaryGizmoOptions):
         self.times = times
         
         if source == 'GeoJSON':
-            geometry_attribute = 'geometry'
+            self.geometry_attribute = 'geometry'
 
-        if feature_selection and not geometry_attribute:
+        if self.feature_selection and not self.geometry_attribute:
             log.warning(f"geometry_attribute not defined for layer '{legend_title}' -using default value 'the_geom'")
 
 
