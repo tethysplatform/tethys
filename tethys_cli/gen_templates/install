@@ -1,5 +1,5 @@
 # This file may be committed to your app code.
-version: 1.0
+version: 1.1
 # This should match the app - package name in your setup.py
 name:
 
@@ -11,4 +11,7 @@ requirements:
     channels:
     packages:
   pip:
+  # Add JavaScript packages and versions under npm as a key value pair
+  npm:
+   # package_name: 1.0
 post:
