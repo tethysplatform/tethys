@@ -1,4 +1,4 @@
-from tethys_portal.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 __all__ = ['ESRIMap', 'EMView', 'EMLayer']
@@ -60,7 +60,7 @@ class ESRIMap(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "esri_map"
-    version = dependencies['arcgis'].version
+    version = vendor_static_dependencies['arcgis'].version
 
     def __init__(self, height='100%', width='100%', basemap='topo-vector', view=None, layers=None):
         """
@@ -81,7 +81,7 @@ class ESRIMap(TethysGizmoOptions):
         Javascript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return dependencies['arcgis'].get_custom_version_url(url_type='js', version=cls.version),
+        return vendor_static_dependencies['arcgis'].get_custom_version_url(url_type='js', version=cls.version),
 
     @staticmethod
     def get_gizmo_js():
@@ -97,7 +97,7 @@ class ESRIMap(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return dependencies['arcgis'].get_custom_version_url(url_type='css', version=cls.version),
+        return vendor_static_dependencies['arcgis'].get_custom_version_url(url_type='css', version=cls.version),
 
 
 class EMView(SecondaryGizmoOptions):

@@ -240,7 +240,7 @@ class BokehView(TethysGizmoOptions):
     def bk_resources(cls):
         if cls._bk_resources is None:
             # configure bokeh resources
-            default = 'cdn' if settings.STATICFILES_USE_CDN else 'server'
+            default = 'server' if settings.STATICFILES_USE_NPM else 'cdn'
             mode = bk_settings.resources(default=default)
             kwargs = {'mode': mode}
             if mode == 'server':

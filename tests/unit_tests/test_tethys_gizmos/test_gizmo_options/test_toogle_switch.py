@@ -10,7 +10,7 @@ class TestToggleSwitch(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @override_settings(STATICFILES_USE_CDN=False)
+    @override_settings(STATICFILES_USE_NPM=True)
     def test_ToggleSwitch(self):
         display_text = 'Styled Toggle'
         name = 'toggle2'

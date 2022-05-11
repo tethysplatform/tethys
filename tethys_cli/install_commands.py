@@ -469,7 +469,10 @@ def install_command(args):
                     call(['pip', 'install', *requirements_config["pip"]])
 
                 try:
-                    public_resources_dir = list(Path().glob(str(Path('tethysapp', '*', 'public'))))[0]
+                    public_resources_dir = [
+                        *Path().glob(str(Path('tethysapp', '*', 'public'))),
+                        *Path().glob(str(Path('tethysapp', '*', 'static'))),
+                    ][0]
                 except IndexError:
                     write_warning('No public directory detected. Unable to process JavaScript dependencies.')
                 else:

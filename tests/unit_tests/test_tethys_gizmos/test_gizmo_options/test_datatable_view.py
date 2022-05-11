@@ -10,7 +10,7 @@ class TestDatatableView(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @override_settings(STATICFILES_USE_CDN=False)
+    @override_settings(STATICFILES_USE_NPM=True)
     def test_DataTableView(self):
         column_names = ['Name', 'Age', 'Job']
         datatable_options = {'rows': [['Bill', '30', 'contractor'], ['Fred', '18', 'programmer']]}

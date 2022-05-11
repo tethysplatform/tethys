@@ -17,7 +17,7 @@ from tethys_cli.gen_commands import (
     GEN_INSTALL_OPTION,
     GEN_PORTAL_OPTION,
     GEN_META_YAML_OPTION,
-    GEN_VENDOR_JS_OPTION,
+    GEN_PACKAGE_JSON_OPTION,
 )
 
 from tethys_apps.utilities import get_tethys_src_dir
@@ -670,7 +670,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
 
         mock_args = mock.MagicMock(
-            type=GEN_VENDOR_JS_OPTION,
+            type=GEN_PACKAGE_JSON_OPTION,
             directory=False,
         )
         result = get_destination_path(mock_args)

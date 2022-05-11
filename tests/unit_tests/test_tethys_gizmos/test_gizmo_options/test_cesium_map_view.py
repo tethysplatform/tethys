@@ -10,7 +10,7 @@ class TestCesiumMapView(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @override_settings(STATICFILES_USE_CDN=True)
+    @override_settings(STATICFILES_USE_NPM=False)
     def test_CesiumMapView(self):
         options = {'options': 'options_value'}
         view = {'view': 'view_value'}
@@ -48,7 +48,7 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_gizmo_css()[0])
 
-    @override_settings(STATICFILES_USE_CDN=False)
+    @override_settings(STATICFILES_USE_NPM=True)
     def test_CesiumMapView_build_version(self):
         options = {'options': 'options_value'}
         view = {'view': 'view_value'}

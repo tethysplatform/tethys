@@ -10,7 +10,7 @@ class TestESRI(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @override_settings(STATICFILES_USE_CDN=True)
+    @override_settings(STATICFILES_USE_NPM=False)
     def test_ESRIMap(self):
         layers = ['layer1', 'layer2']
         basemap = 'Aerial'

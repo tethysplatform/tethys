@@ -8,7 +8,7 @@
 """
 import re
 from json import dumps
-from tethys_portal.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['DataTableView']
@@ -108,7 +108,7 @@ class DataTableView(TethysGizmoOptions):
     # SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns',
     #                         'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
-    version = dependencies['datatables'].version
+    version = vendor_static_dependencies['datatables'].version
 
     def __init__(self, rows, column_names, footer=False, hover=False, striped=False, bordered=False,
                  condensed=False, dark=False, attributes=None, classes='', **kwargs):
@@ -137,7 +137,7 @@ class DataTableView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return dependencies['datatables_bs5'].css_url,
+        return vendor_static_dependencies['datatables_bs5'].css_url,
 
     @classmethod
     def get_vendor_js(cls):
@@ -146,8 +146,8 @@ class DataTableView(TethysGizmoOptions):
         {% block global_scripts %} block
         """
         return (
-            dependencies['datatables'].js_url,
-            dependencies['datatables_bs5'].js_url,
+            vendor_static_dependencies['datatables'].js_url,
+            vendor_static_dependencies['datatables_bs5'].js_url,
         )
 
     @staticmethod

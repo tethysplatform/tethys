@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 import json
-from tethys_portal.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['SelectInput']
@@ -124,7 +124,7 @@ class SelectInput(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return dependencies['select2'].js_url,
+        return vendor_static_dependencies['select2'].js_url,
 
     @staticmethod
     def get_vendor_css():
@@ -132,7 +132,7 @@ class SelectInput(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return dependencies['select2'].css_url,
+        return vendor_static_dependencies['select2'].css_url,
 
     @staticmethod
     def get_gizmo_js():

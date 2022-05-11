@@ -24,7 +24,7 @@ from django.conf import settings
 
 import tethys_portal
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
-from tethys_portal.dependencies import dependencies as vendor_static_dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
@@ -37,7 +37,7 @@ GEN_PORTAL_OPTION = 'portal_config'
 GEN_SERVICES_OPTION = 'services'
 GEN_INSTALL_OPTION = 'install'
 GEN_META_YAML_OPTION = 'metayaml'
-GEN_VENDOR_JS_OPTION = 'vendor_js'
+GEN_PACKAGE_JSON_OPTION = 'package_json'
 
 FILE_NAMES = {
     GEN_APACHE_OPTION: 'tethys-default.conf',
@@ -48,7 +48,7 @@ FILE_NAMES = {
     GEN_SERVICES_OPTION: 'services.yml',
     GEN_INSTALL_OPTION: 'install.yml',
     GEN_META_YAML_OPTION: 'meta.yaml',
-    GEN_VENDOR_JS_OPTION: 'package.json',
+    GEN_PACKAGE_JSON_OPTION: 'package.json',
 }
 
 VALID_GEN_OBJECTS = (
@@ -60,7 +60,7 @@ VALID_GEN_OBJECTS = (
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_META_YAML_OPTION,
-    GEN_VENDOR_JS_OPTION,
+    GEN_PACKAGE_JSON_OPTION,
 )
 
 TETHYS_SRC = get_tethys_src_dir()
@@ -294,7 +294,7 @@ def get_destination_path(args):
     elif args.type == GEN_META_YAML_OPTION:
         destination_dir = os.path.join(TETHYS_SRC, 'conda.recipe')
 
-    elif args.type == GEN_VENDOR_JS_OPTION:
+    elif args.type == GEN_PACKAGE_JSON_OPTION:
         destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal', 'static')
 
     if args.directory:
@@ -356,7 +356,7 @@ GEN_COMMANDS = {
     GEN_SERVICES_OPTION: gen_services_yaml,
     GEN_INSTALL_OPTION: gen_install,
     GEN_META_YAML_OPTION: gen_meta_yaml,
-    GEN_VENDOR_JS_OPTION: (gen_vendor_static_files, download_vendor_static_files),
+    GEN_PACKAGE_JSON_OPTION: (gen_vendor_static_files, download_vendor_static_files),
 }
 
 

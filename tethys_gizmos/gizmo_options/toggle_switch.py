@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from tethys_portal.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['ToggleSwitch']
@@ -83,7 +83,7 @@ class ToggleSwitch(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "toggle_switch"
-    version = dependencies['bootstrap-switch'].version
+    version = vendor_static_dependencies['bootstrap-switch'].version
 
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
                  size='regular', initial=False, disabled=False, error='', success='', attributes=None, classes=''):
@@ -111,7 +111,7 @@ class ToggleSwitch(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return dependencies['bootstrap-switch'].get_custom_version_url(url_type='js', version=cls.version),
+        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(url_type='js', version=cls.version),
 
     @classmethod
     def get_vendor_css(cls):
@@ -119,7 +119,7 @@ class ToggleSwitch(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return dependencies['bootstrap-switch'].get_custom_version_url(url_type='css', version=cls.version),
+        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(url_type='css', version=cls.version),
 
     @staticmethod
     def get_gizmo_js():

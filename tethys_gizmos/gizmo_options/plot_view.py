@@ -1,5 +1,5 @@
 # coding=utf-8
-from tethys_portal.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
@@ -11,9 +11,9 @@ class PlotViewBase(TethysGizmoOptions):
     Plot view classes inherit from this class.
     """
     gizmo_name = "plot_view"
-    version_d3 = dependencies['d3'].version
-    version_d3_tip = dependencies['d3-tip'].version
-    version_highcharts = dependencies['highcharts'].version
+    version_d3 = vendor_static_dependencies['d3'].version
+    version_d3_tip = vendor_static_dependencies['d3-tip'].version
+    version_highcharts = vendor_static_dependencies['highcharts'].version
 
     def __init__(self, width='500px', height='500px', engine='d3'):
         """
@@ -39,9 +39,9 @@ class PlotViewBase(TethysGizmoOptions):
         """
 
         return (
-            *dependencies['highcharts'].get_js_urls(version=cls.version_highcharts),
-            dependencies['d3'].get_custom_version_url(url_type='js', version=cls.version_d3),
-            dependencies['d3-tip'].get_custom_version_url(url_type='js', version=cls.version_d3_tip),
+            *vendor_static_dependencies['highcharts'].get_js_urls(version=cls.version_highcharts),
+            vendor_static_dependencies['d3'].get_custom_version_url(url_type='js', version=cls.version_d3),
+            vendor_static_dependencies['d3-tip'].get_custom_version_url(url_type='js', version=cls.version_d3_tip),
         )
 
     @staticmethod

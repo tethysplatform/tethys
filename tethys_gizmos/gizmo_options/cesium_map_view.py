@@ -1,5 +1,5 @@
 import logging
-from tethys_portal.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.cesium_map_view')
@@ -516,7 +516,7 @@ class CesiumMapView(TethysGizmoOptions):
     gizmo_name = "cesium_map_view"
 
     # Set Cesium Default Release Version.
-    cesium_version = dependencies['cesiumjs'].version
+    cesium_version = vendor_static_dependencies['cesiumjs'].version
 
     def __init__(self, options=None, globe=None, view=None, layers=None, entities=None, primitives=None, terrain=None,
                  models=None, clock=None, height='100%', width='100%', draw=False, attributes=None, classes='',
@@ -546,7 +546,7 @@ class CesiumMapView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return dependencies['cesiumjs'].get_custom_version_url(url_type='js', version=cls.cesium_version),
+        return vendor_static_dependencies['cesiumjs'].get_custom_version_url(url_type='js', version=cls.cesium_version),
 
     @staticmethod
     def get_gizmo_js():
@@ -564,7 +564,7 @@ class CesiumMapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return dependencies['cesiumjs'].get_custom_version_url(url_type='css', version=cls.cesium_version),
+        return vendor_static_dependencies['cesiumjs'].get_custom_version_url(url_type='css', version=cls.cesium_version),
 
     @staticmethod
     def get_gizmo_css():

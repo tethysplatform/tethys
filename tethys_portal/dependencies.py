@@ -24,7 +24,7 @@ class StaticDependency:
 
     @property
     def use_cdn(self):
-        return settings.STATICFILES_USE_CDN
+        return not settings.STATICFILES_USE_NPM
 
     @property
     def css_url(self):
@@ -47,15 +47,16 @@ class StaticDependency:
         return path.replace('min.', '')
 
     def get_custom_version_url(self, url_type, version, debug=None):
+        use_cdn = self.use_cdn
         if version == self.version:
             pass
         elif not self.use_cdn:
             logger.warning(
-                f'The "STATICFILES_USE_CDN" setting is set to False, so the custom version "{self.npm_name}={version}" '
-                f'is not supported. Using the default version ({self.version}) instead.'
+                f'The "STATICFILES_USE_NPM" setting is set to True, but the custom version "{self.npm_name}={version}" '
+                f'is not supported. A CDN will be used to attempt to provide the custom version ({self.version}).'
             )
-            version = self.version
-        return self._get_url(url_type, version, debug=debug)
+            use_cdn = True
+        return self._get_url(url_type, version, debug=debug, use_cdn=use_cdn)
 
     def get_js_urls(self, version=None):
         version = version or self.version
@@ -64,9 +65,10 @@ class StaticDependency:
         else:
             return [self._get_url(url, version) for url in self.js_paths]
 
-    def _get_url(self, url_type_or_path, version=None, debug=None):
+    def _get_url(self, url_type_or_path, version=None, debug=None, use_cdn=None):
         version = version or self.version
         debug = debug or settings.DEBUG
+        use_cdn = use_cdn or self.use_cdn
 
         path = {
             url_type_or_path: url_type_or_path,
@@ -82,7 +84,7 @@ class StaticDependency:
         if debug:
             path = self.debug_path_converter(path)
 
-        if self.use_cdn:
+        if use_cdn:
             return self.cdn_url.format(npm_name=self.npm_name, version=version, path=path)
         else:
             return self.static_url.format(npm_name=self.npm_name, path=path)
@@ -114,14 +116,17 @@ class JsDelivrStaticDependency(StaticDependency):
 class ArcGISStaticDependency(StaticDependency):
     cdn_url = 'https://js.arcgis.com/{version}/{path}'
 
-    def _get_url(self, url_type_or_path, version=None, debug=None):
-        if not self.use_cdn:
-            raise ValueError('The ArcGIS JS API is only available via CDN.')
-        # Can be downloaded with https://developers.arcgis.com/downloads/#javascript
+    def _get_url(self, url_type_or_path, version=None, debug=None, use_cdn=None):
+        use_cdn = use_cdn or self.use_cdn
+        if not use_cdn:
+            raise ValueError(
+                'The ArcGIS JS API is only available via CDN. '
+                'It Can be downloaded using an API key from https://developers.arcgis.com/downloads/#javascript.'
+            )
         return super()._get_url(url_type_or_path, version, debug=debug)
 
 
-dependencies = {
+vendor_static_dependencies = {
     'arcgis': ArcGISStaticDependency(
         npm_name='arcgis-js-api',  # Not sure if this is the right package
         version='4.22.2',
@@ -133,12 +138,8 @@ dependencies = {
         version='5.1.3',
         css_path='dist/css/bootstrap.min.css',
         js_path='dist/js/bootstrap.bundle.min.js',
-        # SRIs for version 5.1.3 (from Bootstrap.com)
-        css_integrity='sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3',
-        js_integrity='sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p',
-        # SRIS from jsdelivr
-        # css_integrity='sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=',
-        # js_integrity='sha256-9SEPo+fwJFpMUet/KACSwO+Z/dKMReF9q4zFhU/fT9M=',
+        css_integrity='sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=',
+        js_integrity='sha256-9SEPo+fwJFpMUet/KACSwO+Z/dKMReF9q4zFhU/fT9M=',
     ),
     'bootstrap-datepicker': JsDelivrStaticDependency(
         npm_name='bootstrap-datepicker',
@@ -191,7 +192,7 @@ dependencies = {
         version='1.11.4',
         js_path='js/jquery.dataTables.min.js',
         # SRI for version 1.11.4
-        js_integrity='sha256-hMOOju/zavxcwBsZt0hWn5kBaKk6QOfAKiAUgCJvUi0='
+        js_integrity='sha256-hMOOju/zavxcwBsZt0hWn5kBaKk6QOfAKiAUgCJvUi0=',
     ),
     'datatables_bs5': JsDelivrStaticDependency(
         npm_name='datatables.net-bs5',
@@ -230,8 +231,8 @@ dependencies = {
         js_path='ol.js',
         css_path='ol.css',
         # SRIs for version 6.12.0
-        # css_integrity='sha256-tNEA99Lx5UuZVVzRBp10B2NPUyAaDv8ARGA9egh8Gb0=',
-        # js_integrity='sha256-Z/Lw28FXXazW4RWDVSOlE3ofJMslivvdLlpF9NaEJ2Q='
+        css_integrity='sha256-tNEA99Lx5UuZVVzRBp10B2NPUyAaDv8ARGA9egh8Gb0=',
+        js_integrity='sha256-Z/Lw28FXXazW4RWDVSOlE3ofJMslivvdLlpF9NaEJ2Q=',
     ),
     'select2': JsDelivrStaticDependency(
         npm_name='select2',
