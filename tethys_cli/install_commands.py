@@ -5,7 +5,6 @@ from pathlib import Path
 
 from subprocess import (call, Popen, PIPE, STDOUT)
 from argparse import Namespace
-from conda.cli.python_api import run_command as conda_run, Commands
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
@@ -17,6 +16,13 @@ from tethys_apps.utilities import (
     get_service_model_from_type,
     get_tethys_home_dir,
 )
+
+has_conda = False
+try:
+    from conda.cli.python_api import run_command as conda_run, Commands
+    has_conda = True
+except ModuleNotFoundError:
+    write_warning('Conda not found. Some functionality will not be available.')
 
 FNULL = open(os.devnull, 'w')
 
@@ -462,12 +468,20 @@ def install_command(args):
                 write_warning("Skipping package installation.")
             else:
                 if validate_schema('conda', requirements_config):  # noqa: E501
-                    conda_config = requirements_config['conda']
-                    install_packages(conda_config, update_installed=args.update_installed)
+                    if has_conda:
+                        conda_config = requirements_config['conda']
+                        install_packages(conda_config, update_installed=args.update_installed)
+                    else:
+                        write_warning(
+                            'Conda is not installed. Attempting to install conda packages with pip...'
+                        )
+                        try:
+                            call(['pip', 'install', *requirements_config['conda']['packages']])
+                        except Exception as e:
+                            write_error(f'Installing conda packages with pip failed with the following exception: {e}')
                 if validate_schema('pip', requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(['pip', 'install', *requirements_config["pip"]])
-
                 try:
                     public_resources_dir = [
                         *Path().glob(str(Path('tethysapp', '*', 'public'))),
