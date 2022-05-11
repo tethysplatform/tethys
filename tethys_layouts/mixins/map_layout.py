@@ -352,6 +352,7 @@ class MapLayoutMixin:
 
         # Bind geometry features to layer via layer name
         for feature in geojson['features']:
+            feature.setdefault('properties', {})
             feature['properties']['layer_name'] = layer_name
 
         mv_layer = cls._build_mv_layer(

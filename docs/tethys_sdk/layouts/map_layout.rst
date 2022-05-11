@@ -4,7 +4,7 @@
 Map Layout
 **********
 
-**Last Updated:** April 2022
+**Last Updated:** May 2022
 
 The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds. It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
 
@@ -573,7 +573,7 @@ In this example, the plot data is hard-coded for simplicity:
 
 .. code-block:: python
 
-    def get_plot_for_layer_feature(self, layer_name, feature_id):
+    def get_plot_for_layer_feature(self, request, layer_name, feature_id, *args, **kwargs):
         """
         Retrieves plot data for given feature on given layer.
 

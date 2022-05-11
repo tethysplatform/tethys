@@ -259,17 +259,18 @@ var MAP_LAYOUT = (function() {
 
     get_feature_id_from_feature = function(feature) {
         let feature_id = feature.getId();
-        let fid = '-1';
 
         if (feature_id) {
-            // Derive fid from ID assigned by GeoServer (<layer_name>.<fid>)
-            // e.g.: 0958cc07-c194-4af9-81c5-118a77d335ac_stream_links.fid--72787a80_169a16811e6_-7aa6
-            fid = feature_id.split('.')[1];
+            if (feature_id.includes('.fid')) {
+                // Derive fid from ID assigned by GeoServer (<layer_name>.<fid>)
+                // e.g.: 0958cc07-c194-4af9-81c5-118a77d335ac_stream_links.fid--72787a80_169a16811e6_-7aa6
+                feature_id = feature_id.split('.')[1];
+            }
         } else {
-            fid = feature.get('id');
+            feature_id = feature.get('id');
         }
 
-        return fid;
+        return feature_id;
     };
 
     // Plotting

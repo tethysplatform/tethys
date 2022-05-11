@@ -129,7 +129,93 @@ class TestMapView(unittest.TestCase):
         gizmo_map_view.MVLayer(source=source, legend_title=legend_title, options=options,
                                feature_selection=feature_selection)
 
-        mock_log.assert_called_with("geometry_attribute not defined -using default value 'the_geom'")
+        mock_log.assert_called_with("geometry_attribute not defined for layer 'Park City Watershed' "
+                                    "-using default value 'the_geom'")
+
+    def test_MVLayer_geojson_source_geometry_attribute(self):
+        source = 'GeoJSON'
+        legend_title = 'GeoJSON Layer'
+        geojson = {
+            'type': 'FeatureCollection',
+            'crs': {
+                'type': 'name',
+                'properties': {
+                    'name': 'EPSG:3857'
+                }
+            },
+            'features': [
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [0, 0]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Polygon',
+                        'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+                    }
+                }
+            ]
+        }
+
+        ret = gizmo_map_view.MVLayer(source=source, legend_title=legend_title, options=geojson)
+
+        self.assertEqual('geometry', ret.geometry_attribute)
+
+    @mock.patch('tethys_gizmos.gizmo_options.map_view.log.warning')
+    def test_MVLayer_geojson_source_geometry_attribute_feature_selection(self, mock_warning):
+        source = 'GeoJSON'
+        legend_title = 'GeoJSON Layer'
+        feature_selection = True
+        geojson = {
+            'type': 'FeatureCollection',
+            'crs': {
+                'type': 'name',
+                'properties': {
+                    'name': 'EPSG:3857'
+                }
+            },
+            'features': [
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [0, 0]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Polygon',
+                        'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+                    }
+                }
+            ]
+        }
+
+        ret = gizmo_map_view.MVLayer(source=source, legend_title=legend_title, options=geojson,
+                                     feature_selection=feature_selection)
+
+        self.assertEqual('geometry', ret.geometry_attribute)
+
+        mock_warning.assert_not_called()
 
     def test_MVLegendClass(self):
         # Point
