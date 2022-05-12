@@ -441,7 +441,7 @@ Exclude properties from being displayed in the properties pop-ups using the ``ex
 
 .. caution::
 
-    The Feature Selection Property Popup feature and the :ref:`map_layout_map_clicks_popups`feature cannot not be used together. When both are enabled, neither popup is displayed.
+    The Feature Selection Property Popup feature and the :ref:`map_layout_map_clicks_popups` feature cannot not be used together. When both are enabled, neither popup is displayed.
 
 .. _map_layout_popup_javascript_api:
 
