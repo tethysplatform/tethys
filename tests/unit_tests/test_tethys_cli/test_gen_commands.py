@@ -7,13 +7,17 @@ from tethys_cli.gen_commands import (
     derive_version_from_conda_environment,
     gen_meta_yaml,
     generate_command,
+    gen_vendor_static_files,
+    download_vendor_static_files,
+    get_destination_path,
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
     GEN_ASGI_SERVICE_OPTION,
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_PORTAL_OPTION,
-    GEN_META_YAML_OPTION
+    GEN_META_YAML_OPTION,
+    GEN_PACKAGE_JSON_OPTION,
 )
 
 from tethys_apps.utilities import get_tethys_src_dir
@@ -650,3 +654,41 @@ class CLIGenCommandsTest(unittest.TestCase):
                          rts_call_args[0][0][0])
         self.assertEqual('Some error',
                          rts_call_args[1][0][0])
+
+    def test_gen_vendor_static_files(self):
+        context = gen_vendor_static_files(mock.MagicMock())
+        for k, v in context.items():
+            self.assertIsNotNone(v)
+
+    @mock.patch('tethys_cli.gen_commands.call')
+    def test_download_vendor_static_files(self, mock_call):
+        download_vendor_static_files(mock.MagicMock())
+        mock_call.assert_called_once()
+
+    @mock.patch('tethys_cli.gen_commands.check_for_existing_file')
+    @mock.patch('tethys_cli.gen_commands.os.path.isdir', return_value=True)
+    def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
+
+        mock_args = mock.MagicMock(
+            type=GEN_PACKAGE_JSON_OPTION,
+            directory=False,
+        )
+        result = get_destination_path(mock_args)
+        mock_isdir.assert_called()
+        mock_check_file.assert_called_once()
+        self.assertEqual(result, f'{TETHYS_SRC}/tethys_portal/static/package.json')
+
+    @mock.patch('tethys_cli.gen_commands.GEN_COMMANDS')
+    @mock.patch('tethys_cli.gen_commands.write_path_to_console')
+    @mock.patch('tethys_cli.gen_commands.render_template')
+    @mock.patch('tethys_cli.gen_commands.get_destination_path')
+    def test_generate_commmand_post_process_func(self, mock_get_path, mock_render, mock_write_path, mock_commands):
+        mock_commands.__getitem__.return_value = (mock.MagicMock(), mock.MagicMock())
+        mock_args = mock.MagicMock(
+            type='test',
+        )
+        generate_command(mock_args)
+        mock_get_path.assert_called_once_with(mock_args)
+        mock_render.assert_called_once()
+        mock_write_path.assert_called_once()
+        mock_commands.__getitem__.assert_called_once()

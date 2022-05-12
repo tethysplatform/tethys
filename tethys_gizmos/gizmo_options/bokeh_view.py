@@ -1,6 +1,10 @@
 # coding=utf-8
 from bokeh.embed import components
-from bokeh.resources import CDN
+from bokeh.resources import Resources
+from bokeh.settings import settings as bk_settings
+
+from django.conf import settings
+from django.utils.functional import classproperty
 
 from .base import TethysGizmoOptions
 
@@ -217,6 +221,7 @@ class BokehView(TethysGizmoOptions):
         {% gizmo hexbin_plot %}
     """
     gizmo_name = "bokeh_view"
+    _bk_resources = None
 
     def __init__(self, plot_input, height=None, width='100%',
                  attributes='', classes='', divid='', hidden=False):
@@ -231,18 +236,37 @@ class BokehView(TethysGizmoOptions):
         self.divid = divid
         self.hidden = hidden
 
-    @staticmethod
-    def get_vendor_css():
-        """
-        JavaScript vendor libraries to be placed in the
-        {% block global_scripts %} block
-        """
-        return CDN.css_files
+    @classproperty
+    def bk_resources(cls):
+        if cls._bk_resources is None:
+            # configure bokeh resources
+            default = 'server' if settings.STATICFILES_USE_NPM else 'cdn'
+            mode = bk_settings.resources(default=default)
+            kwargs = {'mode': mode}
+            if mode == 'server':
+                kwargs['root_url'] = '/'
+            cls._bk_resources = Resources(**kwargs)
+        return cls._bk_resources
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def _get_bokeh_resources(cls, resource_type):
+        files = getattr(cls.bk_resources, f'{resource_type}_files')
+        if cls.bk_resources.mode == 'server':
+            files = [f[len('/static'):] for f in files]
+        return files
+
+    @classmethod
+    def get_vendor_css(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return CDN.js_files
+        return cls._get_bokeh_resources('css')
+
+    @classmethod
+    def get_vendor_js(cls):
+        """
+        JavaScript vendor libraries to be placed in the
+        {% block global_scripts %} block
+        """
+        return cls._get_bokeh_resources('js')

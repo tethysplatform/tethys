@@ -4,7 +4,7 @@ version: 1.0
 name: my_first_app
 
 requirements:
-  # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+  # Putting in a skip true param will skip the entire section. Ignoring the option will assume it is set to False
   skip: false
   conda:
     channels:
@@ -16,6 +16,9 @@ requirements:
 
   pip:
     - see
+
+  npm:
+    leaflet: 1.8.0
 
 post:
   - test.sh

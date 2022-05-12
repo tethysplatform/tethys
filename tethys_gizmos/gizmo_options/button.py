@@ -195,7 +195,7 @@ class Button(TethysGizmoOptions):
     gizmo_name = "button"
 
     def __init__(self, display_text='', name='', style='', icon='', href='',
-                 submit=False, disabled=False, attributes={}, classes=''):
+                 submit=False, disabled=False, attributes=None, classes=''):
         """
         Constructor
         """

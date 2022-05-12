@@ -94,7 +94,7 @@ class TestJobsTable(unittest.TestCase):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]
-        column_fields = [('id', '1'), 'name', 'description', 'creation_time', 'run_time', 'extended_properties']
+        column_fields = [('ID', 'id'), 'name', 'description', 'creation_time', 'run_time', 'extended_properties']
 
         # This set_rows_and_columns method is called at the init
         result = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields)

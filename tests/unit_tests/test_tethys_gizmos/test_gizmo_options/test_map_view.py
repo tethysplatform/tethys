@@ -3,11 +3,6 @@ import tethys_gizmos.gizmo_options.map_view as gizmo_map_view
 from unittest import mock
 
 
-class MockObject:
-    def __init__(self, debug=True):
-        self.DEBUG = debug
-
-
 class TestMapView(unittest.TestCase):
     def setUp(self):
         pass
@@ -33,13 +28,6 @@ class TestMapView(unittest.TestCase):
         self.assertIn('.js', gizmo_map_view.MapView.get_gizmo_js()[0])
         self.assertIn('.css', gizmo_map_view.MapView.get_vendor_css()[0])
         self.assertIn('.css', gizmo_map_view.MapView.get_gizmo_css()[0])
-
-    @mock.patch('tethys_gizmos.gizmo_options.map_view.settings')
-    def test_MapView_debug(self, mock_settings):
-        ms = mock_settings()
-        ms.return_value = MockObject()
-        gizmo_map_view.MapView.ol_version = '4.6.5'
-        self.assertIn('-debug.js', gizmo_map_view.MapView.get_vendor_js()[0])
 
     def test_MVView(self):
         projection = 'EPSG:4326'

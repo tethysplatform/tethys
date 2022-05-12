@@ -31,7 +31,7 @@ from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import get_tethys_home_dir
 from tethys_cli.gen_commands import generate_secret_key
 
-from bokeh.settings import settings as bokeh_settings
+from bokeh.settings import settings as bokeh_settings, bokehjsdir
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
@@ -262,7 +262,14 @@ TEMPLATES = [
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
+STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop('STATICFILES_USE_NPM', False)
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static', 'node_modules'),
+    bokehjsdir()
+)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 import json
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['SelectInput']
@@ -94,14 +94,16 @@ class SelectInput(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "select_input"
 
-    def __init__(self, name, display_text='', initial=[], multiple=False, original=False,
+    def __init__(self, name, display_text='', initial=None, multiple=False, original=False,
                  select2_options=None, options='', disabled=False, error='', success='',
-                 attributes={}, classes=''):
+                 attributes=None, classes=''):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(attributes=attributes, classes=classes)
+
+        initial = initial or []
 
         self.display_text = display_text
         self.name = name
@@ -122,7 +124,7 @@ class SelectInput(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return (f"https://cdn.jsdelivr.net/npm/select2@{dependencies['select2']['version']}/dist/js/select2.min.js",)
+        return vendor_static_dependencies['select2'].js_url,
 
     @staticmethod
     def get_vendor_css():
@@ -130,7 +132,7 @@ class SelectInput(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return (f"https://cdn.jsdelivr.net/npm/select2@{dependencies['select2']['version']}/dist/css/select2.min.css",)
+        return vendor_static_dependencies['select2'].css_url,
 
     @staticmethod
     def get_gizmo_js():
@@ -138,4 +140,4 @@ class SelectInput(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/select_input.js',)
+        return 'tethys_gizmos/js/select_input.js',

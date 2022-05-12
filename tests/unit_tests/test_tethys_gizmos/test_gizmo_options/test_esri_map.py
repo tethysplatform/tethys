@@ -1,4 +1,5 @@
 import unittest
+from django.test import override_settings
 import tethys_gizmos.gizmo_options.esri_map as gizmo_esri_map
 
 
@@ -9,6 +10,7 @@ class TestESRI(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(STATICFILES_USE_NPM=False)
     def test_ESRIMap(self):
         layers = ['layer1', 'layer2']
         basemap = 'Aerial'

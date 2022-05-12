@@ -77,7 +77,7 @@ class TableView(TethysGizmoOptions):
     gizmo_name = "table_view"
 
     def __init__(self, rows, column_names='', hover=False, striped=False, bordered=False, condensed=False,
-                 dark=False, editable_columns='', row_ids='', attributes={}, classes=''):
+                 dark=False, editable_columns='', row_ids='', attributes=None, classes=''):
         """
         Constructor
         """

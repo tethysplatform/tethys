@@ -91,8 +91,8 @@
     {% endcomment %}
 
     {% block styles %}
-      <link href="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/css/bootstrap.min.css" rel="stylesheet" integrity="{{ tethys.bootstrap.css_integrity }}" crossorigin="anonymous">
-      <link href="//cdn.jsdelivr.net/npm/bootstrap-icons@{{ tethys.bootstrap_icons.version }}/font/bootstrap-icons.css" rel="stylesheet" >
+      {{ tethys.bootstrap.link_tag|safe }}
+      {{ tethys.bootstrap_icons.link_tag|safe }}
       <link href="{% static 'tethys_portal/css/tethys_main.min.css' %}"  rel="stylesheet" />
       <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
       <style id="global-styles">
@@ -208,8 +208,8 @@
     {% endblock %}
 
     {% block global_scripts %}
-      <script src="//code.jquery.com/jquery-{{ tethys.jquery.version }}.min.js" integrity="{{ tethys.jquery.integrity }}" crossorigin="anonymous"></script>
-      <script src="//cdn.jsdelivr.net/npm/bootstrap@{{ tethys.bootstrap.version }}/dist/js/bootstrap.bundle.min.js" integrity="{{ tethys.bootstrap.js_integrity }}" crossorigin="anonymous"></script>
+      {{ tethys.jquery.script_tag|safe }}
+      {{ tethys.bootstrap.script_tag|safe }}
     {% endblock %}
 
     {% block session_timeout_modal %}

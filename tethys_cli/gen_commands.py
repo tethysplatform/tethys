@@ -7,10 +7,13 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import json
 import os
-from pathlib import Path
 import string
 import random
+from pathlib import Path
+from subprocess import call
+
 
 from conda.cli.python_api import run_command, Commands
 from yaml import safe_load
@@ -21,6 +24,7 @@ from django.conf import settings
 
 import tethys_portal
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
+from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
@@ -33,6 +37,7 @@ GEN_PORTAL_OPTION = 'portal_config'
 GEN_SERVICES_OPTION = 'services'
 GEN_INSTALL_OPTION = 'install'
 GEN_META_YAML_OPTION = 'metayaml'
+GEN_PACKAGE_JSON_OPTION = 'package_json'
 
 FILE_NAMES = {
     GEN_APACHE_OPTION: 'tethys-default.conf',
@@ -42,7 +47,8 @@ FILE_NAMES = {
     GEN_PORTAL_OPTION: 'portal_config.yml',
     GEN_SERVICES_OPTION: 'services.yml',
     GEN_INSTALL_OPTION: 'install.yml',
-    GEN_META_YAML_OPTION: 'meta.yaml'
+    GEN_META_YAML_OPTION: 'meta.yaml',
+    GEN_PACKAGE_JSON_OPTION: 'package.json',
 }
 
 VALID_GEN_OBJECTS = (
@@ -53,7 +59,8 @@ VALID_GEN_OBJECTS = (
     GEN_PORTAL_OPTION,
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
-    GEN_META_YAML_OPTION
+    GEN_META_YAML_OPTION,
+    GEN_PACKAGE_JSON_OPTION,
 )
 
 TETHYS_SRC = get_tethys_src_dir()
@@ -250,6 +257,18 @@ def gen_meta_yaml(args):
     return context
 
 
+def gen_vendor_static_files(args):
+    context = {
+        'json': json.dumps({'dependencies': {d.npm_name: d.version for d in vendor_static_dependencies.values()}})
+    }
+    return context
+
+
+def download_vendor_static_files(args):
+    cwd = Path(TETHYS_SRC) / 'tethys_portal' / 'static'
+    call(['npm', 'i'], cwd=cwd)
+
+
 def gen_install(args):
     write_info('Please review the generated install.yml file and fill in the appropriate information '
                '(app name is required).')
@@ -274,6 +293,9 @@ def get_destination_path(args):
 
     elif args.type == GEN_META_YAML_OPTION:
         destination_dir = os.path.join(TETHYS_SRC, 'conda.recipe')
+
+    elif args.type == GEN_PACKAGE_JSON_OPTION:
+        destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal', 'static')
 
     if args.directory:
         destination_dir = os.path.abspath(args.directory)
@@ -333,8 +355,13 @@ GEN_COMMANDS = {
     GEN_PORTAL_OPTION: gen_portal_yaml,
     GEN_SERVICES_OPTION: gen_services_yaml,
     GEN_INSTALL_OPTION: gen_install,
-    GEN_META_YAML_OPTION: gen_meta_yaml
+    GEN_META_YAML_OPTION: gen_meta_yaml,
+    GEN_PACKAGE_JSON_OPTION: (gen_vendor_static_files, download_vendor_static_files),
 }
+
+
+def no_op(args):
+    pass
 
 
 def generate_command(args):
@@ -342,10 +369,17 @@ def generate_command(args):
     Generate a settings file for a new installation.
     """
     # Setup variables
-    context = GEN_COMMANDS[args.type](args)
+    context_func = GEN_COMMANDS[args.type]
+    post_process_func = no_op
+    if isinstance(context_func, tuple):
+        context_func, post_process_func = context_func
+
+    context = context_func(args)
 
     destination_path = get_destination_path(args)
 
     render_template(args.type, context, destination_path)
 
     write_path_to_console(destination_path)
+
+    post_process_func(args)

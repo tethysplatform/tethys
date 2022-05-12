@@ -10,7 +10,7 @@
 
 {% block styles %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/{{ tethys.datatables.version }}/css/dataTables.bootstrap5.min.css">
+  {{ tethys.datatables_bs5.link_tag|safe }}
 {% endblock %}
 
 {% block profile_sections %}
@@ -48,8 +48,8 @@
 
 {% block global_scripts %}
   {{ block.super }}
-  <script src="https://cdn.datatables.net/{{ tethys.datatables.version }}/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/{{ tethys.datatables.version }}/js/dataTables.bootstrap5.min.js"></script>
+  {{ tethys.datatables.script_tag|safe }}
+  {{ tethys.datatables_bs5.script_tag|safe }}
 {% endblock %}
 
 {% block scripts %}

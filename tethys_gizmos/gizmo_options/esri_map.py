@@ -1,4 +1,4 @@
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 __all__ = ['ESRIMap', 'EMView', 'EMLayer']
@@ -60,9 +60,9 @@ class ESRIMap(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "esri_map"
-    version = dependencies['arcgis']['version']
+    version = vendor_static_dependencies['arcgis'].version
 
-    def __init__(self, height='100%', width='100%', basemap='topo', view={'center': [-100, 40], 'zoom': 2}, layers=[]):
+    def __init__(self, height='100%', width='100%', basemap='topo-vector', view=None, layers=None):
         """
         Constructor
         """
@@ -72,8 +72,8 @@ class ESRIMap(TethysGizmoOptions):
         self.height = height
         self.width = width
         self.basemap = basemap
-        self.view = view
-        self.layers = layers
+        self.view = view or {'center': [-100, 40], 'zoom': 2}
+        self.layers = layers or []
 
     @classmethod
     def get_vendor_js(cls):
@@ -81,8 +81,7 @@ class ESRIMap(TethysGizmoOptions):
         Javascript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        esri_javascript_library = f'https://js.arcgis.com/{cls.version}/'
-        return (esri_javascript_library,)
+        return vendor_static_dependencies['arcgis'].get_custom_version_url(url_type='js', version=cls.version),
 
     @staticmethod
     def get_gizmo_js():
@@ -90,7 +89,7 @@ class ESRIMap(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/esri_map.js',)
+        return 'tethys_gizmos/js/esri_map.js',
 
     @classmethod
     def get_vendor_css(cls):
@@ -98,7 +97,7 @@ class ESRIMap(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return (f'https://js.arcgis.com/{cls.version}/esri/css/main.css',)
+        return vendor_static_dependencies['arcgis'].get_custom_version_url(url_type='css', version=cls.version),
 
 
 class EMView(SecondaryGizmoOptions):

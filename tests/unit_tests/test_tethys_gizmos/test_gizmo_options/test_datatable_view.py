@@ -1,4 +1,5 @@
 import unittest
+from django.test.utils import override_settings
 import tethys_gizmos.gizmo_options.datatable_view as gizmo_datatable_view
 
 
@@ -9,6 +10,7 @@ class TestDatatableView(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(STATICFILES_USE_NPM=True)
     def test_DataTableView(self):
         column_names = ['Name', 'Age', 'Job']
         datatable_options = {'rows': [['Bill', '30', 'contractor'], ['Fred', '18', 'programmer']]}

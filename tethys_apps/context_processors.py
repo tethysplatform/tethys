@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from tethys_apps.utilities import get_active_app
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 
 
 def tethys_apps_context(request):
@@ -43,6 +43,6 @@ def tethys_apps_context(request):
                 context['tethys_app']['enable_feedback'] = app.enable_feedback
 
     # Dependency Versions
-    context.update({'tethys': dependencies})
+    context.update({'tethys': vendor_static_dependencies})
 
     return context

@@ -8,7 +8,8 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions
-from django.conf import settings
+from tethys_portal.dependencies import vendor_static_dependencies
+
 
 __all__ = ['DatePicker']
 
@@ -77,16 +78,12 @@ class DatePicker(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "date_picker"
-    version = '1.9.0'
-
-    @classmethod
-    def cdn(cls):
-        return f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/{cls.version}'
+    version = vendor_static_dependencies['bootstrap-datepicker'].version
 
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
                  days_of_week_disabled='', end_date='', format='', min_view_mode='days', multidate=1, start_date='',
                  start_view='month', today_button=False, today_highlight=False, week_start=0, initial='',
-                 disabled=False, error='', attributes={}, classes=''):
+                 disabled=False, error='', attributes=None, classes=''):
         """
         Constructor
         """
@@ -118,11 +115,9 @@ class DatePicker(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        if settings.DEBUG:
-            ret = (f'{cls.cdn()}/css/bootstrap-datepicker3.css',)
-        else:
-            ret = (f'{cls.cdn()}/css/bootstrap-datepicker3.min.css',)
-        return ret
+        return vendor_static_dependencies['bootstrap-datepicker'].get_custom_version_url(
+            url_type='css', version=cls.version
+        ),
 
     @classmethod
     def get_vendor_js(cls):
@@ -130,8 +125,6 @@ class DatePicker(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        if settings.DEBUG:
-            ret = (f'{cls.cdn()}/js/bootstrap-datepicker.js',)
-        else:
-            ret = (f'{cls.cdn()}/js/bootstrap-datepicker.min.js',)
-        return ret
+        return vendor_static_dependencies['bootstrap-datepicker'].get_custom_version_url(
+            url_type='js', version=cls.version
+        ),

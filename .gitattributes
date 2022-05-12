@@ -1,7 +1,4 @@
 docs/* linguist-documentation
-static/tethys_portal/vendor/* linguist-vendored
-tethys_apps/static/vendor/* linguist-vendored
-tethys_gizmos/static/vendor/* linguist-vendored
 docs/**/*.png filter=lfs diff=lfs merge=lfs -text
 docs/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
 docs/**/*.jpg filter=lfs diff=lfs merge=lfs -text

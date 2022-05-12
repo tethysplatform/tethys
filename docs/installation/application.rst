@@ -48,7 +48,7 @@ This file is generated with your application scaffold. Dependencies that are lis
 
 **install.yml Options:**
 
-* **version**: Indicated the version of the :file:`install.yml` file. Current default : 1.0
+* **version**: Indicated the version of the :file:`install.yml` file. Current default : 1.1
 * **name**: This should match the app-package name in your setup.py
 
 * **skip**: If enabled, it will skip the installation of packages. This option is set to `False` by default.
@@ -59,11 +59,17 @@ This file is generated with your application scaffold. Dependencies that are lis
 
 * **pip**: A list of python dependencies that need to be installed by pip.
 
+* **npm**: A dictionary of JavaScript dependencies and versions that are installed by npm. They should be listed as a key-value pair (e.g. ``leaflet: 1.8.0``).
+
 * **post**: A list of shell scripts that you would want to run after the installation is complete. This option can be used to initialize workspaces/databases etc. These shell scripts should be present in the same directory as setup.py
 
 .. tip::
 
     Run ``tethys gen install`` to create a blank template of this file. By default the file will be saved to the current working directory.
+
+.. note::
+
+    If ``npm`` packages are listed in the :file:`install.yml` file, then a :file:`package.json` file will be created in the ``public`` directory of the app, and then ``npm`` will be run with that file. Alternatively, you can directly create a ``package.json`` file in the ``public`` directory and it will be used to install JavaScript packages.
 
 .. _tethys_services_yml:
 

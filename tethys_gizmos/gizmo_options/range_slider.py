@@ -67,7 +67,7 @@ class RangeSlider(TethysGizmoOptions):
     gizmo_name = "range_slider"
 
     def __init__(self, name, min, max, initial, step, disabled=False, display_text='', error='',
-                 success='', attributes={}, classes=''):
+                 success='', attributes=None, classes=''):
         """
         Constructor
         """
@@ -90,7 +90,7 @@ class RangeSlider(TethysGizmoOptions):
         CSS specific to gizmo to be placed in the
         {% block styles %} block
         """
-        return ('tethys_gizmos/css/range_slider.css',)
+        return 'tethys_gizmos/css/range_slider.css',
 
     @staticmethod
     def get_gizmo_js():
@@ -98,4 +98,4 @@ class RangeSlider(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/range_slider.js',)
+        return 'tethys_gizmos/js/range_slider.js',
