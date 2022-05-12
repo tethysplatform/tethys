@@ -1,10 +1,6 @@
 import unittest
+from django.test import override_settings
 import tethys_gizmos.gizmo_options.cesium_map_view as gizmo_map_view
-
-
-class MockObject:
-    def __init__(self, debug=True):
-        self.DEBUG = debug
 
 
 class TestCesiumMapView(unittest.TestCase):
@@ -14,6 +10,7 @@ class TestCesiumMapView(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(STATICFILES_USE_NPM=False)
     def test_CesiumMapView(self):
         options = {'options': 'options_value'}
         view = {'view': 'view_value'}
@@ -43,14 +40,15 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertFalse(result['draw'])
 
         # Check sources
-        self.assertIn('https://cesium.com/downloads/cesiumjs/releases/1.51/Build/Cesium/Cesium.js',
+        self.assertIn('https://cdn.jsdelivr.net/npm/cesium@1.51/Build/Cesium/Cesium.js',
                       gizmo_map_view.CesiumMapView.get_vendor_js()[0])
-        self.assertIn('https://cesium.com/downloads/cesiumjs/releases/1.51/Build/Cesium/Widgets/widgets.css',
+        self.assertIn('https://cdn.jsdelivr.net/npm/cesium@1.51/Build/Cesium/Widgets/widgets.css',
                       gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.js', gizmo_map_view.CesiumMapView.get_gizmo_js()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_gizmo_css()[0])
 
+    @override_settings(STATICFILES_USE_NPM=True)
     def test_CesiumMapView_build_version(self):
         options = {'options': 'options_value'}
         view = {'view': 'view_value'}
@@ -60,8 +58,7 @@ class TestCesiumMapView(unittest.TestCase):
         terrain = {'terrain': 'terrain_value'}
         models = ['model1', 'model2']
 
-        # Set cesium_version to blank to use the build version.
-        gizmo_map_view.CesiumMapView.cesium_version = ''
+        gizmo_map_view.CesiumMapView.cesium_version = '1.88'
         result = gizmo_map_view.CesiumMapView(options=options, view=view, layers=layers, entities=entities,
                                               terrain=terrain, models=models, draw=True, primitives=primitives)
 
@@ -78,9 +75,9 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertEqual(primitives, result['primitives'])
 
         # Check sources
-        self.assertIn('https://cesium.com/downloads/cesiumjs/releases//Build/Cesium/Cesium.js',
+        self.assertIn('/cesium/Build/Cesium/Cesium.js',
                       gizmo_map_view.CesiumMapView.get_vendor_js()[0])
-        self.assertIn('https://cesium.com/downloads/cesiumjs/releases//Build/Cesium/Widgets/widgets.css',
+        self.assertIn('/cesium/Build/Cesium/Widgets/widgets.css',
                       gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.js', gizmo_map_view.CesiumMapView.get_gizmo_js()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_vendor_css()[0])

@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['ToggleSwitch']
@@ -83,10 +83,10 @@ class ToggleSwitch(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "toggle_switch"
-    version = dependencies['bootstrap-switch']['version']
+    version = vendor_static_dependencies['bootstrap-switch'].version
 
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
-                 size='regular', initial=False, disabled=False, error='', success='', attributes={}, classes=''):
+                 size='regular', initial=False, disabled=False, error='', success='', attributes=None, classes=''):
         """
         Constructor
         """
@@ -111,7 +111,9 @@ class ToggleSwitch(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return (f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/{cls.version}/js/bootstrap-switch.min.js',)
+        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(
+            url_type='js', version=cls.version
+        ),
 
     @classmethod
     def get_vendor_css(cls):
@@ -119,7 +121,9 @@ class ToggleSwitch(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return (f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/{cls.version}/css/bootstrap-switch.min.css',)
+        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(
+            url_type='css', version=cls.version
+        ),
 
     @staticmethod
     def get_gizmo_js():
@@ -127,4 +131,4 @@ class ToggleSwitch(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/toggle_switch.js',)
+        return 'tethys_gizmos/js/toggle_switch.js',

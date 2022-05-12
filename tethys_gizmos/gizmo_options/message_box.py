@@ -60,7 +60,7 @@ class MessageBox(TethysGizmoOptions):
     gizmo_name = "message_box"
 
     def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok',
-                 affirmative_attributes='', width=560, attributes={}, classes=''):
+                 affirmative_attributes='', width=560, attributes=None, classes=''):
         """
         Constructor
         """

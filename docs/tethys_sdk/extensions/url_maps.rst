@@ -21,7 +21,7 @@ Although ``UrlMaps`` and controllers defined in extensions are loaded, it is not
         root_url = 'my-first-extension'
         description = 'This is my first extension.'
 
-        def url_maps():
+        def url_maps(self):
             """
             Map controllers to URLs.
             """

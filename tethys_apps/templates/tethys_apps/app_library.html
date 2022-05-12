@@ -7,7 +7,7 @@
 
 {% block styles %}
   {{ block.super }}
-  <link href="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}/dist/css/select2.min.css" rel="stylesheet" />
+  {{ tethys.select2.link_tag|safe }}
   <style id="app-library-styles">
     .no-apps-loaded-message {
       width: 50%;
@@ -81,7 +81,7 @@
 
 {% block global_scripts %}
   {{ block.super }}
-  <script src="https://cdn.jsdelivr.net/npm/select2@{{ tethys.select2.version }}/dist/js/select2.min.js"></script>
+  {{ tethys.select2.script_tag|safe }}
 {% endblock %}
 
 {% block primary_content %}
