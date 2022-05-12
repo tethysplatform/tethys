@@ -1,4 +1,5 @@
 import unittest
+from django.test.utils import override_settings
 import tethys_gizmos.gizmo_options.toggle_switch as gizmo_toggle_switch
 
 
@@ -9,6 +10,7 @@ class TestToggleSwitch(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(STATICFILES_USE_NPM=True)
     def test_ToggleSwitch(self):
         display_text = 'Styled Toggle'
         name = 'toggle2'

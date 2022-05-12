@@ -1,5 +1,5 @@
 # coding=utf-8
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
@@ -11,9 +11,9 @@ class PlotViewBase(TethysGizmoOptions):
     Plot view classes inherit from this class.
     """
     gizmo_name = "plot_view"
-    version_d3 = dependencies['d3']['version']
-    version_d3_tip = dependencies['d3-tip']['version']
-    version_highcharts = dependencies['highcharts']['version']
+    version_d3 = vendor_static_dependencies['d3'].version
+    version_d3_tip = vendor_static_dependencies['d3-tip'].version
+    version_highcharts = vendor_static_dependencies['highcharts'].version
 
     def __init__(self, width='500px', height='500px', engine='d3'):
         """
@@ -37,11 +37,12 @@ class PlotViewBase(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return (f'https://cdnjs.cloudflare.com/ajax/libs/highcharts/{cls.version_highcharts}/highcharts.js',
-                f'https://cdnjs.cloudflare.com/ajax/libs/highcharts/{cls.version_highcharts}/highcharts-more.js',
-                f'https://cdnjs.cloudflare.com/ajax/libs/highcharts/{cls.version_highcharts}/modules/exporting.js',
-                f'https://cdnjs.cloudflare.com/ajax/libs/d3/{cls.version_d3}/d3.min.js',
-                f'https://cdnjs.cloudflare.com/ajax/libs/d3-tip/{cls.version_d3_tip}/d3-tip.min.js')
+
+        return (
+            *vendor_static_dependencies['highcharts'].get_js_urls(version=cls.version_highcharts),
+            vendor_static_dependencies['d3'].get_custom_version_url(url_type='js', version=cls.version_d3),
+            vendor_static_dependencies['d3-tip'].get_custom_version_url(url_type='js', version=cls.version_d3_tip),
+        )
 
     @staticmethod
     def get_gizmo_js():
@@ -49,7 +50,7 @@ class PlotViewBase(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/plot_view.js',)
+        return 'tethys_gizmos/js/plot_view.js',
 
     @staticmethod
     def get_gizmo_css():
@@ -57,7 +58,7 @@ class PlotViewBase(TethysGizmoOptions):
         CSS specific to gizmo to be placed in the
         {% block content_dependent_styles %} block
         """
-        return ('tethys_gizmos/css/plot_view.css',)
+        return 'tethys_gizmos/css/plot_view.css',
 
 
 class PlotObject(TethysGizmoOptions):
@@ -65,18 +66,18 @@ class PlotObject(TethysGizmoOptions):
     Base Plot Object that is constructed by plot views.
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=None, display_legend=True,
-                 tooltip=True, x_axis={}, y_axis={}, tooltip_format={}, plotOptions={}, **kwargs):
+    def __init__(self, chart=None, title='', subtitle='', legend=None, display_legend=True,
+                 tooltip=True, x_axis=None, y_axis=None, tooltip_format=None, plotOptions=None, **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__()
 
-        self.chart = chart
-        self.xAxis = x_axis
-        self.yAxis = y_axis
-        self.plotOptions = plotOptions
+        self.chart = chart or {}
+        self.xAxis = x_axis or {}
+        self.yAxis = y_axis or {}
+        self.plotOptions = plotOptions or {}
 
         if title != '':
             self.title = {'text': title}
@@ -94,7 +95,7 @@ class PlotObject(TethysGizmoOptions):
             self.legend = legend or default_legend
 
         if tooltip:
-            self.tooltip = tooltip_format
+            self.tooltip = tooltip_format or {}
 
         # add any other attributes the user wants
         for key, value in kwargs.items():
@@ -286,14 +287,15 @@ class PolarPlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', categories=[],
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='', categories=None,
                  **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
+        categories = categories or []
         chart = kwargs.pop('chart', None)
         x_axis = kwargs.pop('x_axis', None)
         y_axis = kwargs.pop('y_axis', None)
@@ -421,14 +423,14 @@ class ScatterPlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
                  x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
         chart = kwargs.pop('chart', None)
 
         if not chart:
@@ -511,7 +513,7 @@ class PiePlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', **kwargs):
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='', **kwargs):
         """
         Constructor
 
@@ -519,7 +521,7 @@ class PiePlot(PlotViewBase):
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
         chart = kwargs.pop('chart', None)
 
         if not chart:
@@ -612,15 +614,16 @@ class BarPlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
-                 horizontal=False, categories=[], axis_title='', axis_units='', group_tools=True,
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
+                 horizontal=False, categories=None, axis_title='', axis_units='', group_tools=True,
                  y_min=0, **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
+        categories = categories or []
         chart = kwargs.pop('chart', None)
         y_axis = kwargs.pop('y_axis', None)
 
@@ -754,14 +757,14 @@ class TimeSeries(PlotViewBase):
         {% gizmo timeseries_plot %}
     """
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
                  y_axis_units='', y_min=0, **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
         chart = kwargs.pop('chart', None)
         x_axis = kwargs.pop('x_axis', None)
         y_axis = kwargs.pop('y_axis', None)
@@ -881,14 +884,14 @@ class AreaRange(PlotViewBase):
 
     """  # noqa: E501
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
                  y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
         chart = kwargs.pop('chart', None)
         x_axis = kwargs.pop('x_axis', None)
         y_axis = kwargs.pop('y_axis', None)
@@ -1001,14 +1004,14 @@ class HeatMap(PlotViewBase):
 
     """  # noqa: E501
 
-    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', x_categories=[],
-                 y_categories=[], tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):
+    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
+                 x_categories=None, y_categories=None, tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
-
+        series = series or []
         chart = kwargs.pop('chart', None)
 
         if not chart:
@@ -1019,11 +1022,11 @@ class HeatMap(PlotViewBase):
             }
 
         x_axis = {
-            'categories': x_categories
+            'categories': x_categories or [],
         }
 
         y_axis = {
-            'categories': y_categories,
+            'categories': y_categories or [],
             'title': 'null'
         }
 
