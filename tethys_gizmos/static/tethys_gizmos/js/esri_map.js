@@ -183,7 +183,6 @@ var ESRI_MAP = (function() {
             "esri/views/MapView",
             "esri/widgets/LayerList",
             "dojo/domReady!"],function (MapView,LayerList) {
-            m_view.then(function() {
                 var layerList = new LayerList({
                     view: m_view
                 });
@@ -195,7 +194,6 @@ var ESRI_MAP = (function() {
                 });
                 // Add widget to the top right corner of the view
                 m_view.ui.add(layerList, "top-right");
-            });
         });
 
     };

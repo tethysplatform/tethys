@@ -8,7 +8,7 @@
 """
 import re
 from json import dumps
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
 __all__ = ['DataTableView']
@@ -108,10 +108,10 @@ class DataTableView(TethysGizmoOptions):
     # SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns',
     #                         'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
-    version = dependencies['datatables']['version']
+    version = vendor_static_dependencies['datatables'].version
 
     def __init__(self, rows, column_names, footer=False, hover=False, striped=False, bordered=False,
-                 condensed=False, dark=False, attributes={}, classes='', **kwargs):
+                 condensed=False, dark=False, attributes=None, classes='', **kwargs):
         """
         Constructor
         """
@@ -137,7 +137,7 @@ class DataTableView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return (f"https://cdn.datatables.net/{cls.version}/css/dataTables.bootstrap5.min.css",)
+        return vendor_static_dependencies['datatables_bs5'].css_url,
 
     @classmethod
     def get_vendor_js(cls):
@@ -146,8 +146,8 @@ class DataTableView(TethysGizmoOptions):
         {% block global_scripts %} block
         """
         return (
-            f"https://cdn.datatables.net/{cls.version}/js/jquery.dataTables.min.js",
-            f"https://cdn.datatables.net/{cls.version}/js/dataTables.bootstrap5.min.js",
+            vendor_static_dependencies['datatables'].js_url,
+            vendor_static_dependencies['datatables_bs5'].js_url,
         )
 
     @staticmethod
@@ -156,4 +156,4 @@ class DataTableView(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/datatable_view.js',)
+        return 'tethys_gizmos/js/datatable_view.js',

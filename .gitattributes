@@ -1,4 +1,1 @@
 docs/* linguist-documentation
-static/tethys_portal/vendor/* linguist-vendored
-tethys_apps/static/vendor/* linguist-vendored
-tethys_gizmos/static/vendor/* linguist-vendored

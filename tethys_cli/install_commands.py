@@ -1,4 +1,5 @@
 import yaml
+import json
 import os
 from pathlib import Path
 
@@ -131,7 +132,7 @@ def get_service_type_from_setting(setting):
     raise RuntimeError(f'Could not determine service type for setting: {setting}')
 
 
-# Pulling this function out so I can mock this for inputs to the interactive mode
+# Pulling this function out, so I can mock this for inputs to the interactive mode
 def get_interactive_input():
     return input("")
 
@@ -466,6 +467,29 @@ def install_command(args):
                 if validate_schema('pip', requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(['pip', 'install', *requirements_config["pip"]])
+
+                try:
+                    public_resources_dir = [
+                        *Path().glob(str(Path('tethysapp', '*', 'public'))),
+                        *Path().glob(str(Path('tethysapp', '*', 'static'))),
+                    ][0]
+                except IndexError:
+                    write_warning('No public directory detected. Unable to process JavaScript dependencies.')
+                else:
+                    package_json_file = public_resources_dir / 'package.json'
+                    if validate_schema('npm', requirements_config):
+                        npm_requirements = requirements_config['npm']
+                        try:
+                            assert isinstance(npm_requirements, dict)
+                        except AssertionError:
+                            write_error(
+                                'The npm requirements are not formatted correctly. '
+                                'It should be provided as key-value (e.g. "package_name: 1.0").')
+                        else:
+                            with package_json_file.open('w') as f:
+                                json.dump({'dependencies': npm_requirements}, f)
+                    if package_json_file.exists():
+                        call(['npm', 'i', str(public_resources_dir)])
 
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:

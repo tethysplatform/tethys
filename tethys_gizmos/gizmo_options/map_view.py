@@ -8,8 +8,7 @@
 ********************************************************************************
 """
 import logging
-from django.conf import settings
-from tethys_apps.dependencies import dependencies
+from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.map_view')
@@ -315,14 +314,11 @@ class MapView(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "map_view"
-    ol_version = dependencies['openlayers']['version']
-    cdn = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v{version}/{folder}/ol{debug}.{ext}'
-    alternate_cdn = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{version}/ol{debug}.{ext}'
-    local_url = 'tethys_gizmos/vendor/openlayers/{version}/ol.{ext}'
+    ol_version = vendor_static_dependencies['openlayers'].version
 
-    def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
-                 feature_selection=None, show_clicks=False):
+    def __init__(self, height='100%', width='100%', basemap=None, view=None,
+                 controls=None, layers=None, draw=None, legend=False, attributes=None, classes='',
+                 disable_basemap=False, feature_selection=None, show_clicks=False):
         """
         Constructor
         """
@@ -332,9 +328,9 @@ class MapView(TethysGizmoOptions):
         self.height = height
         self.width = width
         self.basemap = basemap
-        self.view = view
-        self.controls = controls
-        self.layers = layers
+        self.view = view or {'center': [-100, 40], 'zoom': 2}
+        self.controls = controls or []
+        self.layers = layers or []
         self.draw = draw
         self.legend = legend
         self.disable_basemap = disable_basemap
@@ -342,28 +338,15 @@ class MapView(TethysGizmoOptions):
         self.show_clicks = show_clicks
 
     @classmethod
-    def static_url(cls):
-        return cls.cdn if cls.ol_version != '5.3.0' else cls.local_url
-
-    @classmethod
-    def debug(cls):
-        # Note: Since version 5 OpenLayers now uses source maps instead of a '-debug' version of the code
-        return '-debug' if settings.DEBUG and int(cls.ol_version[0]) < 5 else ''
-
-    @classmethod
     def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        openlayers_library = cls.static_url().format(
-            version=cls.ol_version,
-            debug=cls.debug(),
-            folder='build',
-            ext='js'
-        )
-
-        return openlayers_library,
+        return vendor_static_dependencies['openlayers'].get_custom_version_url(
+            url_type='js',
+            version=cls.ol_version
+        ),
 
     @staticmethod
     def get_gizmo_js():
@@ -380,14 +363,10 @@ class MapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        openlayers_css = cls.static_url().format(
-            version=cls.ol_version,
-            debug=cls.debug(),
-            folder='css',
-            ext='css'
-        )
-
-        return openlayers_css,
+        return vendor_static_dependencies['openlayers'].get_custom_version_url(
+            url_type='css',
+            version=cls.ol_version
+        ),
 
     @staticmethod
     def get_gizmo_css():
@@ -471,22 +450,23 @@ class MVDraw(SecondaryGizmoOptions):
 
     """  # noqa: E501
 
-    def __init__(self, controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box', 'Pan'],
+    def __init__(self, controls=None,
                  initial='Pan', output_format='GeoJSON', line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
-                 point_color="#ffcc33", initial_features=None, snapping_enabled=True, snapping_options={},
-                 snapping_layer={}, feature_selection=False, legend_title='Drawing Layer', data=None):
+                 point_color="#ffcc33", initial_features=None, snapping_enabled=True, snapping_options=None,
+                 snapping_layer=None, feature_selection=False, legend_title='Drawing Layer', data=None):
         """
         Constructor
         """
         # Initialize super class
         super().__init__()
 
-        self.controls = controls
+        self.controls = controls or ['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box', 'Pan']
 
         # Validate initial
         if initial not in self.controls and initial != 'Pan':
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
 
+        snapping_layer = snapping_layer or {}
         if len(snapping_layer) > 1:
             raise ValueError('The snapping_layer parameter of MVDraw object is not valid: {}. '
                              'Only one key allowed.'.format(snapping_layer))
@@ -498,7 +478,7 @@ class MVDraw(SecondaryGizmoOptions):
         self.line_color = line_color
         self.point_color = point_color
         self.snapping_enabled = snapping_enabled
-        self.snapping_options = snapping_options
+        self.snapping_options = snapping_options or {}
         self.feature_selection = feature_selection
         self.legend_title = legend_title
         self.data = data or dict()
@@ -721,7 +701,7 @@ class MVLegendClass(SecondaryGizmoOptions):
         type (str, required): The type of feature to be represented by the legend class. Either 'point', 'line', 'polygon', or 'raster'.
         value (str, required): The value or name of the legend class.
         fill (str): Valid RGB color for the fill (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'point' or 'polygon' types.
-        stoke (str): Valid RGB color for the stoke/line (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'line' types and optional for 'polygon' types.
+        stroke (str): Valid RGB color for the stoke/line (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'line' types and optional for 'polygon' types.
         ramp (list): A list of hexidecimal RGB colors that will be used to construct a color ramp. Required for 'raster' types.
 
     Example
@@ -734,7 +714,7 @@ class MVLegendClass(SecondaryGizmoOptions):
 
     """  # noqa: E501
 
-    def __init__(self, type, value, fill='', stroke='', ramp=[]):
+    def __init__(self, type, value, fill='', stroke='', ramp=None):
         """
         Constructor
         """
