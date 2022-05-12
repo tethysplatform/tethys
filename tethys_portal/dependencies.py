@@ -101,7 +101,7 @@ class StaticDependency:
 
         if self.use_cdn:
             other_attrs = ''
-            if integrity:
+            if integrity and not settings.DEBUG:
                 other_attrs = f'integrity="{integrity}" crossorigin="anonymous"'
         else:
             other_attrs = ''
@@ -203,6 +203,11 @@ vendor_static_dependencies = {
         css_integrity='sha256-Ba3RbD9Gjy82eeINezPTRD9kvWeLFx6fqpUGwrUTH1w=',
         js_integrity='sha256-2iYlCYmJTHCqEILUjOjrGFWPHIy4n6+CvHzOYZT2Sto=',
     ),
+    'doc_cookies': JsDelivrStaticDependency(
+        npm_name='doc-cookies',
+        version='1.1.0',
+        js_path='cookies.min.js',
+    ),
     'graphlib': JsDelivrStaticDependency(
         npm_name='graphlib',
         version='2.1.8',
@@ -230,9 +235,6 @@ vendor_static_dependencies = {
         version='6.12.0',
         js_path='ol.js',
         css_path='ol.css',
-        # SRIs for version 6.12.0
-        css_integrity='sha256-tNEA99Lx5UuZVVzRBp10B2NPUyAaDv8ARGA9egh8Gb0=',
-        js_integrity='sha256-Z/Lw28FXXazW4RWDVSOlE3ofJMslivvdLlpF9NaEJ2Q=',
     ),
     'select2': JsDelivrStaticDependency(
         npm_name='select2',

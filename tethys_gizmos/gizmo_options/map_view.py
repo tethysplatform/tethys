@@ -8,7 +8,6 @@
 ********************************************************************************
 """
 import logging
-from django.conf import settings
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
@@ -316,9 +315,6 @@ class MapView(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "map_view"
     ol_version = vendor_static_dependencies['openlayers'].version
-    cdn = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v{version}/{folder}/ol{debug}.{ext}'
-    alternate_cdn = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{version}/ol{debug}.{ext}'
-    local_url = 'tethys_gizmos/vendor/openlayers/{version}/ol.{ext}'
 
     def __init__(self, height='100%', width='100%', basemap=None, view=None,
                  controls=None, layers=None, draw=None, legend=False, attributes=None, classes='',
@@ -342,28 +338,15 @@ class MapView(TethysGizmoOptions):
         self.show_clicks = show_clicks
 
     @classmethod
-    def static_url(cls):
-        return cls.cdn if cls.ol_version != '5.3.0' else cls.local_url
-
-    @classmethod
-    def debug(cls):
-        # Note: Since version 5 OpenLayers now uses source maps instead of a '-debug' version of the code
-        return '-debug' if settings.DEBUG and int(cls.ol_version[0]) < 5 else ''
-
-    @classmethod
     def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        openlayers_library = cls.static_url().format(
-            version=cls.ol_version,
-            debug=cls.debug(),
-            folder='build',
-            ext='js'
-        )
-
-        return openlayers_library,
+        return vendor_static_dependencies['openlayers'].get_custom_version_url(
+            url_type='js',
+            version=cls.ol_version
+        ),
 
     @staticmethod
     def get_gizmo_js():
@@ -380,14 +363,10 @@ class MapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        openlayers_css = cls.static_url().format(
-            version=cls.ol_version,
-            debug=cls.debug(),
-            folder='css',
-            ext='css'
-        )
-
-        return openlayers_css,
+        return vendor_static_dependencies['openlayers'].get_custom_version_url(
+            url_type='css',
+            version=cls.ol_version
+        ),
 
     @staticmethod
     def get_gizmo_css():
