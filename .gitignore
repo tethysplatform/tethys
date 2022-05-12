@@ -5,6 +5,7 @@
 *.pydevproject
 *.project
 *.idea
+*.vscode
 *.sqlite3
 *.db
 *.whl
