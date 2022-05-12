@@ -564,7 +564,9 @@ class CesiumMapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return vendor_static_dependencies['cesiumjs'].get_custom_version_url(url_type='css', version=cls.cesium_version),
+        return vendor_static_dependencies['cesiumjs'].get_custom_version_url(
+            url_type='css', version=cls.cesium_version
+        ),
 
     @staticmethod
     def get_gizmo_css():

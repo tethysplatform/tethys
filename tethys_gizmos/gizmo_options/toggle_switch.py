@@ -111,7 +111,9 @@ class ToggleSwitch(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(url_type='js', version=cls.version),
+        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(
+            url_type='js', version=cls.version
+        ),
 
     @classmethod
     def get_vendor_css(cls):
@@ -119,7 +121,9 @@ class ToggleSwitch(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(url_type='css', version=cls.version),
+        return vendor_static_dependencies['bootstrap-switch'].get_custom_version_url(
+            url_type='css', version=cls.version
+        ),
 
     @staticmethod
     def get_gizmo_js():
