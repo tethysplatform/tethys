@@ -4,7 +4,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** October 2019
+**Last Updated:** May 2022
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
@@ -17,51 +17,27 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
 
 To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` to stop the development server if it is still running, and execute the following commands:
 
+.. code-block:: bash
 
-**Linux and Mac:**
-
-::
-
-    t
-    mkdir ~/tethysdev
-    cd ~/tethysdev
-    tethys scaffold dam_inventory
-
-**Windows:**
-
-Locate the ``tethys_cmd.bat`` (in the TETHYS_HOME directory) and double-click it to open a new command windows with the Tethys environment activated.  Then run the following commands:
-
-::
-
-    mkdir C:%HOMEPATH%\tethysdev
-    cd %HOMEPATH%\tethysdev
+    conda activate tethys
     tethys scaffold dam_inventory
 
 .. tip::
 
-    Windows Users: If you have admin rights on your computer, it is even better to right-click on the ``tethys_cmd.bat`` and select **Run as Administrator**.
+    Windows Users: Use the Anaconda Powershell Prompt to run Tethys commands.
 
-You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default value by pressing enter, repeatedly.
+You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default value that is shown in the square brackets by pressing enter.
 
-In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-dam_inventory`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
+In a file browser change into your home directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-dam_inventory`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
 
 2. Development Installation
 ===========================
 
-Now that you have a new Tethys app project, you need to install the app on your development Tethys Portal. In a terminal, change into the :file:`tethysapp-dam_inventory` directory and execute the :command:`tethys install -d` command. Be sure to activate the Tethys :term:`Python conda environment` if it is not already activated (see line 1 of the first code block):
+Now that you have a new Tethys app project, you need to install the app on your development Tethys Portal. In a terminal, change into the :file:`tethysapp-dam_inventory` directory and execute the :command:`tethys install -d` command:
 
-**Linux and Mac:**
+.. code-block:: bash
 
-::
-
-    cd ~/tethysdev/tethysapp-dam_inventory
-    tethys install -d
-
-**Windows:**
-
-::
-
-    cd C:%HOMEPATH%\tethysdev\tethysapp-dam_inventory
+    cd tethysapp-dam_inventory
     tethys install -d
 
 .. tip::
@@ -74,7 +50,7 @@ Now that you have a new Tethys app project, you need to install the app on your 
 
 Use start up the development server:
 
-::
+.. code-block:: bash
 
     tethys manage start
 
@@ -82,13 +58,13 @@ Use start up the development server:
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:
 
-    ::
+    .. code-block:: bash
 
         tethys db start
 
     You can also stop the Tethys database by running:
 
-    ::
+    .. code-block:: bash
 
         tethys db stop
 
@@ -114,24 +90,20 @@ If all has gone well, you should see your app listed on the app library page. Cl
 4. App Project Paths
 ====================
 
-Throughout the tutorial, you will be asked to open various files. Most of the files will be located in your :term:`app package` directory which shares the name of your app: "dam_inventory". If you generated your scaffold exactly as above, this directory will be located at the following path:
+Throughout the tutorial, you will be asked to open various files. Most of the files will be located in your :term:`app package` directory which shares the name of your app: "dam_inventory". Relative to the ``tethysapp-dam_inventory`` directory, this directory is located at:
 
-::
+.. code-block:: bash
 
-    # Linux and Mac
-    ~/tethysdev/tethysapp-dam_inventory/tethysapp/dam_inventory/
-
-    # Windows
-    C:%HOMEPATH%\tethysdev\tethysapp-dam_inventory\tethys_app\dam_inventory\
+    tethysapp-dam_inventory/tethysapp/dam_inventory/
 
 
 
 For convenience, all paths in the following tutorials will be given relative to the :term:`app package` directory. For example:
 
-::
+.. code-block:: bash
 
     # This path:
-    ~/tethysdev/tethysapp-dam_inventory/tethysapp/dam_inventory/controllers.py
+    tethysapp-dam_inventory/tethysapp/dam_inventory/controllers.py
 
     # Will be referred to as:
     controllers.py
@@ -143,6 +115,6 @@ For convenience, all paths in the following tutorials will be given relative to 
     Similarly, if you add a directory to your project that contains Python modules and you would like them to be made available to your code, add a :file:`\_\_init\_\_.py` file to the directory to make it a package.
 
 
-.. warning::
+.. danger::
 
     The :file:`tethysapp` directory should no longer contain an :file:`\_\_init\_\_.py` as it did in version of Tethys Platform prior to 3.0. This directory is a Python namespace directory and in Tethys Platform 3.0 the implicit namespace pattern is used. Adding an :file:`\_\_init\_\_.py` to this directory will break the app.
