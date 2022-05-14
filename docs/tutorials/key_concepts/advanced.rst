@@ -60,7 +60,7 @@ a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by ad
                 return ps_settings
 
 
-    Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. With SQLAlchemy, you can harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
+Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. With SQLAlchemy, you can harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 
 b. Define a table called ``dams`` by creating a new class in ``model.py`` called ``Dam``:
 
@@ -102,7 +102,7 @@ b. Define a table called ``dams`` by creating a new class in ``model.py`` called
 
         For more information on Persistent Stores, see: :doc:`../../tethys_sdk/tethys_services/persistent_store`.
 
-c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` to use the SQL database instead of the files:
+c. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` with versions that use the SQL database instead of the files:
 
     .. code-block:: python
 
@@ -198,7 +198,7 @@ d. Create a new function called ``init_primary_db`` at the bottom of ``model.py`
                 session.commit()
                 session.close()
 
-e. Refactor ``home`` controller in ``controllers.py`` to use updated model methods:
+e. Refactor ``home`` controller in ``controllers.py`` to use the updated model methods:
 
     .. code-block:: python
         :emphasize-lines: 1-2, 7, 13-14, 19-20, 23-27
@@ -322,42 +322,42 @@ g. Refactor the ``list_dams`` controller to use updated model methods:
 
             ...
 
-h. Add **Persistent Store Service** to Tethys Portal:
+h. Add a **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
-    c. Scroll down to **Tethys Services** section and select **Persistent Store Services** link.
+    c. Scroll down to the **Tethys Services** section and select **Persistent Store Services** link.
     d. Click on the **Add Persistent Store Service** button.
-    e. Give the **Persistent Store Service** a name and fill out the connection information.
+    e. Give the **Persistent Store Service** any name and fill out the connection information.
     f. Press **Save** to create the new **Persistent Store Service**.
 
 
 .. figure:: ../../images/tutorial/advanced/Persistent_Store_Service.png
-    :width: 800px
+    :width: 100%
     :align: center
 
 .. important::
 
     The username and password for the persistent store service must be a superuser to use spatial persistent stores.
-    Note that this is set by default in the installation to: username: "tethys_super", password: "pass".
+    Note that the default installation of Tethys Portal includes a superuser named "tethys_super", password: "pass".
 
-9. Assign **Persistent Store Service** to Dam Inventory App:
+9. Assign the new **Persistent Store Service** to the Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
-    c. Scroll down to **Tethys Apps** section and select **Installed App** link.
+    c. Scroll down to the **Tethys Apps** section and select the **Installed App** link.
     d. Select the **Dam Inventory** link.
     e. Scroll down to the **Persistent Store Database Settings** section.
-    f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db**.
+    f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db** setting.
     g. Press **Save** to save the settings.
 
 .. figure:: ../../images/tutorial/advanced/Assign_Persistent_Store_Service.png
-    :width: 800px
+    :width: 100%
     :align: center
 
-j. Execute **syncstores** command to initialize Persistent Store database:
+j. Execute the **syncstores** command to create the tables in the Persistent Store database:
 
-    ::
+    .. code-block:: bash
 
         tethys syncstores dam_inventory
 
@@ -625,7 +625,7 @@ a. Define permissions for the app by adding the ``permissions`` method to the ap
 
                 return permissions
 
-b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``permission_required`` argument of the ``controller`` decorator:
+b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``permissions_required`` argument of the ``controller`` decorator:
 
     .. code-block:: python
 
