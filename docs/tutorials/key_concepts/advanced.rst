@@ -92,15 +92,15 @@ b. Define a table called ``dams`` by creating a new class in ``model.py`` called
             river = Column(String)
             date_built = Column(String)
 
-.. tip::
+    .. tip::
 
-    **SQLAlchemy Data Models**: Each class in an SQLAlchemy data model defines a table in the database. The model you defined above consists of a single table called "dams", as denoted by the ``__tablename__`` property of the ``Dam`` class. The ``Dam`` class inherits from a ``Base`` class that we created in the previous lines from the ``declarative_base`` function. This inheritance notifies SQLAlchemy that the ``Dam`` class is part of the data model.
+        **SQLAlchemy Data Models**: Each class in an SQLAlchemy data model defines a table in the database. The model you defined above consists of a single table called "dams", as denoted by the ``__tablename__`` property of the ``Dam`` class. The ``Dam`` class inherits from a ``Base`` class that we created in the previous lines from the ``declarative_base`` function. This inheritance notifies SQLAlchemy that the ``Dam`` class is part of the data model.
 
-    The class defines seven other properties that are instances of SQLAlchemy ``Column`` class: *id*, *latitude*, *longitude*, *name*, *owner*, *river*, *date_built*. These properties define the columns of the "dams" table. The column type and options are defined by the arguments passed to the ``Column`` class. For example, the *latitude* column is of type ``Float`` while the *id* column is of type ``Integer``. The ``id`` column is flagged as the primary key for the table. IDs will be generated for each object when they are committed.
+        The class defines seven other properties that are instances of SQLAlchemy ``Column`` class: *id*, *latitude*, *longitude*, *name*, *owner*, *river*, *date_built*. These properties define the columns of the "dams" table. The column type and options are defined by the arguments passed to the ``Column`` class. For example, the *latitude* column is of type ``Float`` while the *id* column is of type ``Integer``. The ``id`` column is flagged as the primary key for the table. IDs will be generated for each object when they are committed.
 
-    This class is not only used to define the tables for your persistent store, it is also used to create new entries and query the database.
+        This class is not only used to define the tables for your persistent store, it is also used to create new entries and query the database.
 
-    For more information on Persistent Stores, see: :doc:`../../tethys_sdk/tethys_services/persistent_store`.
+        For more information on Persistent Stores, see: :doc:`../../tethys_sdk/tethys_services/persistent_store`.
 
 c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` to use the SQL database instead of the files:
 
@@ -152,9 +152,9 @@ c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` t
 
             return dams
 
-.. important::
+    .. important::
 
-    Don't forget to close your ``session`` objects when you are done. Eventually you will run out of connections to the database if you don't, which will cause unsightly errors.
+        Don't forget to close your ``session`` objects when you are done. Eventually you will run out of connections to the database if you don't, which will cause unsightly errors.
 
 d. Create a new function called ``init_primary_db`` at the bottom of ``model.py``. This function is used to initialize the database by creating the tables and adding any initial data.
 
@@ -201,6 +201,7 @@ d. Create a new function called ``init_primary_db`` at the bottom of ``model.py`
 e. Refactor ``home`` controller in ``controllers.py`` to use updated model methods:
 
     .. code-block:: python
+        :emphasize-lines: 1-2, 7, 13-14, 19-20, 23-27
 
         @controller
         def home(request):
@@ -222,7 +223,6 @@ e. Refactor ``home`` controller in ``controllers.py`` to use updated model metho
                     'geometry': {
                         'type': 'Point',
                         'coordinates': [dam.longitude, dam.latitude],
-
                     },
                     'properties': {
                         'id': dam.id,
@@ -239,6 +239,7 @@ e. Refactor ``home`` controller in ``controllers.py`` to use updated model metho
 f. Refactor the ``add_dam`` controller to use the updated model methods:
 
     .. code-block:: python
+        :emphasize-lines: 1-2, 52
 
         @controller(url='dams/add')
         def add_dam(request):
@@ -301,6 +302,7 @@ f. Refactor the ``add_dam`` controller to use the updated model methods:
 g. Refactor the ``list_dams`` controller to use updated model methods:
 
     .. code-block:: python
+        :emphasize-lines: 1-2, 6, 12-13
 
         @controller(name='dams', url='dams')
         def list_dams(request):
@@ -331,7 +333,7 @@ h. Add **Persistent Store Service** to Tethys Portal:
 
 
 .. figure:: ../../images/tutorial/advanced/Persistent_Store_Service.png
-    :width: 600px
+    :width: 800px
     :align: center
 
 .. important::
@@ -350,7 +352,7 @@ h. Add **Persistent Store Service** to Tethys Portal:
     g. Press **Save** to save the settings.
 
 .. figure:: ../../images/tutorial/advanced/Assign_Persistent_Store_Service.png
-    :width: 600px
+    :width: 800px
     :align: center
 
 j. Execute **syncstores** command to initialize Persistent Store database:
@@ -367,6 +369,7 @@ In the :doc:`./beginner` tutorial, we created a custom setting named `max_dams`.
 a. Modify the `add_dam` controller, such that it won't add a new dam if the `max_dams` limit has been reached:
 
     .. code-block:: python
+        :emphasize-lines: 1-2, 57-69
 
         from .model import Dam
         from .app import DamInventory as app
@@ -445,9 +448,9 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
             ...
 
 
-.. tip::
+    .. tip::
 
-    For more information on app settings, see :doc:`../../tethys_sdk/app_settings`.
+        For more information on app settings, see :doc:`../../tethys_sdk/app_settings`.
 
 
 3. Use JavaScript APIs
@@ -458,13 +461,15 @@ JavaScript is the programming language that is used to program web browsers. You
 a. Modify the MVLayer in the ``home`` controller to make the layer selectable:
 
     .. code-block:: python
+        :emphasize-lines: 8
 
         ...
 
         dams_layer = MVLayer(
-
-            ...
-
+            source='GeoJSON',
+            options=dams_feature_collection,
+            legend_title='Dams',
+            layer_options={'style': style},
             feature_selection=True
         )
 
@@ -515,7 +520,7 @@ b. Create a new file called ``/public/js/map.js`` and add the following contents
                                         '</div>';
 
                     // Clean up last popup and reinitialize
-                    $(popup_element).popover('destroy');
+                    $(popup_element).popover('dispose');
 
                     // Delay arbitrarily to wait for previous popover to
                     // be deleted before showing new popover.
@@ -523,17 +528,17 @@ b. Create a new file called ``/public/js/map.js`` and add the following contents
                         popup.setPosition(coordinates);
 
                         $(popup_element).popover({
-                        'placement': 'top',
-                        'animation': true,
-                        'html': true,
-                        'content': popup_content
+                            'placement': 'top',
+                            'animation': true,
+                            'html': true,
+                            'content': popup_content
                         });
 
                         $(popup_element).popover('show');
                     }, 500);
                 } else {
                     // remove pop up when selecting nothing on the map
-                    $(popup_element).popover('destroy');
+                    $(popup_element).popover('dispose');
                 }
             });
         });
@@ -544,37 +549,43 @@ c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the
     .. code-block:: html+django
 
         {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos staticfiles %}
-
-        {% block app_content %}
-        {% gizmo dam_inventory_map %}
-        <div id="popup"></div>
-        {% endblock %}
-
-        {% block app_actions %}
-        {% if can_add_dams %}
-            {% gizmo add_dam_button %}
-        {% endif %}
-        {% endblock %}
+        {% load tethys_gizmos static %}
 
         {% block styles %}
             {{ block.super }}
             <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
         {% endblock %}
 
-        {% block scripts %}
-        {{ block.super }}
-        <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
+        {% block app_content %}
+            {% gizmo dam_inventory_map %}
+            <div id="popup"></div>
         {% endblock %}
+
+        {% block app_actions %}
+            {% gizmo add_dam_button %}
+        {% endblock %}
+
+        {% block scripts %}
+            {{ block.super }}
+            <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
+        {% endblock %}
+
 
 d. Open ``public/css/map.css`` and add the following contents:
 
     .. code-block:: css
+        :emphasize-lines: 1-3
 
-        ...
-
-        .popover-content {
+        .popover {
             width: 240px;
+        }
+
+        #inner-app-content {
+            padding: 0;
+        }
+
+        #app-content, #inner-app-content, #map_view_outer_container {
+            height: 100%;
         }
 
 4. App Permissions
@@ -614,13 +625,9 @@ a. Define permissions for the app by adding the ``permissions`` method to the ap
 
                 return permissions
 
-b. Protect the Add Dam view with the ``add_dams`` permission by replacing the ``login_required`` decorator with the ``permission_required`` decorator to the ``add_dams`` controller:
+b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``permission_required`` argument of the ``controller`` decorator:
 
     .. code-block:: python
-
-        from tethys_sdk.permissions import permission_required
-
-        ...
 
         @controller(url='dams/add', permission_required='add_dams')
         def add_dam(request):
@@ -632,6 +639,7 @@ b. Protect the Add Dam view with the ``add_dams`` permission by replacing the ``
 c. Add a context variable called ``can_add_dams`` to the context of each controller with the value of the return value of the ``has_permission`` function:
 
     .. code-block:: python
+        :emphasize-lines: 1, 12, 27, 42
 
         from tethys_sdk.permissions import has_permission
 
@@ -670,7 +678,8 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
             """
             Show all dams in a table view.
             """
-            dams = get_all_dams()
+            ...
+
             context = {
                 ...
                 'can_add_dams': has_permission(request, 'add_dams')
@@ -680,22 +689,24 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
 d. Use the ``can_add_dams`` variable to determine whether to show or hide the navigation link to the Add Dam View in ``base.html``:
 
     .. code-block:: html+django
+        :emphasize-lines: 8, 10
 
         {% block app_navigation_items %}
         {% url 'dam_inventory:home' as home_url %}
         {% url 'dam_inventory:add_dam' as add_dam_url %}
         {% url 'dam_inventory:dams' as list_dam_url %}
-        <li class="title">Navigation</li>
-        <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
-        <li class="{% if request.path == list_dam_url %}active{% endif %}"><a href="{{ list_dam_url }}">Dams</a></li>
+        <li class="nav-item title">Navigation</li>
+        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
         {% if can_add_dams %}
-        <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
         {% endif %}
         {% endblock %}
 
 e. Use the ``can_add_dams`` variable to determine whether to show or hide the "Add Dam" button in ``home.html``:
 
     .. code-block:: html+django
+        :emphasize-lines: 2, 4
 
         {% block app_actions %}
         {% if can_add_dams %}
@@ -729,7 +740,7 @@ g. Log in with each user account. If the permission has been applied correctly, 
 
 Add Flood Hydrograph table
 
-a. Define two new tables to ``models.py`` for storing the hydrograph and hydrograph points. Also, establish relationships between the tables. Each dam will have only one hydrograph and each hydrograph can have multiple hydrograph points.
+a. Define two new tables to ``model.py`` for storing the hydrograph and hydrograph points. Also, establish relationships between the tables. Each dam will have only one hydrograph and each hydrograph can have multiple hydrograph points.
 
     .. code-block:: python
 
@@ -978,12 +989,12 @@ d. Update navigation
         {% url 'dam_inventory:add_dam' as add_dam_url %}
         {% url 'dam_inventory:dams' as list_dam_url %}
         {% url 'dam_inventory:assign_hydrograph' as assign_hydrograph_url %}
-        <li class="title">Navigation</li>
-        <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
-        <li class="{% if request.path == list_dam_url %}active{% endif %}"><a href="{{ list_dam_url }}">Dams</a></li>
+        <li class="nav-item title">Navigation</li>
+        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
         {% if can_add_dams %}
-        <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
-        <li class="{% if request.path == assign_hydrograph_url %}active{% endif %}"><a href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.path == assign_hydrograph_url %} active{% endif %}" href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
         {% endif %}
         {% endblock %}
 
@@ -1006,8 +1017,8 @@ a. Create Template ``hydrograph.html``
         {% load tethys_gizmos %}
 
         {% block app_navigation_items %}
-        <li class="title">App Navigation</li>
-        <li class=""><a href="{% url 'dam_inventory:dams' %}">Back</a></li>
+        <li class="nav-item title">App Navigation</li>
+        <li class="nav-item "><a class="nav-link" href="{% url 'dam_inventory:dams' %}">Back</a></li>
         {% endblock %}
 
         {% block app_content %}
@@ -1161,12 +1172,13 @@ Add Hydrographs to pop-ups if they exist.
 a. Add Plotly Gizmo dependency to ``home.html``:
 
     .. code-block:: html+django
+        :emphasize-lines: 4-6
 
         {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos staticfiles %}
+        {% load tethys_gizmos static %}
 
         {% block import_gizmos %}
-        {% import_gizmo_dependency plotly_view %}
+            {% import_gizmo_dependency plotly_view %}
         {% endblock %}
 
         ...
@@ -1178,7 +1190,7 @@ b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
         {% load tethys_gizmos %}
 
         {% if hydrograph_plot %}
-        {% gizmo hydrograph_plot %}
+            {% gizmo hydrograph_plot %}
         {% endif %}
 
 c. Create an AJAX controller ``hydrograph_ajax``
@@ -1210,6 +1222,7 @@ c. Create an AJAX controller ``hydrograph_ajax``
 d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
 
     .. code-block:: javascript
+        :emphasize-lines: 37, 57-58
 
         $(function() {
             // Create new Overlay with the #popup element
@@ -1251,7 +1264,7 @@ d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
                                         '</div>';
 
                     // Clean up last popup and reinitialize
-                    $(popup_element).popover('destroy');
+                    $(popup_element).popover('dispose');
 
                     // Delay arbitrarily to wait for previous popover to
                     // be deleted before showing new popover.
@@ -1259,10 +1272,10 @@ d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
                         popup.setPosition(coordinates);
 
                         $(popup_element).popover({
-                        'placement': 'top',
-                        'animation': true,
-                        'html': true,
-                        'content': popup_content
+                            'placement': 'top',
+                            'animation': true,
+                            'html': true,
+                            'content': popup_content
                         });
 
                         $(popup_element).popover('show');
@@ -1273,7 +1286,7 @@ d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
 
                 } else {
                     // remove pop up when selecting nothing on the map
-                    $(popup_element).popover('destroy');
+                    $(popup_element).popover('dispose');
                 }
             });
         });
@@ -1282,8 +1295,9 @@ d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
 f. Update ``map.css``:
 
     .. code-block:: css
+        :emphasize-lines: 1-5
 
-        .popover-content {
+        .popover-body {
             width: 400px;
             max-height: 300px;
             overflow-y: auto;
