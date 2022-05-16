@@ -377,7 +377,7 @@ In this step, you'll create controls using Tethys Gizmos with their initial valu
         load_button = Button(
             name='load_map',
             display_text='Load',
-            style='default',
+            style='outline-secondary',
             attributes={'id': 'load_map'}
         )
 

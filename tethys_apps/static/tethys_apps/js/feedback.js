@@ -43,8 +43,8 @@ $(document).ready(function(){
                           "</div>"+
                           "<input type='hidden' name='csrfmiddlewaretoken' value="+csrftoken+">"+
                           "<div style='width:100%'>"+
-                            "<button id='cancelBetaForm' class='btn btn-default' type='button'>Cancel</button>"+
-                            "<button id='submitBetaForm'  class='btn btn-default' type='button'>Submit</button>"+
+                            "<button id='cancelBetaForm' class='btn btn-secondary' type='button'>Cancel</button>"+
+                            "<button id='submitBetaForm'  class='btn btn-secondary' type='button'>Submit</button>"+
                           "</div>"+
                         "</div>"+
                       "</form>";

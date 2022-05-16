@@ -498,7 +498,7 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
     clear_button = Button(
         name='clear_map',
         display_text='Clear',
-        style='default',
+        style='outline-secondary',
         attributes={'id': 'clear_map'}
     )
 

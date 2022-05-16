@@ -106,7 +106,7 @@ Create a new :file:`map.html` template in your template directory and add the fo
         <form method="post">
             {% csrf_token %}
             {% gizmo select_input select_options %}
-            <input name="submit" type="submit" value="Update" class="btn btn-default">
+            <input name="submit" type="submit" value="Update" class="btn btn-secondary">
         </form> 
         {% gizmo map_options %}
     {% endblock %}

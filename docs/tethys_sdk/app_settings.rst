@@ -113,6 +113,11 @@ Scheduler Settings are used to request connection information that will allow yo
 .. automethod:: tethys_apps.base.TethysAppBase.scheduler_settings
    :noindex:
 
+.. _app_settings_get_scheduler:
+
+Using Scheduler Settings
+------------------------
+
 To retrieve a scheduler, import your :term:`app class` and call the ``get_scheduler()`` class method:
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_scheduler

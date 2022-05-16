@@ -85,7 +85,7 @@ class ToggleSwitch(TethysGizmoOptions):
     gizmo_name = "toggle_switch"
     version = vendor_static_dependencies['bootstrap-switch'].version
 
-    def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
+    def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='secondary',
                  size='regular', initial=False, disabled=False, error='', success='', attributes=None, classes=''):
         """
         Constructor

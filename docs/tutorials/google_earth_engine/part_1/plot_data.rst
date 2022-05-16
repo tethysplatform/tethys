@@ -340,7 +340,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
     plot_button = Button(
         name='load_plot',
         display_text='Plot AOI',
-        style='default',
+        style='outline-secondary',
         attributes={'id': 'load_plot'}
     )
 

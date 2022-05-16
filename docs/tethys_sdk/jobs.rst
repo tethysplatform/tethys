@@ -32,6 +32,8 @@ A scheduler is the part of a job managment system that is responsible for accept
 
     Schedulers can also be created and accessed programmatically using the lower-level compute API. However, this approach is only recommended for experienced developers (see: :ref:`lower_level_scheduler_api`).
 
+.. _jobs_api_scheduler_app_settings:
+
 Scheduler App Settings
 ----------------------
 

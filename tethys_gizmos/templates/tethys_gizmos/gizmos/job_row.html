@@ -43,7 +43,7 @@
 {% if show_actions %}
   <td>
     <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
       <ul class="dropdown-menu dropdown-menu-right">
         {% if actions.run %}
           <li><a class="dropdown-item btn-job-run{% if not row.actions.run %} disabled{% endif %}" href="javascript:void(0)" data-job-id="{{ job_id }}" >Run</a></li>
