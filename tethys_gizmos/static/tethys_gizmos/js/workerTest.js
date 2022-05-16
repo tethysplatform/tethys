@@ -253,7 +253,7 @@ function recurse(){
       this.kml = kml;
       this.btn_group = $('<div />', { class: 'btn-group map-view'})
         .appendTo(div);
-      this.button = $('<a />', { class: 'btn btn-default btn-mini dropdown-toggle map-view-options-btn', type: 'button', 'data-toggle': 'dropdown'})
+      this.button = $('<a />', { class: 'btn btn-secondary btn-mini dropdown-toggle map-view-options-btn', type: 'button', 'data-toggle': 'dropdown'})
         .click(this.calculateMenuDirection)
         .appendTo(this.btn_group);
           $('<span />', {class: 'caret'}).appendTo(this.button);

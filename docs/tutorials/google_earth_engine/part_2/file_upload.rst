@@ -42,7 +42,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
     set_boundary_button = Button(
         name='set_boundary',
         display_text='Set Boundary',
-        style='default',
+        style='outline-secondary',
         attributes={
             'id': 'set_boundary',
         }
@@ -103,7 +103,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
           <div class="modal-body">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
     set_boundary_button = Button(
         name='set_boundary',
         display_text='Set Boundary',
-        style='default',
+        style='outline-secondary',
         attributes={
             'id': 'set_boundary',
             'data-toggle': 'modal',
@@ -185,8 +185,8 @@ Add an HTML ``form`` element with the attributes that are required to perform a 
     :emphasize-lines: 3
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      <input type="submit" class="btn btn-default" value="Set Boundary" name="set-boundary-submit" id="set-boundary-submit" form="set-boundary-form">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      <input type="submit" class="btn btn-secondary" value="Set Boundary" name="set-boundary-submit" id="set-boundary-submit" form="set-boundary-form">
     </div>
 
 5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and press the **Set Boundary** button. Verify that the modal opens and it contains a form with a file chooser button.

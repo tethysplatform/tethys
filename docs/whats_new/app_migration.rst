@@ -1,143 +1,332 @@
-.. _migrate_2_to_3:
+.. _migrate_3_to_4:
 
-****************************
-Migrating Apps from Tethys 2
-****************************
+*********************************
+Migrating Apps from Tethys 3 to 4
+*********************************
 
-Porting your App to Python 3.6+
-===============================
+**Last Updated:** May 2022
 
-Porting Python 2 apps to Python 3 can be done in a systematic way, and is usually less complicated than expected. We
-recommend using the `2to3 <https://docs.python.org/2/library/2to3.html>`_ Python program to translate your Python 2 apps
-into Python 3 automatically.
-
-New Tethys App Installation
-===========================
-
-Tethys 3 facilitates app installation by providing a new ``install`` command. This command replaces the previous
-`Python setup.py <install/develop>`. Some of the main changes to the app installation process are updates to the
-directory structure of the app, the ``setup.py`` file, and the addition of new functionality to facilitate the
-installation and setup of apps including app service configuration using a predefined custim yml file or an interactive
-mode.
-
-Tethys apps are now python package that are installed in the tethys conda environment and can be imported as shown
-below:
-
-.. code-block:: python
-
-    # imports test_app
-    from tethysapp import test_app
-
-Init.py
--------
-
-The ``__init__.py`` files in the file structure of old tethys apps need to be slightly modified to work with the new
-``install`` command.
-
-.. figure:: ../images/app_package_django.png
-	:alt: diagram of a Tethys app project for an app named my_first_app
-
-	**Figure 1. An example of a Tethys app project for an app named "my_first_app".**
-
-The ``__init__.py`` from the ``Project`` and the ``tethysapp`` directories need to be deleted.
-
-The ``__init__.py`` from the ``App Package`` directory needs to be empty.
-
-For example:
-
-Remove the following contents from ``tethysapp-my_first_app/tethysapp/my_first_app/__init__.py``:
-
-.. code-block:: python
-
-    # this is a namespace package
-    try:
-        import pkg_resources
-        pkg_resources.declare_namespace(__name__)
-    except ImportError:
-        import pkgutil
-        __path__ = pkgutil.extend_path(__path__, __name__)
-
-
-Setup.py
---------
-
-The setup.py file has been simplified. In addition, the ``find_packages`` function has been replaced with the
-``find_namespace_packages``. A new function ``find_resource_files`` is used to carry additional package data such as
-templates along with the setup installation.
-
-Example of new ``setup.py`` file:
-
-.. code-block:: python
-
-    from setuptools import setup, find_namespace_packages
-    from tethys_apps.app_installation import find_resource_files
-
-    # -- Apps Definition -- #
-    app_package = 'test_app'
-    release_package = 'tethysapp-' + app_package
-
-    # -- Python Dependencies -- #
-    dependencies = []
-
-    # -- Get Resource File -- #
-    resource_files = find_resource_files('tethysapp/' + app_package + '/templates', 'tethysapp/' + app_package)
-    resource_files += find_resource_files('tethysapp/' + app_package + '/public', 'tethysapp/' + app_package)
-
-    setup(
-        name=release_package,
-        version='0.0.1',
-        description='',
-        long_description='',
-        keywords='',
-        author='',
-        author_email='',
-        url='',
-        license='',
-        packages=find_namespace_packages(),
-        package_data={'': resource_files},
-        include_package_data=True,
-        zip_safe=False,
-        install_requires=dependencies,
-    )
+This guide describes how to migrate Tethys 3 apps to work in Tethys 4. There are several "breaking" changes that were introduced in Tethys 4 that may cause apps developed in Tethys 3 to not load or function properly. Use the tips below to help you make the changes necessary for the app to function properly in Tethys 4.
 
 .. note::
-    Do not list app dependencies in the ``setup.py``. Dependencies should now be listed using the ``install.yml`` file
-    (see :doc:`../installation/application`).
 
-App Base Template
------------------
+    To migrate an app developed for Tethys 2 to Tethys 4, you will need to first complete the steps found in the :ref:`migrate_2_to_3` guide.
 
-If you'd like your app to support setting the app icon to use an image from an external source (e.g. "http://example.com/example.jpg"), you'll need to update the `base.html` located in your templates directory. Either remove the `app_icon` block or change it to:
+Index Controller
+================
+
+The ``index`` property of the :term:`app class` is used to tell Tethys which controller should be used for the home page of the app. In Tethys 4, the app namespace portion (the part before the ``:``) should be dropped.
+
+For example, a Tethys app with an ``index`` property looking like this:
+
+.. code-block:: python
+    :emphasize-lines: 2
+
+    class MyFirstApp(TethysAppBase):
+        index = "my_first_app:home"
+
+should be changed to this:
+
+.. code-block:: python
+    :emphasize-lines: 2
+
+    class MyFirstApp(TethysAppBase):
+        index = "home"
+
+Controller Decorators
+=====================
+
+The ``url_maps()`` method is being deprecated in favor of the simpler ``controller`` decorator method introduced in Tethys 4. Therefore, it is recommended that apps are migrated to use the ``controller`` decorator and remove the ``url_maps()`` method fsrom the :file:`app.py`. Use the following tips to help you migrate:
+
+1. Review the :ref:`url_maps_api` documentation to become familiar with the ``controller`` decorator.
+2. If your app has a lot of controllers, use the ``url_maps()`` in :file:`app.py` to make a list them. There should be one controller function or class for each ``UrlMap`` listed.
+3. Add the ``controller`` decorator to each controller function or class in your app.
+4. If the default URL or name generated by the ``controller`` decorator don't match what is set in the ``UrlMap``, override it by setting the ``url`` and ``name`` arguments of the controller decorator.
+5. If your controller uses any other decorators, remove them and use the appropriate arguments in the ``controller`` decorator instead.
+6. Remove the ``url_maps()`` method from the :file:`app.py`.
+
+.. note::
+
+    Tethys 4 also introduces the ``consumer`` and ``handler`` decorators that function equivalently for consumers and handler functions. See the :ref:`url_maps_api` documentation for more details.
+
+Theme and Styles
+================
+
+The frontend CSS framework, Bootstrap, was upgraded from version 3 to version 5 in Tethys Platform 4. As a result, any Boostrap components that are used in templates will need to be updated to use the `Bootstrap 5 <https://getbootstrap.com/docs/5.0/getting-started/introduction/>`_ syntax so they function and look as expected. This section describes how to update the most common Bootstrap components that are used in Tethys Apps.
+
+.. note::
+
+    The app base templates and Template Gizmos have all been updated to use Bootstrap 5. You should only need to upgrade Bootstrap code that is contained in your app. The Gizmos that are used by your app will be automatically upgraded.
+
+Bootstrap Icons
+---------------
+
+The glyphicons that were included in Bootstrap 3 were moved to a separate library called `Bootstrap Icons <https://icons.getbootstrap.com/>`_. The Bootstrap Icons use a different syntax than glyphicons, so any glyphicons that are used in your app will not show up in Tethys Platform 4.
+
+However, Tethys Platform 4 includes the Boostrap Icons library in the base template for apps, so the only change that you should need to make is to update the icon to an equivalent Bootstrap Icon:
+
+.. code-block:: html
+
+    <i class="bi bi-home"></i>
+
+The Bootstrap Icons library has many more icons than the Bootstrap 3 glyphicon library, however the names of many icons have changed. For example ``glyphicon-pencil`` featured a *filled* pencil icon, but ``bi-pencil`` is an *outlined* pencil icon. To use the equivalent Bootstrap Icon, you will need to use the ``bi-pencil-fill`` icon. Fortunately, the `Bootstrap Icons <https://icons.getbootstrap.com/>`_ website has an excellent search capability that makes it easy to find equivalent icons.
+
+For example, if your app had the following glyphicons:
+
+.. code-block:: html
+
+    <span class="glyphicon glyhpicon-home" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+
+you could update them to use the following equivalent Bootstrap Icons:
+
+.. code-block:: html
+
+    <i class="bi bi-house-door-fill"></i>
+    <i class="bi bi-trash"></i>
+    <i class="bi bi-save"></i>
+
+App Navigation
+--------------
+
+The navigation items that are used in the ``app_navigation_items`` block of your templates (usually in the :file:`base.html`) need to have slight changes made to work properly. To update the navigation elements do the following:
+
+1. Add a ``nav-item`` class on each ``<li>`` element.
+2. Add a class ``nav-link`` on each ``<a>`` element.
+3. Move the ``active`` class (if applicable) from the ``<li>`` element to the ``<a>`` element.
+
+For example, an old ``app_navigation_items`` block like this:
 
 .. code-block:: html+django
 
-    {% block app_icon %}
-      {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
-      <img src="{% if 'http' in tethys_app.icon %}{{ tethys_app.icon }}{% else %}{% static tethys_app.icon %}{% endif %}" />
+    {% block app_navigation_items %}
+      <li class="title">App Navigation</li>
+      <li class="active"><a href="">Home</a></li>
+      <li><a href="">Jobs</a></li>
+      <li class="separator"></li>
+      <li><a href="">Get Started</a></li>
     {% endblock %}
 
-App Installation
-----------------
 
-Tethys apps are now installed using the ``install`` command. See :doc:`../installation/application` for an example of
-how to use the ``install`` command, how to use ``yml`` files in combination with the ``install`` command, and a list of
-available parameters.
+should be changed to this:
 
-::
+.. code-block:: html+django
 
-    # Install Tethys App
-    tethys install
+    {% block app_navigation_items %}
+      <li class="nav-item title">App Navigation</li>
+      <li class="nav-item"><a class="nav-link active" href="">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="">Jobs</a></li>
+      <li class="nav-item separator"></li>
+      <li class="nav-item"><a class="nav-link" href="">Get Started</a></li>
+    {% endblock %}
 
-    # Install Tethys App with develop
-    tethys install -d
+.. _app_migration_bs5_data_attrs: 
 
-    # Skip interactive mode
-    tethys install -q
+Data Attributes
+---------------
 
-    # Tethys install with custom options
-    tethys install -d -f install.yml
+All Boostrap related data attributes on HTML elements now include a ``bs`` namespace. For example, ``data-target`` needs to be changed to ``data-bs-target``. Use the following tips to help you migrate data attributes appropriately:
 
-Presentation
-============
+1. Perform a project-wide search on your app source code for ``"data-"`` to find instances of data attributes.
+2. Review the tips below for Tooltips, Dropdowns, and Modals.
+3. Review the `Bootstrap 5 documentation <https://getbootstrap.com/docs/5.0/components/accordion/>`_ for details about changes to other components that your app uses that are not listed below.
 
-Use this presentation in workshops and training courses to provide an overview of the app migration process: `Migrate Apps from Tethys 2 to Tethys 3 Presentation <https://docs.google.com/presentation/d/16C9Lx4wB84aNrpzW_-PxOwzU_KGgAg54d_g6yfpLdEk/edit>`_.
+Buttons
+-------
+
+The ``btn-default`` class no longer exists in Bootstrap 5. Change it to ``btn-outline-secondary`` for a similar looking button. Alternatively, choose from several new styles of buttons that can be found here: `Boostrap Buttons <https://getbootstrap.com/docs/5.0/components/buttons/>`_.
+
+Tooltips
+--------
+
+Bootstrap Tooltip components have the following data attributes that need to be updated:
+
+* ``data-toggle``: ``data-bs-toggle``
+* ``data-placement``: ``data-bs-placement``
+
+For example, this button with an old-style tooltip:
+
+.. code-block:: html
+    :emphasize-lines: 1
+
+    <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">
+      Tooltip on bottom
+    </button>
+
+needs to be updated to this:
+
+.. code-block:: html
+    :emphasize-lines: 1
+
+    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tooltip on bottom">
+      Tooltip on bottom
+    </button>
+
+Dropdowns
+---------
+
+Bootstrap Dropdown components have the following data attributes that need to be updated:
+
+* ``data-toggle``: ``data-bs-toggle``
+
+In addition, the `<span>` element with class `carot` should be removed.
+
+For example, this old-style dropdown:
+
+.. code-block:: html
+    :emphasize-lines: 2,4
+
+    <div class="dropdown">
+      <button id="dLabel" type="button" data-toggle="dropdown" aria-expanded="false">
+        Dropdown trigger
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dLabel">
+        ...
+      </ul>
+    </div>
+
+needs to be updated to this:
+
+.. code-block:: html
+    :emphasize-lines: 2
+
+    <div class="dropdown">
+      <button id="dLabel" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Dropdown trigger
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dLabel">
+        ...
+      </ul>
+    </div>
+
+Modals
+------
+
+Bootstrap Modal components have the following data attributes that need to be updated:
+
+* ``data-dismiss``: ``data-bs-dismiss``
+* ``data-toggle``: ``data-bs-toggle``
+* ``data-target``: ``data-bs-target``
+
+In addition the class of the close button should be changed from ``close`` to ``btn-close`` and the ``&times;`` should be removed. The modal title and close button also need to be reordered (title first, button second).
+
+For example, the following old-style modal:
+
+.. code-block:: html
+    :emphasize-lines: 2,11,12,18
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal">
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          </div>
+          <div class="modal-body">
+            <p>Modal body text goes here.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+needs to be updated to this:
+
+.. code-block:: html
+    :emphasize-lines: 2,11,12,18
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Modal body text goes here.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+Gizmos
+------
+
+Although Gizmos have been updated to use Bootstrap 5, some arguments passed to them may include Bootstrap 3 values. For example, the ``Button`` and ``TextInput`` Gizmos have arguments that accept the names of icons to be displayed on them that need to be updated to Boostrap Icons values. Other arguments to check are ``attributes``, ``classes``, and ``style`` that may have old Bootstrap 3 values that need to be updated to use Bootstrap 5 values. Use the following tips to help you migrate:
+
+1. Do a project-wide search for ``"glphyicon"`` and update any icon arguments for Gizmos to the name of equivalent Bootstrap Icons (without the ``bi``).
+2. Check for old Bootstrap data attributes in the ``attributes`` arguments of Gizmos (see: :ref:`app_migration_bs5_data_attrs`).
+3. Check for old Bootstrap classes in the ``classes`` arguments of Gizmos (e.g. ``btn-default``).
+4. Check for old Bootstrap values in the ``style`` arguments of some Gizmos (e.g.: ``default``).
+
+
+For example, to update this Button Gizmo to have the equivalent style and icon:
+
+.. code-block:: python
+    :emphasize-lines: 3
+
+    add_button = Button(
+        display_text='Add',
+        icon='glyphicon glyphicon-plus',
+        style='success',
+    )
+
+change the value of ``icon`` (without the ``bi`` portion) of the Bootstrap Icon:
+
+.. code-block:: python
+    :emphasize-lines: 3
+    
+    add_button = Button(
+        display_text='Add',
+        icon='plus-circle-fill',
+        style='success',
+    )
+
+Schedulers
+==========
+
+In Tethys 4, job :ref:`jobs_api_schedulers` should be assigned to apps using :ref:`Scheduler app settings <jobs_api_scheduler_app_settings>`. If your app uses job schedulers: 
+
+1. Create a Scheduler app setting by defining the ``scheduler_settings()`` method on the app class. See :ref:`app_settings_scheduler_settings`. 
+2. Define a Scheduler Service and assign it to the app setting. See :ref:`Scheduler Service <schedulers-label>`.
+3. Use the ``get_scheduler()`` app class method to get the Scheduler from the setting. See :ref:`app_settings_get_scheduler`.
+
+Other Resources
+===============
+
+It is not possible to anticipate every migration step that will be needed. The suggestions are for the cases that will be most commonly encountered. The following resources may provide additional guidance for migrating your app(s).
+
+* Tethys is powered by Django. If your app makes uses of Django features directly, you may need to perform additional migration steps. See `Upgrading Django to a newer version <https://docs.djangoproject.com/en/3.2/howto/upgrade-version/>`_ and `Django 3.2 Release Notes <https://docs.djangoproject.com/en/3.2/releases/>`_.
+* Apps are styled using Bootstrap, a frontend CSS framework. If your app uses Bootstrap components other than those described above, use these links to help you migrate: `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/4.0/migration/>`_ and `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/5.0/migration/>`_.
+
+.. _app_migration_older_apps:
+
+Upgrade Older Apps
+==================
+
+To upgrade apps that are several versions behind, complete the app migration process for each version in order. For example, to upgrade an app developed in Tethys 2 to Tethys 4, first complete the "2 to 3" migration instructions and then complete the "3 to 4" instructions.
+
+.. toctree::
+
+    app_migration/app_migration_2_to_3
