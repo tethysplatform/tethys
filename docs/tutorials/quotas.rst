@@ -2,7 +2,7 @@
 Quotas Concepts
 ***************
 
-**Last Updated:** October 2019
+**Last Updated:** May 2022
 
 This tutorial introduces Tethys Quotas API concepts for Tethys developers. The topics covered include:
 
@@ -29,17 +29,15 @@ If you wish to use the advanced solution as a starting point:
 
 In the :ref:`key_concepts_advanced_tutorial` tutorial we refactored the Model to use an SQL database, rather than files. However, we might want to store some data as files in case we want to export them later. This will also allow us to demonstrate the use of the built-in workspace qutoas that come with the :doc:`../../tethys_sdk/tethys_quotas`.
 
-a. Add the :ref:`user_workspace` decorator and a `user_workspace` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
+a. Add the :ref:`user_workspace` argument to the ``controller`` decorator and a `user_workspace` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
 
-::
+.. code-block:: python
 
     import os
-    from tethys_sdk.workspaces import user_workspace
 
     ...
 
-    @user_workspace
-    @login_required()
+    @controller(url='hydrographs/assign', user_workspace=True)
     def assign_hydrograph(request, user_workspace):
         """
         Controller for the Add Hydrograph page.
@@ -121,7 +119,7 @@ d. Now that hydrograph files are stored to the user's workspace and the user can
 
 First add ``user_id = Column(Integer)`` as a column in the Dam model class. Also add ``cascade="all,delete"`` as an argument to the `hydrograph` relationship in the ``Dam`` model class and the `points` relationship in the ``Hydrograph`` model class.
 
-::
+.. code-block:: python
 
     class Dam(Base):
         """
@@ -163,7 +161,7 @@ First add ``user_id = Column(Integer)`` as a column in the Dam model class. Also
 
 Then modify the ``add_new_dam`` function like so:
 
-::
+.. code-block:: python
 
     def add_new_dam(location, name, owner, river, date_built, user_id):
         """
@@ -187,7 +185,7 @@ Then modify the ``add_new_dam`` function like so:
 
 e. Add ``user_id=-1`` when initializing ``dam1`` and ``dam2`` in the ``init_primary_db`` function.
 
-::
+.. code-block:: python
 
     def init_primary_db(engine, first_time):
 
@@ -218,9 +216,9 @@ e. Add ``user_id=-1`` when initializing ``dam1`` and ``dam2`` in the ``init_prim
 
 Then make the following changes to the ``add_dam`` controller:
 
-::
+.. code-block:: python
 
-    @permission_required('add_dams')
+    @controller(url='dams/add', permissions_required='add_dams')
     def add_dam(request):
         """
         Controller for the Add Dam page.
@@ -251,15 +249,9 @@ Now that we have changed the model for the persistent store we will need to drop
 
 f. Modify the ``assign_hydrograph`` controller again, this time to only allow users to assign hydrographs to dams that they have created.
 
-::
+.. code-block:: python
 
-    import os
-    from tethys_sdk.workspaces import user_workspace
-
-    ...
-
-    @user_workspace
-    @login_required()
+    @controller(url='hydrographs/assign', user_workspace=True)
     def assign_hydrograph(request, user_workspace):
         """
         Controller for the Add Hydrograph page.
@@ -275,7 +267,7 @@ f. Modify the ``assign_hydrograph`` controller again, this time to only allow us
 
 g. Finally, override the ``pre_delete_user_workspace`` method that was added with the :doc:`../../tethys_sdk/tethys_quotas`. Add this to ``app.py``:
 
-::
+.. code-block:: python
 
     @classmethod
     def pre_delete_user_workspace(cls, user):
@@ -297,7 +289,7 @@ h. Finally, remove the permissions restrictions on adding dams so that any user 
 
 controllers.py:
 
-::
+.. code-block:: python
 
     def add_dam(request):
         """
@@ -307,7 +299,7 @@ controllers.py:
 
 base.html:
 
-::
+.. code-block:: html+django
 
     {% block app_navigation_items %}
       {% url 'dam_inventory:home' as home_url %}
@@ -323,7 +315,7 @@ base.html:
 
 home.html:
 
-::
+.. code-block:: html+django
 
     {% block app_actions %}
       {% gizmo add_dam_button %}
@@ -340,7 +332,7 @@ With the changes we made to the Dam model, we can now associate each dam with th
 
 a. Creating a custom quota is pretty simple. Create a new file called ``dam_quota_handler.py`` and add the following contents:
 
-::
+.. code-block:: python
 
     from tethys_quotas.handlers.base import ResourceQuotaHandler
     from .model import Dam
@@ -383,7 +375,7 @@ a. Creating a custom quota is pretty simple. Create a new file called ``dam_quot
 
 b. Now go into the portal's :file:`portal_config.yml` file and add the dot-path of the handler class you just created in the ``RESOURCE_QUOTA_HANDLERS`` array.
 
-::
+.. code-block:: yaml
 
     settings:
       RESOURCE_QUOTA_HANDLERS:
@@ -401,16 +393,11 @@ d. Go into the app's settings page through the portal admin pages and delete the
     :width: 600px
     :align: center
 
-e. To enforce the new dam quota import the ``@enforce_quota`` decorator and add it to the ``add_dam`` controller.
+e. To enforce the new dam quota set the ``enforce_quotas`` argument on the ``controllers`` decorator and add it to the ``add_dam`` controller.
 
-::
+.. code-block:: python
 
-    from tethys_sdk.quotas import enforce_quota
-
-    ...
-
-    @enforce_quota('user_dam_quota')
-    @permission_required('add_dams')
+    @controller(url='dams/add', permissions_required='add_dams', enforce_quotas='user_dam_quota')
     def add_dam(request):
         """
         Controller for the Add Dam page.
@@ -433,10 +420,9 @@ As is, the app would never allow a user to add a new dam once the quota was reac
 
 a. Create the ``delete_dam`` function in ``controllers.py``:
 
-::
+.. code-block:: python
 
-    @user_workspace
-    @login_required()
+    @contoller(url='dams/{dam_id}/delete', user_workspace=True)
     def delete_dam(request, user_workspace, dam_id):
         """
         Controller for the deleting a dam.
@@ -459,21 +445,11 @@ a. Create the ``delete_dam`` function in ``controllers.py``:
 
         return redirect(reverse('dam_inventory:dams'))
 
-b. Add this ``delete_dam`` url map to ``app.py``:
+d. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. The code will restrict user's to deleting only dams that they created.
 
-::
+.. code-block:: python
 
-    UrlMap(
-        name='delete_dam',
-        url='dam-inventory/delete_dam/{dam_id}',
-        controller='dam_inventory.controllers.delete_dam'
-    ),
-
-c. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. The code will restrict user's to deleting only dams that they created.
-
-::
-
-    @login_required()
+    @controller(name='dams', url='dams')
     def list_dams(request):
         """
         Show all dams in a table view.
@@ -520,7 +496,7 @@ c. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. 
 
         return render(request, 'dam_inventory/list_dams.html', context)
 
-d. Test by deleting a dam or two (while logged in as the non-administrator) and trying to add new dams. This time you shouldn't be redirected to the error page, but should be able to add a dam like normal because you brought the number of dams created by the current user below the quota's default value.
+e. Test by deleting a dam or two (while logged in as the non-administrator) and trying to add new dams. This time you shouldn't be redirected to the error page, but should be able to add a dam like normal because you brought the number of dams created by the current user below the quota's default value.
 
 4. Solution
 ===========
