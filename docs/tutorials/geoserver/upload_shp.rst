@@ -21,7 +21,7 @@ Replace the contents of the existing :file:`home.html` template with:
             <label for="fileInput">Shapefiles</label>
             <input name="files" type="file" multiple class="form-control" id="fileInput" placeholder="Shapefiles">
         </div>
-        <input name="submit" type="submit" class="btn btn-default">
+        <input name="submit" type="submit" class="btn btn-secondary">
       </form>
     {% endblock %}
 
