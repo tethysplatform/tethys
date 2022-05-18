@@ -2,15 +2,39 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** November 2019
+**Last Updated:** May 2022
 
 1. Setting up the scaffold
 ==========================
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
-Create a new app using the instructions here: :ref:`key_concepts_new_app_project_tutorial`. For this tutorial we will be calling our project ``dask_tutorial``, so replace all instances of ``dam_inventory`` with ``dask_tutorial`` in the tutorial.
+Create a new app for this tutorial as follows:
 
+a. Activate the Tethys conda environment:
+
+    .. code-block:: bash
+
+        conda activate tethys
+
+b. Scaffold a new app named ``dask_tutorial``:
+
+    .. code-block:: bash
+
+        tethys scaffold dask_tutorial
+
+c. Install the app in development mode:
+
+    .. code-block:: bash
+
+        cd tethysapp-dask_tutorial
+        tethys install -d
+
+d. Start the Tethys development server:
+
+    .. code-block:: bash
+
+        tethys manage start
 
 2. Dask
 =======

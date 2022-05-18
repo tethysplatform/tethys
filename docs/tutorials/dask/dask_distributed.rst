@@ -2,7 +2,7 @@
 Dask Distributed
 ****************
 
-**Last Updated:** January 2022
+**Last Updated:** May 2022
 
 This section will illustrate how to use the ``dask.distributed`` API with ``DaskJob`` in Tethys. This example also illustrates how to use a custom process results function.
 
@@ -46,7 +46,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 'data-placement': 'top',
                 'title': 'Dask Delayed Job'
             },
-            href=reverse('dask_tutorial:run-dask', kwargs={'job_type': 'delayed'})
+            href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'delayed'})
         )
 
         dask_distributed_button = Button(
@@ -57,7 +57,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 'data-placement': 'top',
                 'title': 'Dask Future Job'
             },
-            href=reverse('dask_tutorial:run-dask', kwargs={'job_type': 'distributed'})
+            href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'distributed'})
         )
 
         jobs_button = Button(
@@ -68,7 +68,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 'data-placement': 'top',
                 'title': 'Show All Jobs'
             },
-            href=reverse('dask_tutorial:jobs-table')
+            href=reverse('dask_tutorial:jobs_table')
         )
 
         context = {
@@ -129,7 +129,7 @@ Additionally update the ``run_job`` controller in :file:`controller.py` to look 
             dask.process_results_function = convert_to_dollar_sign
             dask.execute(future)
 
-        return HttpResponseRedirect(reverse('dask_tutorial:jobs-table'))
+        return HttpResponseRedirect(reverse('dask_tutorial:jobs_table'))
     ...
 
 3. Setup HTML
