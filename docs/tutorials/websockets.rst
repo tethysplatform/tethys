@@ -126,8 +126,8 @@ b. ``Channel layers`` require a backend to store the ``WebSocket messages`` comi
     .. tip::
         A ``Channel layer`` can be added to the `settings` section of the :file:`portal_config.yml` by manually editing the file or by running ``tethys settings --set CHANNEL_LAYERS.default.BACKEND <<CHANNEL_LAYERS_BACKEND>>`` where ``<<CHANNEL_LAYERS_BACKEND>>`` is the python dot-formatted path of the channel layer. See :ref:`tethys_configuration` for details.
 
-    Channel Layer Definitions
-    -------------------------
+Channel Layer Definitions
+-------------------------
 
     +---------------+-----------------------------------------------+
     | Term          | Simplified definition                         |

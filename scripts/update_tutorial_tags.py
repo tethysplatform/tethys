@@ -25,7 +25,7 @@ tutorial_repos = {
         'setup-views-solution': 'setup-views-solution',
         'dask-delayed-solution': 'dask-delayed-solution',
         'dask-distributed-solution': 'dask-distributed-solution',
-        'multiple-leaf-solution': 'multiple-leaf-solution',        
+        'multiple-leaf-solution': 'multiple-leaf-solution',
     },
     'tethysplatform/tethysapp-geoserver_app': {
         'master': 'solution',
