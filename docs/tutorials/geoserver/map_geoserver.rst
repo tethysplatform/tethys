@@ -2,31 +2,16 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** November 2019
+**Last Updated:** May 2020
 
-
-1. Map Page UrlMap
-==================
-
-Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
-
-::
-
-    UrlMap(
-        name='map',
-        url='geoserver-app/map',
-        controller='geoserver_app.controllers.map'
-    ),
-
-
-2. Map Page Controller
+1. Map Page Controller
 ======================
 
 Add a new controller to the :file:`controller.py` module:
 
-::
+.. code-block:: python
 
-    @login_required()
+    @controller
     def map(request):
         """
         Controller for the map page
@@ -86,17 +71,19 @@ Add a new controller to the :file:`controller.py` module:
             view=view_options
         )
 
-        context = {'map_options': map_options,
-                   'select_options': select_options}
+        context = {
+            'map_options': map_options,
+            'select_options': select_options
+        }
 
         return render(request, 'geoserver_app/map.html', context)
 
-3. Map Page Template
+2. Map Page Template
 ====================
 
 Create a new :file:`map.html` template in your template directory and add the following contents:
 
-::
+.. code-block:: html+django
 
     {% extends "geoserver_app/base.html" %}
     {% load tethys_gizmos %}
@@ -112,7 +99,7 @@ Create a new :file:`map.html` template in your template directory and add the fo
     {% endblock %}
 
 
-4. Test Map Page
+3. Test Map Page
 ================
 
 Navigate to the map page (`<http://localhost:8000/apps/geoserver-app/map/>`_). Use the select box to select a layer to display on the map. Press the submit button to effect the change.

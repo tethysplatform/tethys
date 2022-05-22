@@ -12,10 +12,10 @@ Use the following tutorials to learn the basics about Tethys Platform.
    :maxdepth: 1
 
    tutorials/key_concepts
-   tutorials/quotas
-   tutorials/websockets
-   tutorials/bokeh
-   tutorials/dask
    tutorials/geoserver
    tutorials/google_earth_engine
    tutorials/thredds
+   tutorials/dask
+   tutorials/websockets
+   tutorials/bokeh
+   tutorials/quotas

@@ -2,7 +2,7 @@
 Start and Register
 ******************
 
-**Last Updated:** November 2019
+**Last Updated:** May 2020
 
 
 1. Scaffold New App
@@ -10,9 +10,8 @@ Start and Register
 
 Create a new app, but don't install it yet:
 
-::
+.. code-block:: bash
 
-    t
     tethys scaffold geoserver_app
 
 2. Create Spatial Dataset Service Setting
@@ -20,7 +19,7 @@ Create a new app, but don't install it yet:
 
 Open the ``app.py`` and add the following method to the ``GeoserverApp`` class:
 
-::
+.. code-block:: python
 
     from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
@@ -45,13 +44,10 @@ Open the ``app.py`` and add the following method to the ``GeoserverApp`` class:
 
             return sds_settings
 
-
-
-
 3. Install GeoServer and Start Tethys Development Server
 ========================================================
 
-::
+.. code-block:: bash
 
     cd tethysapp-geoserver_app
     tethys install -d
@@ -61,15 +57,17 @@ Open the ``app.py`` and add the following method to the ``GeoserverApp`` class:
 4. Start GeoServer
 ==================
 
-If you are using the Docker containers, start up your :doc:`../../software_suite/geoserver` container:
+If you are using the Docker containers, create and start your :doc:`../../software_suite/geoserver` container:
 
-::
+.. code-block:: bash
+
+	tethys docker init -c geoserver
+
+.. code-block:: bash
 
 	tethys docker start -c geoserver
 
 Otherwise ensure that you have GeoServer installed and running. Refer to the `GeoServer Installation Guide <http://docs.geoserver.org/stable/en/user/installation/>`_ for system specific instructions.
-
-
 
 5. Create GeoServer Spatial Dataset Service
 ===========================================
@@ -103,7 +101,7 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
 
 	If you don't see the "main_geoserver" setting in the "Spatial Dataset Service Settings" section try restarting the Tethys development server. If it still doesn't show up, then stop the Tethys development server, uninstall the app, reinstall it, and start the Tethys server again:
 
-    ::
+    .. code-block:: bash
 
         tethys uninstall geoserver_app
         cd tethysapp-geoserver_app
