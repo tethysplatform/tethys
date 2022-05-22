@@ -45,10 +45,11 @@ class DaskJob(TethysJob):
         # 'processing-forgotten': 'RES',  # Will freeze processing results if enabled.
         'processing-erred': 'ERR',
         'erred-forgotten': 'ERR',
+        'cancelled': 'ABT',
         # States returned by Future objects
         'pending': 'SUB',
         'processing': 'RUN',
-        'finished': 'COM'
+        'finished': 'COM',
     }
 
     @property
