@@ -50,10 +50,10 @@ Create :file:`job_functions.py` and set its contents to the following:
     The ``sleep`` calls in each function are to simulate functions that do real work and hence take time to run.
 
 
-2. Setup Controller
-===================
+2. Setup Controllers
+====================
 
-Add the jobs button to the ``home`` controller in :file:`controller.py` module such that it looks like this:
+Replacte the contents of :file:`controller.py` with the following:
 
     .. code-block:: python
 
@@ -70,6 +70,7 @@ Add the jobs button to the ``home`` controller in :file:`controller.py` module s
         # get job manager for the app
         job_manager = app.get_job_manager()
 
+
         @controller
         def home(request):
             """
@@ -80,8 +81,8 @@ Add the jobs button to the ``home`` controller in :file:`controller.py` module s
                 display_text='Show All Jobs',
                 name='dask_button',
                 attributes={
-                    'data-toggle': 'tooltip',
-                    'data-placement': 'top',
+                    'data-bs-toggle': 'tooltip',
+                    'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
                 href=reverse('dask_tutorial:jobs_table')
@@ -93,9 +94,6 @@ Add the jobs button to the ``home`` controller in :file:`controller.py` module s
 
             return render(request, 'dask_tutorial/home.html', context)
 
-Add two new controllers, ``jobs_table`` and ``result``, and the error handler, ``error_message``, to the :file:`controller.py` module:
-
-    .. code-block:: python
 
         @controller
         def jobs_table(request):
@@ -120,8 +118,8 @@ Add two new controllers, ``jobs_table`` and ``result``, and the error handler, `
                 display_text='Home',
                 name='home_button',
                 attributes={
-                    'data-toggle': 'tooltip',
-                    'data-placement': 'top',
+                    'data-bs-toggle': 'tooltip',
+                    'data-bs-placement': 'top',
                     'title': 'Home'
                 },
                 href=reverse('dask_tutorial:home')
@@ -145,8 +143,8 @@ Add two new controllers, ``jobs_table`` and ``result``, and the error handler, `
                 display_text='Home',
                 name='home_button',
                 attributes={
-                    'data-toggle': 'tooltip',
-                    'data-placement': 'top',
+                    'data-bs-toggle': 'tooltip',
+                    'data-bs-placement': 'top',
                     'title': 'Home'
                 },
                 href=reverse('dask_tutorial:home')
@@ -156,14 +154,19 @@ Add two new controllers, ``jobs_table`` and ``result``, and the error handler, `
                 display_text='Show All Jobs',
                 name='dask_button',
                 attributes={
-                    'data-toggle': 'tooltip',
-                    'data-placement': 'top',
+                    'data-bs-toggle': 'tooltip',
+                    'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
                 href=reverse('dask_tutorial:jobs_table')
             )
 
-            context = {'result': job_result, 'name': name, 'home_button': home_button, 'jobs_button': jobs_button}
+            context = {
+                'result': job_result,
+                'name': name,
+                'home_button': home_button,
+                'jobs_button': jobs_button
+            }
 
             return render(request, 'dask_tutorial/results.html', context)
 
@@ -178,7 +181,53 @@ Add two new controllers, ``jobs_table`` and ``result``, and the error handler, `
 3. Set up HTML
 ==============
 
-Create :file:`jobs_table.html`. Change it so that the contents are as follows:
+Remove the navigation menu from the app by using the ``app_no_nav.html`` base template. Replace the contents of :file:`templates/dask_tutorial/base.html` as follows:
+
+    .. code-block:: html+django
+
+        {% extends "tethys_apps/app_no_nav.html" %}
+
+        {% load static %}
+
+        {% block title %}{{ tethys_app.name }}{% endblock %}
+
+        {% block app_icon %}
+        {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
+        <img src="{% if 'http' in tethys_app.icon %}{{ tethys_app.icon }}{% else %}{% static tethys_app.icon %}{% endif %}" />
+        {% endblock %}
+
+        {# The name you provided in your app.py is accessible through the tethys_app.name context variable #}
+        {% block app_title %}{{ tethys_app.name }}{% endblock %}
+
+        {% block app_content %}
+        {% endblock %}
+
+        {% block app_actions %}
+        {% endblock %}
+
+        {% block content_dependent_styles %}
+        {{ block.super }}
+        <link href="{% static 'dask_tutorial/css/main.css' %}" rel="stylesheet"/>
+        {% endblock %}
+
+        {% block scripts %}
+        {{ block.super }}
+        <script src="{% static 'dask_tutorial/js/main.js' %}" type="text/javascript"></script>
+        {% endblock %}
+
+
+Replace the contents of :file:`templates/dask_tutorial/home.html` with the following:
+
+    .. code-block:: html+django
+
+        {% extends "dask_tutorial/base.html" %}
+        {% load tethys_gizmos %}
+
+        {% block app_actions %}
+        {% gizmo jobs_button %}
+        {% endblock %}
+
+Create :file:`templates/dask_tutorial/jobs_table.html` with the following contents:
 
     .. code-block:: html+django
 
@@ -220,42 +269,7 @@ Create :file:`jobs_table.html`. Change it so that the contents are as follows:
         {% gizmo_dependencies js %}
         {% endblock %}
 
-Create file :file:`error.html` and set its contents to the following:
-
-    .. code-block:: html+django
-
-        {% extends "dask_tutorial/base.html" %}
-        {% load tethys_gizmos %}
-
-        {% block header_buttons %}
-        <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
-            <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
-        </div>
-        {% endblock %}
-
-        {% block app_content %}
-        <div class="error-message">
-            {{ error_message }}
-        </div>
-        {% endblock %}
-
-        {% block app_actions %}
-        {% gizmo jobs_button %}
-        {% endblock %}
-
-Edit :file:`home.html` and and set it to the following:
-
-    .. code-block:: html+django
-
-        {% extends "dask_tutorial/base.html" %}
-        {% load tethys_gizmos %}
-
-        {% block app_actions %}
-        {% gizmo jobs_button %}
-        {% endblock %}
-
-
-Define :file:`results.html` to be the following:
+Create :file:`templates/dask_tutorial/results.html` with the following contents:
 
     .. code-block:: html+django
 
@@ -277,7 +291,7 @@ Define :file:`results.html` to be the following:
         <link rel="stylesheet" href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" type="text/css" />
         <style>
             #content {
-            padding-bottom: 50px;
+                padding-bottom: 50px;
             }
         </style>
         {% endblock %}
@@ -298,56 +312,41 @@ Define :file:`results.html` to be the following:
         {% gizmo_dependencies js %}
         {% endblock %}
 
-Edit :file:`base.html` to be the following:
+Create :file:`templates/dask_tutorial/error.html` with the following contents:
 
     .. code-block:: html+django
 
-        {% extends "tethys_apps/app_base.html" %}
-
-        {% load static %}
-
-        {% block title %}{{ tethys_app.name }}{% endblock %}
-
-        {% block app_icon %}
-        {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
-        <img src="{% if 'http' in tethys_app.icon %}{{ tethys_app.icon }}{% else %}{% static tethys_app.icon %}{% endif %}" />
-        {% endblock %}
-
-        {# The name you provided in your app.py is accessible through the tethys_app.name context variable #}
-        {% block app_title %}{{ tethys_app.name }}{% endblock %}
-
-        {% block app_navigation_toggle_override %}
-        {% endblock %}
-
-        {% block app_navigation_override %}
-        {% endblock %}
+        {% extends "dask_tutorial/base.html" %}
+        {% load tethys_gizmos %}
 
         {% block app_content %}
+        <div class="error-message">
+            {{ error_message }}
+        </div>
         {% endblock %}
 
         {% block app_actions %}
+        {% gizmo jobs_button %}
         {% endblock %}
 
-        {% block content_dependent_styles %}
-        {{ block.super }}
-        <link href="{% static 'dask_tutorial/css/main.css' %}" rel="stylesheet"/>
-        {% endblock %}
+4. Change App icon
+==================
 
-        {% block scripts %}
-        {{ block.super }}
-        <script src="{% static 'dask_tutorial/js/main.js' %}" type="text/javascript"></script>
-        {% endblock %}
+Download :download:`Dask Logo <./resources/dask-logo.png>` and save it to :file:`public/images`.
 
-4. Edit Styles
-==============
+Update the ``icon`` property of the :term:`app class` in :file:`app.py` to use the dask logo as the app icon:
 
-Edit :file:`main.css` to be the following:
+    .. code-block:: python
+        :emphasize-lines: 6
 
-    .. code-block:: css
+        class DaskTutorial(TethysAppBase):
+            """
+            Tethys app class for Dask Tutorial.
+            """
+            ... 
+            icon = f'{package}/images/dask-logo.png'
+            ...
 
-        #app-header .tethys-app-header #nav-title-wrapper {
-            margin-left: 20px;
-        }
 
 5. Review Results
 =================

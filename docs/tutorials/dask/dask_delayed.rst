@@ -13,8 +13,6 @@ Add a new function to the :file:`job_functions.py` module that builds a Dask job
 
     .. code-block:: python
 
-        ...
-
         # Delayed Job
         def delayed_job():
             output = []
@@ -31,6 +29,7 @@ Add a new function to the :file:`job_functions.py` module that builds a Dask job
 Modify the ``home`` controller in the :file:`controller.py` module, adding a button to the context that will launch the Dask Delayed job. Afterwards the home function should look like this:
 
     .. code-block:: python
+        :emphasize-lines: 6-15, 29
 
         @controller
         def home(request):
@@ -41,8 +40,8 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 display_text='Dask Delayed Job',
                 name='dask_delayed_button',
                 attributes={
-                    'data-toggle': 'tooltip',
-                    'data-placement': 'top',
+                    'data-bs-toggle': 'tooltip',
+                    'data-bs-placement': 'top',
                     'title': 'Dask Delayed Job'
                 },
                 href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'delayed'})
@@ -52,8 +51,8 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 display_text='Show All Jobs',
                 name='dask_button',
                 attributes={
-                    'data-toggle': 'tooltip',
-                    'data-placement': 'top',
+                    'data-bs-toggle': 'tooltip',
+                    'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
                 href=reverse('dask_tutorial:jobs_table')
@@ -70,8 +69,6 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
 Add the ``run_job`` controller to the :file:`controller.py` module as well:
 
     .. code-block:: python
-
-        ...
 
         @controller
         def run_job(request, job_type):
@@ -109,14 +106,10 @@ Add the ``app_content`` block to the :file:`home.html` so that it looks like the
 
     .. code-block:: html+django
 
-        ...
-
         {% block app_content %}
         <h2>Dask Delayed Job</h2>
         {% gizmo dask_delayed_button %}
         {% endblock %}
-
-        ...
 
 4. Review Dask Delayed
 ======================
