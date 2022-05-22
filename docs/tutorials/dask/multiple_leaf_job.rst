@@ -210,10 +210,10 @@ Click on the ``Dask Multiple Leaf Jobs`` button to launch the new job type. You 
 5. Solution
 ===========
 
-This concludes the Dask Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_ or clone it as follows:
+View the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone git@github.com:tethysplatform/tethysapp-dask_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial.git
     cd tethysapp-dask_tutorial
-    git checkout -b solution solution-|version|
+    git checkout -b multiple-leaf-solution multiple-leaf-solution-|version|

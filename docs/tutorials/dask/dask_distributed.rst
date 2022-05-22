@@ -159,6 +159,13 @@ Click on the ``Dask Distributed Job`` button to launch the new job type. It will
     :width: 900px
     :align: center
 
-.. tip::
+5. Solution
+===========
 
-    If you get stuck, compare with the solution here: `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_
+View the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial.git
+    cd tethysapp-dask_tutorial
+    git checkout -b dask-distributed-solution dask-distributed-solution-|version|

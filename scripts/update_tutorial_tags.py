@@ -5,7 +5,7 @@ from github.GithubException import BadCredentialsException
 # Requirements: pip install PyGithub
 
 # Tethys Version to Tag For
-tethys_version = '3.4'
+tethys_version = '4.0'
 
 # Tutorial repos ({<repo_name>: {<branch>: <tag_prefix>}}
 tutorial_repos = {
@@ -21,6 +21,11 @@ tutorial_repos = {
     },
     'tethysplatform/tethysapp-dask_tutorial': {
         'master': 'solution',
+        'setup-scheduler-solution': 'setup-scheduler-solution',
+        'setup-views-solution': 'setup-views-solution',
+        'dask-delayed-solution': 'dask-delayed-solution',
+        'dask-distributed-solution': 'dask-distributed-solution',
+        'multiple-leaf-solution': 'multiple-leaf-solution',        
     },
     'tethysplatform/tethysapp-geoserver_app': {
         'master': 'solution',

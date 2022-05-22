@@ -363,6 +363,13 @@ In the lower right hand corner is the button to navigate to the jobs table. Clic
     :width: 900px
     :align: center
 
-.. tip::
+6. Solution
+===========
 
-    If you get stuck, compare with the solution here: `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_
+View the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial.git
+    cd tethysapp-dask_tutorial
+    git checkout -b setup-views-solution setup-views-solution-|version|
