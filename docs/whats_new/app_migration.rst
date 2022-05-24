@@ -49,6 +49,23 @@ The ``url_maps()`` method is being deprecated in favor of the simpler ``controll
 
     Tethys 4 also introduces the ``consumer`` and ``handler`` decorators that function equivalently for consumers and handler functions. See the :ref:`url_maps_api` documentation for more details.
 
+Templates
+=========
+
+In Tethys 4, the ``staticfiles`` template library needs to be changed to ``static``:
+
+For example, the following ``load`` statement:
+
+.. code-block:: html+django
+
+    {% load staticfiles %}
+
+needs to be changed to this:
+
+.. code-block:: html+django
+
+    {% load static %}
+
 Theme and Styles
 ================
 
@@ -128,7 +145,7 @@ Data Attributes
 
 All Boostrap related data attributes on HTML elements now include a ``bs`` namespace. For example, ``data-target`` needs to be changed to ``data-bs-target``. Use the following tips to help you migrate data attributes appropriately:
 
-1. Perform a project-wide search on your app source code for ``"data-"`` to find instances of data attributes.
+1. Perform a project-wide search on your app source code for ``data-`` to find instances of data attributes.
 2. Review the tips below for Tooltips, Dropdowns, and Modals.
 3. Review the `Bootstrap 5 documentation <https://getbootstrap.com/docs/5.0/components/accordion/>`_ for details about changes to other components that your app uses that are not listed below.
 
