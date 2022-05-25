@@ -52,7 +52,7 @@ The ``url_maps()`` method is being deprecated in favor of the simpler ``controll
 Workspaces
 ==========
 
-The ``get_app_workspace()`` and ``get_user_workspace()`` methods of the :term:`app class` were deprecated in Tethys 3 in favor of the ``app_workspace`` and ``user_workspace`` decorators. It is recommended that you use the``app_workspace`` and ``user_workspace`` arguments of the ``controller`` decorator to acquire workspaces in Tethys 4.
+The ``get_app_workspace()`` and ``get_user_workspace()`` methods of the :term:`app class` were deprecated in Tethys 3 in favor of the ``app_workspace`` and ``user_workspace`` decorators. However, it is recommended that you use the ``app_workspace`` and ``user_workspace`` arguments of the ``controller`` decorator to acquire workspaces in Tethys 4.
 
 For example, the following controllers:
 
