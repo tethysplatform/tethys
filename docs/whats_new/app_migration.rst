@@ -79,11 +79,11 @@ should be refactored to use the ``controller`` decorator as follows:
 
 .. code-block:: python
 
-    @controller(user_workspace=True)
-    def controller_
-
     from tethys_sdk.routing import controller
-a(request, user_workspace):
+    
+
+    @controller(user_workspace=True)
+    def controller_a(request, user_workspace):
         """Gets user workspace from the controller decorator."""
         uw_path = user_workspace.path
         ...
