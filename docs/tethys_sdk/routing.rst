@@ -8,7 +8,7 @@ Routing API
 
 Routing is the way a request to a URL is connected (or routed) to a function or class that is responsible for handling that request. When a request is submitted to Tethys, it matches the URL of that request against a list of registered URLs and calls the function or class that is registered with that URL. This connection between the URL and the function or class that handles it is also called a URL mapping. A function or class that is mapped to a URL endpoint is known as either a controller or a consumer (depending on the protocol used in the URL).
 
-Beginning in Tethys 4.0, registering a URL is done by decorating its function or class with one of the Tethys routing decorators (``controller`` or ``consumer``). The ``controller`` decorator is used to register a URL using the HTTP protocol, while the ``consumer`` decorator is used to register a URL using the :ref:`websocket <websockets>` protocol. In a Tethys app the controllers are defined in the ``controllers.py`` module. If your app includes consumers then they should be defined in a ``consumers.py`` module. Tethys will automatically search both the ``controllers.py`` and ``consumers.py`` modules to find any functions or classes that have been decorated with the either ``controller`` or the ``consumer`` decorators and register them. If you have many controllers or consumers and want to organize them in multiple modules then you can convert the ``controllers.py`` or the ``consumers.py`` modules into packages (a directory with an ``__init__.py`` and other Python modules in it).
+Beginning in Tethys 4.0, registering a URL is done by decorating its function or class with one of the Tethys routing decorators (``controller`` or ``consumer``). The ``controller`` decorator is used to register a URL using the HTTP protocol, while the ``consumer`` decorator is used to register a URL using the :ref:`websocket <websockets>` protocol. 
 
 .. _controller-decorator:
 
@@ -134,6 +134,24 @@ Handler Decorator
 
 .. tip::
     For a more in-depth example of how to use Bokeh with Tethys see the :ref:`bokeh-tutorial`.
+
+.. _controller-search-path:
+
+Search Path
+-----------
+
+In a Tethys app the controllers are usually defined in the ``controllers.py`` module. If your app includes consumers then they should be defined in a ``consumers.py`` module. Tethys will automatically search both the ``controllers.py`` and ``consumers.py`` modules to find any functions or classes that have been decorated with the either ``controller`` or the ``consumer`` decorators and register them. If you have many controllers or consumers and want to organize them in multiple modules then you can convert the ``controllers.py`` or the ``consumers.py`` modules into packages with the same name (a directory named either ``controllers`` or ``consumers`` with an ``__init__.py`` and other Python modules in it).
+
+For existing apps with controllers located in modules with different names than these defaults, it is recommended to move the modules into a package named either ``controllers`` or ``consumers`` as described above. However, you may also use the ``controller_modules`` property of the :term:`app class` to define addtiional controller search locations. For example:
+
+.. code-block:: python
+
+    class MyFirstApp(TethysAppBase):
+        ...
+        controller_modules = [
+            'custom_controllers',  # For a module named custom_controller.py in the same directory as app.py
+            'rest',  # For a package named "rest" in the same directory as app.py containing modules with controllers
+        ]
 
 .. _class_based_controllers:
 
