@@ -49,10 +49,10 @@ The ``url_maps()`` method is being deprecated in favor of the simpler ``controll
 
     Tethys 4 also introduces the ``consumer`` and ``handler`` decorators that function equivalently for consumers and handler functions. See the :ref:`url_maps_api` documentation for more details.
 
-Controller Modules
-------------------
+Search Path
+-----------
 
-Tethys will only search for functions with the ``controller``, ``consumer``, and ``handler`` decorators in modules named ``controllers.py`` or ``consumers.py`` or any module located in packages named ``controllers`` and ``consumers``. If your app has controllers located in modules with different names than these defaults, the **recommended migration** is to move the modules into a package named either ``controllers`` or ``consumers``.
+Tethys will only search for the ``controller``, ``consumer``, and ``handler`` decorators in modules named ``controllers.py`` or ``consumers.py`` or any module located in packages named ``controllers`` and ``consumers``. If your app has controllers located in modules with different names than these defaults, the **recommended migration** is to move the modules into a package named either ``controllers`` or ``consumers``.
 
 However, you may also use the ``controller_modules`` property of the :term:`app class` to define addtiional search locations. For example:
 
