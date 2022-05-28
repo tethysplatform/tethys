@@ -71,6 +71,21 @@ class TethysBase(TethysBaseMixin):
     def package_namespace(cls):
         raise NotImplementedError()
 
+    @classproperty
+    def db_model(cls):
+        raise NotImplementedError()
+    
+    @classproperty
+    def db_object(cls):
+        if getattr(cls, '_django_db_obj', None) is None:
+            _django_db_obj = cls.db_model.objects.get(package=cls.package)
+        return _django_db_obj
+
+    @classproperty
+    def id(cls):
+        """Returns ID of Django database object."""
+        return cls.db_object.id
+
     @classmethod
     def _resolve_ref_function(cls, ref, ref_type):
         """
@@ -328,6 +343,11 @@ class TethysExtensionBase(TethysBase):
     def package_namespace(cls):
         return 'tethysext'
 
+    @classproperty
+    def db_model(cls):
+        from tethys_apps.models import TethysExtension
+        return TethysExtension
+
     def sync_with_tethys_db(self):
         """
         Sync installed apps with database.
@@ -406,6 +426,11 @@ class TethysAppBase(TethysBase):
     @classproperty
     def package_namespace(cls):
         return 'tethysapp'
+
+    @classproperty
+    def db_model(cls):
+        from tethys_apps.models import TethysApp
+        return TethysApp
 
     def custom_settings(self):
         """
