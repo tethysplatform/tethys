@@ -63,10 +63,6 @@ class TethysBase(TethysBaseMixin):
                 f'(i.e. index = \'{self.index}\')'
             )
 
-    @property
-    def index_url(self):
-        return f'{self.url_namespace}:{self.index}'
-
     @classproperty
     def package_namespace(cls):
         raise NotImplementedError()
@@ -1461,7 +1457,7 @@ class TethysAppBase(TethysBase):
                     description=self.description,
                     enable_feedback=self.enable_feedback,
                     feedback_emails=self.feedback_emails,
-                    index=self.index_url,
+                    index=self.index,
                     icon=self.icon,
                     root_url=self.root_url,
                     color=self.color,
@@ -1487,7 +1483,7 @@ class TethysAppBase(TethysBase):
             # If the app is in the database, update developer priority attributes
             elif len(db_apps) == 1:
                 db_app = db_apps[0]
-                db_app.index = self.index_url
+                db_app.index = self.index
                 db_app.root_url = self.root_url
 
                 # custom settings
