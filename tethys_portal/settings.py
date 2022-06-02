@@ -338,6 +338,7 @@ MFA_QUICKLOGIN = False               # Allow quick login for returning users by 
 MFA_HIDE_DISABLE = ('FIDO2',)        # Can the user disable his key (Added in 1.2.0).
 MFA_OWNED_BY_ENTERPRISE = False      # Who owns security keys
 TOKEN_ISSUER_NAME = 'Tethys Portal'  # TOTP Issuer name
+MFA_SUCCESS_REGISTRATION_MSG = ''
 
 U2F_APPID = 'http://localhost'       # URL For U2F
 FIDO_SERVER_ID = u'localhost'        # Server rp id for FIDO2, it's the full domain of your project
