@@ -1,10 +1,10 @@
 .. _tutorial_geoserver:
 
-************************
-GeoServer and Map Layout
-************************
+*********
+GeoServer
+*********
 
-**Last Updated:** May 2020
+**Last Updated:** June 2020
 
 
 This tutorial will show you how to use GeoServer in a Tethys App project using Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.

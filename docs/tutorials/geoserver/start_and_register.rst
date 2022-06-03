@@ -2,7 +2,7 @@
 Start and Register
 ******************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2020
 
 
 1. Scaffold New App
@@ -78,7 +78,7 @@ Register the GeoServer with Tethys Portal admin page by creating a Spatial Datas
 2. Scroll to the "Tethys Services" section and select the "Spatial Dataset Services" link.
 3. Create a new Spatial Dataset Service named "primary_geoserver" of type GeoServer.
 4. Enter the endpoint and public endpoint as the same (e.g.: http://localhost:8181/geoserver/rest/ if using Docker or http://localhost:8080/geoserver/rest/ if using a default installation of GeoServer).
-5. Fill out the username and password (default username and password is "admin" and "geoserver", respectively.
+5. Fill out the username and password (default username and password is "admin" and "geoserver", respectively).
 6. No API Key is required.
 7. Press "Save".
 

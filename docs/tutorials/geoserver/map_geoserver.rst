@@ -2,7 +2,7 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2020
 
 1. Map Page Controller
 ======================
@@ -90,7 +90,7 @@ Create a new :file:`map.html` template in your template directory and add the fo
 
     {% block app_content %}
         <h1>GeoServer Layers</h1>
-        <form method="post">
+        <form method="post" class="mb-3">
             {% csrf_token %}
             {% gizmo select_input select_options %}
             <input name="submit" type="submit" value="Update" class="btn btn-secondary">

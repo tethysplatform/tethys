@@ -17,8 +17,8 @@ Replace the contents of the existing :file:`home.html` template with:
       <h1>Upload a Shapefile</h1>
       <form action="" method="post" enctype="multipart/form-data">.
         {% csrf_token %}
-        <div class="form-group">
-            <label for="fileInput">Shapefiles</label>
+        <div class="mb-3">
+            <label for="fileInput" class="form-label">Shapefiles</label>
             <input name="files" type="file" multiple class="form-control" id="fileInput" placeholder="Shapefiles">
         </div>
         <input name="submit" type="submit" class="btn btn-secondary">

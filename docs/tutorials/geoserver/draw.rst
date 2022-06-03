@@ -2,7 +2,7 @@
 Spatial Input
 *************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2020
 
 1. Spatial Input Controller
 ===========================
@@ -55,7 +55,7 @@ Create a new :file:`draw.html` template in your template directory and add the f
         <form method="post">
             {% csrf_token %} 
             {% gizmo map_view map_options %}
-            <input name="submit" type="submit">
+            <input name="submit" type="submit" class="btn btn-primary mt-3">
         </form>
     {% endblock %}
 
