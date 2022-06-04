@@ -4,7 +4,7 @@
 Part 1: Dataset Viewer
 **********************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 In this tutorial, you will be introduced to some of the basic functionality of Google Earth Engine. Next, you will learn how to visualize Google Earth Engine layers on a Tethys :ref:`map-view` Gizmo. Finally, you will learn how to use Google Earth Engine to extract time series data at a location and plot it using a :ref:`plotly_view_gizmo` Gizmo.
 
