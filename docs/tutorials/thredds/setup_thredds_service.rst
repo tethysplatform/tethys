@@ -2,7 +2,7 @@
 Setup THREDDS Service
 *********************
 
-**Last Updated:** December 2019
+**Last Updated:** June 2022
 
 In this tutorial you will register a THREDDS server as a Tethys Spatial Dataset **Service** so it can be more easily used by the app. You will also create a Spatial Dataset Service **Setting** in the app to allow it to consume this service. The following topics will be covered in this tutorial:
 
