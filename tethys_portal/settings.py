@@ -403,8 +403,8 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 # Prevent JavaScript from accessing CSRF and session cookies
 # NOTE: This will probably break scripts that use the cookie to get the CSRF token
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_HTTPONLY = True
 
 # Production only
 # CSRF_COOKIE_SECURE = not DEBUG
