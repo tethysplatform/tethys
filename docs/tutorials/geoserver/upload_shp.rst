@@ -91,3 +91,14 @@ Replace the contents of :file:`controllers.py` module with the following:
 Go to the home page of your app located at `<http://localhost:8000/apps/geoserver-app/>`_. You should see a form with a file input ("Browse" button or similar) and a submit button. To test this page, select the "Browse" button and upload one of the shapefiles from the data that you downloaded earlier. Remember that for the shapefile to be valid, you need to select at least the files with the extensions "shp", "shx", and "dbf". Press submit to upload the files.
 
 Use the GeoServer web admin interface (`<http://localhost:8181/geoserver/web/>`_) to verify that the layers were successfully uploaded. Look for layers belonging to the workspace 'geoserver_app'.
+
+4. Solution
+===========
+
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
+    cd tethysapp-geoserver_app
+    git checkout -b upload-shapefile-solution upload-shapefile-solution-|version|

@@ -86,10 +86,10 @@ Navigate to the spatial input page using the "Draw" link in your navigation (`<h
 5. Solution
 ===========
 
-This concludes the GeoServer Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone git@github.com:tethysplatform/tethysapp-geoserver_app.git
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
     cd tethysapp-geoserver_app
-    git checkout -b solution solution-|version|
+    git checkout -b map-draw-solution map-draw-solution-|version|

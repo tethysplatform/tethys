@@ -122,3 +122,14 @@ The archive contains several shapefiles organized into folders. Unzip the archiv
 ================================
 
 Explore the GeoServer web admin interface by visiting link: `<http://localhost:8181/geoserver/web/>`_.
+
+9. Solution
+===========
+
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
+    cd tethysapp-geoserver_app
+    git checkout -b start-and-register-solution start-and-register-solution-|version|

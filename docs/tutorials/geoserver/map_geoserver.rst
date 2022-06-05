@@ -103,3 +103,14 @@ Create a new :file:`map.html` template in your template directory and add the fo
 ================
 
 Navigate to the map page (`<http://localhost:8000/apps/geoserver-app/map/>`_). Use the select box to select a layer to display on the map. Press the submit button to effect the change.
+
+4. Solution
+===========
+
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
+    cd tethysapp-geoserver_app
+    git checkout -b map-geoserver-solution map-geoserver-solution-|version|

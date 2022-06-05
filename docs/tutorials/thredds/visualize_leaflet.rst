@@ -90,8 +90,8 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
         /************************************************************************
         *                      MODULE LEVEL / GLOBAL VARIABLES
         *************************************************************************/
-        var public_interface,                           // Object returned by the module
-            m_map;                                              // The Leaflet Map
+        var public_interface,    // Object returned by the module
+            m_map;               // The Leaflet Map
         /************************************************************************
         *                    PRIVATE FUNCTION DECLARATIONS
         *************************************************************************/
