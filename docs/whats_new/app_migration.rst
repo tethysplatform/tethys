@@ -49,6 +49,85 @@ The ``url_maps()`` method is being deprecated in favor of the simpler ``controll
 
     Tethys 4 also introduces the ``consumer`` and ``handler`` decorators that function equivalently for consumers and handler functions. See the :ref:`url_maps_api` documentation for more details.
 
+Search Path
+-----------
+
+Tethys will only search for the ``controller``, ``consumer``, and ``handler`` decorators in modules named ``controllers.py`` or ``consumers.py`` or any module located in packages named ``controllers`` and ``consumers``. If your app has controllers located in modules with different names than these defaults, the **recommended migration** is to move the modules into a package named either ``controllers`` or ``consumers``.
+
+However, you may also use the ``controller_modules`` property of the :term:`app class` to define addtiional search locations. For example:
+
+.. code-block:: python
+
+    class MyFirstApp(TethysAppBase):
+        ...
+        controller_modules = [
+            'custom_controllers',  # For a module named custom_controller.py in the same directory as app.py
+            'rest',  # For a package named "rest" in the same directory as app.py containing modules with controllers
+        ]
+
+Workspaces
+==========
+
+The ``get_app_workspace()`` and ``get_user_workspace()`` methods of the :term:`app class` were deprecated in Tethys 3 in favor of the ``app_workspace`` and ``user_workspace`` decorators. However, it is recommended that you use the ``app_workspace`` and ``user_workspace`` arguments of the ``controller`` decorator to acquire workspaces in Tethys 4.
+
+For example, the following controllers:
+
+.. code-block:: python
+
+    from tethys_sdk.workspaces import app_workspace
+    from .app import MyFirstApp as app
+
+
+    def controller_a(request):
+        """Gets user workspace from old app class method."""
+        user_workspace = app.get_user_workspace(request.user)
+        uw_path = user_workspace.path
+        ...
+ 
+ 
+    @app_workspace
+    def controller_b(request, app_workspace):
+        """Gets app workspace from the app_workspace decorator."""
+        aw_path = app_workspace.path
+        ...
+
+should be refactored to use the ``controller`` decorator as follows:
+
+.. code-block:: python
+
+    from tethys_sdk.routing import controller
+    
+
+    @controller(user_workspace=True)
+    def controller_a(request, user_workspace):
+        """Gets user workspace from the controller decorator."""
+        uw_path = user_workspace.path
+        ...
+
+
+    @controller(app_workspace=True)
+    def controller_b(request, app_workspace):
+        """Gets app workspace from the controller decorator."""
+        aw_path = app_workspace.path
+        ...
+
+Templates
+=========
+
+In Tethys 4, the ``staticfiles`` template library needs to be changed to ``static``:
+
+For example, the following ``load`` statement:
+
+.. code-block:: html+django
+
+    {% load staticfiles %}
+
+needs to be changed to this:
+
+.. code-block:: html+django
+
+    {% load static %}
+
 Theme and Styles
 ================
 
@@ -128,7 +207,7 @@ Data Attributes
 
 All Boostrap related data attributes on HTML elements now include a ``bs`` namespace. For example, ``data-target`` needs to be changed to ``data-bs-target``. Use the following tips to help you migrate data attributes appropriately:
 
-1. Perform a project-wide search on your app source code for ``"data-"`` to find instances of data attributes.
+1. Perform a project-wide search on your app source code for ``data-`` to find instances of data attributes.
 2. Review the tips below for Tooltips, Dropdowns, and Modals.
 3. Review the `Bootstrap 5 documentation <https://getbootstrap.com/docs/5.0/components/accordion/>`_ for details about changes to other components that your app uses that are not listed below.
 
