@@ -38,6 +38,7 @@ class TethysBase(TethysBaseMixin):
     name = ''
     description = ''
     package = ''
+    catch_all = ''
     root_url = ''
     index = None
     controller_modules = []
@@ -232,6 +233,7 @@ class TethysBase(TethysBaseMixin):
             root_url=self.root_url,
             modules=controller_modules,
             index=self.index,
+            catch_all=self.catch_all,
         )
 
     @property
