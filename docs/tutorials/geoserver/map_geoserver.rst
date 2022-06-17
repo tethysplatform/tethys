@@ -2,31 +2,16 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** November 2019
+**Last Updated:** June 2020
 
-
-1. Map Page UrlMap
-==================
-
-Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
-
-::
-
-    UrlMap(
-        name='map',
-        url='geoserver-app/map',
-        controller='geoserver_app.controllers.map'
-    ),
-
-
-2. Map Page Controller
+1. Map Page Controller
 ======================
 
 Add a new controller to the :file:`controller.py` module:
 
-::
+.. code-block:: python
 
-    @login_required()
+    @controller
     def map(request):
         """
         Controller for the map page
@@ -86,24 +71,26 @@ Add a new controller to the :file:`controller.py` module:
             view=view_options
         )
 
-        context = {'map_options': map_options,
-                   'select_options': select_options}
+        context = {
+            'map_options': map_options,
+            'select_options': select_options
+        }
 
         return render(request, 'geoserver_app/map.html', context)
 
-3. Map Page Template
+2. Map Page Template
 ====================
 
 Create a new :file:`map.html` template in your template directory and add the following contents:
 
-::
+.. code-block:: html+django
 
     {% extends "geoserver_app/base.html" %}
     {% load tethys_gizmos %}
 
     {% block app_content %}
         <h1>GeoServer Layers</h1>
-        <form method="post">
+        <form method="post" class="mb-3">
             {% csrf_token %}
             {% gizmo select_input select_options %}
             <input name="submit" type="submit" value="Update" class="btn btn-secondary">
@@ -112,7 +99,18 @@ Create a new :file:`map.html` template in your template directory and add the fo
     {% endblock %}
 
 
-4. Test Map Page
+3. Test Map Page
 ================
 
 Navigate to the map page (`<http://localhost:8000/apps/geoserver-app/map/>`_). Use the select box to select a layer to display on the map. Press the submit button to effect the change.
+
+4. Solution
+===========
+
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
+    cd tethysapp-geoserver_app
+    git checkout -b map-geoserver-solution map-geoserver-solution-|version|

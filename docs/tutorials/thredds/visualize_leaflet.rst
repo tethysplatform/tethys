@@ -2,12 +2,12 @@
 Visualize THREDDS Services with Leaflet
 ***************************************
 
-**Last Updated:** March 2020
+**Last Updated:** June 2022
 
 In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_ map to a Tethys App for visualizing layers from a THREDDS server. This tutorial is adapted from `Time Dimension Example 1 <https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/js/example1.js>`_ and the `Siphon NCSS Time Series Example <https://unidata.github.io/siphon/latest/examples/ncss/NCSS_Timeseries_Examples.html#sphx-glr-examples-ncss-ncss-timeseries-examples-py>`_. The following topics will be covered in this tutorial:
 
 * Using external JavaScript libraries in Tethys Apps
-* AJAX calls with JavaScript
+* Fetch calls with JavaScript
 * Recursive Python Functions
 * Logging in Python
 * `Leaflet Map <https://leafletjs.com/>`_
@@ -46,15 +46,15 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
     {% endblock %}
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
        crossorigin=""></script>
     {% endblock %}
 
@@ -90,8 +90,8 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
         /************************************************************************
         *                      MODULE LEVEL / GLOBAL VARIABLES
         *************************************************************************/
-        var public_interface,                           // Object returned by the module
-            m_map;                                              // The Leaflet Map
+        var public_interface,    // Object returned by the module
+            m_map;               // The Leaflet Map
         /************************************************************************
         *                    PRIVATE FUNCTION DECLARATIONS
         *************************************************************************/
@@ -174,16 +174,16 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
        crossorigin=""></script>
     {% endblock %}
 
@@ -215,11 +215,11 @@ In this step, you'll create controls to allow the user to search for and select 
 .. code-block:: python
 
     from django.shortcuts import render
-    from tethys_sdk.permissions import login_required
+    from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput
 
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.
@@ -233,8 +233,10 @@ In this step, you'll create controls to allow the user to search for and select 
             multiple=False,
             options=datasets,
             initial=None,
-            select2_options={'placeholder': 'Select a dataset',
-                             'allowClear': False}
+            select2_options={
+                'placeholder': 'Select a dataset',
+                'allowClear': False
+            }
         )
 
         variable_select = SelectInput(
@@ -242,8 +244,10 @@ In this step, you'll create controls to allow the user to search for and select 
             name='variable',
             multiple=False,
             options=(),
-            select2_options={'placeholder': 'Select a variable',
-                             'allowClear': False}
+            select2_options={
+                'placeholder': 'Select a variable',
+                'allowClear': False
+            }
         )
 
         style_select = SelectInput(
@@ -251,8 +255,10 @@ In this step, you'll create controls to allow the user to search for and select 
             name='style',
             multiple=False,
             options=(),
-            select2_options={'placeholder': 'Select a style',
-                             'allowClear': False}
+            select2_options={
+                'placeholder': 'Select a style',
+                'allowClear': False
+            }
         )
 
         context = {
@@ -314,7 +320,7 @@ At this point the select controls are empty and don't do anything. In this step,
             if dataset_wms_url:
                 datasets.append((dataset_name, f'{dataset_name};{dataset_wms_url}'))
 
-        for catalog_name, catalog_obj in catalog.catalog_refs.items():
+        for _, catalog_obj in catalog.catalog_refs.items():
             d = parse_datasets(catalog_obj.follow())
             datasets.extend(d)
 
@@ -328,7 +334,7 @@ At this point the select controls are empty and don't do anything. In this step,
 
     Depending on the size of the catalog and the connection speed, this function can take quite bit of time to parse all of the datasets. This can be especially annoying when developing. One strategy to deal with slow catalog services during development is to temporarily mock the data.
 
-    If you print the data returned by the function and copy it into a temporary variable, you can have the function return that instead. They the function will run instantaneously during development. Don't forget to change the code back when you are done.
+    If you print the data returned by the function and copy it into a temporary variable, you can have the function return that instead. Then the function will run instantaneously during development. Don't forget to change the code back when you are done.
 
     Mocking the data look something like this:
 
@@ -361,7 +367,7 @@ At this point the select controls are empty and don't do anything. In this step,
             #     if dataset_wms_url:
             #         datasets.append((dataset_name, f'{dataset_name};{dataset_wms_url}'))
             #
-            # for catalog_name, catalog_obj in catalog.catalog_refs.items():
+            # for _, catalog_obj in catalog.catalog_refs.items():
             #     d = parse_datasets(catalog_obj.follow())
             #     datasets.extend(d)
             #
@@ -379,14 +385,14 @@ At this point the select controls are empty and don't do anything. In this step,
 .. code-block:: python
 
     from django.shortcuts import render
-    from tethys_sdk.permissions import login_required
+    from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput
     from .app import ThreddsTutorial as app
     from .thredds_methods import parse_datasets
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.
@@ -407,8 +413,10 @@ At this point the select controls are empty and don't do anything. In this step,
             multiple=False,
             options=datasets,
             initial=initial_dataset_option,
-            select2_options={'placeholder': 'Select a dataset',
-                             'allowClear': False}
+            select2_options={
+                'placeholder': 'Select a dataset',
+                'allowClear': False
+            }
         )
 
         ...
@@ -432,7 +440,7 @@ At this point the select controls are empty and don't do anything. In this step,
 4. Create Endpoint for Getting Available WMS Layers
 ===================================================
 
-Each time a new dataset is selected, the options in the variable and style controls need to be updated to match the variables and styles of the new dataset. This information can be found by querying the WMS endpoint of the dataset provided by THREDDS. Querying the WMS endpoint is most easily accomplished by using the `OWSLib <https://geopython.github.io/OWSLib/>`_ Python library. In this step you will implement a new controller that will use OWSLib to retrieve the information and call it using AJAX anytime a new dataset is selected.
+Each time a new dataset is selected, the options in the variable and style controls need to be updated to match the variables and styles of the new dataset. This information can be found by querying the WMS endpoint of the dataset provided by THREDDS. Querying the WMS endpoint is most easily accomplished by using the `OWSLib <https://geopython.github.io/OWSLib/>`_ Python library. In this step you will implement a new controller that will use OWSLib to retrieve the information and call it using ``fetch`` anytime a new dataset is selected.
 
 1. Add the following ``get_layers_for_wms`` function to :file:`thredds_methods.py`:
 
@@ -501,7 +509,7 @@ Each time a new dataset is selected, the options in the variable and style contr
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def get_wms_layers(request):
         json_response = {'success': False}
 
@@ -523,31 +531,6 @@ Each time a new dataset is selected, the options in the variable and style contr
             json_response['error'] = f'An unexpected error has occurred. Please try again.'
 
         return JsonResponse(json_response)
-
-3. Create a new endpoint for the ``get_wms_layers`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
-
-.. code-block:: python
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='thredds-tutorial',
-                controller='thredds_tutorial.controllers.home'
-            ),
-            UrlMap(
-                name='get_wms_layers',
-                url='thredds-tutorial/get-wms-layers',
-                controller='thredds_tutorial.controllers.get_wms_layers'
-            ),
-        )
-
-        return url_maps
 
 5. Stub Out the Variable and Style Control JavaScript Methods
 =============================================================
@@ -658,14 +641,10 @@ Here is a brief explanation of each method that will be implemented in this step
 .. code-block:: javascript
 
     update_variable_control = function() {
-        // Use AJAX endpoint to get WMS layers
-        $.ajax({
-            url: './get-wms-layers/',
-            method: 'GET',
-            data: {
-                'wms_url': m_curr_wms_url
-            }
-        }).done(function(data) {
+        // Use REST endpoint to get WMS layers
+        fetch('./get-wms-layers/?' + new URLSearchParams({'wms_url': m_curr_wms_url}))
+          .then((response) => response.json())
+          .then((data) => {
             if (!data.success) {
                 console.log('An unexpected error occurred!');
                 return;
@@ -691,7 +670,7 @@ Here is a brief explanation of each method that will be implemented in this step
 
             // Trigger a change to refresh the select box
             $('#variable').trigger('change');
-        });
+          });
     };
 
 
@@ -727,8 +706,8 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
@@ -736,8 +715,8 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
        crossorigin=""></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js"></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js"></script>
@@ -964,8 +943,8 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
@@ -1053,7 +1032,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
     The ``loading`` event is called whenever tile layers start loading and the ``load`` event is called when the visible tiles of a tile layer have finished loading. See: `TileLayer.WMS reference <https://leafletjs.com/reference-1.6.0.html#tilelayer-wms>`_.
 
-7. Also show the map loader when the variable control is updating (the AJAX call to get the WMS layers could take some time to run). **Replace** the ``update_variable_control`` method in :file:`public/js/leaflet_map.js` with the following updated implementation:
+7. Also show the map loader when the variable control is updating (the ``fetch`` call to get the WMS layers could take some time to run). **Replace** the ``update_variable_control`` method in :file:`public/js/leaflet_map.js` with the following updated implementation:
 
 .. code-block:: javascript
 
@@ -1061,14 +1040,10 @@ Depending on the speed of the THREDDS server and the user's internet connection,
         // Show loader
         show_loader();
 
-        // Use AJAX endpoint to get WMS layers
-        $.ajax({
-            url: './get-wms-layers/',
-            method: 'GET',
-            data: {
-                'wms_url': m_curr_wms_url
-            }
-        }).done(function(data) {
+        // Use REST endpoint to get WMS layers
+        fetch('./get-wms-layers/?' + new URLSearchParams({'wms_url': m_curr_wms_url}))
+          .then((response) => response.json())
+          .then((data) => {
             if (!data.success) {
                 console.log('An unexpected error occurred!');
                 return;
@@ -1097,7 +1072,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
             // Hide the loader
             hide_loader();
-        });
+          });
     };
 
 11. Clean Up
@@ -1105,7 +1080,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
 During development it is common to use print statements. Rather than delete these when you are done, turn them into log statements so that you can use them for debugging in the future.
 
-1. Use the Python logging module to get a logger for this module:
+1. Use the Python logging module to setup logging in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -1117,7 +1092,7 @@ During development it is common to use print statements. Rather than delete thes
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.
@@ -1135,7 +1110,7 @@ During development it is common to use print statements. Rather than delete thes
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def get_wms_layers(request):
         json_response = {'success': False}
 

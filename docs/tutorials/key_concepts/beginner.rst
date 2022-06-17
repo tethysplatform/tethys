@@ -4,7 +4,7 @@
 Beginner Concepts
 *****************
 
-**Last Updated:** October 2019
+**Last Updated:** May 2022
 
 This tutorial introduces important concepts for first-time or beginner Tethys developers. The topics covered include:
 
@@ -48,9 +48,9 @@ b. Change the Name and Description of your app by changing their respective valu
 
 You can also create custom settings for your app that can be configured on the app settings page:
 
-b. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInventory`` class. Don't for get to import ``CustomSetting``:
+a. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInventory`` class. Don't for get to import ``CustomSetting``:
 
-    ::
+    .. code-block:: python
 
         from tethys_sdk.app_settings import CustomSetting
 
@@ -80,11 +80,11 @@ b. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInve
 
         Ellipsis in code blocks in Tethys tutorials indicate code that is not shown for brevity. When there are ellipsis in the code, DO NOT COPY AND PASTE THE BLOCK VERBATIM.
 
-c. Save changes to ``app.py``.
+b. Save changes to ``app.py``.
 
-d. The development server should automatically restart when it detects changes to files. However if it does not restart, you can manually restart it by pressing ``CTRL-C`` to stop the server followed by the ``tethys manage start`` command to start it again.
+c. The development server should automatically restart when it detects changes to files. However if it does not restart, you can manually restart it by pressing ``CTRL-C`` to stop the server followed by the ``tethys manage start`` command to start it again.
 
-e. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
+d. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
 
 .. tip::
 
@@ -107,18 +107,18 @@ Views for Tethys apps are constructed using the standard web programming tools: 
 
 a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with the following:
 
-::
+    .. code-block:: html+django
 
-    {% extends "dam_inventory/base.html" %}
-    {% load tethys_gizmos %}
+        {% extends "dam_inventory/base.html" %}
+        {% load tethys_gizmos %}
 
-    {% block app_content %}
-      {% gizmo dam_inventory_map %}
-    {% endblock %}
+        {% block app_content %}
+        {% gizmo dam_inventory_map %}
+        {% endblock %}
 
-    {% block app_actions %}
-      {% gizmo add_dam_button %}
-    {% endblock %}
+        {% block app_actions %}
+        {% gizmo add_dam_button %}
+        {% endblock %}
 
 .. tip::
 
@@ -141,40 +141,40 @@ Basic controllers consist of a Python function that takes a ``request`` object a
 
 a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller:
 
-::
+    .. code-block:: python
 
-    from django.shortcuts import render
-    from tethys_sdk.permissions import login_required
-    from tethys_sdk.gizmos import MapView, Button
-
-
-    @login_required()
-    def home(request):
-        """
-        Controller for the app home page.
-        """
-
-        dam_inventory_map = MapView(
-            height='100%',
-            width='100%',
-            layers=[],
-            basemap='OpenStreetMap',
-        )
+        from django.shortcuts import render
+        from tethys_sdk.gizmos import MapView, Button
+        from tethys_sdk.routing import controller
 
 
-        add_dam_button = Button(
-            display_text='Add Dam',
-            name='add-dam-button',
-            icon='glyphicon glyphicon-plus',
-            style='success'
-        )
+        @controller
+        def home(request):
+            """
+            Controller for the app home page.
+            """
 
-        context = {
-            'dam_inventory_map': dam_inventory_map,
-            'add_dam_button': add_dam_button
-        }
+            dam_inventory_map = MapView(
+                height='100%',
+                width='100%',
+                layers=[],
+                basemap=['OpenStreetMap'],
+            )
 
-        return render(request, 'dam_inventory/home.html', context)
+
+            add_dam_button = Button(
+                display_text='Add Dam',
+                name='add-dam-button',
+                icon='plus-square',
+                style='success'
+            )
+
+            context = {
+                'dam_inventory_map': dam_inventory_map,
+                'add_dam_button': add_dam_button
+            }
+
+            return render(request, 'dam_inventory/home.html', context)
 
 b. Save your changes to ``controllers.py`` and ``home.html`` and refresh the page to view the map.
 
@@ -191,28 +191,28 @@ It would look nicer if the map gizmo filled the entire app content area. To do t
 
 a. Create a new file ``/public/css/map.css`` and add the following contents:
 
-::
+    .. code-block:: css
 
-    #inner-app-content {
-        padding: 0;
-    }
+        #inner-app-content {
+            padding: 0;
+        }
 
-    #app-content, #inner-app-content, #map_view_outer_container {
-        height: 100%;
-    }
+        #app-content, #inner-app-content, #map_view_outer_container {
+            height: 100%;
+        }
 
 b. Load the styles on the ``/templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``static`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
 
-::
+    .. code-block:: html+django
 
-    {% load tethys_gizmos static %}
+        {% load tethys_gizmos static %}
 
-    ...
+        ...
 
-    {% block styles %}
-        {{ block.super }}
-        <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
-    {% endblock %}
+        {% block styles %}
+            {{ block.super }}
+            <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
+        {% endblock %}
 
 c. Save your changes to ``map.css`` and ``home.html`` and refresh the page to view the changes. The map should fill the content area now. Notice how the map dynamically resizes if the screen size changes.
 
@@ -227,71 +227,38 @@ Creating a new page in your app consists of three steps: (1) create a new templa
 
 a. Create a new file ``/templates/dam_inventory/add_dam.html`` and add the following contents:
 
-::
+    .. code-block:: html+django
 
-    {% extends "dam_inventory/base.html" %}
+        {% extends "dam_inventory/base.html" %}
 
-This is the simplest template you can create in a Tethys app, which amounts to a blank Tethys app page. You must still extend the ``base.html`` to retain the styling of an app page.
+    This is the simplest template you can create in a Tethys app, which amounts to a blank Tethys app page. You must still extend the ``base.html`` to retain the styling of an app page.
 
 
 b. Create a new controller function called ``add_dam`` at the bottom of the ``controllers.py``:
 
-::
+    .. code-block:: python
 
-    @login_required()
-    def add_dam(request):
-        """
-        Controller for the Add Dam page.
-        """
-
-        context = {}
-        return render(request, 'dam_inventory/add_dam.html', context)
-
-This is the most basic controller function you can write: a function that accepts an argument called ``request`` and a return value that is the result of the ``render`` function. The ``render`` function renders the Django template into valid HTML using the ``request`` and ``context`` provided.
-
-c. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` method of App Class in ``app.py``:
-
-::
-
-    class DamInventory(TethysAppBase):
-        """
-        Tethys app class for Dam Inventory.
-        """
-        ...
-
-        def url_maps(self):
+        @controller(url='dams/add')
+        def add_dam(request):
             """
-            Add controllers
+            Controller for the Add Dam page.
             """
-            UrlMap = url_map_maker(self.root_url)
+            context = {}
+            return render(request, 'dam_inventory/add_dam.html', context)
 
-            url_maps = (
-                UrlMap(
-                    name='home',
-                    url='dam-inventory',
-                    controller='dam_inventory.controllers.home'
-                ),
-                UrlMap(
-                    name='add_dam',
-                    url='dam-inventory/dams/add',
-                    controller='dam_inventory.controllers.add_dam'
-                ),
-            )
+    This is the most basic controller function you can write: a function that accepts an argument called ``request`` and a return value that is the result of the ``render`` function. The ``render`` function renders the Django template into valid HTML using the ``request`` and ``context`` provided.
 
-            return url_maps
+    Notice the use of the ``url`` argument in the ``controller`` decorator. The default URL that would have been generated without this argument would have been ``'add-dam'``.  The ``url`` argument is used to provide a custom URL for a controller. URLs are defined relative to the root URL of the app. The full URL for the ``add_dam`` controller as shown above is ``'/apps/dam-inventory/dams/add/'``.
 
-A ``UrlMap`` is an object that maps a URL for your app to controller function that should handle requests to that URL.
+c. At this point you should be able to access the new page by entering its URL (`<http://localhost:8000/apps/dam-inventory/dams/add/>`_) into the address bar of your browser. It is not a very exciting page, because it is blank.
 
-d. At this point you should be able to access the new page by entering its URL (`<http://localhost:8000/apps/dam-inventory/dams/add/>`_) into the address bar of your browser. It is not a very exciting page, because it is blank.
+    .. tip::
 
-.. tip::
+        **New Page Pattern**: Adding new pages is an exercise of the Model View Controller pattern. Generally, the steps are:
 
-    **New Page Pattern**: Adding new pages is an exercise of the Model View Controller pattern. Generally, the steps are:
-
-    * Modify the model as necessary to support the data for the new page
-    * Create a new HTML template
-    * Create a new controller function
-    * Add a new ``UrlMap`` in ``app.py``
+        * Modify the model as necessary to support the data for the new page
+        * Create a new HTML template
+        * Create a new controller function
 
 8. Link to New Page
 ===================
@@ -300,71 +267,71 @@ Finally, you can also link to the page from another page using a button.
 
 a. Modify the ``add_dam_button`` on the Home page to link to the newly created page (don't forget the import):
 
-::
+    .. code-block:: python
 
-    from django.shortcuts import reverse
+        from django.shortcuts import reverse
 
-    ...
-
-    @login_required()
-    def home(request):
         ...
 
-        add_dam_button = Button(
-            display_text='Add Dam',
-            name='add-dam-button',
-            icon='glyphicon glyphicon-plus',
-            style='success',
-            href=reverse('dam_inventory:add_dam')
-        )
+        @controller
+        def home(request):
+            ...
+
+            add_dam_button = Button(
+                display_text='Add Dam',
+                name='add-dam-button',
+                icon='plus-square',
+                style='success',
+                href=reverse('dam_inventory:add_dam')
+            )
 
 9. Build Out New Page
 =====================
 
 a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app content area and add ``Add`` and ``Cancel`` buttons to the app actions area:
 
-::
+    .. code-block:: html+django
 
-    {% extends "dam_inventory/base.html" %}
-    {% load tethys_gizmos %}
+        {% extends "dam_inventory/base.html" %}
+        {% load tethys_gizmos %}
 
-    {% block app_content %}
-      <h1>Add Dam</h1>
-    {% endblock %}
+        {% block app_content %}
+        <h1>Add Dam</h1>
+        {% endblock %}
 
-    {% block app_actions %}
-      {% gizmo cancel_button %}
-      {% gizmo add_button %}
-    {% endblock %}
+        {% block app_actions %}
+        {% gizmo cancel_button %}
+        {% gizmo add_button %}
+        {% endblock %}
 
 b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_dam`` controller in ``controllers.py``. Also add the variables to the context so they are available to the template:
 
-::
+    .. code-block:: python
 
-    @login_required()
-    def add_dam(request):
-        """
-        Controller for the Add Dam page.
-        """
-        add_button = Button(
-            display_text='Add',
-            name='add-button',
-            icon='glyphicon glyphicon-plus',
-            style='success'
-        )
+        @controller(url='dams/add')
+        def add_dam(request):
+            """
+            Controller for the Add Dam page.
+            """
+            add_button = Button(
+                display_text='Add',
+                name='add-button',
+                icon='plus-square',
+                style='success'
+            )
 
-        cancel_button = Button(
-            display_text='Cancel',
-            name='cancel-button',
-            href=reverse('dam_inventory:home')
-        )
+            cancel_button = Button(
+                display_text='Cancel',
+                name='cancel-button',
+                href=reverse('dam_inventory:home')
+            )
 
-        context = {
-            'add_button': add_button,
-            'cancel_button': cancel_button,
-        }
+            context = {
+                'add_button': add_button,
+                'cancel_button': cancel_button,
+            }
 
-        return render(request, 'dam_inventory/add_dam.html', context)
+            return render(request, 'dam_inventory/add_dam.html', context)
 
 
 10. Customize Navigation
@@ -374,29 +341,29 @@ Now that there are two pages in the app, we should modify the app navigation to 
 
 a. Open ``/templates/dam_inventory/base.html`` and replace the ``app_navigation_items`` block:
 
-::
+    .. code-block:: html+django
 
-    {% block app_navigation_items %}
-      <li class="title">Navigation</li>
-      <li class="active"><a href="{% url 'dam_inventory:home' %}">Home</a></li>
-      <li class=""><a href="{% url 'dam_inventory:add_dam' %}">Add Dam</a></li>
-    {% endblock %}
+        {% block app_navigation_items %}
+        <li class="nav-item title">Navigation</li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'dam_inventory:home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'dam_inventory:add_dam' %}">Add Dam</a></li>
+        {% endblock %}
 
-Notice that the **Home** link in the app navigation is always highlighed, even if you are on the **Add Dam** page. The highlight is controlled by adding the ``active`` class to the appropriate navigation link. We can get the navigation to highlight appropriately using the following pattern.
+    Notice that the **Home** link in the app navigation is always highlighed, even if you are on the **Add Dam** page. The highlight is controlled by adding the ``active`` class to the appropriate navigation link. We can get the navigation to highlight appropriately using the following pattern.
 
 b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html`` to dynamically highlight active link:
 
-::
+    .. code-block:: html+django
 
-    {% block app_navigation_items %}
-      {% url 'dam_inventory:home' as home_url %}
-      {% url 'dam_inventory:add_dam' as add_dam_url %}
-      <li class="title">Navigation</li>
-      <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
-      <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
-    {% endblock %}
+        {% block app_navigation_items %}
+        {% url 'dam_inventory:home' as home_url %}
+        {% url 'dam_inventory:add_dam' as add_dam_url %}
+        <li class="nav-item title">Navigation</li>
+        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
+        {% endblock %}
 
-The ``url`` tag is used in templates to lookup URLs using the name of the UrlMap, namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the urls to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
+    The ``url`` tag is used in templates to lookup URLs using the name of the UrlMap, namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the urls to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
 
 11. Solution
 ============

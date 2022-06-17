@@ -2,7 +2,7 @@
 Part 2 Primer: Boostrap, CSS, Assets and More
 *********************************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 This tutorial extends the Earth Engine app developed in Part 1 and covers a wide range of additional topics for Tethys App development. In this tutorial you will learn how to add multiple pages to a Tethys App, create responsive layouts using the Boostrap CSS framework, upload files and manage them in the app, work with Google Earth Engine Assets, and add a REST API to your app.
 

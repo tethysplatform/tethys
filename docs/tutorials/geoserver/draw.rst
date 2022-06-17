@@ -2,30 +2,16 @@
 Spatial Input
 *************
 
-**Last Updated:** November 2019
+**Last Updated:** June 2020
 
-
-1. Spatial Input Page UrlMap
-============================
-
-Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
-
-::
-
-    UrlMap(
-        name='draw',
-        url='geoserver-app/draw',
-        controller='geoserver_app.controllers.draw'
-    ),
-
-2. Spatial Input Controller
+1. Spatial Input Controller
 ===========================
 
 Add a new controller to the :file:`controller.py` module:
 
-::
+.. code-block:: python
 
-    @login_required()
+    @controller
     def draw(request):
         drawing_options = MVDraw(
             controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
@@ -49,12 +35,12 @@ Add a new controller to the :file:`controller.py` module:
 
         return render(request, 'geoserver_app/draw.html', context)
 
-3. Spatial Input Template
+2. Spatial Input Template
 =========================
 
 Create a new :file:`draw.html` template in your template directory and add the following contents:
 
-::
+.. code-block:: python
 
     {% extends "geoserver_app/base.html" %}
     {% load tethys_gizmos %}
@@ -69,41 +55,41 @@ Create a new :file:`draw.html` template in your template directory and add the f
         <form method="post">
             {% csrf_token %} 
             {% gizmo map_view map_options %}
-            <input name="submit" type="submit">
+            <input name="submit" type="submit" class="btn btn-primary mt-3">
         </form>
     {% endblock %}
 
 
-4. Add Navigation Links
+3. Add Navigation Links
 =======================
 
 Replace the ``app_navigation_items`` block of the :file:`base.html` template with:
 
-::
+.. code-block:: html+django
 
     {% block app_navigation_items %}
-      <li class="title">App Navigation</li>
       {% url 'geoserver_app:home' as home_url %}
       {% url 'geoserver_app:map' as map_url %}
       {% url 'geoserver_app:draw' as draw_url %}
-      <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Upload Shapefile</a></li>
-      <li class="{% if request.path == map_url %}active{% endif %}"><a href="{{ map_url }}">GeoServer Layers</a></li>
-      <li class="{% if request.path == draw_url %}active{% endif %}"><a href="{{ draw_url }}">Draw</a></li>
+      <li class="nav-item title">App Navigation</li>
+      <li class="nav-item"><a href="{{ home_url }}" class="nav-link{% if request.path == home_url %} active{% endif %}">Upload Shapefile</a></li>
+      <li class="nav-item"><a href="{{ map_url }}" class="nav-link{% if request.path == map_url %} active{% endif %}">GeoServer Layers</a></li>
+      <li class="nav-item"><a href="{{ draw_url }}" class="nav-link{% if request.path == draw_url %} active{% endif %}">Draw</a></li>
     {% endblock %}
 
 
-5. Test Spatial Input Page
+4. Test Spatial Input Page
 ==========================
 
 Navigate to the spatial input page using the "Draw" link in your navigation (`<http://localhost:8000/apps/geoserver-app/draw/>`_). Use the drawing controls to add features to the map, then press the submit button. The GeoJSON encoded spatial data should be displayed when the page refreshes.
 
-6. Solution
+5. Solution
 ===========
 
-This concludes the GeoServer Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone git@github.com:tethysplatform/tethysapp-geoserver_app.git
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
     cd tethysapp-geoserver_app
-    git checkout -b solution solution-|version|
+    git checkout -b map-draw-solution map-draw-solution-|version|

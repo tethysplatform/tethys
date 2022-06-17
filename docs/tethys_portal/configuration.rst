@@ -57,7 +57,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **ENABLE_RESTRICTED_APP_ACCESS**: app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.
     * **TETHYS_WORKSPACES_ROOT**: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
     * **STATIC_ROOT**: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
-    * **STATICFILES_USE_NPM**: serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run :cmd:`tethys gen package_json` to npm install the JS dependencies locally so they can be served by Tethys.
+    * **STATICFILES_USE_NPM**: serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.
 
   * **SESSION_CONFIG**:
 

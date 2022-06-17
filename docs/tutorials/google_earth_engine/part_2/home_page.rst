@@ -32,7 +32,7 @@ We recommend you use the previous solution as a starting point for Part 2:
 1. Move Map View to Viewer Endpoint
 ===================================
 
-Currently, the map viewer page is the "home" page of the app as evidenced by it being rendered by a controller called ``home`` and a template called :file:`home.html`. In this step you will rename these to "viewer" to make way for the new home page. You will also need to update the ``UrlMap`` to point at the new ``viewer`` controller. You will also change it's endpoint from the root endpoint to a new endpoint to allow the new home page to use the root endpoint.
+Currently, the map viewer page is the "home" page of the app as evidenced by it being rendered by a controller called ``home`` and a template called :file:`home.html`. In this step you will rename these to "viewer" to make way for the new home page. You will also change it's endpoint from the root endpoint to a new endpoint to allow the new home page to use the root endpoint.
 
 1. Rename :file:`templates/earth_engine/home.html` to :file:`templates/earth_engine/viewer.html`.
 
@@ -40,7 +40,7 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def viewer(request):
         """
         Controller for the app viewer page.
@@ -52,37 +52,7 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 
     return render(request, 'earth_engine/viewer.html', context)
 
-4. Update the ``UrlMaps`` in :file:`app.py` to the following:
-
-.. code-block:: python
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='viewer',
-                url='earth-engine/viewer',
-                controller='earth_engine.controllers.viewer'
-            ),
-            UrlMap(
-                name='get_image_collection',
-                url='earth-engine/viewer/get-image-collection',
-                controller='earth_engine.controllers.get_image_collection'
-            ),
-            UrlMap(
-                name='get_time_series_plot',
-                url='earth-engine/viewer/get-time-series-plot',
-                controller='earth_engine.controllers.get_time_series_plot'
-            ),
-        )
-
-        return url_maps
-
-5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the map view still functions as it should. Be sure to test loading a dataset or two and plot data at a location.
+4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the map view still functions as it should. Be sure to test loading a dataset or two and plot data at a location.
 
     .. note::
     
@@ -92,7 +62,7 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 2. Create New Home Endpoint
 ===========================
 
-In this step you will create a new ``home`` controller and :file:`home.html` template and setup a new ``UrlMap`` for the new home page.
+In this step you will create a new ``home`` controller and :file:`home.html` template for the new home page.
 
 1. Create a new :file:`templates/earth_engine/home.html` with the following contents:
 
@@ -109,7 +79,7 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.
@@ -117,44 +87,9 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
         context = {}
         return render(request, 'earth_engine/home.html', context)
 
-3. Add a new ``UrlMap`` for the root URL of the app (``earth-engine``) in :file:`app.py`. This new ``UrlMap`` should use the new ``home`` controller:
+3. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the new home page loads with text "Home Page".
 
-.. code-block:: python
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='earth-engine',
-                controller='earth_engine.controllers.home'
-            ),
-            UrlMap(
-                name='viewer',
-                url='earth-engine/viewer',
-                controller='earth_engine.controllers.viewer'
-            ),
-            UrlMap(
-                name='get_image_collection',
-                url='earth-engine/viewer/get-image-collection',
-                controller='earth_engine.controllers.get_image_collection'
-            ),
-            UrlMap(
-                name='get_time_series_plot',
-                url='earth-engine/viewer/get-time-series-plot',
-                controller='earth_engine.controllers.get_time_series_plot'
-            ),
-        )
-
-        return url_maps
-
-4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the new home page loads with text "Home Page".
-
-5. Exit the app and launch it again from the Apps Library to verify that loads the new home page.
+4. Exit the app and launch it again from the Apps Library to verify that loads the new home page.
 
 
 3. Remove Navigation from Home Page
@@ -558,7 +493,7 @@ In this step you will add a Home button to the Viewer page so that users can eas
 
     {% block header_buttons %}
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
       </div>
     {% endblock %}
 

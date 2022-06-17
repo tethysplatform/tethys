@@ -4,7 +4,7 @@
 Publish App Code to GitHub
 **************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 `GitHub <https://github.com/>`_ is among the most popular git repositories and is an excellent place to publish open source code. In this tutorial you will learn how to setup a new GitHub repository and push your code to it. Be sure to properly sanitize your code before pushing it to GitHub (see: :ref:`prepare_for_publish_and_deploy`).
 

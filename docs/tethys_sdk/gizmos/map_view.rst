@@ -273,14 +273,15 @@ Four elements are required:
             )
 
             # Configure the map
-            map_options = MapView(height='500px',
-                                  width='100%',
-                                  layers=map_layer_list,
-                                  controls=['FullScreen'],
-                                  view=view_options,
-                                  basemap='OpenStreetMap',
-                                  legend=True,
-                                  )
+            map_options = MapView(
+                height='500px',
+                width='100%',
+                layers=map_layer_list,
+                controls=['FullScreen'],
+                view=view_options,
+                basemap=['OpenStreetMap'],
+                legend=True,
+            )
         
             context = { 'map_options': map_options }
             

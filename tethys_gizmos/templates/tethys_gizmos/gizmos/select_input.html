@@ -6,7 +6,7 @@
 {% endif %}
 <div class="input-group mb-3{% if error or success %} has-validation{% endif %}">
   <select id="{{ name }}" 
-    class="{% if not original %}tethys-select2{% else %}form-control{% endif %}{% if error %} is-invalid{% endif %}{% if success %} is-valid{% endif %}{% if classes %} {{ classes }}{% endif %}"
+    class="{% if not original %}tethys-select2{% else %}form-select{% endif %}{% if error %} is-invalid{% endif %}{% if success %} is-valid{% endif %}{% if classes %} {{ classes }}{% endif %}"
     name="{{ name }}" {% if not original %}style="width:100%;"{% endif %}
     {% if multiple %}multiple{% endif %} {% if disabled %}disabled{% endif %}
     {% if attributes %}

@@ -4,7 +4,7 @@
 Part 3: Publish Code and Deploy
 *******************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 This tutorial builds on the app developed in the :ref:`google_earth_engine_part_1` Tutorial.
 

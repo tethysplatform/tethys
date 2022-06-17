@@ -28,7 +28,7 @@
         {% for app in apps %}
         <tr>
           <td>
-            <a href="{% url app.index %}">{{ app.name }}</a>
+            <a href="{% url app.index_url %}">{{ app.name }}</a>
           </td>
           <td>{{ app.current_use }}</td>
           <td>

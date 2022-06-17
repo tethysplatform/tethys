@@ -2,7 +2,7 @@
 Part 3 Primer: Publishing and Deploying
 ***************************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 Publishing and deploying your Tethys app to a production Tethys Portal server are the final steps in the life cycle of a Tethys app. Unfortunately, deploying is also one of the more challenging aspects of Tethys development. Many of the challenges of installing apps in production can be avoided through preparation and experience. In this tutorial you will learn how to prepare the Earth Engine app for publishing and deployment. You will then publish the app on GitHub and deploy the app on a production Tethys Portal server.
 

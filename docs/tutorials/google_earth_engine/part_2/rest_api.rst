@@ -2,7 +2,7 @@
 Add a REST API
 **************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 In this tutorial you will add a REST API endpoint to the Earth Engine app. The REST API will provide a programmatic access point to the underlying ``get_time_series_from_image_collection`` method. This is the same method that is used retrieve the time series for the plot at an area of interest capability of the Viewer page. Topics covered in this tutorial include:
 
@@ -54,12 +54,12 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
     import logging
     from django.shortcuts import render
-    from tethys_sdk.permissions import login_required
+    from tethys_sdk.routing import controller
 
     log = logging.getLogger(f'tethys.apps.{__name__}')
 
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.
@@ -68,7 +68,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         return render(request, 'earth_engine/home.html', context)
 
 
-    @login_required()
+    @controller
     def about(request):
         """
         Controller for the app about page.
@@ -92,7 +92,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
     from django.shortcuts import render
     from simplejson.errors import JSONDecodeError
     from tethys_sdk.gizmos import SelectInput, DatePicker, Button, MapView, MVView, PlotlyView, MVDraw
-    from tethys_sdk.permissions import login_required
+    from tethys_sdk.routing import controller
     from tethys_sdk.workspaces import user_workspace
     from ..helpers import generate_figure, find_shapefile, write_boundary_shapefile, prep_boundary_dir
     from ..gee.methods import get_image_collection_asset, get_time_series_from_image_collection, upload_shapefile_to_gee, \
@@ -103,8 +103,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
 .. code-block:: python
 
-    @login_required()
-    @user_workspace
+    @controller(user_workspace=True)
     def viewer(request, user_workspace):
         """
         Controller for the app viewer page.
@@ -115,7 +114,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         return render(request, 'earth_engine/viewer.html', context)
 
 
-    @login_required()
+    @controller
     def get_image_collection(request):
         """
         Controller to handle image collection requests.
@@ -126,7 +125,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         return JsonResponse(response_data)
 
 
-    @login_required()
+    @controller
     def get_time_series_plot(request):
 
         ...  # Code not shown for brevity
@@ -146,56 +145,14 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         """
         ... # Code not shown for brevity
 
-
-4. Update the ``UrlMaps`` in :file:`app.py` to point to the new locations of the controllers:
-
-.. code-block:: python
-    :emphasize-lines: 11, 16, 21, 26, 31
-
-        def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='earth-engine',
-                controller='earth_engine.controllers.home.home'
-            ),
-            UrlMap(
-                name='about',
-                url='earth-engine/about',
-                controller='earth_engine.controllers.home.about'
-            ),
-            UrlMap(
-                name='viewer',
-                url='earth-engine/viewer',
-                controller='earth_engine.controllers.viewer.viewer'
-            ),
-            UrlMap(
-                name='get_image_collection',
-                url='earth-engine/viewer/get-image-collection',
-                controller='earth_engine.controllers.viewer.get_image_collection'
-            ),
-            UrlMap(
-                name='get_time_series_plot',
-                url='earth-engine/viewer/get-time-series-plot',
-                controller='earth_engine.controllers.viewer.get_time_series_plot'
-            ),
-        )
-
-        return url_maps
-
 5. Delete the old :file:`controllers.py` file.
 
 6. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the app functions as it did before the change.
 
-2. Create New UrlMap and Controller for REST API Endpoint
-=========================================================
+2. Create New Controller for REST API Endpoint
+==============================================
 
-REST endpoints are similar to normal controllers. The primary difference is that they typically return data using JSON or XML format instead of HTML. In this step you will create a new controller function and ``UrlMap`` for the REST endpoint.
+REST endpoints are similar to normal controllers. The primary difference is that they typically return data using JSON or XML format instead of HTML. In this step you will create a new controller function for the REST endpoint.
 
 1. Create a new controller function named ``get_time_series`` in :file:`controllers/rest.py` with the following contents:
 
@@ -203,12 +160,14 @@ REST endpoints are similar to normal controllers. The primary difference is that
 
     import logging
     from django.http import JsonResponse
+    from tethys_sdk.routing import controller
     from rest_framework.authentication import TokenAuthentication
     from rest_framework.decorators import api_view, authentication_classes
 
     log = logging.getLogger(f'tethys.apps.{__name__}')
 
 
+    @controller(url='api/get-time-series')
     @api_view(['GET', 'POST'])
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
@@ -223,52 +182,6 @@ REST endpoints are similar to normal controllers. The primary difference is that
 .. tip::
 
     Tethys includes the `Django REST Framework <https://www.django-rest-framework.org/>`_ to aid with the token authentication capability (i.e. ``api_view()`` and ``authentication_classes()`` decorators). It is quite a capable extension for Django websites and is worth investigating if you plan to make a large, stand alone REST API.
-
-2. Add a new ``UrlMap`` for the ``get_time_series`` controller to :file:`app.py`:
-
-.. code-block:: python
-    :emphasize-lines: 33-37
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='earth-engine',
-                controller='earth_engine.controllers.home.home'
-            ),
-            UrlMap(
-                name='about',
-                url='earth-engine/about',
-                controller='earth_engine.controllers.home.about'
-            ),
-            UrlMap(
-                name='viewer',
-                url='earth-engine/viewer',
-                controller='earth_engine.controllers.viewer.viewer'
-            ),
-            UrlMap(
-                name='get_image_collection',
-                url='earth-engine/viewer/get-image-collection',
-                controller='earth_engine.controllers.viewer.get_image_collection'
-            ),
-            UrlMap(
-                name='get_time_series_plot',
-                url='earth-engine/viewer/get-time-series-plot',
-                controller='earth_engine.controllers.viewer.get_time_series_plot'
-            ),
-            UrlMap(
-                name='rest_get_time_series',
-                url='earth-engine/api/get-time-series',
-                controller='earth_engine.controllers.rest.get_time_series'
-            ),
-        )
-
-        return url_maps
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/api/get-time-series/>`_. You should see an API page that is auto generated by the `Django REST Framework <https://www.django-rest-framework.org/>`_ titled **Get Time Series**. The page should display an *HTTP 401 Unauthorized* error and display a result object with detail "Authentication credentials were not provided."
 
@@ -327,6 +240,7 @@ In this step you'll define the parameters that the REST endpoint will accept. If
 
 .. code-block:: python
 
+    @controller(url='api/get-time-series')
     @api_view(['GET', 'POST'])
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
@@ -409,6 +323,7 @@ In this step you'll add the validation logic for the ``platform``, ``sensor``, `
 .. code-block:: python
     :emphasize-lines: 25-70
 
+    @controller(url='api/get-time-series')
     @api_view(['GET', 'POST'])
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
