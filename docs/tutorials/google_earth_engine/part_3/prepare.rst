@@ -4,7 +4,7 @@
 Prepare App for Publishing and Deploy
 *************************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 In this tutorial you will prepare the app for publishing and deployment. The app source code will be published to `GitHub <https://github.com/>`_ under an `open source license <https://opensource.org/licenses>`_. Among other things, this will allow you to track future changes to the app and it will allow others to view the code and modify it for their own use. Having the app code published on GitHub will also make it easier to download when installing the app on a production server.
 

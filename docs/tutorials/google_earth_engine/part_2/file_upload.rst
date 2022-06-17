@@ -2,7 +2,7 @@
 File Upload
 ***********
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded. The following topics will be reviewed in this tutorial:
 
@@ -97,20 +97,20 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h5 class="modal-title" id="set-boundary-modal-label">Set Boundary</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           </div>
         </div>
       </div>
     </div>
     <!-- End Set Boundary Modal -->
 
-4. Add the Bootstrap modal ``data-toggle`` and ``data-target`` attributes to the Set Boundary button so that it opens the modal when pressed. Update the Set Boundary button definition near the bottom of the ``viewer`` controller in :file:`controllers.py` as follows:
+4. Add the Bootstrap modal ``data-bs-toggle`` and ``data-bs-target`` attributes to the Set Boundary button so that it opens the modal when pressed. Update the Set Boundary button definition near the bottom of the ``viewer`` controller in :file:`controllers.py` as follows:
 
 .. code-block:: python
     :emphasize-lines: 8-9
@@ -122,8 +122,8 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
         style='outline-secondary',
         attributes={
             'id': 'set_boundary',
-            'data-toggle': 'modal',
-            'data-target': '#set-boundary-modal'  # ID of the Set Boundary Modal
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#set-boundary-modal'  # ID of the Set Boundary Modal
         }
     )
 
@@ -185,7 +185,7 @@ Add an HTML ``form`` element with the attributes that are required to perform a 
     :emphasize-lines: 3
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
       <input type="submit" class="btn btn-secondary" value="Set Boundary" name="set-boundary-submit" id="set-boundary-submit" form="set-boundary-form">
     </div>
 
@@ -590,17 +590,12 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
         return shapefile_path
 
-3. The :ref:`tethys_workspaces_api` provides controller decorators that are used to get the user and app workspaces. Add the ``user_workspace`` decorator to the ``viewer`` controller. The decorator passes the user workspace object as an additional argument to the controller, so you will need to add an additional argument to accept the user workspace in :file:`controllers.py`:
+3. The ``controller`` decorator provides arguments for adding the user and app workspaces. Add the ``user_workspace`` argument and set it to ``True`` in the ``controller`` decorator for the ``viewer`` function. The decorator passes the user workspace object as an additional argument to the controller, so you will need to add an additional argument to accept the user workspace in :file:`controllers.py`:
 
 .. code-block:: python
+    :emphasize-lines: 1-2
 
-    from tethys_sdk.workspaces import user_workspace
-
-.. code-block:: python
-    :emphasize-lines: 2-3
-
-    @login_required()
-    @user_workspace
+    @controller(user_workspace=True)
     def viewer(request, user_workspace):
         """
         Controller for the app viewer page.

@@ -2,7 +2,7 @@
 Plot Data at a Location
 ***********************
 
-**Last Updated:** March 2020
+**Last Updated:** June 2022
 
 In the final tutorial you will add the ability for users to drop a point or draw a polygon and generate a time series of the selected dataset at that location. The following topics will be reviewed in this tutorial:
 
@@ -205,7 +205,7 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def get_time_series_plot(request):
         context = {'success': False}
 
@@ -298,36 +298,6 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
 
     Notice also that the template will render an error message instead of the plot if an error is provided in the context.
 
-4. Create a new endpoint for the ``get_time_series_plot`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
-
-.. code-block:: python
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='earth-engine',
-                controller='earth_engine.controllers.home'
-            ),
-            UrlMap(
-                name='get_image_collection',
-                url='earth-engine/get-image-collection',
-                controller='earth_engine.controllers.get_image_collection'
-            ),
-            UrlMap(
-                name='get_time_series_plot',
-                url='earth-engine/get-time-series-plot',
-                controller='earth_engine.controllers.get_time_series_plot'
-            ),
-        )
-
-        return url_maps
-
 3. Create a Modal for the Plot
 ==============================
 
@@ -387,8 +357,8 @@ In this step you'll add a Plot button and the modal for the plot to the controll
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h5 class="modal-title" id="plot-modal-label">Area of Interest Plot</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div id="plot-container"></div>

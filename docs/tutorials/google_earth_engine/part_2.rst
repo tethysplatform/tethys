@@ -4,7 +4,7 @@
 Part 2: Additional Pages, Clip by Asset, and Rest API
 *****************************************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 This tutorial builds on the app developed in the :ref:`google_earth_engine_part_1` Tutorial.
 
