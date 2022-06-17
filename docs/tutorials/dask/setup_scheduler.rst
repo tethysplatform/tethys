@@ -4,7 +4,7 @@
 Setup Scheduler
 ***************
 
-**Last Updated:** January 2022
+**Last Updated:** May 2022
 
 1. Start Scheduler
 ==================
@@ -145,3 +145,14 @@ g. Press the ``SAVE`` button to save the changes.
 .. figure:: ../../images/tutorial/DaskAppSettings.png
     :width: 900px
     :align: center
+
+10. Solution
+============
+
+View the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial.git
+    cd tethysapp-dask_tutorial
+    git checkout -b setup-scheduler-solution setup-scheduler-solution-|version|

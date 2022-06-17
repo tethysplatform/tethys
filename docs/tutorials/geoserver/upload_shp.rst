@@ -2,14 +2,14 @@
 Upload Shapefile
 ****************
 
-**Last Updated:** November 2019
+**Last Updated:** May 2020
 
 1. Add Form to Home Page
 ========================
 
 Replace the contents of the existing :file:`home.html` template with:
 
-::
+.. code-block:: html+django
 
     {% extends "geoserver_app/base.html" %}
 
@@ -17,8 +17,8 @@ Replace the contents of the existing :file:`home.html` template with:
       <h1>Upload a Shapefile</h1>
       <form action="" method="post" enctype="multipart/form-data">.
         {% csrf_token %}
-        <div class="form-group">
-            <label for="fileInput">Shapefiles</label>
+        <div class="mb-3">
+            <label for="fileInput" class="form-label">Shapefiles</label>
             <input name="files" type="file" multiple class="form-control" id="fileInput" placeholder="Shapefiles">
         </div>
         <input name="submit" type="submit" class="btn btn-secondary">
@@ -31,13 +31,13 @@ Replace the contents of the existing :file:`home.html` template with:
 
 Replace the contents of :file:`controllers.py` module with the following:
 
-::
+.. code-block:: python
 
     import random
     import string
 
     from django.shortcuts import render
-    from tethys_sdk.permissions import login_required
+    from tethys_sdk.routing import controller
 
     from tethys_sdk.gizmos import *
     from .app import GeoserverApp as app
@@ -47,7 +47,7 @@ Replace the contents of :file:`controllers.py` module with the following:
     GEOSERVER_URI = 'http://www.example.com/geoserver-app'
 
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.
@@ -92,3 +92,13 @@ Go to the home page of your app located at `<http://localhost:8000/apps/geoserve
 
 Use the GeoServer web admin interface (`<http://localhost:8181/geoserver/web/>`_) to verify that the layers were successfully uploaded. Look for layers belonging to the workspace 'geoserver_app'.
 
+4. Solution
+===========
+
+This concludes the this part of the GeoServer tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-geoserver_app>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
+    cd tethysapp-geoserver_app
+    git checkout -b upload-shapefile-solution upload-shapefile-solution-|version|

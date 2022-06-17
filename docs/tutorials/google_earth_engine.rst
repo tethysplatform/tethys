@@ -4,7 +4,7 @@
 Google Earth Engine
 *******************
 
-**Last Updated:** November 2019
+**Last Updated:** June 2022
 
 This tutorial demonstrates how to use Google Earth Engine in a Tethys app.
 

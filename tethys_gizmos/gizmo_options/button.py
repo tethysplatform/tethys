@@ -30,7 +30,7 @@ class ButtonGroup(TethysGizmoOptions):
 
         # Horizontal Button Group
         add_button = Button(display_text='Add',
-                            icon='glyphicon glyphicon-plus',
+                            icon='plus-square',
                             style='success')
         delete_button = Button(display_text='Delete',
                                icon='glyphicon glyphicon-trash',

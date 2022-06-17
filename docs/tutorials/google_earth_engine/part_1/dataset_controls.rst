@@ -2,7 +2,7 @@
 Build Dataset Selection Controls
 ********************************
 
-**Last Updated:** November 2019
+**Last Updated:** June 2022
 
 In this tutorial you will add controls to the app that will eventually be used to select various Google Earth Engine datasets to display. The following topics will be reviewed in this tutorial:
 
@@ -265,12 +265,12 @@ In this step, you'll create controls using Tethys Gizmos with their initial valu
 
     import datetime as dt
     from django.shortcuts import render
-    from tethys_sdk.permissions import login_required
+    from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput, DatePicker, Button
     from .gee.products import EE_PRODUCTS
 
 
-    @login_required()
+    @controller
     def home(request):
         """
         Controller for the app home page.

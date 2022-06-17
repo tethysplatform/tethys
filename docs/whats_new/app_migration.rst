@@ -397,7 +397,7 @@ Other Resources
 It is not possible to anticipate every migration step that will be needed. The suggestions are for the cases that will be most commonly encountered. The following resources may provide additional guidance for migrating your app(s).
 
 * Tethys is powered by Django. If your app makes uses of Django features directly, you may need to perform additional migration steps. See `Upgrading Django to a newer version <https://docs.djangoproject.com/en/3.2/howto/upgrade-version/>`_ and `Django 3.2 Release Notes <https://docs.djangoproject.com/en/3.2/releases/>`_.
-* Apps are styled using Bootstrap, a frontend CSS framework. If your app uses Bootstrap components other than those described above, use these links to help you migrate: `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/4.0/migration/>`_ and `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/5.0/migration/>`_.
+* Apps are styled using Bootstrap, a frontend CSS framework. If your app uses Bootstrap components other than those described above, use these links to help you migrate: `Migrating to v4 | Bootstrap <https://getbootstrap.com/docs/4.0/migration/>`_ and `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/5.0/migration/>`_.
 
 .. _app_migration_older_apps:
 
