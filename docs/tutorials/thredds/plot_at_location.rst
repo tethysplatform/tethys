@@ -2,7 +2,7 @@
 Plot Time Series at Location
 ****************************
 
-**Last Updated:** March 2020
+**Last Updated:** June 2022
 
 In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location and display it on a plot. Topics covered in this tutorial include:
 
@@ -38,8 +38,8 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
@@ -49,8 +49,8 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
        crossorigin=""></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js"></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js"></script>
@@ -301,7 +301,7 @@ In this step you will create a new controller that will query the dataset at the
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def get_time_series_plot(request):
         context = {'success': False}
 
@@ -386,36 +386,6 @@ In this step you will create a new controller that will query the dataset at the
       </div>
     {% endif %}
 
-5. Create a new endpoint for the ``get_time_series_plot`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
-
-.. code-block:: python
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='thredds-tutorial',
-                controller='thredds_tutorial.controllers.home'
-            ),
-            UrlMap(
-                name='get_wms_layers',
-                url='thredds-tutorial/get-wms-layers',
-                controller='thredds_tutorial.controllers.get_wms_layers'
-            ),
-            UrlMap(
-                name='get_time_series_plot',
-                url='thredds-tutorial/get-time-series-plot',
-                controller='thredds_tutorial.controllers.get_time_series_plot'
-            ),
-        )
-
-        return url_maps
-
 3. Load Plot Using JQuery Load
 ==============================
 
@@ -428,7 +398,7 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
 .. code-block:: css
 
     #plot-loader {
-        margin: 65px 84px;
+        margin: 65px 34px;
     }
 
     #plot-loader p {
@@ -449,8 +419,8 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
@@ -472,8 +442,8 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h5 class="modal-title" id="plot-modal-label">Area of Interest Plot</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div id="plot-container"></div>

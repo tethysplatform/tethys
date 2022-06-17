@@ -2,7 +2,7 @@
 Add About Page and Disclaimer Modal
 ***********************************
 
-**Last Updated:** May 2020
+**Last Updated:** June 2022
 
 In this tutorial you will add an About page and a disclaimer modal. The requirements for the About page include a fixed width content area, two columns with text on the left and images on the right, and a list of sponsor logos at the bottom. The Disclaimer modal needs to be available from any page in the app and should also include the sponsor logos. The following topics will be reviewed in this tutorial:
 
@@ -30,10 +30,10 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-earth_engine
     git checkout -b home-page-solution home-page-solution-|version|
 
-1. Create new Template, Controller, and UrlMap for About Page
-=============================================================
+1. Create new Template and Controller for About Page
+====================================================
 
-The first step to adding a new page to the app is to create a new controller and template for the page and specify it's URL with a new ``UrlMap``.
+The first step to adding a new page to the app is to create a new controller and template for the page.
 
 1. Create new :file:`templates/earth_engine/about.html` template. Include the :file:`public/earth_engine/css/no_nav.css` stylesheet because this template overrides the navigation menu:
 
@@ -58,7 +58,7 @@ The first step to adding a new page to the app is to create a new controller and
 
 .. code-block:: python
 
-    @login_required()
+    @controller
     def about(request):
         """
         Controller for the app about page.
@@ -66,48 +66,7 @@ The first step to adding a new page to the app is to create a new controller and
         context = {}
         return render(request, 'earth_engine/about.html', context)
 
-3. Create new ``UrlMap`` in :file:`app.py` for the ``about`` controller:
-
-.. code-block:: python
-    :emphasize-lines: 28-32
-
-        def url_maps(self):
-            """
-            Add controllers
-            """
-            UrlMap = url_map_maker(self.root_url)
-
-            url_maps = (
-                UrlMap(
-                    name='home',
-                    url='earth-engine',
-                    controller='earth_engine.controllers.home'
-                ),
-                UrlMap(
-                    name='viewer',
-                    url='earth-engine/viewer',
-                    controller='earth_engine.controllers.viewer'
-                ),
-                UrlMap(
-                    name='get_image_collection',
-                    url='earth-engine/viewer/get-image-collection',
-                    controller='earth_engine.controllers.get_image_collection'
-                ),
-                UrlMap(
-                    name='get_time_series_plot',
-                    url='earth-engine/viewer/get-time-series-plot',
-                    controller='earth_engine.controllers.get_time_series_plot'
-                ),
-                UrlMap(
-                    name='about',
-                    url='earth-engine/about',
-                    controller='earth_engine.controllers.about'
-                )
-            )
-
-            return url_maps
-
-4. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the new page loads. You should see the "This is the About Page" text.
+3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the new page loads. You should see the "This is the About Page" text.
 
 2. Modify Header Buttons to Navigate between About Page and Home Page
 =====================================================================
@@ -120,7 +79,7 @@ In this step you will add a new button to the page header that will link to the 
 
     {% block header_buttons %}
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
       </div>
     {% endblock %}
 
@@ -135,10 +94,10 @@ In this step you will add a new button to the page header that will link to the 
 
     {% block header_buttons %}
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
       </div>
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:about' %}" title="About"><span class="glyphicon glyphicon-info-sign"></span></a>
+        <a href="{% url 'earth_engine:about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
       </div>
     {% endblock %}
 
@@ -342,8 +301,8 @@ In this step you will create a new modal that will contain a disclaimer for the 
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h2 class="modal-title" id="disclaimer-modal-label">Disclaimer</h2>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
             </div>
@@ -363,13 +322,13 @@ In this step you will create a new modal that will contain a disclaimer for the 
     {% block header_buttons %}
       {{ block.super }}
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
       </div>
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:about' %}" title="About"><span class="glyphicon glyphicon-info-sign"></span></a>
+        <a href="{% url 'earth_engine:about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
       </div>
       <div class="header-button glyphicon-button">
-        <a data-toggle="modal" data-target="#disclaimer-modal" title="Disclaimer"><span class="glyphicon glyphicon-warning-sign"></span></a>
+        <a data-bs-toggle="modal" data-bs-target="#disclaimer-modal" title="Disclaimer"><i class="bi bi-exclamation-diamond-fill"></i></a>
       </div>
     {% endblock %}
 
@@ -390,8 +349,8 @@ In this step you will create a new modal that will contain a disclaimer for the 
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h5 class="modal-title" id="plot-modal-label">Area of Interest Plot</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div id="plot-container"></div>

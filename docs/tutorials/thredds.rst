@@ -2,7 +2,7 @@
 THREDDS
 *******
 
-**Last Updated:** December 2019
+**Last Updated:** June 2022
 
 This tutorial demonstrates how to use THREDDS in a Tethys app.
 

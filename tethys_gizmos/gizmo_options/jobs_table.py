@@ -151,7 +151,7 @@ class JobsTable(TethysGizmoOptions):
             resubmit='resubmit' in actions,
             logs='logs' in actions,
             monitor='monitor' in actions and monitor_url,
-            results='results' in actions and monitor_url,
+            results='results' in actions and results_url,
             terminate='terminate' in actions,
             delete='delete' in actions,
         )
