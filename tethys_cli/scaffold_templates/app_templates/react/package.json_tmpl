@@ -1,7 +1,7 @@
 {
-  "name": "my_react_app_frontend",
-  "version": "1.0.0",
-  "description": "",
+  "name": "{{project}}_frontend",
+  "version": "0.0.1",
+  "description": "Frontend React project for {{proper_name}}",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --config ./reactapp/config/webpack.config.js",

@@ -1,4 +1,4 @@
-# React Tethys App
+# {{proper_name}}
 
 This is an experimental Tethys app scaffold that integrates React. The goal would be to use React to create the frontend of the app and Tethys to create the backend/API.
 
@@ -10,7 +10,7 @@ You need to install both the Tethys dependencies and the node dependencies:
 
 ```
 conda activate tethys
-cd tethysapp-my_react_app
+cd tethysapp-{{project}}
 tethys install -d
 ```
 
@@ -18,7 +18,7 @@ tethys install -d
 
 ```
 conda install -c conda-forge nodejs
-cd tethysapp-my_react_app
+cd tethysapp-{{project}}
 npm install --dev
 ```
 
