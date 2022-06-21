@@ -110,3 +110,15 @@ class TestSettings(TestCase):
         self.assertFalse(settings.STATICFILES_USE_NPM)
         node_modules_in_any_paths = any(['node_modules' in path for path in settings.STATICFILES_DIRS])
         self.assertFalse(node_modules_in_any_paths)
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'COOKIE_CONFIG': {'CSRF_COOKIE_SAMESITE': 'Strict'}}})
+    def test_cookie_config(self, _):
+        reload(settings)
+        self.assertEqual(settings.CSRF_COOKIE_SAMESITE, 'Strict')
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'CORS_CONFIG': {'CORS_ALLOWED_ORIGINS': ['http://example.com']}}})
+    def test_cors_config(self, _):
+        reload(settings)
+        self.assertListEqual(settings.CORS_ALLOWED_ORIGINS, ['http://example.com'])

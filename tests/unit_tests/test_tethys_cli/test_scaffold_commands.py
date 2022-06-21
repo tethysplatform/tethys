@@ -61,7 +61,7 @@ class TestScaffoldCommands(unittest.TestCase):
     def test_get_random_color(self, mock_choice):
         mock_choice.return_value = '#16a085'
         ret = get_random_color()
-        self.assertEqual(mock_choice.return_value, ret)
+        self.assertEqual('#16a085', ret)
 
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     def test_theme_color_validator_same_default_value(self, mock_random_color):

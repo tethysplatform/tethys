@@ -329,13 +329,13 @@ class TethysExtensionBase(TethysBase):
         """
         String representation
         """
-        return '<TethysApp: {0}>'.format(self.name)
+        return '<TethysExt: {0}>'.format(self.name)
 
     def __repr__(self):
         """
         String representation
         """
-        return '<TethysApp: {0}>'.format(self.name)
+        return '<TethysExt: {0}>'.format(self.name)
 
     @classproperty
     def package_namespace(cls):

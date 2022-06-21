@@ -54,8 +54,8 @@ def proper_name_validator(value, default):
             value = value.replace('"', '')
             value = value.replace("'", "")
             write_pretty_output(
-                'Warning: Illegal characters were detected in proper name "{0}". They have been replaced or '
-                'removed with valid characters: "{1}"'.format(before, value), FG_YELLOW
+                f'Warning: Illegal characters were detected in proper name "{before}". They have been replaced or '
+                f'removed with valid characters: "{value}"', FG_YELLOW
             )
         # Otherwise, throw error
         else:

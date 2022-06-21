@@ -398,8 +398,8 @@ for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
 
 # Cookie Settings
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# SESSION_COOKIE_SAMESITE = 'Lax'
 
 # Prevent JavaScript from accessing CSRF and session cookies
 # NOTE: This will probably break scripts that use the cookie to get the CSRF token
