@@ -9,7 +9,7 @@ class {{class_name}}(TethysAppBase):
     description = '{{description|default("Place a brief description of your app here.")}}'
     package = '{{project}}'  # WARNING: Do not change this value
     index = 'home'
-    icon = f'{package}/images/icon.gif'
+    icon = f'{package}/images/icon.png'
     catch_all = 'home'  # Catch all url mapped to home controller, required for react browser routing
     root_url = '{{project_url}}'
     color = ''  # Don't set color here, set it in reactapp/custom-bootstrap.scss

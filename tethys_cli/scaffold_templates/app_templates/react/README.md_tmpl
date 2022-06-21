@@ -1,6 +1,6 @@
 # {{proper_name}}
 
-This is an experimental Tethys app scaffold that integrates React. The goal would be to use React to create the frontend of the app and Tethys to create the backend/API.
+This app was created using an experimental Tethys + React app scaffold. It uses React for the frontend of the app and Tethys as the backend.
 
 ## Development Installation
 
@@ -17,7 +17,6 @@ tethys install -d
 2. Install the node and dependencies
 
 ```
-conda install -c conda-forge nodejs
 cd tethysapp-{{project}}
 npm install --dev
 ```
@@ -40,7 +39,11 @@ npm start
 
 ## Build
 
-Webpack is configured to bundle and build the React app into the `public/frontend` directory. Before building a Python distribution, you should run the `npm run build` to update the build.
+Webpack is configured to bundle and build the React app into the `tethysapp/<app_package>/public/frontend` directory. Before building a Python distribution for release, you should build using this command:
+
+```
+npm run build
+```
 
 ## Test
 
