@@ -137,13 +137,13 @@ ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
 ADD --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
 ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
 ADD --chown=www:www LICENSE ${TETHYS_HOME}/tethys/
-ADD --chown=www:www *.toml ${TETHYS_HOME}/tethys/
+ADD --chown=www:www *.py ${TETHYS_HOME}/tethys/
 ADD --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
 ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-RUN pip install -e .
+RUN python setup.py develop
 RUN tethys gen portal_config
 
 # Install channel-redis
