@@ -82,9 +82,10 @@ jobs:
       - name: Upload Docker No Tag
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          echo "Pushing to docker registry";
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:master;
+          echo "Not Pushing to docker registry...";
+          # echo "Pushing to docker registry";
+          # echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
+          # docker push ${{ secrets.DOCKER_UPLOAD_URL }}:master;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}

@@ -26,3 +26,4 @@ tests/extensions/*/build/*
 tests/apps/*/build/*
 tests/extensions/*/dist/*
 tests/apps/*/dist/*
+tethys_portal/_version.py
