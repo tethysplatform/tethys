@@ -1,4 +1,3 @@
-import re
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse

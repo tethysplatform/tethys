@@ -38,7 +38,7 @@ def get_app(request, app):
 
     try:
         app = TethysApp.objects.get(package=package)
-    except:
+    except TethysApp.DoesNotExist:
         return(JsonResponse({'error': f'Could not find app "{app}".'}))
 
     metadata = {

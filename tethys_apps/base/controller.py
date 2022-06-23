@@ -580,11 +580,10 @@ def _listify(obj):
 
 
 def register_controllers(
-        root_url: str, 
-        modules: Union[str, list, tuple], 
-        index: str = None, 
-        catch_all: str = ''
-    ) -> list:
+        root_url: str,
+        modules: Union[str, list, tuple],
+        index: str = None,
+        catch_all: str = '') -> list:
     """
     Registers ``UrlMap`` entries for all controllers that have been decorated with the ``@controller`` decorator.
 
@@ -675,7 +674,7 @@ def register_controllers(
 
     UrlMap = url_map_maker(root_url)
     url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
-    
+
     # Add a catch all endpoint for any URL following the app's root URL and map it to the index controller
     if catch_all and catch_all in names:
         url_maps.append(

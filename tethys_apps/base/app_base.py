@@ -71,7 +71,7 @@ class TethysBase(TethysBaseMixin):
     @classproperty
     def db_model(cls):
         raise NotImplementedError()
-    
+
     @classproperty
     def db_object(cls):
         if getattr(cls, '_django_db_obj', None) is None:

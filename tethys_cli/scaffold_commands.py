@@ -373,7 +373,7 @@ def scaffold_command(args):
 
             # Load the template
             log.debug('Loading template: "{}"'.format(template_file_path))
-            
+
             if needs_rendering:
                 with open(template_file_path, 'r') as tf:
                     template = Template(tf.read())
