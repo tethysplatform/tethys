@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+FROM mambaorg/micromamba
 ###################
 # BUILD ARGUMENTS #
 ###################
@@ -30,6 +30,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
 ENV  BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
+     ENV_NAME=tethys \
      ASGI_PROCESSES=1 \
      CLIENT_MAX_BODY_SIZE="75M"
 
@@ -85,6 +86,7 @@ ENV  TAB_TITLE="" \
 #########
 # SETUP #
 #########
+USER root
 RUN mkdir -p "${TETHYS_HOME}/tethys"
 WORKDIR ${TETHYS_HOME}
 
@@ -102,10 +104,11 @@ RUN rm -rf /var/lib/apt/lists/*\
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Setup Conda Environment
-ADD environment.yml ${TETHYS_HOME}/tethys/
+COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
 RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
- && ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
+ && micromamba create -n "${CONDA_ENV_NAME}" --yes --file "environment.yml" \
+ && micromamba clean --all --yes
 
 ###########
 # INSTALL #
@@ -126,6 +129,7 @@ ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
 ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
 ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
 ADD --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
+ADD --chown=www:www tethys_layouts ${TETHYS_HOME}/tethys/tethys_layouts/
 ADD --chown=www:www tethys_gizmos ${TETHYS_HOME}/tethys/tethys_gizmos/
 ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
 ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
@@ -133,19 +137,18 @@ ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
 ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
 ADD --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
 ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
-ADD --chown=www:www *.py ${TETHYS_HOME}/tethys/
+ADD --chown=www:www LICENSE ${TETHYS_HOME}/tethys/
+ADD --chown=www:www *.toml ${TETHYS_HOME}/tethys/
 ADD --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
 ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; python setup.py develop'
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen portal_config'
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
+RUN pip install -e .
+RUN tethys gen portal_config
 
 # Install channel-redis
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; pip install channels_redis'
+RUN pip install channels_redis
 
 ############
 # CLEAN UP #
