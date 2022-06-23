@@ -23,6 +23,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Get Tag Name
       - name: Get Tag
         id: gitTag
@@ -50,6 +52,8 @@ jobs:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       # Setup Tethys
       - name: Setup Tethys
         run: |
@@ -85,12 +89,16 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
-          conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+          mamba create -y -c conda-forge -n conda-build boa anaconda-client 
+          conda activate conda-build
+          conda config --set anaconda_upload no
+          mkdir -p ~/conda-bld
+          conda mambabuild -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request With Tag
       - name: Upload Conda With Tag
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
+          ls ~/conda-bld/noarch
+          conda activate conda-build
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;

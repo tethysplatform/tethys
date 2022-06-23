@@ -7,6 +7,7 @@
 *.idea
 *.sqlite3
 *.db
+.vscode/
 docs/_build
 *~
 tethys_gizmos/static/tethys_gizmos/less/bower_components/*
