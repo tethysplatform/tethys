@@ -27,7 +27,7 @@ def get_whoami(request):
         'firstName': request.user.first_name,
         'lastName': request.user.last_name,
         'email': request.user.email,
-        'isAuthenticated': True,
+        'isAuthenticated': request.user.is_authenticated,
         'isStaff': request.user.is_staff,
     })
 
@@ -49,7 +49,7 @@ def get_app(request, app):
         'urlNamespace': app.url_namespace,
         'color': app.color,
         'icon': static(app.icon),
-        'exitUrl': '/apps/',
+        'exitUrl': reverse('app_library'),
         'rootUrl': reverse(app.index_url),
         'settingsUrl': f'{reverse("admin:index")}tethys_apps/tethysapp/{ app.id }/change/',
     }
