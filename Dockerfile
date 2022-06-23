@@ -129,7 +129,6 @@ ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
 ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
 ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
 ADD --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
-ADD --chown=www:www tethys_layouts ${TETHYS_HOME}/tethys/tethys_layouts/
 ADD --chown=www:www tethys_gizmos ${TETHYS_HOME}/tethys/tethys_gizmos/
 ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
 ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
