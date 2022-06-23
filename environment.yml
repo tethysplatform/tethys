@@ -64,7 +64,7 @@ dependencies:
 - django-analytical
 - django-simple-captcha
 - django-recaptcha2
-- django-mfa2
+- django-mfa2<2.5
 - social-auth-app-django
 
 # tests dependencies
