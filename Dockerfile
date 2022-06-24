@@ -7,8 +7,8 @@ ARG PYTHON_VERSION=3.*
 ###############
 # ENVIRONMENT #
 ###############
-ENV  TETHYS_HOME="/usr/lib/tethys" \
-     TETHYS_LOG="/var/log/tethys" \
+ENV  TETHYS_HOME="/usr/lib/tethys"
+ENV  TETHYS_LOG="/var/log/tethys" \
      TETHYS_PERSIST="/var/lib/tethys_persist" \
      TETHYS_APPS_ROOT="${TETHYS_HOME}/apps" \
      TETHYS_PORT=8000 \
