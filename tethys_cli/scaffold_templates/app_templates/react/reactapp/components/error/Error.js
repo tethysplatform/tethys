@@ -1,10 +1,8 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
-
-import { AppContext } from 'components/context';
 
 const TETHYS_PORTAL_HOST = process.env.TETHYS_PORTAL_HOST;
+const APP_ROOT_URL = process.env.TETHYS_APP_ROOT_URL;
 
 const ErrorWhiteout = styled.div`
   position: absolute;
@@ -51,7 +49,6 @@ const ErrorTitle = styled.h1`
 `;
 
 const Error = ({title, image, children}) => {
-  const {tethysApp} = useContext(AppContext);
   return (
     <>
       <ErrorWhiteout>
@@ -60,7 +57,7 @@ const Error = ({title, image, children}) => {
           <ErrorMessageBox className="px-5 py-3 shadow rounded">
             <ErrorTitle>{title}</ErrorTitle>
             <ErrorMessage className="mb-0">{children}</ErrorMessage>
-            {tethysApp && <ErrorMessage className="text-faded"><a href={TETHYS_PORTAL_HOST + tethysApp.rootUrl}>Return to Home</a> or <a href={TETHYS_PORTAL_HOST + tethysApp.exitUrl}>Exit the App</a></ErrorMessage>}
+            <ErrorMessage className="text-faded"><a href={TETHYS_PORTAL_HOST + APP_ROOT_URL}>Reload App</a> or <a href={TETHYS_PORTAL_HOST + '/apps/'}>Exit the App</a></ErrorMessage>
           </ErrorMessageBox>
         </ErrorMessageContainer>
       </ErrorWhiteout>
