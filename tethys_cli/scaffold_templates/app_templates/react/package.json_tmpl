@@ -96,8 +96,9 @@
       "<rootDir>/reactapp"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts"
+      "reactapp/**/*.{js,jsx,ts,tsx}",
+      "!reactapp/**/*.d.ts",
+      "!reactapp/config/**/*"
     ],
     "setupFiles": [
       "react-app-polyfill/jsdom"
