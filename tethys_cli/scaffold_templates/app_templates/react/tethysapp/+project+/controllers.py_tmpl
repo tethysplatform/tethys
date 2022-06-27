@@ -11,15 +11,16 @@ def home(request):
     # The index.html template loads the React frontend
     return render(request, '{{project}}/index.html')
 
+
 @controller
 def data(request):
     """API controller for the plot page."""
     # Download example data from GitHub
     df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
-    
-    # Do data processing in Python 
+
+    # Do data processing in Python
     l_date = df['Date'].tolist()
-    
+
     # Then return JSON containing data
     return JsonResponse({
         'series': [
