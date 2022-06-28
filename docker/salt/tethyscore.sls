@@ -106,6 +106,7 @@ Generate_ASGI_Service_TethysCore:
         tethys gen asgi_service
         --asgi-processes {{ ASGI_PROCESSES }}
         --conda-prefix {{ CONDA_HOME }}/envs/{{ CONDA_ENV_NAME }}
+        --micromamba
         --overwrite
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
