@@ -88,6 +88,7 @@ Generate_Tethys_Settings_TethysCore:
         --set CHANNEL_LAYERS.default.CONFIG {{ CHANNEL_LAYERS_CONFIG }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
+        --set TETHYS_PUBLIC_HOST {{ TETHYS_PUBLIC_HOST }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:
