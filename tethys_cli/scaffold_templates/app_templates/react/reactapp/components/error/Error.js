@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const TETHYS_PORTAL_HOST = process.env.TETHYS_PORTAL_HOST;
+import { getTethysPortalHost } from 'services/utilities';
+
+const TETHYS_PORTAL_HOST = getTethysPortalHost();
 const APP_ROOT_URL = process.env.TETHYS_APP_ROOT_URL;
 
 const ErrorWhiteout = styled.div`

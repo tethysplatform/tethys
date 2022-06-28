@@ -1,4 +1,3 @@
-// const TETHYS_PORTAL_HOST = process.env.TETHYS_PORTAL_HOST;
 describe('test.env', () => {
   it('TETHYS_DEBUG_MODE is defined', () => {
     expect(process.env.TETHYS_DEBUG_MODE).toBeDefined();
