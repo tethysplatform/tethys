@@ -86,6 +86,10 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
                             help='Port for the Tethys Server to run on in production. This is used when generating the '
                                  'Daphne and nginx configuration files. Defaults to 8000.')
+    gen_parser.add_argument('--micromamba', dest='micromamba', action='store_true',
+                            help='Generate files to work in a Micromamba environment. Used when generating the '
+                                 'configuration files for a Docker build (the Docker image uses the micromamba image '
+                                 'as the base image).')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
     gen_parser.set_defaults(func=generate_command, client_max_body_size='75M', asgi_processes=1, conda_prefix=False,
@@ -158,7 +162,8 @@ def gen_asgi_service(args):
         'conda_home': conda_home,
         'tethys_src': TETHYS_SRC,
         'tethys_home': TETHYS_HOME,
-        'user_option_prefix': user_option_prefix
+        'user_option_prefix': user_option_prefix,
+        'is_micromamba': args.micromamba,
     }
     return context
 

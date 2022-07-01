@@ -262,14 +262,15 @@ TEMPLATES = [
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
-STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop('STATICFILES_USE_NPM', False)
-
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATICFILES_DIRS = (
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'static', 'node_modules'),
-    bokehjsdir()
-)
+    bokehjsdir(),
+]
+
+STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop('STATICFILES_USE_NPM', False)
+if STATICFILES_USE_NPM:
+    STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'static', 'node_modules'))
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

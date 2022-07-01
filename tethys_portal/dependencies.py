@@ -138,8 +138,8 @@ vendor_static_dependencies = {
         version='5.1.3',
         css_path='dist/css/bootstrap.min.css',
         js_path='dist/js/bootstrap.bundle.min.js',
-        css_integrity='sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=',
-        js_integrity='sha256-9SEPo+fwJFpMUet/KACSwO+Z/dKMReF9q4zFhU/fT9M=',
+        css_integrity='sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3',
+        js_integrity='sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p',
     ),
     'bootstrap-datepicker': JsDelivrStaticDependency(
         npm_name='bootstrap-datepicker',

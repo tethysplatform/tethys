@@ -7,81 +7,82 @@ ARG PYTHON_VERSION=3.*
 ###############
 # ENVIRONMENT #
 ###############
-ENV  TETHYS_HOME="/usr/lib/tethys" \
-     TETHYS_LOG="/var/log/tethys" \
-     TETHYS_PERSIST="/var/lib/tethys_persist" \
-     TETHYS_APPS_ROOT="${TETHYS_HOME}/apps" \
-     TETHYS_PORT=8000 \
-     POSTGRES_PASSWORD="pass" \
-     TETHYS_DB_NAME='tethys_platform' \
-     TETHYS_DB_USERNAME="tethys_default" \
-     TETHYS_DB_PASSWORD="pass" \
-     TETHYS_DB_HOST="db" \
-     TETHYS_DB_PORT=5432 \
-     TETHYS_DB_SUPERUSER="tethys_super" \
-     TETHYS_DB_SUPERUSER_PASS="pass" \
-     PORTAL_SUPERUSER_NAME="" \
-     PORTAL_SUPERUSER_EMAIL="" \
-     PORTAL_SUPERUSER_PASSWORD="" \
-     TETHYS_MANAGE="${TETHYS_HOME}/tethys/tethys_portal/manage.py"
+ENV TETHYS_HOME="/usr/lib/tethys"
+ENV TETHYS_LOG="/var/log/tethys"
+ENV TETHYS_PERSIST="/var/lib/tethys_persist"
+ENV TETHYS_APPS_ROOT="/var/www/tethys/apps"
+ENV TETHYS_PORT=8000
+ENV POSTGRES_PASSWORD="pass"
+ENV TETHYS_DB_NAME='tethys_platform'
+ENV TETHYS_DB_USERNAME="tethys_default"
+ENV TETHYS_DB_PASSWORD="pass"
+ENV TETHYS_DB_HOST="db"
+ENV TETHYS_DB_PORT=5432
+ENV TETHYS_DB_SUPERUSER="tethys_super"
+ENV TETHYS_DB_SUPERUSER_PASS="pass"
+ENV PORTAL_SUPERUSER_NAME=""
+ENV PORTAL_SUPERUSER_EMAIL=""
+ENV PORTAL_SUPERUSER_PASSWORD=""
+ENV TETHYS_MANAGE="${TETHYS_HOME}/tethys/tethys_portal/manage.py"
+ENV TETHYS_PUBLIC_HOST="http://localhost"
 
 
 # Misc
-ENV  BASH_PROFILE=".bashrc" \
-     CONDA_HOME="/opt/conda" \
-     CONDA_ENV_NAME=tethys \
-     ENV_NAME=tethys \
-     ASGI_PROCESSES=1 \
-     CLIENT_MAX_BODY_SIZE="75M"
+ENV BASH_PROFILE=".bashrc"
+ENV CONDA_HOME="/opt/conda"
+ENV CONDA_ENV_NAME=tethys
+ENV ENV_NAME=tethys
+ENV ASGI_PROCESSES=1
+ENV CLIENT_MAX_BODY_SIZE="75M"
 
 # Tethys settings arguments
-ENV  DEBUG="False" \
-     ALLOWED_HOSTS="\"[localhost, 127.0.0.1]\"" \
-     BYPASS_TETHYS_HOME_PAGE="True" \
-     ADD_DJANGO_APPS="\"[]\"" \
-     SESSION_WARN=1500 \
-     SESSION_EXPIRE=1800 \
-     STATIC_ROOT="${TETHYS_PERSIST}/static" \
-     WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces" \
-     QUOTA_HANDLERS="\"[]\"" \
-     DJANGO_ANALYTICAL="\"{}\"" \
-     ADD_BACKENDS="\"[]\"" \
-     OAUTH_OPTIONS="\"{}\"" \
-     CHANNEL_LAYERS_BACKEND="channels.layers.InMemoryChannelLayer" \
-     CHANNEL_LAYERS_CONFIG="\"{}\"" \
-     RECAPTCHA_PRIVATE_KEY="" \
-     RECAPTCHA_PUBLIC_KEY=""
+ENV DEBUG="False"
+ENV ALLOWED_HOSTS="\"[localhost, 127.0.0.1]\""
+ENV BYPASS_TETHYS_HOME_PAGE="True"
+ENV ADD_DJANGO_APPS="\"[]\""
+ENV SESSION_WARN=1500
+ENV SESSION_EXPIRE=1800
+ENV STATIC_ROOT="${TETHYS_PERSIST}/static"
+ENV WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces"
+ENV QUOTA_HANDLERS="\"[]\""
+ENV DJANGO_ANALYTICAL="\"{}\""
+ENV ADD_BACKENDS="\"[]\""
+ENV OAUTH_OPTIONS="\"{}\""
+ENV CHANNEL_LAYERS_BACKEND="channels.layers.InMemoryChannelLayer"
+ENV CHANNEL_LAYERS_CONFIG="\"{}\""
+ENV RECAPTCHA_PRIVATE_KEY=""
+ENV RECAPTCHA_PUBLIC_KEY=""
 
 # Tethys site arguments
-ENV  TAB_TITLE="" \
-     FAVICON="" \
-     TITLE="" \
-     LOGO="" \
-     LOGO_HEIGHT="" \
-     LOGO_WIDTH="" \
-     LOGO_PADDING="" \
-     LIBRARY_TITLE="" \
-     PRIMARY_COLOR="" \
-     SECONDARY_COLOR="" \
-     BACKGROUND_COLOR="" \
-     TEXT_COLOR="" \
-     TEXT_HOVER_COLOR="" \
-     SECONDARY_TEXT_COLOR="" \
-     SECONDARY_TEXT_HOVER_COLOR="" \
-     COPYRIGHT="" \
-     HERO_TEXT="" \
-     BLURB_TEXT="" \
-     FEATURE1_HEADING="" \
-     FEATURE1_BODY="" \
-     FEATURE1_IMAGE="" \
-     FEATURE2_HEADING="" \
-     FEATURE2_BODY="" \
-     FEATURE2_IMAGE="" \
-     FEATURE3_HEADING="" \
-     FEATURE3_BODY="" \
-     FEATURE3_IMAGE="" \
-     ACTION_TEXT="" \
-     ACTION_BUTTON=""
+ENV TAB_TITLE=""
+ENV FAVICON=""
+ENV TITLE=""
+ENV LOGO=""
+ENV LOGO_HEIGHT=""
+ENV LOGO_WIDTH=""
+ENV LOGO_PADDING=""
+ENV LIBRARY_TITLE=""
+ENV PRIMARY_COLOR=""
+ENV SECONDARY_COLOR=""
+ENV BACKGROUND_COLOR=""
+ENV TEXT_COLOR=""
+ENV TEXT_HOVER_COLOR=""
+ENV SECONDARY_TEXT_COLOR=""
+ENV SECONDARY_TEXT_HOVER_COLOR=""
+ENV COPYRIGHT=""
+ENV HERO_TEXT=""
+ENV BLURB_TEXT=""
+ENV FEATURE1_HEADING=""
+ENV FEATURE1_BODY=""
+ENV FEATURE1_IMAGE=""
+ENV FEATURE2_HEADING=""
+ENV FEATURE2_BODY=""
+ENV FEATURE2_IMAGE=""
+ENV FEATURE3_HEADING=""
+ENV FEATURE3_BODY=""
+ENV FEATURE3_IMAGE=""
+ENV ACTION_TEXT=""
+ENV ACTION_BUTTON=""
 
 #########
 # SETUP #
@@ -114,7 +115,7 @@ RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
 # INSTALL #
 ###########
 # Make dirs
-RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
+RUN mkdir -p ${TETHYS_PERSIST} ${TETHYS_APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
 
 # Setup www user, run supervisor and nginx processes as www user
 RUN groupadd www \

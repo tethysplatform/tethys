@@ -3,6 +3,11 @@
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
 {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
 
+Activate_Tethys_Environment_Pre_Tethys:
+  cmd.run:
+    - name: /usr/local/bin/_entrypoint.sh
+    - shell: /bin/bash
+
 Create_Static_Root_On_Mounted_Pre_Tethys:
   cmd.run:
     - name: mkdir -p {{ STATIC_ROOT }}
