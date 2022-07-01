@@ -11,37 +11,97 @@ Refer to this article for information about each new release of Tethys Platform.
 Release |version|
 ==================
 
-Production Installation Docs
-============================
+Python 3.10
+-----------
 
-* Expanded the docs for manual production installation
-* Added a tutorial and documentation for using the Tethys Docker for production releases
-* Added documentation explaining the new Microsoft Azure Tethys Platform Image
+* Tethys Platform formally updated to use Python 3.10
+* Should also support Python 3.7+
 
-Cesium Map View Gizmo
-=====================
+Django 3.2
+----------
 
-* Added support for Cesium Ion Primitives
-* Added JavaScript API for the `CesiumMapView` to allow loading with Ajax
+* Django 2.2, the version Tethys 3 depended on, lost LTS status in April 11, 2022
+* Tethys was upgraded to be able to use **Django 3.2**, the new LTS version until April of 2024
 
-Dockerfile
-==========
+See: `Django Supported Versions <https://www.djangoproject.com/download/#supported-versions>`_
 
-* Added build args to Dockerfile to allow Python version to be specified
+Bootstrap 5
+-----------
 
-Tethys CLI
-==========
+* Upgraded to use Bootstrap version 5 (Tethys 3 used version 3).
+* Tethys Portal overhauled and rethemed using new capabilities of Bootstrap 5.
 
-* Added support for specifying the type of spatial service (e.g. GeoServer or THREDDS) in the `tethys services create spatial` command
-* Added support for setting custom settings via the `tethys app_settings` command
+See: `Boostrap 5 Documentation <https://getbootstrap.com/docs/5.0/getting-started/introduction/>`_whats_new
+
+Controller Decorators
+---------------------
+
+* Added new three new decorators: ``controler``, ``consumer``, and ``handler``.
+* Use these decorators for mapping controllers, consumers, and handlers to URLs.
+* UrlMaps in app.py no longer needed and the ``url_maps`` method is deprecated.
+
+See: :ref:`url_maps_api`
+
+Tethys Map Layout
+-----------------
+
+* The first Tethys Layout, a new way to quickly and easily a fully functioning views to Tethys Apps.
+* A fully-featured, customizable map view with layer tree, address search, attribute popups, click-n-plot capability, and more.
+* Subclass the ``MapLayout`` class and override the ``compose_layers`` method to add layers.
+* Enable / disable functionality by setting class properties.
+
+See: :ref:`sdk_layouts_api` and :ref:`map_layout`
+
+Comprehensive Tethys Manage Command
+-----------------------------------
+
+* The ``tethys manage`` command now provides full range of ``manage.py`` commands.
+* Use it to run any ``manage.py`` command, including commands provided by Django apps (e.g. ``django manage shell``).
+* Use ``tethys manage path`` to get the path to the ``manage.py`` that Tethys is using.
+
+See: :ref:`tethys_manage_cmd`
+
+Static Dependencies
+-------------------
+
+* Replaced vendored static dependencies with CDN-hosted equivalants
+* Removed all vendored packages--almost 2000 files!
+* Upgraded all static dependencies to the latest versions
+* Added alternative to install static dependencies using NPM to allow self-hosting of dependencies instead of CDNs
+
+See ``STATICFILES_USE_NPM`` setting at :ref:`tethys_configuration`
+
+Scheduler App Settings
+----------------------
+
+* HTCondor and Dask Schedulers can now be assigned to apps using App Settings like other services.
+* Tethys Dask Scheduler updated to be compatible to the latest version of Dask.
+
+Documentation
+-------------
+
+* App Migration Documentation for Tethys 3 to 4: :ref:`migrate_2_to_3`
+* All tutorials updated for new Bootstrap 5, Django 3.2, and Tethys 4 syntax: :ref:`tutorials`
+* Other documentation updates as discussed above.
+
+Miscellaneous Changes
+---------------------
+
+* Changed logging scope for Tethys apps from ``tethys.apps`` to ``tethysapp`` to allow for using ``__name__`` to get/name loggers.
 
 Bug Fixes
-=========
+---------
 
-- Pinned version of psycopg2 to be compatible with Django 2.2
-- Fixed Plotly tests for compatibility with newer version
-- Updated CDN URL for compatibility
-- Updated tests to be compatible with Bokeh 2.4.0
+* Fixed `Issue 763: Spatial Dataset Service created w/ CLI does not work until manually saved in admin pages <https://github.com/tethysplatform/tethys/issues/763>`_
+* Fixed `Issue 714: Restore Defaults Option of Site Command Breaks Tethys Portal <https://github.com/tethysplatform/tethys/issues/714>`_
+* Fixed `Issue 760: Logging configuration is broken <https://github.com/tethysplatform/tethys/issues/760>`_
+* Fixed `Issue 718: Error to bind the THREDDS data directory on Windows`_
+
+Security Fixes
+--------------
+
+* Updated GeoServer and THREDDS containers used by `tethys docker` command to address log4j vulnerabilities.
+* Addressed `Issue 719: CSP requires unsafe-eval for plot_view`_.
 
 Prior Release Notes
 ===================
