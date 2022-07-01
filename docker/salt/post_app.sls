@@ -22,12 +22,12 @@ Chown_Portal_Config_Post_App:
 
 Collect_Static:
   cmd.run:
-    - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && cat {{ TETHYS_HOME }}/portal_config.yml && cat {{ TETHYS_HOME }}/tethys/tethys_portal/settings.py && tethys manage collectstatic --noinput
+    - name: tethys manage collectstatic --noinput
     - shell: /bin/bash
 
 Collect_Workspaces:
   cmd.run:
-    - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && cat {{ TETHYS_HOME }}/portal_config.yml && cat {{ TETHYS_HOME }}/tethys/tethys_portal/settings.py && tethys manage collectworkspaces
+    - name: tethys manage collectworkspaces
     - shell: /bin/bash
 
 Persist_NGINX_Config_Post_App:
