@@ -94,3 +94,19 @@ class TestSettings(TestCase):
     def test_other_settings(self, _):
         reload(settings)
         self.assertEqual(settings.test_oauth_key, 'test')
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'TETHYS_PORTAL_CONFIG': {'STATICFILES_USE_NPM': True}}})
+    def test_staticfiles_use_npm__enabled(self, _):
+        reload(settings)
+        self.assertTrue(settings.STATICFILES_USE_NPM)
+        node_modules_in_any_paths = any(['node_modules' in path for path in settings.STATICFILES_DIRS])
+        self.assertTrue(node_modules_in_any_paths)
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'TETHYS_PORTAL_CONFIG': {'STATICFILES_USE_NPM': False}}})
+    def test_staticfiles_use_npm__disabled(self, _):
+        reload(settings)
+        self.assertFalse(settings.STATICFILES_USE_NPM)
+        node_modules_in_any_paths = any(['node_modules' in path for path in settings.STATICFILES_DIRS])
+        self.assertFalse(node_modules_in_any_paths)
