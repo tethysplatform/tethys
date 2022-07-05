@@ -8,7 +8,7 @@ on:
       - '*'
 
 env:
-  CONDA_BUILD_PIN_LEVEL: minor
+  CONDA_BUILD_PIN_LEVEL: major
 
 jobs:
   docker-build:
