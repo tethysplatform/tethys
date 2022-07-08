@@ -406,18 +406,11 @@ def app_workspace(controller):
         if request is None:
             raise ValueError('No request given. The app_workspace decorator only works on controllers.')
 
-        try:
-            codename = 'app_workspace_quota'
-            rq = ResourceQuota.objects.get(codename=codename)
-
-        except ResourceQuota.DoesNotExist:
-            log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
-
         # Get the active app
         app = get_active_app(request, get_class=True)
 
-        if not passes_quota(app, codename):
-            raise PermissionDenied(rq.help)
+        if not passes_quota(app, 'app_workspace_quota'):
+            raise PermissionDenied(rq.help)  # TODO raise this in passes_quota?
 
         the_workspace = _get_app_workspace(app)
 
