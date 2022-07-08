@@ -10,9 +10,10 @@
 """
 from collections import namedtuple
 import logging
+from functools import wraps
+from copy import deepcopy
 
-from tethys_portal.dependencies import vendor_static_dependencies
-from tethys_cli.cli_colors import write_warning
+from tethys_compute.models import TethysJob
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
 
@@ -22,6 +23,90 @@ __all__ = ['JobsTable']
 
 
 JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions'])
+
+
+def add_static_method(cls):
+    def outer(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            return func(*args, **kwargs)
+        setattr(cls, func.__name__, wrapper)
+        return func
+    return outer
+
+
+def add_method(cls):
+    def outer(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        setattr(cls, func.__name__, wrapper)
+        return func
+    return outer
+
+
+class CustomJobAction:
+    def __init__(self, label, callback_or_url=None, enabled_callback=None, confirm_message=None,
+                 show_overlay=False, modal_url=None, job_type=TethysJob):
+        self.label = label
+        self.confirm_message = confirm_message
+        self.show_overlay = show_overlay
+        self.modal_url = modal_url
+        self.url = None
+        self.callback = None
+
+        if callback_or_url is None:
+            pass
+        elif modal_url is None and callback_or_url is None:
+            raise ValueError('There is not a callback url or modal url.')
+        else:
+            if isinstance(callback_or_url, str) and (':' in callback_or_url or '/' in callback_or_url):
+                self.url = callback_or_url
+            else:
+                self.callback = self.register_callback(callback_or_url, job_type)
+        if enabled_callback:
+            self.register_callback(enabled_callback, job_type, self.get_enabled_callback_name(label))
+
+    @property
+    def properties(self):
+        return {
+            'callback': self.callback,
+            'url': self.url,
+            'modal_url': self.modal_url,
+            'confirm_message': self.confirm_message,
+            'show_overlay': self.show_overlay,
+        }
+
+    @staticmethod
+    def register_callback(callback, job_type, name=None):
+        if isinstance(callback, str):
+            getattr(job_type, callback)
+            return callback
+        elif callable(callback):
+            name = name or callback.__name__
+            setattr(job_type, name, callback)
+            return name
+        else:
+            raise ValueError(f'The specified callback "{callback}" is not valid.')
+
+    @staticmethod
+    def get_enabled_callback_name(label):
+        return f'custom_action_{label}_enabled'
+
+
+DEFAULT_ACTIONS_ARGS = dict(
+    run=['Run', 'execute', lambda job, job_status: job_status == 'Pending'],
+    pause=['Pause', 'pause', lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES],
+    resume=['Resume', 'resume', lambda job, job_status: job_status == 'Paused'],
+    resubmit=['Resubmit', 'resubmit', lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES, '', True],
+    logs=['View Logs', None, lambda job, job_status: job_status not in TethysJob.PRE_RUNNING_STATUSES],
+    monitor=['Monitor Job', None, lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES],
+    results=['View Results', None, lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES],
+    terminate=['Terminate', 'stop', lambda job, job_status: job_status in TethysJob.ACTIVE_STATUSES,
+               'Are you sure you want to terminate this job?', True],
+    delete=['Delete', 'delete', lambda job, job_status: job_status not in TethysJob.ACTIVE_STATUSES,
+            'Are you sure you want to permanently delete this job?', True],
+)
 
 
 class JobsTable(TethysGizmoOptions):
@@ -86,9 +171,7 @@ class JobsTable(TethysGizmoOptions):
     def __init__(self, jobs, column_fields, show_status=True, show_actions=True,
                  monitor_url='', results_url='', hover=False, striped=False, bordered=False, condensed=False,
                  attributes=None, classes='', refresh_interval=5000, delay_loading_status=True,
-                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None,
-                 # Deprecated options:
-                 status_actions=None, show_resubmit_btn=None, run_btn=None, delete_btn=None, show_log_btn=None):
+                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None):
         """
         Constructor
         """
@@ -99,12 +182,9 @@ class JobsTable(TethysGizmoOptions):
         self.rows = None
         self.column_fields = None
         self.column_names = None
-        self.set_rows_and_columns(jobs, column_fields)
 
         self.show_status = show_status
         self.show_actions = show_actions
-        self.monitor_url = monitor_url
-        self.results_url = results_url
         self.hover = hover
         self.striped = striped
         self.bordered = bordered
@@ -117,44 +197,62 @@ class JobsTable(TethysGizmoOptions):
         self.enable_data_table = enable_data_table
         self.data_table_options = data_table_options or {'ordering': True, 'searching': False, 'paging': False}
 
-        actions = actions or ['run', 'resubmit', 'logs', 'terminate', 'delete']
-        if monitor_url:
-            actions.append('monitor')
-        if results_url:
-            actions.append('results')
+        actions = actions or ['run', 'resubmit', '|', 'logs', 'monitor', 'results', '|', 'terminate', 'delete']
 
-        # code for backwards compatibility. Remove in Tethys v3.3
-        if status_actions is not None:
-            # deprecation warning
-            write_warning('Deprecation Warning: The "status_actions" option in JobsTable will be removed in '
-                          'the next release of Tethys. Please use "show_status" and "show_actions" instead.')
-            self.show_actions = status_actions
-        lcl = locals()
-        for option, action in (('run_btn', 'run'), ('delete_btn', 'delete'), ('show_resubmit_btn', 'resubmit'),
-                               ('show_log_btn', 'logs')):
-            option_val = lcl[option]
-            if option_val is not None:
-                # deprecation warning
-                write_warning(f'Deprecation Warning: The "{option}" option in JobsTable will be removed in the '
-                              f'next release of Tethys. Please use the "show_actions" and "actions" options instead.')
-                if option_val:
-                    actions.append(action)
-                else:
-                    try:
+        # TODO: this is backward compatibility code, remove at next major release
+        if '|' not in actions:
+            # revert to previous default order
+            actions.extend(['monitor', 'results'])
+            actions = set(actions)
+            ordered_actions = list()
+            prev_len = 0
+            for action_group in [
+                ['run', 'pause', 'resume', 'resubmit'],
+                ['logs', 'monitor', 'results'],
+                ['terminate', 'delete'],
+            ]:
+                for action in action_group:
+                    if action in actions:
+                        ordered_actions.append(action)
                         actions.remove(action)
-                    except ValueError:
-                        pass
+                if len(ordered_actions) > prev_len:
+                    ordered_actions.append('|')
+                prev_len = len(ordered_actions)
+            ordered_actions.extend(actions)
+            actions = ordered_actions[:-1] if ordered_actions[-1] == '|' else ordered_actions
         # end compatibility code
 
-        self.actions = dict(
-            run='run' in actions,
-            resubmit='resubmit' in actions,
-            logs='logs' in actions,
-            monitor='monitor' in actions and monitor_url,
-            results='results' in actions and results_url,
-            terminate='terminate' in actions,
-            delete='delete' in actions,
-        )
+        for action_name, url in (('monitor', monitor_url), ('results', results_url)):
+            if url:
+                args = DEFAULT_ACTIONS_ARGS[action_name]
+                args[1] = url
+                if action_name in actions:
+                    actions[actions.index(action_name)] = args
+                else:
+                    actions.append(args)
+            elif action_name in actions:
+                actions.remove(action_name)
+
+        self.actions = dict()
+
+        for i, action in enumerate(actions):
+            if action == '|':
+                self.actions[f'_sep_{i}'] = {'sep': i}
+                # the value dict (i.e. {'sep': i}) needs to have some value in it for the POST request to keep it
+                continue
+            if isinstance(action, str):
+                try:
+                    args = DEFAULT_ACTIONS_ARGS[action]
+                    action = CustomJobAction(*args)
+                except KeyError:
+                    raise ValueError(f'The action "{action}" is not a valid default action.')
+            if isinstance(action, tuple) or isinstance(action, list):
+                action = CustomJobAction(*action)
+
+            if isinstance(action, CustomJobAction):
+                self.actions[action.label] = action.properties
+
+        self.set_rows_and_columns(jobs, column_fields)
 
         # Compute column count
         self.num_cols = len(column_fields)
@@ -178,9 +276,13 @@ class JobsTable(TethysGizmoOptions):
             if isinstance(field, tuple):
                 column_name, field = field
             else:
-                column_name = field.title().replace('_', ' ')
+                column_name = field
+                if field.startswith('extended_properties'):
+                    column_name = field.split('.')[-1]
+                column_name = column_name.title().replace('_', ' ')
             try:
-                getattr(first_job, field)  # verify that the field name is a valid attribute on the job
+                if not field.startswith('extended_properties'):
+                    getattr(first_job, field)  # verify that the field name is a valid attribute on the job
                 self.column_names.append(column_name)
                 self.column_fields.append(field)
             except AttributeError:
@@ -188,45 +290,48 @@ class JobsTable(TethysGizmoOptions):
                             column_name, str(first_job), field)
 
         for job in sorted(jobs):
-            row_values = self.get_row(job, self.column_fields)
+            row_values = self.get_row(
+                job, self.column_fields, deepcopy(self.actions), delay_loading_status=self.delay_loading_status
+            )
             self.rows.append(row_values)
 
     @staticmethod
-    def get_row(job, job_attributes):
+    def get_row(job, job_attributes, actions=None, delay_loading_status=False):
         """Get the field values for one row (corresponding to one job).
 
         Args:
             job (TethysJob): An instance of a subclass of TethysJob
             job_attributes (list): a list of attribute names corresponding to the fields in the jobs table
+            actions (dict): a dictionary of custom actions
 
         Returns:
             A list of field values for one row.
 
         """
-        from tethys_compute.models import TethysJob
+        job_actions = actions or {}
         row_values = list()
-        job_actions = dict()
+        extended_properties = job.extended_properties
         for attribute in job_attributes:
-            value = getattr(job, attribute)
-            # Truncate fractional seconds
-            if attribute == 'run_time':
-                value = str(value).split('.')[0]
             if attribute.startswith('extended_properties'):
-                extended_properties = job.extended_properties
-                attribute = attribute.split('.')[-1]
-                value = extended_properties.get(attribute, '')
+                parts = attribute.split('.')
+                keys = parts[1:-1]
+                cur_dict = extended_properties
+                for key in keys:
+                    cur_dict = cur_dict.get(key, {})
+                value = cur_dict.get(parts[-1], '')
+            else:
+                value = getattr(job, attribute)
+                # Truncate fractional seconds
+                if attribute == 'run_time':
+                    value = str(value).split('.')[0]
+
             row_values.append(value)
 
-            job_status = job.status
-            job_actions = dict(
-                run=job_status == 'Pending',
-                resubmit=job_status in TethysJob.TERMINAL_STATUSES,
-                monitor=job_status in TethysJob.RUNNING_STATUSES,
-                results=job_status in TethysJob.TERMINAL_STATUSES,
-                logs=job_status not in TethysJob.PRE_RUNNING_STATUSES,
-                terminate=job_status in TethysJob.ACTIVE_STATUSES,
-                delete=job_status not in TethysJob.ACTIVE_STATUSES,
-            )
+        job_status = None if delay_loading_status else job.status
+
+        for action, properties in job_actions.items():
+            properties['enabled'] = getattr(
+                job, CustomJobAction.get_enabled_callback_name(action), lambda js: True)(job_status)
 
         return JobsTableRow(row_values, actions=job_actions)
 
@@ -240,11 +345,11 @@ class JobsTable(TethysGizmoOptions):
     @staticmethod
     def get_vendor_js():
         return (
-            vendor_static_dependencies['d3'].js_url,
-            vendor_static_dependencies['lodash'].js_url,
-            vendor_static_dependencies['graphlib'].js_url,
-            vendor_static_dependencies['dagre'].js_url,
-            vendor_static_dependencies['dagre-d3'].js_url,
+            'https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js',
+            'tethys_gizmos/vendor/lodash/lodash.min.js',
+            'tethys_gizmos/vendor/graphlib/dist/graphlib.core.min.js',
+            'tethys_gizmos/vendor/dagre/dist/dagre.core.min.js',
+            'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js',
             *SelectInput.get_vendor_js(),
         )
 
@@ -256,3 +361,75 @@ class JobsTable(TethysGizmoOptions):
         return (
             'tethys_gizmos/js/jobs_table.js',
         )
+
+    @staticmethod
+    def get_gizmo_modals():
+        return (
+            jobs_table_modals,
+        )
+
+# HTML code to be read
+jobs_table_modals = '''
+<!-- Jobs Table: Loading Overlay -->
+<div id="jobs_table_overlay" class="hidden">
+    <div class="cv-spinner" >
+        <span class="spinner"></span>
+    </div>
+</div>
+
+<!-- Jobs Table: Logs Modal -->
+<div id="modal-dialog-jobs-table-show-log" title="Logs" class="modal" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalJobLogTitle">Logs</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="modal-dialog-jobs-table-log-nav"></div>
+      <div class="modal-body" id="modal-dialog-jobs-table-log-body">
+        <div id="jobs_table_logs_overlay" class="hidden">
+          <div class="cv-spinner" >
+            <span class="spinner"></span>
+          </div>
+        </div>
+        <div id="modal-dialog-jobs-table-log-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="tethys_log_refresh_job_id" value="">Refresh</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Jobs Table: Confirmation Modal -->
+<div id="modal-dialog-jobs-table-confirm" title="Confirm" class="modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-job-confirm-title">Confirm Action</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-dialog-jobs-table-confirm-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="tethys_jobs-table-confirm" value="">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Jobs Table: Custom Modal -->
+<div id="modal-dialog-jobs-table-modal" title="Modal_option" class="modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" id="modal-dialog-jobs-table-modal-content">
+    </div>
+  </div>
+</div>
+'''
