@@ -78,7 +78,7 @@ def passes_quota(entity, codename):
         return rq.check_quota(entity)
 
     except ResourceQuota.DoesNotExist:
-        log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+        log.info('ResourceQuota with codename {} does not exist.'.format(codename))
         return True
 
 
