@@ -302,16 +302,8 @@ def user_workspace(controller):
         # Get user
         user = request.user
 
-        try:
-            codename = 'user_workspace_quota'
-            rq = ResourceQuota.objects.get(codename=codename)
-
-            if not passes_quota(user, codename):
-                raise PermissionDenied(rq.help)
-
-        except ResourceQuota.DoesNotExist:
-            log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
-
+        assert passes_quota(user, 'user_workspace_quota')
+        
         # Get the active app
         app = get_active_app(request, get_class=True)
 
@@ -409,8 +401,7 @@ def app_workspace(controller):
         # Get the active app
         app = get_active_app(request, get_class=True)
 
-        if not passes_quota(app, 'app_workspace_quota'):
-            raise PermissionDenied(rq.help)  # TODO raise this in passes_quota?
+        assert passes_quota(app, 'app_workspace_quota')
 
         the_workspace = _get_app_workspace(app)
 
