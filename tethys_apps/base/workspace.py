@@ -303,7 +303,7 @@ def user_workspace(controller):
         user = request.user
 
         assert passes_quota(user, 'user_workspace_quota')
-        
+
         # Get the active app
         app = get_active_app(request, get_class=True)
 
