@@ -10,6 +10,7 @@ from tethys_sdk.gizmos import SelectInput
 
 log = logging.getLogger('tethys.tethys_gizmos.views.jobs_table')
 
+
 def perform_action(request, job_id, action, success_message='', error_message=None):
     try:
         job = TethysJob.objects.get_subclass(id=job_id)
@@ -293,7 +294,7 @@ def _parse_value(val):
 def reconstruct_post_dict(request):
     data = {key: _parse_value(val) for key, val in request.POST.items()}
     # parse out dictionaries from POST items
-    parts = [re.split('[\[\]]+', k)[:-1] for k in data.keys() if '[' in k]
+    parts = [re.split('[\[\]]+', k)[:-1] for k in data.keys() if '[' in k]  # noqa: W605
     for p in parts:
         name = p[0]
         keys = p[1:]
