@@ -212,7 +212,7 @@ p.loading-error {
 }
 
 /* Status indicator */
-.status-indicator, .status-info{
+.status-indicator{
     border-radius: 50%;
     height: 14px;
     width: 14px;
@@ -224,14 +224,8 @@ p.loading-error {
     top: 1px;
 }
 
-.status-indicator.error{
-  top: 5px;
-}
-
-.status-indicator i{
-  position: relative;
-  top: -5px;
-  left: -1px;
+.status-info{
+    color: #7f7f7f;
 }
 
 .status-pending{
@@ -240,37 +234,40 @@ p.loading-error {
   color: white;
 }
 
+.status-info.status-pending{
+  color: black;
+  border: none;
+}
+
 .status-submitted, .status-paused{
   background: #f0ad4e;
+  color: #f0ad4e;
 }
 
 .status-running{
   background: #5bc1df;
+  color: #5bc1df;
 }
 
 .status-complete{
   background: #5cb85b;
+  color: #5cb85b;
 }
 
 .status-error{
   background: #d9524f;
+  color: #d9524f;
 }
 
 .status-aborted{
   background: black;
-}
-
-.status-info.status-pending{
-  background: black;
-  width: 16px;
-  height: 16px;
+  color: black;
 }
 
 .status-info{
-  background: white;
+  background: none;
   margin-right: 5px;
   font-size: 14px;
-  top: 2px;
 }
 
 .status-various-complete{

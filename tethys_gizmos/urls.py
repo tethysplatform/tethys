@@ -20,7 +20,7 @@ ajax_urls = [
     re_path(r'^(?P<job_id>[\d.@+-]+)/action/update-workflow-nodes-row', jobs_table_views.update_workflow_nodes_row,
             name='update_workflow_nodes_row'),
     re_path(r'^(?P<job_id>[\d.@+-]+)/(?P<type>[\w-]+)/insert-bokeh-row', jobs_table_views.bokeh_row, name='bokeh_row'),
-    re_path(r'^(?P<job_id>[\d.@+-]+)/custom-action/(?P<action>[\w+-]+)', jobs_table_views.perform_action,
+    re_path(r'^(?P<job_id>[\d.@+-]+)/action/(?P<action>[\w+-]+)', jobs_table_views.perform_action,
             name='custom_action'),
 ]
 
