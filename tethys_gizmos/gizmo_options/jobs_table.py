@@ -305,6 +305,7 @@ class JobsTable(TethysGizmoOptions):
             job (TethysJob): An instance of a subclass of TethysJob
             job_attributes (list): a list of attribute names corresponding to the fields in the jobs table
             actions (dict): a dictionary of custom actions
+            delay_loading_status (bool): whether to delay loading the status
 
         Returns:
             A list of field values for one row.
@@ -347,11 +348,11 @@ class JobsTable(TethysGizmoOptions):
     @staticmethod
     def get_vendor_js():
         return (
-            'https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js',
-            'tethys_gizmos/vendor/lodash/lodash.min.js',
-            'tethys_gizmos/vendor/graphlib/dist/graphlib.core.min.js',
-            'tethys_gizmos/vendor/dagre/dist/dagre.core.min.js',
-            'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js',
+            vendor_static_dependencies['d3'].js_url,
+            vendor_static_dependencies['lodash'].js_url,
+            vendor_static_dependencies['graphlib'].js_url,
+            vendor_static_dependencies['dagre'].js_url,
+            vendor_static_dependencies['dagre-d3'].js_url,
             *SelectInput.get_vendor_js(),
         )
 
@@ -373,7 +374,7 @@ class JobsTable(TethysGizmoOptions):
 # HTML code to be read
 jobs_table_modals = '''
 <!-- Jobs Table: Loading Overlay -->
-<div id="jobs_table_overlay" class="hidden">
+<div id="jobs_table_overlay" class="d-none">
     <div class="cv-spinner" >
         <span class="spinner"></span>
     </div>
@@ -385,13 +386,11 @@ jobs_table_modals = '''
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="ModalJobLogTitle">Logs</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div id="modal-dialog-jobs-table-log-nav"></div>
       <div class="modal-body" id="modal-dialog-jobs-table-log-body">
-        <div id="jobs_table_logs_overlay" class="hidden">
+        <div id="jobs_table_logs_overlay" class="d-none">
           <div class="cv-spinner" >
             <span class="spinner"></span>
           </div>
@@ -399,8 +398,8 @@ jobs_table_modals = '''
         <div id="modal-dialog-jobs-table-log-content"></div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-success" id="tethys_log_refresh_job_id" value="">Refresh</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -412,15 +411,13 @@ jobs_table_modals = '''
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modal-job-confirm-title">Confirm Action</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div id="modal-dialog-jobs-table-confirm-content"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-danger" id="tethys_jobs-table-confirm" value="">Yes</button>
       </div>
     </div>

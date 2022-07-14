@@ -18,13 +18,12 @@ function add_message(message, message_type='danger'){
 
 const status_html =
 '<div class="progress" style="margin-bottom: 0;">' +
-    '<div class="progress-bar bg-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
-        '<span class="sr-only">100% Complete</span>' +
+    '<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
     '</div>' +
 '</div>';
 
 function bind_action(action, on_success=()=>{}){
-  if($(action).parent().hasClass('disabled')){
+  if($(action).hasClass('disabled')){
     return;
   }
   var job_id = $(action).data('job-id');
@@ -37,13 +36,13 @@ function bind_action(action, on_success=()=>{}){
 
   var do_action = function () {
       if(show_overlay){
-        $("#jobs_table_overlay").removeClass('hidden');
+        $("#jobs_table_overlay").removeClass('d-none');
       }
       $(action).closest('td').prev().html(status_html);
       $.ajax({
           url: url
       }).done(function (json) {
-          $("#jobs_table_overlay").addClass('hidden');
+          $("#jobs_table_overlay").addClass('d-none');
           update_row($('#jobs-table-row-' + job_id));
           if(json.success){
             on_success(job_id);

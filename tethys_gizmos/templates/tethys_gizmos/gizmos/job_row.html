@@ -30,7 +30,7 @@
         </div>
       {% else %}
         {% if error_message %}
-          <div class="status-info status-{{ job_status|codify }} error"><i class="bi bi-info" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ error_message }}"></i></div>
+          <i class="bi bi-info-circle{% if job_status|codify != "pending" %}-fill{% endif %} status-info status-{{ job_status|codify }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ error_message }}"></i>
         {% else %}
           <div class="status-indicator status-{{ job_status|codify }}"></div>
         {% endif %}
@@ -47,10 +47,10 @@
       <ul class="dropdown-menu dropdown-menu-right">
         {% for action, properties in row.actions.items %}
           {% if action|slice:":5" == "_sep_" %}
-            <li role="separator" class="dropdown-divider"></li>
+            <li><hr class="dropdown-divider"></li>
           {% else %}
-            <li class="{% if not properties.enabled %}disabled{% endif %}">
-              <a class="dropdown-item job-action job-action-{{ action|codify }}"
+            <li>
+              <a class="dropdown-item {% if not properties.enabled %}disabled{% endif %} job-action job-action-{{ action|codify }}"
                 {% if properties.enabled %}
                   href="{% if properties.url %}{% url properties.url job_id=job.id %}{% else %}javascript:void(0){% endif %}"
                  {% if properties.modal_url %}
@@ -63,8 +63,8 @@
                       data-confirm-message="{{ properties.confirm_message }}"
                     {% endif %}
                   {% if action == 'View Logs' %}
-                    data-toggle="modal"
-                    data-target="#modal-dialog-jobs-table-show-log"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-dialog-jobs-table-show-log"
                   {% endif %}
                 {% else %}
                   href="#"
