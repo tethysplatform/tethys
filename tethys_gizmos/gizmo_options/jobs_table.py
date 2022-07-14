@@ -371,6 +371,7 @@ class JobsTable(TethysGizmoOptions):
             jobs_table_modals,
         )
 
+
 # HTML code to be read
 jobs_table_modals = '''
 <!-- Jobs Table: Loading Overlay -->
