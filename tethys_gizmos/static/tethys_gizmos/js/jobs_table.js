@@ -287,7 +287,7 @@ function update_row(table_elem){
     var column_fields = $(table).data('column-fields');
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/action/update-row';
+    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
 
     var data = {
         column_fields: column_fields,
@@ -375,7 +375,7 @@ function update_workflow_nodes_row(table_elem){
     var job_id = $(table_elem).data('job-id');
     var target_selector = "#" + $(table_elem).attr('id') + " td .workflow-nodes-graph";
     var error_selector = target_selector + ' .loading-error';
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/action/update-workflow-nodes-row';
+    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-workflow-nodes-row';
 
     $.ajax({
         method: 'POST',
