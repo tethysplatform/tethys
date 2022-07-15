@@ -10,7 +10,7 @@ from tethys_gizmos.views.gizmos.jobs_table import bokeh_row
 
 class TestJobsTable(unittest.TestCase):
     column_names = "['id', 'creation_time']"
-    
+
     def setUp(self):
         pass
 
