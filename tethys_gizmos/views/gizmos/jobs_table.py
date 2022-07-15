@@ -20,7 +20,7 @@ def perform_action(request, job_id, action, success_message='', error_message=No
     except Exception as e:
         success = False
         log.exception(e)
-        log.error('The following error occurred when running "%s" on job %s: %s', action, job_id, str(e))
+        log.error(f'The following error occurred when running "{action}" on job {job_id}: {str(e)}')
         message = error_message or f'Unable to {action} job {job_id}.'
     return JsonResponse({'success': success, 'message': message})
 
@@ -39,7 +39,7 @@ def delete(request, job_id):
     except Exception as e:
         success = True
         message = str(e)
-        log.error('The following error occurred when deleting job %s: %s', job_id, message)
+        log.error(f'The following error occurred when deleting job {job_id}: {message}')
     return JsonResponse({'success': success, 'message': message})
 
 

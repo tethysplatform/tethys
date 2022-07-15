@@ -14,7 +14,6 @@ from functools import wraps
 from copy import deepcopy
 
 from tethys_portal.dependencies import vendor_static_dependencies
-from tethys_cli.cli_colors import write_warning
 from tethys_compute.models import TethysJob
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
@@ -30,7 +29,7 @@ JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions'])
 def add_static_method(cls):
     def outer(func):
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(_, *args, **kwargs):
             return func(*args, **kwargs)
         setattr(cls, func.__name__, wrapper)
         return func
@@ -59,8 +58,6 @@ class CustomJobAction:
 
         if callback_or_url is None:
             pass
-        elif modal_url is None and callback_or_url is None:
-            raise ValueError('There is not a callback url or modal url.')
         else:
             if isinstance(callback_or_url, str) and (':' in callback_or_url or '/' in callback_or_url):
                 self.url = callback_or_url
