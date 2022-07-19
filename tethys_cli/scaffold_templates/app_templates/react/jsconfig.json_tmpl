@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "baseUrl": "reactapp",
+        "module": "CommonJS",
+        "target": "ES6"
+    },
+    "include": ["reactapp"],
+    "exclude": [
+        "node_modules",
+        "tethysapp"
+    ]
+}

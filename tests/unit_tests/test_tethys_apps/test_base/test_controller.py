@@ -219,3 +219,21 @@ class TestController(unittest.TestCase):
         mock_importlib.import_module.side_effect = ModuleNotFoundError
         tethys_controller.register_controllers('root', 'controllers')
         mock_warning.assert_called_once()
+
+    @mock.patch('tethys_apps.base.controller.isinstance')
+    @mock.patch('tethys_apps.base.controller.get_all_submodules')
+    @mock.patch('tethys_apps.base.controller.importlib')
+    @mock.patch('tethys_apps.base.controller.list')
+    @mock.patch('tethys_apps.base.controller.url_map_maker')
+    def test_register_controllers_catch_all(self, mock_url_map_maker, mock_list, _, __, ___):
+        mock_controller = mock.MagicMock(__module__='module', __name__='name')
+        mock_list.return_value = [
+                {'name': 'foo', 'url': 'url', 'controller': mock_controller},
+            ]
+        mock_UrlMap = mock_url_map_maker()
+        tethys_controller.register_controllers('root', 'controllers', catch_all='foo')
+        mock_UrlMap.assert_called_with(
+            name='catch_all',
+            url='root/.*/',
+            controller=mock_controller
+        )

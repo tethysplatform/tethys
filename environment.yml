@@ -58,6 +58,7 @@ dependencies:
   - django-filter
   - djangorestframework
   - django-bootstrap5
+  - django-cors-headers
   - django-model-utils
   - django-guardian
   - django-gravatar2

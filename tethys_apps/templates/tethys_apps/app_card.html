@@ -1,7 +1,7 @@
 {% load static tags site_settings %}
 <div class="app-card-container position-relative" data-tags="{{ app|get_tag_class }}">
     {% if not unconfigured %}
-    <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" {% if not app.show_in_apps_library %}title="Hidden"{% elif not app.enabled %}title="Disabled"{% else %}title="{{ app.name }}"{% endif %} href="{% if app.proxied %}{{ app.url }}{% else %}{% url app.index %}{% endif %}">
+    <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" {% if not app.show_in_apps_library %}title="Hidden"{% elif not app.enabled %}title="Disabled"{% else %}title="{{ app.name }}"{% endif %} href="{% if app.proxied %}{{ app.url }}{% else %}{% url app.index_url %}{% endif %}">
     {% else %}
     <a class="app-link-wrapper rounded d-block mt-4 unconfigured" title="Not Configured" href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
     {% endif %}
