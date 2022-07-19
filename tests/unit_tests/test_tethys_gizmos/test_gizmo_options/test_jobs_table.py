@@ -189,6 +189,18 @@ class TestJobsTable(unittest.TestCase):
 
         self.assertIn('Custom Action', ret.actions)
 
+    def test_JobsTable_init_custom_action_no_callback_or_modal(self):
+        job1 = JobObject(1, 'name1', 'des1', 1, 1)
+        job2 = JobObject(2, 'name2', 'des2', 2, 2)
+        jobs = [job1, job2]
+        column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
+
+        self.assertRaises(
+            ValueError,
+            gizmo_jobs_table.JobsTable,
+            jobs=jobs, column_fields=column_fields, actions=[('Custom Action',)]
+        )
+
     def test_add_static_method(self):
         @gizmo_jobs_table.add_static_method(JobObject)
         def mock_static_method():

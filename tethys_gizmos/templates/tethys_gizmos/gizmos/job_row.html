@@ -52,19 +52,18 @@
             <li>
               <a class="dropdown-item {% if not properties.enabled %}disabled{% endif %} job-action job-action-{{ action|codify }}"
                 {% if properties.enabled %}
-                  href="{% if properties.url %}{% url properties.url job_id=job.id %}{% else %}javascript:void(0){% endif %}"
-                 {% if properties.modal_url %}
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-dialog-jobs-table-modal"
-                      data-modal-url ="{% url properties.modal_url job_id=job.id %}"
-                    {% elif properties.confirm_message %}
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-dialog-jobs-table-confirm"
-                      data-confirm-message="{{ properties.confirm_message }}"
-                    {% endif %}
+                    href="{% if properties.url %}{% url properties.url job_id=job.id %}{% else %}javascript:void(0){% endif %}"
                   {% if action == 'View Logs' %}
                     data-bs-toggle="modal"
                     data-bs-target="#modal-dialog-jobs-table-show-log"
+                  {% elif properties.modal_url %}
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-dialog-jobs-table-modal"
+                    data-modal-url ="{% url properties.modal_url job_id=job.id %}"
+                  {% elif properties.confirmation_message %}
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-dialog-jobs-table-confirm"
+                    data-confirmation-message="{{ properties.confirmation_message }}"
                   {% endif %}
                 {% else %}
                   href="#"
