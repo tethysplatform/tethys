@@ -202,7 +202,7 @@ class JobsTable(TethysGizmoOptions):
         column_fields(tuple or list, required): A tuple or list of strings that represent TethysJob object attributes to show in the columns.
         show_status(bool): Add a column to the table to show dynamically updating job status. Default is True.
         show_actions(bool): Add a column to the table to show a dynamically updating dropdown list of actions that can be done on the job. The available actions are determined by `actions` option. Actions are enabled/disabled based on the job status. If this is False then then `actions` option ignored.
-        actions(list): A list of default actions or custom action arguments that can be done on a job with the `|` character used to divide the actions into sections. If None then all the default actions will be used (i.e. `['run', 'resubmit', '|', 'logs', 'monitor', 'results', '|', 'terminate', 'delete']`). Note that if `monitor_url` and `results_url` are supplied then 'monitor' and 'results' respectively will be added if not already in the list. If they are not provided then `monitor` and `results` will be removed from the list if present. Default is None. 
+        actions(list): A list of default actions or custom action arguments that can be done on a job with the `|` character used to divide the actions into sections. If None then all the default actions will be used (i.e. `['run', 'resubmit', '|', 'logs', 'monitor', 'results', '|', 'terminate', 'delete']`). Note that if `monitor_url` and `results_url` are supplied then 'monitor' and 'results' respectively will be added if not already in the list. If they are not provided then `monitor` and `results` will be removed from the list if present. Default is None.
         monitor_url(str):  A string representing the namespaced path to a controller to that displays monitoring information about a running job (e.g. app_name:monitoring_controller)
         results_url(str): A string representing the namespaced path to a controller to that displays job results (e.g. app_name:results_controller)
         hover(bool): Illuminate rows on hover (does not work on striped tables)
@@ -235,20 +235,20 @@ class JobsTable(TethysGizmoOptions):
         }
 
     Controller Example with Custom Actions
-    
+
     ::
-    
+
         from tethys_sdk.gizmos import JobsTable, CustomJobAction
-        
+
         def custom_action(job):
             # do something with job
-            
+
         def custom_action2(job):
             # do something with job
-            
+
         def enable_custom_action(job):
             # custom logic to determine if action should be enabled
-        
+
         def controller(request):
             ...
 
@@ -256,16 +256,16 @@ class JobsTable(TethysGizmoOptions):
                 jobs=jobs,
                 column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
                 actions=[
-                    'run', 'resubmit', '|', 
-                    'logs', '|', 
+                    'run', 'resubmit', '|',
+                    'logs', '|',
                     'terminate', 'delete', '|',
                     CustomJobAction(
-                        label='Custom Action', 
-                        callback_or_url=custom_action, 
-                        enabled_callback=enable_custom_action, 
+                        label='Custom Action',
+                        callback_or_url=custom_action,
+                        enabled_callback=enable_custom_action,
                         confirmation_message='Do you really want to do this?',
                         show_overlay=True,  # displays the overlay loading spinner until the custom action function returns
-                    ), 
+                    ),
                     # Custom actions can also be defined as a list/tuple of args. The only required arguments are label and callback_or_url
                     ('Another Custom Action', custom_action2),
                     # Instead of a function a custom action can just be a url name for a custom endpoint
@@ -283,7 +283,7 @@ class JobsTable(TethysGizmoOptions):
                 'jobs_table_options': jobs_table_options,
             }
             ...
-        
+
 
     Template Example
 
@@ -292,10 +292,10 @@ class JobsTable(TethysGizmoOptions):
         {% load tethys_gizmos %}
 
         {% gizmo jobs_table_options %}
-        
+
     .. tip::
-    
-        To see the Jobs Table Gizmo in action, install the `Gizmo Showcase Tethys app. 
+
+        To see the Jobs Table Gizmo in action, install the `Gizmo Showcase Tethys app.
         <https://github.com/tethysplatform/tethysapp-gizmo_showcase>`_
 
     """  # noqa: E501
