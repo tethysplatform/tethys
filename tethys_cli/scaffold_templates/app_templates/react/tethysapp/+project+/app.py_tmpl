@@ -1,0 +1,18 @@
+from tethys_sdk.base import TethysAppBase
+
+
+class {{class_name}}(TethysAppBase):
+    """
+    Tethys app class for {{proper_name}}.
+    """
+    name = '{{proper_name}}'
+    description = '{{description|default("Place a brief description of your app here.")}}'
+    package = '{{project}}'  # WARNING: Do not change this value
+    index = 'home'
+    icon = f'{package}/images/icon.png'
+    catch_all = 'home'  # Catch all url mapped to home controller, required for react browser routing
+    root_url = '{{project_url}}'
+    color = ''  # Don't set color here, set it in reactapp/custom-bootstrap.scss
+    tags = '{{tags}}'
+    enable_feedback = False
+    feedback_emails = []

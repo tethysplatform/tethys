@@ -1,0 +1,16 @@
+{{ '{%' }} load static {{ '%}' }}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="{{color}}" />
+		<link rel="shortcut icon" href="{{ '{%' }} if site_globals.favicon and 'http' in site_globals.favicon {{ '%}' }}{{ '{{' }} site_globals.favicon }{{ "}" }}{{ '{%' }} elif site_globals.favicon {{ '%}' }}{{ '{%' }} static site_globals.favicon {{ '%}' }}{{ '{%' }} else {{ '%}' }}{{ '{%' }} static 'tethys_portal/images/default_favicon.png' {{ '%}' }}{{ '{%' }} endif {{ '%}' }}" />
+		<title>{{ '{{' }} tethys_app.name }{{ "}" }}</title>
+	</head>
+	<body style="margin: 0;">
+		<noscript>You need to enable JavaScript to run this app.</noscript>
+		<div id="root"></div>
+		<script src="{{ '{%' }} static '{{project}}/frontend/main.js' {{ '%}' }}"></script>
+	</body>
+</html>

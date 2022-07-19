@@ -140,6 +140,7 @@ LOGGERS.setdefault('tethysapp', {
 
 INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'channels',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -173,6 +174,7 @@ INSTALLED_APPS = tuple(INSTALLED_APPS + portal_config_settings.pop('INSTALLED_AP
 
 MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -338,6 +340,7 @@ MFA_QUICKLOGIN = False               # Allow quick login for returning users by 
 MFA_HIDE_DISABLE = ('FIDO2',)        # Can the user disable his key (Added in 1.2.0).
 MFA_OWNED_BY_ENTERPRISE = False      # Who owns security keys
 TOKEN_ISSUER_NAME = 'Tethys Portal'  # TOTP Issuer name
+MFA_SUCCESS_REGISTRATION_MSG = ''
 
 U2F_APPID = 'http://localhost'       # URL For U2F
 FIDO_SERVER_ID = u'localhost'        # Server rp id for FIDO2, it's the full domain of your project
@@ -392,4 +395,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():
+    setattr(this_module, setting, value)
+
+COOKIE_CONFIG = portal_config_settings.pop('COOKIE_CONFIG', {})
+for setting, value in COOKIE_CONFIG.items():
+    setattr(this_module, setting, value)
+
+CORS_CONFIG = portal_config_settings.pop('CORS_CONFIG', {})
+for setting, value in CORS_CONFIG.items():
     setattr(this_module, setting, value)

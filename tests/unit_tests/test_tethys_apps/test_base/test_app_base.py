@@ -352,6 +352,14 @@ class TestTethysBase(unittest.TestCase):
     def test_remove_from_db(self):
         self.assertRaises(NotImplementedError, tethys_app_base.TethysBase().remove_from_db)
 
+    def test_db_model(self):
+        with self.assertRaises(NotImplementedError):
+            tethys_app_base.TethysBase.db_model
+
+    def test_db_object(self):
+        with self.assertRaises(NotImplementedError):
+            tethys_app_base.TethysBase.db_object
+
 
 class TestTethysExtensionBase(unittest.TestCase):
     def setUp(self):
@@ -362,11 +370,30 @@ class TestTethysExtensionBase(unittest.TestCase):
 
     def test__str__(self):
         result = tethys_app_base.TethysExtensionBase().__str__()
-        self.assertEqual('<TethysApp: >', result)
+        self.assertEqual('<TethysExt: >', result)
 
     def test__repr__(self):
         result = tethys_app_base.TethysExtensionBase().__repr__()
-        self.assertEqual('<TethysApp: >', result)
+        self.assertEqual('<TethysExt: >', result)
+
+    def test_package_namespace(self):
+        ret = tethys_app_base.TethysExtensionBase.package_namespace
+        self.assertEqual('tethysext', ret)
+
+    def test_db_model(self):
+        from tethys_apps.models import TethysExtension
+        ret = tethys_app_base.TethysExtensionBase.db_model
+        self.assertIs(TethysExtension, ret)
+
+    @mock.patch('tethys_apps.models.TethysExtension')
+    def test_db_object(self, mock_TethysExtension):
+        ret = tethys_app_base.TethysExtensionBase.db_object
+        self.assertEqual(mock_TethysExtension.objects.get(), ret)
+
+    @mock.patch('tethys_apps.models.TethysExtension')
+    def test_id(self, mock_TethysExtension):
+        ret = tethys_app_base.TethysExtensionBase.id
+        self.assertEqual(mock_TethysExtension.objects.get().id, ret)
 
     @mock.patch('tethys_apps.base.controller.register_controllers')
     def test_url_maps(self, mock_rc):
@@ -448,6 +475,25 @@ class TestTethysAppBase(unittest.TestCase):
     def test__repr__(self):
         result = tethys_app_base.TethysAppBase().__repr__()
         self.assertEqual('<TethysApp: >', result)
+
+    def test_package_namespace(self):
+        ret = tethys_app_base.TethysAppBase.package_namespace
+        self.assertEqual('tethysapp', ret)
+
+    def test_db_model(self):
+        from tethys_apps.models import TethysApp
+        ret = tethys_app_base.TethysAppBase.db_model
+        self.assertIs(TethysApp, ret)
+
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_db_object(self, mock_TethysApp):
+        ret = tethys_app_base.TethysAppBase.db_object
+        self.assertEqual(mock_TethysApp.objects.get(), ret)
+
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_id(self, mock_TethysApp):
+        ret = tethys_app_base.TethysAppBase.id
+        self.assertEqual(mock_TethysApp.objects.get().id, ret)
 
     def test_custom_settings(self):
         self.assertIsNone(tethys_app_base.TethysAppBase().custom_settings())
@@ -1116,7 +1162,7 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check if TethysApp is called
         mock_ta.assert_called_with(color='c', description='d', enable_feedback='e', feedback_emails='f',
-                                   icon='ic', index='r:in', name='n', package='p', root_url='r', tags='t')
+                                   icon='ic', index='in', name='n', package='p', root_url='r', tags='t')
 
         # Check if save is called 2 times
         self.assertTrue(mock_ta().save.call_count == 2)
