@@ -38,6 +38,7 @@ class TethysBase(TethysBaseMixin):
     name = ''
     description = ''
     package = ''
+    catch_all = ''
     root_url = ''
     index = None
     controller_modules = []
@@ -63,13 +64,24 @@ class TethysBase(TethysBaseMixin):
                 f'(i.e. index = \'{self.index}\')'
             )
 
-    @property
-    def index_url(self):
-        return f'{self.url_namespace}:{self.index}'
-
     @classproperty
     def package_namespace(cls):
         raise NotImplementedError()
+
+    @classproperty
+    def db_model(cls):
+        raise NotImplementedError()
+
+    @classproperty
+    def db_object(cls):
+        if getattr(cls, '_django_db_obj', None) is None:
+            _django_db_obj = cls.db_model.objects.get(package=cls.package)
+        return _django_db_obj
+
+    @classproperty
+    def id(cls):
+        """Returns ID of Django database object."""
+        return cls.db_object.id
 
     @classmethod
     def _resolve_ref_function(cls, ref, ref_type):
@@ -221,6 +233,7 @@ class TethysBase(TethysBaseMixin):
             root_url=self.root_url,
             modules=controller_modules,
             index=self.index,
+            catch_all=self.catch_all,
         )
 
     @property
@@ -316,17 +329,22 @@ class TethysExtensionBase(TethysBase):
         """
         String representation
         """
-        return '<TethysApp: {0}>'.format(self.name)
+        return '<TethysExt: {0}>'.format(self.name)
 
     def __repr__(self):
         """
         String representation
         """
-        return '<TethysApp: {0}>'.format(self.name)
+        return '<TethysExt: {0}>'.format(self.name)
 
     @classproperty
     def package_namespace(cls):
         return 'tethysext'
+
+    @classproperty
+    def db_model(cls):
+        from tethys_apps.models import TethysExtension
+        return TethysExtension
 
     def sync_with_tethys_db(self):
         """
@@ -406,6 +424,11 @@ class TethysAppBase(TethysBase):
     @classproperty
     def package_namespace(cls):
         return 'tethysapp'
+
+    @classproperty
+    def db_model(cls):
+        from tethys_apps.models import TethysApp
+        return TethysApp
 
     def custom_settings(self):
         """
@@ -1436,7 +1459,7 @@ class TethysAppBase(TethysBase):
                     description=self.description,
                     enable_feedback=self.enable_feedback,
                     feedback_emails=self.feedback_emails,
-                    index=self.index_url,
+                    index=self.index,
                     icon=self.icon,
                     root_url=self.root_url,
                     color=self.color,
@@ -1462,7 +1485,7 @@ class TethysAppBase(TethysBase):
             # If the app is in the database, update developer priority attributes
             elif len(db_apps) == 1:
                 db_app = db_apps[0]
-                db_app.index = self.index_url
+                db_app.index = self.index
                 db_app.root_url = self.root_url
 
                 # custom settings

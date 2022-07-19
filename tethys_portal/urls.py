@@ -17,7 +17,7 @@ from social_django import views as psa_views, urls as psa_urls
 
 from tethys_apps.urls import extension_urls
 
-from tethys_portal.views import accounts as tethys_portal_accounts, \
+from tethys_portal.views import accounts as tethys_portal_accounts, api as tethys_portal_api, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, \
     admin as tethys_portal_admin, psa as tethys_portal_psa, email as tethys_portal_email
 from tethys_apps import views as tethys_apps_views
@@ -56,6 +56,13 @@ account_urls = [
         success_url=reverse_lazy('accounts:password_done'))
     ), name='password_confirm'),
     re_path(r'^password/done/$', never_cache(PasswordResetCompleteView.as_view()), name='password_done'),
+]
+
+api_urls = [
+    re_path(r'^csrf/$', tethys_portal_api.get_csrf, name='get_csrf'),
+    re_path(r'^session/$', tethys_portal_api.get_session, name='get_session'),
+    re_path(r'^whoami/$', tethys_portal_api.get_whoami, name='get_whoami'),
+    re_path(r'^apps/(?P<app>[\w-]+)/$', tethys_portal_api.get_app, name='get_app'),
 ]
 
 user_urls = [
@@ -112,6 +119,7 @@ urlpatterns = [
     re_path(r'session_security/', include('session_security.urls')),
     re_path(r'^mfa/', include('mfa.urls')),
     re_path(r'devices/add$', mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
+    re_path(r'api/', include((api_urls, 'api'), namespace='api')),
     # re_path(r'^error/', include(development_error_urls)),
 ]
 

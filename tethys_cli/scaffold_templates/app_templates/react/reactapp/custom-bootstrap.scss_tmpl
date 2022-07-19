@@ -1,0 +1,5 @@
+/* Set bootstrap primary color to be app theme color */
+$primary: {{color}};
+
+/* import bootstrap to set changes */
+@import "../node_modules/bootstrap/scss/bootstrap";
