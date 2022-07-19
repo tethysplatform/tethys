@@ -397,35 +397,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
 
-# Cookie Settings
-# CSRF_COOKIE_SAMESITE = 'Lax'
-# SESSION_COOKIE_SAMESITE = 'Lax'
-
-# Prevent JavaScript from accessing CSRF and session cookies
-# NOTE: This will probably break scripts that use the cookie to get the CSRF token
-# CSRF_COOKIE_HTTPONLY = True
-# SESSION_COOKIE_HTTPONLY = True
-
-# Production only
-# CSRF_COOKIE_SECURE = not DEBUG
-# SESSION_COOKIE_SECURE = not DEBUG
-
 COOKIE_CONFIG = portal_config_settings.pop('COOKIE_CONFIG', {})
 for setting, value in COOKIE_CONFIG.items():
     setattr(this_module, setting, value)
-
-# CORS Header Settings
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080',
-    'http://127.0.0.1:8080',
-]
-
-CORS_EXPOSE_HEADERS = [
-    'Content-Type',
-    'X-CSRFToken',
-]
-
-CORS_ALLOW_CREDENTIALS = True
 
 CORS_CONFIG = portal_config_settings.pop('CORS_CONFIG', {})
 for setting, value in CORS_CONFIG.items():

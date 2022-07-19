@@ -675,7 +675,7 @@ def register_controllers(
     UrlMap = url_map_maker(root_url)
     url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
 
-    # Add a catch all endpoint for any URL following the app's root URL and map it to the index controller
+    # Add a catch all endpoint for any URL following the app's root URL and map it to the named controller
     if catch_all and catch_all in names:
         url_maps.append(
             UrlMap(
