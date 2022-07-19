@@ -4,7 +4,7 @@
 Jobs API
 ********
 
-**Last Updated:** January 2022
+**Last Updated:** July 2022
 
 The Jobs API provides a way for your app to run asynchronous tasks (meaning that after starting a task you don't have to wait for it to finish before moving on). As an example, you may need to run a simulation that takes a long time (potentially hours or days) to complete. Using the Jobs API you can create a job that will submit the simulation run, and then leave it to run while your app moves on and does other stuff. You can check the job's status at any time, and when the job is done the Jobs API will help retrieve the results.
 
@@ -44,7 +44,7 @@ Apps that use either HTCondor or Dask should define one or more app Scheduler Se
 Job Manager
 ===========
 
-To facilitate interacting with jobs asynchronously, the details of the jobs are stored in a database. The Jobs API provides a Job Manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The Jobs API supports various types of jobs (see `Job Types`_).
+To facilitate interacting with jobs asynchronously, the metadata of the jobs are stored in a database. The Jobs API provides a Job Manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The Jobs API supports various types of jobs (see `Job Types`_).
 
 .. .. seealso::
 
@@ -116,7 +116,7 @@ Before a controller returns a response the job must be saved or else all of the 
 Common Attributes
 -----------------
 
-Job attributes can be passed into the `create_job` method of the job manager or they can be specified after the job is instantiated. All jobs have a common set of attributes, and then each job type may add additional attributes.
+Job attributes can be passed into the `create_job` method of the job manager or they can be specified after the job is instantiated. All jobs have a common set of attributes. Each job type may have additional attributes specific that are to that job type.
 
 The following attributes can be defined for *all* job types:
 
@@ -124,15 +124,6 @@ The following attributes can be defined for *all* job types:
     * ``description`` (string): a short description of the job.
     * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job.
     * ``extended_properties`` (dict): a dictionary of additional properties that can be used to create custom job attributes.
-
-All job types also have the following **read-only** attributes:
-
-    * ``user`` (User): the user who created the job.
-    * ``label`` (string): the package name of the Tethys App used to created the job.
-    * ``creation_time`` (datetime): the time the job was created.
-    * ``execute_time`` (datetime): the time that job execution was started.
-    * ``start_time`` (datetime):
-    * ``completion_time`` (datetime): the time that the job status changed to 'Complete'.
     * ``status`` (string): a string representing the state of the job. Possible statuses are:
 
         - 'Pending'
@@ -144,8 +135,19 @@ All job types also have the following **read-only** attributes:
         - 'Aborted'
         - 'Various'\*
         - 'Various-Complete'\*
+        - 'Other'\**
 
         \*used for job types with multiple sub-jobs (e.g. CondorWorkflow).
+        \**When  a custom job status is set the official status is 'Other', but the custom status is stored as an extended property of the job.
+
+All job types also have the following **read-only** attributes:
+
+    * ``user`` (User): the user who created the job.
+    * ``label`` (string): the package name of the Tethys App used to created the job.
+    * ``creation_time`` (datetime): the time the job was created.
+    * ``execute_time`` (datetime): the time that job execution was started.
+    * ``start_time`` (datetime):
+    * ``completion_time`` (datetime): the time that the job status changed to 'Complete'.
 
 Job Types
 ---------
@@ -191,7 +193,7 @@ Two methods are provided to retrieve jobs: ``list_jobs`` and ``get_job``. Jobs a
 
 Jobs Table Gizmo
 ----------------
-The Jobs Table Gizmo facilitates job management through the web interface and is designed to be used in conjunction with the Job Manager. It can be configured to list any of the properties of the jobs, and will automatically update the job status, and provides buttons to run, delete, or view job results. The following code sample shows how to use the job manager to populate the jobs table:
+The Jobs Table Gizmo facilitates job management through the web interface and is designed to be used in conjunction with the Job Manager. It can be configured to list any of the properties of the jobs, and will automatically update the job status. It also can provide a list of actions that can be done on the a job. In addition to several build-in actions (including run, delete, viewing job results, etc.), developers can also create custom actions to include in the actions dropdown list. The following code sample shows how to use the job manager to populate the jobs table:
 
 ::
 
@@ -199,14 +201,16 @@ The Jobs Table Gizmo facilitates job management through the web interface and is
 
     jobs = job_manager.list_jobs(request.user)
 
-    jobs_table_options = JobsTable(jobs=jobs,
-                                   column_fields=('id', 'description', 'run_time'),
-                                   hover=True,
-                                   striped=False,
-                                   bordered=False,
-                                   condensed=False,
-                                   results_url='my_first_app:results',
-                                   )
+    jobs_table_options = JobsTable(
+        jobs=jobs,
+        column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
+        actions=['run', 'resubmit', '|', 'logs', '|', 'terminate', 'delete'],
+        hover=True,
+        striped=False,
+        bordered=False,
+        condensed=False,
+        results_url='app_name:results_controller',
+    )
 
 .. seealso::
     :doc:`gizmos/jobs_table`
@@ -254,6 +258,7 @@ Tethys Job
 ----------
 
 .. autoclass:: tethys_compute.models.TethysJob
+    :members:
 
 .. _lower_level_scheduler_api:
 

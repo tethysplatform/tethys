@@ -29,7 +29,7 @@ function bind_action(action, on_success=()=>{}){
   var job_id = $(action).data('job-id');
   var label = $(action).text();
   var show_overlay = $(action).data('show-overlay');
-  var confirm_message = $(action).data('confirm-message');
+  var confirmation_message = $(action).data('confirmation-message');
   var modal_url = $(action).data('modal-url');
   var callback = $(action).data('callback');
   var url = '/developer/gizmos/ajax/' + job_id + '/action/' + callback;
@@ -56,8 +56,8 @@ function bind_action(action, on_success=()=>{}){
 
   if(callback){
     $(action).on('click', function(){
-      if(confirm_message){
-        $('#modal-dialog-jobs-table-confirm-content').html(confirm_message);
+      if(confirmation_message){
+        $('#modal-dialog-jobs-table-confirm-content').html(confirmation_message);
         $('#tethys_jobs-table-confirm').html(label);
         $('#tethys_jobs-table-confirm').off('click');
         $('#tethys_jobs-table-confirm').on('click', function(){

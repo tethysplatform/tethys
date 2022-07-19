@@ -20,7 +20,7 @@ from .select_input import SelectInput
 
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.jobs_table')
 
-__all__ = ['JobsTable']
+__all__ = ['JobsTable', 'CustomJobAction']
 
 
 JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions'])
@@ -47,17 +47,65 @@ def add_method(cls):
 
 
 class CustomJobAction:
-    def __init__(self, label, callback_or_url=None, enabled_callback=None, confirm_message=None,
+    """
+    A ``CustomJobAction`` is used to create custom actions in the actions dropdown menu of the jobs table.
+
+    Attributes:
+        label (str, required): The display name of the action that will show in the actions dropdown.
+        callback_or_url (str or callable, required if ``modal_url`` is not supplied): The name on a callable attribute
+            on the ``job_type`` object or a callable that accepts a ``TethysJob`` as an argument.
+            Or it can be the name of a URL that the custom action option will link to.
+        enabled_callback (callable): A callable that accepts a ``job_type`` object as an argument and returns True
+            if the action should be enabled or False if it should be disabled.
+        confirmation_message (str): A message to display in a modal to ask for confirmation to perform the action.
+        show_overlay (bool): Whether to show an overlay with a loading spinner while the action is being called.
+        modal_url (str, required if ``callback_or_url`` is not supplied): The name of a URL to retrieve content to
+            populate a modal.
+        job_type (class): A subclass of ``TethysJob``. Must be specified if the ``callback_or_url`` argument is an
+            attribute that is only defined at the subclass level.
+
+    Examples:
+
+    ::
+
+        def custom_action(job):
+            # do something with job
+
+        def custom_action2(job):
+            # do something with job
+
+        def enable_custom_action(job):
+            # custom logic to determine if action should be enabled
+
+        CustomJobAction(
+            label='Custom Action',
+            callback_or_url=custom_action,
+            enabled_callback=enable_custom_action,
+            confirmation_message='Do you really want to do this?',
+            show_overlay=True,  # displays the overlay loading spinner until the custom action function returns
+        )
+
+    .. tip::
+
+        For a complete example of using ``CustomJobAction`` refer to the `Gizmo Showcase Tethys app code.
+        <https://github.com/tethysplatform/tethysapp-gizmo_showcase/blob/main/tethysapp/gizmo_showcase/controllers/processing.py>`_
+
+    """  # noqa: E501
+    def __init__(self, label, callback_or_url=None, enabled_callback=None, confirmation_message=None,
                  show_overlay=False, modal_url=None, job_type=TethysJob):
         self.label = label
-        self.confirm_message = confirm_message
+        self.confirmation_message = confirmation_message
         self.show_overlay = show_overlay
         self.modal_url = modal_url
         self.url = None
         self.callback = None
 
         if callback_or_url is None:
-            pass
+            if not modal_url:
+                raise ValueError(
+                    f'A {self.__class__.__name__} requires either the "callback_or_url" argument '
+                    f'or the "modal_url" argument.'
+                )
         else:
             if isinstance(callback_or_url, str) and (':' in callback_or_url or '/' in callback_or_url):
                 self.url = callback_or_url
@@ -72,7 +120,7 @@ class CustomJobAction:
             'callback': self.callback,
             'url': self.url,
             'modal_url': self.modal_url,
-            'confirm_message': self.confirm_message,
+            'confirmation_message': self.confirmation_message,
             'show_overlay': self.show_overlay,
         }
 
@@ -94,17 +142,54 @@ class CustomJobAction:
 
 
 DEFAULT_ACTIONS_ARGS = dict(
-    run=['Run', 'execute', lambda job, job_status: job_status == 'Pending'],
-    pause=['Pause', 'pause', lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES],
-    resume=['Resume', 'resume', lambda job, job_status: job_status == 'Paused'],
-    resubmit=['Resubmit', 'resubmit', lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES, '', True],
-    logs=['View Logs', None, lambda job, job_status: job_status not in TethysJob.PRE_RUNNING_STATUSES],
-    monitor=['Monitor Job', None, lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES],
-    results=['View Results', None, lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES],
-    terminate=['Terminate', 'stop', lambda job, job_status: job_status in TethysJob.ACTIVE_STATUSES,
-               'Are you sure you want to terminate this job?', True],
-    delete=['Delete', 'delete', lambda job, job_status: job_status not in TethysJob.ACTIVE_STATUSES,
-            'Are you sure you want to permanently delete this job?', True],
+    run=dict(
+        label='Run',
+        callback_or_url='execute',
+        enabled_callback=lambda job, job_status: job_status == 'Pending',
+    ),
+    pause=dict(
+        label='Pause',
+        callback_or_url='pause',
+        enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
+    ),
+    resume=dict(
+        label='Resume',
+        callback_or_url='resume',
+        enabled_callback=lambda job, job_status: job_status == 'Paused',
+    ),
+    resubmit=dict(
+        label='Resubmit',
+        callback_or_url='resubmit',
+        enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
+        show_overlay=True,
+    ),
+    logs=dict(
+        label='View Logs',
+        enabled_callback=lambda job, job_status: job_status not in TethysJob.PRE_RUNNING_STATUSES,
+        modal_url='logs',  # Note: this is just a placeholder and is not actually used
+    ),
+    monitor=dict(
+        label='Monitor Job',
+        enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
+    ),
+    results=dict(
+        label='View Results',
+        enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
+    ),
+    terminate=dict(
+        label='Terminate',
+        callback_or_url='stop',
+        enabled_callback=lambda job, job_status: job_status in TethysJob.ACTIVE_STATUSES,
+        confirmation_message='Are you sure you want to terminate this job?',
+        show_overlay=True,
+    ),
+    delete=dict(
+        label='Delete',
+        callback_or_url='delete',
+        enabled_callback=lambda job, job_status: job_status not in TethysJob.ACTIVE_STATUSES,
+        confirmation_message='Are you sure you want to permanently delete this job?',
+        show_overlay=True,
+    ),
 )
 
 
@@ -117,7 +202,7 @@ class JobsTable(TethysGizmoOptions):
         column_fields(tuple or list, required): A tuple or list of strings that represent TethysJob object attributes to show in the columns.
         show_status(bool): Add a column to the table to show dynamically updating job status. Default is True.
         show_actions(bool): Add a column to the table to show a dynamically updating dropdown list of actions that can be done on the job. The available actions are determined by `actions` option. Actions are enabled/disabled based on the job status. If this is False then then `actions` option ignored.
-        actions(list): A list of actions that can be done on a job. Available actions are ['run', 'resubmit', 'logs', 'terminate', 'delete']. If `monitor_url` and `results_url` are supplied then 'monitor' and 'results' respectively will be added. If None then all actions will be used. Default is None.
+        actions(list): A list of default actions or custom action arguments that can be done on a job with the `|` character used to divide the actions into sections. If None then all the default actions will be used (i.e. `['run', 'resubmit', '|', 'logs', 'monitor', 'results', '|', 'terminate', 'delete']`). Note that if `monitor_url` and `results_url` are supplied then 'monitor' and 'results' respectively will be added if not already in the list. If they are not provided then `monitor` and `results` will be removed from the list if present. Default is None. 
         monitor_url(str):  A string representing the namespaced path to a controller to that displays monitoring information about a running job (e.g. app_name:monitoring_controller)
         results_url(str): A string representing the namespaced path to a controller to that displays job results (e.g. app_name:results_controller)
         hover(bool): Illuminate rows on hover (does not work on striped tables)
@@ -129,32 +214,76 @@ class JobsTable(TethysGizmoOptions):
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
         show_detailed_status(bool): Show status of each node in CondorWorkflow jobs when True. Defaults to False.
 
-    Deprecated Attributes:
-        status_actions(bool): Add a column to the table to show dynamically updating status, and action buttons. If this is false then the values for run_btn, delete_btn, monitor_url, and results_url will be ignored. Default is True.
-        run_btn(bool): Add a button to run the job when job status is "Pending". Default is True.
-        delete_btn(bool): Add a button to delete jobs. Default is True.
-        show_resubmit_btn(bool): Add a button to resubmit jobs. Default is False.
-        show_log_btn(bool): Add a button to see log for submitted job. Default is False.
-
     Controller Example
 
     ::
 
-        from tethys_apps.sdk.gizmos import JobsTable
+        from tethys_sdk.gizmos import JobsTable
 
         jobs_table_options = JobsTable(
-                                       jobs=jobs,
-                                       column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
-                                       actions=['run', 'resubmit', 'logs', 'terminate', 'delete'],
-                                       hover=True,
-                                       striped=False,
-                                       bordered=False,
-                                       condensed=False,
-                                       results_url='app_name:results_controller',
-                                     )
+            jobs=jobs,
+            column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
+            actions=['run', 'resubmit', '|', 'logs', '|', 'terminate', 'delete'],
+            hover=True,
+            striped=False,
+            bordered=False,
+            condensed=False,
+            results_url='app_name:results_controller',
+        )
         context = {
-                    'jobs_table_options': jobs_table_options,
-                  }
+            'jobs_table_options': jobs_table_options,
+        }
+
+    Controller Example with Custom Actions
+    
+    ::
+    
+        from tethys_sdk.gizmos import JobsTable, CustomJobAction
+        
+        def custom_action(job):
+            # do something with job
+            
+        def custom_action2(job):
+            # do something with job
+            
+        def enable_custom_action(job):
+            # custom logic to determine if action should be enabled
+        
+        def controller(request):
+            ...
+
+            jobs_table_options = JobsTable(
+                jobs=jobs,
+                column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
+                actions=[
+                    'run', 'resubmit', '|', 
+                    'logs', '|', 
+                    'terminate', 'delete', '|',
+                    CustomJobAction(
+                        label='Custom Action', 
+                        callback_or_url=custom_action, 
+                        enabled_callback=enable_custom_action, 
+                        confirmation_message='Do you really want to do this?',
+                        show_overlay=True,  # displays the overlay loading spinner until the custom action function returns
+                    ), 
+                    # Custom actions can also be defined as a list/tuple of args. The only required arguments are label and callback_or_url
+                    ('Another Custom Action', custom_action2),
+                    # Instead of a function a custom action can just be a url name for a custom endpoint
+                    ('Yet Another Custom Action', 'my_app:custom_endpoint'),
+                    # An alternative type of custom action is to provide an endpoint to get content for a modal
+                    CustomJobAction('Custom Modal Content', modal_url='my_app:get_modal_content'),
+                ],
+                hover=True,
+                striped=False,
+                bordered=False,
+                condensed=False,
+                results_url='app_name:results_controller',
+            )
+            context = {
+                'jobs_table_options': jobs_table_options,
+            }
+            ...
+        
 
     Template Example
 
@@ -163,6 +292,11 @@ class JobsTable(TethysGizmoOptions):
         {% load tethys_gizmos %}
 
         {% gizmo jobs_table_options %}
+        
+    .. tip::
+    
+        To see the Jobs Table Gizmo in action, install the `Gizmo Showcase Tethys app. 
+        <https://github.com/tethysplatform/tethysapp-gizmo_showcase>`_
 
     """  # noqa: E501
     gizmo_name = "jobs_table"
@@ -223,12 +357,12 @@ class JobsTable(TethysGizmoOptions):
 
         for action_name, url in (('monitor', monitor_url), ('results', results_url)):
             if url:
-                args = DEFAULT_ACTIONS_ARGS[action_name]
-                args[1] = url
+                kwargs = DEFAULT_ACTIONS_ARGS[action_name]
+                kwargs['callback_or_url'] = url
                 if action_name in actions:
-                    actions[actions.index(action_name)] = args
+                    actions[actions.index(action_name)] = kwargs
                 else:
-                    actions.append(args)
+                    actions.append(kwargs)
             elif action_name in actions:
                 actions.remove(action_name)
 
@@ -241,12 +375,14 @@ class JobsTable(TethysGizmoOptions):
                 continue
             if isinstance(action, str):
                 try:
-                    args = DEFAULT_ACTIONS_ARGS[action]
-                    action = CustomJobAction(*args)
+                    kwargs = DEFAULT_ACTIONS_ARGS[action]
+                    action = CustomJobAction(**kwargs)
                 except KeyError:
                     raise ValueError(f'The action "{action}" is not a valid default action.')
             if isinstance(action, tuple) or isinstance(action, list):
                 action = CustomJobAction(*action)
+            if isinstance(action, dict):
+                action = CustomJobAction(**action)
 
             if isinstance(action, CustomJobAction):
                 self.actions[action.label] = action.properties

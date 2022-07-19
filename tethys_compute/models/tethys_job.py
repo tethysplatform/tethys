@@ -83,6 +83,10 @@ class TethysJob(models.Model):
 
     @property
     def update_status_interval(self):
+        """
+        Returns a ``datetime.timedelta`` of the minimum time between updating the status of a job.
+
+        """
         if not hasattr(self, '_update_status_interval'):
             self._update_status_interval = datetime.timedelta(seconds=10)
         return self._update_status_interval
@@ -95,6 +99,13 @@ class TethysJob(models.Model):
 
     @property
     def status(self):
+        """
+        The current status of the job.
+
+        Returns: A string of the display name for the current job status.
+
+        It may be set as an attribute in which case ``update_status`` is called.
+        """
         self.update_status()
         field = self._meta.get_field('_status')
         status = self._get_FIELD_display(field)
@@ -131,7 +142,17 @@ class TethysJob(models.Model):
 
     def update_status(self, status=None, *args, **kwargs):
         """
-        Update status of job.
+        Updates the status of a job. If ``status`` is passed then it will manually update the status. Otherwise,
+            it will determine if ``_update_status`` should be called.
+
+        Args:
+            status (str, optional): The value to manually set the status to. It may be either the display name or the
+                three letter database code for defined statuses. If it is not one of the defined statuses, then the
+                status will be set to ``OTH`` and the ``status`` value will be saved in ``extended_properties``
+                using the ``OTHER_STATUS_KEY``.
+            *args: positional arguments that are passed through to ``_update_status``.
+            **kwargs: key-word arguments that are passed through to ``_update_status``.
+
         """
         old_status = self._status
 
@@ -227,6 +248,12 @@ class TethysJob(models.Model):
 
     @abstractmethod
     def _update_status(self, *args, **kwargs):
+        """
+        A method to be implemented by subclasses to retrieve the jobs current status and save it as ``self._status``.
+        Args:
+            *args:
+            **kwargs:
+        """
         pass
 
     @abstractmethod
