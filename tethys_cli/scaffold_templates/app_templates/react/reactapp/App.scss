@@ -1,0 +1,14 @@
+@import "custom-bootstrap";
+
+:root {
+    --ts-header-height: 56px;
+}
+
+html, body, #root {
+    height: 100%;
+}
+
+body {
+    /* offset for fixed header */
+    padding-top: var(--ts-header-height);
+}

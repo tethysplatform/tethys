@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    {{ block.super }}
+    <style id="mfa-styles">
+        #content {
+            min-height: 0!important;
+        }
+    </style>
+{% endblock %}

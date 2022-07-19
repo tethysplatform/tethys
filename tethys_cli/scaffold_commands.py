@@ -54,8 +54,8 @@ def proper_name_validator(value, default):
             value = value.replace('"', '')
             value = value.replace("'", "")
             write_pretty_output(
-                'Warning: Illegal characters were detected in proper name "{0}". They have been replaced or '
-                'removed with valid characters: "{1}"'.format(before, value), FG_YELLOW
+                f'Warning: Illegal characters were detected in proper name "{before}". They have been replaced or '
+                f'removed with valid characters: "{value}"', FG_YELLOW
             )
         # Otherwise, throw error
         else:
@@ -356,7 +356,7 @@ def scaffold_command(args):
             exit(1)
 
     # Walk the template directory, creating the templates and directories in the new project as we go
-    for curr_template_root, dirs, template_files in os.walk(template_root):
+    for curr_template_root, _, template_files in os.walk(template_root):
         curr_project_root = curr_template_root.replace(template_root, project_root)
         curr_project_root = render_path(curr_project_root, context)
 
@@ -366,6 +366,7 @@ def scaffold_command(args):
 
         # Create Files
         for template_file in template_files:
+            needs_rendering = template_file.endswith(TEMPLATE_SUFFIX)
             template_file_path = os.path.join(curr_template_root, template_file)
             project_file = template_file.replace(TEMPLATE_SUFFIX, '')
             project_file_path = os.path.join(curr_project_root, project_file)
@@ -373,20 +374,14 @@ def scaffold_command(args):
             # Load the template
             log.debug('Loading template: "{}"'.format(template_file_path))
 
-            try:
-                with open(template_file_path, 'r') as tfp:
-                    template = Template(tfp.read())
-            except UnicodeDecodeError:
-                with open(template_file_path, 'br') as tfp:
-                    with open(project_file_path, 'bw') as pfp:
-                        pfp.write(tfp.read())
-                continue
+            if needs_rendering:
+                with open(template_file_path, 'r') as tf:
+                    template = Template(tf.read())
+                    with open(project_file_path, 'w') as pf:
+                        pf.write(template.render(context))
+            else:
+                shutil.copy(template_file_path, project_file_path)
 
-            # Render template if loaded
-            log.debug('Rendering template: "{}"'.format(template_file_path))
-            if template:
-                with open(project_file_path, 'w') as pfp:
-                    pfp.write(template.render(context))
-                write_pretty_output('Created: "{}"'.format(project_file_path), FG_WHITE)
+            write_pretty_output('Created: "{}"'.format(project_file_path), FG_WHITE)
 
     write_pretty_output('Successfully scaffolded new project "{}"'.format(project_name), FG_WHITE)
