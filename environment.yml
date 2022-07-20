@@ -80,6 +80,7 @@ dependencies:
 - flake8
 - pbr
 - git
+- fido2<1
 
 # Conda to allow Python API access to Conda Install
 - conda
