@@ -81,6 +81,7 @@ def passes_quota(entity, codename, raise_on_false=True):
         passes = rq.check_quota(entity)
         if not passes and raise_on_false:
             raise PermissionDenied(rq.help)
+        return passes
 
     except ResourceQuota.DoesNotExist:
         log.info('ResourceQuota with codename {} does not exist.'.format(codename))

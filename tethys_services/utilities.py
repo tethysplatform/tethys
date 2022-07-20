@@ -73,7 +73,7 @@ def ensure_oauth2(provider):
                 if not user_data:
                     try:
                         logger.debug('token is not valid, attempting to refresh using refresh token')
-                        social.refresh_token(load_strategy())
+                        social.refresh_token(strategy)
                     except requests.exceptions.HTTPError:
                         logger.debug('there was an error refreshing the token - redirecting user to re-authenticate')
                         return redirect_response
