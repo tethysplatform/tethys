@@ -55,7 +55,7 @@ if register_controller_setting:
     try:
         register_controller = register_controller.as_controller()
     except AttributeError:
-        print('not a class-based view')
+        # not a class-based view
         pass
 
 account_urls = [
