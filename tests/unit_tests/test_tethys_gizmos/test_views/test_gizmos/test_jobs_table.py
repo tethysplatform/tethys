@@ -9,6 +9,8 @@ from tethys_gizmos.views.gizmos.jobs_table import bokeh_row
 
 
 class TestJobsTable(unittest.TestCase):
+    column_names = "['id', 'creation_time']"
+
     def setUp(self):
         pass
 
@@ -20,7 +22,7 @@ class TestJobsTable(unittest.TestCase):
         tj = mock_tj()
         tj.execute.return_value = mock.MagicMock()
 
-        result = gizmo_jobs_table.execute(request='', job_id='1')
+        result = gizmo_jobs_table.perform_action(request='', job_id='1', action='execute')
 
         self.assertEqual(200, result.status_code)
 
@@ -30,16 +32,16 @@ class TestJobsTable(unittest.TestCase):
         tj = mock_tj.objects.get_subclass()
         tj.execute.side_effect = Exception('error')
 
-        gizmo_jobs_table.execute(request='', job_id='1')
+        gizmo_jobs_table.perform_action(request='', job_id='1', action='execute')
 
-        mock_log.error.assert_called_with('The following error occurred when executing job %s: %s', '1', 'error')
+        mock_log.error.assert_called_with('The following error occurred when running "execute" on job 1: error')
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_terminate(self, mock_tj):
         tj = mock_tj.objects.get_subclass()
         tj.stop.return_value = mock.MagicMock()
 
-        result = gizmo_jobs_table.terminate(request='', job_id='1')
+        result = gizmo_jobs_table.perform_action(request='', job_id='1', action='terminate')
 
         self.assertEqual(200, result.status_code)
 
@@ -47,11 +49,11 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_terminate_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
-        tj.stop.side_effect = Exception('error')
+        tj.terminate.side_effect = Exception('error')
 
-        gizmo_jobs_table.terminate(request='', job_id='1')
+        gizmo_jobs_table.perform_action(request='', job_id='1', action='terminate')
 
-        mock_log.error.assert_called_with('The following error occurred when terminating job %s: %s', '1', 'error')
+        mock_log.error.assert_called_with('The following error occurred when running "terminate" on job 1: error')
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_delete(self, mock_tj):
@@ -70,7 +72,7 @@ class TestJobsTable(unittest.TestCase):
 
         gizmo_jobs_table.delete(request='', job_id='1')
 
-        mock_log.error.assert_called_with('The following error occurred when deleting job %s: %s', '1', 'error')
+        mock_log.error.assert_called_with('The following error occurred when deleting job 1: error')
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass')
     def test_resubmit(self, mock_tj):
@@ -89,7 +91,7 @@ class TestJobsTable(unittest.TestCase):
 
         gizmo_jobs_table.resubmit(request='', job_id='1')
 
-        mock_log.error.assert_called_with('The following error occurred when resubmiting job %s: %s', '1', 'error')
+        mock_log.error.assert_called_with('The following error occurred when running "resubmit" on job 1: error')
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass')
     def test_show_log(self, mock_tj):
@@ -148,8 +150,7 @@ class TestJobsTable(unittest.TestCase):
             spec=TethysJob, status='Various', label='gizmos_showcase'
         )
         rows = [('1', '30')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -168,8 +169,7 @@ class TestJobsTable(unittest.TestCase):
             spec=TethysJob, status='Various-Complete', label='gizmos_showcase'
         )
         rows = [('1', '30')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -188,8 +188,7 @@ class TestJobsTable(unittest.TestCase):
             spec=CondorWorkflow, status='Various', label='gizmos_showcase'
         )
         rows = [('1', '30')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -210,10 +209,17 @@ class TestJobsTable(unittest.TestCase):
             statuses={'Completed': 1, 'Running': 1}, num_jobs=2
         )
         rows = [('1', '30')]
-        column_names = ['id', 'creation_time']
+        actions = dict()
+        for action in ('Run', 'Resubmit'):
+            actions.update({
+                f'actions[{action}][callback]': 'execute',
+                f'actions[{action}][url]': '',
+                f'actions[{action}][modal_url]': '',
+                f'actions[{action}][confirm_message]': '',
+                f'actions[{action}][show_overlay]': False
+            })
 
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows,
-                                                  'actions[run]': False, 'actions[resubmit]': False})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows, **actions})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -233,8 +239,7 @@ class TestJobsTable(unittest.TestCase):
             spec=DaskJob, status='Results-Ready', label='test_label',
         )
         rows = [('1', '30')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -252,8 +257,7 @@ class TestJobsTable(unittest.TestCase):
             statuses={'Completed': 0, 'Running': 0}, num_jobs=1
         )
         rows = [('1', '30')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -272,8 +276,7 @@ class TestJobsTable(unittest.TestCase):
         rows = [('1', '30'),
                 ('2', '18'),
                 ('3', '26')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        request = RequestFactory().post('/jobs', {'column_fields': self.column_names, 'row': rows})
         gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
