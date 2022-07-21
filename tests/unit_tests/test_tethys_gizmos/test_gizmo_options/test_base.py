@@ -54,6 +54,10 @@ class TestTethysGizmosBase(unittest.TestCase):
         result = basetest.TethysGizmoOptions.get_gizmo_css()
         self.assertFalse(result)
 
+    def test_get_gizmo_modals(self):
+        result = basetest.TethysGizmoOptions.get_gizmo_modals()
+        self.assertFalse(result)
+
     def test_SecondaryGizmoOptions(self):
         result = basetest.SecondaryGizmoOptions()
         self.assertFalse(result)

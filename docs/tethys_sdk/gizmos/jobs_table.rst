@@ -4,6 +4,8 @@
 Jobs Table
 **********
 
-**Last Updated:** August 10, 2015
+**Last Updated:** July 2022
 
 .. autoclass:: tethys_sdk.gizmos.JobsTable
+
+.. autoclass:: tethys_sdk.gizmos.CustomJobAction

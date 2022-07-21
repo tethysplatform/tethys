@@ -35,22 +35,26 @@ class TethysJob(models.Model):
         ('PEN', 'Pending'),
         ('SUB', 'Submitted'),
         ('RUN', 'Running'),
+        ('VAR', 'Various'),
+        ('PAS', 'Paused'),
         ('COM', 'Complete'),
         ('ERR', 'Error'),
         ('ABT', 'Aborted'),
-        ('VAR', 'Various'),
         ('VCP', 'Various-Complete'),
         ('RES', 'Results-Ready'),
+        ('OTH', 'Other')
     )
 
     VALID_STATUSES = [v for v, _ in STATUSES]
     DISPLAY_STATUSES = [k for _, k in STATUSES]
-    DISPLAY_STATUSES.insert(3, DISPLAY_STATUSES.pop(6))  # Move 'Various' to be by 'Running'
+    REVERSE_STATUSES = {v: k for k, v in STATUSES}
 
     PRE_RUNNING_STATUSES = DISPLAY_STATUSES[:2]
     RUNNING_STATUSES = DISPLAY_STATUSES[2:4]
-    ACTIVE_STATUSES = DISPLAY_STATUSES[1:4]
-    TERMINAL_STATUSES = DISPLAY_STATUSES[4:]
+    ACTIVE_STATUSES = DISPLAY_STATUSES[1:5]
+    TERMINAL_STATUSES = DISPLAY_STATUSES[5:]
+
+    OTHER_STATUS_KEY = '__other_status__'
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default='')
@@ -79,6 +83,10 @@ class TethysJob(models.Model):
 
     @property
     def update_status_interval(self):
+        """
+        Returns a ``datetime.timedelta`` of the minimum time between updating the status of a job.
+
+        """
         if not hasattr(self, '_update_status_interval'):
             self._update_status_interval = datetime.timedelta(seconds=10)
         return self._update_status_interval
@@ -91,9 +99,18 @@ class TethysJob(models.Model):
 
     @property
     def status(self):
+        """
+        The current status of the job.
+
+        Returns: A string of the display name for the current job status.
+
+        It may be set as an attribute in which case ``update_status`` is called.
+        """
         self.update_status()
         field = self._meta.get_field('_status')
         status = self._get_FIELD_display(field)
+        if self._status == 'OTH':
+            status = self.extended_properties.get(self.OTHER_STATUS_KEY, status)
         return status
 
     @status.setter
@@ -125,16 +142,30 @@ class TethysJob(models.Model):
 
     def update_status(self, status=None, *args, **kwargs):
         """
-        Update status of job.
+        Updates the status of a job. If ``status`` is passed then it will manually update the status. Otherwise,
+            it will determine if ``_update_status`` should be called.
+
+        Args:
+            status (str, optional): The value to manually set the status to. It may be either the display name or the
+                three letter database code for defined statuses. If it is not one of the defined statuses, then the
+                status will be set to ``OTH`` and the ``status`` value will be saved in ``extended_properties``
+                using the ``OTHER_STATUS_KEY``.
+            *args: positional arguments that are passed through to ``_update_status``.
+            **kwargs: key-word arguments that are passed through to ``_update_status``.
+
         """
         old_status = self._status
 
         # Set status from status given
         if status:
             if status not in self.VALID_STATUSES:
-                log.error('Invalid status given: {}'.format(status))
-                return
-
+                if status in self.DISPLAY_STATUSES:
+                    status = self.REVERSE_STATUSES[status]
+                else:
+                    self.extended_properties[self.OTHER_STATUS_KEY] = status
+                    status = 'OTH'
+            if status != 'OTH':
+                self.extended_properties.pop(self.OTHER_STATUS_KEY, None)
             self._status = status
             self.save()
 
@@ -197,8 +228,8 @@ class TethysJob(models.Model):
         self.save()
         log.debug('Finished processing results for job: {}'.format(self))
 
-    def resubmit(self):
-        self._resubmit()
+    def resubmit(self, *args, **kwargs):
+        self._resubmit(*args, **kwargs)
 
     def get_logs(self):
         return self._get_logs()
@@ -217,6 +248,12 @@ class TethysJob(models.Model):
 
     @abstractmethod
     def _update_status(self, *args, **kwargs):
+        """
+        A method to be implemented by subclasses to retrieve the jobs current status and save it as ``self._status``.
+        Args:
+            *args:
+            **kwargs:
+        """
         pass
 
     @abstractmethod
