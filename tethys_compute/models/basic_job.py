@@ -23,10 +23,13 @@ class BasicJob(TethysJob):
         pass
 
     def stop(self):
-        pass
+        self.status = 'ABT'
 
     def pause(self):
-        pass
+        self.status = 'PAS'
 
     def resume(self):
-        pass
+        self.status = 'RUN'
+
+    def _resubmit(self):
+        self.status = 'RUN'

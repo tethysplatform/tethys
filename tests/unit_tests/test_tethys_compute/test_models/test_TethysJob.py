@@ -128,8 +128,7 @@ class TethysJobTest(TethysTestCase):
 
         self.assertEqual('Error', status)
 
-    @mock.patch('tethys_compute.models.tethys_job.log')
-    def test_update_status_invalid(self, mock_log):
+    def test_update_status_other(self):
         tethysjob = TethysJob(
             name='test_tethysjob',
             description='test_description',
@@ -141,7 +140,21 @@ class TethysJobTest(TethysTestCase):
 
         # Check result
         self.assertIsNone(tethysjob.update_status('Test'))
-        mock_log.error.assert_called_with('Invalid status given: Test')
+        self.assertEqual(tethysjob.status, 'Test')
+
+    def test_update_status_display(self):
+        tethysjob = TethysJob(
+            name='test_tethysjob',
+            description='test_description',
+            user=self.user,
+            label='test_label',
+            execute_time=django_timezone.now(),
+        )
+        tethysjob._status = ''
+
+        # Check result
+        self.assertIsNone(tethysjob.update_status('Pending'))
+        self.assertEqual(tethysjob.status, 'Pending')
 
     @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
@@ -163,13 +176,6 @@ class TethysJobTest(TethysTestCase):
         self.assertIsInstance(tethysjob.last_status_update, datetime)
         self.assertIsNotNone(tethysjob.start_time)
         self.assertIsInstance(tethysjob.start_time, datetime)
-
-    @mock.patch('tethys_compute.models.tethys_job.log')
-    def test_update_bad_status(self, mock_log):
-        tethys_job = TethysJob.objects.get(name='test_tethysjob')
-        tethys_job.update_status(status='test')
-
-        mock_log.error.assert_called_with('Invalid status given: test')
 
     @mock.patch('django.db.models.base.Model.save')
     def test_update_valid_status(self, mock_save):

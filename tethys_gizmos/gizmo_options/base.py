@@ -88,6 +88,14 @@ class TethysGizmoOptions(dict):
         """
         return ()
 
+    @staticmethod
+    def get_gizmo_modals():
+        """
+        HTML specific to gizmo to be placed in the
+        {% block gizmo_modals %} block
+        """
+        return ()
+
 
 class SecondaryGizmoOptions(dict):
     """

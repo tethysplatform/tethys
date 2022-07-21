@@ -218,60 +218,59 @@ p.loading-error {
     width: 14px;
     display: inline-block;
     margin-right: 5px;
-    color: white;
+    color: #7f7f7f;
+    background: #7f7f7f;
     position: relative;
     top: 1px;
 }
 
-.status-indicator.error{
-  top: 5px;
+.status-info{
+    color: #7f7f7f;
 }
 
-.status-indicator i{
-  position: relative;
-  top: -5px;
-  left: -1px;
-}
-
-.status-Pending{
+.status-pending{
   border: 1px solid black;
+  background: white;
+  color: white;
+}
+
+.status-info.status-pending{
   color: black;
-  height: 15px;
-  width: 15px;
+  border: none;
 }
 
-.status-Submitted{
+.status-submitted, .status-paused{
   background: #f0ad4e;
+  color: #f0ad4e;
 }
 
-.status-Running{
+.status-running{
   background: #5bc1df;
+  color: #5bc1df;
 }
 
-.status-Complete{
+.status-complete{
   background: #5cb85b;
+  color: #5cb85b;
 }
 
-.status-Error{
+.status-error{
   background: #d9524f;
+  color: #d9524f;
 }
 
-.status-Aborted{
+.status-aborted{
   background: black;
+  color: black;
 }
 
 .status-info{
-  background: white;
+  background: none;
   margin-right: 5px;
   font-size: 14px;
-  top: 2px;
-}
-.status-info.status-Pending{
-  border-radius: 50%;
-  background: black;
 }
 
-.status-Various-Complete{
+.status-various-complete{
   background: #5cb85b;
   border: 2px solid #d9524f;
 }

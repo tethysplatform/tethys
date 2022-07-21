@@ -34,6 +34,10 @@ class TestGizmo(TethysGizmoOptions):
     def get_gizmo_css():
         return ('tethys_gizmos/css/tethys_map_view.min.css',)
 
+    @staticmethod
+    def get_gizmo_modals():
+        return '<modals>',
+
 
 class TestTethysGizmos(unittest.TestCase):
     def setUp(self):
@@ -411,3 +415,25 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertIn('tethys_gizmos.js', render_js)
         self.assertNotIn('ol.min.js', render_js)
         self.assertNotIn('PLOTLY_JAVASCRIPT', render_js)
+
+    def test_render_modals(self):
+        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        output_type = 'modals'
+        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_type)
+
+        # Check result
+        self.assertEqual(output_type, result.output_type)
+
+        # TEST render
+        context = Context({'foo': TestGizmo(name='test_render')})
+        context.update({'gizmos_rendered': []})
+
+        # unless it has the same gizmo name as the predefined one
+        render_modals = result.render(context=context)
+
+        # Check Gizmo CSS
+        self.assertIn('<modals>', render_modals)
+
+    def test_codify(self):
+        result = gizmos_templatetags.codify('Test Name')
+        self.assertEqual(result, 'test-name')

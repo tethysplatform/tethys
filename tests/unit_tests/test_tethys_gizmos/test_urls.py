@@ -13,7 +13,7 @@ class TestUrls(TethysTestCase):
     def test_ajax_urls_delete_job(self):
         url = reverse('gizmos:delete_job', kwargs={'job_id': '123'})
         resolver = resolve(url)
-        self.assertEqual('/developer/gizmos/ajax/123/delete', url)
+        self.assertEqual('/developer/gizmos/ajax/123/action/delete', url)
         self.assertEqual('delete', resolver.func.__name__)
         self.assertEqual('tethys_gizmos.views.gizmos.jobs_table', resolver.func.__module__)
         self.assertEqual('gizmos', resolver.namespaces[0])

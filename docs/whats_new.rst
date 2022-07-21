@@ -4,7 +4,7 @@
 What's New
 **********
 
-**Last Updated:** December 2021
+**Last Updated:** July 2022
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -29,9 +29,9 @@ Bootstrap 5
 -----------
 
 * Upgraded to use Bootstrap version 5 (Tethys 3 used version 3).
-* Tethys Portal overhauled and rethemed using new capabilities of Bootstrap 5.
+* Tethys Portal overhauled and re-themed using new capabilities of Bootstrap 5.
 
-See: `Boostrap 5 Documentation <https://getbootstrap.com/docs/5.0/getting-started/introduction/>`_whats_new
+See: `Boostrap 5 Documentation <https://getbootstrap.com/docs/5.0/getting-started/introduction/>`_
 
 Controller Decorators
 ---------------------
@@ -71,6 +71,12 @@ Static Dependencies
 
 See ``STATICFILES_USE_NPM`` setting at :ref:`tethys_configuration`
 
+Custom Job Actions
+------------------
+
+* The :doc:`tethys_sdk/gizmos/jobs_table` now allows custom actions to be defined and added.
+* The order of the actions displayed in the actions dropdown menu can now be customized.
+
 Scheduler App Settings
 ----------------------
 
@@ -95,13 +101,13 @@ Bug Fixes
 * Fixed `Issue 763: Spatial Dataset Service created w/ CLI does not work until manually saved in admin pages <https://github.com/tethysplatform/tethys/issues/763>`_
 * Fixed `Issue 714: Restore Defaults Option of Site Command Breaks Tethys Portal <https://github.com/tethysplatform/tethys/issues/714>`_
 * Fixed `Issue 760: Logging configuration is broken <https://github.com/tethysplatform/tethys/issues/760>`_
-* Fixed `Issue 718: Error to bind the THREDDS data directory on Windows`_
+* Fixed `Issue 718: Error to bind the THREDDS data directory on Windows <https://github.com/tethysplatform/tethys/issues/718>`_
 
 Security Fixes
 --------------
 
 * Updated GeoServer and THREDDS containers used by `tethys docker` command to address log4j vulnerabilities.
-* Addressed `Issue 719: CSP requires unsafe-eval for plot_view`_.
+* Addressed `Issue 719: CSP requires unsafe-eval for plot_view <https://github.com/tethysplatform/tethys/issues/719>`_.
 
 Prior Release Notes
 ===================
