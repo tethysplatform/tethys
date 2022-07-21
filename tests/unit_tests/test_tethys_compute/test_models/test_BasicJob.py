@@ -44,3 +44,8 @@ class CondorBaseTest(TethysTestCase):
     def test_resume(self):
         ret = BasicJob.objects.get(name='test_basicjob').resume()
         self.assertIsNone(ret)
+
+    def test_resubmit(self):
+        job = BasicJob.objects.get(name='test_basicjob')
+        job._resubmit()
+        self.assertEqual(job.status, 'Running')

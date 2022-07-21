@@ -246,6 +246,9 @@
     {% block modals %}
     {% endblock %}
     {% endblock %}
+    {% block gizmo_modals%}
+      {% gizmo_dependencies modals %}
+    {% endblock %}
 
     {% block flash %}
       {% if messages %}

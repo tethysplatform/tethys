@@ -1,11 +1,5 @@
 {% load static tethys_gizmos %}
 
-<div id="jobs_table_overlay" class="d-none">
-	<div class="cv-spinner" >
-		<span class="spinner"></span>
-	</div>
-</div>
-
 <div id="jobs-table-messages"></div>
 <table class="table jobs-table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}"
        {% if attributes %}
@@ -59,46 +53,3 @@
   </tbody>
 </table>
 
-{# Logs Modal #}
-<div id="modal-dialog-jobs-table-show-log" title="Logs" class="modal" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="ModalJobLogTitle">Logs</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div id="modal-dialog-jobs-table-log-nav"></div>
-      <div class="modal-body" id="modal-dialog-jobs-table-log-body">
-        <div id="jobs_table_logs_overlay" class="d-none">
-          <div class="cv-spinner" >
-            <span class="spinner"></span>
-          </div>
-        </div>
-        <div id="modal-dialog-jobs-table-log-content"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" id="tethys_log_refresh_job_id" value="">Refresh</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{# Confirmation Modal #}
-<div id="modal-dialog-jobs-table-confirm" title="Confirm" class="modal" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-job-confirm-title">Confirm Action</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="modal-dialog-jobs-table-confirm-content"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="tethys_jobs-table-confirm" value="">Yes</button>
-      </div>
-    </div>
-  </div>
-</div>
