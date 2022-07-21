@@ -129,8 +129,8 @@ class ArcGISStaticDependency(StaticDependency):
 vendor_static_dependencies = {
     'arcgis': ArcGISStaticDependency(
         npm_name='arcgis-js-api',  # Not sure if this is the right package
-        version='4.22.2',
-        js_path='',
+        version='4.24',
+        js_path='/',
         css_path='esri/css/main.css',
     ),
     'bootstrap': JsDelivrStaticDependency(
