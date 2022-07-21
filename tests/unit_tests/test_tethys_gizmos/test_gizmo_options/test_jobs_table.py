@@ -219,7 +219,7 @@ class TestJobsTable(unittest.TestCase):
         self.assertRaises(
             ValueError,
             gizmo_jobs_table.CustomJobAction.register_callback,
-            True, gizmo_jobs_table.TethysJob,
+            True, mock.MagicMock(),
         )
 
     def test_JobsTable_init_extended_properties(self):

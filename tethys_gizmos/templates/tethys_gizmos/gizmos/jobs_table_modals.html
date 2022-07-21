@@ -1,0 +1,58 @@
+<!-- Jobs Table: Loading Overlay -->
+<div id="jobs_table_overlay" class="d-none">
+    <div class="cv-spinner" >
+        <span class="spinner"></span>
+    </div>
+</div>
+
+<!-- Jobs Table: Logs Modal -->
+<div id="modal-dialog-jobs-table-show-log" title="Logs" class="modal" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalJobLogTitle">Logs</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div id="modal-dialog-jobs-table-log-nav"></div>
+      <div class="modal-body" id="modal-dialog-jobs-table-log-body">
+        <div id="jobs_table_logs_overlay" class="d-none">
+          <div class="cv-spinner" >
+            <span class="spinner"></span>
+          </div>
+        </div>
+        <div id="modal-dialog-jobs-table-log-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success" id="tethys_log_refresh_job_id" value="">Refresh</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Jobs Table: Confirmation Modal -->
+<div id="modal-dialog-jobs-table-confirm" title="Confirm" class="modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-job-confirm-title">Confirm Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-dialog-jobs-table-confirm-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="tethys_jobs-table-confirm" value="">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Jobs Table: Custom Modal -->
+<div id="modal-dialog-jobs-table-modal" title="Modal_option" class="modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" id="modal-dialog-jobs-table-modal-content">
+    </div>
+  </div>
+</div>

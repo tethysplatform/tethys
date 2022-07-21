@@ -12,9 +12,9 @@ from collections import namedtuple
 import logging
 from functools import wraps
 from copy import deepcopy
+from pathlib import Path
 
 from tethys_portal.dependencies import vendor_static_dependencies
-from tethys_compute.models import TethysJob
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
 
@@ -92,7 +92,10 @@ class CustomJobAction:
 
     """  # noqa: E501
     def __init__(self, label, callback_or_url=None, enabled_callback=None, confirmation_message=None,
-                 show_overlay=False, modal_url=None, job_type=TethysJob):
+                 show_overlay=False, modal_url=None, job_type=None):
+        from tethys_compute.models import TethysJob
+
+        job_type = job_type or TethysJob
         self.label = label
         self.confirmation_message = confirmation_message
         self.show_overlay = show_overlay
@@ -139,58 +142,6 @@ class CustomJobAction:
     @staticmethod
     def get_enabled_callback_name(label):
         return f'custom_action_{label}_enabled'
-
-
-DEFAULT_ACTIONS_ARGS = dict(
-    run=dict(
-        label='Run',
-        callback_or_url='execute',
-        enabled_callback=lambda job, job_status: job_status == 'Pending',
-    ),
-    pause=dict(
-        label='Pause',
-        callback_or_url='pause',
-        enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
-    ),
-    resume=dict(
-        label='Resume',
-        callback_or_url='resume',
-        enabled_callback=lambda job, job_status: job_status == 'Paused',
-    ),
-    resubmit=dict(
-        label='Resubmit',
-        callback_or_url='resubmit',
-        enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
-        show_overlay=True,
-    ),
-    logs=dict(
-        label='View Logs',
-        enabled_callback=lambda job, job_status: job_status not in TethysJob.PRE_RUNNING_STATUSES,
-        modal_url='logs',  # Note: this is just a placeholder and is not actually used
-    ),
-    monitor=dict(
-        label='Monitor Job',
-        enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
-    ),
-    results=dict(
-        label='View Results',
-        enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
-    ),
-    terminate=dict(
-        label='Terminate',
-        callback_or_url='stop',
-        enabled_callback=lambda job, job_status: job_status in TethysJob.ACTIVE_STATUSES,
-        confirmation_message='Are you sure you want to terminate this job?',
-        show_overlay=True,
-    ),
-    delete=dict(
-        label='Delete',
-        callback_or_url='delete',
-        enabled_callback=lambda job, job_status: job_status not in TethysJob.ACTIVE_STATUSES,
-        confirmation_message='Are you sure you want to permanently delete this job?',
-        show_overlay=True,
-    ),
-)
 
 
 class JobsTable(TethysGizmoOptions):
@@ -308,6 +259,8 @@ class JobsTable(TethysGizmoOptions):
         """
         Constructor
         """
+        from tethys_compute.models import TethysJob
+
         # Initialize super class
         super().__init__(attributes=attributes, classes=classes)
 
@@ -332,32 +285,60 @@ class JobsTable(TethysGizmoOptions):
 
         actions = actions or ['run', 'resubmit', '|', 'logs', 'monitor', 'results', '|', 'terminate', 'delete']
 
-        # TODO: this is backward compatibility code, remove at next major release
-        if '|' not in actions:
-            # revert to previous default order
-            actions.extend(['monitor', 'results'])
-            actions = set(actions)
-            ordered_actions = list()
-            prev_len = 0
-            for action_group in [
-                ['run', 'pause', 'resume', 'resubmit'],
-                ['logs', 'monitor', 'results'],
-                ['terminate', 'delete'],
-            ]:
-                for action in action_group:
-                    if action in actions:
-                        ordered_actions.append(action)
-                        actions.remove(action)
-                if len(ordered_actions) > prev_len:
-                    ordered_actions.append('|')
-                prev_len = len(ordered_actions)
-            ordered_actions.extend(actions)
-            actions = ordered_actions[:-1] if ordered_actions[-1] == '|' else ordered_actions
-        # end compatibility code
+        default_actions_args = dict(
+            run=dict(
+                label='Run',
+                callback_or_url='execute',
+                enabled_callback=lambda job, job_status: job_status == 'Pending',
+            ),
+            pause=dict(
+                label='Pause',
+                callback_or_url='pause',
+                enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
+            ),
+            resume=dict(
+                label='Resume',
+                callback_or_url='resume',
+                enabled_callback=lambda job, job_status: job_status == 'Paused',
+            ),
+            resubmit=dict(
+                label='Resubmit',
+                callback_or_url='resubmit',
+                enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
+                show_overlay=True,
+            ),
+            logs=dict(
+                label='View Logs',
+                enabled_callback=lambda job, job_status: job_status not in TethysJob.PRE_RUNNING_STATUSES,
+                modal_url='logs',  # Note: this is just a placeholder and is not actually used
+            ),
+            monitor=dict(
+                label='Monitor Job',
+                enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
+            ),
+            results=dict(
+                label='View Results',
+                enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
+            ),
+            terminate=dict(
+                label='Terminate',
+                callback_or_url='stop',
+                enabled_callback=lambda job, job_status: job_status in TethysJob.ACTIVE_STATUSES,
+                confirmation_message='Are you sure you want to terminate this job?',
+                show_overlay=True,
+            ),
+            delete=dict(
+                label='Delete',
+                callback_or_url='delete',
+                enabled_callback=lambda job, job_status: job_status not in TethysJob.ACTIVE_STATUSES,
+                confirmation_message='Are you sure you want to permanently delete this job?',
+                show_overlay=True,
+            ),
+        )
 
         for action_name, url in (('monitor', monitor_url), ('results', results_url)):
             if url:
-                kwargs = DEFAULT_ACTIONS_ARGS[action_name]
+                kwargs = default_actions_args[action_name]
                 kwargs['callback_or_url'] = url
                 if action_name in actions:
                     actions[actions.index(action_name)] = kwargs
@@ -375,13 +356,13 @@ class JobsTable(TethysGizmoOptions):
                 continue
             if isinstance(action, str):
                 try:
-                    kwargs = DEFAULT_ACTIONS_ARGS[action]
+                    kwargs = default_actions_args[action]
                     action = CustomJobAction(**kwargs)
                 except KeyError:
                     raise ValueError(f'The action "{action}" is not a valid default action.')
-            if isinstance(action, tuple) or isinstance(action, list):
+            elif isinstance(action, tuple) or isinstance(action, list):
                 action = CustomJobAction(*action)
-            if isinstance(action, dict):
+            elif isinstance(action, dict):
                 action = CustomJobAction(**action)
 
             if isinstance(action, CustomJobAction):
@@ -500,69 +481,9 @@ class JobsTable(TethysGizmoOptions):
 
     @staticmethod
     def get_gizmo_modals():
+        modals_file = Path(__file__).parents[1] / 'templates' / 'tethys_gizmos' / 'gizmos' / 'jobs_table_modals.html'
+        with modals_file.open() as f:
+            modals = f.read()
         return (
-            jobs_table_modals,
+            modals,
         )
-
-
-# HTML code to be read
-jobs_table_modals = '''
-<!-- Jobs Table: Loading Overlay -->
-<div id="jobs_table_overlay" class="d-none">
-    <div class="cv-spinner" >
-        <span class="spinner"></span>
-    </div>
-</div>
-
-<!-- Jobs Table: Logs Modal -->
-<div id="modal-dialog-jobs-table-show-log" title="Logs" class="modal" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="ModalJobLogTitle">Logs</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div id="modal-dialog-jobs-table-log-nav"></div>
-      <div class="modal-body" id="modal-dialog-jobs-table-log-body">
-        <div id="jobs_table_logs_overlay" class="d-none">
-          <div class="cv-spinner" >
-            <span class="spinner"></span>
-          </div>
-        </div>
-        <div id="modal-dialog-jobs-table-log-content"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success" id="tethys_log_refresh_job_id" value="">Refresh</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Jobs Table: Confirmation Modal -->
-<div id="modal-dialog-jobs-table-confirm" title="Confirm" class="modal" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-job-confirm-title">Confirm Action</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="modal-dialog-jobs-table-confirm-content"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="tethys_jobs-table-confirm" value="">Yes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Jobs Table: Custom Modal -->
-<div id="modal-dialog-jobs-table-modal" title="Modal_option" class="modal" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content" id="modal-dialog-jobs-table-modal-content">
-    </div>
-  </div>
-</div>
-'''
