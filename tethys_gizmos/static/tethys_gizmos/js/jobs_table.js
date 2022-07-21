@@ -9,8 +9,8 @@ function add_message(message, message_type='danger'){
       message = '<strong>Error!</strong> ' + message;
     }
     var alert_html = '<div class="alert alert-' + message_type + ' alert-dismissible" role="alert">' +
-                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                          message +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                     '</div>';
     $('#jobs-table-messages').append(alert_html);
   }
