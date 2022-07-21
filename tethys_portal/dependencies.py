@@ -165,7 +165,7 @@ vendor_static_dependencies = {
         version='1.88',
         css_path='Build/Cesium/Widgets/widgets.css',
         js_path='Build/Cesium/Cesium.js',
-        debug_path_converter=lambda path: path.replace('Cesium', 'CesiumUnminified')
+        debug_path_converter=lambda path: path.replace('Cesium/', 'CesiumUnminified/')
     ),
     'd3': JsDelivrStaticDependency(
         npm_name='d3',
