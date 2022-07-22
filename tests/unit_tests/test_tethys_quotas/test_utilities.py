@@ -42,10 +42,11 @@ class TethysQuotasUtilitiesTest(TestCase):
 
     @mock.patch('tethys_quotas.models.ResourceQuota')
     def test_passes_quota_fails(self, mock_rq):
+        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
         rq = mock.MagicMock()
         mock_rq.objects.get.return_value = rq
         rq.check_quota.return_value = False
-        self.assertFalse(utilities.passes_quota(UserQuota, 'codename'))
+        self.assertFalse(utilities.passes_quota(UserQuota, 'codename', raise_on_false=False))
 
     @mock.patch('tethys_quotas.utilities.get_quota')
     @mock.patch('tethys_quotas.models.ResourceQuota')

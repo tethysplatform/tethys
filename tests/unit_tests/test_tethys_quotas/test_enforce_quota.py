@@ -4,7 +4,6 @@ from tethys_quotas.decorators import enforce_quota
 from tethys_quotas.models import ResourceQuota
 from django.http import HttpRequest
 from tethys_apps.models import TethysApp
-from django.core.exceptions import PermissionDenied
 
 
 @enforce_quota(codename='foo')
@@ -74,18 +73,3 @@ class DecoratorsTest(unittest.TestCase):
 
         mock_log.warning.assert_called_with('ResourceQuota that applies_to not.valid.rq is not supported')
         self.assertEqual('Success', ret)
-
-    @mock.patch('tethys_quotas.decorators.passes_quota')
-    @mock.patch('tethys_quotas.decorators.ResourceQuota')
-    def test_enforce_quota_passes_quota_false(self, mock_RQ, mock_passes_quota):
-        mock_RQ.DoesNotExist = ResourceQuota.DoesNotExist
-
-        mock_RQ.objects.get.return_value = mock.MagicMock(codename='foo',
-                                                          help='helpful message',
-                                                          applies_to='django.contrib.auth.models.User')
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock())
-        mock_passes_quota.return_value = False
-
-        with self.assertRaises(PermissionDenied) as context:
-            a_controller(mock_request)
-        self.assertTrue("helpful message" in str(context.exception))

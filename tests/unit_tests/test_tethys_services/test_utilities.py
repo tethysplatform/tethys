@@ -1,6 +1,8 @@
 import unittest
 from unittest import mock
 
+import requests
+
 from django.core.exceptions import ObjectDoesNotExist
 from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
@@ -27,25 +29,66 @@ class TestUtilites(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch('tethys_services.utilities.load_strategy')
     @mock.patch('tethys_services.utilities.reverse')
     @mock.patch('tethys_services.utilities.redirect')
-    def test_ensure_oauth2(self, mock_redirect, mock_reverse):
+    def test_ensure_oauth2(self, mock_redirect, mock_reverse, mock_ls):
 
         mock_user = mock.MagicMock()
-
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_redirect_url = mock.MagicMock()
-
         mock_reverse.return_value = mock_redirect_url
 
         enforced_controller(mock_request)
-
         mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
-
         mock_redirect.assert_called_once()
-
         mock_user.social_auth.get.assert_called_once_with(provider='hydroshare')
+        mock_ls.assert_called_once()
+
+    @mock.patch('tethys_services.utilities.logger')
+    @mock.patch('tethys_services.utilities.load_strategy')
+    @mock.patch('tethys_services.utilities.reverse')
+    @mock.patch('tethys_services.utilities.redirect')
+    def test_ensure_oauth2_token_expired(self, mock_redirect, mock_reverse, mock_ls, mock_logger):
+
+        mock_user = mock.MagicMock()
+        mock_social = mock.MagicMock()
+        mock_user.social_auth.get.return_value = mock_social
+        mock_social.get_backend_instance().user_data.return_value = None
+        mock_request = mock.MagicMock(user=mock_user, path='path')
+        mock_redirect_url = mock.MagicMock()
+        mock_reverse.return_value = mock_redirect_url
+
+        enforced_controller(mock_request)
+        mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
+        mock_redirect.assert_called_once()
+        mock_user.social_auth.get.assert_called_once_with(provider='hydroshare')
+        mock_social.refresh_token.assert_called_once()
+        mock_ls.assert_called_once()
+        mock_logger.debug.assert_called_once()
+
+    @mock.patch('tethys_services.utilities.logger')
+    @mock.patch('tethys_services.utilities.load_strategy')
+    @mock.patch('tethys_services.utilities.reverse')
+    @mock.patch('tethys_services.utilities.redirect')
+    def test_ensure_oauth2_token_expired_exception(self, mock_redirect, mock_reverse, mock_ls, mock_logger):
+
+        mock_user = mock.MagicMock()
+        mock_social = mock.MagicMock()
+        mock_user.social_auth.get.return_value = mock_social
+        mock_social.get_backend_instance().user_data.return_value = None
+        mock_social.refresh_token.side_effect = requests.exceptions.HTTPError
+        mock_request = mock.MagicMock(user=mock_user, path='path')
+        mock_redirect_url = mock.MagicMock()
+        mock_reverse.return_value = mock_redirect_url
+
+        enforced_controller(mock_request)
+        mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
+        mock_redirect.assert_called_once()
+        mock_user.social_auth.get.assert_called_once_with(provider='hydroshare')
+        mock_social.refresh_token.assert_called_once()
+        mock_ls.assert_called_once()
+        self.assertEqual(len(mock_logger.debug.call_args_list), 2)
 
     @mock.patch('tethys_services.utilities.reverse')
     @mock.patch('tethys_services.utilities.redirect')
@@ -53,42 +96,28 @@ class TestUtilites(unittest.TestCase):
         from django.core.exceptions import ObjectDoesNotExist
 
         mock_user = mock.MagicMock()
-
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_redirect_url = mock.MagicMock()
-
         mock_reverse.return_value = mock_redirect_url
-
         mock_user.social_auth.get.side_effect = ObjectDoesNotExist
 
         ret = enforced_controller(mock_request)
-
         mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
-
         mock_redirect.assert_called_once()
-
         self.assertEqual(mock_redirect(), ret)
 
     @mock.patch('tethys_services.utilities.reverse')
     @mock.patch('tethys_services.utilities.redirect')
     def test_ensure_oauth2_AttributeError(self, mock_redirect, mock_reverse):
         mock_user = mock.MagicMock()
-
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_redirect_url = mock.MagicMock()
-
         mock_reverse.return_value = mock_redirect_url
-
         mock_user.social_auth.get.side_effect = AttributeError
 
         ret = enforced_controller(mock_request)
-
         mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
-
         mock_redirect.assert_called_once()
-
         self.assertEqual(mock_redirect(), ret)
 
     @mock.patch('tethys_services.utilities.reverse')
@@ -97,38 +126,26 @@ class TestUtilites(unittest.TestCase):
         from social_core.exceptions import AuthAlreadyAssociated
 
         mock_user = mock.MagicMock()
-
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_redirect_url = mock.MagicMock()
-
         mock_reverse.return_value = mock_redirect_url
-
         mock_user.social_auth.get.side_effect = AuthAlreadyAssociated(mock.MagicMock(), mock.MagicMock())
 
         self.assertRaises(AuthAlreadyAssociated, enforced_controller, mock_request)
-
         mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
-
         mock_redirect.assert_called_once()
 
     @mock.patch('tethys_services.utilities.reverse')
     @mock.patch('tethys_services.utilities.redirect')
     def test_ensure_oauth2_Exception(self, mock_redirect, mock_reverse):
         mock_user = mock.MagicMock()
-
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_redirect_url = mock.MagicMock()
-
         mock_reverse.return_value = mock_redirect_url
-
         mock_user.social_auth.get.side_effect = Exception
 
         self.assertRaises(Exception, enforced_controller, mock_request)
-
         mock_reverse.assert_called_once_with('social:begin', args=['hydroshare'])
-
         mock_redirect.assert_called_once()
 
     def test_initialize_engine_object(self):
@@ -137,19 +154,13 @@ class TestUtilites(unittest.TestCase):
 
         mock_user = mock.MagicMock()
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_social = mock.MagicMock()
-
         mock_user.social_auth.get.return_value = mock_social
-
         mock_api_key = mock.MagicMock()
-
         mock_social.extra_data['access_token'].return_value = mock_api_key
 
         ret = initialize_engine_object(engine=input_engine, endpoint=input_end_point, request=mock_request)
-
         mock_user.social_auth.get.assert_called_once_with(provider='hydroshare')
-
         self.assertEqual('http://localhost/api/3/action', ret.endpoint)
         self.assertIsInstance(ret, HydroShareDatasetEngine)
 
@@ -159,11 +170,8 @@ class TestUtilites(unittest.TestCase):
 
         mock_user = mock.MagicMock()
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_social = mock.MagicMock()
-
         mock_user.social_auth.get.side_effect = [ObjectDoesNotExist, mock_social]
-
         mock_social.extra_data['access_token'].return_value = None
 
         self.assertRaises(AuthException, initialize_engine_object, engine=input_engine, endpoint=input_end_point,
@@ -177,9 +185,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_user = mock.MagicMock()
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_social = mock.MagicMock()
-
         mock_user.social_auth.get.side_effect = [AttributeError, mock_social]
 
         self.assertRaises(AttributeError, initialize_engine_object, engine=input_engine, endpoint=input_end_point,
@@ -193,9 +199,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_user = mock.MagicMock()
         mock_request = mock.MagicMock(user=mock_user, path='path')
-
         mock_social = mock.MagicMock()
-
         mock_user.social_auth.get.side_effect = [AuthAlreadyAssociated(mock.MagicMock(), mock.MagicMock()), mock_social]
 
         self.assertRaises(AuthAlreadyAssociated, initialize_engine_object, engine=input_engine,
