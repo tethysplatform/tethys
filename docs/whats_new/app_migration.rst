@@ -348,6 +348,11 @@ needs to be updated to this:
         </div>
       </div>
     </div>
+
+Hidden Class
+------------
+
+The ``hidden`` class was changed to ``d-none`` Bootstrap 5 (short for display none). Replace all instances of ``hidden`` with ``d-none``. Be sure to check for use in your JavaScript as this class is often used to hide elements dynamically.
     
 Gizmos
 ------
