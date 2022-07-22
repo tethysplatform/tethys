@@ -1647,7 +1647,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Bind Opacity Control
     opacity_control.on('input', function() {
-      layer.setOpacity(this.value);
+      layer.setOpacity(parseFloat(this.value));
     });
 
     // Bind Display Control
