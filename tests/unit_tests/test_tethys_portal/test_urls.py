@@ -1,3 +1,5 @@
+from unittest import mock
+from django.test import override_settings
 from django.urls import reverse, resolve
 from tethys_sdk.testing import TethysTestCase
 
@@ -156,3 +158,30 @@ class TestUrls(TethysTestCase):
         self.assertEqual('/update-dask-job-status/123456789/', url)
         self.assertEqual('update_dask_job_status', resolver.func.__name__)
         self.assertEqual('tethys_apps.views', resolver.func.__module__)
+
+    @override_settings(REGISTER_CONTROLLER='test')
+    @mock.patch('django.urls.re_path')
+    @mock.patch('tethys_apps.base.function_extractor.TethysFunctionExtractor')
+    def test_custom_register_controller(self, mock_func_extractor, _):
+        import tethys_portal.urls
+        from importlib import reload
+
+        reload(tethys_portal.urls)
+        self.assertEqual(tethys_portal.urls.register_controller_setting, 'test')
+        mock_func_extractor.assert_called_once()
+
+    @override_settings(REGISTER_CONTROLLER='test')
+    @mock.patch('django.urls.re_path')
+    @mock.patch('tethys_apps.base.function_extractor.TethysFunctionExtractor')
+    def test_custom_register_controller_not_class_based_view(self, mock_func_extractor, _):
+        import tethys_portal.urls
+        from importlib import reload
+
+        mock_controller = mock.MagicMock()
+        mock_controller.as_controller.side_effect = AttributeError
+        mock_func_extractor.return_value = mock.MagicMock(function=mock_controller)
+
+        reload(tethys_portal.urls)
+        self.assertEqual(tethys_portal.urls.register_controller_setting, 'test')
+        self.assertEqual(tethys_portal.urls.register_controller, mock_controller)
+        mock_func_extractor.assert_called_once()
