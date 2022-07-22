@@ -47,8 +47,7 @@ def enforce_quota(codename):
                 else:
                     raise ValueError('ResourceQuota that applies_to {} is not supported'.format(rq.applies_to))
 
-                if not passes_quota(entity, codename):
-                    raise PermissionDenied(rq.help)
+                assert passes_quota(entity, codename)
 
             except ValueError as e:
                 log.warning(str(e))

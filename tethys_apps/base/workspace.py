@@ -13,7 +13,6 @@ import sys
 import shutil
 import logging
 from django.utils.functional import wraps
-from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from tethys_quotas.utilities import passes_quota, _get_storage_units
@@ -302,15 +301,7 @@ def user_workspace(controller):
         # Get user
         user = request.user
 
-        try:
-            codename = 'user_workspace_quota'
-            rq = ResourceQuota.objects.get(codename=codename)
-
-            if not passes_quota(user, codename):
-                raise PermissionDenied(rq.help)
-
-        except ResourceQuota.DoesNotExist:
-            log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+        assert passes_quota(user, 'user_workspace_quota')
 
         # Get the active app
         app = get_active_app(request, get_class=True)
@@ -406,18 +397,10 @@ def app_workspace(controller):
         if request is None:
             raise ValueError('No request given. The app_workspace decorator only works on controllers.')
 
-        try:
-            codename = 'app_workspace_quota'
-            rq = ResourceQuota.objects.get(codename=codename)
-
-        except ResourceQuota.DoesNotExist:
-            log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
-
         # Get the active app
         app = get_active_app(request, get_class=True)
 
-        if not passes_quota(app, codename):
-            raise PermissionDenied(rq.help)
+        assert passes_quota(app, 'app_workspace_quota')
 
         the_workspace = _get_app_workspace(app)
 

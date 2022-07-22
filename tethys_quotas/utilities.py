@@ -8,6 +8,8 @@
 """
 import logging
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
+
 
 log = logging.getLogger('tethys.' + __name__)
 
@@ -60,13 +62,14 @@ def sync_resource_quota_handlers():
                 setattr(codenames, rq.codename.upper(), rq.codename)
 
 
-def passes_quota(entity, codename):
+def passes_quota(entity, codename, raise_on_false=True):
     """
     Checks to see if the quota has been exceeded or not
 
     Args:
         entity(User or TethysApp): the entity on which to check.
         codename(str): codename of the Quota to check
+        raise_on_false(bool): raise error if entity does not pass quota.
 
     Returns:
         False if the entity has exceeded the quota, otherwise True.
@@ -75,10 +78,13 @@ def passes_quota(entity, codename):
 
     try:
         rq = ResourceQuota.objects.get(codename=codename)
-        return rq.check_quota(entity)
+        passes = rq.check_quota(entity)
+        if not passes and raise_on_false:
+            raise PermissionDenied(rq.help)
+        return passes
 
     except ResourceQuota.DoesNotExist:
-        log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+        log.info('ResourceQuota with codename {} does not exist.'.format(codename))
         return True
 
 

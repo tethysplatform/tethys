@@ -6,10 +6,8 @@ from unittest import mock
 from ... import UserFactory
 from django.http import HttpRequest
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.workspace import user_workspace, app_workspace, _get_app_workspace, _get_user_workspace
-from tethys_quotas.models import ResourceQuota
 
 
 @user_workspace
@@ -174,34 +172,22 @@ class TestUrlMap(unittest.TestCase):
         self.assertNotIn('user_workspaces', rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.workspace.log')
-    @mock.patch('tethys_quotas.models.ResourceQuota')
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
     @mock.patch('tethys_apps.utilities.get_active_app')
     @mock.patch('tethys_apps.base.workspace._get_user_workspace')
-    def test_user_workspace_user(self, mock_guw, _, mock_rq, mock_log):
+    def test_user_workspace_user(self, mock_guw, _, mock_pq, mock_log):
         user_workspace = mock.MagicMock()
         mock_guw.return_value = user_workspace
-        mock_rq.objects.get.return_value = mock.MagicMock(codename='user_workspace_quota')
-        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
         mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
 
         ret = user_dec_controller(mock_request)
         self.assertEqual(user_workspace, ret)
         self.assertEqual(0, len(mock_log.warning.call_args_list))
-
-    @mock.patch('tethys_apps.base.workspace.log')
-    @mock.patch('tethys_quotas.models.ResourceQuota')
-    @mock.patch('tethys_apps.utilities.get_active_app')
-    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
-    def test_user_workspace_rq_does_not_exist(self, _, __, mock_rq, mock_log):
-        mock_rq.objects.get.side_effect = ResourceQuota.DoesNotExist
-        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
-
-        user_dec_controller(mock_request)
-        mock_log.warning.assert_called_with('ResourceQuota with codename user_workspace_quota does not exist.')
+        mock_pq.assert_called_once()
 
     def test_user_workspace_no_HttpRequest(self):
         mock_request = mock.MagicMock()
+
         ret = None
         with self.assertRaises(ValueError) as context:
             ret = user_dec_controller(mock_request)
@@ -209,71 +195,26 @@ class TestUrlMap(unittest.TestCase):
             'No request given. The user_workspace decorator only works on controllers.' in str(context.exception))
         self.assertEqual(None, ret)
 
-    @mock.patch('tethys_apps.base.workspace.passes_quota')
-    @mock.patch('tethys_quotas.models.ResourceQuota')
-    @mock.patch('tethys_apps.utilities.get_active_app')
-    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
-    def test_user_workspace_passes_quota_false(self, _, mock_app, mock_rq, mock_pq):
-        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_rq.objects.get.return_value = mock.MagicMock(help='helpful message')
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
-        mock_pq.return_value = False
-
-        ret = None
-        with self.assertRaises(PermissionDenied) as context:
-            ret = user_dec_controller(mock_request)
-        self.assertTrue("helpful message" in str(context.exception))
-        self.assertEqual(None, ret)
-
     @mock.patch('tethys_apps.base.workspace.log')
-    @mock.patch('tethys_quotas.models.ResourceQuota')
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
     @mock.patch('tethys_apps.utilities.get_active_app')
     @mock.patch('tethys_apps.base.workspace._get_app_workspace')
-    def test_app_workspace_app(self, mock_gaw, _, mock_rq, mock_log):
+    def test_app_workspace_app(self, mock_gaw, _, mock_pq, mock_log):
         app_workspace = mock.MagicMock()
         mock_gaw.return_value = app_workspace
-        mock_rq.objects.get.return_value = mock.MagicMock(codename='app_workspace_quota')
-        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
         mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
 
         ret = app_dec_controller(mock_request)
         self.assertEqual(app_workspace, ret)
         self.assertEqual(0, len(mock_log.warning.call_args_list))
-
-    @mock.patch('tethys_quotas.utilities.log')
-    @mock.patch('tethys_apps.base.workspace.log')
-    @mock.patch('tethys_quotas.models.ResourceQuota')
-    @mock.patch('tethys_apps.utilities.get_active_app')
-    @mock.patch('tethys_apps.base.workspace._get_app_workspace')
-    def test_app_workspace_rq_does_not_exist(self, _, __, mock_rq, mock_log, ___):
-        mock_rq.objects.get.side_effect = ResourceQuota.DoesNotExist
-        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
-
-        app_dec_controller(mock_request)
-        mock_log.warning.assert_called_with('ResourceQuota with codename app_workspace_quota does not exist.')
+        mock_pq.assert_called_once()
 
     def test_app_workspace_no_HttpRequest(self):
         mock_request = mock.MagicMock()
+
         ret = None
         with self.assertRaises(ValueError) as context:
             ret = app_dec_controller(mock_request)
         self.assertTrue(
             'No request given. The app_workspace decorator only works on controllers.' in str(context.exception))
-        self.assertEqual(None, ret)
-
-    @mock.patch('tethys_apps.base.workspace.passes_quota')
-    @mock.patch('tethys_quotas.models.ResourceQuota')
-    @mock.patch('tethys_apps.utilities.get_active_app')
-    @mock.patch('tethys_apps.base.workspace._get_app_workspace')
-    def test_app_workspace_passes_quota_false(self, _, mock_app, mock_rq, mock_pq):
-        mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_rq.objects.get.return_value = mock.MagicMock(help='helpful message')
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
-        mock_pq.return_value = False
-
-        ret = None
-        with self.assertRaises(PermissionDenied) as context:
-            ret = app_dec_controller(mock_request)
-        self.assertTrue("helpful message" in str(context.exception))
         self.assertEqual(None, ret)
