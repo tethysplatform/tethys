@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import mfa.TrustedDevice
+from django.conf import settings
 from django.urls import reverse_lazy, include, re_path
 from django.views.decorators.cache import never_cache
 from django.contrib import admin
@@ -22,6 +23,7 @@ from tethys_portal.views import accounts as tethys_portal_accounts, api as tethy
     admin as tethys_portal_admin, psa as tethys_portal_psa, email as tethys_portal_email
 from tethys_apps import views as tethys_apps_views
 from tethys_compute.views import dask_dashboard as tethys_dask_views
+from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
@@ -44,10 +46,22 @@ admin_url_list.insert(0, re_path(r'^tethys_apps/tethysapp/(?P<app_id>[0-9]+)/cle
 # Recreate admin.site.urls tuple
 admin_urls = (admin_url_list, admin.site.urls[1], admin.site.urls[2])
 
+# default register controller
+register_controller = tethys_portal_accounts.register
+register_controller_setting = settings.REGISTER_CONTROLLER
+if register_controller_setting:
+    function_extractor = TethysFunctionExtractor(register_controller_setting, None)
+    register_controller = function_extractor.function
+    try:
+        register_controller = register_controller.as_controller()
+    except AttributeError:
+        # not a class-based view
+        pass
+
 account_urls = [
     re_path(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     re_path(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
-    re_path(r'^register/$', tethys_portal_accounts.register, name='register'),
+    re_path(r'^register/$', register_controller, name='register'),
     re_path(r'^password/reset/$', never_cache(tethys_portal_email.TethysPasswordResetView.as_view(
         success_url=reverse_lazy('accounts:password_reset_done'))
     ), name='password_reset'),
