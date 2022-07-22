@@ -7,8 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import logging
 from urllib.error import HTTPError, URLError
 from functools import wraps
+
+import requests.exceptions
+from social_django.utils import load_strategy
 
 from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,6 +23,9 @@ from social_core.exceptions import AuthAlreadyAssociated, AuthException
 from tethys_apps.base.app_base import TethysAppBase
 from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
 from tethys_dataset_services.engines import HydroShareDatasetEngine
+
+
+logger = logging.getLogger(__name__)
 
 
 def ensure_oauth2(provider):
@@ -46,7 +53,7 @@ def ensure_oauth2(provider):
             redirect_response = redirect(redirect_url)
 
             try:
-                user.social_auth.get(provider=provider)
+                social = user.social_auth.get(provider=provider)
             except ObjectDoesNotExist:
                 # User is not associated with that provider
                 return redirect_response
@@ -57,6 +64,20 @@ def ensure_oauth2(provider):
             except AuthAlreadyAssociated as e:
                 # Another user has already used the account to associate...
                 raise e
+            else:
+                strategy = load_strategy()
+                access_token = social.get_access_token(strategy)
+
+                # verify that token is actually valid
+                user_data = social.get_backend_instance(strategy).user_data(access_token)
+                if not user_data:
+                    try:
+                        logger.debug('token is not valid, attempting to refresh using refresh token')
+                        social.refresh_token(strategy)
+                    except requests.exceptions.HTTPError:
+                        logger.debug('there was an error refreshing the token - redirecting user to re-authenticate')
+                        return redirect_response
+
             return func(request, *args, **kwargs)
         return wrapper
     return decorator
