@@ -11,11 +11,11 @@ import json
 import os
 import string
 import random
+from datetime import datetime
 from pathlib import Path
-from subprocess import call
+from subprocess import call, run
 
 
-from conda.cli.python_api import run_command, Commands
 from yaml import safe_load
 from distro import linux_distribution
 from jinja2 import Template
@@ -26,6 +26,13 @@ import tethys_portal
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
+
+has_conda = False
+try:
+    from conda.cli.python_api import run_command, Commands
+    has_conda = True
+except ModuleNotFoundError:
+    write_warning('Conda not found. Some functionality will not be available.')
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
@@ -38,6 +45,7 @@ GEN_SERVICES_OPTION = 'services'
 GEN_INSTALL_OPTION = 'install'
 GEN_META_YAML_OPTION = 'metayaml'
 GEN_PACKAGE_JSON_OPTION = 'package_json'
+GEN_REQUIREMENTS_OPTION = 'requirements'
 
 FILE_NAMES = {
     GEN_APACHE_OPTION: 'tethys-default.conf',
@@ -49,6 +57,7 @@ FILE_NAMES = {
     GEN_INSTALL_OPTION: 'install.yml',
     GEN_META_YAML_OPTION: 'meta.yaml',
     GEN_PACKAGE_JSON_OPTION: 'package.json',
+    GEN_REQUIREMENTS_OPTION: 'requirements.txt',
 }
 
 VALID_GEN_OBJECTS = (
@@ -61,6 +70,7 @@ VALID_GEN_OBJECTS = (
     GEN_INSTALL_OPTION,
     GEN_META_YAML_OPTION,
     GEN_PACKAGE_JSON_OPTION,
+    GEN_REQUIREMENTS_OPTION,
 )
 
 TETHYS_SRC = get_tethys_src_dir()
@@ -271,7 +281,23 @@ def gen_vendor_static_files(args):
 
 def download_vendor_static_files(args):
     cwd = Path(TETHYS_SRC) / 'tethys_portal' / 'static'
-    call(['npm', 'i'], cwd=cwd)
+    try:
+        call(['npm', 'i'], cwd=cwd)
+    except FileNotFoundError:
+        install_instructions = (
+            'To get npm you must install nodejs. Run the following command to install nodejs:'
+            '\n\n\tconda install -c conda-forge nodejs\n'
+            if has_conda else
+            'For help installing npm see: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm'
+        )
+        msg = (
+            f'ERROR! The packages from the package.json file could not be installed because npm is not installed.\n'
+            f'{install_instructions}\n'
+            f'After installing npm you can rerun "tethys gen package_json" '
+            f'or you can navigate to {cwd} and run "npm install".'
+        )
+
+        write_error(msg)
 
 
 def gen_install(args):
@@ -279,6 +305,19 @@ def gen_install(args):
                '(app name is required).')
 
     context = {}
+    return context
+
+
+def gen_requirements_txt(args):
+    write_warning('WARNING: The requirements.txt is currently only experimental.')
+    # pip list --format=freeze | sed '/conda/d'
+    output = run(['pip', 'list', '--format=freeze'], capture_output=True)
+    packages = output.stdout.decode().splitlines()
+    packages = [p for p in packages if 'conda' not in p and 'tethys-platform' not in p and 'psycopg2=' not in p]
+    context = {
+        'packages': packages,
+        'date': datetime.now().strftime('%Y-%m-%d')
+    }
     return context
 
 
@@ -301,6 +340,9 @@ def get_destination_path(args):
 
     elif args.type == GEN_PACKAGE_JSON_OPTION:
         destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal', 'static')
+
+    elif args.type == GEN_REQUIREMENTS_OPTION:
+        destination_dir = TETHYS_SRC
 
     if args.directory:
         destination_dir = os.path.abspath(args.directory)
@@ -362,6 +404,7 @@ GEN_COMMANDS = {
     GEN_INSTALL_OPTION: gen_install,
     GEN_META_YAML_OPTION: gen_meta_yaml,
     GEN_PACKAGE_JSON_OPTION: (gen_vendor_static_files, download_vendor_static_files),
+    GEN_REQUIREMENTS_OPTION: gen_requirements_txt,
 }
 
 

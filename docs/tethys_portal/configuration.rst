@@ -328,7 +328,7 @@ Sample portal_config.yml file:
       #  STATIC_ROOT: ''
       #  TETHYS_WORKSPACES_ROOT: ''
       #  STATICFILES_USE_NPM: True
-  
+
     SESSION_CONFIG:
       SESSION_EXPIRE_AT_BROWSER_CLOSE: True
       SESSION_SECURITY_WARN_AFTER: 840

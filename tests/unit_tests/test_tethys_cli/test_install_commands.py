@@ -23,6 +23,25 @@ class TestServiceInstallHelpers(TestCase):
         )
         self.app.save()
 
+    @mock.patch('tethys_cli.cli_colors.write_warning')
+    def test_no_conda(self, mock_warn):
+        from importlib import reload
+        import builtins
+
+        real_import = builtins.__import__
+
+        def mock_import(name, *args):
+            if name == 'conda.cli.python_api':
+                raise ModuleNotFoundError
+            else:
+                return real_import(name, *args)
+
+        builtins.__import__ = mock_import
+        reload(install_commands)
+        builtins.__import__ = real_import
+        self.assertEqual(install_commands.has_conda, False)
+        mock_warn.assert_called_once()
+
     @mock.patch('tethys_cli.install_commands.exit')
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_open_file_error(self, mock_pretty_output, mock_exit):
@@ -665,6 +684,74 @@ class TestInstallCommands(TestCase):
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
         self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[1][1][0])
         self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[2][1][0])
+
+        mock_exit.assert_called_with(0)
+
+    @mock.patch('tethys_cli.install_commands.write_warning')
+    @mock.patch.object(install_commands, 'has_conda')
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    def test_conda_install_no_conda(self, mock_pretty_output, mock_exit, mock_call, _, mock_has_conda, mock_warn):
+        file_path = self.root_app_path / 'install-dep.yml'
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
+                              no_db_sync=False, only_dependencies=False, without_dependencies=False)
+        mock_exit.side_effect = SystemExit
+        mock_has_conda.__bool__ = lambda self: False
+
+        self.assertRaises(SystemExit, install_commands.install_command, args)
+
+        mock_warn.assert_called_once()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
+        self.assertEqual("Running application install....", po_call_args[2][0][0])
+        self.assertEqual("Quiet mode: No additional service setting validation will be performed.",
+                         po_call_args[3][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
+
+        self.assertEqual(['pip', 'install', 'geojson'], mock_call.mock_calls[0][1][0])
+        self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[1][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[3][1][0])
+
+        mock_exit.assert_called_with(0)
+
+    @mock.patch('tethys_cli.install_commands.write_warning')
+    @mock.patch.object(install_commands, 'has_conda')
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    def test_conda_install_no_conda_error(self, mock_pretty_output, mock_exit, mock_call, _, mock_has_conda, mock_warn):
+        file_path = self.root_app_path / 'install-dep.yml'
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
+                              no_db_sync=False, only_dependencies=False, without_dependencies=False)
+        mock_exit.side_effect = SystemExit
+        mock_has_conda.__bool__ = lambda self: False
+        mock_call.side_effect = [Exception, None, None, None]
+        self.assertRaises(SystemExit, install_commands.install_command, args)
+
+        mock_warn.assert_called_once()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual(
+            "Installing conda packages with pip failed with the following exception: ",
+            po_call_args[1][0][0]
+        )
+        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
+        self.assertEqual("Running application install....", po_call_args[3][0][0])
+        self.assertEqual(
+            "Quiet mode: No additional service setting validation will be performed.",
+            po_call_args[4][0][0]
+        )
+        self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
+
+        self.assertEqual(['pip', 'install', 'geojson'], mock_call.mock_calls[0][1][0])
+        self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[1][1][0])
+        self.assertEqual(['pip', 'install', '.'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[3][1][0])
 
         mock_exit.assert_called_with(0)
 

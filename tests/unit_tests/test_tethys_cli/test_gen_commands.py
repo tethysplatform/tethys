@@ -1,6 +1,8 @@
 import unittest
 from unittest import mock
+from pathlib import Path
 
+import tethys_cli.gen_commands as tethys_gen_commands
 from tethys_cli.gen_commands import (
     get_environment_value,
     get_settings_value,
@@ -18,6 +20,8 @@ from tethys_cli.gen_commands import (
     GEN_PORTAL_OPTION,
     GEN_META_YAML_OPTION,
     GEN_PACKAGE_JSON_OPTION,
+    GEN_REQUIREMENTS_OPTION,
+    VALID_GEN_OBJECTS,
 )
 
 from tethys_apps.utilities import get_tethys_src_dir
@@ -31,6 +35,26 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    @mock.patch('tethys_cli.cli_colors.write_warning')
+    def test_no_conda(self, mock_warn):
+        import tethys_cli.gen_commands as tethys_gen_commands
+        from importlib import reload
+        import builtins
+
+        real_import = builtins.__import__
+
+        def mock_import(name, *args):
+            if name == 'conda.cli.python_api':
+                raise ModuleNotFoundError
+            else:
+                return real_import(name, *args)
+
+        builtins.__import__ = mock_import
+        reload(tethys_gen_commands)
+        builtins.__import__ = real_import
+        self.assertEqual(tethys_gen_commands.has_conda, False)
+        mock_warn.assert_called_once()
 
     def test_get_environment_value(self):
         result = get_environment_value(value_name='DJANGO_SETTINGS_MODULE')
@@ -377,6 +401,27 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
+    @mock.patch('tethys_cli.gen_commands.run')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    @mock.patch('tethys_cli.gen_commands.write_warning')
+    @mock.patch('tethys_cli.gen_commands.write_info')
+    def test_generate_requirements_option(
+            self, mock_write_info, mock_write_warn, mock_os_path_isfile, mock_file, mock_run
+    ):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_REQUIREMENTS_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        mock_write_warn.assert_called_once()
+        mock_write_info.assert_called_once()
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+        mock_run.assert_called_once()
+
     @mock.patch('tethys_cli.gen_commands.os.path.join')
     @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.Template')
@@ -665,6 +710,24 @@ class CLIGenCommandsTest(unittest.TestCase):
         download_vendor_static_files(mock.MagicMock())
         mock_call.assert_called_once()
 
+    @mock.patch('tethys_cli.gen_commands.write_error')
+    @mock.patch('tethys_cli.gen_commands.call')
+    def test_download_vendor_static_files_no_npm(self, mock_call, mock_error):
+        mock_call.side_effect = FileNotFoundError
+        download_vendor_static_files(mock.MagicMock())
+        mock_call.assert_called_once()
+        mock_error.assert_called_once()
+
+    @mock.patch.object(tethys_gen_commands, 'has_conda')
+    @mock.patch('tethys_cli.gen_commands.write_error')
+    @mock.patch('tethys_cli.gen_commands.call')
+    def test_download_vendor_static_files_no_npm_no_conda(self, mock_call, mock_error, mock_has_conda):
+        mock_call.side_effect = FileNotFoundError
+        mock_has_conda.__bool__ = lambda self: False
+        download_vendor_static_files(mock.MagicMock())
+        mock_call.assert_called_once()
+        mock_error.assert_called_once()
+
     @mock.patch('tethys_cli.gen_commands.check_for_existing_file')
     @mock.patch('tethys_cli.gen_commands.os.path.isdir', return_value=True)
     def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
@@ -692,3 +755,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_render.assert_called_once()
         mock_write_path.assert_called_once()
         mock_commands.__getitem__.assert_called_once()
+
+    def test_templates_exist(self):
+        template_dir = Path(TETHYS_SRC) / 'tethys_cli' / 'gen_templates'
+        for file_name in VALID_GEN_OBJECTS:
+            template_path = template_dir / file_name
+            self.assertTrue(template_path.exists())
