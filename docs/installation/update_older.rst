@@ -4,9 +4,50 @@
 Upgrade from Older Versions
 ***************************
 
-**Last Updated:** August 2020
+**Last Updated:** July 2022
 
-This document provides instructions for upgrading from versions of Tethys Platform prior to 3.0.
+This document provides instructions for upgrading from versions of Tethys Platform prior to |version|.
+
+Upgrading 3.X Versions
+======================
+
+Use these instructions to update Tethys 3.X installations to other versions of Tethys 3 (3.1, 3.2, 3.3, and 3.4). Tethys Platform has become much more stable as of version 3.0 and you shouldn't expect many major breaking changes between different minor versions (e.g. 3.1, 3.2, 3.3). In other words, apps that work in 3.0 should work in 3.1 without any changes. The following steps can be used as a general guide, but additional steps may be required for your specific installation.
+
+Upgrade Steps
+-------------
+
+1. Review the :ref:`whats_new` documentation before attempting any upgrade, especially on production servers.
+
+2. Activate the ``tethys`` conda environment::
+
+    conda activate tethys
+
+3. Update the Tethys Platform conda package and dependencies by installing the new version of Tethys Platform::
+
+    conda install -c tethysplatform -c conda-forge tethys-platform=3.*
+
+4. Migrate the Tethys Platform database tables::
+
+    tethys db migrate
+
+5. Make any changes to your apps if necessary. This should only be the case when upgrading between major versions (e.g. 3.0 to 4.0). See the :ref:`whats_new` documentation for detailed notes on what changes occur in each release.
+
+.. note::
+
+    In previous versions of Tethys Platform it was required to backup the :file:`settings.py` file before upgrading and then copy your custom settings from the backup to the new :file:`settings.py` file after upgrading. As of version 3.0, this should no longer be the case. All custom settings should be defined in the :file:`portal_config.yml`, which is preserved during upgrades. See: :ref:`tethys_configuration` for more details.
+
+Additional Upgrade Steps for Production Installations
+-----------------------------------------------------
+
+The following additional steps may be required for production server upgrades.
+
+1. Collect static files::
+
+    tethys manage collectstatic
+
+2. Restart Daphne and NGINX servers::
+
+    sudo supervisorctl restart all
 
 Upgrading from 2.1 to 3.X
 =========================
