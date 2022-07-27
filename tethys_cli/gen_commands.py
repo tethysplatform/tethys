@@ -154,6 +154,7 @@ def gen_asgi_service(args):
 
     conda_prefix = args.conda_prefix if args.conda_prefix else get_environment_value('CONDA_PREFIX')
     conda_home = Path(conda_prefix).parents[1]
+    conda_env_name = Path(conda_prefix).name
 
     user_option_prefix = ''
 
@@ -170,6 +171,7 @@ def gen_asgi_service(args):
         'asgi_processes': args.asgi_processes,
         'conda_prefix': conda_prefix,
         'conda_home': conda_home,
+        'conda_env_name': conda_env_name,
         'tethys_src': TETHYS_SRC,
         'tethys_home': TETHYS_HOME,
         'user_option_prefix': user_option_prefix,
