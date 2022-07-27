@@ -252,30 +252,14 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
 
     @mock.patch('django.contrib.auth.admin.UserAdmin.change_view')
-    @mock.patch('django.contrib.auth.admin.UserAdmin.add_view')
-    def test_admin_site_register_custom_user(self, mock_ua_add_view, mock_ua_change_view):
+    def test_admin_site_register_custom_user(self, mock_ua_change_view):
         from django.contrib import admin
         ret = CustomUser(mock.MagicMock(), mock.MagicMock())
 
         # Add custom inline when change_view is called
         ret.change_view(mock.MagicMock())
         mock_ua_change_view.assert_called()
-        self.assertIn(UserQuotasSettingInline, ret.inlines)
-
-        # Remove custom inline when change_view is called
-        ret.add_view(mock.MagicMock())
-        mock_ua_add_view.assert_called()
-        self.assertNotIn(UserQuotasSettingInline, ret.inlines)
-
-        # Repeat to complete full cycle (change -> add -> change -> add)
-        # Add custom inline when change_view is called
-        ret.change_view(mock.MagicMock())
-        mock_ua_change_view.assert_called()
-        self.assertIn(UserQuotasSettingInline, ret.inlines)
-
-        # Remove custom inline when change_view is called
-        ret.add_view(mock.MagicMock())
-        mock_ua_add_view.assert_called()
+        # ensure the custom inline was removed
         self.assertNotIn(UserQuotasSettingInline, ret.inlines)
 
         # Check registration
