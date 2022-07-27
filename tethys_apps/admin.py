@@ -150,15 +150,14 @@ class TethysExtensionAdmin(GuardedModelAdmin):
 
 
 class CustomUser(UserAdmin):
-    def add_view(self, *args, **kwargs):
-        if UserQuotasSettingInline in self.inlines:
-            self.inlines.pop(self.inlines.index(UserQuotasSettingInline))
-        return super().add_view(*args, **kwargs)
-
     def change_view(self, *args, **kwargs):
         if UserQuotasSettingInline not in self.inlines:
             self.inlines.append(UserQuotasSettingInline)
-        return super().change_view(*args, **kwargs)
+        response = super().change_view(*args, **kwargs)
+
+        # remove inline so it does not interfere with other models that relate to User
+        self.inlines.remove(UserQuotasSettingInline)
+        return response
 
 
 class GOPAppAccessForm(forms.ModelForm):
