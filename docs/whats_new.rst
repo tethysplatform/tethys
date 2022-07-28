@@ -83,6 +83,15 @@ Scheduler App Settings
 * HTCondor and Dask Schedulers can now be assigned to apps using App Settings like other services.
 * Tethys Dask Scheduler updated to be compatible to the latest version of Dask.
 
+Showcase Apps
+-------------
+
+* The Developer pages, including the Gizmo Showcase, were removed from Tethys Portal.
+* A new Gizmo Showcase App was developed to provide improved demonstrations and code examples of Tethys Gizmos.
+* A new Layout Showcase App was developed to provide live demonstrations and code examples of the new Map Layout and future Layouts.
+
+See :ref:`installation_showcase_apps`
+
 Documentation
 -------------
 

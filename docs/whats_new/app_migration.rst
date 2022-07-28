@@ -354,8 +354,8 @@ Hidden Class
 
 The ``hidden`` class was changed to ``d-none`` Bootstrap 5 (short for display none). Replace all instances of ``hidden`` with ``d-none``. Be sure to check for use in your JavaScript as this class is often used to hide elements dynamically.
     
-Gizmos
-------
+References in Gizmos
+--------------------
 
 Although Gizmos have been updated to use Bootstrap 5, some arguments passed to them may include Bootstrap 3 values. For example, the ``Button`` and ``TextInput`` Gizmos have arguments that accept the names of icons to be displayed on them that need to be updated to Boostrap Icons values. Other arguments to check are ``attributes``, ``classes``, and ``style`` that may have old Bootstrap 3 values that need to be updated to use Bootstrap 5 values. Use the following tips to help you migrate:
 
@@ -386,6 +386,49 @@ change the value of ``icon`` (without the ``bi`` portion) of the Bootstrap Icon:
         icon='plus-circle-fill',
         style='success',
     )
+
+Gizmos
+======
+
+Static Dependencies
+-------------------
+
+Most of the static dependencies of Gizmos, the CSS and JavaScript libraries they depend on, have been updated. As a result, some funtionality may have changed. If your app interacts with Gizmos using JavaScript, you may need to make some minor changes to the code to work with the new versions. This will be enirely dependent on what functionality you use.
+
+For example, the MapView gizmo depends on the OpenLayers JavaScript library. If your app uses the ``getMap()`` JavaScript API method of the MapView Gizmo and then manipulates the map object (add layers, change map settings, etc), it is likely using the OpenLayers API to do so. If your app doesn't seem to be functioning correctly, check the developer console in your web browser for errors.
+
+.. note::
+
+    The Gizmos have been updated to work with the new versions of the libraries. This suggestion only applies to your custom JavaScript code. If you use Gizmos and don't use JavaScript to manipulate them, then this likely doesn't apply to you.
+
+MapView Gizmo
+-------------
+
+The ``basemap`` argument of the ``MapView`` Gizmo needs to be specified as a list, even if only one basemap is listed. For example a ``MapView`` Gizmo specifing only ``'OpenStreetMap'`` basemap like this:
+
+.. code-block:: python
+    :emphasize-lines: 6
+
+     map_view_options = MapView(
+        height='500px',
+        width='100%',
+        layers=[...],
+        view=view_options,
+        basemap='OpenStreetMap',
+     )
+
+should be updated to this:
+
+.. code-block:: python
+    :emphasize-lines: 6
+
+     map_view_options = MapView(
+        height='500px',
+        width='100%',
+        layers=[...],
+        view=view_options,
+        basemap=['OpenStreetMap'],
+     )
 
 Schedulers
 ==========
