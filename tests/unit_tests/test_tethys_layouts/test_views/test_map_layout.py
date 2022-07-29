@@ -1,1 +1,1 @@
-from tethys_layouts.views.tethys_layout import MapLayout
+from tethys_layouts.views.map_layout import MapLayout
