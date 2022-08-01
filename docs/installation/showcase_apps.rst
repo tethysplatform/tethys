@@ -52,7 +52,7 @@ Installation
 
 4. Set up Cesium Ion Token (Optional)
 
-    To view the Cesium Map View demos, you will need to obtain a Cesium Ion Token See Cesium ion Access Tokens tutorial for instructions on obtaining a token. After obtaining a token, navigate to the settings for the Gizmo Showcase, locate the cesium_ion_token setting under Custom Settings section, enter the token, and save.
+    To view the Cesium Map View demos, you will need to obtain a Cesium Ion Token. See Cesium ion Access Tokens tutorial for instructions on obtaining a token. After obtaining a token, navigate to the settings for the Gizmo Showcase, locate the cesium_ion_token setting under Custom Settings section, enter the token, and save.
 
 5. GeoServer (Optional)
 
