@@ -159,4 +159,4 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 
 .. tip::
 
-    Run ``tethys gen portal_config`` to create a blank template of this file. By default the file will be saved to ``$TETHYS_SRC/tethy_portal``.
+    Run ``tethys gen portal_config`` to create a blank template of this file. By default the file will be saved to the ``$TETHYS_HOME`` directory.
