@@ -36,7 +36,7 @@ See: `Boostrap 5 Documentation <https://getbootstrap.com/docs/5.0/getting-starte
 Controller Decorators
 ---------------------
 
-* Added new three new decorators: ``controller``, ``consumer``, and ``handler``.
+* Added three new decorators: ``controller``, ``consumer``, and ``handler``.
 * Use these decorators for mapping controllers, consumers, and handlers to URLs.
 * UrlMaps in app.py no longer needed and the ``url_maps`` method is deprecated.
 
