@@ -38,7 +38,7 @@ Controller Decorators
 
 * Added three new decorators: ``controller``, ``consumer``, and ``handler``.
 * Use these decorators for mapping controllers, consumers, and handlers to URLs.
-* UrlMaps in app.py no longer needed and the ``url_maps`` method is deprecated.
+* UrlMaps in app.py are no longer needed and the ``url_maps`` method is deprecated.
 
 See: :ref:`url_maps_api`
 
