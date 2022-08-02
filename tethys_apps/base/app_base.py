@@ -238,21 +238,21 @@ class TethysBase(TethysBaseMixin):
 
     @property
     def registered_url_maps(self):
+        # TODO remove deprecation code
+        try:
+            self._registered_url_maps = self.url_maps()
+            from tethys_cli.cli_colors import write_warning
+            write_warning(
+                f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
+                'This method is now deprecated. '
+                'Please use the new "controller", "consumer", and "handler" decorators to register URL maps '
+                '(see docs: http://docs.tethysplatform.org/en/stable/tethys_sdk/routing.html).'
+            )
+        except AttributeError:
+            pass
+
         if self._registered_url_maps is None:
             self._registered_url_maps = self.register_url_maps()
-
-            # TODO remove deprecation code
-            try:
-                self._registered_url_maps = self.url_maps()
-                from tethys_cli.cli_colors import write_warning
-                write_warning(
-                    f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
-                    'This method is now deprecated. '
-                    'Please use the new controller decorator to register URL maps (see docs:  '
-                    'http://docs.tethysplatform.org/en/stable/tethys_sdk/app_class.html#controllers) '
-                )
-            except AttributeError:
-                pass
 
         return self._registered_url_maps
 
@@ -408,6 +408,8 @@ class TethysAppBase(TethysBase):
     tags = ''
     enable_feedback = False
     feedback_emails = []
+    enabled = True
+    show_in_apps_library = True
 
     def __str__(self):
         """
@@ -1463,7 +1465,9 @@ class TethysAppBase(TethysBase):
                     icon=self.icon,
                     root_url=self.root_url,
                     color=self.color,
-                    tags=self.tags
+                    tags=self.tags,
+                    enabled=self.enabled,
+                    show_in_apps_library=self.show_in_apps_library
                 )
                 db_app.save()
 
@@ -1512,6 +1516,9 @@ class TethysAppBase(TethysBase):
                     db_app.tags = self.tags
                     db_app.enable_feedback = self.enable_feedback
                     db_app.feedback_emails = self.feedback_emails
+                    db_app.enabled = self.enabled
+                    db_app.show_in_apps_library = self.show_in_apps_library
+
                     db_app.save()
 
             # More than one instance of the app in db... (what to do here?)

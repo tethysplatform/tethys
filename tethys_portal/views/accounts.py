@@ -15,6 +15,7 @@ from django.views.decorators.cache import never_cache
 from mfa.helpers import has_mfa
 from tethys_portal.forms import LoginForm, RegisterForm
 from tethys_portal.utilities import log_user_in
+from tethys_config.models import get_custom_template
 
 
 @never_cache
@@ -69,7 +70,9 @@ def login_view(request):
     context = {'form': form,
                'signup_enabled': signup_enabled}
 
-    return render(request, 'tethys_portal/accounts/login.html', context)
+    template = get_custom_template('Login Page Template', 'tethys_portal/accounts/login.html')
+
+    return render(request, template, context)
 
 
 @never_cache
@@ -130,7 +133,8 @@ def register(request):
         form = RegisterForm()
 
     context = {'form': form}
-    return render(request, 'tethys_portal/accounts/register.html', context)
+    template = get_custom_template('Register Page Template', 'tethys_portal/accounts/register.html')
+    return render(request, template, context)
 
 
 def logout_view(request):

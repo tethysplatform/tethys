@@ -281,8 +281,8 @@ def gen_vendor_static_files(args):
     return context
 
 
-def download_vendor_static_files(args):
-    cwd = Path(TETHYS_SRC) / 'tethys_portal' / 'static'
+def download_vendor_static_files(args, cwd=None):
+    cwd = cwd or Path(TETHYS_SRC) / 'tethys_portal' / 'static'
     try:
         call(['npm', 'i'], cwd=cwd)
     except FileNotFoundError:

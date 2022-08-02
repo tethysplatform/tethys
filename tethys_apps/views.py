@@ -12,7 +12,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from tethys_compute.models import TethysJob, DaskJob
-from tethys_config.models import Setting
+from tethys_config.models import get_custom_template
 
 from .base.app_base import TethysAppBase
 from .models import TethysApp
@@ -66,11 +66,7 @@ def library(request):
     # Define the context object
     context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
 
-    custom_template = Setting.objects.get(name='Apps Library Template').content
-    if custom_template:
-        template = custom_template.lstrip('/') if custom_template.startswith('/') else custom_template
-    else:
-        template = 'tethys_apps/app_library.html'
+    template = get_custom_template('Apps Library Template', 'tethys_apps/app_library.html')
 
     return render(request, template, context)
 

@@ -17,6 +17,8 @@ from tethys_apps.utilities import (
     get_tethys_home_dir,
 )
 
+from .gen_commands import download_vendor_static_files
+
 has_conda = False
 try:
     from conda.cli.python_api import run_command as conda_run, Commands
@@ -503,7 +505,7 @@ def install_command(args):
                             with package_json_file.open('w') as f:
                                 json.dump({'dependencies': npm_requirements}, f)
                     if package_json_file.exists():
-                        call(['npm', 'i', str(public_resources_dir)])
+                        download_vendor_static_files(None, cwd=str(public_resources_dir))
 
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:

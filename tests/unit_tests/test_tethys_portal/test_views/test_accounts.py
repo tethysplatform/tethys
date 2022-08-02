@@ -149,6 +149,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_mfa.assert_called_with(mock_request, mock_user.username)
 
     @override_settings(ENABLE_OPEN_SIGNUP=False)
+    @mock.patch('tethys_portal.views.accounts.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.accounts.render')
     @mock.patch('tethys_portal.views.accounts.messages')
     @mock.patch('tethys_portal.views.accounts.login')
@@ -156,7 +157,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch('tethys_portal.views.accounts.LoginForm')
     @mock.patch('tethys_portal.views.accounts.redirect')
     def test_login_view_get_method_not_active_user(self, mock_redirect, mock_login_form, mock_authenticate, mock_login,
-                                                   mock_messages, mock_render):
+                                                   mock_messages, mock_render, mock_get_template):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'login-submit'
@@ -203,9 +204,12 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         context = {'form': mock_login_form(),
                    'signup_enabled': False}
 
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/accounts/login.html', context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(ENABLE_OPEN_SIGNUP=False)
+    @mock.patch('tethys_portal.views.accounts.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.accounts.render')
     @mock.patch('tethys_portal.views.accounts.messages')
     @mock.patch('tethys_portal.views.accounts.login')
@@ -213,7 +217,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch('tethys_portal.views.accounts.LoginForm')
     @mock.patch('tethys_portal.views.accounts.redirect')
     def test_login_view_get_method_user_none(self, mock_redirect, mock_login_form, mock_authenticate, mock_login,
-                                             mock_messages, mock_render):
+                                             mock_messages, mock_render, mock_get_template):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'login-submit'
@@ -260,14 +264,17 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         context = {'form': mock_login_form(),
                    'signup_enabled': False}
 
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/accounts/login.html', context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(ENABLE_OPEN_SIGNUP=False)
+    @mock.patch('tethys_portal.views.accounts.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.accounts.render')
     @mock.patch('tethys_portal.views.accounts.login')
     @mock.patch('tethys_portal.views.accounts.LoginForm')
     @mock.patch('tethys_portal.views.accounts.redirect')
-    def test_login_view_wrong_method(self, mock_redirect, mock_login_form, mock_login, mock_render):
+    def test_login_view_wrong_method(self, mock_redirect, mock_login_form, mock_login, mock_render, mock_get_template):
         mock_request = mock.MagicMock()
         mock_request.method = 'foo'
 
@@ -288,7 +295,9 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         context = {'form': mock_login_form(),
                    'signup_enabled': False}
 
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/accounts/login.html', context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', context)
+
+        mock_get_template.assert_called_once()
 
     @mock.patch('tethys_portal.views.accounts.redirect')
     def test_register_not_anonymous_user(self, mock_redirect):
@@ -406,13 +415,14 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_redirect.assert_called_once_with(mock_request.GET['next'])
 
     @override_settings(ENABLE_OPEN_SIGNUP=True)
+    @mock.patch('tethys_portal.views.accounts.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.accounts.messages')
     @mock.patch('tethys_portal.views.accounts.login')
     @mock.patch('tethys_portal.views.accounts.authenticate')
     @mock.patch('tethys_portal.views.accounts.RegisterForm')
     @mock.patch('tethys_portal.views.accounts.render')
     def test_register_post_request_not_active_user(self, mock_render, mock_register_form, mock_authenticate,
-                                                   mock_login, mock_messages):
+                                                   mock_login, mock_messages, mock_get_template):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'register-submit'
@@ -460,16 +470,19 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         context = {'form': mock_form}
 
         # mock redirect after logged in using next parameter or default to user profile
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/accounts/register.html', context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(ENABLE_OPEN_SIGNUP=True)
+    @mock.patch('tethys_portal.views.accounts.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.accounts.messages')
     @mock.patch('tethys_portal.views.accounts.login')
     @mock.patch('tethys_portal.views.accounts.authenticate')
     @mock.patch('tethys_portal.views.accounts.RegisterForm')
     @mock.patch('tethys_portal.views.accounts.render')
     def test_register_post_request_user_none(self, mock_render, mock_register_form, mock_authenticate,
-                                             mock_login, mock_messages):
+                                             mock_login, mock_messages, mock_get_template):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'register-submit'
@@ -517,12 +530,15 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         context = {'form': mock_form}
 
         # mock redirect after logged in using next parameter or default to user profile
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/accounts/register.html', context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(ENABLE_OPEN_SIGNUP=True)
+    @mock.patch('tethys_portal.views.accounts.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.accounts.RegisterForm')
     @mock.patch('tethys_portal.views.accounts.render')
-    def test_register_bad_request(self, mock_render, mock_register_form):
+    def test_register_bad_request(self, mock_render, mock_register_form, mock_get_template):
         mock_request = mock.MagicMock()
         mock_request.method = 'FOO'
 
@@ -543,7 +559,9 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         context = {'form': mock_form}
 
         # mock redirect after logged in using next parameter or default to user profile
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/accounts/register.html', context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', context)
+
+        mock_get_template.assert_called_once()
 
     @mock.patch('tethys_portal.views.accounts.messages')
     @mock.patch('tethys_portal.views.accounts.logout')

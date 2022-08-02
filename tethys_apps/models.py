@@ -52,16 +52,14 @@ class TethysApp(models.Model, TethysBaseMixin):
         default=list,
     )
     tags = models.CharField(max_length=200, blank=True, default='')
+    enabled = models.BooleanField(default=True)
+    show_in_apps_library = models.BooleanField(default=True)
 
     # Developer first attributes
     index = models.CharField(max_length=200, default='')
     icon = models.CharField(max_length=200, default='')
     root_url = models.CharField(max_length=200, default='')
     color = models.CharField(max_length=10, default='')
-
-    # Portal admin only attributes
-    enabled = models.BooleanField(default=True)
-    show_in_apps_library = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Tethys App'
