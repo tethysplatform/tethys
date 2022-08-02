@@ -1,3 +1,5 @@
+.. _tutorials_websockets:
+
 *******************
 WebSockets Concepts
 *******************

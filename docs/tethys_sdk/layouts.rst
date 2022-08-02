@@ -24,6 +24,10 @@ Here is a list of Layouts provided by Tethys Platform.
 
    layouts/map_layout
 
+Layout Showcase App
+===================
+
+The Layout Showcase App is a Tethys App can be installed in any Tethys Portal and includes live demonstrations and code samples of each Layout. See :ref:`installation_layout_showcase_app` for instructions on installing the Layout Showcase App.
 
 Tethys Layouts
 ==============

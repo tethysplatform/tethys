@@ -88,21 +88,10 @@ The Gizmo tag is replaced with the appropriate HTML, JavaScript, and CSS that is
 .. figure:: ../images/gizmo_example.png
     :width: 650px
 
-Gizmo Showcase
-==============
+Gizmo Showcase App
+==================
 
-Live demos of each Gizmo is provided as a developer tool called "Gizmo Showcase". To access the Gizmo Showcase, start up your development server and navigate to the home page of your Tethys Portal at `<http://127.0.0.1:8000>`_. Login and select the ``Developer`` link from the main navigation. This will bring up the Developer Tools page of your Tethys Portal:
-
-.. figure:: ../images/developer_tools_page.png
-    :width: 650px
-
-
-Select the Gizmos developer tool and you will be brought to the Gizmo Showcase page:
-
-.. figure:: ../images/gizmo_showcase_page.png
-    :width: 650px
-
-For explanations the Gizmo Options objects and code examples, refer to the :ref:`gizmo_options` section.
+The Gizmo Showcase App provides live demos and code examples of every Tethys Gizmo. See :ref:`installation_gizmo_showcase_app` to learn how to install the Gizmo Showcase app. For explanations of the Gizmo Options objects and code examples, refer to the :ref:`gizmo_options` section.
 
 API Documentation
 =================

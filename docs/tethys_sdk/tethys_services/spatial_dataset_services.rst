@@ -67,6 +67,8 @@ Using dataset services in your app is accomplished by adding the ``spatial_datas
 
     The ellipsis in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
 
+.. _assign_spatial_dataset_service:
+
 Assign Spatial Dataset Service
 ==============================
 
