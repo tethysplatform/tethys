@@ -4,7 +4,7 @@
 Application Installation
 ************************
 
-**Last Updated:** March 2019
+**Last Updated:** July 2022
 
 Once you have the portal configured and setup with all the required services, the next step is to install Tethys applications on to your portal.
 
@@ -13,26 +13,55 @@ Once you have the portal configured and setup with all the required services, th
 
 Within the command line interface, navigate to the directory of the app you wish to install (this directory must contain the app's ``setup.py`` file).
 
-::
+.. code-block::
 
     cd /directory/of/app
 
 2. Install the App
 ==================
 
-Using Install (Recommended):
-----------------------------
-
 Using the :ref:`install cli command <tethys_cli_install>`, you can install the application in one quick step. The ``install`` command will install all the dependencies, link any services that you might need for your application and can also rely on the portal configuration to link default services to your application (as configured by the portal administrator).
 
-::
+.. code-block::
 
-    # Run Init
+    # Normal installation
     tethys install
+
+    # Development installation
+    tethys install -d
 
     # Tethys install with custom options
     tethys install -f ../install.yml -p $TETHYS_HOME/src/configs/portal_config.yml
 
+
+
+
+3. Restart Tethys Server
+========================
+
+Restart tethys portal to effect the changes:
+
+.. code-block::
+
+    tethys manage start
+
+
+4. Configure Additional App Settings
+====================================
+
+If any required settings were not configured through the installation process go to the application settings page in the Tethys Portal admin pages and configure them there (see :doc:`../../tethys_portal/admin_pages`).
+
+5. Initialize Persistent Stores (Optional)
+==========================================
+
+The install command will automatically run the syncstores command if it detects that the app has persistent stores. However, if you need to run syncstores manually, it can be done like so:
+
+.. code-block::
+
+    tethys syncstores {app_name}
+
+Install Configuration Files
+===========================
 
 The install command uses three configuration files:
 
@@ -130,28 +159,4 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 
 .. tip::
 
-    Run ``tethys gen portal_config`` to create a blank template of this file. By default the file will be saved to ``$TETHYS_SRC/tethy_portal``.
-
-
-3. Restart Tethys Server
-========================
-
-Restart tethys portal to effect the changes::
-
-    tethys manage start
-
-
-4. Configure Additional App Settings
-====================================
-
-If any required settings were not configured through the installation process go to the application settings page in the Tethys Portal admin pages and configure them there (see :doc:`../../tethys_portal/admin_pages`).
-
-5. Initialize Persistent Stores (Optional)
-==========================================
-
-The install command will automatically run the syncstores command if it detects that the app has persistent stores. However, if you need to run syncstores manually, it can be done like so:
-
-::
-
-    t
-    tethys syncstores {app_name}
+    Run ``tethys gen portal_config`` to create a blank template of this file. By default the file will be saved to the ``$TETHYS_HOME`` directory.
