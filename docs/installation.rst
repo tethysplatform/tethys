@@ -107,10 +107,11 @@ This will start up a locally running web server. You can access the Tethys Porta
 
 There are several directions that you may want to go from here.
 
-* Checkout the :doc:`./installation/web_admin_setup` docs to set up your Tethys Portal.
+* Install an app you have already developed using the :ref:`app_installation` guide.
+* Complete one or more :ref:`tutorials` to learn how to develop apps using Tethys Platform.
+* Install one or both of the :ref:`installation_showcase_apps` to see live demos and code examples of Gizmos and Layouts.
+* Checkout the :doc:`./installation/web_admin_setup` docs to customize your Tethys Portal.
 * For help getting started with docker see :ref:`using_docker`
-* To install your app refer to the :ref:`app_installation`
-* You also may want to jump over to the :ref:`tutorials` to begin developing your first app.
 
 
 Related Docs
@@ -120,11 +121,11 @@ Related Docs
     :maxdepth: 1
 
     installation/system_requirements
+    tethys_portal/configuration
+    installation/application
+    installation/showcase_apps
     installation/update
     installation/production
     installation/developer_installation
-    tethys_portal/configuration
     installation/using_docker
     installation/web_admin_setup
-    installation/application
-
