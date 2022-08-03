@@ -31,6 +31,6 @@ class SettingTest(TethysTestCase):
         self.assertIn('site_title', set_all)
 
     @mock.patch('tethys_config.models.Setting.objects.get', return_value=mock.MagicMock(content='/test.html'))
-    def test_get_custom_template(self, mock_setting):
+    def test_get_custom_template(self, _):
         result = get_custom_template('name', None)
         self.assertEqual('test.html', result)

@@ -1,39 +1,39 @@
 # Portal Level Config File
 
-# see tethys documentation for how to setup this file
-version: 1.0
+# For more information about this file refer to the Tethys Docs (http://docs.tethysplatform.org/en/stable/tethys_portal/configuration.html)
+version: 2.0
 name:
+
+############################################################################
+#
+# APPS
+#
+# This section is applied when running the "tethys install" command. Tethys
+# will first look for app settings in this file. If none are found it will
+# then look for a "services.yml" file in the install location.
+#
+#############################################################################
 apps:
+
+############################################################################
+#
+# SETTINGS
+#
+# Settings from this section are read everytime the Portal starts up. If
+# changes are made you will need to restart the portal.
+#
+#############################################################################
 settings:
+
+############################################################################
+#
+# SITE SETTINGS
+#
+# Settings from this section are read when running the "tethys site -f"
+# command. Note that the "-f" flag indicates that site settings should be
+# applied from this file.
+#
+#############################################################################
 site_settings:
   GENERAL_SETTINGS:
-    SITE_TITLE:
-    FAVICON:
     BRAND_TEXT: "New Title"
-    BRAND_IMAGE:
-    BRAND_IMAGE_HEIGHT:
-    BRAND_IMAGE_WIDTH:
-    BRAND_IMAGE_PADDING:
-    APPS_LIBRARY_TITLE:
-    PRIMARY_COLOR:
-    SECONDARY_COLOR:
-    BACKGROUND_COLOR:
-    PRIMARY_TEXT_COLOR:
-    PRIMARY_TEXT_HOVER_COLOR:
-    SECONDARY_TEXT_COLOR:
-    SECONDARY_TEXT_HOVER_COLOR:
-    FOOTER_COPYRIGHT:
-  HOME_PAGE:
-    HERO_TEXT:
-    BLURB_TEXT:
-    FEATURE_1_HEADING:
-    FEATURE_1_BODY:
-    FEATURE_1_IMAGE:
-    FEATURE_2_HEADING:
-    FEATURE_2_BODY:
-    FEATURE_2_IMAGE:
-    FEATURE_3_HEADING:
-    FEATURE_3_BODY:
-    FEATURE_3_IMAGE:
-    CALL_TO_ACTION:
-    CALL_TO_ACTION_BUTTON:
