@@ -718,6 +718,52 @@ class TestMapLayoutMixin(unittest.TestCase):
             'excluded_properties': ['id', 'type', 'layer_name'],
         })
 
+    def test_build_wms_layer_times(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_wms_layer(
+            endpoint='http://example.com/geoserver/wms',
+            layer_name='foo:bar',
+            layer_title='Foo Bar',
+            layer_variable='baz',
+            env='foo:1;bar:baz',
+            times=["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"],
+        )
+        self.maxDiff = None
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, 'TileWMS')
+        self.assertEqual(ret.legend_title, 'Foo Bar')
+        self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertFalse(ret.feature_selection)
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertEqual(ret.times, '["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]')
+        self.assertDictEqual(ret.options, {
+            'url': 'http://example.com/geoserver/wms',
+            'params': {
+                'LAYERS': 'foo:bar',
+                'TILED': True,
+                'TILESORIGIN': '0.0,0.0',
+                'ENV': 'foo:1;bar:baz',
+            },
+            'serverType': 'geoserver',
+            'crossOrigin': None,
+            'tileGrid': _DEFAULT_TILE_GRID
+        })
+        self.assertDictEqual(ret.layer_options, {
+            'visible': True,
+            'show_download': False
+        })
+        self.assertDictEqual(ret.data, {
+            'layer_id': 'foo:bar',
+            'layer_name': 'foo:bar',
+            'popup_title': 'Foo Bar',
+            'layer_variable': 'baz',
+            'toggle_status': True,
+            'excluded_properties': ['id', 'type', 'layer_name'],
+        })
+
     def test_build_arc_gis_layer_default(self):
         class CustomMapLayoutThing(MapLayoutMixin):
             map_extent = [-65.69, 23.81, -129.17, 49.38]
@@ -796,15 +842,15 @@ class TestMapLayoutMixin(unittest.TestCase):
             top_offset=0.5,
             bottom_offset=0.5,
             prefix='v',
-            color_ramp='Galaxy Berry',
+            color_ramp='Galaxy Berries',
             color_prefix='c',
             no_data_value='-999'
         )
 
         self.assertDictEqual(ret, 
             {
-                'c3': '#fff100', 'c4': '#ff8c00', 'c5': '#e81123',
-                'c6': '#ec008c', 'c7': '#68217a',
+                'c3': '#0040bf', 'c4': '#a3cc52', 'c5': '#b9a087',
+                'c6': '#a01fcc', 'c7': '#5bb698',
                 'v3': '0.5', 'v4': '4.0', 'v5': '7.5',
                 'v6': '11.0', 'v7': '14.5',
                 'val_no_data': '-999'
