@@ -1,3 +1,5 @@
+# flake8: noqa
+
 d = {
     '': {
         'SECRET_KEY': 'the Django `SECRET_KEY <https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key>`_ setting. Automatically generated if not set, however setting it manually is recommended.',
