@@ -1,3 +1,5 @@
+# flake8: noqa
+
 import re
 import inspect
 from django.utils import timezone

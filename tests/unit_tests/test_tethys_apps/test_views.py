@@ -32,7 +32,7 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         # configure mock objects so they can be sorted
         for app in (mock_app1, mock_app2, mock_proxy_app1):
-            app.__lt__=lambda s, o: s.order < o.order
+            app.__lt__ = lambda s, o: s.order < o.order
             app.name = app._extract_mock_name()
 
         mock_render.return_value = True
@@ -68,7 +68,7 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         # configure mock objects so they can be sorted
         for app in (mock_app1, mock_app2, mock_proxy_app1):
-            app.__lt__=lambda s, o: s.order < o.order
+            app.__lt__ = lambda s, o: s.order < o.order
             app.name = app._extract_mock_name()
 
         ret = library(mock_request)
