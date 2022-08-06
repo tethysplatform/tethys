@@ -157,10 +157,12 @@ An app can be disabled by unchecking the ``Enabled`` checkbox in the app setting
 
 An app can also be hidden from the ``Apps Library`` by unchecking the ``Show in apps library`` checkbox. Hidden apps can still be accessed directly through their ``URL`` endpoints by Admin users and users with app access permissions. In addition, Admin users can still see the app in the ``Apps Library``, but the app icon appears transparent and with the ``hidden`` tag added to the app title. Users without permission to access the app cannot see the app in the ``Apps Library`` or access it directly through its ``URL`` endpoint.
 
+The order that the apps appear in the ``Apps Library`` (alphabetically by default) can be controlled using the ``Order`` setting on the app settings page. The apps will be displayed in assending order.
+
 Common Settings
 ---------------
 
-The Common Settings include those settings that are common to all apps or extension such as the ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library``, and ``Enable feedback`` (see Figure 11). Many of these settings correspond with attributes of the term:`app class` and can be overridden by the portal administrator. Other control the visibility or accessibility of the app.
+The Common Settings include those settings that are common to all apps or extension such as the ``Name``, ``Description``, ``Tags``, ``Order``, ``Enabled``, ``Show in apps library``, and ``Enable feedback`` (see Figure 11). Many of these settings correspond with attributes of the term:`app class` and can be overridden by the portal administrator. Others control the sorting order, visibility, or accessibility of the app.
 
 .. figure:: ../images/site_admin/app_settings_top.png
     :width: 675px
@@ -219,7 +221,7 @@ The links under the ``TETHYS PORTAL`` heading can be used to customize the look 
 
 .. tip::
 
-    For more information on customizing the Tethys Portal see the :ref:`production_customize_theme` documentation.
+    For more information on customizing the Tethys Portal see the :ref:`production_customize_theme` documentation, and the :ref:`tethys_configuration_site_settings` documentation.
 
 .. _admin_pages_tethys_quotas:
 

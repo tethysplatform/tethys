@@ -16,115 +16,128 @@ def add_site_parser(subparsers):
     # Setup site command
     site_parser = subparsers.add_parser('site', help='Add/Change the Tethys Portal content and theme.')
     site_parser.add_argument('--site-title', dest='site_title',
-                             help='A double quoted string with the title that will display in the browser tab. '
+                             help='Title of the web page that appears in browser tabs and bookmarks of the site. '
                                   'Default is "Tethys Portal".')
     site_parser.add_argument('--favicon', dest='favicon',
                              help='Local or external path to the icon that will display in the browser tab. '
                                   'We recommend storing the favicon in the static directory of tethys_portal. '
                                   'Default is "tethys_portal/images/default_favicon.png".')
     site_parser.add_argument('--brand-text', dest='brand_text',
-                             help='A double quoted string with the title of the portal. Default is "Tethys Portal".')
+                             help='Title that appears in the header of the portal. Default is "Tethys Portal".')
     site_parser.add_argument('--brand-image', dest='brand_image',
                              help='Local or external path to the portal logo. We recommend storing the logo in the '
                                   'static directory of tethys_portal. '
                                   'Default is "tethys_portal/images/tethys-logo-75.png".')
-    site_parser.add_argument('--brand-image-height', dest='brand_image_height', help='The height of the portal logo.')
-    site_parser.add_argument('--brand-image-width', dest='brand_image_width', help='The width of the portal logo.')
+    site_parser.add_argument('--brand-image-height', dest='brand_image_height', help='The height of the brand image.')
+    site_parser.add_argument('--brand-image-width', dest='brand_image_width', help='The width of the brand image.')
     site_parser.add_argument('--brand-image-padding', dest='brand_image_padding',
-                             help='The padding for the portal logo.')
+                             help='The padding for the brand image.')
     site_parser.add_argument('--apps-library-title', dest='apps_library_title',
-                             help='A double quoted string with the Title for the Apps library. '
-                                  'Default is "Apps Library".')
+                             help='Title of the page that displays app icons. Default is "Apps".')
     site_parser.add_argument('--primary-color', dest='primary_color',
-                             help='The primary color for the portal. Default is #0a62a9.')
+                             help='The primary color for the portal theme. Default is #0a62a9.')
     site_parser.add_argument('--secondary-color', dest='secondary_color',
-                             help='The secondary color for the portal. Default is #7ec1f7.')
-    site_parser.add_argument('--background-color', dest='background_color', help='The background color for the portal.')
+                             help='The secondary color for the portal theme. Default is #7ec1f7.')
     site_parser.add_argument('--primary-text-color', dest='primary_text_color',
-                             help='The primary text color for the portal.')
+                             help='Color of the text appearing in the headers and footer.')
     site_parser.add_argument('--primary-text-hover-color', dest='primary_text_hover_color',
-                             help='The hover text color for the portal.')
+                             help='Hover color of the text appearing in the headers and footer (where applicable).')
     site_parser.add_argument('--secondary-text-color', dest='secondary_text_color',
-                             help='The secondary text color for the portal.')
+                             help='Color of secondary text on the home page.')
     site_parser.add_argument('--secondary-text-hover-color', dest='secondary_text_hover_color',
-                             help='The secondary hover text color for the portal.')
+                             help='Hover color of the secondary text on the home page.')
+    site_parser.add_argument('--background-color', dest='background_color',
+                             help='Color of the background on the apps library page and other pages.')
     site_parser.add_argument('--copyright', dest='footer_copyright',
-                             help='A double quoted string with the Footer copyright for the portal. '
-                                  'Default is "Copyright © 2019 Your Organization".')
+                             help='Copyright text that appears in the footer of the portal. '
+                                  f'Default is "Copyright © {timezone.now():%Y} Your Organization".')
     site_parser.add_argument('--hero-text', dest='hero_text',
-                             help='A double quoted string with the hero text to display in the portal home. '
+                             help='Text that appears in the hero banner at the top of the home page. '
                                   'Default is "Welcome to Tethys Portal,\nthe hub for your apps.".')
     site_parser.add_argument('--blurb-text', dest='blurb_text',
-                             help='A double quoted string with the blurb text to display in the portal home. '
+                             help='Text that appears in the blurb banner, which follows the hero banner. '
                                   'Default is "Tethys Portal is designed to be customizable, so that you can host apps '
                                   'for your\norganization. You can change everything on this page from the Home Page '
                                   'settings.".')
     site_parser.add_argument('--feature-1-heading', dest='feature_1_heading',
-                             help='A double quoted string with the heading for display feature number 1 out 3.')
+                             help='Heading for 1st feature highlight (out of 3).')
     site_parser.add_argument('--feature-1-body', dest='feature_1_body',
-                             help='A double quoted string with the content for display feature number 1 out 3.')
+                             help='Body text for the 1st feature highlight.')
     site_parser.add_argument('--feature-1-image', dest='feature_1_image',
-                             help='A double quoted string with an image for display feature number 1 out 3.')
+                             help='Path or url to image for the 1st feature highlight.')
     site_parser.add_argument('--feature-2-heading', dest='feature_2_heading',
-                             help='A double quoted string with the heading for display feature number 2 out 3.')
+                             help='Heading for 2nd feature highlight (out of 3).')
     site_parser.add_argument('--feature-2-body', dest='feature_2_body',
-                             help='A double quoted string with the content for display feature number 2 out 3.')
+                             help='Body text for the 2nd feature highlight.')
     site_parser.add_argument('--feature-2-image', dest='feature_2_image',
-                             help='A double quoted string with an image for display feature number 2 out 3.')
+                             help='Path or url to image for the 2nd feature highlight.')
     site_parser.add_argument('--feature-3-heading', dest='feature_3_heading',
-                             help='A double quoted string with the heading for display feature number 3 out 3.')
+                             help='Heading for 3rd feature highlight (out of 3).')
     site_parser.add_argument('--feature-3-body', dest='feature_3_body',
-                             help='A double quoted string with the content for display feature number 3 out 3.')
+                             help='Body text for the 3rd feature highlight.')
     site_parser.add_argument('--feature-3-image', dest='feature_3_image',
-                             help='A double quoted string with an image for display feature number 3 out 3.')
+                             help='Path or url to image for the 3rd feature highlight.')
     site_parser.add_argument('--call-to-action', dest='call_to_action',
-                             help='A double quoted string with the call to action text that will display in the '
-                                  'portal. Default is "Ready to get started?".')
+                             help='Text that appears in the call to action banner at the bottom of the page '
+                                  '(only visible when user is not logged in). Default is "Ready to get started?".')
     site_parser.add_argument('--call-to-action-button', dest='call_to_action_button',
-                             help='A double quoted string for the call to action button. '
-                                  'Default is "Start Using Tethys!".')
+                             help='Text that appears on the call to action button in the call to action banner '
+                                  '(only visible when user is not logged in). Default is "Start Using Tethys!".')
     site_parser.add_argument('--portal-base-css', dest='portal_base_css',
                              help='CSS code to modify the Tethys Portal Base Page, which extends most of the portal '
-                                  'pages (i.e. Home, Login, Developer, Admin, etc.). Takes a file path available '
-                                  'through Tethys static files or straight CSS code.')
+                                  'pages (i.e. Home, Login, Developer, Admin, etc.). Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--home-page-css', dest='home_page_css',
-                             help='CSS code to modify the Tethys Portal Home Page. Takes a file path available through '
-                                  'Tethys static files or straight CSS code.')
+                             help='CSS code to modify the Tethys Portal Home Page. Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--apps-library-css', dest='apps_library_css',
-                             help='CSS code to modify the Tethys Portal Apps Library. Takes a file path available '
-                                  'through Tethys static files or straight CSS code.')
+                             help='CSS code to modify the Tethys Portal Apps Library. Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--accounts-base-css', dest='accounts_base_css',
                              help='CSS code to modify the base template for all of the accounts pages '
-                                  '(e.g. login, register, change password, etc.). Takes a file path available '
-                                  'through Tethys static files or straight CSS code.')
+                                  '(e.g. login, register, change password, etc.). Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--login-css', dest='login_css',
-                             help='CSS code to modify the Portal Login page. Takes a file path available '
-                                  'through Tethys static files or straight CSS code.')
+                             help='CSS code to modify the Portal Login page. Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--register-css', dest='register_css',
-                             help='CSS code to modify the Portal Registration page. Takes a file path available '
-                                  'through Tethys static files or straight CSS code.')
+                             help='CSS code to modify the Portal Registration page. Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--user-base-css', dest='user_base_css',
                              help='CSS code to modify the base template for all of the user profile pages '
-                                  '(e.g. user, settings, manage storage). Takes a file path available '
-                                  'through Tethys static files or straight CSS code.')
+                                  '(e.g. user, settings, manage storage). Takes or straight CSS code or a '
+                                  'file path available through Tethys static files, such as in a Tethys app, Tethys '
+                                  'extension, or Django app.')
     site_parser.add_argument('--home-page-template', dest='home_page_template',
-                             help='Django template to modify the Tethys Portal Home Page. Takes a file path available '
-                                  'through the Tethys template files system.')
+                             help='Path to alternate Home page template (will replace Home page template entirely). '
+                                  'The template must be located within a valid templates directory, such as in a '
+                                  'Tethys app, Tethys extension, or Django app.')
     site_parser.add_argument('--apps-library-template', dest='apps_library_template',
-                             help='Django template to modify the Tethys Portal Apps Library. Takes a file path '
-                                  'available through the Tethys template files system.')
+                             help='Path to alternate Apps Library page template (will replace Apps Library page '
+                                  'template entirely). The template must be located within a valid templates '
+                                  'directory, such as in a Tethys app, Tethys extension, or Django app.')
     site_parser.add_argument('--login-page-template', dest='login_page_template',
-                             help='Django template to modify the Portal Login page. Takes a file path '
-                                  'available through the Tethys template files system.')
+                             help='Path to alternate portal login page template (will replace login page template '
+                                  'entirely). The template must be located within a valid templates directory, such '
+                                  'as in a Tethys app, Tethys extension, or Django app.')
     site_parser.add_argument('--register-page-template', dest='register_page_template',
-                             help='Django template to modify the Portal Registration page. Takes a file path '
-                                  'available through the Tethys template files system.')
+                             help='Path to alternate portal registration (or signup) page template (will replace '
+                                  'signup page template entirely). The template must be located within a valid '
+                                  'templates directory, such as in a Tethys app, Tethys extension, or Django app.')
     site_parser.add_argument('--user-page-template', dest='user_page_template',
-                             help='Django template to modify the User Profile page. Takes a file path '
-                                  'available through the Tethys template files system.')
+                             help='Path to alternate user profile page template (will replace user page '
+                                  'template entirely). The template must be located within a valid templates '
+                                  'directory, such as in a Tethys app, Tethys extension, or Django app.')
     site_parser.add_argument('--user-settings-page-template', dest='user_settings_page_template',
-                             help='Django template to modify the User Settings (i.e. edit) page. Takes a file path '
-                                  'available through the Tethys template files system.')
+                             help='Path to alternate user settings (i.e. edit) page template (will replace settings '
+                                  'page template entirely). The template must be located within a valid templates '
+                                  'directory, such as in a Tethys app, Tethys extension, or Django app.')
     site_parser.add_argument('-d', '--restore-defaults', dest='restore_defaults', action='store_true',
                              help='Restores the sites default values.')
     site_parser.add_argument('-f', '--from-file', action='store_true', default=False,

@@ -198,8 +198,8 @@ def gen_portal_yaml(args):
         tethys_portal_settings.update(args.tethys_portal_settings)
     except AttributeError:
 
-        write_info(f'A Tethys Portal configuration file is being generated. '
-                   f'Please review the file and fill in the appropriate settings.')
+        write_info('A Tethys Portal configuration file is being generated. '
+                   'Please review the file and fill in the appropriate settings.')
 
     context = {
         'version': tethys_portal_settings['version'],

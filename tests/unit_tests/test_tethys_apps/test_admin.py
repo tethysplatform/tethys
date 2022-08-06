@@ -175,7 +175,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     def test_TethysAppAdmin(self):
         expected_readonly_fields = ('package', 'manage_app_storage',)
-        expected_fields = ('package', 'name', 'description', 'icon', 'color', 'tags', 'enabled',
+        expected_fields = ('package', 'name', 'description', 'icon', 'color', 'tags', 'order', 'enabled',
                            'show_in_apps_library', 'enable_feedback', 'manage_app_storage')
         expected_inlines = [CustomSettingInline,
                             PersistentStoreConnectionSettingInline,
