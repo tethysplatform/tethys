@@ -20,7 +20,7 @@ ln -s ${DEACTIVATE_SCRIPT} ${TETHYS_HOME}
 
 # Add lines to the activate script that create an alias to easily edit the portal_config.yml file for this environment
 echo "export TETHYS_HOME=${TETHYS_HOME}" > "${ACTIVATE_SCRIPT}"
-echo "alias vipc='vi ${TETHYS_HOME}/portal_config.yml" >> "${ACTIVATE_SCRIPT}"
+echo "alias vipc='vi ${TETHYS_HOME}/portal_config.yml" >> "${ACTIVATE_SCRIPT}"'
 
 # Add lines to the activate script that create aliases to start the tethys development server
 echo "alias tms='tethys manage start -p ${HOSTNAME}:${PORT}'" >> "${ACTIVATE_SCRIPT}"
