@@ -15,28 +15,24 @@ fi
 touch ${ACTIVATE_SCRIPT}
 touch ${DEACTIVATE_SCRIPT}
 
-ln -s ${ACTIVATE_SCRIPT} ${TETHYS_HOME}
-ln -s ${DEACTIVATE_SCRIPT} ${TETHYS_HOME}
+mkdir -p ${TETHYS_HOME}
+ln -s ${ACTIVATE_SCRIPT} ${TETHYS_HOME}/tethys-activate.sh
+ln -s ${DEACTIVATE_SCRIPT} ${TETHYS_HOME}/tethys-deactivate.sh
 
 # Add lines to the activate script that create an alias to easily edit the portal_config.yml file for this environment
 echo "export TETHYS_HOME=${TETHYS_HOME}" > "${ACTIVATE_SCRIPT}"
-echo "alias vipc='vi ${TETHYS_HOME}/portal_config.yml" >> "${ACTIVATE_SCRIPT}"'
-
+echo "alias vipc='vi ${TETHYS_HOME}/portal_config.yml'" >> "${ACTIVATE_SCRIPT}"
 # Add lines to the activate script that create aliases to start the tethys development server
 echo "alias tms='tethys manage start -p ${HOSTNAME}:${PORT}'" >> "${ACTIVATE_SCRIPT}"
 echo "alias tstart='tethys db start; tms'"  >> "${ACTIVATE_SCRIPT}"
-
 # Add lines to the activate script that create aliases that change ownership of Tethys directories to the active user
 echo "alias tethys_user_own='sudo chown -R \${USER} \"${STATIC_ROOT}\" \"${TETHYS_WORKSPACES_ROOT}\"'" >> "${ACTIVATE_SCRIPT}"
 echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
-
 # Add lines to the activate script that create aliases that change ownership of Tethys directories to the NGINX user
 echo "alias tethys_server_own='sudo chown -R ${NGINX_USER} \"${STATIC_ROOT}\" \"${TETHYS_WORKSPACES_ROOT}\"'" >> "${ACTIVATE_SCRIPT}"
 echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
-
 echo "alias cs='tuo; tethys manage collectstatic; tso;'" >> "${ACTIVATE_SCRIPT}"
 echo "alias tsr='tso; sudo systemctl restart supervisord'" >> "${ACTIVATE_SCRIPT}"
-
 # Add lines that remove the aliases to the deactivate Script
 echo "unalias vipc" > "${DEACTIVATE_SCRIPT}"
 echo "unalias tethys_user_own" > "${DEACTIVATE_SCRIPT}"
