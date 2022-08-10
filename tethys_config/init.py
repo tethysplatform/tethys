@@ -283,26 +283,3 @@ def tethys4_site_settings(apps, schema_editor):
     if copyright_setting.content == "Copyright © 2019 Your Organization":
         copyright_setting.content = f"Copyright © {now:%Y} Your Organization"
         copyright_setting.save()
-
-    # Add New settings
-    for category_name, settings in (
-        ('Custom Templates', [
-            "Login Page Template",
-            "Register Page Template",
-            "User Page Template",
-            "User Settings Page Template",
-        ]),
-        ('Custom Styles', [
-            "Accounts Base CSS",
-            "Login CSS",
-            "Register CSS",
-            "User Base CSS",
-        ]),
-    ):
-        category = SettingsCategory.objects.get(name=category_name)
-        for setting_name in settings:
-            category.setting_set.create(name=setting_name,
-                                        content="",
-                                        date_modified=now)
-
-        category.save()

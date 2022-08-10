@@ -17,15 +17,6 @@ This will create a new :file:`portal_config.yml` file in your ``TETHYS_HOME`` di
 .. literalinclude:: ../installation/resources/blank-portal-config.yml
    :language: yaml
 
-
-.. tip::
-
-  You can now customize this file either by manually editing it, or by using the :ref:`tethys_settings_cmd`.
-
-  .. caution::
-
-    The :ref:`tethys_settings_cmd` will rewrite the :file:`portal_config.yml` file each time it is run and will not preserve user-added comments.
-
 Portal Yaml Keys
 ----------------
 
@@ -51,6 +42,15 @@ Settings
 ========
 
 Tethys Portal settings. Note: do not edit the :file:`settings.py` directly, Instead set any Django setting in this section, even those not listed here.
+
+.. tip::
+
+  You can customize these settings either by manually editing the :file:`portal_config.yml` file, or by using the :ref:`tethys_settings_cmd`.
+
+  .. caution::
+
+    The :ref:`tethys_settings_cmd` will rewrite the :file:`portal_config.yml` file each time it is run and will not preserve user-added comments.
+
 
 ================================================== ================================================================================
 Setting                                            Description
@@ -345,85 +345,95 @@ The **site_settings** Portal Yaml Key is used to specify settings related to cus
   The ``site_settings`` key is new in Tethys 4.0. Previous versions used the ``site_content`` key. Additionally, the setting categories were introduced, and the names of several settings were changed to be consistent with the corresponding settings in the Portal Admin pages :doc:`admin_pages`.
 
 
-GENERAL_SETTINGS
+General Settings
 ++++++++++++++++
 
-============================== ================================================================================
-Setting                        Description
-============================== ================================================================================
-SITE_TITLE                     Title of the web page that appears in browser tabs and bookmarks of the site. Default is "Tethys Portal".
-FAVICON                        Local or external path to the icon that will display in the browser tab. We recommend storing the favicon in the static directory of tethys_portal. Default is "tethys_portal/images/default_favicon.png".
-BRAND_TEXT                     Title that appears in the header of the portal. Default is "Tethys Portal".
-BRAND_IMAGE                    Local or external path to the portal logo. We recommend storing the logo in the static directory of tethys_portal. Default is "tethys_portal/images/tethys-logo-75.png".
-BRAND_IMAGE_HEIGHT             The height of the brand image.
-BRAND_IMAGE_WIDTH              The width of the brand image.
-BRAND_IMAGE_PADDING            The padding for the brand image.
-APPS_LIBRARY_TITLE             Title of the page that displays app icons. Default is "Apps".
-PRIMARY_COLOR                  The primary color for the portal theme. Default is #0a62a9.
-SECONDARY_COLOR                The secondary color for the portal theme. Default is #7ec1f7.
-PRIMARY_TEXT_COLOR             Color of the text appearing in the headers and footer.
-PRIMARY_TEXT_HOVER_COLOR       Hover color of the text appearing in the headers and footer (where applicable).
-SECONDARY_TEXT_COLOR           Color of secondary text on the home page.
-SECONDARY_TEXT_HOVER_COLOR     Hover color of the secondary text on the home page.
-BACKGROUND_COLOR               Color of the background on the apps library page and other pages.
-FOOTER_COPYRIGHT               Copyright text that appears in the footer of the portal. Default is "Copyright © 2022 Your Organization".
-HOME_PAGE_TEMPLATE             Path to alternate Home page template (will replace Home page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-APPS_LIBRARY_TEMPLATE          Path to alternate Apps Library page template (will replace Apps Library page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-LOGIN_PAGE_TEMPLATE            Path to alternate portal login page template (will replace login page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-REGISTER_PAGE_TEMPLATE         Path to alternate portal registration (or signup) page template (will replace signup page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-USER_PAGE_TEMPLATE             Path to alternate user profile page template (will replace user page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-USER_SETTINGS_PAGE_TEMPLATE    Path to alternate user settings (i.e. edit) page template (will replace settings page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-============================== ================================================================================
+The following settings can be used to modify global features of the site. Access the settings using the Site Settings > General Settings links on the admin pages or under the ``GENERAL_SETTINGS`` category in the ``site_settings`` section of the :file:`portal_config.yml` file.
 
-HOME_PAGE
+============================== ============================== ============================== ================================================================================
+Admin Setting                  Portal Config Yaml Key         Site Setting Command Option    Description
+============================== ============================== ============================== ================================================================================
+Site Title                     SITE_TITLE                     --site-title                   Title of the web page that appears in browser tabs and bookmarks of the site. Default is "Tethys Portal".
+Favicon                        FAVICON                        --favicon                      Local or external path to the icon that will display in the browser tab. We recommend storing the favicon in the static directory of tethys_portal. Default is "tethys_portal/images/default_favicon.png".
+Brand Text                     BRAND_TEXT                     --brand-text                   Title that appears in the header of the portal. Default is "Tethys Portal".
+Brand Image                    BRAND_IMAGE                    --brand-image                  Local or external path to the portal logo. We recommend storing the logo in the static directory of tethys_portal. Default is "tethys_portal/images/tethys-logo-75.png".
+Brand Image Height             BRAND_IMAGE_HEIGHT             --brand-image-height           The height of the brand image.
+Brand Image Width              BRAND_IMAGE_WIDTH              --brand-image-width            The width of the brand image.
+Brand Image Padding            BRAND_IMAGE_PADDING            --brand-image-padding          The padding for the brand image.
+Apps Library Title             APPS_LIBRARY_TITLE             --apps-library-title           Title of the page that displays app icons. Default is "Apps".
+Primary Color                  PRIMARY_COLOR                  --primary-color                The primary color for the portal theme. Default is #0a62a9.
+Secondary Color                SECONDARY_COLOR                --secondary-color              The secondary color for the portal theme. Default is #7ec1f7.
+Primary Text Color             PRIMARY_TEXT_COLOR             --primary-text-color           Color of the text appearing in the headers and footer.
+Primary Text Hover Color       PRIMARY_TEXT_HOVER_COLOR       --primary-text-hover-color     Hover color of the text appearing in the headers and footer (where applicable).
+Secondary Text Color           SECONDARY_TEXT_COLOR           --secondary-text-color         Color of secondary text on the home page.
+Secondary Text Hover Color     SECONDARY_TEXT_HOVER_COLOR     --secondary-text-hover-color   Hover color of the secondary text on the home page.
+Background Color               BACKGROUND_COLOR               --background-color             Color of the background on the apps library page and other pages.
+Footer Copyright               FOOTER_COPYRIGHT               --footer-copyright             Copyright text that appears in the footer of the portal. Default is "Copyright © 2022 Your Organization".
+Home Page Template             HOME_PAGE_TEMPLATE             --home-page-template           Path to alternate Home page template (will replace Home page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+Apps Library Template          APPS_LIBRARY_TEMPLATE          --apps-library-template        Path to alternate Apps Library page template (will replace Apps Library page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+Login Page Template            LOGIN_PAGE_TEMPLATE            --login-page-template          Path to alternate portal login page template (will replace login page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+Register Page Template         REGISTER_PAGE_TEMPLATE         --register-page-template       Path to alternate portal registration (or signup) page template (will replace signup page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+User Page Template             USER_PAGE_TEMPLATE             --user-page-template           Path to alternate user profile page template (will replace user page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+User Settings Page Template    USER_SETTINGS_PAGE_TEMPLATE    --user-settings-page-template  Path to alternate user settings (i.e. edit) page template (will replace settings page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+============================== ============================== ============================== ================================================================================
+
+Home Page
 +++++++++
 
-============================== ================================================================================
-Setting                        Description
-============================== ================================================================================
-HERO_TEXT                      Text that appears in the hero banner at the top of the home page. Default is "Welcome to Tethys Portal,\nthe hub for your apps.".
-BLURB_TEXT                     Text that appears in the blurb banner, which follows the hero banner. Default is "Tethys Portal is designed to be customizable, so that you can host apps for your\norganization. You can change everything on this page from the Home Page settings.".
-FEATURE_1_HEADING              Heading for 1st feature highlight (out of 3).
-FEATURE_1_BODY                 Body text for the 1st feature highlight.
-FEATURE_1_IMAGE                Path or url to image for the 1st feature highlight.
-FEATURE_2_HEADING              Heading for 2nd feature highlight (out of 3).
-FEATURE_2_BODY                 Body text for the 2nd feature highlight.
-FEATURE_2_IMAGE                Path or url to image for the 2nd feature highlight.
-FEATURE_3_HEADING              Heading for 3rd feature highlight (out of 3).
-FEATURE_3_BODY                 Body text for the 3rd feature highlight.
-FEATURE_3_IMAGE                Path or url to image for the 3rd feature highlight.
-CALL_TO_ACTION                 Text that appears in the call to action banner at the bottom of the page (only visible when user is not logged in). Default is "Ready to get started?".
-CALL_TO_ACTION_BUTTON          Text that appears on the call to action button in the call to action banner (only visible when user is not logged in). Default is "Start Using Tethys!".
-============================== ================================================================================
+The following settings can be used to modify the content on the home page. Access the settings using the Site Settings > Home Page links on the admin pages or under the ``HOME_PAGE`` category in the ``site_settings`` section of the :file:`portal_config.yml` file.
 
-CUSTOM_STYLES
+============================== ============================== ============================== ================================================================================
+Admin Setting                  Portal Config Yaml Key         Site Setting Command Option    Description
+============================== ============================== ============================== ================================================================================
+Hero Text                      HERO_TEXT                      --hero-text                    Text that appears in the hero banner at the top of the home page. Default is "Welcome to Tethys Portal,\nthe hub for your apps.".
+Blurb Text                     BLURB_TEXT                     --blurb-text                   Text that appears in the blurb banner, which follows the hero banner. Default is "Tethys Portal is designed to be customizable, so that you can host apps for your\norganization. You can change everything on this page from the Home Page settings.".
+Feature 1 Heading              FEATURE_1_HEADING              --feature-1-heading            Heading for 1st feature highlight (out of 3).
+Feature 1 Body                 FEATURE_1_BODY                 --feature-1-body               Body text for the 1st feature highlight.
+Feature 1 Image                FEATURE_1_IMAGE                --feature-1-image              Path or url to image for the 1st feature highlight.
+Feature 2 Heading              FEATURE_2_HEADING              --feature-2-heading            Heading for 2nd feature highlight (out of 3).
+Feature 2 Body                 FEATURE_2_BODY                 --feature-2-body               Body text for the 2nd feature highlight.
+Feature 2 Image                FEATURE_2_IMAGE                --feature-2-image              Path or url to image for the 2nd feature highlight.
+Feature 3 Heading              FEATURE_3_HEADING              --feature-3-heading            Heading for 3rd feature highlight (out of 3).
+Feature 3 Body                 FEATURE_3_BODY                 --feature-3-body               Body text for the 3rd feature highlight.
+Feature 3 Image                FEATURE_3_IMAGE                --feature-3-image              Path or url to image for the 3rd feature highlight.
+Call To Action                 CALL_TO_ACTION                 --call-to-action               Text that appears in the call to action banner at the bottom of the page (only visible when user is not logged in). Default is "Ready to get started?".
+Call To Action Button          CALL_TO_ACTION_BUTTON          --call-to-action-button        Text that appears on the call to action button in the call to action banner (only visible when user is not logged in). Default is "Start Using Tethys!".
+============================== ============================== ============================== ================================================================================
+
+For more advanced customization, you may use the Custom Styles and Custom Template options to completely replace the Home Page or Apps Library page CSS and HTML.
+
+Custom Styles
 +++++++++++++
 
-============================== ================================================================================
-Setting                        Description
-============================== ================================================================================
-PORTAL_BASE_CSS                CSS code to modify the Tethys Portal Base Page, which extends most of the portal pages (i.e. Home, Login, Developer, Admin, etc.). Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-HOME_PAGE_CSS                  CSS code to modify the Tethys Portal Home Page. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-APPS_LIBRARY_CSS               CSS code to modify the Tethys Portal Apps Library. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-ACCOUNTS_BASE_CSS              CSS code to modify the base template for all of the accounts pages (e.g. login, register, change password, etc.). Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-LOGIN_CSS                      CSS code to modify the Portal Login page. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-REGISTER_CSS                   CSS code to modify the Portal Registration page. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-USER_BASE_CSS                  CSS code to modify the base template for all of the user profile pages (e.g. user, settings, manage storage). Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
-============================== ================================================================================
+The following settings can be used to add additional CSS to the Home page, Apps Library page, and portal-wide. Access the settings using the Site Settings > Custom Styles links on the admin pages or under the ``CUSTOM_STYLES`` category in the ``site_settings`` section of the :file:`portal_config.yml` file.
 
-CUSTOM_TEMPLATES
+============================== ============================== ============================== ================================================================================
+Admin Setting                  Portal Config Yaml Key         Site Setting Command Option    Description
+============================== ============================== ============================== ================================================================================
+Portal Base Css                PORTAL_BASE_CSS                --portal-base-css              CSS code to modify the Tethys Portal Base Page, which extends most of the portal pages (i.e. Home, Login, Developer, Admin, etc.). Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+Home Page Css                  HOME_PAGE_CSS                  --home-page-css                CSS code to modify the Tethys Portal Home Page. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+Apps Library Css               APPS_LIBRARY_CSS               --apps-library-css             CSS code to modify the Tethys Portal Apps Library. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+Accounts Base Css              ACCOUNTS_BASE_CSS              --accounts-base-css            CSS code to modify the base template for all of the accounts pages (e.g. login, register, change password, etc.). Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+Login Css                      LOGIN_CSS                      --login-css                    CSS code to modify the Portal Login page. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+Register Css                   REGISTER_CSS                   --register-css                 CSS code to modify the Portal Registration page. Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+User Base Css                  USER_BASE_CSS                  --user-base-css                CSS code to modify the base template for all of the user profile pages (e.g. user, settings, manage storage). Takes or straight CSS code or a file path available through Tethys static files, such as in a Tethys app, Tethys extension, or Django app.
+============================== ============================== ============================== ================================================================================
+
+Custom Templates
 ++++++++++++++++
 
-============================== ================================================================================
-Setting                        Description
-============================== ================================================================================
-HOME_PAGE_TEMPLATE             Path to alternate Home page template (will replace Home page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-APPS_LIBRARY_TEMPLATE          Path to alternate Apps Library page template (will replace Apps Library page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-LOGIN_PAGE_TEMPLATE            Path to alternate portal login page template (will replace login page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-REGISTER_PAGE_TEMPLATE         Path to alternate portal registration (or signup) page template (will replace signup page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-USER_PAGE_TEMPLATE             Path to alternate user profile page template (will replace user page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-USER_SETTINGS_PAGE_TEMPLATE    Path to alternate user settings (i.e. edit) page template (will replace settings page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-============================== ================================================================================
+The following settings can be used to override the templates for the Home page and Apps Library page. Access the settings using the Site Settings > Custom Templates links on the admin pages or under the ``CUSTOM_TEMPLATES`` category in the ``site_settings`` section of the :file:`portal_config.yml` file..
+
+============================== ============================== ============================== ================================================================================
+Admin Setting                  Portal Config Yaml Key         Site Setting Command Option    Description
+============================== ============================== ============================== ================================================================================
+Home Page Template             HOME_PAGE_TEMPLATE             --home-page-template           Path to alternate Home page template (will replace Home page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+Apps Library Template          APPS_LIBRARY_TEMPLATE          --apps-library-template        Path to alternate Apps Library page template (will replace Apps Library page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+Login Page Template            LOGIN_PAGE_TEMPLATE            --login-page-template          Path to alternate portal login page template (will replace login page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+Register Page Template         REGISTER_PAGE_TEMPLATE         --register-page-template       Path to alternate portal registration (or signup) page template (will replace signup page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+User Page Template             USER_PAGE_TEMPLATE             --user-page-template           Path to alternate user profile page template (will replace user page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+User Settings Page Template    USER_SETTINGS_PAGE_TEMPLATE    --user-settings-page-template  Path to alternate user settings (i.e. edit) page template (will replace settings page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
+============================== ============================== ============================== ================================================================================
 
 
 .. tip::

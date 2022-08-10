@@ -5,37 +5,23 @@ version: 2.0
 name: 
 
 ############################################################################
-#
 # APPS
-#
-# This section is applied when running the "tethys install" command. Tethys
-# will first look for app settings in this file. If none are found it will
-# then look for a "services.yml" file in the install location.
-#
+# The "tethys install" command checks this section for app settings.
 #############################################################################
 apps: {}
 
 
 ############################################################################
-#
 # SETTINGS
-#
-# Settings from this section are read everytime the Portal starts up. If
-# changes are made you will need to restart the portal.
-#
+# Settings from this section are read everytime the Portal starts up.
 #############################################################################
 settings:
   SECRET_KEY: ...
 
 
 ############################################################################
-#
 # SITE SETTINGS
-#
-# Settings from this section are read when running the "tethys site -f"
-# command. Note that the "-f" flag indicates that site settings should be
-# applied from this file.
-#
+# This section is applied when running the "tethys site -f" command.
 #############################################################################
 site_settings:
   CUSTOM_STYLES: {}

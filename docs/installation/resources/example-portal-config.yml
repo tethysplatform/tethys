@@ -5,13 +5,8 @@ version: 2.0
 name: Tethys Main Portal
 
 ############################################################################
-#
 # APPS
-#
-# This section is applied when running the "tethys install" command. Tethys
-# will first look for app settings in this file. If none are found it will
-# then look for a "services.yml" file in the install location.
-#
+# The "tethys install" command checks this section for app settings.
 #############################################################################
 apps:
   my_first_app:
@@ -24,12 +19,8 @@ apps:
       custom_settings:
 
 ############################################################################
-#
 # SETTINGS
-#
-# Settings from this section are read everytime the Portal starts up. If
-# changes are made you will need to restart the portal.
-#
+# Settings from this section are read everytime the Portal starts up.
 #############################################################################
 settings:
   SECRET_KEY: 'gij28v16WhZ4v18WtlHqusP5VYnVUslxEvRQoXLj7hvJ2ZRN7f'
@@ -166,13 +157,8 @@ settings:
   #   ANONYMOUS_DEFAULT_USERNAME_VALUE: 'anonymous'
 
 ############################################################################
-#
 # SITE SETTINGS
-#
-# Settings from this section are read when running the "tethys site -f"
-# command. Note that the "-f" flag indicates that site settings should be
-# applied from this file.
-#
+# This section is applied when running the "tethys site -f" command.
 #############################################################################
 site_settings:
   GENERAL_SETTINGS:
