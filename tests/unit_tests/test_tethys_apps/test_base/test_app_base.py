@@ -66,8 +66,7 @@ class TestTethysBase(unittest.TestCase):
         self.assertIn(app.index, kwargs['index'])
 
     @mock.patch('tethys_cli.cli_colors.write_warning')
-    @mock.patch('tethys_apps.base.controller.register_controllers')
-    def test_register_url_maps_deprecation(self, mock_rc, mock_warning):
+    def test_register_url_maps_deprecation(self, mock_warning):
         app = tethys_app_base.TethysAppBase()
         app.package = 'package'
         app.root_url = 'root_url'
@@ -76,7 +75,6 @@ class TestTethysBase(unittest.TestCase):
         app.url_maps = mock.MagicMock(return_value=['test'])
         result = app.registered_url_maps
         self.assertEqual(app.url_maps(), result)
-        mock_rc.assert_called_once()
         mock_warning.assert_called_once()
 
     @mock.patch('tethys_apps.base.app_base.re_path')
@@ -1155,14 +1153,18 @@ class TestTethysAppBase(unittest.TestCase):
         self.app.root_url = 'r'
         self.app.color = 'c'
         self.app.tags = 't'
+        self.app.show_in_apps_library = False
+        self.app.enabled = False
         self.app.sync_with_tethys_db()
 
         # Check if TethysApp.objects.filter is called
         mock_ta.objects.filter().all.assert_called()
 
         # Check if TethysApp is called
-        mock_ta.assert_called_with(color='c', description='d', enable_feedback='e', feedback_emails='f',
-                                   icon='ic', index='in', name='n', package='p', root_url='r', tags='t')
+        mock_ta.assert_called_with(
+            color='c', description='d', enable_feedback='e', feedback_emails='f', icon='ic', index='in', name='n',
+            package='p', root_url='r', tags='t', enabled=False, show_in_apps_library=False,
+        )
 
         # Check if save is called 2 times
         self.assertTrue(mock_ta().save.call_count == 2)

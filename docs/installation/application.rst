@@ -98,7 +98,7 @@ This file is generated with your application scaffold. Dependencies that are lis
 
 .. note::
 
-    If ``npm`` packages are listed in the :file:`install.yml` file, then a :file:`package.json` file will be created in the ``public`` directory of the app, and then ``npm`` will be run with that file. Alternatively, you can directly create a ``package.json`` file in the ``public`` directory and it will be used to install JavaScript packages.
+    If ``npm`` packages are listed in the :file:`install.yml` file, then a :file:`package.json` file will be created in the ``public`` directory of the app, and then ``npm`` will be run with that file. Alternatively, you can directly create a ``package.json`` file in the ``public`` directory and it will be used to install JavaScript packages. To ensure that `npm` is available in the environment, it is recommended that you list `nodejs` as a conda dependency in the :file:`install.yml` file.
 
 .. _tethys_services_yml:
 

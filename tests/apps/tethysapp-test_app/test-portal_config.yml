@@ -1,37 +1,39 @@
 # Portal Level Config File
 
-# see tethys documentation for how to setup this file
-version: 1.0
+# For more information about this file refer to the Tethys Docs (http://docs.tethysplatform.org/en/stable/tethys_portal/configuration.html)
+version: 2.0
 name:
+
+############################################################################
+#
+# APPS
+#
+# This section is applied when running the "tethys install" command. Tethys
+# will first look for app settings in this file. If none are found it will
+# then look for a "services.yml" file in the install location.
+#
+#############################################################################
 apps:
+
+############################################################################
+#
+# SETTINGS
+#
+# Settings from this section are read everytime the Portal starts up. If
+# changes are made you will need to restart the portal.
+#
+#############################################################################
 settings:
-site_content:
-  TAB_TITLE:
-  FAVICON:
-  TITLE: "New Title"
-  LOGO:
-  LOGO_HEIGHT:
-  LOGO_WIDTH:
-  LOGO_PADDING:
-  LIBRARY_TITLE:
-  PRIMARY_COLOR:
-  SECONDARY_COLOR:
-  BACKGROUND_COLOR:
-  TEXT_COLOR:
-  TEXT_HOVER_COLOR:
-  SECONDARY_TEXT_COLOR:
-  SECONDARY_TEXT_HOVER_COLOR:
-  COPYRIGHT:
-  HERO_TEXT:
-  BLURB_TEXT:
-  FEATURE1_HEADING:
-  FEATURE1_BODY:
-  FEATURE1_IMAGE:
-  FEATURE2_HEADING:
-  FEATURE2_BODY:
-  FEATURE2_IMAGE:
-  FEATURE3_HEADING:
-  FEATURE3_BODY:
-  FEATURE3_IMAGE:
-  ACTION_TEXT:
-  ACTION_BUTTON:
+
+############################################################################
+#
+# SITE SETTINGS
+#
+# Settings from this section are read when running the "tethys site -f"
+# command. Note that the "-f" flag indicates that site settings should be
+# applied from this file.
+#
+#############################################################################
+site_settings:
+  GENERAL_SETTINGS:
+    BRAND_TEXT: "New Title"

@@ -23,6 +23,18 @@ class ProxyAppTests(TethysTestCase):
         self.assertEqual('Proxy App', proxy_app._meta.verbose_name)
         self.assertEqual('Proxy Apps', proxy_app._meta.verbose_name_plural)
 
+    def test_properties(self):
+        proxy_app = ProxyApp.objects.create(
+            name=self.app_name,
+            endpoint=self.endpoint,
+            logo_url=self.logo,
+            description=self.description,
+            tags=self.tags
+        )
+        self.assertTrue(proxy_app.proxied)
+        self.assertEqual(self.endpoint, proxy_app.url)
+        self.assertEqual(self.logo, proxy_app.icon)
+
     def test__str__(self):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,

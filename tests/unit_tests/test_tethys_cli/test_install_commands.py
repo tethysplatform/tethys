@@ -978,10 +978,10 @@ class TestInstallCommands(TestCase):
         'requirements': {'npm': {'test': '1.1.1'}}
     })
     @mock.patch('tethys_cli.install_commands.run_services')
-    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.download_vendor_static_files')
     @mock.patch('tethys_cli.install_commands.exit')
     @mock.patch('tethys_cli.cli_colors.pretty_output')
-    def test_npm_install(self, mock_pretty_output, mock_exit, mock_call, _, __, mock_open, mock_exists):
+    def test_npm_install(self, mock_pretty_output, mock_exit, mock_download, _, __, mock_open, mock_exists):
         file_path = self.root_app_path / 'install-npm-dep.yml'
         import io
         mock_open.return_value.__enter__.return_value = mock.MagicMock(spec=io.StringIO)
@@ -995,8 +995,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
         self.assertEqual("Successfully installed dependencies for test_app.", po_call_args[1][0][0])
 
-        self.assertEqual(1, len(mock_call.mock_calls))
-        self.assertEqual(['npm', 'i', 'tethysapp/test_app/public'], mock_call.mock_calls[0][1][0])
+        self.assertEqual(1, len(mock_download.mock_calls))
+        self.assertEqual({'cwd': 'tethysapp/test_app/public'}, mock_download.mock_calls[0][2])
 
         mock_exit.assert_called_with(0)
         mock_exists.assert_called()
