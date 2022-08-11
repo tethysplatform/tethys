@@ -181,7 +181,7 @@ class TethysBase(TethysBaseMixin):
     def register_url_maps(self, set_index=True):
         """
         Only override this method to manually define or extend the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``. Alternatively, Bokeh Server can also be integrated into Tethys using ``Django Channels`` and ``Websockets``. Tethys will automatically set these up for you if a ``handler`` and ``handler_type`` parameters are provided as part of the ``UrlMap``.
-    
+
         Args:
             set_index: Whether to pass the ``index`` argument to ``register_controllers``. If ``True`` (default) then ``self.index` will be passed. Otherwise ``None`` will be passed as the ``index`` argument.
 
@@ -200,7 +200,7 @@ class TethysBase(TethysBaseMixin):
                     \"""
                     Example register_url_maps method.
                     \"""
-                    
+ 
                     root_url = self.root_url
                     UrlMap = url_map_maker(root_url)
 
