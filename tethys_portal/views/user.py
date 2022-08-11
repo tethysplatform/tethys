@@ -23,6 +23,7 @@ from tethys_apps.utilities import get_app_class
 from tethys_apps.decorators import login_required
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_quotas.utilities import get_quota, _convert_storage_units
+from tethys_config.models import get_custom_template
 
 
 @login_required()
@@ -50,7 +51,8 @@ def profile(request):
         'mfa_required': mfa_is_required,
         'show_user_token_mfa': show_user_token_mfa
     }
-    return render(request, 'tethys_portal/user/profile.html', context)
+    template = get_custom_template('User Page Template', 'tethys_portal/user/profile.html')
+    return render(request, template, context)
 
 
 @login_required()
@@ -105,7 +107,8 @@ def settings(request):
         'mfa_required': mfa_is_required,
         'show_user_token_mfa': show_user_token_mfa
     }
-    return render(request, 'tethys_portal/user/settings.html', context)
+    template = get_custom_template('User Settings Page Template', 'tethys_portal/user/settings.html')
+    return render(request, template, context)
 
 
 @login_required()

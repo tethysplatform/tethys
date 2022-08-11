@@ -248,7 +248,7 @@ class SingletonHarvester:
 
                 for name, obj in inspect.getmembers(app_module):
                     # Retrieve the members of the app_module and iterate through
-                    # them to find the the class that inherits from AppBase.
+                    # them to find the class that inherits from AppBase.
                     try:
                         # issubclass() will fail if obj is not a class
                         if (issubclass(obj, TethysAppBase)) and (obj is not TethysAppBase):
@@ -284,7 +284,7 @@ class SingletonHarvester:
                             try:
                                 app_instance.register_app_permissions()
                             except ProgrammingError:
-                                tethys_log.warning("Unable to register app permissions. django_contetn_type "
+                                tethys_log.warning("Unable to register app permissions. django_content_type "
                                                    "table does not exist")
                             except ObjectDoesNotExist as e:
                                 tethys_log.warning(e)

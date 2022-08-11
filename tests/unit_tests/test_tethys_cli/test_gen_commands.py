@@ -116,9 +116,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.os.makedirs')
     def test_generate_command_portal_yaml__tethys_home_not_exists(self, mock_makedirs, mock_os_path_isfile, mock_file,
                                                                   mock_write_info, mock_isdir):
-        mock_args = mock.MagicMock()
-        mock_args.type = GEN_PORTAL_OPTION
-        mock_args.directory = None
+        mock_args = mock.MagicMock(type=GEN_PORTAL_OPTION, directory=None, spec=['overwrite'])
         mock_os_path_isfile.return_value = False
         mock_isdir.side_effect = [False, True]  # TETHYS_HOME dir exists, computed dir exists
 

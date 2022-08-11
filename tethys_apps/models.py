@@ -52,16 +52,15 @@ class TethysApp(models.Model, TethysBaseMixin):
         default=list,
     )
     tags = models.CharField(max_length=200, blank=True, default='')
+    enabled = models.BooleanField(default=True)
+    show_in_apps_library = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
 
     # Developer first attributes
     index = models.CharField(max_length=200, default='')
     icon = models.CharField(max_length=200, default='')
     root_url = models.CharField(max_length=200, default='')
     color = models.CharField(max_length=10, default='')
-
-    # Portal admin only attributes
-    enabled = models.BooleanField(default=True)
-    show_in_apps_library = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Tethys App'
@@ -966,10 +965,23 @@ class ProxyApp(models.Model):
     tags = models.CharField(max_length=200, blank=True, default='')
     enabled = models.BooleanField(default=True)
     show_in_apps_library = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
 
     class Meta:
         verbose_name = 'Proxy App'
         verbose_name_plural = 'Proxy Apps'
+
+    @property
+    def proxied(self):
+        return True
+
+    @property
+    def url(self):
+        return self.endpoint
+
+    @property
+    def icon(self):
+        return self.logo_url
 
     def __str__(self):
         return self.name

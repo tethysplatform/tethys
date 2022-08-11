@@ -1,5 +1,7 @@
+from unittest import mock
+
 from tethys_sdk.testing import TethysTestCase
-from tethys_config.models import Setting
+from tethys_config.models import Setting, get_custom_template
 
 
 class SettingTest(TethysTestCase):
@@ -27,3 +29,8 @@ class SettingTest(TethysTestCase):
         # Check result
         self.assertIsInstance(set_all, dict)
         self.assertIn('site_title', set_all)
+
+    @mock.patch('tethys_config.models.Setting.objects.get', return_value=mock.MagicMock(content='/test.html'))
+    def test_get_custom_template(self, _):
+        result = get_custom_template('name', None)
+        self.assertEqual('test.html', result)

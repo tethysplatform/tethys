@@ -1,7 +1,13 @@
 # Portal Level Config File
-version: 1.0
+
+# For more information about this file refer to the Tethys Docs (http://docs.tethysplatform.org/en/stable/tethys_portal/configuration.html)
+version: 2.0
 name: Tethys Main Portal
 
+############################################################################
+# APPS
+# The "tethys install" command checks this section for app settings.
+#############################################################################
 apps:
   my_first_app:
     services:
@@ -12,6 +18,10 @@ apps:
       wps:
       custom_settings:
 
+############################################################################
+# SETTINGS
+# Settings from this section are read everytime the Portal starts up.
+#############################################################################
 settings:
   SECRET_KEY: 'gij28v16WhZ4v18WtlHqusP5VYnVUslxEvRQoXLj7hvJ2ZRN7f'
   DEBUG: True
@@ -22,6 +32,7 @@ settings:
     ENABLE_OPEN_SIGNUP: False
     ENABLE_OPEN_PORTAL: False
     ENABLE_RESTRICTED_APP_ACCESS: False
+    #  REGISTER_CONTROLLER: ''
     #  STATIC_ROOT: ''
     #  TETHYS_WORKSPACES_ROOT: ''
     #  STATICFILES_USE_NPM: True
@@ -145,33 +156,53 @@ settings:
   #   GUARDIAN_TEMPLATE_403: ''
   #   ANONYMOUS_DEFAULT_USERNAME_VALUE: 'anonymous'
 
-site_content:
-  TAB_TITLE:
-  FAVICON:
-  TITLE:
-  LOGO:
-  LOGO_HEIGHT:
-  LOGO_WIDTH:
-  LOGO_PADDING:
-  LIBRARY_TITLE:
-  PRIMARY_COLOR:
-  SECONDARY_COLOR:
-  BACKGROUND_COLOR:
-  TEXT_COLOR:
-  TEXT_HOVER_COLOR:
-  SECONDARY_TEXT_COLOR:
-  SECONDARY_TEXT_HOVER_COLOR:
-  COPYRIGHT:
-  HERO_TEXT:
-  BLURB_TEXT:
-  FEATURE1_HEADING:
-  FEATURE1_BODY:
-  FEATURE1_IMAGE:
-  FEATURE2_HEADING:
-  FEATURE2_BODY:
-  FEATURE2_IMAGE:
-  FEATURE3_HEADING:
-  FEATURE3_BODY:
-  FEATURE3_IMAGE:
-  ACTION_TEXT:
-  ACTION_BUTTON:
+############################################################################
+# SITE SETTINGS
+# This section is applied when running the "tethys site -f" command.
+#############################################################################
+site_settings:
+  GENERAL_SETTINGS:
+    SITE_TITLE:
+    FAVICON:
+    BRAND_TEXT:
+    BRAND_IMAGE:
+    BRAND_IMAGE_HEIGHT:
+    BRAND_IMAGE_WIDTH:
+    BRAND_IMAGE_PADDING:
+    APPS_LIBRARY_TITLE:
+    PRIMARY_COLOR:
+    SECONDARY_COLOR:
+    BACKGROUND_COLOR:
+    PRIMARY_TEXT_COLOR:
+    PRIMARY_TEXT_HOVER_COLOR:
+    SECONDARY_TEXT_COLOR:
+    SECONDARY_TEXT_HOVER_COLOR:
+    FOOTER_COPYRIGHT:
+  HOME_PAGE:
+    HERO_TEXT:
+    BLURB_TEXT:
+    FEATURE_1_HEADING:
+    FEATURE_1_BODY:
+    FEATURE_1_IMAGE:
+    FEATURE_2_HEADING:
+    FEATURE_2_BODY:
+    FEATURE_2_IMAGE:
+    FEATURE_3_HEADING:
+    FEATURE_3_BODY:
+    FEATURE_3_IMAGE:
+    CALL_TO_ACTION:
+    CALL_TO_ACTION_BUTTON:
+  CUSTOM_STYLES:
+    PORTAL_BASE_CSS:
+    HOME_PAGE_CSS:
+    APPS_LIBRARY_CSS:
+    ACCOUNTS_BASE_CSS:
+    LOGIN_CSS:
+    REGISTER_CSS:
+    USER_BASE_CSS:
+  CUSTOM_TEMPLATES:
+    HOME_PAGE_TEMPLATE:
+    APPS_LIBRARY_TEMPLATE:
+    LOGIN_PAGE_TEMPLATE:
+    REGISTER_PAGE_TEMPLATE:
+    USER_PAGE_TEMPLATE:

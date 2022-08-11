@@ -67,16 +67,16 @@ def ensure_oauth2(provider):
             else:
                 strategy = load_strategy()
                 access_token = social.get_access_token(strategy)
-
-                # verify that token is actually valid
-                user_data = social.get_backend_instance(strategy).user_data(access_token)
-                if not user_data:
+                if social.access_token_expired():
                     try:
                         logger.debug('token is not valid, attempting to refresh using refresh token')
                         social.refresh_token(strategy)
+                        access_token = social.get_access_token(strategy)
                     except requests.exceptions.HTTPError:
                         logger.debug('there was an error refreshing the token - redirecting user to re-authenticate')
                         return redirect_response
+
+                request.social_access_token = access_token
 
             return func(request, *args, **kwargs)
         return wrapper

@@ -219,25 +219,32 @@ def setting_defaults(category):
                                     date_modified=now)
 
     elif category.name == 'Custom Styles':
-        category.setting_set.create(name="Portal Base CSS",
-                                    content="",
-                                    date_modified=now),
-        category.setting_set.create(name="Home Page CSS",
-                                    content="",
-                                    date_modified=now)
+        for setting_name in [
+            "Portal Base CSS",
+            "Home Page CSS",
+            "Apps Library CSS",
+            "Accounts Base CSS",
+            "Login CSS",
+            "Register CSS",
+            "User Base CSS",
+        ]:
 
-        category.setting_set.create(name="Apps Library CSS",
-                                    content="",
-                                    date_modified=now)
+            category.setting_set.create(name=setting_name,
+                                        content="",
+                                        date_modified=now)
 
     elif category.name == 'Custom Templates':
-        category.setting_set.create(name="Home Page Template",
-                                    content="",
-                                    date_modified=now)
-
-        category.setting_set.create(name="Apps Library Template",
-                                    content="",
-                                    date_modified=now)
+        for setting_name in [
+            "Home Page Template",
+            "Apps Library Template",
+            "Login Page Template",
+            "Register Page Template",
+            "User Page Template",
+            "User Settings Page Template",
+        ]:
+            category.setting_set.create(name=setting_name,
+                                        content="",
+                                        date_modified=now)
 
     category.save()
 
@@ -272,7 +279,7 @@ def tethys4_site_settings(apps, schema_editor):
         .filter(category__name="General Settings")\
         .get(name="Footer Copyright")
 
+    now = timezone.now()
     if copyright_setting.content == "Copyright © 2019 Your Organization":
-        now = timezone.now()
         copyright_setting.content = f"Copyright © {now:%Y} Your Organization"
         copyright_setting.save()

@@ -42,3 +42,12 @@ class Setting(models.Model):
             settings_dict[code_name] = setting.content
 
         return settings_dict
+
+
+def get_custom_template(name, default):
+    custom_template = Setting.objects.get(name=name).content
+    if custom_template:
+        template = custom_template.lstrip('/') if custom_template.startswith('/') else custom_template
+    else:
+        template = default
+    return template

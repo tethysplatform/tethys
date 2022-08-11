@@ -1,8 +1,13 @@
 {% extends "tethys_portal/accounts/base.html" %}
 
-{% load django_bootstrap5 recaptcha2 %}
+{% load django_bootstrap5 recaptcha2 site_settings %}
 
 {% block title %}{{ block.super }} - Sign Up{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  {{ site_globals.register_css|load_custom_css|safe }}
+{% endblock %}
 
 {% block account_content_top %}
 {% recaptcha_init %}

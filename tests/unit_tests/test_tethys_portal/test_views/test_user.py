@@ -20,13 +20,14 @@ class TethysPortalUserTests(unittest.TestCase):
 
     @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.user.has_mfa')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     def test_profile(self, mock_token_get_create, mock_render, mock_get_quota, mock_convert_units,
-                     mock_has_mfa, _):
+                     mock_has_mfa, mock_get_template, _):
         mock_request = mock.MagicMock()
 
         mock_user_token = mock.MagicMock()
@@ -47,17 +48,20 @@ class TethysPortalUserTests(unittest.TestCase):
 
         profile(mock_request)
 
-        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+        mock_render.assert_called_with(mock_request, 'mock_template', expected_context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.user.has_mfa')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     def test_profile_quota(self, mock_token_get_create, mock_render, mock_get_quota,
-                           mock_convert_units, mock_has_mfa, _):
+                           mock_convert_units, mock_has_mfa, mock_get_template, _):
         mock_request = mock.MagicMock()
         mock_user = mock.MagicMock()
         mock_request.user = mock_user
@@ -80,19 +84,22 @@ class TethysPortalUserTests(unittest.TestCase):
 
         profile(mock_request)
 
-        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+        mock_render.assert_called_with(mock_request, 'mock_template', expected_context)
 
         mock_token_get_create.assert_called_with(user=mock_user)
 
+        mock_get_template.assert_called_once()
+
     @override_settings(MFA_REQUIRED=True)
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.user.has_mfa')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     def test_profile_mfa_required_no_mfa_set(self, mock_token_get_create, mock_render, mock_get_quota,
-                                             mock_convert_units, mock_has_mfa, _):
+                                             mock_convert_units, mock_has_mfa, mock_get_template, _):
         mock_request = mock.MagicMock()
         mock_user_token = mock.MagicMock()
         mock_token_created = mock.MagicMock()
@@ -112,17 +119,20 @@ class TethysPortalUserTests(unittest.TestCase):
 
         profile(mock_request)
 
-        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+        mock_render.assert_called_with(mock_request, 'mock_template', expected_context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(MFA_REQUIRED=True)
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.user.has_mfa')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     def test_profile_mfa_required_mfa_set(self, mock_token_get_create, mock_render, mock_get_quota,
-                                          mock_convert_units, mock_has_mfa, _):
+                                          mock_convert_units, mock_has_mfa, mock_get_template, _):
         mock_request = mock.MagicMock()
         mock_user_token = mock.MagicMock()
         mock_token_created = mock.MagicMock()
@@ -142,17 +152,20 @@ class TethysPortalUserTests(unittest.TestCase):
 
         profile(mock_request)
 
-        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+        mock_render.assert_called_with(mock_request, 'mock_template', expected_context)
+
+        mock_get_template.assert_called_once()
 
     @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.user.has_mfa')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     def test_profile_mfa_not_required_mfa_set(self, mock_token_get_create, mock_render, mock_get_quota,
-                                              mock_convert_units, mock_has_mfa, _):
+                                              mock_convert_units, mock_has_mfa, mock_get_template,  _):
         mock_request = mock.MagicMock()
         mock_user_token = mock.MagicMock()
         mock_token_created = mock.MagicMock()
@@ -172,7 +185,9 @@ class TethysPortalUserTests(unittest.TestCase):
 
         profile(mock_request)
 
-        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+        mock_render.assert_called_with(mock_request, 'mock_template', expected_context)
+
+        mock_get_template.assert_called_once()
 
     @mock.patch('tethys_portal.views.user.UserSettingsForm')
     @mock.patch('tethys_portal.views.user.redirect')
@@ -205,11 +220,13 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_redirect.assert_called_once_with('user:profile')
 
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.get_custom_template', return_value='mock_template')
     @mock.patch('tethys_portal.views.user.django_settings')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     @mock.patch('tethys_portal.views.user.UserSettingsForm')
     @mock.patch('tethys_portal.views.user.render')
-    def test_settings_request_get(self, mock_render, mock_usf, mock_token_get_create, mock_django_settings, _):
+    def test_settings_request_get(self, mock_render, mock_usf, mock_token_get_create, mock_django_settings,
+                                  mock_get_template, _):
         mock_request_user = mock.MagicMock()
         mock_request_user.username = 'foo'
 
@@ -241,7 +258,9 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_token_get_create.assert_called_once_with(user=mock_request_user)
 
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/user/settings.html', expected_context)
+        mock_render.assert_called_once_with(mock_request, 'mock_template', expected_context)
+
+        mock_get_template.assert_called_once()
 
     @mock.patch('tethys_portal.views.user.UserPasswordChangeForm')
     @mock.patch('tethys_portal.views.user.redirect')

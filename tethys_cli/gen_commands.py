@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import call, run
 
-
+import yaml
 from yaml import safe_load
 from distro import linux_distribution
 from jinja2 import Template
@@ -26,6 +26,7 @@ import tethys_portal
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
+from .site_commands import SITE_SETTING_CATEGORIES
 
 has_conda = False
 try:
@@ -186,11 +187,27 @@ def gen_nginx_service(args):
 
 
 def gen_portal_yaml(args):
-    write_info(f'A Tethys Portal configuration file is being generated at '
-               f'{get_tethys_home_dir() + "/" + FILE_NAMES[GEN_PORTAL_OPTION]}. '
-               f'Please review the file and fill in the appropriate settings.')
+    tethys_portal_settings = {}
+    tethys_portal_settings.setdefault('version', 2.0)
+    tethys_portal_settings.setdefault('name', '')
+    tethys_portal_settings.setdefault('apps', {})
+    tethys_portal_settings.setdefault('settings', {'SECRET_KEY': generate_secret_key()})
+    tethys_portal_settings.setdefault('site_settings', {category: {} for category in SITE_SETTING_CATEGORIES})
 
-    context = {'SECRET_KEY': generate_secret_key()}
+    try:
+        tethys_portal_settings.update(args.tethys_portal_settings)
+    except AttributeError:
+
+        write_info('A Tethys Portal configuration file is being generated. '
+                   'Please review the file and fill in the appropriate settings.')
+
+    context = {
+        'version': tethys_portal_settings['version'],
+        'name': tethys_portal_settings['name'],
+        'apps': yaml.safe_dump({'apps': tethys_portal_settings['apps']}),
+        'settings': yaml.safe_dump({'settings': tethys_portal_settings['settings']}),
+        'site_settings': yaml.safe_dump({'site_settings': tethys_portal_settings['site_settings']})
+    }
     return context
 
 
@@ -281,8 +298,8 @@ def gen_vendor_static_files(args):
     return context
 
 
-def download_vendor_static_files(args):
-    cwd = Path(TETHYS_SRC) / 'tethys_portal' / 'static'
+def download_vendor_static_files(args, cwd=None):
+    cwd = cwd or Path(TETHYS_SRC) / 'tethys_portal' / 'static'
     try:
         call(['npm', 'i'], cwd=cwd)
     except FileNotFoundError:

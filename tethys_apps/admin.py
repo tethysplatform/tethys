@@ -99,7 +99,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     obj_perms_manage_template = \
         "tethys_apps/guardian/extend_obj_perms_manage.html"
     readonly_fields = ('package', 'manage_app_storage',)
-    fields = ('package', 'name', 'description', 'icon', 'color', 'tags', 'enabled', 'show_in_apps_library',
+    fields = ('package', 'name', 'description', 'icon', 'color', 'tags', 'order', 'enabled', 'show_in_apps_library',
               'enable_feedback', 'manage_app_storage',)
     inlines = [
         CustomSettingInline,

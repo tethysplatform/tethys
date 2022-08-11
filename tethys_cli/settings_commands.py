@@ -62,21 +62,18 @@ def read_settings():
     return tethys_settings
 
 
-def generate_portal_config_file():
-    write_warning('No Tethys Portal configuration file was found. Generating one now...')
-    args = Namespace(type='portal_config', directory=None, overwrite=False)
-    generate_command(args)
-
-
 def write_settings(tethys_settings):
     portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
-    if not portal_yaml_file.exists():
-        generate_portal_config_file()
-    with portal_yaml_file.open('r') as portal_yaml:
-        portal_settings = yaml.safe_load(portal_yaml) or {}
+    portal_settings = {}
+    if portal_yaml_file.exists():
+        with portal_yaml_file.open('r') as portal_yaml:
+            portal_settings = yaml.safe_load(portal_yaml) or {}
+    else:
+        write_warning('No Tethys Portal configuration file was found. Generating one now...')
+
     portal_settings['settings'] = tethys_settings
-    with portal_yaml_file.open('w') as portal_yaml:
-        yaml.safe_dump(portal_settings, portal_yaml)
+    args = Namespace(type='portal_config', tethys_portal_settings=portal_settings, directory=None, overwrite=True)
+    generate_command(args)
 
 
 def set_settings(tethys_settings, kwargs):
