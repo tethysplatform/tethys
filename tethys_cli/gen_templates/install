@@ -12,6 +12,7 @@ requirements:
     packages:
   pip:
   # Add JavaScript packages and versions under npm as a key value pair
+  # If you include JavaScript packages it is recommended the you include "nodejs" as a conda package.
   npm:
    # package_name: 1.0
 post:

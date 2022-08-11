@@ -576,7 +576,7 @@ def _process_url_kwargs(controller, url_map_kwargs_list):
 def _listify(obj):
     if obj is None:
         return []
-    return obj if isinstance(obj, Union[list, tuple]) else [obj]
+    return obj if isinstance(obj, (list, tuple)) else [obj]
 
 
 def register_controllers(

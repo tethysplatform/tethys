@@ -103,12 +103,22 @@ Showcase Apps
 
 See: :ref:`installation_showcase_apps`
 
+Apps Library
+------------
+
+* The apps in the apps library are now sorted alphabetically by default.
+* Additionally, apps (including proxy apps) have a new ``order`` attribute that enables the app sorting to be customized.
+
+See: :ref:`tethys_portal_app_settings`
+
 Tethys Portal
 -------------
 
+* Additional templates and styles can be overriden.
 * The registration page can now be overridden with a custom controller using the ``REGISTER_CONTROLLER`` setting.
+* Minor changes to the structure and naming of the site settings in the :file:`portal_config.yml` file.
 
-See: ``REGISTER_CONTROLLER`` setting at :ref:`tethys_configuration`
+See: :ref:`tethys_configuration` and :doc:`tethys_portal/admin_pages`
 
 Documentation
 -------------

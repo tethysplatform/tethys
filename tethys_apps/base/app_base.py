@@ -178,9 +178,12 @@ class TethysBase(TethysBaseMixin):
         handler_patterns['http'][namespace].append(http_url)
         handler_patterns['websocket'][namespace].append(ws_url)
 
-    def register_url_maps(self):
+    def register_url_maps(self, set_index=True):
         """
         Only override this method to manually define or extend the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``. Alternatively, Bokeh Server can also be integrated into Tethys using ``Django Channels`` and ``Websockets``. Tethys will automatically set these up for you if a ``handler`` and ``handler_type`` parameters are provided as part of the ``UrlMap``.
+
+        Args:
+            set_index: If `False` then the index controller will not be configured/validated automatically, and it is left to the user to ensure that a controller name that matches `self.index` is configured.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -198,13 +201,14 @@ class TethysBase(TethysBaseMixin):
                     Example register_url_maps method.
                     \"""
 
+                    root_url = self.root_url
                     UrlMap = url_map_maker(root_url)
 
-                    url_maps = super().register_url_maps()
+                    url_maps = super().register_url_maps(set_index=False)
                     url_maps.extend((
                         UrlMap(
                             name='home',
-                            url='my-first-app',
+                            url=root_url,
                             controller='my_first_app.controllers.home',
                         ),
                         UrlMap(
@@ -227,32 +231,34 @@ class TethysBase(TethysBaseMixin):
         # import function here to prevent circular imports
         from .controller import register_controllers
 
+        index = self.index if set_index else None
+
         controller_modules = [f'{self.package_namespace}.{self.package}.{module_name}' for module_name in
                               set(DEFAULT_CONTROLLER_MODULES + self.controller_modules)]
         return register_controllers(
             root_url=self.root_url,
             modules=controller_modules,
-            index=self.index,
+            index=index,
             catch_all=self.catch_all,
         )
 
     @property
     def registered_url_maps(self):
+        # TODO remove deprecation code
+        try:
+            self._registered_url_maps = self.url_maps()
+            from tethys_cli.cli_colors import write_warning
+            write_warning(
+                f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
+                'This method is now deprecated. '
+                'Please use the new "controller", "consumer", and "handler" decorators to register URL maps '
+                '(see docs: http://docs.tethysplatform.org/en/stable/tethys_sdk/routing.html).'
+            )
+        except AttributeError:
+            pass
+
         if self._registered_url_maps is None:
             self._registered_url_maps = self.register_url_maps()
-
-            # TODO remove deprecation code
-            try:
-                self._registered_url_maps = self.url_maps()
-                from tethys_cli.cli_colors import write_warning
-                write_warning(
-                    f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
-                    'This method is now deprecated. '
-                    'Please use the new controller decorator to register URL maps (see docs:  '
-                    'http://docs.tethysplatform.org/en/stable/tethys_sdk/app_class.html#controllers) '
-                )
-            except AttributeError:
-                pass
 
         return self._registered_url_maps
 
@@ -408,6 +414,8 @@ class TethysAppBase(TethysBase):
     tags = ''
     enable_feedback = False
     feedback_emails = []
+    enabled = True
+    show_in_apps_library = True
 
     def __str__(self):
         """
@@ -1463,7 +1471,9 @@ class TethysAppBase(TethysBase):
                     icon=self.icon,
                     root_url=self.root_url,
                     color=self.color,
-                    tags=self.tags
+                    tags=self.tags,
+                    enabled=self.enabled,
+                    show_in_apps_library=self.show_in_apps_library
                 )
                 db_app.save()
 
@@ -1512,6 +1522,9 @@ class TethysAppBase(TethysBase):
                     db_app.tags = self.tags
                     db_app.enable_feedback = self.enable_feedback
                     db_app.feedback_emails = self.feedback_emails
+                    db_app.enabled = self.enabled
+                    db_app.show_in_apps_library = self.show_in_apps_library
+
                     db_app.save()
 
             # More than one instance of the app in db... (what to do here?)
