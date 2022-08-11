@@ -4,6 +4,10 @@ from django.conf import settings
 
 import os
 
+from ..static_finders import TethysStaticFinder
+
+static_finder = TethysStaticFinder()
+
 register = template.Library()
 
 
@@ -13,7 +17,7 @@ def load_custom_css(var):
     if var.startswith('/'):
         var = var.lstrip('/')
 
-    is_file = os.path.isfile(os.path.join(settings.STATIC_ROOT, var))
+    is_file = os.path.isfile(os.path.join(settings.STATIC_ROOT, var)) or static_finder.find(var)
 
     if is_file:
         return '<link href="' + os.path.join('/static', var) + '" rel="stylesheet" />'

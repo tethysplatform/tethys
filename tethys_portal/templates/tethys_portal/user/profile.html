@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static gravatar %}
+{% load static gravatar site_settings %}
 
 {% block title %}{{ block.super }} - Profile{% endblock %}
 
@@ -20,6 +20,7 @@
       color: {{ site_globals.primary_text_color|default:'#ffffff' }};
     }
   </style>
+  {{ site_globals.user_css|load_custom_css|safe }}
 {% endblock %}
 
 {% block primary_content %}

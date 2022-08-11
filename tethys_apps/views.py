@@ -12,7 +12,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from tethys_compute.models import TethysJob, DaskJob
-from tethys_config.models import Setting
+from tethys_config.models import get_custom_template
 
 from .base.app_base import TethysAppBase
 from .models import TethysApp
@@ -48,29 +48,19 @@ def library(request):
     proxy_apps = ProxyApp.objects.all()
 
     for proxy_app in proxy_apps:
-        new_app = {
-            'proxied': True,
-            'show_in_apps_library': proxy_app.show_in_apps_library,
-            'enabled': proxy_app.enabled,
-            'url': proxy_app.endpoint,
-            'icon': proxy_app.logo_url,
-            'name': proxy_app.name,
-            'description': proxy_app.description,
-            'tags': proxy_app.tags
-        }
-        if request.user.is_staff:
-            configured_apps.append(new_app)
-        elif proxy_app.enabled and proxy_app.show_in_apps_library:
-            configured_apps.append(new_app)
+        if request.user.is_staff or (proxy_app.enabled and proxy_app.show_in_apps_library):
+            configured_apps.append(proxy_app)
+
+    # sort apps alphabetically
+    configured_apps.sort(key=lambda a: a.name)
+
+    # sort apps by order
+    configured_apps.sort(key=lambda a: a.order)
 
     # Define the context object
     context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
 
-    custom_template = Setting.objects.get(name='Apps Library Template').content
-    if custom_template:
-        template = custom_template.lstrip('/') if custom_template.startswith('/') else custom_template
-    else:
-        template = 'tethys_apps/app_library.html'
+    template = get_custom_template('Apps Library Template', 'tethys_apps/app_library.html')
 
     return render(request, template, context)
 

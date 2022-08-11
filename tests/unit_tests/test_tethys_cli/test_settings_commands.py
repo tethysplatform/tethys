@@ -21,31 +21,22 @@ class TestSettingsCommands(TestCase):
         settings = cmds.read_settings()
         self.assertDictEqual(settings, MOCK_SETTINGS['settings'])
 
+    @mock.patch('tethys_cli.settings_commands.generate_command')
     @mock.patch('tethys_cli.settings_commands.Path.open')
     @mock.patch('tethys_cli.settings_commands.yaml.safe_load', return_value={})
-    @mock.patch('tethys_cli.settings_commands.yaml.safe_dump')
-    def test_write_settings(self, mock_dump, _, mock_open):
+    def test_write_settings(self, mock_load, mock_open, mock_gen):
         mock_open().__enter__.return_value = 'mock_file'
         cmds.write_settings(MOCK_SETTINGS['settings'])
-        mock_dump.assert_called_with(MOCK_SETTINGS, 'mock_file')
+        mock_load.assert_called_once()
+        self.assertDictEqual(MOCK_SETTINGS, mock_gen.mock_calls[0][1][0].tethys_portal_settings)
 
-    @mock.patch('tethys_cli.settings_commands.generate_portal_config_file')
     @mock.patch('tethys_cli.settings_commands.Path.exists', return_value=False)
-    @mock.patch('tethys_cli.settings_commands.Path.open')
-    @mock.patch('tethys_cli.settings_commands.yaml.safe_load', return_value={})
-    @mock.patch('tethys_cli.settings_commands.yaml.safe_dump')
-    def test_write_settings_no_portal_config(self, mock_dump, _, mock_open, __, mock_gen_config):
-        mock_open().__enter__.return_value = 'mock_file'
-        cmds.write_settings(MOCK_SETTINGS['settings'])
-        mock_gen_config.assert_called_once()
-        mock_dump.assert_called_with(MOCK_SETTINGS, 'mock_file')
-
     @mock.patch('tethys_cli.settings_commands.generate_command')
     @mock.patch('tethys_cli.settings_commands.write_warning')
-    def test_generate_portal_config_file(self, mock_write_warning, mock_gen):
-        cmds.generate_portal_config_file()
-        mock_write_warning.assert_called_once()
-        mock_gen.assert_called_once()
+    def test_write_settings_no_portal_config(self, mock_warn, mock_gen, _):
+        cmds.write_settings(MOCK_SETTINGS['settings'])
+        mock_warn.assert_called_once()
+        self.assertDictEqual(MOCK_SETTINGS, mock_gen.mock_calls[0][1][0].tethys_portal_settings)
 
     @mock.patch('tethys_cli.settings_commands._get_dict_key_handle')
     @mock.patch('tethys_cli.settings_commands.write_settings')
