@@ -104,7 +104,8 @@ def permission_required(*args, **kwargs):
     """  # noqa: E501
 
     use_or = kwargs.pop('use_or', False)
-    message = kwargs.pop('message', "We're sorry, but the operation you requested cannot be found.")
+    message = kwargs.pop('message', None)
+    message = message or "We're sorry, but the operation you requested cannot be found."
     raise_exception = kwargs.pop('raise_exception', False)
     perms = [arg for arg in args if isinstance(arg, str)]
 
