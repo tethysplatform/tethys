@@ -12,5 +12,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(tethys4_site_settings, lambda a,s: None)
+        migrations.RunPython(tethys4_site_settings, lambda a, s: None)
     ]
