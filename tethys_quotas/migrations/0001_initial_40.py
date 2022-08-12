@@ -7,8 +7,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_quotas', '0001_initial_30'), ('tethys_quotas', '0002_auto_20211221_2300')]
-
     initial = True
 
     dependencies = [

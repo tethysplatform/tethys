@@ -9,8 +9,6 @@ import tethys_compute.models.dask.dask_field
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_compute', '0001_initial_30'), ('tethys_compute', '0002_tethysjob_groups'), ('tethys_compute', '0003_tethysjob_status_message'), ('tethys_compute', '0004_auto_20211221_2300'), ('tethys_compute', '0005_auto_20211221_2313'), ('tethys_compute', '0006_alter_condorpyjob__attributes'), ('tethys_compute', '0007_scheduler_settings'), ('tethys_compute', '0008_alter_tethysjob__status')]
-
     initial = True
 
     dependencies = [

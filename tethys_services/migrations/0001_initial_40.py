@@ -6,8 +6,6 @@ import tethys_services.models
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_services', '0001_initial_30'), ('tethys_services', '0002_auto_20211221_2300')]
-
     initial = True
 
     dependencies = [

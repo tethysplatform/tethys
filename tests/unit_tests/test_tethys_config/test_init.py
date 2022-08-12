@@ -3,8 +3,7 @@ from unittest import mock
 
 from django.utils import timezone
 
-from tethys_config.init import initial_settings, reverse_init, setting_defaults, custom_settings, \
-    reverse_custom, tethys4_site_settings
+from tethys_config.init import initial_settings, reverse_init, setting_defaults
 
 
 class TestInit(unittest.TestCase):
@@ -29,61 +28,18 @@ class TestInit(unittest.TestCase):
         mock_settings.assert_any_call(name='Home Page')
         mock_settings(name='Home Page').save.assert_called()
 
-        self.assertEqual(mock_defaults.call_count, 2)
+        self.assertEqual(mock_defaults.call_count, 4)
 
-    @mock.patch('tethys_config.init.initial_settings')
-    @mock.patch('tethys_config.init.setting_defaults')
     @mock.patch('tethys_config.init.SettingsCategory')
-    def test_custom_settings(self, mock_settings, mock_defaults, mock_init_settings):
-        mock_apps = mock.MagicMock()
-        mock_schema_editor = mock.MagicMock()
-        mock_settings.objects.all.return_value = False
-
-        custom_settings(apps=mock_apps, schema_editor=mock_schema_editor)
-
-        mock_init_settings.called_with(mock_apps, mock_schema_editor)
-        mock_settings.assert_has_calls([mock.call(name='Custom Styles'), mock.call(name='Custom Templates')],
-                                       any_order=True)
-        mock_settings(name='Custom Styles').save.assert_called()
-        mock_settings(name='Custom Templates').save.assert_called()
-
-        self.assertEqual(mock_defaults.call_count, 2)
-
-    @mock.patch('tethys_config.init.Setting')
-    @mock.patch('tethys_config.init.SettingsCategory')
-    def test_reverse_init(self, mock_categories, mock_settings):
+    def test_reverse_init(self, mock_categories):
         mock_apps = mock.MagicMock
         mock_schema_editor = mock.MagicMock()
         mock_cat = mock.MagicMock()
-        mock_set = mock.MagicMock()
-        mock_categories.objects.all.return_value = [mock_cat]
-        mock_settings.objects.all.return_value = [mock_set]
+        mock_categories.objects.get.return_value = mock_cat
 
         reverse_init(apps=mock_apps, schema_editor=mock_schema_editor)
 
-        mock_categories.objects.all.assert_called_once()
-        mock_settings.objects.all.assert_called_once()
-        mock_cat.delete.assert_called_once()
-        mock_set.delete.assert_called_once()
-
-    @mock.patch('tethys_config.init.Setting')
-    @mock.patch('tethys_config.init.SettingsCategory')
-    def test_reverse_custom(self, mock_categories, mock_settings):
-        mock_apps = mock.MagicMock
-        mock_schema_editor = mock.MagicMock()
-        mock_cat = mock.MagicMock()
-        mock_cat.name = 'Custom Styles'
-        mock_set = mock.MagicMock()
-        mock_set.name = 'Home Page Template'
-        mock_categories.objects.all.return_value = [mock_cat]
-        mock_settings.objects.all.return_value = [mock_set]
-
-        reverse_custom(apps=mock_apps, schema_editor=mock_schema_editor)
-
-        mock_categories.objects.all.assert_called_once()
-        mock_settings.objects.all.assert_called_once()
-        mock_cat.delete.assert_called_once()
-        mock_set.delete.assert_called_once()
+        self.assertEqual(mock_cat.delete.call_count, 4)
 
     @mock.patch('tethys_config.init.timezone')
     @mock.patch('tethys_config.init.SettingsCategory')
@@ -235,46 +191,3 @@ class TestInit(unittest.TestCase):
                                                            date_modified=now)
 
         mock_settings().save.assert_called()
-
-    @mock.patch('tethys_config.init.timezone')
-    @mock.patch('tethys_config.init.Setting')
-    def test_tethys4_site_settings(self, mock_setting, mock_timezone):
-        # Set up some mock settings
-        mock_brand_setting = mock.MagicMock(
-            content="/tethys_portal/images/tethys-logo-75.png"
-        )
-        mock_apps_library_setting = mock.MagicMock(
-            content="Apps Library"
-        )
-        mock_copyright_setting = mock.MagicMock(
-            content="Copyright © 2019 Your Organization"
-        )
-
-        # Create a fake "get" method for the mocked Setting
-        def setting_get(name):
-            if name == "Brand Image":
-                return mock_brand_setting
-            elif name == "Apps Library Title":
-                return mock_apps_library_setting
-            elif name == "Footer Copyright":
-                return mock_copyright_setting
-
-        # Bind mocked "get" method
-        mock_setting.objects.filter().get = setting_get
-
-        # Set now to something that is verifiable
-        now = timezone.now()
-        mock_timezone.now.return_value = now
-
-        # Execute
-        tethys4_site_settings(mock.MagicMock(), mock.MagicMock())
-
-        # Verify values changed appropriately
-        self.assertEqual("/tethys_portal/images/tethys-logo-25.png", mock_brand_setting.content)
-        self.assertEqual("Apps", mock_apps_library_setting.content)
-        self.assertEqual(f"Copyright © {now:%Y} Your Organization", mock_copyright_setting.content)
-
-        # Verify settings saved
-        mock_brand_setting.save.assert_called()
-        mock_apps_library_setting.save.assert_called()
-        mock_copyright_setting.save.assert_called()

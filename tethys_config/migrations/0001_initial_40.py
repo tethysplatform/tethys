@@ -2,12 +2,10 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-from tethys_config.init import initial_settings, reverse_init, custom_settings, reverse_custom
+from tethys_config.init import initial_settings, reverse_init
 
 
 class Migration(migrations.Migration):
-
-    replaces = [('tethys_config', '0001_initial_30'), ('tethys_config', '0002_auto_20200410_1731'), ('tethys_config', '0003_auto_20211220_2307'), ('tethys_config', '0004_auto_20211221_2300'), ('tethys_config', '0005_add_new_settings')]
 
     initial = True
 
@@ -38,5 +36,4 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.RunPython(initial_settings, reverse_init),
-        migrations.RunPython(custom_settings, reverse_custom),
     ]
