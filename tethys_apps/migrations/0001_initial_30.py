@@ -9,11 +9,6 @@ import tethys_services.models
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_apps', '0001_initial_20'), ('tethys_apps', '0002_tethysextension'),
-                ('tethys_apps', '0003_python3_compatibility'), ('tethys_apps', '0004_auto_20190506_1714'),
-                ('tethys_apps', '0005_customsetting_default'), ('tethys_apps', '0006_proxyapp'),
-                ]
-
     initial = True
 
     dependencies = [
