@@ -118,7 +118,8 @@ class CondorBase(TethysJob):
         """
         pass
 
-    def _get_logs_from_remote(self, log_files):
+    @staticmethod
+    def _get_lazy_log_content(log_files, read_func, log_path=None):
         """
         Get logs from remote while job is running.
 
@@ -130,45 +131,22 @@ class CondorBase(TethysJob):
 
         contents = dict()
         for log_file_type, log_file_path in log_files.items():
-            if log_file_type == 'workflow':
-                contents['workflow'] = partial(self.get_log_content, log_file_path)
-            else:
-                # Parse out logs for each job.
-                contents[log_file_type] = dict()
-                for job_log_type, job_log_path in log_file_path.items():
-                    contents[log_file_type][job_log_type] = partial(self.get_log_content, job_log_path)
+            # Parse out logs for each job.
+            contents[log_file_type] = dict()
+            for job_log_type, job_log_path in log_file_path.items():
+                if log_path:
+                    p = Path(log_path) / job_log_path
+                    try:
+                        job_log_path = list(p.parent.glob(p.name))[0].as_posix()
+                    except IndexError:
+                        continue
+                contents[log_file_type][job_log_type] = partial(read_func, job_log_path)
 
         return contents
 
-    def get_log_content(self, log_file):
+    def get_remote_log_content(self, log_file):
         content, _ = self.condor_object._execute(['cat', log_file])
         return content
-
-    def _get_logs_from_workspace(self, log_files):
-        """
-        Get logs from workspaces in case the job has been deleted over the condor scheduler.
-        :param log_files: the nested dictionaries of all the log files
-        :return: the contents of all the logs files in a nested dictionary.
-        """
-        contents = dict()
-        for log_file_type, log_file_path in log_files.items():
-            if log_file_type == 'workflow':
-                log_file = os.path.join(self.workspace, self.remote_id, log_file_path)
-                contents['workflow'] = partial(self.read_file, log_file)
-            else:
-                # Parse out logs for each job.
-                contents[log_file_type] = dict()
-                for job_log_type, job_log_path in log_file_path.items():
-                    log_file_folder = os.path.join(self.workspace, self.remote_id, log_file_type, "logs")
-                    log_file_ext = job_log_path[-4:]
-                    file_name = 'File'
-                    if os.path.isdir(log_file_folder):
-                        for file in os.listdir(log_file_folder):
-                            if file.endswith(log_file_ext):
-                                file_name = os.path.join(log_file_folder, file)
-                    contents[log_file_type][job_log_type] = partial(self.read_file, file_name)
-
-        return contents
 
     @staticmethod
     def read_file(file_name):
@@ -188,12 +166,12 @@ class CondorBase(TethysJob):
         Get logs contents for condor job.
         """
         log_files = self._log_files()
-        log_contents = self._get_logs_from_remote(log_files)
-        # Check to see if log_contents are empty. If it's empty, the job on the condor machine might get removed.
-        # We will try to get from the workspace if this is the case.
-        log_has_content = self._check_log_has_content(log_contents)
-        if not log_has_content:
-            log_contents = self._get_logs_from_workspace(log_files)
+        log_path = os.path.join(self.workspace, self.remote_id)
+        log_contents = self._get_lazy_log_content(log_files, self.read_file, log_path)
+        # Check to see if local log files exist. If not get log contents from remote.
+        logs_exist = self._check_local_logs_exist(log_contents)
+        if not logs_exist:
+            log_contents = self._get_lazy_log_content(log_files, self.get_remote_log_content)
         return log_contents
 
     def pause(self):
@@ -214,16 +192,19 @@ class CondorBase(TethysJob):
         self.remote_id = self.remote_id or self._condor_object._remote_id
 
     @staticmethod
-    def _check_log_has_content(log_contents):
+    def _check_local_logs_exist(log_contents):
         """
         Return True if log content is not empty.
         """
+        log_funcs = list()
         for key, value in log_contents.items():
             if isinstance(value, dict):
                 for child_value in value.values():
-                    if child_value:
-                        return True
+                    log_funcs.append(child_value)
             else:
-                if value:
-                    return True
-        return False
+                log_funcs.append(value)
+        log_exists = list()
+        for func in log_funcs:
+            filename = func.args[0]
+            log_exists.append(os.path.exists(filename))
+        return any(log_exists)
