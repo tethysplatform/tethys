@@ -76,10 +76,10 @@ var log_contents = {};
 
 function load_log_content(job_id) {
     // Clear content
-    $('#modal-dialog-jobs-table-log-content').html('')
+    $('#modal-dialog-jobs-table-log-content').html('');
     $("#jobs_table_logs_overlay").removeClass('d-none');
 
-    $('#ModalJobLogTitle').html('Logs for Job ID: ' + $('#job_id-' + job_id).html())
+    $('#ModalJobLogTitle').html('Logs for Job ID: ' + job_id);
     var show_log_url = '/developer/gizmos/ajax/' + job_id + '/action/show-log';
     $.ajax({
         url: show_log_url
@@ -106,8 +106,8 @@ function load_log_content(job_id) {
 
 function update_log_menu(event){
   var key = event.target.value;
-  $('.jobs-table-log-menu').hide();
-  $('#log_select_' + key).show();
+  $('.jobs-table-log-menu').addClass('d-none');
+  $('#log_select_' + key).removeClass('d-none');
   $('#log_' + key).trigger('change');
 }
 
@@ -183,10 +183,10 @@ function get_first_id_from_content(contents) {
 
 function display_log_content(log_content_id) {
     // Hide all the class first
-    $('.tethys_job_log_content').hide();
+    $('.tethys_job_log_content').addClass('d-none');
 
     //Display the selected log
-    $('#' + log_content_id).show();
+    $('#' + log_content_id).removeClass('d-none');
 }
 
 function render_workflow_nodes_graph(dag, target_selector) {
@@ -258,7 +258,7 @@ function render_workflow_nodes_graph(dag, target_selector) {
 
     let legend = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(30,30)");
+        .attr("transform", "translate(15,20)");
 
     let legend_items = legend.append("g")
         .attr("class", "legend-items");
@@ -267,14 +267,14 @@ function render_workflow_nodes_graph(dag, target_selector) {
         let legend_entry = legend_entries[i];
 
         legend_items.append("text")
-            .attr("x", "1em")
-            .attr("y", i + "em")
+            .attr("x", "10px")
+            .attr("y", i * 16 + "px")
             .text(legend_entry.title);
 
         legend_items.append("circle")
-            .attr("r", "0.4em")
+            .attr("r", "6px")
             .attr("cx", 0)
-            .attr("cy", i - 0.35 + "em")
+            .attr("cy", (i * 16) - 5 + "px")
             .style("fill", legend_entry.color);
     }
 }

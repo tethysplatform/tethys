@@ -274,3 +274,11 @@ p.loading-error {
   background: #5cb85b;
   border: 2px solid #d9524f;
 }
+
+.select2-container {
+  z-index: 10000;
+}
+
+#jobs_table_logs_overlay {
+  background: black;
+}

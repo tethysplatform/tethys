@@ -87,7 +87,11 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         log_folder_list = dict()
         # The first item of the log_folder_list is always the workflow log
         workflow_name = self.name.replace(" ", "_")
-        log_folder_list['workflow'] = f'{workflow_name}.dag.dagman.out'
+        log_folder_list['workflow'] = {
+            'out': f'{workflow_name}.dag.dagman.out',
+            'log': f'{workflow_name}.dag.dagman.log',
+            'error': f'{workflow_name}.dag.lib.err',
+        }
         for job_node in self.nodes:
             job_name = job_node.name
             log_file_path = os.path.join(job_name, 'logs', '*.log')

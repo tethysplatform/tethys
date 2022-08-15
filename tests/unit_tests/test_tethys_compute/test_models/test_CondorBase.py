@@ -189,97 +189,92 @@ class CondorBaseTest(TethysTestCase):
         self.assertEqual(expected_result, log_content)
         mock_log.exception.assert_called_once()
 
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_workspace')
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_remote')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._check_local_logs_exist')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_lazy_log_content')
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._log_files')
-    def test_get_logs_no_remote(self, mock_log_files, mock_log_remote, mock_log_workspace):
-        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
-                     'test_job': {'log': 'test_job/logs/*.log',
-                                  'error': 'test_job/logs/*.err',
-                                  'output': 'test_job/logs/*.out'}
-                     }
+    def test_get_logs(self, mock_log_files, mock_lazy_logs, mock_logs_exist):
         logs_file_contents = {'workspace': '', 'test_job': {'log': '', 'error': '', 'output': ''}}
-        mock_log_files.return_value = logs_file
-        mock_log_remote.return_value = logs_file_contents
-        expected_return = 'log_from_workspace'
-        mock_log_workspace.return_value = expected_return
+        mock_logs_exist.return_value = True
+        mock_lazy_logs.return_value = logs_file_contents
 
         logs = CondorBase.objects.get(name='test_condorbase')._get_logs()
-        self.assertEqual(expected_return, logs)
-
-    @mock.patch('tethys_compute.models.condor.condor_base.partial')
-    def test_get_logs_from_remote(self, mock_partial):
-        mock_func = mock.MagicMock()
-        mock_partial.return_value = mock_func
-        log_files = {'workflow': 'test_name.dag.dagman.out',
-                     'test_job1': {'log': 'test_job1/logs/*.log',
-                                   'error': 'test_job1/logs/*.err',
-                                   'output': 'test_job1/logs/*.out'}}
-        expected_value = {'workflow': mock_func,
-                          'test_job1': {
-                              'log': mock_func,
-                              'error': mock_func,
-                              'output': mock_func
-                          }}
-        # Execute
-        ret = self.condorbase._get_logs_from_remote(log_files)
-        self.assertEqual(expected_value, ret)
-
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_workspace')
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_remote')
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._log_files')
-    def test_get_logs_remote(self, mock_log_files, mock_log_remote, mock_log_workspace):
-        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
-                     'test_job': {'log': 'test_job/logs/*.log',
-                                  'error': 'test_job/logs/*.err',
-                                  'output': 'test_job/logs/*.out'}
-                     }
-        logs_file_contents = {'workspace': 'has_content', 'test_job': {'log': '', 'error': '', 'output': ''}}
-        mock_log_files.return_value = logs_file
-        mock_log_remote.return_value = logs_file_contents
-        mock_log_workspace.return_value = 'log_from_workspace'
-
-        logs = CondorBase.objects.get(name='test_condorbase')._get_logs()
-
+        mock_log_files.assert_called_once()
+        mock_lazy_logs.assert_called_once()
         self.assertEqual(logs_file_contents, logs)
 
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_workspace')
-    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_remote')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._check_local_logs_exist')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_lazy_log_content')
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._log_files')
-    def test_get_logs_remote_check_child(self, mock_log_files, mock_log_remote, mock_log_workspace):
-        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
-                     'test_job': {'log': 'test_job/logs/*.log',
-                                  'error': 'test_job/logs/*.err',
-                                  'output': 'test_job/logs/*.out'}
-                     }
-        logs_file_contents = {'workspace': '', 'test_job': {'log': 'has_content', 'error': '', 'output': ''}}
-        mock_log_files.return_value = logs_file
-        mock_log_remote.return_value = logs_file_contents
-        mock_log_workspace.return_value = 'log_from_workspace'
+    def test_get_logs_remote(self, mock_log_files, mock_lazy_logs, mock_logs_exist):
+        logs_file_contents = {'workspace': '', 'test_job': {'log': '', 'error': '', 'output': ''}}
+        mock_logs_exist.return_value = False
+        mock_lazy_logs.return_value = logs_file_contents
 
         logs = CondorBase.objects.get(name='test_condorbase')._get_logs()
-
+        mock_log_files.assert_called_once()
+        self.assertEqual(mock_lazy_logs.call_count, 2)
         self.assertEqual(logs_file_contents, logs)
 
-    @mock.patch('builtins.open')
-    @mock.patch('tethys_compute.models.condor.condor_base.os.listdir')
-    @mock.patch('tethys_compute.models.condor.condor_base.os.path.isdir')
-    @mock.patch('tethys_compute.models.condor.condor_base.os.path.isfile')
-    def test_get_logs_from_workspace_mock_file(self, mock_isfile, mock_isdir, mock_list_dir, mock_open):
-        mock_isfile.return_value = True
-        mock_isdir.return_value = True
-        mock_list_dir.return_value = ['file1.log', 'file2.err', 'file3.out']
-        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
-                     'test_job': {'log': 'test_job/logs/*.log',
-                                  'error': 'test_job/logs/*.err',
-                                  'output': 'test_job/logs/*.out'}
-                     }
-        logs = CondorBase.objects.get(name='test_condorbase')._get_logs_from_workspace(logs_file)
+    def test_get_lazy_log_content(self):
+        from functools import partial
+        logs_file = {
+            'workflow': {
+                'error': 'test_workflow/logs/*.err',
+            },
+            'test_job': {
+                'log': 'test_job/logs/*.log',
+            }
+        }
 
-        self.assertIsNotNone(logs['workflow'])
-        self.assertIsNotNone(logs['test_job']['log'])
-        self.assertIsNotNone(logs['test_job']['error'])
-        self.assertIsNotNone(logs['test_job']['output'])
+        mock_read = mock.MagicMock()
+
+        logs = CondorBase.objects.get(name='test_condorbase')._get_lazy_log_content(logs_file, mock_read)
+        expected = {
+            'workflow': {
+                'error': partial(mock_read, 'test_workflow/logs/*.err'),
+            },
+            'test_job': {
+                'log': partial(mock_read, 'test_job/logs/*.log'),
+            }
+        }
+
+        self.assertEqual(logs['workflow']['error'].func, expected['workflow']['error'].func)
+        self.assertEqual(logs['workflow']['error'].args, expected['workflow']['error'].args)
+        self.assertEqual(logs['test_job']['log'].func, expected['test_job']['log'].func)
+        self.assertEqual(logs['test_job']['log'].args, expected['test_job']['log'].args)
+
+    @mock.patch('tethys_compute.models.condor.condor_base.Path')
+    def test_get_lazy_log_content_local(self, mock_path):
+        logs_file = {
+            'workflow': {
+                'error': 'test_workflow/logs/*.err',
+            },
+            'test_job': {
+                'log': 'test_job1/logs/*.log',
+            }
+        }
+
+        mock_read = mock.MagicMock()
+        mock_log_path = mock.MagicMock()
+        mock_path.return_value = mock_log_path
+
+        logs = CondorBase.objects.get(name='test_condorbase')._get_lazy_log_content(logs_file, mock_read, 'path')
+        expected = {
+            'workflow': {},
+            'test_job': {}
+        }
+        self.assertEqual(expected, logs)
+
+    @mock.patch('tethys_compute.models.condor.condor_base.os.path.exists', return_value=True)
+    def test_check_local_logs_exist(self, mock_path_exists):
+        mock_partial = mock.MagicMock(args=('file_path',))
+        logs_file_contents = {
+            'workspace': mock_partial,
+            'test_job': {'log': mock_partial, 'error': mock_partial, 'output': mock_partial}
+        }
+        exists = CondorBase.objects.get(name='test_condorbase')._check_local_logs_exist(logs_file_contents)
+
+        self.assertTrue(exists)
 
     def test_pause(self):
         ret = CondorBase.objects.get(name='test_condorbase_exe').pause()
@@ -314,7 +309,7 @@ class CondorBaseTest(TethysTestCase):
         self.assertIsNone(ret)
 
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
-    def test_get_log_content(self, mock_co):
+    def test_get_remote_log_content(self, mock_co):
         mock_co._execute.return_value = ('test_out', 'test_err')
-        self.condorbase.get_log_content('log_file')
+        self.condorbase.get_remote_log_content('log_file')
         mock_co._execute.assert_called_with(['cat', 'log_file'])
