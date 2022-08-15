@@ -136,10 +136,18 @@ class CondorWorkflowTest(TethysTestCase):
     @mock.patch('tethys_compute.models.condor.condor_workflow.CondorWorkflow.nodes',
                 new_callable=mock.PropertyMock(return_value=[mock_nodes]))
     def test_log_files(self, _):
-        expected_ret = {'workflow': 'test_name.dag.dagman.out',
-                        'test_job1': {'log': 'test_job1/logs/*.log',
-                                      'error': 'test_job1/logs/*.err',
-                                      'output': 'test_job1/logs/*.out'}}
+        expected_ret = {
+            'workflow': {
+                'out': 'test_name.dag.dagman.out',
+                'log': 'test_name.dag.dagman.log',
+                'error': 'test_name.dag.lib.err',
+            },
+            'test_job1': {
+                'log': 'test_job1/logs/*.log',
+                'error': 'test_job1/logs/*.err',
+                'output': 'test_job1/logs/*.out'
+            }
+        }
         # Execute
         ret = self.condorworkflow._log_files()
 
