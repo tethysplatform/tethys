@@ -15,6 +15,8 @@ import logging
 from django.utils.functional import wraps
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
+
+from tethys_apps.base.app_base import TethysAppBase
 from tethys_quotas.utilities import passes_quota, _get_storage_units
 
 log = logging.getLogger('tethys.' + __name__)
@@ -254,6 +256,42 @@ def _get_user_workspace(app_class, user_or_request):
     return TethysWorkspace(workspace_directory)
 
 
+def get_user_workspace(request_or_user) -> TethysWorkspace:
+    """
+    Get the dedicated workspace directory for active user of request given or the given user.
+
+    Args:
+        request_or_user: Either an HttpRequest with active user session or Django User object.
+    
+    Raises:
+        ValueError: if request_or_user is not of type HttpRequest or User.
+        AssertionError: if quota for the user workspace has been exceeded.
+
+    Returns:
+        TethysWorkspace: workspace object bound to the user's workspace directory.    
+    """
+    from django.contrib.auth.models import User
+    from tethys_apps.utilities import get_active_app
+
+    # Get user
+    if isinstance(request_or_user, HttpRequest):
+        user = request_or_user.user
+    elif isinstance(request_or_user, User):
+        user = request_or_user
+    else:
+        raise ValueError(f'Argument "request_or_user" must be of type HttpRequest or User: '
+                         f'"{type(request_or_user)}" given.')
+
+    assert passes_quota(user, 'user_workspace_quota')
+
+    # Get the active app
+    app = get_active_app(request_or_user, get_class=True)
+
+    the_workspace = _get_user_workspace(app, user)
+
+    return the_workspace
+
+
 def user_workspace(controller):
     """
     **Decorator:** Get the file workspace (directory) for the given User. Add an argument named "user_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
@@ -286,11 +324,10 @@ def user_workspace(controller):
     """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
-        from tethys_quotas.models import ResourceQuota
         from tethys_apps.utilities import get_active_app
 
         request = None
-        for index, arg in enumerate(args):
+        for _, arg in enumerate(args):
             if isinstance(arg, HttpRequest):
                 request = arg
                 break
@@ -298,15 +335,7 @@ def user_workspace(controller):
         if request is None:
             raise ValueError('No request given. The user_workspace decorator only works on controllers.')
 
-        # Get user
-        user = request.user
-
-        assert passes_quota(user, 'user_workspace_quota')
-
-        # Get the active app
-        app = get_active_app(request, get_class=True)
-
-        the_workspace = _get_user_workspace(app, user)
+        the_workspace = get_user_workspace(request)
 
         return controller(*args, user_workspace=the_workspace, **kwargs)
     return wrapper
@@ -353,6 +382,38 @@ def _get_app_workspace(app_class):
     return TethysWorkspace(workspace_directory)
 
 
+def get_app_workspace(request_or_app: HttpRequest | TethysAppBase) -> TethysWorkspace:
+    """
+    Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
+
+    Args:
+        request_or_app (HttpRequest | TethysAppBase): HttpRequest of an active app session or the Tethys App class.
+
+    Raises:
+        ValueError: if object of type other than HttpRequest or TethysAppBase given.
+        AssertionError: if quota for the app workspace has been exceeded.
+
+    Returns:
+        TethysWorkspace: workspace object bound to the app workspace.
+    """
+    from tethys_apps.utilities import get_active_app
+
+    # Get the active app
+    if isinstance(request_or_app, HttpRequest):
+        app = get_active_app(request_or_app, get_class=True)
+    elif isinstance(request_or_app, TethysAppBase):
+        app = request_or_app
+    else:
+        raise ValueError(f'Argument "request_or_app" must be of type HttpRequest or TethysAppBase: '
+                         f'"{type(request_or_app)}" given.')
+
+    assert passes_quota(app, 'app_workspace_quota')
+
+    the_workspace = _get_app_workspace(app)
+
+    return the_workspace
+
+
 def app_workspace(controller):
     """
     **Decorator:** Get the file workspace (directory) for the app. Add an argument named "app_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
@@ -385,11 +446,8 @@ def app_workspace(controller):
     """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
-        from tethys_quotas.models import ResourceQuota
-        from tethys_apps.utilities import get_active_app
-
         request = None
-        for index, arg in enumerate(args):
+        for _, arg in enumerate(args):
             if isinstance(arg, HttpRequest):
                 request = arg
                 break
@@ -397,12 +455,7 @@ def app_workspace(controller):
         if request is None:
             raise ValueError('No request given. The app_workspace decorator only works on controllers.')
 
-        # Get the active app
-        app = get_active_app(request, get_class=True)
-
-        assert passes_quota(app, 'app_workspace_quota')
-
-        the_workspace = _get_app_workspace(app)
+        the_workspace = get_app_workspace(request)
 
         return controller(*args, app_workspace=the_workspace, **kwargs)
     return wrapper
