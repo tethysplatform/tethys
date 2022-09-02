@@ -22,10 +22,8 @@ from .mixins import TethysBaseMixin
 from .workspace import get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
-from bokeh.server.django.consumers import WSConsumer
-from bokeh.server.django import autoload
-
-from bokeh.server.django.consumers import AutoloadJsConsumer
+from bokeh_django.consumers import WSConsumer, AutoloadJsConsumer
+from bokeh_django import autoload
 
 tethys_log = logging.getLogger('tethys.app_base')
 
