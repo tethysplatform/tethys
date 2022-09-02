@@ -52,7 +52,7 @@ dependencies:
 
 # django/plugin dependencies
 - django=2.2.*
-- django-axes
+- django-axes=5.35.*
 - django-filter
 - djangorestframework
 - django-bootstrap3
