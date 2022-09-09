@@ -67,7 +67,7 @@ The install command uses three configuration files:
 
 .. _tethys_install_yml:
 
-install.yml 
+install.yml
 -----------
 
 This file is generated with your application scaffold. Dependencies that are listed in the ``install.yml`` will be installed with conda and will honor the specified channel priority. If there are any dependencies listed in the ``setup.py`` that are not specified in the ``install.yml`` then these packages will be installed with pip as part of the setup process. This file should be committed with your application code in order to aid installation on a Tethys Portal.
@@ -77,12 +77,13 @@ This file is generated with your application scaffold. Dependencies that are lis
 
 **install.yml Options:**
 
-* **version**: Indicated the version of the :file:`install.yml` file. Current default : 1.1
+* **version**: Indicates the version of the :file:`install.yml` file. Current default : 1.1
+* **tethys_version**: Indicates the version of the tethys-platform library (Tethys Portal) required to install the app. Defaults to >=4.0.0. Assumes <4.0.0 if not specified.
 * **name**: This should match the app-package name in your setup.py
 
 * **skip**: If enabled, it will skip the installation of packages. This option is set to `False` by default.
 
-* **conda/channels**: List of conda channels that need to be searched for dependency installation. Only specify any conda channels that are apart from the default. 
+* **conda/channels**: List of conda channels that need to be searched for dependency installation. Only specify any conda channels that are apart from the default.
 
 * **conda/packages**: List of python dependencies that need to be installed by conda. These may be entered in the format ``pyshp=2.0.0`` to download a specific version.
 
@@ -102,7 +103,7 @@ This file is generated with your application scaffold. Dependencies that are lis
 
 .. _tethys_services_yml:
 
-services.yml 
+services.yml
 ------------
 
 The file is designed to be maintained by Tethys Portal administrators to automatically assign services defined in their Tethys Portal to apps they are installing. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
