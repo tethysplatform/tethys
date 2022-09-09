@@ -19,6 +19,7 @@ from .testing.environment import is_testing_environment, get_test_db_name, TESTI
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
+from .workspace import get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 from bokeh.server.django.consumers import WSConsumer
@@ -905,6 +906,36 @@ class TethysAppBase(TethysBase):
         app = cls()
         job_manager = JobManager(app)
         return job_manager
+
+    @classmethod
+    def get_user_workspace(cls, user_or_request):
+        """
+        Get the dedicated user workspace for this app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
+
+        Args:
+            request_or_user (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
+        
+        Raises:
+            ValueError: if user_or_request is not of type HttpRequest or User.
+            AssertionError: if quota for the user workspace has been exceeded.
+
+        Returns:
+            TethysWorkspace: workspace object bound to the user's workspace directory.
+        """  # noqa: E501
+        return get_user_workspace(cls, user_or_request)
+
+    @classmethod
+    def get_app_workspace(cls):
+        """
+        Get the app workspace for the given Tethys App class.
+
+        Raises:
+            AssertionError: if quota for the app workspace has been exceeded.
+
+        Returns:
+            TethysWorkspace: workspace object bound to the app workspace.
+        """
+        return get_app_workspace(cls)
 
     @classmethod
     def get_scheduler(cls, name):

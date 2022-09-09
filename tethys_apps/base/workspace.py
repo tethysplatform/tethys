@@ -16,7 +16,6 @@ from django.utils.functional import wraps
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 
-from tethys_apps.base.app_base import TethysAppBase
 from tethys_quotas.utilities import passes_quota, _get_storage_units
 
 log = logging.getLogger('tethys.' + __name__)
@@ -244,52 +243,56 @@ def _get_user_workspace(app_class, user_or_request):
     elif isinstance(user_or_request, HttpRequest):
         username = user_or_request.user.username
     elif user_or_request is None:
-        pass
+        username = 'anonymous_user'
     else:
         raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
-
-    if not username:
-        username = 'anonymous_user'
 
     project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
     workspace_directory = os.path.join(project_directory, 'workspaces', 'user_workspaces', username)
     return TethysWorkspace(workspace_directory)
 
 
-def get_user_workspace(request_or_user) -> TethysWorkspace:
+def get_user_workspace(app_class_or_request, user_or_request) -> TethysWorkspace:
     """
-    Get the dedicated workspace directory for active user of request given or the given user.
+    Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
     Args:
-        request_or_user: Either an HttpRequest with active user session or Django User object.
+        app_class_or_request (TethysAppBase or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
+        user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
     
     Raises:
-        ValueError: if request_or_user is not of type HttpRequest or User.
+        ValueError: if app_class_or_request or user_or_request are not correct types.
         AssertionError: if quota for the user workspace has been exceeded.
 
     Returns:
         TethysWorkspace: workspace object bound to the user's workspace directory.    
-    """
-    from django.contrib.auth.models import User
+    """  # noqa: E501
+    from tethys_apps.base.app_base import TethysAppBase
     from tethys_apps.utilities import get_active_app
+    from django.contrib.auth.models import User
+
+    # Get app
+    if isinstance(app_class_or_request, TethysAppBase) or \
+        (isinstance(app_class_or_request, type) and issubclass(app_class_or_request, TethysAppBase)):
+        app = app_class_or_request
+    elif isinstance(app_class_or_request, HttpRequest):
+        app = get_active_app(app_class_or_request, get_class=True)
+    else:
+        raise ValueError(f'Argument "app_class_or_request" must be of type TethysAppBase or HttpRequest: '
+                         f'"{type(app_class_or_request)}" given.')
 
     # Get user
-    if isinstance(request_or_user, HttpRequest):
-        user = request_or_user.user
-    elif isinstance(request_or_user, User):
-        user = request_or_user
+    if isinstance(user_or_request, User) or isinstance(user_or_request, SimpleLazyObject):
+        user = user_or_request
+    elif isinstance(user_or_request, HttpRequest):
+        user = user_or_request.user
     else:
-        raise ValueError(f'Argument "request_or_user" must be of type HttpRequest or User: '
-                         f'"{type(request_or_user)}" given.')
+        raise ValueError(f'Argument "user_or_request" must be of type HttpRequest or User: '
+                         f'"{type(user_or_request)}" given.')
 
     assert passes_quota(user, 'user_workspace_quota')
 
-    # Get the active app
-    app = get_active_app(request_or_user, get_class=True)
-
-    the_workspace = _get_user_workspace(app, user)
-
-    return the_workspace
+    return _get_user_workspace(app, user)
 
 
 def user_workspace(controller):
@@ -324,8 +327,6 @@ def user_workspace(controller):
     """  # noqa:E501
     @wraps(controller)
     def wrapper(*args, **kwargs):
-        from tethys_apps.utilities import get_active_app
-
         request = None
         for _, arg in enumerate(args):
             if isinstance(arg, HttpRequest):
@@ -335,7 +336,7 @@ def user_workspace(controller):
         if request is None:
             raise ValueError('No request given. The user_workspace decorator only works on controllers.')
 
-        the_workspace = get_user_workspace(request)
+        the_workspace = get_user_workspace(request, request.user)
 
         return controller(*args, user_workspace=the_workspace, **kwargs)
     return wrapper
@@ -346,7 +347,7 @@ def _get_app_workspace(app_class):
     Get the file workspace (directory) for the app.
 
     Args:
-      app_class(TethysApp): tethys app
+      app_class(TethysAppBase): The Tethys app class that is defined in app.py.
 
     Returns:
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
@@ -374,20 +375,17 @@ def _get_app_workspace(app_class):
             return render(request, 'my_first_app/template.html', context)
 
     """
-    # Find the path to the app project directory
-    # Hint: cls is a child class of this class.
-    # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
     project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
     workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
     return TethysWorkspace(workspace_directory)
 
 
-def get_app_workspace(request_or_app: HttpRequest | TethysAppBase) -> TethysWorkspace:
+def get_app_workspace(app_or_request) -> TethysWorkspace:
     """
     Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
 
     Args:
-        request_or_app (HttpRequest | TethysAppBase): HttpRequest of an active app session or the Tethys App class.
+        app_or_request (TethysAppBase | HttpRequest): The Tethys App class or an HttpRequest to an app endpoint.
 
     Raises:
         ValueError: if object of type other than HttpRequest or TethysAppBase given.
@@ -396,22 +394,22 @@ def get_app_workspace(request_or_app: HttpRequest | TethysAppBase) -> TethysWork
     Returns:
         TethysWorkspace: workspace object bound to the app workspace.
     """
+    from tethys_apps.base.app_base import TethysAppBase
     from tethys_apps.utilities import get_active_app
 
     # Get the active app
-    if isinstance(request_or_app, HttpRequest):
-        app = get_active_app(request_or_app, get_class=True)
-    elif isinstance(request_or_app, TethysAppBase):
-        app = request_or_app
+    if isinstance(app_or_request, HttpRequest):
+        app = get_active_app(app_or_request, get_class=True)
+    elif isinstance(app_or_request, TethysAppBase) or \
+        (isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)):
+        app = app_or_request
     else:
-        raise ValueError(f'Argument "request_or_app" must be of type HttpRequest or TethysAppBase: '
-                         f'"{type(request_or_app)}" given.')
+        raise ValueError(f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '
+                         f'"{type(app_or_request)}" given.')
 
     assert passes_quota(app, 'app_workspace_quota')
 
-    the_workspace = _get_app_workspace(app)
-
-    return the_workspace
+    return _get_app_workspace(app)
 
 
 def app_workspace(controller):
