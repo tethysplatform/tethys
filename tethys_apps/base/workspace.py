@@ -211,29 +211,6 @@ def _get_user_workspace(app_class, user_or_request):
 
     Returns:
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
-
-    **Example:**
-
-    ::
-
-        import os
-        from my_first_app.app import MyFirstApp as app
-
-        def a_controller(request):
-            \"""
-            Example controller that uses get_user_workspace() method.
-            \"""
-            # Retrieve the workspace
-            user_workspace = app.get_user_workspace(request.user)
-            new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
-
-            with open(new_file_path, 'w') as a_file:
-                a_file.write('...')
-
-            context = {}
-
-            return render(request, 'my_first_app/template.html', context)
-
     """
     username = ''
 
@@ -259,13 +236,23 @@ def get_user_workspace(app_class_or_request, user_or_request) -> TethysWorkspace
     Args:
         app_class_or_request (TethysAppBase or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
-    
+
     Raises:
         ValueError: if app_class_or_request or user_or_request are not correct types.
         AssertionError: if quota for the user workspace has been exceeded.
 
     Returns:
-        TethysWorkspace: workspace object bound to the user's workspace directory.    
+        TethysWorkspace: workspace object bound to the user's workspace directory.
+
+    ::
+
+        import os
+        from tethys_sdk.workspaces import get_user_workspace
+        from .app import MyFirstApp as app
+
+        def some_function(user):
+            user_workspace = get_user_workspace(app, user)
+            ...
     """  # noqa: E501
     from tethys_apps.base.app_base import TethysAppBase
     from tethys_apps.utilities import get_active_app
@@ -273,7 +260,7 @@ def get_user_workspace(app_class_or_request, user_or_request) -> TethysWorkspace
 
     # Get app
     if isinstance(app_class_or_request, TethysAppBase) or \
-        (isinstance(app_class_or_request, type) and issubclass(app_class_or_request, TethysAppBase)):
+       (isinstance(app_class_or_request, type) and issubclass(app_class_or_request, TethysAppBase)):
         app = app_class_or_request
     elif isinstance(app_class_or_request, HttpRequest):
         app = get_active_app(app_class_or_request, get_class=True)
@@ -351,29 +338,6 @@ def _get_app_workspace(app_class):
 
     Returns:
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
-
-    **Example:**
-
-    ::
-
-        import os
-        from my_first_app.app import MyFirstApp as app
-
-        def a_controller(request):
-            \"""
-            Example controller that uses get_app_workspace() method.
-            \"""
-            # Retrieve the workspace
-            app_workspace = app.get_app_workspace()
-            new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
-
-            with open(new_file_path, 'w') as a_file:
-                a_file.write('...')
-
-            context = {}
-
-            return render(request, 'my_first_app/template.html', context)
-
     """
     project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
     workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
@@ -393,6 +357,18 @@ def get_app_workspace(app_or_request) -> TethysWorkspace:
 
     Returns:
         TethysWorkspace: workspace object bound to the app workspace.
+
+    **Example:**
+
+    ::
+
+        import os
+        from tethys_sdk.workspaces import get_app_workspace
+        from .app import MyFirstApp as app
+
+        def some_function():
+            app_workspace = get_app_workspace(app)
+            ...
     """
     from tethys_apps.base.app_base import TethysAppBase
     from tethys_apps.utilities import get_active_app
@@ -401,7 +377,7 @@ def get_app_workspace(app_or_request) -> TethysWorkspace:
     if isinstance(app_or_request, HttpRequest):
         app = get_active_app(app_or_request, get_class=True)
     elif isinstance(app_or_request, TethysAppBase) or \
-        (isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)):
+            (isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)):
         app = app_or_request
     else:
         raise ValueError(f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '

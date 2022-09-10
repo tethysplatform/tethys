@@ -5,7 +5,6 @@ import shutil
 from unittest import mock
 from ... import UserFactory
 from django.http import HttpRequest
-from django.contrib.auth.models import User
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.workspace import (
     _get_user_workspace, get_user_workspace, user_workspace, _get_app_workspace, get_app_workspace, app_workspace
@@ -146,7 +145,6 @@ class TestUrlMap(unittest.TestCase):
 
     @mock.patch('tethys_apps.base.workspace.TethysWorkspace')
     def test__get_user_workspace_http(self, mock_tws):
-        from django.http import HttpRequest
         request = HttpRequest()
         request.user = self.user
         ret = _get_user_workspace(self.app, request)
@@ -196,7 +194,6 @@ class TestUrlMap(unittest.TestCase):
     @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
     @mock.patch('tethys_apps.base.workspace._get_user_workspace')
     def test_get_user_workspace_aor_request(self, mock_guw, mock_pq, mock_gaa):
-        from django.http import HttpRequest
         request = HttpRequest()
         request.user = self.user
         mock_workspace = mock.MagicMock()
@@ -231,7 +228,6 @@ class TestUrlMap(unittest.TestCase):
     @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
     @mock.patch('tethys_apps.base.workspace._get_user_workspace')
     def test_get_user_workspace_uor_request(self, mock_guw, mock_pq):
-        from django.http import HttpRequest
         request = HttpRequest()
         request.user = self.user
         mock_workspace = mock.MagicMock()
@@ -252,7 +248,6 @@ class TestUrlMap(unittest.TestCase):
 
     @mock.patch('tethys_apps.base.workspace.get_user_workspace')
     def test_user_workspace_decorator_user(self, mock_guw):
-        from django.http import HttpRequest
         request = HttpRequest()
         request.user = self.user
         mock_workspace = mock.MagicMock()
@@ -302,12 +297,11 @@ class TestUrlMap(unittest.TestCase):
         mock_gaa.assert_not_called()
         mock_pq.assert_called_with(TethysAppChild, 'app_workspace_quota')
         mock_gaw.assert_called_with(TethysAppChild)
-    
+
     @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
     @mock.patch('tethys_apps.utilities.get_active_app')
     @mock.patch('tethys_apps.base.workspace._get_app_workspace')
     def test_get_app_workspace_http(self, mock_gaw, mock_gaa, mock_pq):
-        from django.http import HttpRequest
         request = HttpRequest()
         mock_workspace = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
@@ -331,7 +325,6 @@ class TestUrlMap(unittest.TestCase):
     @mock.patch('tethys_apps.utilities.get_active_app')
     @mock.patch('tethys_apps.base.workspace.get_app_workspace')
     def test_app_workspace_decorator(self, mock_gaw, mock_gaa):
-        from django.http import HttpRequest
         request = HttpRequest()
         mock_workspace = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
