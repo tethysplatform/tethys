@@ -8,7 +8,7 @@ from tethys_layouts.mixins.map_layout import MapLayoutMixin, _COLOR_RAMPS, _DEFA
 
 
 class TestMapLayoutMixin(unittest.TestCase):
-    
+
     def setUp(self):
         self.style_map = {
             'Point': {'ol.style.Style': {
@@ -86,10 +86,10 @@ class TestMapLayoutMixin(unittest.TestCase):
             MapLayoutMixin.get_vector_style_map()
 
     def test__build_mv_layer_default(self):
-        
+
         class CustomMapLayoutThing(MapLayoutMixin):
             map_extent = [-65.69, 23.81, -129.17, 49.38]
-        
+
         source_options = {
             'url': 'http://example.com/geoserver/wms',
             'params': {'LAYERS': 'foo:bar'},
@@ -103,7 +103,7 @@ class TestMapLayoutMixin(unittest.TestCase):
             layer_variable='baz',
             options=source_options,
         )
-        
+
         self.assertIsInstance(ret, MVLayer)
         self.assertEqual(ret.legend_title, 'Foo Bar')
         self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
@@ -151,11 +151,12 @@ class TestMapLayoutMixin(unittest.TestCase):
             show_download=True,
             times=["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]
         )
-        
+
         self.assertIsInstance(ret, MVLayer)
         self.assertEqual(ret.legend_title, 'Foo Bar')
         self.assertListEqual(ret.legend_extent, [-50, 25, -130, 50])
-        self.assertListEqual(ret.times, 
+        self.assertListEqual(
+            ret.times,
             ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]
         )
         self.assertTrue(ret.feature_selection)
@@ -182,7 +183,7 @@ class TestMapLayoutMixin(unittest.TestCase):
 
     def test_build_layer_group_default(self):
         layers = [
-            {'layer_name': 'foo:bar'}, 
+            {'layer_name': 'foo:bar'},
             {'layer_name': 'foo:baz'}
         ]
 
@@ -203,7 +204,7 @@ class TestMapLayoutMixin(unittest.TestCase):
 
     def test_build_layer_group_custom_args(self):
         layers = [
-            {'layer_name': 'foo:bar'}, 
+            {'layer_name': 'foo:bar'},
             {'layer_name': 'foo:baz'}
         ]
 
@@ -227,7 +228,7 @@ class TestMapLayoutMixin(unittest.TestCase):
 
     def test_build_layer_group_invalid_layer_control(self):
         layers = [
-            {'layer_name': 'foo:bar'}, 
+            {'layer_name': 'foo:bar'},
             {'layer_name': 'foo:baz'}
         ]
 
@@ -253,7 +254,7 @@ class TestMapLayoutMixin(unittest.TestCase):
         ret = MapLayoutMixin.build_param_string(**kwargs)
         self.assertEqual(
             'c3:#fff100;c4:#ff8c00;c5:#e81123;c6:#ec008c;c7:#68217a;'
-            'v3:0.5;v4:4.0;v5:7.5;v6:11.0;v7:14.5;val_no_data:-999', 
+            'v3:0.5;v4:4.0;v5:7.5;v6:11.0;v7:14.5;val_no_data:-999',
             ret
         )
 
@@ -293,7 +294,8 @@ class TestMapLayoutMixin(unittest.TestCase):
 
         ret = MapLayoutMixin.build_legend(layer, units='ft')
 
-        self.assertDictEqual(ret, 
+        self.assertDictEqual(
+            ret,
             {
                 'color_list': [
                     'Default', 'Blue', 'Blue and Red', 'Elevated', 'Flower Field',
@@ -351,7 +353,8 @@ class TestMapLayoutMixin(unittest.TestCase):
 
         ret = MapLayoutMixin.build_legend(layer, units='ft')
 
-        self.assertDictEqual(ret, 
+        self.assertDictEqual(
+            ret,
             {
                 'color_list': [
                     'Default', 'Blue', 'Blue and Red', 'Elevated', 'Flower Field',
@@ -395,7 +398,7 @@ class TestMapLayoutMixin(unittest.TestCase):
             legend_title='Foo Bar',
             data={
                 'layer_name': 'foo_bar.nc',
-                'layer_variable': 'baz'
+                'layer_variable': 'baz',
             },
             options={
                 'url': 'http://example.com/thredds/wms',
@@ -403,10 +406,11 @@ class TestMapLayoutMixin(unittest.TestCase):
                 'serverType': 'thredds',
             },
         )
-        
+
         ret = MapLayoutMixin.build_legend(layer)
 
-        self.assertDictEqual(ret, 
+        self.assertDictEqual(
+            ret,
             {
                 'default_palette': 'Default',
                 'initial_option': 'Default',
@@ -506,7 +510,7 @@ class TestMapLayoutMixin(unittest.TestCase):
             layer_title='Foo Bar',
             layer_variable='baz'
         )
-        
+
         self.assertIsInstance(ret, MVLayer)
         self.assertEqual(ret.source, 'TileWMS')
         self.assertEqual(ret.legend_title, 'Foo Bar')
@@ -589,7 +593,7 @@ class TestMapLayoutMixin(unittest.TestCase):
             viewparams='low:2000000;high:5000000',
             styles='foobar'
         )
-        
+
         self.assertIsInstance(ret, MVLayer)
         self.assertEqual(ret.source, 'TileWMS')
         self.assertEqual(ret.legend_title, 'Foo Bar')
@@ -769,7 +773,8 @@ class TestMapLayoutMixin(unittest.TestCase):
             map_extent = [-65.69, 23.81, -129.17, 49.38]
 
         ret = CustomMapLayoutThing.build_arc_gis_layer(
-            endpoint='https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer',
+            endpoint='https://sampleserver1.arcgisonline.com'
+                     '/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer',
             layer_name='foo:bar',
             layer_title='Foo Bar',
             layer_variable='baz'
@@ -778,7 +783,11 @@ class TestMapLayoutMixin(unittest.TestCase):
         self.assertIsInstance(ret, MVLayer)
         self.assertEqual(ret.source, 'TileArcGISRest')
         self.assertEqual(ret.legend_title, 'Foo Bar')
-        self.assertEqual(ret.options['url'], 'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer')
+        self.assertEqual(
+            ret.options['url'],
+            'https://sampleserver1.arcgisonline.com'
+            '/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'
+        )
         self.assertListEqual(ret.legend_classes, [])
         self.assertDictEqual(ret.layer_options, {
             'visible': True,
@@ -799,7 +808,8 @@ class TestMapLayoutMixin(unittest.TestCase):
             max_value=15,
         )
 
-        self.assertDictEqual(ret,
+        self.assertDictEqual(
+            ret,
             {
                 'color1': '#fff100', 'color10': '#bad80a', 'color2': '#ff8c00',
                 'color3': '#e81123', 'color4': '#ec008c', 'color5': '#68217a',
@@ -819,7 +829,8 @@ class TestMapLayoutMixin(unittest.TestCase):
             color_ramp='doesnotexist'
         )
 
-        self.assertDictEqual(ret,
+        self.assertDictEqual(
+            ret,
             {
                 'color1': '#fff100', 'color10': '#bad80a', 'color2': '#ff8c00',
                 'color3': '#e81123', 'color4': '#ec008c', 'color5': '#68217a',
@@ -847,7 +858,8 @@ class TestMapLayoutMixin(unittest.TestCase):
             no_data_value='-999'
         )
 
-        self.assertDictEqual(ret, 
+        self.assertDictEqual(
+            ret,
             {
                 'c3': '#0040bf', 'c4': '#a3cc52', 'c5': '#b9a087',
                 'c6': '#a01fcc', 'c7': '#5bb698',

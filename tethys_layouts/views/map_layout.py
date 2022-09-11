@@ -152,7 +152,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             list<LayerGroupDicts>: The MapView, extent, and list of LayerGroup dictionaries.
         """  # noqa:E501
-        return []
+        return list()
 
     @classmethod
     def get_initial_map_extent(cls):

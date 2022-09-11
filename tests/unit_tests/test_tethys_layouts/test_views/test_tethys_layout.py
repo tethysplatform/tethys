@@ -1,4 +1,3 @@
-import unittest
 from unittest import mock
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
@@ -10,6 +9,7 @@ class MethodLayout(TethysLayout):
     def some_method(self, request, *args, **kwargs):
         return 'some-response'
 
+
 class TestTethysLayout(TestCase):
     def setUp(self):
         self.inst = TethysLayout()
@@ -20,7 +20,6 @@ class TestTethysLayout(TestCase):
 
     def test_default_props(self):
         ret = TethysLayout()
-        
         self.assertEqual('', ret.template_name)
         self.assertIsNone(ret.app)
         self.assertIsNone(ret.back_url)
