@@ -901,6 +901,58 @@ class TestTethysLayout(TestCase):
             'success': True
         })
 
+    @mock.patch('tethys_layouts.views.map_layout.uuid')
+    @mock.patch('tethys_layouts.views.map_layout.has_permission', return_value=True)
+    @mock.patch('tethys_layouts.views.map_layout.requests')
+    def test_find_location_by_query_long_name(self, mock_requests, _, mock_uuid):
+        class GeocodingMapLayout(MapLayout):
+            geocode_api_key = '12345'
+            enforce_permissions = False
+            geocode_extent = [-10, -20, 20, 10]
+
+        features = {
+            'features': [
+                {
+                    'geometry': {
+                        'coordinates': [-5, 5]
+                    },
+                    'properties': {
+                        'bounds': {
+                            'southwest': {'lng': -25, 'lat': 15},
+                            'northeast': {'lng': -15, 'lat': 25},
+                        },
+                        'formatted': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+                    },
+                },
+            ]
+        }
+        mock_response = mock.MagicMock(
+            status_code=200,
+            json=mock.MagicMock(return_value=features)
+        )
+        mock_requests.get.return_value = mock_response
+        request = self.factory.post(
+            '/some/endpoint',
+            data={
+                'method': 'find-location-by-query',
+                'q': '3210 N. Canyon Road, Provo, UT 84660',
+            }
+        )
+        mock_uuid.uuid4.return_value = '123-456-789'
+        controller = GeocodingMapLayout.as_controller()
+        ret = controller(request)
+        self.assertIsInstance(ret, JsonResponse)
+        ret_json = json.loads(ret.content)
+        self.assertDictEqual(ret_json, {
+            'results': [{
+                'bbox': [-25.0, 15.0, -15.0, 25.0],
+                'id': 'geocode-123-456-789',
+                'point': [-5, 5],
+                'text': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmn...'
+            }],
+            'success': True
+        })
+
     @mock.patch('tethys_layouts.views.map_layout.has_permission', return_value=False)
     def test_find_location_by_query_permission_denied(self, _):
         class GeocodingMapLayout(MapLayout):
@@ -1170,7 +1222,36 @@ class TestTethysLayout(TestCase):
                 ])
 
     def test_convert_geojson_to_shapefile_unsupported_shape(self):
-        pass
+        data = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "NotSupported",
+                        "coordinates": [[-118.828125, 43.32517767999296]]
+                    }
+                }
+            ]
+        }
+        request = self.factory.post(
+            '/some/endpoint',
+            data={
+                'method': 'convert-geojson-to-shapefile',
+                'data': json.dumps(data),
+                'id': '12345',
+            }
+        )
+        controller = MapLayout.as_controller()
+
+        with self.assertRaises(ValueError) as cm:
+            controller(request)
+
+        self.assertEqual(
+            str(cm.exception),
+            'Only GeoJson of the following types are supported: Polygon, Point, or LineString'
+        )
 
     @mock.patch('tethys_layouts.views.map_layout.MapLayout.sds_setting', new_callable=mock.PropertyMock)
     def test_get_wms_endpoint_trailing_slash(self, mock_sds_setting):
