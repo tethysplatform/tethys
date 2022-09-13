@@ -5,16 +5,86 @@ import zipfile
 from django.test import RequestFactory, TestCase
 from django.http import JsonResponse
 
-from tethys_gizmos.gizmo_options import MVView, MVLayer, MapView, CesiumMapView
+from tethys_gizmos.gizmo_options import MVView, MVLayer, MapView, CesiumMapView, ToggleSwitch, SlideSheet
 from tethys_layouts.views.map_layout import MapLayout
 from tethys_layouts.exceptions import TethysLayoutPropertyException
 
 
-class TestTethysLayout(TestCase):
+class ComposeLayersMapLayout(MapLayout):
+    map_title = 'Bar'
+    map_subtitle = 'Baz'
+    geocode_api_key = '12345'
+    layer_tab_name = 'Foos'
+    initial_map_extent = [10, 10, 20, 20]
+    map_type = 'tethys_map_view'
+    show_public_toggle = True
+    plotly_version = '1.2.3'
+    show_properties_popup = True
+    show_map_click_popup = True
+    show_legends = True
+    wide_nav = False
+    geoserver_workspace = 'foo'
+
+    def compose_layers(self, request, map_view, *args, **kwargs):
+        # Legends are built for thredds server layers
+        wms_layer = self.build_wms_layer(
+            endpoint='https://tethys2.byu.edu/thredds/wms/testAll/grace/GRC_jpl_tot.nc',
+            server_type='thredds',
+            layer_name='area',
+            layer_title="WMS Layer",
+            layer_variable='grace',
+            visible=True,
+        )
+
+        geojson = {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-111.64031982421875, 40.20509926855807]
+                }
+            }]
+        }
+
+        geojson_layer = self.build_geojson_layer(
+            geojson=geojson,
+            layer_name='a-point',
+            layer_title='GeoJSON Layer',
+            layer_variable='reference',
+            visible=False,
+            extent=[-63.69, 12.81, -129.17, 49.38],
+        )
+
+        arc_gis_layer = self.build_arc_gis_layer(
+            endpoint='https://sampleserver1.arcgisonline.com'
+                     '/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer',
+            layer_name='ESRI_StateCityHighway',
+            layer_title='ArcGIS Layer',
+            layer_variable='highways',
+            visible=False,
+            extent=[-173, 17, -65, 72],
+        )
+
+        layers = [wms_layer, geojson_layer, arc_gis_layer]
+
+        layer_groups = [
+            self.build_layer_group(
+                id='test-layer-group',
+                display_name='Foo',
+                layer_control='radio',
+                layers=layers,
+            ),
+        ]
+
+        return layer_groups
+
+
+class TestMapLayout(TestCase):
     def setUp(self):
         self.inst = MapLayout()
         self.factory = RequestFactory()
-        self.maxDiff = None  # TODO: REMOVE ME
 
     def tearDown(self):
         pass
@@ -58,18 +128,29 @@ class TestTethysLayout(TestCase):
         self.assertFalse(inst.wide_nav)
 
     def test_map_extent(self):
-        ret = MapLayout.map_extent
-        self.assertListEqual(ret, [-65.69, 23.81, -129.17, 49.38])
+        class MapExtentMapLayout(MapLayout):
+            initial_map_extent = [-30, -15, 15, 30]
+
+        MapExtentMapLayout._map_extent = None
+        ret = MapExtentMapLayout.map_extent
+        self.assertListEqual(ret, [-30, -15, 15, 30])
 
     def test_default_view(self):
-        ret = MapLayout.default_view
+        class DefaultViewMapLayout(MapLayout):
+            initial_map_extent = [-30, -10, 10, 30]
+            default_zoom = 16
+            max_zoom = 22
+            min_zoom = 10
+
+        DefaultViewMapLayout._default_view = None
+        ret = DefaultViewMapLayout.default_view
         self.assertIsInstance(ret, MVView)
         self.assertDictEqual(ret, {
-            'center': [-97.42999999999999, 36.595],
-            'maxZoom': 28,
-            'minZoom': 0,
+            'center': [-10, 10],
+            'maxZoom': 22,
+            'minZoom': 10,
             'projection': 'EPSG:4326',
-            'zoom': 4
+            'zoom': 16
         })
 
     def test_sds_setting(self):
@@ -208,8 +289,122 @@ class TestTethysLayout(TestCase):
         self.assertEqual(ret.status_code, 200)
         self.assertEqual(ret.content, b'{"success": true, "message": "Not Implemented."}')
 
-    def test_get_context(self):
-        pass  # TODO: THIS NEEDS TESTING
+    @mock.patch('tethys_layouts.views.map_layout.log')
+    def test_get_context(self, _):
+        request = self.factory.get('/some/endpoint')
+        ComposeLayersMapLayout._map_extent = None  # Override this to ensure not set from other tests
+        ComposeLayersMapLayout._default_view = None  # Override this to ensure not set from other tests
+        inst = ComposeLayersMapLayout()
+        initial_context = dict()
+        ret = inst.get_context(request, initial_context)
+        self.assertTrue(ret['geocode_enabled'])
+        self.assertEqual(len(ret['layer_groups']), 1)
+        self.assertEqual(ret['layer_groups'][0]['display_name'], 'Foo')
+        self.assertEqual(len(ret['layer_groups'][0]['layers']), 3)
+        self.assertEqual(ret['layer_tab_name'], 'Foos')
+        self.assertListEqual(ret['map_extent'], [10, 10, 20, 20])
+        self.assertEqual(ret['map_type'], 'tethys_map_view')
+        self.assertIsInstance(ret['map_view'], MapView)
+        self.assertEqual(len(ret['map_view'].layers), 3)
+        self.assertEqual(ret['nav_title'], 'Bar')
+        self.assertEqual(ret['nav_subtitle'], 'Baz')
+        self.assertEqual(ret['plotly_version'], '1.2.3')
+        self.assertFalse(ret['show_custom_layer'])
+        self.assertTrue(ret['show_properties_popup'])
+        self.assertTrue(ret['show_map_click_popup'])
+        self.assertTrue(ret['show_legends'])
+        self.assertFalse(ret['wide_nav'])
+        self.assertEqual(ret['workspace'], 'foo')
+        self.assertIsInstance(ret['plot_slide_sheet'], SlideSheet)
+
+    @mock.patch('tethys_layouts.views.map_layout.log')
+    def test_get_context_custom_layer(self, _):
+        class CustomLayerMapLayout(ComposeLayersMapLayout):
+            show_custom_layer = True
+
+        request = self.factory.get('/some/endpoint')
+        CustomLayerMapLayout._map_extent = None  # Override this to ensure not set from other tests
+        CustomLayerMapLayout._default_view = None  # Override this to ensure not set from other tests
+        inst = CustomLayerMapLayout()
+        initial_context = dict()
+        ret = inst.get_context(request, initial_context)
+        self.assertTrue(ret['geocode_enabled'])
+        self.assertEqual(len(ret['layer_groups']), 2)
+        self.assertEqual(ret['layer_groups'][0]['display_name'], 'Foo')
+        self.assertEqual(ret['layer_groups'][1]['display_name'], 'Custom Layers')
+        self.assertEqual(ret['layer_groups'][1]['control'], 'checkbox')
+        self.assertEqual(len(ret['layer_groups'][1]['layers']), 0)
+        self.assertTrue(ret['show_custom_layer'])
+
+    @mock.patch('tethys_layouts.views.map_layout.log')
+    def test_get_context_custom_layer_already_exists(self, _):
+        class CustomLayerMapLayout(ComposeLayersMapLayout):
+            show_custom_layer = True
+
+            def compose_layers(self, request, map_view, *args, **kwargs):
+                layer_groups = super().compose_layers(request, map_view, *args, **kwargs)
+                layer_groups.append(
+                    self.build_layer_group(
+                        id="custom_layers",
+                        display_name="Extra Custom Layers",
+                        layers=[],
+                        layer_control='radio',
+                        visible=True
+                    )
+                )
+                return layer_groups
+
+        request = self.factory.get('/some/endpoint')
+        CustomLayerMapLayout._map_extent = None  # Override this to ensure not set from other tests
+        CustomLayerMapLayout._default_view = None  # Override this to ensure not set from other tests
+        inst = CustomLayerMapLayout()
+        initial_context = dict()
+        ret = inst.get_context(request, initial_context)
+        self.assertTrue(ret['geocode_enabled'])
+        self.assertEqual(len(ret['layer_groups']), 2)
+        self.assertEqual(ret['layer_groups'][0]['display_name'], 'Foo')
+        self.assertEqual(ret['layer_groups'][1]['display_name'], 'Extra Custom Layers')
+        self.assertEqual(ret['layer_groups'][1]['control'], 'radio')
+        self.assertEqual(len(ret['layer_groups'][1]['layers']), 0)
+        self.assertTrue(ret['show_custom_layer'])
+
+    @mock.patch('tethys_layouts.views.map_layout.log')
+    def test_get_context_cesium(self, _):
+        class CesiumComposeLayersMapLayout(ComposeLayersMapLayout):
+            map_type = 'cesium_map_view'
+            cesium_ion_token = '987-654-321'
+
+        request = self.factory.get('/some/endpoint')
+        CesiumComposeLayersMapLayout._map_extent = None  # Override this to ensure not set from other tests
+        CesiumComposeLayersMapLayout._default_view = None  # Override this to ensure not set from other tests
+        inst = CesiumComposeLayersMapLayout()
+        initial_context = dict()
+        ret = inst.get_context(request, initial_context)
+        expected_context_vars = [
+            'geocode_enabled', 'layer_groups', 'layer_tab_name', 'legends',
+            'map_extent', 'map_type', 'map_view', 'nav_subtitle', 'nav_title',
+            'plotly_version', 'show_custom_layer', 'show_properties_popup',
+            'show_map_click_popup', 'show_legends', 'wide_nav', 'workspace',
+            'plot_slide_sheet'
+        ]
+        for var in expected_context_vars:
+            self.assertIn(var, ret)
+
+        self.assertEqual(ret['map_type'], 'cesium_map_view')
+        self.assertIsInstance(ret['map_view'], CesiumMapView)
+        self.assertEqual(len(ret['map_view'].layers), 1)  # ArcGIS Layer not supported
+        self.assertEqual(len(ret['map_view'].entities), 1)
+
+    @mock.patch('tethys_layouts.views.map_layout.log')
+    def test_get_context_public_toggle(self, _):
+        request = self.factory.get('/some/endpoint')
+        ComposeLayersMapLayout._map_extent = None  # Override this to ensure not set from other tests
+        ComposeLayersMapLayout._default_view = None  # Override this to ensure not set from other tests
+        inst = ComposeLayersMapLayout()
+        initial_context = dict(show_public_toggle=True)
+        ret = inst.get_context(request, initial_context)
+        self.assertIn('layer_dropdown_toggle', ret)
+        self.assertIsInstance(ret['layer_dropdown_toggle'], ToggleSwitch)
 
     @mock.patch('tethys_layouts.views.map_layout.has_permission')
     def test_get_permissions_not_enforce(self, mock_has_permission):
@@ -894,6 +1089,63 @@ class TestTethysLayout(TestCase):
         self.assertDictEqual(ret_json, {
             'results': [{
                 'bbox': [-25.0, 15.0, -15.0, 25.0],
+                'id': 'geocode-123-456-789',
+                'point': [-5, 5],
+                'text': 'Foo'
+            }],
+            'success': True
+        })
+
+    @mock.patch('tethys_layouts.views.map_layout.uuid')
+    @mock.patch('tethys_layouts.views.map_layout.has_permission', return_value=True)
+    @mock.patch('tethys_layouts.views.map_layout.requests')
+    def test_find_location_by_query_small_bounds(self, mock_requests, _, mock_uuid):
+        class GeocodingMapLayout(MapLayout):
+            geocode_api_key = '12345'
+            enforce_permissions = False
+            geocode_extent = [-10, -20, 20, 10]
+
+        features = {
+            'features': [
+                {
+                    'geometry': {
+                        'coordinates': [-5, 5]
+                    },
+                    'properties': {
+                        'bounds': {
+                            'southwest': {'lng': 10.0005, 'lat': 10.0005},
+                            'northeast': {'lng': 10.0010, 'lat': 10.0010},
+                        },
+                        'formatted': 'Foo',
+                    },
+                },
+            ]
+        }
+        mock_response = mock.MagicMock(
+            status_code=200,
+            json=mock.MagicMock(return_value=features)
+        )
+        mock_requests.get.return_value = mock_response
+        request = self.factory.post(
+            '/some/endpoint',
+            data={
+                'method': 'find-location-by-query',
+                'q': '3210 N. Canyon Road, Provo, UT 84660',
+            }
+        )
+        mock_uuid.uuid4.return_value = '123-456-789'
+        controller = GeocodingMapLayout.as_controller()
+        ret = controller(request)
+        self.assertIsInstance(ret, JsonResponse)
+        ret_json = json.loads(ret.content)
+        self.assertDictEqual(ret_json, {
+            'results': [{
+                'bbox': [
+                    9.999500000000001,
+                    9.999500000000001,
+                    10.001999999999999,
+                    10.001999999999999
+                ],
                 'id': 'geocode-123-456-789',
                 'point': [-5, 5],
                 'text': 'Foo'

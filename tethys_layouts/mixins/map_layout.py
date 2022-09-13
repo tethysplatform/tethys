@@ -435,6 +435,14 @@ class MapLayoutMixin:
         if times:
             times = json.dumps(times)
 
+        if color_ramp_division_kwargs:
+            # Create color ramp and add them to ENV
+            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(**color_ramp_division_kwargs)
+            if 'ENV' in params.keys() and params['ENV']:
+                params['ENV'] += ";" + cls.build_param_string(**color_ramp_divisions)
+            else:
+                params['ENV'] = cls.build_param_string(**color_ramp_divisions)
+
         # Build options
         options = {
             'url': endpoint,
@@ -445,14 +453,6 @@ class MapLayoutMixin:
 
         if tiled:
             options['tileGrid'] = cls.DEFAULT_TILE_GRID
-
-        if color_ramp_division_kwargs:
-            # Create color ramp and add them to ENV
-            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(**color_ramp_division_kwargs)
-            if 'ENV' in params.keys() and params['ENV']:
-                params['ENV'] += ";" + cls.build_param_string(**color_ramp_divisions)
-            else:
-                params['ENV'] = cls.build_param_string(**color_ramp_divisions)
 
         mv_layer = cls._build_mv_layer(
             layer_id=layer_id,
