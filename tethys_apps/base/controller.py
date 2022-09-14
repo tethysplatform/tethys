@@ -626,8 +626,10 @@ def register_controllers(
                     f'"{module_name}" but the module "{module}" could not be imported. '
                     f'Any controllers in that module will not be registered.'
                 )
-
-            if not isinstance(e, ModuleNotFoundError):
+            module_not_found = None
+            if isinstance(e, ModuleNotFoundError):
+                module_not_found = e.msg.split("'")[-2]
+            if module_not_found != module:
                 write_warning(
                     f'Warning: Found controller module "{module}", but it could not be imported '
                     f'because of the following error: {e}'
