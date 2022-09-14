@@ -585,7 +585,8 @@ class TestScaffoldCommands(unittest.TestCase):
     def test_scaffold_command_with_no_defaults_input_exception(self, mock_exit, _, __, mock_makedirs, mock_os_walk,
                                                                mock_render_path, mock_rmt,
                                                                mock_os_path_isdir, mock_pretty_output,
-                                                               mock_random_color, mock_logger, mock_input, mock_proper_name_validator):
+                                                               mock_random_color, mock_logger, mock_input,
+                                                               mock_proper_name_validator):
         # mock the input args
         mock_args = mock.MagicMock()
 
