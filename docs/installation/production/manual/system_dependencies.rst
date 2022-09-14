@@ -4,7 +4,7 @@
 Install System Dependencies
 ***************************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 This guide describes how to install the necessary system dependencies. You will need ``sudo`` or root access on the server to complete these steps.
 

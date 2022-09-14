@@ -4,7 +4,7 @@
 Production Configuration
 ************************
 
-**Last Updated:** August 2020
+**Last Updated:** September 2022
 
 There is a lot of configuration to be done when setting up a production installation of Tethys Portal. Each part of the configuration has been divided into the following guides. We recommend you go through them in order when doing an installation, but they are split out for simpler lookup and reference.
 
