@@ -47,3 +47,5 @@ echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
 echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
 echo "unalias cs" >> "${DEACTIVATE_SCRIPT}"
 echo "unalias tsr" >> "${DEACTIVATE_SCRIPT}"
+
+source ${ACTIVATE_SCRIPT}

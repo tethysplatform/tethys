@@ -477,6 +477,9 @@ def handler(
 
     """  # noqa: E501
     controller = controller or _get_bokeh_controller(template, app_package)
+    if isinstance(controller, str):
+        from .function_extractor import TethysFunctionExtractor
+        controller = TethysFunctionExtractor(controller)
 
     def wrapped(function):
         controller.__name__ = function.__name__
@@ -509,7 +512,7 @@ def _get_url_map_kwargs_list(
 ):
     final_urls = []
     if url is not None:
-        final_urls = _listify(url)
+        final_urls = url if isinstance(url, dict) else _listify(url)
 
     if not final_urls:
         module_parts = function_or_class.__module__.split('.')[3:]
