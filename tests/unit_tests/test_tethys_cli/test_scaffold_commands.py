@@ -102,7 +102,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch('tethys_cli.scaffold_commands.shutil.copy')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('builtins.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -113,7 +112,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.scaffold_commands.Template')
     def test_scaffold_command(self, _, __, mock_makedirs, mock_os_walk, mock_render_path, mock_rmt,
-                              mock_os_path_isdir, mock_pretty_output, mock_random_color, mock_callable, mock_logger,
+                              mock_os_path_isdir, mock_pretty_output, mock_random_color, mock_logger,
                               mock_copy):
 
         # mock the input args
@@ -133,8 +132,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mocking the validate template call return value
         mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.return_value = True
 
         mock_render_path.return_value = ''
 
@@ -221,7 +218,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch('tethys_cli.scaffold_commands.shutil.copy')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('builtins.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -233,7 +229,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.Template')
     def test_scaffold_command_with_no_extension(self, _, __, mock_makedirs, mock_os_walk, mock_render_path, mock_rmt,
                                                 mock_os_path_isdir, mock_pretty_output, mock_random_color,
-                                                mock_callable, mock_logger, mock_copy):
+                                                mock_logger, mock_copy):
         # mock the input args
         mock_args = mock.MagicMock()
 
@@ -250,8 +246,6 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.return_value = True
 
         mock_render_path.return_value = ''
 
@@ -298,7 +292,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch('tethys_cli.scaffold_commands.shutil.copy')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('builtins.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -310,7 +303,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.Template')
     def test_scaffold_command_with_uppercase_project_name(self, _, __, mock_makedirs, mock_os_walk, mock_render_path,
                                                           mock_rmt, mock_os_path_isdir, mock_pretty_output,
-                                                          mock_random_color, mock_callable, mock_logger, mock_copy):
+                                                          mock_random_color, mock_logger, mock_copy):
         # mock the input args
         mock_args = mock.MagicMock()
 
@@ -328,8 +321,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mocking the validate template call return value
         mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.return_value = True
 
         mock_render_path.return_value = ''
 
@@ -417,7 +408,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch('tethys_cli.scaffold_commands.shutil.copy')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('builtins.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -429,7 +419,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.Template')
     def test_scaffold_command_with_project_warning(self, _, __, mock_makedirs, mock_os_walk, mock_render_path, mock_rmt,
                                                    mock_os_path_isdir, mock_pretty_output, mock_random_color,
-                                                   mock_callable, mock_logger, mock_copy):
+                                                   mock_logger, mock_copy):
         # mock the input args
         mock_args = mock.MagicMock()
 
@@ -446,8 +436,6 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.return_value = True
 
         mock_render_path.return_value = ''
 
@@ -498,7 +486,6 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.proper_name_validator')
     @mock.patch('tethys_cli.scaffold_commands.input')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('builtins.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -510,8 +497,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.Template')
     def test_scaffold_command_with_no_defaults(self, _, __, mock_makedirs, mock_os_walk, mock_render_path, mock_rmt,
                                                mock_os_path_isdir, mock_pretty_output, mock_random_color,
-                                               mock_callable, mock_logger, mock_input, mock_proper_name_validator,
-                                               mock_copy):
+                                               mock_logger, mock_input, mock_proper_name_validator, mock_copy):
         # mock the input args
         mock_args = mock.MagicMock()
 
@@ -527,9 +513,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
 
-        mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.side_effect = [True, False, False, False, False]
+        mock_os_path_isdir.return_value = [True, False]
 
         mock_render_path.return_value = ''
 
@@ -588,7 +572,6 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.proper_name_validator')
     @mock.patch('tethys_cli.scaffold_commands.input')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('builtins.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -602,8 +585,8 @@ class TestScaffoldCommands(unittest.TestCase):
     def test_scaffold_command_with_no_defaults_input_exception(self, mock_exit, _, __, mock_makedirs, mock_os_walk,
                                                                mock_render_path, mock_rmt,
                                                                mock_os_path_isdir, mock_pretty_output,
-                                                               mock_random_color, mock_callable,
-                                                               mock_logger, mock_input, mock_proper_name_validator):
+                                                               mock_random_color, mock_logger, mock_input,
+                                                               mock_proper_name_validator):
         # mock the input args
         mock_args = mock.MagicMock()
 
@@ -620,9 +603,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.side_effect = [True, False, False, False, False]
+        mock_os_path_isdir.return_value = [True, False]
 
         mock_render_path.return_value = ''
 
@@ -668,7 +649,6 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_cli.scaffold_commands.proper_name_validator')
     @mock.patch('tethys_cli.scaffold_commands.input')
     @mock.patch('tethys_cli.scaffold_commands.logging.getLogger')
-    @mock.patch('tethys_cli.scaffold_commands.callable')
     @mock.patch('tethys_cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_cli.scaffold_commands.write_pretty_output')
     @mock.patch('tethys_cli.scaffold_commands.os.path.isdir')
@@ -681,8 +661,7 @@ class TestScaffoldCommands(unittest.TestCase):
     def test_scaffold_command_with_no_defaults_invalid_response(self, _, __, mock_makedirs, mock_os_walk,
                                                                 mock_render_path, mock_rmt,
                                                                 mock_os_path_isdir, mock_pretty_output,
-                                                                mock_random_color,
-                                                                mock_callable, mock_logger, mock_input,
+                                                                mock_random_color, mock_logger, mock_input,
                                                                 mock_proper_name_validator, mock_copy):
         # mock the input args
         mock_args = mock.MagicMock()
@@ -700,9 +679,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
-
-        mock_callable.side_effect = [True, False, False, False, False, False]
+        mock_os_path_isdir.return_value = [True, False]
 
         mock_render_path.return_value = ''
 
@@ -714,7 +691,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_makedirs.return_value = True
 
         mock_input.side_effect = ['test1', 'test1_a', 'test2', 'test3', 'test4', 'test5']
-        mock_proper_name_validator.return_value = False, 'foo'
+        mock_proper_name_validator.side_effect = ((False, 'foo'), (True, 'test1_a'))
 
         scaffold_command(args=mock_args)
 
