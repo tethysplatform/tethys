@@ -13,10 +13,10 @@ import json
 import logging
 import os
 import requests
+import tempfile
 import uuid
 from zipfile import ZipFile
 
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.functional import classproperty
@@ -152,7 +152,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             list<LayerGroupDicts>: The MapView, extent, and list of LayerGroup dictionaries.
         """  # noqa:E501
-        return []
+        return list()
 
     @classmethod
     def get_initial_map_extent(cls):
@@ -312,7 +312,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 break
 
         # Create the Custom Layers layer group
-        if create_custom_layer:
+        if self.show_custom_layer and create_custom_layer:
             log.debug('Creating the "Custom Layers" layer group...')
             custom_layers = self.build_layer_group(
                 id="custom_layers",
@@ -575,14 +575,14 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         A jQuery.load() handler method that renders the HTML for a legend.
         """
         # Get request parameters
-        legend_div_id = json.loads(request.POST.get('div_id'))
+        legend_div_id = request.POST.get('div_id')
         minimum = json.loads(request.POST.get('minimum'))
         maximum = json.loads(request.POST.get('maximum'))
-        color_ramp = json.loads(request.POST.get('color_ramp'))
-        prefix = json.loads(request.POST.get('prefix'))
-        color_prefix = json.loads(request.POST.get('color_prefix'))
+        color_ramp = request.POST.get('color_ramp')
+        prefix = request.POST.get('prefix')
+        color_prefix = request.POST.get('color_prefix')
         first_division = json.loads(request.POST.get('first_division'))
-        layer_id = json.loads(request.POST.get('layer_id'))
+        layer_id = request.POST.get('layer_id')
 
         legend = {
             'divisions': dict(),
@@ -684,7 +684,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             request(HttpRequest): The request.
         """
         if self.enforce_permissions and not has_permission(request, 'use_map_geocode'):
-            return PermissionDenied()
+            json = {'success': False,
+                    'error': 'Permission Denied: user does not have permission to use geocoding.'}
+            return JsonResponse(json)
 
         if not self.geocode_api_key:
             raise RuntimeError('Cannot run GeoCode query because no API token was supplied. Please provide the '
@@ -776,66 +778,66 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         json_data = json.loads(request.POST.get('data', ''))
         layer_id = request.POST.get('id', '0')
         json_type = json_data['features'][0]['geometry']['type']
+        shape_types = {
+            'Polygon': shapefile.POLYGON,
+            'Point': shapefile.POINT,
+            'LineString': shapefile.POLYLINE,
+        }
 
-        if json_type == 'Polygon':
-            shpfile_obj = shapefile.Writer(shapefile.POLYGON)
-        elif json_type == 'Point':
-            shpfile_obj = shapefile.Writer(shapefile.POINT)
-        elif json_type == 'LineString':
-            shpfile_obj = shapefile.Writer(shapefile.POLYLINE)
-        else:
+        if json_type not in shape_types:
             raise ValueError('Only GeoJson of the following types are supported: Polygon, Point, or LineString')
 
-        shpfile_obj.autoBalance = 1
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shp_base = layer_id + "_" + json_type
+            shp_file = os.path.join(tmpdir, shp_base)
 
-        columns_list = json_data['features'][0]['properties'].keys()
-        for i in columns_list:
-            shpfile_obj.field(str(i), 'C', '50')
+            with shapefile.Writer(shp_file, shape_types[json_type]) as shpfile_obj:
+                shpfile_obj.autoBalance = 1
 
-        geometries = list()
-        attributes = list()
-        for feature in json_data['features']:
-            if feature['geometry']['type'] == json_type:
-                geometries.append(feature['geometry']['coordinates'])
-            attributes_per_feature = list()
-            for attribute_feature in columns_list:
-                attributes_per_feature.append(str(feature['properties'][str(attribute_feature)]))
-            attributes.append(attributes_per_feature)
+                # Define fields from geojson properties
+                columns_list = json_data['features'][0]['properties'].keys()
+                for col in columns_list:
+                    shpfile_obj.field(str(col), 'C', '50')
 
-        for geo in geometries:
-            if json_type == 'Polygon':
-                shpfile_obj.poly(polys=geo)
-            elif json_type == 'Point':
-                shpfile_obj.point(geo[0], geo[1])
-            elif json_type == 'LineString':
-                shpfile_obj.line(lines=[geo])
+                # Extract geometry and attributes from geojson
+                geometries = list()
+                attributes = list()
+                for feature in json_data['features']:
+                    if feature['geometry']['type'] == json_type:
+                        geometries.append(feature['geometry']['coordinates'])
+                    attributes_per_feature = list()
+                    for attribute_feature in columns_list:
+                        attributes_per_feature.append(str(feature['properties'][str(attribute_feature)]))
+                    attributes.append(attributes_per_feature)
 
-        for attr in attributes:
-            shpfile_obj.record(*attr)
+                # Write geometry
+                for geo in geometries:
+                    if json_type == 'Polygon':
+                        shpfile_obj.poly(polys=geo)
+                    elif json_type == 'Point':
+                        shpfile_obj.point(geo[0], geo[1])
+                    elif json_type == 'LineString':
+                        shpfile_obj.line(lines=[geo])
 
-        # write shapefile
-        shp_file = layer_id + "_" + json_type
-        prj_file = open(shp_file + '.prj', 'w')
-        prj_str = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],' \
-                  'PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'
-        prj_file.write(prj_str)
-        prj_file.close()
-        shpfile_obj.save(shp_file)
+                # Add records
+                for attr in attributes:
+                    shpfile_obj.record(*attr)
 
-        in_memory = BytesIO()
-        shp_file_ext = ['prj', 'shp', 'dbf', 'shx']
+            # write projection file
+            with open(shp_file + '.prj', 'w') as prj_file:
+                prj_str = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],' \
+                        'PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'
+                prj_file.write(prj_str)
 
-        with ZipFile(in_memory, "w") as my_zip:
-            for ext in shp_file_ext:
-                my_zip.write(shp_file + "." + ext)
+            in_memory = BytesIO()
+            shp_file_ext = ['prj', 'shp', 'dbf', 'shx']
 
-        # Clean up
-        for ext in shp_file_ext:
-            if os.path.exists(shp_file + "." + ext):
-                os.remove(shp_file + "." + ext)
+            with ZipFile(in_memory, "w") as my_zip:
+                for ext in shp_file_ext:
+                    my_zip.write(f'{shp_file}.{ext}', f'{shp_base}.{ext}')
 
         response = HttpResponse(content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename="' + shp_file + '.zip' + '"'
+        response['Content-Disposition'] = f'attachment; filename="{shp_base}.zip"'
 
         in_memory.seek(0)
         response.write(in_memory.read())
