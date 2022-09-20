@@ -116,6 +116,7 @@ class MapLayoutMixin:
             layer_name(str): Name of GeoServer layer (e.g.: workspace:a-unique-layer-name).
             layer_title(str): Title of MVLayer (e.g.: Model Boundaries).
             layer_variable(str): Variable type of the layer (e.g.: model_boundaries).
+            options(dict): A dictionary representation of the OpenLayers options object for ol.source.
             layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
             visible(bool): Layer is visible when True. Defaults to True.
             selectable(bool): Enable feature selection. Defaults to False.
@@ -127,7 +128,7 @@ class MapLayoutMixin:
             geometry_attribute(str): Name of the geometry attribute. Optional.
             style_map(dict): Style map dictionary. See MVLayer documentation for examples of style maps. Optional.
             show_download(boolean): enable download layer. (only works for geojson layer).
-            times (list): List of time steps if layer is time-enabled. Times should be represented as strings in
+            times(list): List of time steps if layer is time-enabled. Times should be represented as strings in
                 ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
                 only supported in CesiumMapView.
         Returns:
@@ -272,7 +273,7 @@ class MapLayoutMixin:
                 'legend_id': legend_id,
                 'title': layer.legend_title,
                 'divisions': dict(),
-                'color_list': cls.COLOR_RAMPS.keys(),
+                'color_list': list(cls.COLOR_RAMPS.keys()),
                 'layer_id': layer_id,
                 'min_value': min_value,
                 'max_value': max_value,
@@ -285,7 +286,7 @@ class MapLayoutMixin:
                 'initial_option': color_ramp,
             }
 
-            divisions = cls.generate_custom_color_ramp_divisions(**layer['color_ramp_division_kwargs'])
+            divisions = cls.generate_custom_color_ramp_divisions(**layer.data['color_ramp_division_kwargs'])
 
             for label in divisions.keys():
                 if color_prefix in label and int(label.replace(color_prefix, '')) >= first_division:
@@ -430,8 +431,18 @@ class MapLayoutMixin:
 
         if env:
             params['ENV'] = env
+
         if times:
-            times = json.dumps(times),
+            times = json.dumps(times)
+
+        if color_ramp_division_kwargs:
+            # Create color ramp and add them to ENV
+            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(**color_ramp_division_kwargs)
+            if 'ENV' in params.keys() and params['ENV']:
+                params['ENV'] += ";" + cls.build_param_string(**color_ramp_divisions)
+            else:
+                params['ENV'] = cls.build_param_string(**color_ramp_divisions)
+
         # Build options
         options = {
             'url': endpoint,
@@ -439,17 +450,6 @@ class MapLayoutMixin:
             'serverType': server_type,
             'crossOrigin': cross_origin,
         }
-        if color_ramp_division_kwargs:
-            # Create color ramp and add them to ENV
-            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(**color_ramp_division_kwargs)
-            if 'ENV' in params.keys():
-                if params['ENV']:
-                    params['ENV'] += ";" + cls.build_param_string(**color_ramp_divisions)
-                else:
-                    params['ENV'] = cls.build_param_string(**color_ramp_divisions)
-            else:
-                params['ENV'] = cls.build_param_string(**color_ramp_divisions)
-        layer_source = 'TileWMS' if tiled else 'ImageWMS'
 
         if tiled:
             options['tileGrid'] = cls.DEFAULT_TILE_GRID
@@ -457,7 +457,7 @@ class MapLayoutMixin:
         mv_layer = cls._build_mv_layer(
             layer_id=layer_id,
             layer_name=layer_name,
-            layer_source=layer_source,
+            layer_source='TileWMS' if tiled else 'ImageWMS',
             layer_title=layer_title,
             layer_variable=layer_variable,
             options=options,
@@ -515,7 +515,7 @@ class MapLayoutMixin:
                                              first_division=1, top_offset=0, bottom_offset=0, prefix='val',
                                              color_ramp=None, color_prefix='color', no_data_value=None):
         """
-        Generate custom elevation divisions.
+        Generate custom color ramp divisions.
 
         Args:
             min_value (float): minimum value.
