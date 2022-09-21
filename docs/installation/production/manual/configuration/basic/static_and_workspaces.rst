@@ -4,7 +4,7 @@
 Static and Workspaces Directories
 *********************************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 1. Create Static Directory
 ==========================

@@ -4,7 +4,7 @@
 Troubleshooting
 ***************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 This document provides a number of resources that can be used to troubleshoot your production installation of Tethys Portal.
 
@@ -230,10 +230,10 @@ The following tips can help you when searching for an issue:
     3. Tethys Portal is built on Django, so adding Django to your search terms often yields helpful results.
     4. Recognize that many issues you may encounter won't be Tethys specific. If you can figure out where the error is coming from then you can narrow your search (see: :ref:`production_troubleshooting_logs`). For example, if the error is occurring in one of the NGINX logs, then adding "NGINX" to your search terms would be more helpful than adding "Tethys".
 
-Tethys Platform Forum
-=====================
+Tethys Platform GitHub Discussions
+==================================
 
-The `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_ is an excellent place to search for Tethys-specific problems. Many members of the forum respond to questions posted on the forum, including the primary developers of Tethys Platform.
+The `Tethys Platform GitHub Discussions <https://github.com/tethysplatform/tethys/discussions>`_ is an excellent place to search for Tethys-specific problems. Many members of the group respond to questions posted, including the primary developers of Tethys Platform.
 
 Please search for your issue before posting a new question, as someone likely has already asked the question you want to ask. If you do post a question, please provide as much information as possible. At a minimum, include:
 

@@ -4,7 +4,7 @@
 NGINX Configuration
 *******************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 `NGINX <https://www.nginx.com/resources/wiki/>`_ is used as the primary HTTP server for a Tethys Portal deployment. It is used to handle all incoming HTTP traffic and directs it to the Daphne/Django server. It also hosts the static files needed by the apps and Tethys Portal. In this section of the production installation guide, you will generate the NGINX configuration files.
 
