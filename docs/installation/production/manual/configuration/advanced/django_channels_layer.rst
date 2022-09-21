@@ -4,7 +4,7 @@
 Django Channels Layer (Optional)
 ********************************
 
-**Last Updated:** Sep 2020
+**Last Updated:** September 2022
 
 Production installations that use the ``WebSockets`` and/or ``Bokeh Server`` functionality that comes with Tethys, require the a ``CHANNEL_LAYER``.
 
@@ -18,8 +18,9 @@ Development installations make use of the default ``InMemoryChannelLayer``, howe
 
 First, install the ``channels_redis`` Python package in your Tethys conda environment.
 
-::
+.. code-block:: bash
 
+    conda activate tethys
     pip install channels_redis
 
 Second, add or modify the ``CHANNEL_LAYERS`` parameter in the ``portal_config.yml`` as follows:

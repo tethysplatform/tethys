@@ -4,7 +4,7 @@
 Portal Configuration
 ********************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 The :file:`portal_config.yml` is the primary configuration file for Tethys Portal. As of version 3.0, you should not edit the :file:`settings.py` file directly. Instead add any Django settings that you need to the ``settings`` section of the :file:`portal_config.yml`. This can be done by manually editing the file, or you can use the ``tethys settings`` command to add settings to it.
 
