@@ -4,7 +4,7 @@
 Customize Portal Theme (Recommended)
 ************************************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 The content of Tethys Portal can and should be customized or re-branded to reflect your organization. To access these settings, login to Tethys Portal using an administrator account and navigate to the **Site Admin** page. Then select the  **Site Settings** link under the **TETHYS PORTAL** heading. Site-wide settings can be changed using the **General Settings** link and the content on the home page can be modified by using the **Home Page** link.
 

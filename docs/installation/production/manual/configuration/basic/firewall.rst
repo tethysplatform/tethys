@@ -4,7 +4,7 @@
 Firewall Configuration
 **********************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 If a firewall is enabled on the server on which you are installing Tethys Portal, you may need to configure it to allow connections through the HTTP port(s). This part of the production installation guide will provide instructions for how this is to be done on the default firewall applications installed on Ubuntu (`UWF <https://help.ubuntu.com/community/UFW>`_) and CentOS (`firewalld <https://firewalld.org/documentation/>`_ servers.
 

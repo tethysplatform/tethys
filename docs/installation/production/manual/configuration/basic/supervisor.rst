@@ -4,7 +4,7 @@
 Supervisor & Daphne Configuration
 *********************************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 `Supervisor <http://supervisord.org/>`_ is used to manage the NGINX and Daphne processes. As an ASGI server, Daphne is able to be run with multiple worker processes. It would be cumbersome to manage them individually. Using Supervisor, you will be able to use one command to start, stop, or restart the NGINX process and all of the Daphne processes.
 

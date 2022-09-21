@@ -2,7 +2,7 @@
 Distributed Configuration
 *************************
 
-**Last Updated:** July 2020
+**Last Updated:** September 2022
 
 The Tethys Docker images can be used to easily install each of the software components of Tethys Platform on separate servers. However, you will not be able to use the Tethys commandline tools to install the Dockers as you do during development. The following article describes how to deploy each software component using the native Docker API.
 
@@ -104,17 +104,17 @@ More information about the GeoServer Docker can be found on the Docker Registry:
 PostgreSQL with PostGIS Docker Deployment
 =========================================
 
-We recommend using the `mdillon/postgis <https://hub.docker.com/r/mdillon/postgis>`_ image to deploy PostgreSQL with PostGIS using Docker. This image is based on the official PostgreSQL image. Pull the Docker image for PostgreSQL with PostGIS using the following command:
+We recommend using the `postgis/postgis <https://registry.hub.docker.com/r/postgis/postgis/>`_ image to deploy PostgreSQL with PostGIS using Docker. This image is based on the official PostgreSQL image. Pull the Docker image for PostgreSQL with PostGIS using the following command:
 
 ::
 
-    sudo docker pull mdillon/postgis
+    sudo docker pull postgis/postgis
 
 Here is an example of how to start the container:
 
 ::
 
-    sudo docker run -d -p 5432:5432 --restart=always --name postgis -e POSTGRES_PASSWORD=mysecretpassword mdillon/postgis
+    sudo docker run -d -p 5432:5432 --restart=always --name postgis -e POSTGRES_PASSWORD=mysecretpassword postgis/postgis
 
 Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
 
@@ -135,7 +135,7 @@ Then run the ``tethys db configure`` command, prepending it with the PGPASSWORD 
 
 More information about the PostgreSQL with PostGIS Docker can be found on the Docker Registry:
 
-`<https://hub.docker.com/r/mdillon/postgis>`_
+`<https://registry.hub.docker.com/r/postgis/postgis/>`_
 
 
 52 North WPS Docker Deployment

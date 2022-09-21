@@ -209,7 +209,7 @@ class PostGisContainerMetadata(ContainerMetadata):
     input = 'postgis'
     name = 'tethys_postgis'
     display_name = 'PostGIS/Database'
-    image_name = 'mdillon/postgis'
+    image_name = 'postgis/postgis'
     host_port = 5435
     container_port = 5432
 
@@ -235,8 +235,8 @@ class PostGisContainerMetadata(ContainerMetadata):
 
         # User environmental variables
         if not defaults:
-            write_pretty_output("Tethys uses the mdillon/postgis image on Docker Hub. "
-                                "See: https://hub.docker.com/r/mdillon/postgis/")
+            write_pretty_output("Tethys uses the postgis/postgis image on Docker Hub. "
+                                "See: https://registry.hub.docker.com/r/postgis/postgis/")
 
             # POSTGRES_PASSWORD
             prompt = 'Password for postgres user (i.e. POSTGRES_PASSWORD)'

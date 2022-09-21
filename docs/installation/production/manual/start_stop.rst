@@ -4,7 +4,7 @@
 Start the Server
 ****************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 The Tethys Portal production deployment uses NGINX and Daphne servers. Rather than manage these processes individually, you should use the ``supervisorctl`` command to perform start, stop, and restart operations:
 

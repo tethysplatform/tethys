@@ -4,7 +4,7 @@
 Configure HTTPS (Recommended)
 *****************************
 
-**Last Updated:** November 2021
+**Last Updated:** September 2022
 
 SSL and TLS are the standard technologies for establishing a secured connection between a web server and a browser. In order to create a secured connection, a certificate and key are needed.
 

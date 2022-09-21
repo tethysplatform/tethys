@@ -182,7 +182,7 @@ class TestDockerCommands(unittest.TestCase):
         mock_port_bindings_prop.return_value = mock_port_bindings
         expected_options = dict(
             name='tethys_postgis',
-            image='mdillon/postgis:latest',
+            image='postgis/postgis:latest',
             environment=dict(
                 POSTGRES_PASSWORD='mysecretpassword',
             ),
@@ -211,8 +211,8 @@ class TestDockerCommands(unittest.TestCase):
 
         po_call_args = mock_pretty_output.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn('Tethys uses the mdillon/postgis image on Docker Hub. '
-                      'See: https://hub.docker.com/r/mdillon/postgis/', po_call_args[0][0][0])
+        self.assertIn('Tethys uses the postgis/postgis image on Docker Hub. '
+                      'See: https://registry.hub.docker.com/r/postgis/postgis/', po_call_args[0][0][0])
         mock_default_options.assert_called()
 
     @mock.patch('tethys_cli.docker_commands.GeoServerContainerMetadata.port_bindings',

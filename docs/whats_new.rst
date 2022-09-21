@@ -68,6 +68,14 @@ Comprehensive Tethys Manage Command
 
 See: :ref:`tethys_manage_cmd`
 
+Tethys Docker Command
+---------------------
+
+* The ``tethys docker`` command was updated to use the ``postgis/postgis`` image instead of the ``mdillon/postgis`` image.
+* The ``latest`` version of ``postgis/postgis`` will be pulled which was 14_3.3 at time of writing (PostgreSQL 14, PostGIS 3.3).
+
+See: `<https://registry.hub.docker.com/r/postgis/postgis/>`_
+
 Static Dependencies
 -------------------
 

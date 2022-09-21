@@ -4,11 +4,13 @@
 Security-Enhanced Linux
 ***********************
 
-**Last Updated:** July 2020
+**Last Updated:** September 2022
 
-**WARNING: USE THESE INSTRUCTIONS AT YOUR OWN RISK.**
+.. warning::
 
-What follows is given for illustration purposes only and is not meant to be our official recommendation nor is it guaranteed to work. Ultimately, if you plan to use SELinux on your Tethys Portal server, you are responsible to learn how to configure it appropriately based on your organization's policies.
+    What follows is given for illustration purposes only and is not meant to be our official recommendation nor is it guaranteed to work. Ultimately, if you plan to use SELinux on your Tethys Portal server, you are responsible to learn how to configure it appropriately based on your organization's policies. **USE THESE INSTRUCTIONS AT YOUR OWN RISK.**
+
+
 
 .. note::
 

@@ -4,7 +4,7 @@
 What to Backup
 **************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 Backing up your production Tethys Portal will allow you to quickly recover from hardware failure or other outage. The purpose of this guide is not to provide instructions for setting up backup, but rather to point out the locations where data is stored on a Tethys Portal server.
 
@@ -55,13 +55,13 @@ Configuration Files
 
 You will likely end up customizing the configuration files for your server beyond the default configuration covered in the installation guide. Backing up these files will save you time needing to reconfigure your Tethys Portal after a loss. At a minimum we recommend backing up the :file:`tethys_portal.yml`. Here is a list of configuration files you may consider backing up:
 
-    * :file:`~/.tethys/portal_config.yml`
-    * :file:`~/.tethys/asgi_supervisord.conf`
-    * :file:`~/.tethys/nginx_supervisord.conf`
-    * :file:`~/.tethys/tethys_nginx.conf`
-    * :file:`~/.tethys/tethys-selinux.mod`
-    * :file:`~/.tethys/tethys-selinux.te`
-    * :file:`~/.tethys/tethys-selinux.pp`
+    * :file:`<TETHYS_HOME>/portal_config.yml`
+    * :file:`<TETHYS_HOME>/asgi_supervisord.conf`
+    * :file:`<TETHYS_HOME>/nginx_supervisord.conf`
+    * :file:`<TETHYS_HOME>/tethys_nginx.conf`
+    * :file:`<TETHYS_HOME>/tethys-selinux.mod`
+    * :file:`<TETHYS_HOME>/tethys-selinux.te`
+    * :file:`<TETHYS_HOME>/tethys-selinux.pp`
 
 
 Other App Files

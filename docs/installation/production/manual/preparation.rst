@@ -4,7 +4,7 @@
 Preparation
 ***********
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 We recommend you take time before you start your Tethys Portal installation to collect the information that you will need throughout the installation process. This information includes usernames, passwords, SSL certificates, and server attributes. Planning for these ahead of time will make it more likely that you will setup the server securely, rather than using default values for things like passwords when you are prompted for them throughout the installation process.
 
