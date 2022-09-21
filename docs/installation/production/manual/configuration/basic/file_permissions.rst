@@ -4,7 +4,7 @@
 File Permissions
 ****************
 
-**Last Updated:** May 2020
+**Last Updated:** September 2022
 
 As NGINX is acting as the primary HTTP process, many of the files will need to be accessible by the NGINX user account. There are additional permissions that need to be granted if `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ is active on your server. This part of the production installation guide will show you how to manage the file permissions for your server.
 
