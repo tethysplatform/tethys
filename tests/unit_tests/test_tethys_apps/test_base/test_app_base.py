@@ -685,6 +685,19 @@ class TestTethysAppBase(unittest.TestCase):
         mock_jm.return_value = 'test_job_manager'
         self.assertEqual('test_job_manager', self.app.get_job_manager())
 
+    @mock.patch('tethys_apps.base.app_base.get_user_workspace')
+    def test_get_user_workspace(self, mock_guw):
+        mock_user = mock.MagicMock()
+        ret = TethysAppChild.get_user_workspace(mock_user)
+        mock_guw.assert_called_with(TethysAppChild, mock_user)
+        self.assertEqual(ret, mock_guw())
+
+    @mock.patch('tethys_apps.base.app_base.get_app_workspace')
+    def test_get_app_workspace(self, mock_gaw):
+        ret = TethysAppChild.get_app_workspace()
+        mock_gaw.assert_called_with(TethysAppChild)
+        self.assertEqual(ret, mock_gaw())
+
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_custom_setting(self, mock_ta):
         setting_name = 'fake_setting'
