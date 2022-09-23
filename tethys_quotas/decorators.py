@@ -8,7 +8,6 @@
 """
 import logging
 from django.utils.functional import wraps
-from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from tethys_apps.utilities import get_active_app
 from tethys_quotas.models.resource_quota import ResourceQuota

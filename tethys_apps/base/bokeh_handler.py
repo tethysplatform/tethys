@@ -18,7 +18,7 @@ from django.http.request import HttpRequest
 from django.shortcuts import render
 
 # Tethys Imports
-from tethys_sdk.workspaces import user_workspace, app_workspace
+from tethys_sdk.workspaces import get_user_workspace, get_app_workspace
 
 
 def with_request(handler):
@@ -38,20 +38,10 @@ def with_workspaces(handler):
     @with_request
     @wraps(handler)
     def wrapper(doc: Document):
-        doc.user_workspace = get_user_workspace(doc.request)
+        doc.user_workspace = get_user_workspace(doc.request, doc.request.user)
         doc.app_workspace = get_app_workspace(doc.request)
         return handler(doc)
     return wrapper
-
-
-@user_workspace
-def get_user_workspace(request, user_workspace):
-    return user_workspace
-
-
-@app_workspace
-def get_app_workspace(request, app_workspace):
-    return app_workspace
 
 
 def _get_bokeh_controller(template=None, app_package=None):

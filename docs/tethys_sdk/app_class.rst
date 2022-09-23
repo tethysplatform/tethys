@@ -90,6 +90,12 @@ Class Methods
 .. automethod:: tethys_apps.base.TethysAppBase.get_scheduler
    :noindex:
 
+.. automethod:: tethys_apps.base.TethysAppBase.get_app_workspace
+   :noindex:
+
+.. automethod:: tethys_apps.base.TethysAppBase.get_user_workspace
+   :noindex:
+
 .. automethod:: tethys_apps.base.TethysAppBase.list_persistent_store_connections
 
 .. automethod:: tethys_apps.base.TethysAppBase.list_persistent_store_databases

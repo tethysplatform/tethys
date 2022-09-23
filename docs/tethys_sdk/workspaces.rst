@@ -4,34 +4,97 @@
 Workspaces API
 **************
 
-**Last Updated:** August 6, 2014
+**Last Updated:** September 2022
 
 The Workspaces API makes it easy for you to create directories for storing files that your app operates on. This can be a tricky task for a web application, because of the multi-user, simultaneous-connection environment of the web. The Workspaces API provides a simple mechanism for creating and managing a global workspace for your app and individual workspaces for each user of your app to prevent unwanted overwrites and file lock conflicts.
 
-Get a Workspace
-===============
+Getting Workspaces
+==================
 
-The Workspaces API adds two decorators, that can be used to retrieve the global app workspace and the user workspaces, respectively. To use the Workspace API methods, import the appropriate method from `tethys_sdk.workspaces`. Explanations of the decorators and example usage follows.
+There are three methods for obtaining the workspaces that are supported in Tethys Platform. In order of recommended use, the workspace methods are:
+
+* Controller Decorator
+* Workspaces Decorators
+* App Class Methods
+* Workspace Functions
+
+Controller Decorator
+--------------------
+
+The recommended method for obtaining workspaces in controllers is to use the ``app_workspace`` and ``user_workspace`` arguments of the ``controller`` decorator:
+
+.. code-block:: python
+
+    from tethys_sdk.routing import controller
+
+    @controller(app_workspace=True)
+    def my_controller(request, app_workspace):
+       ...
+
+    @controller(user_workspace=True)
+    def my_controller(request, user_workspace):
+       ...
+
+    @controller(app_workspace=True, user_workspace=True)
+    def my_controller(request, app_workspace, user_workspace):
+       ...
+
+To learn more about the ``controller`` decorator, see: :ref:`controller-decorator`
+
+Workspace Decorators
+--------------------
+
+The Workspaces API includes two decorators, that can be used to retrieve the app workspace and the user workspaces, respectively. To use these decorators, import them from ``tethys_sdk.workspaces``. Explanations of the decorators and example usage follows.
 
 .. _app_workspace:
 
 @app_workspace
------------------
+++++++++++++++
 
 .. automethod:: tethys_apps.base.workspace.app_workspace
 
 .. _user_workspace:
 
 @user_workspace
-------------------
++++++++++++++++
 
 .. automethod:: tethys_apps.base.workspace.user_workspace
+
+App Class Methods
+-----------------
+
+In cases where it is not possible to use one of the decorators, the :term:`app class` provides methods for getting the workspaces:
+
+.. code-block:: python
+
+    from .app import MyFirstApp as app
+
+    @controller
+    def my_controller(request):
+        app_workspace = app.get_app_workspace()
+        user_workspace = app.get_user_workspace(request.user)
+        ...
+
+For more details see :ref:`app_base_class_api`
+
+Workspace Functions
+-------------------
+
+In the rare cases where you need to use a workspace where it is not convenient or not possible to use one of the decorators OR the :term:`app class` methods, the Workspaces API provides function versions of the getters. Import them from ``tethys_sdk.workspaces``:
+
+.. _get_app_workspace_func:
+
+.. automethod:: tethys_apps.base.workspace.get_app_workspace
+
+.. _get_user_workspace_func:
+
+.. automethod:: tethys_apps.base.workspace.get_user_workspace
 
 
 Working with Workspaces
 =======================
 
-The two methods described above return a ``TethysWorkspace`` object that contains the path to the workspace and several convenience methods for working with the workspace. An explanation of the ``TethysWorkspace`` object and examples of it's usage is provided below.
+All of the methods described above return a ``TethysWorkspace`` object that contains the path to the workspace and several convenience methods for working with the workspace directory. An explanation of the ``TethysWorkspace`` object and examples of it's usage are provided below.
 
 TethysWorkspace Objects
 -----------------------
@@ -42,7 +105,7 @@ TethysWorkspace Objects
 Centralize Workspaces
 =====================
 
-The Workspaces API includes a command, ``collectworkspaces``, for moving all workspaces to a central location and symbolically linking them back to the app project directories. This is especially useful for production where the administrator may want to locate workspace content on a mounted drive to optimize storage. A brief explanation of how to use this command will follow. Refer to the :doc:`../tethys_cli` documentation for details about the ``collectworkspaces`` command.
+The Workspaces API provides a :ref:`tethys_cli` command, ``collectworkspaces``, for moving all workspaces to a central location and symbolically linking them back to the app project directories. This command is intended for use in production installations where the administrator may want to locate workspace content on a mounted drive to optimize storage and make it easier to backup app data. A brief explanation of how to use this command will follow. Refer to the :ref:`tethys_cli` documentation for details about the ``collectworkspaces`` command.
 
 Setting
 -------

@@ -19,6 +19,7 @@ from .testing.environment import is_testing_environment, get_test_db_name, TESTI
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
+from .workspace import get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 from bokeh.server.django.consumers import WSConsumer
@@ -907,6 +908,58 @@ class TethysAppBase(TethysBase):
         return job_manager
 
     @classmethod
+    def get_user_workspace(cls, user_or_request):
+        """
+        Get the dedicated user workspace for this app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
+
+        Args:
+            request_or_user (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
+
+        Raises:
+            ValueError: if user_or_request is not of type HttpRequest or User.
+            AssertionError: if quota for the user workspace has been exceeded.
+
+        Returns:
+            TethysWorkspace: workspace object bound to the user's workspace directory.
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp as app
+
+            @controller
+            def my_controller(request):
+                user_workspace = app.get_user_workspace(request.user)
+                ...
+        """  # noqa: E501
+        return get_user_workspace(cls, user_or_request)
+
+    @classmethod
+    def get_app_workspace(cls):
+        """
+        Get the app workspace for the given Tethys App class.
+
+        Raises:
+            AssertionError: if quota for the app workspace has been exceeded.
+
+        Returns:
+            TethysWorkspace: workspace object bound to the app workspace.
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp as app
+
+            @controller
+            def my_controller(request):
+                app_workspace = app.get_app_workspace()
+                ...
+        """
+        return get_app_workspace(cls)
+
+    @classmethod
     def get_scheduler(cls, name):
         """
         Retrieves a Scheduler assigned to the named SchedulerSetting.
@@ -921,7 +974,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             scheduler = app.get_scheduler('primary_condor')
             job_manager = app.get_job_manager()
@@ -960,7 +1013,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             max_count = app.get_custom_setting('max_count')
 
@@ -987,7 +1040,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             max_count = app.set_custom_setting('max_count', 5)
 
@@ -1040,7 +1093,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             ckan_engine = app.get_dataset_service('primary_ckan', as_engine=True)
 
@@ -1078,7 +1131,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             geoserver_engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
@@ -1119,7 +1172,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             wps_engine = app.get_web_processing_service('primary_52n')
 
@@ -1152,7 +1205,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             conn_engine = app.get_persistent_store_connection('primary')
             conn_url = app.get_persistent_store_connection('primary', as_url=True)
@@ -1191,7 +1244,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             db_engine = app.get_persistent_store_database('example_db')
             db_url = app.get_persistent_store_database('example_db', as_url=True)
@@ -1238,7 +1291,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             result = app.create_persistent_store('example_db', 'primary')
 
@@ -1321,7 +1374,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             result = app.drop_persistent_store('example_db')
 
@@ -1365,7 +1418,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             ps_databases = app.list_persistent_store_databases()
 
@@ -1394,7 +1447,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             ps_connections = app.list_persistent_store_connections()
 
@@ -1421,7 +1474,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from my_first_app.app import MyFirstApp as app
+            from .app import MyFirstApp as app
 
             result = app.persistent_store_exists('example_db')
 
