@@ -5,9 +5,24 @@ import shutil
 from unittest import mock
 from ... import UserFactory
 from django.http import HttpRequest
-from django.contrib.auth.models import User
 import tethys_apps.base.app_base as tethys_app_base
-from tethys_apps.base.workspace import user_workspace, app_workspace, _get_app_workspace, _get_user_workspace
+from tethys_apps.base.workspace import (
+    _get_user_workspace, get_user_workspace, user_workspace, _get_app_workspace, get_app_workspace, app_workspace
+)
+
+
+class TethysAppChild(tethys_app_base.TethysAppBase):
+    """
+    Tethys app class for Test App.
+    """
+
+    name = 'Test App'
+    index = 'home'
+    icon = 'test_app/images/icon.gif'
+    package = 'test_app'
+    root_url = 'test-app'
+    color = '#2c3e50'
+    description = 'Place a brief description of your app here.'
 
 
 @user_workspace
@@ -121,100 +136,211 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(self.test_root, workspace.path)
 
     @mock.patch('tethys_apps.base.workspace.TethysWorkspace')
-    def test_get_user_workspace(self, mock_tws):
-        user = self.user
-        _get_user_workspace(self.app, user)
-
-        # Check result
+    def test__get_user_workspace_user(self, mock_tws):
+        ret = _get_user_workspace(self.app, self.user)
+        expected_path = os.path.join('workspaces', 'user_workspaces', self.user.username)
         rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('user_workspaces', rts_call_args[0][0][0])
-        self.assertIn(user.username, rts_call_args[0][0][0])
+        self.assertEqual(ret, mock_tws())
+        self.assertIn(expected_path, rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.workspace.TethysWorkspace')
-    def test_get_user_workspace_http(self, mock_tws):
-        from django.http import HttpRequest
+    def test__get_user_workspace_http(self, mock_tws):
         request = HttpRequest()
         request.user = self.user
-
-        _get_user_workspace(self.app, request)
-
-        # Check result
+        ret = _get_user_workspace(self.app, request)
+        expected_path = os.path.join('workspaces', 'user_workspaces', self.user.username)
         rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('user_workspaces', rts_call_args[0][0][0])
-        self.assertIn(self.user.username, rts_call_args[0][0][0])
+        self.assertEqual(ret, mock_tws())
+        self.assertIn(expected_path, rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.workspace.TethysWorkspace')
-    def test_get_user_workspace_none(self, mock_tws):
-        _get_user_workspace(self.app, None)
-
-        # Check result
+    def test__get_user_workspace_none(self, mock_tws):
+        ret = _get_user_workspace(self.app, None)
+        expected_path = os.path.join('workspaces', 'user_workspaces', 'anonymous_user')
         rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('user_workspaces', rts_call_args[0][0][0])
-        self.assertIn('anonymous_user', rts_call_args[0][0][0])
+        self.assertEqual(ret, mock_tws())
+        self.assertIn(expected_path, rts_call_args[0][0][0])
 
-    def test_get_user_workspace_error(self):
+    def test__get_user_workspace_error(self):
         with self.assertRaises(ValueError) as context:
-            _get_user_workspace(self.app, 'test')
+            _get_user_workspace(self.app, 'not_user_or_request')
+
         self.assertEqual(
-            "Invalid type for argument 'user': must be either an User or HttpRequest object.", str(context.exception))
+            str(context.exception),
+            "Invalid type for argument 'user': must be either an User or HttpRequest object."
+        )
+
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
+    def test_get_user_workspace_aor_app_instance(self, mock_guw, mock_pq):
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        ret = get_user_workspace(self.app, self.user)
+        self.assertEqual(ret, mock_workspace)
+        mock_pq.assert_called_with(self.user, 'user_workspace_quota')
+        mock_guw.assert_called_with(self.app, self.user)
+
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
+    def test_get_user_workspace_aor_app_class(self, mock_guw, mock_pq):
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        ret = get_user_workspace(TethysAppChild, self.user)
+        self.assertEqual(ret, mock_workspace)
+        mock_pq.assert_called_with(self.user, 'user_workspace_quota')
+        mock_guw.assert_called_with(TethysAppChild, self.user)
+
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
+    def test_get_user_workspace_aor_request(self, mock_guw, mock_pq, mock_gaa):
+        request = HttpRequest()
+        request.user = self.user
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        mock_app = mock.MagicMock()
+        mock_gaa.return_value = mock_app
+        ret = get_user_workspace(request, self.user)
+        self.assertEqual(ret, mock_workspace)
+        mock_gaa.assert_called_with(request, get_class=True)
+        mock_pq.assert_called_with(self.user, 'user_workspace_quota')
+        mock_guw.assert_called_with(mock_app, self.user)
+
+    def test_get_user_workspace_aor_error(self):
+        with self.assertRaises(ValueError) as context:
+            get_user_workspace('not_app_or_request', self.user)
+
+        self.assertEqual(
+            str(context.exception),
+            'Argument "app_class_or_request" must be of type TethysAppBase or HttpRequest: "<class \'str\'>" given.'
+        )
+
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
+    def test_get_user_workspace_uor_user(self, mock_guw, mock_pq):
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        ret = get_user_workspace(self.app, self.user)
+        self.assertEqual(ret, mock_workspace)
+        mock_pq.assert_called_with(self.user, 'user_workspace_quota')
+        mock_guw.assert_called_with(self.app, self.user)
+
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
+    def test_get_user_workspace_uor_request(self, mock_guw, mock_pq):
+        request = HttpRequest()
+        request.user = self.user
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        ret = get_user_workspace(self.app, request)
+        self.assertEqual(ret, mock_workspace)
+        mock_pq.assert_called_with(self.user, 'user_workspace_quota')
+        mock_guw.assert_called_with(self.app, self.user)
+
+    def test_get_user_workspace_uor_error(self):
+        with self.assertRaises(ValueError) as context:
+            get_user_workspace(self.app, 'not_user_or_request')
+
+        self.assertEqual(
+            str(context.exception),
+            'Argument "user_or_request" must be of type HttpRequest or User: "<class \'str\'>" given.'
+        )
+
+    @mock.patch('tethys_apps.base.workspace.get_user_workspace')
+    def test_user_workspace_decorator_user(self, mock_guw):
+        request = HttpRequest()
+        request.user = self.user
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        ret = user_dec_controller(request)
+        self.assertEqual(ret, mock_workspace)
+        mock_guw.assert_called_with(request, self.user)
+
+    def test_user_workspace_decorator_HttpRequest_not_given(self):
+        not_a_request = mock.MagicMock()
+        with self.assertRaises(ValueError) as context:
+            user_dec_controller(not_a_request)
+
+        self.assertEqual(
+            str(context.exception),
+            'No request given. The user_workspace decorator only works on controllers.'
+        )
 
     @mock.patch('tethys_apps.base.workspace.TethysWorkspace')
-    def test_get_app_workspace(self, mock_tws):
-        _get_app_workspace(self.app)
-
-        # Check result
+    def test__get_app_workspace(self, mock_tws):
+        ret = _get_app_workspace(self.app)
+        self.assertEqual(ret, mock_tws())
+        expected_path = os.path.join('workspaces', 'app_workspace')
         rts_call_args = mock_tws.call_args_list
-        self.assertIn('workspaces', rts_call_args[0][0][0])
-        self.assertIn('app_workspace', rts_call_args[0][0][0])
-        self.assertNotIn('user_workspaces', rts_call_args[0][0][0])
+        self.assertIn(expected_path, rts_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.base.workspace.log')
-    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
-    @mock.patch('tethys_apps.utilities.get_active_app')
-    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
-    def test_user_workspace_user(self, mock_guw, _, mock_pq, mock_log):
-        user_workspace = mock.MagicMock()
-        mock_guw.return_value = user_workspace
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
-
-        ret = user_dec_controller(mock_request)
-        self.assertEqual(user_workspace, ret)
-        self.assertEqual(0, len(mock_log.warning.call_args_list))
-        mock_pq.assert_called_once()
-
-    def test_user_workspace_no_HttpRequest(self):
-        mock_request = mock.MagicMock()
-
-        ret = None
-        with self.assertRaises(ValueError) as context:
-            ret = user_dec_controller(mock_request)
-        self.assertTrue(
-            'No request given. The user_workspace decorator only works on controllers.' in str(context.exception))
-        self.assertEqual(None, ret)
-
-    @mock.patch('tethys_apps.base.workspace.log')
     @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
     @mock.patch('tethys_apps.utilities.get_active_app')
     @mock.patch('tethys_apps.base.workspace._get_app_workspace')
-    def test_app_workspace_app(self, mock_gaw, _, mock_pq, mock_log):
-        app_workspace = mock.MagicMock()
-        mock_gaw.return_value = app_workspace
-        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
+    def test_get_app_workspace_app_instance(self, mock_gaw, mock_gaa, mock_pq):
+        mock_workspace = mock.MagicMock()
+        mock_gaw.return_value = mock_workspace
+        ret = get_app_workspace(self.app)
+        self.assertEqual(ret, mock_workspace)
+        mock_gaa.assert_not_called()
+        mock_pq.assert_called_with(self.app, 'app_workspace_quota')
+        mock_gaw.assert_called_with(self.app)
 
-        ret = app_dec_controller(mock_request)
-        self.assertEqual(app_workspace, ret)
-        self.assertEqual(0, len(mock_log.warning.call_args_list))
-        mock_pq.assert_called_once()
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    @mock.patch('tethys_apps.base.workspace._get_app_workspace')
+    def test_get_app_workspace_app_class(self, mock_gaw, mock_gaa, mock_pq):
+        mock_workspace = mock.MagicMock()
+        mock_gaw.return_value = mock_workspace
+        ret = get_app_workspace(TethysAppChild)
+        self.assertEqual(ret, mock_workspace)
+        mock_gaa.assert_not_called()
+        mock_pq.assert_called_with(TethysAppChild, 'app_workspace_quota')
+        mock_gaw.assert_called_with(TethysAppChild)
 
-    def test_app_workspace_no_HttpRequest(self):
-        mock_request = mock.MagicMock()
+    @mock.patch('tethys_apps.base.workspace.passes_quota', return_value=True)
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    @mock.patch('tethys_apps.base.workspace._get_app_workspace')
+    def test_get_app_workspace_http(self, mock_gaw, mock_gaa, mock_pq):
+        request = HttpRequest()
+        mock_workspace = mock.MagicMock()
+        mock_gaw.return_value = mock_workspace
+        mock_app = mock.MagicMock()
+        mock_gaa.return_value = mock_app
+        ret = get_app_workspace(request)
+        self.assertEqual(ret, mock_workspace)
+        mock_gaa.assert_called_with(request, get_class=True)
+        mock_pq.assert_called_with(mock_app, 'app_workspace_quota')
+        mock_gaw.assert_called_with(mock_app)
 
-        ret = None
+    def test_get_app_workspace_error(self):
         with self.assertRaises(ValueError) as context:
-            ret = app_dec_controller(mock_request)
-        self.assertTrue(
-            'No request given. The app_workspace decorator only works on controllers.' in str(context.exception))
-        self.assertEqual(None, ret)
+            get_app_workspace('not_app_or_request')
+
+        self.assertEqual(
+            str(context.exception),
+            'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: "<class \'str\'>" given.'
+        )
+
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    @mock.patch('tethys_apps.base.workspace.get_app_workspace')
+    def test_app_workspace_decorator(self, mock_gaw, mock_gaa):
+        request = HttpRequest()
+        mock_workspace = mock.MagicMock()
+        mock_gaw.return_value = mock_workspace
+        mock_app = mock.MagicMock()
+        mock_gaa.return_value = mock_app
+        ret = app_dec_controller(request)
+        self.assertEqual(ret, mock_workspace)
+        mock_gaw.assert_called_with(request)
+
+    def test_app_workspace_decorator_HttpRequest_not_given(self):
+        not_a_request = mock.MagicMock()
+
+        with self.assertRaises(ValueError) as context:
+            app_dec_controller(not_a_request)
+
+        self.assertEqual(
+            str(context.exception),
+            'No request given. The app_workspace decorator only works on controllers.'
+        )
