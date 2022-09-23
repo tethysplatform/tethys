@@ -9,4 +9,5 @@
 """
 # flake8: noqa
 # DO NOT ERASE
-from tethys_apps.base.workspace import TethysWorkspace, user_workspace, app_workspace
+from tethys_apps.base.workspace import TethysWorkspace, user_workspace, app_workspace, get_app_workspace, \
+    get_user_workspace

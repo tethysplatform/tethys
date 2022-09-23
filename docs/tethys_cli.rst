@@ -1,3 +1,5 @@
+.. _tethys_cli:
+
 **********************
 Command Line Interface
 **********************

@@ -102,7 +102,7 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     return match_dirs
 
 
-def get_active_app(request=None, url=None, get_class=None):
+def get_active_app(request=None, url=None, get_class=False):
     """
     Get the active TethysApp object based on the request or URL.
     """
