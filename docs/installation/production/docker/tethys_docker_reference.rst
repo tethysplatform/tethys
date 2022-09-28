@@ -226,6 +226,9 @@ The following environment variables can be used to set some of the Tethys Settin
 | RECAPTCHA_PUBLIC_KEY      | Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.       |
 |                           | See RECAPTCHA_PUBLIC_KEY in :ref:`tethys_configuration`                                  |
 +---------------------------+------------------------------------------------------------------------------------------+
+| OTHER_SETTINGS            | A catch all for adding other Tethys or Django settings. Should be set as if passing      |
+|                           | arguments to the :ref:`tethys_settings_cmd`, (e.g. "--set BOKEH_RESOURCES inline").      |
++---------------------------+------------------------------------------------------------------------------------------+
 
 NGINX Settings
 --------------

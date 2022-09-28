@@ -24,8 +24,7 @@ from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssign
 
 has_bokeh_django = True
 try:
-    from bokeh_django.consumers import WSConsumer, AutoloadJsConsumer
-    from bokeh_django import autoload
+    from bokeh_django import autoload, WSConsumer, AutoloadJsConsumer
 except ImportError:
     has_bokeh_django = False
 
@@ -143,9 +142,10 @@ class TethysBase(TethysBaseMixin):
             self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
         """
         if not has_bokeh_django:
-            tethys_log.error(
-                f'The "bokeh_django" package is required for the Bokeh-type handler "{handler_function.__name__}" '
-                f'in the "{self.name}" app, but is not installed. '
+            from tethys_cli.cli_colors import write_error
+            write_error(
+                f'ERROR! The the "{self.name}" app has a Bokeh-type handler "{handler_function.__name__}", '
+                f'but the "bokeh_django" package is not installed. '
                 f'Please install "bokeh_django" for the app to function properly.'
             )
             return

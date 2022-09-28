@@ -345,19 +345,11 @@ def controller(
         else:
             controller = function_or_class
 
-        if login_required:
-            controller = login_required_decorator(
-                redirect_field_name=redirect_field_name, login_url=login_url
-            )(controller)
-
         if user_workspace:
             controller = user_workspace_decorator(controller)
 
         if app_workspace:
             controller = app_workspace_decorator(controller)
-
-        if ensure_oauth2_provider:
-            controller = ensure_oauth2(ensure_oauth2_provider)(controller)
 
         if permissions_required:
             controller = permission_required(
@@ -367,6 +359,16 @@ def controller(
 
         for codename in enforce_quota_codenames:
             controller = enforce_quota(codename)(controller)
+
+        if ensure_oauth2_provider:
+            # this needs to come before login_required
+            controller = ensure_oauth2(ensure_oauth2_provider)(controller)
+
+        if login_required:
+            # this should be at the end, so it's the first to be evaluated
+            controller = login_required_decorator(
+                redirect_field_name=redirect_field_name, login_url=login_url
+            )(controller)
 
         _process_url_kwargs(controller, url_map_kwargs_list)
         return function_or_class if inspect.isclass(function_or_class) else controller
@@ -479,7 +481,7 @@ def handler(
     controller = controller or _get_bokeh_controller(template, app_package)
     if isinstance(controller, str):
         from .function_extractor import TethysFunctionExtractor
-        controller = TethysFunctionExtractor(controller)
+        controller = TethysFunctionExtractor(controller).function
 
     def wrapped(function):
         controller.__name__ = function.__name__
@@ -631,14 +633,13 @@ def register_controllers(
                 )
             module_not_found = None
             if isinstance(e, ModuleNotFoundError):
-                module_not_found = e.msg.split("'")[-2]
+                 module_not_found = e.msg.split("'")[-2]
             if module_not_found != module:
+                tb = traceback.format_exc()
                 write_warning(
                     f'Warning: Found controller module "{module}", but it could not be imported '
-                    f'because of the following error: {e}'
+                    f'because of the following error: {e}\n\n{tb}'
                 )
-                tb = traceback.format_exc()
-                write_warning(tb)
 
         else:
             all_modules.extend(get_all_submodules(module))

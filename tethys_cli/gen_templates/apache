@@ -1,11 +1,9 @@
 {% if ssl %}
-Listen 443 https
-
 <VirtualHost *:443>
     SSLEngine on
     SSLProxyEngine On
     SSLCertificateFile {{ ssl_cert }}
-    SSLCertificateKeyFile { ssl_key }}
+    SSLCertificateKeyFile {{ ssl_key }}
 
 {% else %}
 <VirtualHost *:80>
@@ -13,15 +11,16 @@ Listen 443 https
     ServerName {{ server_name }}
 
     ProxyPass /static/ !
-    Alias /static/ {{ static_dir }}
+    Alias /static/ {{ static_root }}
 
-    <Directory {{ static_dir }}>
+    <Directory {{ static_root }}>
         Require all granted
     </Directory>
 
     ProxyRequests Off
     ProxyPreserveHost On
 
-    ProxyPass / http://127.0.0.1:8000/
-    ProxyPassReverse / http://127.0.0.1:8000/
+    ProxyPassMatch ^/(.*/ws)$ ws://127.0.0.1:{{ port }}/$1
+    ProxyPass / http://127.0.0.1:{{ port }}/
+    ProxyPassReverse / http://127.0.0.1:{{ port }}/
 </VirtualHost>

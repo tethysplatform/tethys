@@ -38,6 +38,7 @@ except ModuleNotFoundError:
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 GEN_APACHE_OPTION = 'apache'
+GEN_APACHE_SERVICE_OPTION = 'apache_service'
 GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
 GEN_NGINX_SERVICE_OPTION = 'nginx_service'
@@ -49,7 +50,8 @@ GEN_PACKAGE_JSON_OPTION = 'package_json'
 GEN_REQUIREMENTS_OPTION = 'requirements'
 
 FILE_NAMES = {
-    GEN_APACHE_OPTION: 'tethys-default.conf',
+    GEN_APACHE_OPTION: 'tethys_apache.conf',
+    GEN_APACHE_SERVICE_OPTION: 'apache_supervisord.conf',
     GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
     GEN_NGINX_OPTION: 'tethys_nginx.conf',
     GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
@@ -62,7 +64,8 @@ FILE_NAMES = {
 }
 
 VALID_GEN_OBJECTS = (
-    # GEN_APACHE_OPTION,
+    GEN_APACHE_OPTION,
+    GEN_APACHE_SERVICE_OPTION,
     GEN_ASGI_SERVICE_OPTION,
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
@@ -96,13 +99,16 @@ def add_gen_parser(subparsers):
                             help='The path to the Tethys conda environment. Required if $CONDA_PREFIX is not defined.')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
                             help='Port for the Tethys Server to run on in production. This is used when generating the '
-                                 'Daphne and nginx configuration files. Defaults to 8000.')
+                                 'Daphne, Nginx, and Apache configuration files. Defaults to 8000.')
     gen_parser.add_argument('--micromamba', dest='micromamba', action='store_true',
                             help='Generate files to work in a Micromamba environment. Used when generating the '
                                  'configuration files for a Docker build (the Docker image uses the micromamba image '
                                  'as the base image).')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
+    gen_parser.add_argument('--ssl', dest='ssl', action='store_true',
+                            help='Add configuration settings for serving with SSL/HTTPS. '
+                                 'Used for the Apache configuration file.')
     gen_parser.set_defaults(func=generate_command, client_max_body_size='75M', asgi_processes=1, conda_prefix=False,
                             tethys_port=8000, overwrite=False, pin_level='none')
 
@@ -125,6 +131,26 @@ def get_settings_value(value_name):
 
 def generate_secret_key():
     return ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(50)])
+
+
+def empty_context(args):
+    context = {}
+    return context
+
+
+def gen_apache(args):
+    hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
+    static_root = get_settings_value('STATIC_ROOT')
+
+    context = {
+        'ssl': args.ssl,
+        'ssl_cert': '',
+        'ssl_key': '',
+        'server_name': hostname,
+        'static_root': static_root,
+        'port': args.tethys_port,
+    }
+    return context
 
 
 def gen_nginx(args):
@@ -178,11 +204,6 @@ def gen_asgi_service(args):
         'user_option_prefix': user_option_prefix,
         'is_micromamba': args.micromamba,
     }
-    return context
-
-
-def gen_nginx_service(args):
-    context = {}
     return context
 
 
@@ -415,9 +436,11 @@ def write_path_to_console(file_path):
 
 
 GEN_COMMANDS = {
+    GEN_APACHE_OPTION: gen_apache,
+    GEN_APACHE_SERVICE_OPTION: empty_context,
     GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
     GEN_NGINX_OPTION: gen_nginx,
-    GEN_NGINX_SERVICE_OPTION: gen_nginx_service,
+    GEN_NGINX_SERVICE_OPTION: empty_context,
     GEN_PORTAL_OPTION: gen_portal_yaml,
     GEN_SERVICES_OPTION: gen_services_yaml,
     GEN_INSTALL_OPTION: gen_install,
