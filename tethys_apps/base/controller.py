@@ -455,6 +455,24 @@ def handler(
             ...
 
         ------------
+        
+        @handler(
+            name='home',
+            controller='my_app.controllers.my_app_controller',
+        )
+        def my_app_handler(document):
+            ...
+
+        ------------
+        
+        @handler(
+            name='home',
+            controller='tethysext.my_extension.controllers.my_controller',
+        )
+        def my_app_handler(document):
+            ...
+
+        ------------
 
         @handler(
             with_request=True
@@ -475,13 +493,31 @@ def handler(
             user_workspace = document.user_workspace
             app_workspace = document.app_workspace
             ...
+            
+        ------------
+        
+        def job_view(request, job_id):
+            # Do something with URL variable ``job_id``
+            
+        @handler(
+            name='job_view',
+            url='job-view/{job_id}',
+            login_required=True,
+            ensure_oauth2_provider=app.PROVIDER_NAME
+        )
+        def job_view_handler(document):
+            ...
+
+        ------------
 
 
     """  # noqa: E501
     controller = controller or _get_bokeh_controller(template, app_package)
     if isinstance(controller, str):
         from .function_extractor import TethysFunctionExtractor
-        controller = TethysFunctionExtractor(controller).function
+        modules = controller.split('.')
+        prefix = None if modules[0] in ['tethysapp', 'tethysext'] else TethysFunctionExtractor.PATH_PREFIX
+        controller = TethysFunctionExtractor(controller, prefix=prefix).function
 
     def wrapped(function):
         controller.__name__ = function.__name__
