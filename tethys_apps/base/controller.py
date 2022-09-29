@@ -633,7 +633,7 @@ def register_controllers(
                 )
             module_not_found = None
             if isinstance(e, ModuleNotFoundError):
-                 module_not_found = e.msg.split("'")[-2]
+                module_not_found = e.msg.split("'")[-2]
             if module_not_found != module:
                 tb = traceback.format_exc()
                 write_warning(
