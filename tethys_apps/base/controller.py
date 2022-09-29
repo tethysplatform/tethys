@@ -455,7 +455,7 @@ def handler(
             ...
 
         ------------
-        
+
         @handler(
             name='home',
             controller='my_app.controllers.my_app_controller',
@@ -464,7 +464,7 @@ def handler(
             ...
 
         ------------
-        
+
         @handler(
             name='home',
             controller='tethysext.my_extension.controllers.my_controller',
@@ -493,12 +493,12 @@ def handler(
             user_workspace = document.user_workspace
             app_workspace = document.app_workspace
             ...
-            
+
         ------------
-        
+
         def job_view(request, job_id):
             # Do something with URL variable ``job_id``
-            
+
         @handler(
             name='job_view',
             url='job-view/{job_id}',
