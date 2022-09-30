@@ -1,7 +1,5 @@
 Tethys Platform
 ===============
-.. image:: https://travis-ci.org/tethysplatform/tethys.svg?branch=master
-    :target: https://travis-ci.org/tethysplatform/tethys
 
 .. image:: https://coveralls.io/repos/github/tethysplatform/tethys/badge.svg
     :target: https://coveralls.io/github/tethysplatform/tethys

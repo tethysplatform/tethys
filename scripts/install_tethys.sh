@@ -13,7 +13,7 @@ OPTIONS:\n
 \t    -s, --tethys-src <PATH>             \t\t Path for tethys source directory. Default is \${TETHYS_HOME}/tethys.\n
 \t    -a, --allowed-hosts <HOST>          \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
-\t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'master'.\n
+\t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'main'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda.\n
 \t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
 \t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
@@ -89,7 +89,7 @@ TETHYS_DB_PORT=5436
 TETHYS_DB_DIR='psql'
 CONDA_HOME=~/miniconda
 CONDA_ENV_NAME='tethys-dev'
-BRANCH='master'
+BRANCH='main'
 
 TETHYS_SUPER_USER='admin'
 TETHYS_SUPER_USER_EMAIL=''
