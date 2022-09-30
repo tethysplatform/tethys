@@ -16,7 +16,7 @@ The official Tethys Docker images are located in the `tethysplatform/tethys-core
 +===============+======================================================================================================+
 | latest        | latest tagged released                                                                               |
 +---------------+------------------------------------------------------------------------------------------------------+
-| master        | latest development build (what's in the master branch)                                               |
+| dev           | latest development build (what's in the main branch)                                               |
 +---------------+------------------------------------------------------------------------------------------------------+
 | version       | Specify the version of Tethys image, for example: v3.0.5                                             |
 +---------------+------------------------------------------------------------------------------------------------------+
@@ -36,7 +36,7 @@ Use the following commands to download the Tethys image to your machine:
 
 .. code-block::
 
-    docker pull tethysplatform/tethys-core:master
+    docker pull tethysplatform/tethys-core:dev
 
 **Specific Version**
 
@@ -267,7 +267,7 @@ Environment variables can be set to customize the theme and content of the Tethy
 Run.sh
 ======
 
-The primary entrypoint for the Tethys Platform container is the `run.sh <https://github.com/tethysplatform/tethys/blob/master/docker/run.sh>`_ bash script. It performs the following tasks:
+The primary entrypoint for the Tethys Platform container is the `run.sh <https://github.com/tethysplatform/tethys/blob/main/docker/run.sh>`_ bash script. It performs the following tasks:
 
 * Checks and waits for the database to be ready
 * Applies Salt State files to initialize Tethys Portal and the apps
@@ -302,16 +302,16 @@ Salt Scripts
 ============
 
 .. _`Salt State files`: https://docs.saltstack.com/en/latest/topics/index.html
-.. _`top.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/top.sls
+.. _`top.sls`: https://github.com/tethysplatform/tethys/blob/main/docker/salt/top.sls
 
 Tethys uses `Salt State files`_ to perform runtime initialization of the container. The file, named `top.sls`_, contains a list of state files to run and the order in which to run them. These files are ``pre_tethys.sls``, ``tethyscore.sls`` and ``post_app.sls``. You can override this file with your own ``top.sls`` file to insert additional salt state files for your app (see: :ref:`docker_salt_state`).
 
 Salt Script Description
 -----------------------
 
-.. _`pre_tethys.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/pre_tethys.sls
-.. _`tethyscore.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/tethyscore.sls
-.. _`post_app.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/post_app.sls
+.. _`pre_tethys.sls`: https://github.com/tethysplatform/tethys/blob/main/docker/salt/pre_tethys.sls
+.. _`tethyscore.sls`: https://github.com/tethysplatform/tethys/blob/main/docker/salt/tethyscore.sls
+.. _`post_app.sls`: https://github.com/tethysplatform/tethys/blob/main/docker/salt/post_app.sls
 
 `pre_tethys.sls`_:
 
@@ -333,7 +333,7 @@ Salt Script Description
 Source Code
 ===========
 
-* `Dockerfile <https://github.com/tethysplatform/tethys/blob/master/Dockerfile>`_
+* `Dockerfile <https://github.com/tethysplatform/tethys/blob/main/Dockerfile>`_
 * `run.sh`_
 * `pre_tethys.sls`_
 * `tethyscore.sls`_
