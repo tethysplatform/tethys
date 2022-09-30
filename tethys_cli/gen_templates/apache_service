@@ -1,0 +1,8 @@
+[program:apache]
+command=/usr/sbin/httpd -D "FOREGROUND"
+autostart=true
+stopasgroup=true
+killasgroup=true
+autorestart=true
+startretries=1
+user=root
