@@ -1,10 +1,14 @@
-export ACTIVATE_SCRIPT=$CONDA_PREFIX/etc/conda/activate.d/tethys-activate.sh
-export DEACTIVATE_SCRIPT=$CONDA_PREFIX/etc/conda/deactivate.d/tethys-deactivate.sh
+export CONDA_SCRIPTS_DIR=$CONDA_PREFIX/etc/conda/
+export ACTIVATE_SCRIPT_DIR=$CONDA_SCRIPTS_DIR/activate.d
+export DEACTIVATE_SCRIPT_DIR=$CONDA_SCRIPTS_DIR/deactivate.d
+
+export ACTIVATE_SCRIPT=$ACTIVATE_SCRIPT_DIR/tethys-activate.sh
+export DEACTIVATE_SCRIPT=$DEACTIVATE_SCRIPT_DIR/tethys-deactivate.sh
 export STATIC_ROOT=~/.tethys/static
 export TETHYS_WORKSPACES_ROOT=~/.tethys/workspaces
 export TETHYS_HOME=~/.tethys
 export NGINX_USER=nginx
-export PORT=8000
+export PORT="${PORT:-8000}"
 export HOSTNAME=127.0.0.1
 
 if [ "${CONDA_ENV_NAME}" != "tethys" ]
@@ -12,6 +16,8 @@ then
   TETHYS_HOME=${TETHYS_HOME}/$CONDA_DEFAULT_ENV
 fi
 
+mkdir -p ${ACTIVATE_SCRIPT_DIR}
+mkdir -p ${DEACTIVATE_SCRIPT_DIR}
 touch ${ACTIVATE_SCRIPT}
 touch ${DEACTIVATE_SCRIPT}
 
@@ -41,3 +47,5 @@ echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
 echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
 echo "unalias cs" >> "${DEACTIVATE_SCRIPT}"
 echo "unalias tsr" >> "${DEACTIVATE_SCRIPT}"
+
+source ${ACTIVATE_SCRIPT}

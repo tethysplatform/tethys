@@ -49,7 +49,7 @@ except FileNotFoundError:
 except Exception:
     log.exception('There was an error while attempting to read the settings from the portal_config.yml file.')
 
-bokeh_settings.resources = portal_config_settings.pop('BOKEH_RESOURCES', 'cdn')
+bokeh_settings.resources = portal_config_settings.pop('BOKEH_RESOURCES', 'inline')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = portal_config_settings.pop('SECRET_KEY', generate_secret_key())
@@ -266,7 +266,6 @@ TEMPLATES = [
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     bokehjsdir(),
@@ -276,11 +275,12 @@ STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop('STATICFILES_USE_NPM', False)
 if STATICFILES_USE_NPM:
     STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'static', 'node_modules'))
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = portal_config_settings.pop('STATICFILES_FINDERS_OVERRIDE', (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'tethys_apps.static_finders.TethysStaticFinder'
-)
+    'tethys_apps.static_finders.TethysStaticFinder',
+))
+STATICFILES_FINDERS = (*STATICFILES_FINDERS, *portal_config_settings.pop('STATICFILES_FINDERS', []))
 
 STATIC_ROOT = TETHYS_PORTAL_CONFIG.pop('STATIC_ROOT', os.path.join(TETHYS_HOME, 'static'))
 

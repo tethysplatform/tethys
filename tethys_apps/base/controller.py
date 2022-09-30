@@ -345,19 +345,11 @@ def controller(
         else:
             controller = function_or_class
 
-        if login_required:
-            controller = login_required_decorator(
-                redirect_field_name=redirect_field_name, login_url=login_url
-            )(controller)
-
         if user_workspace:
             controller = user_workspace_decorator(controller)
 
         if app_workspace:
             controller = app_workspace_decorator(controller)
-
-        if ensure_oauth2_provider:
-            controller = ensure_oauth2(ensure_oauth2_provider)(controller)
 
         if permissions_required:
             controller = permission_required(
@@ -367,6 +359,16 @@ def controller(
 
         for codename in enforce_quota_codenames:
             controller = enforce_quota(codename)(controller)
+
+        if ensure_oauth2_provider:
+            # this needs to come before login_required
+            controller = ensure_oauth2(ensure_oauth2_provider)(controller)
+
+        if login_required:
+            # this should be at the end, so it's the first to be evaluated
+            controller = login_required_decorator(
+                redirect_field_name=redirect_field_name, login_url=login_url
+            )(controller)
 
         _process_url_kwargs(controller, url_map_kwargs_list)
         return function_or_class if inspect.isclass(function_or_class) else controller
@@ -455,6 +457,24 @@ def handler(
         ------------
 
         @handler(
+            name='home',
+            controller='my_app.controllers.my_app_controller',
+        )
+        def my_app_handler(document):
+            ...
+
+        ------------
+
+        @handler(
+            name='home',
+            controller='tethysext.my_extension.controllers.my_controller',
+        )
+        def my_app_handler(document):
+            ...
+
+        ------------
+
+        @handler(
             with_request=True
         )
         def my_app_handler(document):
@@ -474,9 +494,30 @@ def handler(
             app_workspace = document.app_workspace
             ...
 
+        ------------
+
+        def job_view(request, job_id):
+            # Do something with URL variable ``job_id``
+
+        @handler(
+            name='job_view',
+            url='job-view/{job_id}',
+            login_required=True,
+            ensure_oauth2_provider=app.PROVIDER_NAME
+        )
+        def job_view_handler(document):
+            ...
+
+        ------------
+
 
     """  # noqa: E501
     controller = controller or _get_bokeh_controller(template, app_package)
+    if isinstance(controller, str):
+        from .function_extractor import TethysFunctionExtractor
+        modules = controller.split('.')
+        prefix = None if modules[0] in ['tethysapp', 'tethysext'] else TethysFunctionExtractor.PATH_PREFIX
+        controller = TethysFunctionExtractor(controller, prefix=prefix).function
 
     def wrapped(function):
         controller.__name__ = function.__name__
@@ -509,7 +550,7 @@ def _get_url_map_kwargs_list(
 ):
     final_urls = []
     if url is not None:
-        final_urls = _listify(url)
+        final_urls = url if isinstance(url, dict) else _listify(url)
 
     if not final_urls:
         module_parts = function_or_class.__module__.split('.')[3:]
@@ -626,14 +667,15 @@ def register_controllers(
                     f'"{module_name}" but the module "{module}" could not be imported. '
                     f'Any controllers in that module will not be registered.'
                 )
-
-            if not isinstance(e, ModuleNotFoundError):
+            module_not_found = None
+            if isinstance(e, ModuleNotFoundError):
+                module_not_found = e.msg.split("'")[-2]
+            if module_not_found != module:
+                tb = traceback.format_exc()
                 write_warning(
                     f'Warning: Found controller module "{module}", but it could not be imported '
-                    f'because of the following error: {e}'
+                    f'because of the following error: {e}\n\n{tb}'
                 )
-                tb = traceback.format_exc()
-                write_warning(tb)
 
         else:
             all_modules.extend(get_all_submodules(module))

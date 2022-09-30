@@ -8,7 +8,18 @@
 """
 import uuid
 import factory
+from unittest import mock
 from django.contrib.auth.models import User
+
+import tethys_apps.base.app_base as tethys_app_base
+
+# mock bokeh_django functionality
+tethys_app_base.has_bokeh_django = True
+tethys_app_base.autoload = mock.MagicMock(
+    return_value=mock.MagicMock(app_context='app_context', url='basename')
+)
+tethys_app_base.WSConsumer = mock.MagicMock()
+tethys_app_base.AutoloadJsConsumer = mock.MagicMock()
 
 
 class UserFactory(factory.Factory):

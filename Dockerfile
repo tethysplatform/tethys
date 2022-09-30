@@ -52,6 +52,7 @@ ENV CHANNEL_LAYERS_BACKEND="channels.layers.InMemoryChannelLayer"
 ENV CHANNEL_LAYERS_CONFIG="\"{}\""
 ENV RECAPTCHA_PRIVATE_KEY=""
 ENV RECAPTCHA_PUBLIC_KEY=""
+ENV OTHER_SETTINGS=""
 
 # Tethys site arguments
 ENV SITE_TITLE=""
@@ -191,4 +192,7 @@ WORKDIR ${TETHYS_HOME}
 # Create Salt configuration based on ENVs
 CMD bash run.sh
 HEALTHCHECK --start-period=240s \
-  CMD  ps $(cat $(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')) > /dev/null; && ps $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) > /dev/null;
+  CMD  function check_process_is_running(){ if [ "$(ps $1 | wc -l)" -ne 2 ]; then echo The $2 process \($1\) is  not running. 1>&2; return 1; fi }; \
+  check_process_is_running $(cat $(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')) supervisor; \
+  check_process_is_running $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) nginx; \
+  check_process_is_running $(ls -l /run/tethys_asgi0.sock.lock | awk -F'-> ' '{print $2}') asgi;
