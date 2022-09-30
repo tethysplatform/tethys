@@ -1,27 +1,26 @@
-<VirtualHost 0.0.0.0:80>
-    ServerName example.com
-    ServerAlias www.example.com
+{% if ssl %}
+<VirtualHost *:443>
+    SSLEngine on
+    SSLProxyEngine On
+    SSLCertificateFile {{ ssl_cert }}
+    SSLCertificateKeyFile {{ ssl_key }}
 
-    Alias /static/ /var/www/tethys/static/
+{% else %}
+<VirtualHost *:80>
+{% endif %}
+    ServerName {{ server_name }}
 
-    <Directory /var/www/tethys/static/>
+    ProxyPass /static/ !
+    Alias /static/ {{ static_root }}
+
+    <Directory {{ static_root }}>
         Require all granted
     </Directory>
 
-    WSGIScriptAlias / /usr/lib/tethys/src/tethys_portal/wsgi.py
+    ProxyRequests Off
+    ProxyPreserveHost On
 
-    <Directory /usr/lib/tethys/src/tethys_portal>
-        <Files wsgi.py>
-            Require all granted
-        </Files>
-    </Directory>
-
-    # Daemon config
-    WSGIDaemonProcess tethys_default \
-     python-path=/usr/lib/tethys/src/tethys_portal:/usr/lib/tethys/lib/python2.7/site-packages
-    WSGIProcessGroup tethys_default
-
-    # Logs
-    ErrorLog /var/log/apache2/tethys_default.error.log
-    CustomLog /var/log/apache2/tethys_default.custom.log combined
+    ProxyPassMatch ^/(.*/ws)$ ws://127.0.0.1:{{ port }}/$1
+    ProxyPass / http://127.0.0.1:{{ port }}/
+    ProxyPassReverse / http://127.0.0.1:{{ port }}/
 </VirtualHost>

@@ -12,6 +12,7 @@ from tethys_cli.gen_commands import (
     gen_vendor_static_files,
     download_vendor_static_files,
     get_destination_path,
+    GEN_APACHE_OPTION,
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
     GEN_ASGI_SERVICE_OPTION,
@@ -77,6 +78,26 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.get_settings_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    def test_generate_command_apache_option(self, mock_os_path_isfile, mock_file, mock_settings, mock_write_info):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_APACHE_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+        mock_settings.side_effect = ['/foo/static']
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+        mock_settings.assert_called_with('STATIC_ROOT')
+
+        mock_write_info.assert_called_once()
+
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
+    @mock.patch('tethys_cli.gen_commands.get_settings_value')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_nginx_option(self, mock_os_path_isfile, mock_file, mock_settings, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_NGINX_OPTION
@@ -127,8 +148,8 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         # Verify it makes the Tethys Home directory
         mock_makedirs.assert_called()
-        rts_call_args = mock_write_info.call_args_list
-        self.assertIn('A Tethys Portal configuration file', rts_call_args[0][0][0])
+        rts_call_args = mock_write_info.call_args_list[0]
+        self.assertIn('A Tethys Portal configuration file', rts_call_args.args[0])
 
     @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.render_template')
@@ -155,7 +176,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
         mock_os_path_exists.assert_any_call('/etc/nginx/nginx.conf')
-        context = mock_render_template.call_args_list[0][0][1]
+        context = mock_render_template.call_args.args[1]
         self.assertEqual('http-', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
 
@@ -186,7 +207,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
         mock_os_path_exists.assert_any_call('/etc/nginx/nginx.conf')
-        context = mock_render_template.call_args_list[0][0][1]
+        context = mock_render_template.call_args.args[1]
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
 
@@ -217,7 +238,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
         mock_os_path_exists.assert_any_call('/etc/nginx/nginx.conf')
-        context = mock_render_template.call_args_list[0][0][1]
+        context = mock_render_template.call_args.args[1]
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
 
@@ -310,9 +331,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isdir.assert_any_call(mock_args.directory)
 
         # Check if print is called correctly
-        rts_call_args = mock_write_error.call_args_list
-        self.assertIn('ERROR: ', rts_call_args[0][0][0])
-        self.assertIn('is not a valid directory', rts_call_args[0][0][0])
+        rts_call_args = mock_write_error.call_args
+        self.assertIn('ERROR: ', rts_call_args.args[0])
+        self.assertIn('is not a valid directory', rts_call_args.args[0])
 
         mock_env.assert_called_with('CONDA_PREFIX')
 
@@ -341,9 +362,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
 
         # Check if print is called correctly
-        rts_call_args = mock_write_warning.call_args_list
-        self.assertIn('Generation of', rts_call_args[0][0][0])
-        self.assertIn('cancelled', rts_call_args[0][0][0])
+        rts_call_args = mock_write_warning.call_args
+        self.assertIn('Generation of', rts_call_args.args[0])
+        self.assertIn('cancelled', rts_call_args.args[0])
 
         mock_env.assert_called_with('CONDA_PREFIX')
 
@@ -393,8 +414,8 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         generate_command(args=mock_args)
 
-        rts_call_args = mock_write_info.call_args_list
-        self.assertIn('Please review the generated install.yml', rts_call_args[0][0][0])
+        rts_call_args = mock_write_info.call_args_list[0]
+        self.assertIn('Please review the generated install.yml', rts_call_args.args[0])
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
@@ -450,10 +471,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_run_command.assert_any_call('list', 'foo')
         mock_run_command.assert_any_call('list', 'goo')
 
-        rts_call_args = mock_print.call_args_list
-        self.assertListEqual([], rts_call_args)
+        mock_print.assert_not_called()
 
-        render_context = mock_Template().render.call_args_list[0][0][0]
+        render_context = mock_Template().render.call_args.args[0]
         expected_context = {
             'run_requirements': [
                 'foo=1.2.*',
@@ -482,7 +502,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         ret = gen_meta_yaml(mock_args)
 
-        self.assertEqual(1, len(mock_dvfce.call_args_list))
+        self.assertEqual(1, mock_dvfce.call_count)
         mock_dvfce.assert_called_with('foo', level='minor')
 
         expected_context = {
@@ -692,11 +712,11 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         self.assertEqual('foo', ret)
 
-        rts_call_args = mock_print.call_args_list
+        rts_call_args_list = mock_print.call_args_list
         self.assertEqual('ERROR: Something went wrong looking up dependency "foo" in environment',
-                         rts_call_args[0][0][0])
+                         rts_call_args_list[0].args[0])
         self.assertEqual('Some error',
-                         rts_call_args[1][0][0])
+                         rts_call_args_list[1].args[0])
 
     def test_gen_vendor_static_files(self):
         context = gen_vendor_static_files(mock.MagicMock())
