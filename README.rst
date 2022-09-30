@@ -1,8 +1,13 @@
 Tethys Platform
 ===============
 
+.. image:: https://github.com/tethysplatform/tethys/actions/workflows/tethys.yml/badge.svg
+    :target: https://github.com/tethysplatform/tethys/actions
+    :alt: Test Status
+
 .. image:: https://coveralls.io/repos/github/tethysplatform/tethys/badge.svg
     :target: https://coveralls.io/github/tethysplatform/tethys
+    :alt: Coverage Status
 
 
 .. image:: https://readthedocs.org/projects/tethys-platform/badge/?version=stable
