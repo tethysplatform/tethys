@@ -15,6 +15,7 @@
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
 {% set TETHYS_PORT = salt['environ.get']('TETHYS_PORT') %}
 {% set TETHYS_PUBLIC_HOST = salt['environ.get']('TETHYS_PUBLIC_HOST') %}
+{% set OTHER_SETTINGS = salt['environ.get']('OTHER_SETTINGS') %}
 {% set TETHYS_DB_SUPERUSER = salt['environ.get']('TETHYS_DB_SUPERUSER') %}
 {% set TETHYS_DB_SUPERUSER_PASS = salt['environ.get']('TETHYS_DB_SUPERUSER_PASS') %}
 {% set PORTAL_SUPERUSER_NAME = salt['environ.get']('PORTAL_SUPERUSER_NAME') %}
@@ -94,6 +95,7 @@ Generate_Tethys_Settings_TethysCore:
         --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
         --set TETHYS_PUBLIC_HOST {{ TETHYS_PUBLIC_HOST }}
+        {{ OTHER_SETTINGS }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:

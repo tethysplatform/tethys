@@ -49,7 +49,7 @@ def _get_bokeh_controller(template=None, app_package=None):
     extends_template = f'{app_package}/base.html' if app_package else None
 
     def bokeh_controller(request):
-        script = server_document(request.build_absolute_uri())
+        script = server_document(request.get_full_path())
         context = {'script': script}
         if extends_template:
             context['extends_template'] = extends_template

@@ -22,10 +22,11 @@ from .mixins import TethysBaseMixin
 from .workspace import get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
-from bokeh.server.django.consumers import WSConsumer
-from bokeh.server.django import autoload
-
-from bokeh.server.django.consumers import AutoloadJsConsumer
+has_bokeh_django = True
+try:
+    from bokeh_django import autoload, WSConsumer, AutoloadJsConsumer
+except ImportError:
+    has_bokeh_django = False
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -140,6 +141,14 @@ class TethysBase(TethysBaseMixin):
         Example:
             self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
         """
+        if not has_bokeh_django:
+            from tethys_cli.cli_colors import write_error
+            write_error(
+                f'ERROR! The the "{self.name}" app has a Bokeh-type handler "{handler_function.__name__}", '
+                f'but the "bokeh_django" package is not installed. '
+                f'Please install "bokeh_django" for the app to function properly.'
+            )
+            return
         base_app_endpoint = '/'.join(['apps', self.root_url])
         stripped_url = url_map.url.replace("^", "").replace("$", "")
 

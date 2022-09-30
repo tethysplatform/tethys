@@ -136,6 +136,10 @@ class TestController(unittest.TestCase):
         self.assertEqual(handler, kwargs['handler'])
         self.assertEqual(handler_type, kwargs['handler_type'])
 
+    def test_handler_controller_as_string(self):
+        function = mock.MagicMock(__name__='test')
+        tethys_controller.handler(controller='test_app.controllers.home_controller')(function)
+
     @mock.patch('tethys_apps.base.controller.with_request_decorator')
     def test_handler_with_request(self, mock_with_request):
         function = mock.MagicMock(__name__='test')
@@ -208,7 +212,7 @@ class TestController(unittest.TestCase):
     def test_register_controllers_with_import_error(self, mock_importlib, mock_warning, _, __, ___):
         mock_importlib.import_module.side_effect = ImportError
         tethys_controller.register_controllers('root', 'controllers')
-        self.assertEqual(3, mock_warning.call_count)
+        self.assertEqual(2, mock_warning.call_count)
 
     @mock.patch('tethys_apps.base.controller.get_all_submodules')
     @mock.patch('tethys_apps.base.controller.url_map_maker')
@@ -216,9 +220,9 @@ class TestController(unittest.TestCase):
     @mock.patch('tethys_apps.base.controller.write_warning')
     @mock.patch('tethys_apps.base.controller.importlib')
     def test_register_controllers_with_module_not_found_error(self, mock_importlib, mock_warning, _, __, ___):
-        mock_importlib.import_module.side_effect = ModuleNotFoundError
+        mock_importlib.import_module.side_effect = ModuleNotFoundError("No module named 'another_non_existent_module'")
         tethys_controller.register_controllers('root', 'controllers')
-        mock_warning.assert_called_once()
+        self.assertEqual(2, mock_warning.call_count)
 
     @mock.patch('tethys_apps.base.controller.isinstance')
     @mock.patch('tethys_apps.base.controller.get_all_submodules')
