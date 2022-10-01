@@ -18,16 +18,16 @@ from tethys_compute.models.basic_job import BasicJob  # noqa: F401
 from tethys_compute.models.condor.condor_base import CondorBase  # noqa: F401
 from tethys_compute.models.condor.condor_py_job import CondorPyJob  # noqa: F401
 from tethys_compute.models.condor.condor_job import CondorJob  # noqa: F401
-from tethys_compute.models.condor.condor_py_workflow import (
+from tethys_compute.models.condor.condor_py_workflow import (  # noqa: F401
     CondorPyWorkflow,
-)  # noqa: F401
+)
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow  # noqa: F401
-from tethys_compute.models.condor.condor_workflow_node import (
+from tethys_compute.models.condor.condor_workflow_node import (  # noqa: F401
     CondorWorkflowNode,
-)  # noqa: F401
-from tethys_compute.models.condor.condor_workflow_job_node import (
+)
+from tethys_compute.models.condor.condor_workflow_job_node import (  # noqa: F401
     CondorWorkflowJobNode,
-)  # noqa: F401
+)
 
 from tethys_compute.models.dask.dask_job import DaskJob
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler  # noqa: F401

@@ -33,12 +33,12 @@ dependencies:
   - bokeh
 
   # external services dependencies
-  - tethys_dataset_services>=2.0.0  # This needs upgrading
+  - tethys_dataset_services>=2.0.0 # This needs upgrading
   - hs_restclient
   - owslib
   - requests
-  - dask  # The pin to 1.2 is holding back Python to 3.7
-  - tethys_dask_scheduler>=1.0.2  # This needs upgrading
+  - dask # The pin to 1.2 is holding back Python to 3.7
+  - tethys_dask_scheduler>=1.0.2 # This needs upgrading
   - service_identity
   - condorpy
   - siphon
@@ -79,9 +79,10 @@ dependencies:
   - pip
   - future
   - flake8
+  - flake8-bugbear
   - git
   - setuptools_scm
-  - openssl<3.0.0  # Pin until openssl issue is resolved by conda
+  - openssl<3.0.0 # Pin until openssl issue is resolved by conda
 
   # Conda to allow Python API access to Conda Install
   - conda

@@ -319,7 +319,7 @@ class DaskJob(TethysJob):
             self.scheduler.client.get_scheduler_logs()
         )
         log_workers = self.scheduler.client.get_worker_logs()
-        for i, (worker, worker_content) in enumerate(log_workers.items()):
+        for i, (_, worker_content) in enumerate(log_workers.items()):
             contents[f"Worker-{i}"] = self._parse_log_content(worker_content)
         return contents
 

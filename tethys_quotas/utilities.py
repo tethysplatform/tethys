@@ -26,7 +26,7 @@ def sync_resource_quota_handlers():
                 components = quota_class_str.split(".")
                 mod = __import__(".".join(components[:-1]), fromlist=[components[-1]])
                 class_obj = getattr(mod, components[-1])
-            except:  # noqa: E722
+            except Exception:
                 log.warning(
                     "Unable to load ResourceQuotaHandler: {} is not correctly formatted class or does not exist".format(
                         quota_class_str
@@ -205,7 +205,7 @@ def _convert_storage_units(units, amount):
 
     amount = amount * base_conversion[0]
 
-    for factor, suffix in base_units:
+    for factor, suffix in base_units:  # noqa: B007
         if amount >= factor:
             break
     amount = int(amount / factor)

@@ -33,7 +33,7 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         """
         return self.condorpy_workflow
 
-    def _execute(self, options=[]):
+    def _execute(self, options=list):
         self.load_nodes()
         super()._execute(options=options)
 

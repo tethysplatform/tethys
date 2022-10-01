@@ -28,7 +28,7 @@ def enforce_quota(codename):
         def wrapper(*args, **kwargs):
             try:
                 request = None
-                for index, arg in enumerate(args):
+                for _, arg in enumerate(args):
                     if isinstance(arg, HttpRequest):
                         request = arg
                         break

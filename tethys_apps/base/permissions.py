@@ -80,7 +80,7 @@ class PermissionGroup:
 
     """
 
-    def __init__(self, name, permissions=[]):
+    def __init__(self, name, permissions=list):
         """
         Constructor
         """

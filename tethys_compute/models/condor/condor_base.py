@@ -207,7 +207,7 @@ class CondorBase(TethysJob):
         Return True if log content is not empty.
         """
         log_funcs = list()
-        for key, value in log_contents.items():
+        for _, value in log_contents.items():
             if isinstance(value, dict):
                 for child_value in value.values():
                     log_funcs.append(child_value)

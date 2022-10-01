@@ -5,7 +5,7 @@ from django.test import override_settings
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch("django.views.decorators.cache.never_cache", lambda x: x).start()
 
-from tethys_portal.views.user import (
+from tethys_portal.views.user import (  # noqa: E402
     profile,
     settings,
     change_password,
@@ -13,7 +13,7 @@ from tethys_portal.views.user import (
     delete_account,
     manage_storage,
     clear_workspace,
-)  # noqa: E402
+)
 from tethys_apps.models import TethysApp  # noqa: E402
 
 

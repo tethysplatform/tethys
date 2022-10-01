@@ -31,7 +31,7 @@ GIZMO_NAME_MAP = {}
 EXTENSION_PATH_MAP = {}
 
 # Add gizmos to GIZMO_NAME_MAP
-for name, cls in tethys_sdk.gizmos.__dict__.items():
+for _, cls in tethys_sdk.gizmos.__dict__.items():
     if (
         inspect.isclass(cls)
         and issubclass(cls, TethysGizmoOptions)
@@ -44,10 +44,10 @@ for name, cls in tethys_sdk.gizmos.__dict__.items():
 harvester = SingletonHarvester()
 extension_modules = harvester.extension_modules
 
-for module_name, extension_module in extension_modules.items():
+for _, extension_module in extension_modules.items():
     try:
         gizmo_module = __import__("{}.gizmos".format(extension_module), fromlist=[""])
-        for name, cls in gizmo_module.__dict__.items():
+        for _, cls in gizmo_module.__dict__.items():
             if (
                 inspect.isclass(cls)
                 and issubclass(cls, TethysGizmoOptions)

@@ -12,8 +12,8 @@ from tethys_apps.base.app_base import TethysAppBase, TethysExtensionBase  # noqa
 from tethys_apps.base.bokeh_handler import with_request, with_workspaces  # noqa: F401
 from tethys_apps.base.url_map import url_map_maker  # noqa: F401
 from tethys_apps.base.workspace import TethysWorkspace  # noqa: F401
-from tethys_apps.base.permissions import (
+from tethys_apps.base.permissions import (  # noqa: F401
     Permission,
     PermissionGroup,
     has_permission,
-)  # noqa: F401
+)

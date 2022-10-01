@@ -847,7 +847,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     def test_gen_vendor_static_files(self):
         context = gen_vendor_static_files(mock.MagicMock())
-        for k, v in context.items():
+        for _, v in context.items():
             self.assertIsNotNone(v)
 
     @mock.patch("tethys_cli.gen_commands.call")
