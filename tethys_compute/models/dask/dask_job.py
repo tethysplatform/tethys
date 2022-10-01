@@ -18,7 +18,7 @@ from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.dask.dask_field import DaskSerializedField
 import json
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 client_fire_forget = None
 
 
@@ -26,30 +26,33 @@ class DaskJob(TethysJob):
     """
     Dask job type.
     """
+
     key = models.CharField(max_length=1024, null=True)
-    scheduler = models.ForeignKey(DaskScheduler, on_delete=models.SET_NULL, blank=True, null=True)
+    scheduler = models.ForeignKey(
+        DaskScheduler, on_delete=models.SET_NULL, blank=True, null=True
+    )
     forget = models.BooleanField(default=False)
     result = DaskSerializedField(blank=True, null=True)
 
     DASK_TO_STATUS_TYPES = {
         # States returned from Scheduler transition event.
-        'new-released': 'SUB',
-        'released-waiting': 'SUB',
-        'waiting-no-worker': 'SUB',
-        'no-worker-waiting': 'SUB',
-        'no-worker-processing': 'RUN',
-        'waiting-processing': 'RES',  # Should technically be RUN, but needs to be RES to get results
-        'processing-memory': 'RES',
-        'memory-released': 'RES',
+        "new-released": "SUB",
+        "released-waiting": "SUB",
+        "waiting-no-worker": "SUB",
+        "no-worker-waiting": "SUB",
+        "no-worker-processing": "RUN",
+        "waiting-processing": "RES",  # Should technically be RUN, but needs to be RES to get results
+        "processing-memory": "RES",
+        "memory-released": "RES",
         # 'memory-forgotten': 'RES',  # Will freeze processing results if enabled.
         # 'processing-forgotten': 'RES',  # Will freeze processing results if enabled.
-        'processing-erred': 'ERR',
-        'erred-forgotten': 'ERR',
+        "processing-erred": "ERR",
+        "erred-forgotten": "ERR",
         # 'cancelled': 'ABT',  # Not sure how to classify this, ABT breaks it
         # States returned by Future objects
-        'pending': 'SUB',
-        'processing': 'RUN',
-        'finished': 'COM',
+        "pending": "SUB",
+        "processing": "RUN",
+        "finished": "COM",
     }
 
     @property
@@ -68,7 +71,7 @@ class DaskJob(TethysJob):
         Returns:
             datetime.timedelta: update status interval.
         """
-        if not hasattr(self, '_update_status_interval'):
+        if not hasattr(self, "_update_status_interval"):
             self._update_status_interval = datetime.timedelta(seconds=0)
         return self._update_status_interval
 
@@ -76,17 +79,16 @@ class DaskJob(TethysJob):
     def future(self):
         """
         Get Future instance associated with this job. The Future can be used to query status, get results, and manage the dask task.
-        
+
         Returns:
             dask.distributed.Future: a future bound to the key associated with the Dask Job.
         """  # noqa: #E501
-        if not getattr(self, '_future', None):
+        if not getattr(self, "_future", None):
             if self.key and self.client:
                 try:
-                    future = Future(key=self.key,
-                                    client=self.client)
+                    future = Future(key=self.key, client=self.client)
                 except Exception:
-                    log.exception('Dask Future Init Error')
+                    log.exception("Dask Future Init Error")
                     return None
             else:
                 return None
@@ -102,8 +104,10 @@ class DaskJob(TethysJob):
         Args:
             future_or_delayed (dask.Delayed or dask.distributed.Future): dask task object to track using TethysJobs.
         """  # noqa: E501
-        if not isinstance(future_or_delayed, Future) and not isinstance(future_or_delayed, Delayed):
-            raise ValueError('Must pass a valid instance of Delayed or Future.')
+        if not isinstance(future_or_delayed, Future) and not isinstance(
+            future_or_delayed, Delayed
+        ):
+            raise ValueError("Must pass a valid instance of Delayed or Future.")
 
         if isinstance(future_or_delayed, Delayed):
             future = self.client.compute(future_or_delayed)
@@ -114,7 +118,7 @@ class DaskJob(TethysJob):
 
         # NOTE: Job may not actually be running at this point, but we don't have another
         # way to know when the first node in the workflow starts running.
-        self._status = 'RUN'
+        self._status = "RUN"
         self.start_time = timezone.now()
 
         # Send key to the dask scheduler so the scheduler knows which jobs to send status updates to Tethys.
@@ -184,7 +188,9 @@ class DaskJob(TethysJob):
             # Clean up client
             self.client.close()
             result = e
-            log.warning('Exception encountered when retrieving results: "{}"'.format(str(e)))
+            log.warning(
+                'Exception encountered when retrieving results: "{}"'.format(str(e))
+            )
 
         # Tell scheduler to stop sending updates about this key
         self.client.set_metadata(self.key, False)
@@ -195,21 +201,21 @@ class DaskJob(TethysJob):
             try:
                 result = self.process_results_function(result)
             except Exception as e:
-                log.exception('Process Results Function Error')
-                self._status = 'ERR'
+                log.exception("Process Results Function Error")
+                self._status = "ERR"
                 result = str(e)
 
         # Serialize the result
         try:
             self.result = result
         except Exception:
-            log.exception('Results Serialization Error')
-            self._status = 'ERR'
+            log.exception("Results Serialization Error")
+            self._status = "ERR"
         else:
-            self._status = 'COM' if self._status != 'ERR' else 'ERR'
+            self._status = "COM" if self._status != "ERR" else "ERR"
 
         # Erase the key to avoid problem with dask recycle key
-        self.key = ''
+        self.key = ""
 
         # save the results or status in the database
         self.save()
@@ -231,15 +237,17 @@ class DaskJob(TethysJob):
         """
 
         ep = self.extended_properties
-        is_processing_results = ep.get('processing_results', False)
+        is_processing_results = ep.get("processing_results", False)
 
         if not is_processing_results:
-            ep['processing_results'] = True
+            ep["processing_results"] = True
             self.extended_properties = ep
             self.save()
             return True
         else:
-            log.warning('Unable to aquire lock. Processing results already occurring. Skipping...')
+            log.warning(
+                "Unable to aquire lock. Processing results already occurring. Skipping..."
+            )
             return False
 
     def _release_pr_lock(self):
@@ -247,7 +255,7 @@ class DaskJob(TethysJob):
         Release processing results lock.
         """
         ep = self.extended_properties
-        ep['processing_results'] = False
+        ep["processing_results"] = False
         self.extended_properties = ep
         self.save()
 
@@ -307,10 +315,12 @@ class DaskJob(TethysJob):
         Resubmit this job. Simply use the retry function.
         """
         contents = dict()
-        contents['Scheduler'] = self._parse_log_content(self.scheduler.client.get_scheduler_logs())
+        contents["Scheduler"] = self._parse_log_content(
+            self.scheduler.client.get_scheduler_logs()
+        )
         log_workers = self.scheduler.client.get_worker_logs()
         for i, (worker, worker_content) in enumerate(log_workers.items()):
-            contents[f'Worker-{i}'] = self._parse_log_content(worker_content)
+            contents[f"Worker-{i}"] = self._parse_log_content(worker_content)
         return contents
 
     @staticmethod

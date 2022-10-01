@@ -11,5 +11,5 @@ class TestTethysBaseMixin(unittest.TestCase):
 
     def test_TethysBaseMixin(self):
         result = tethys_mixins.TethysBaseMixin()
-        result.root_url = 'test-url'
-        self.assertEqual('test_url', result.url_namespace)
+        result.root_url = "test-url"
+        self.assertEqual("test_url", result.url_namespace)

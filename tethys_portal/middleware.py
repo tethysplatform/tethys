@@ -26,37 +26,37 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
         if hasattr(social_exceptions, exception.__class__.__name__):
             if isinstance(exception, social_exceptions.AuthCanceled):
                 if request.user.is_anonymous:
-                    return redirect('accounts:login')
+                    return redirect("accounts:login")
                 else:
-                    return redirect('user:settings')
+                    return redirect("user:settings")
             elif isinstance(exception, social_exceptions.AuthAlreadyAssociated):
-                blurb = 'The {0} account you tried to connect to has already been associated with another account.'
+                blurb = "The {0} account you tried to connect to has already been associated with another account."
                 with pretty_output(FG_WHITE) as p:
                     p.write(exception.backend.name)
-                if 'google' in exception.backend.name:
-                    blurb = blurb.format('Google')
-                elif 'linkedin' in exception.backend.name:
-                    blurb = blurb.format('LinkedIn')
-                elif 'hydroshare' in exception.backend.name:
-                    blurb = blurb.format('HydroShare')
-                elif 'facebook' in exception.backend.name:
-                    blurb = blurb.format('Facebook')
+                if "google" in exception.backend.name:
+                    blurb = blurb.format("Google")
+                elif "linkedin" in exception.backend.name:
+                    blurb = blurb.format("LinkedIn")
+                elif "hydroshare" in exception.backend.name:
+                    blurb = blurb.format("HydroShare")
+                elif "facebook" in exception.backend.name:
+                    blurb = blurb.format("Facebook")
                 else:
-                    blurb = blurb.format('social')
+                    blurb = blurb.format("social")
 
                 messages.success(request, blurb)
 
                 if request.user.is_anonymous:
-                    return redirect('accounts:login')
+                    return redirect("accounts:login")
                 else:
-                    return redirect('user:settings')
+                    return redirect("user:settings")
             elif isinstance(exception, social_exceptions.NotAllowedToDisconnect):
-                blurb = 'Unable to disconnect from this social account.'
+                blurb = "Unable to disconnect from this social account."
                 messages.success(request, blurb)
                 if request.user.is_anonymous:
-                    return redirect('accounts:login')
+                    return redirect("accounts:login")
                 else:
-                    return redirect('user:settings')
+                    return redirect("user:settings")
 
 
 class TethysAppAccessMiddleware:
@@ -72,8 +72,12 @@ class TethysAppAccessMiddleware:
         else:
             if not app.enabled:
                 if request.user.is_staff:
-                    return handler_404(request, PermissionDenied, "This app is disabled. A user with admin permissions "
-                                                                  "can enable this app from the app settings page.")
+                    return handler_404(
+                        request,
+                        PermissionDenied,
+                        "This app is disabled. A user with admin permissions "
+                        "can enable this app from the app settings page.",
+                    )
                 else:
                     return handler_404(request, PermissionDenied)
             elif user_can_access_app(request.user, app):
@@ -82,18 +86,21 @@ class TethysAppAccessMiddleware:
                 return handler_404(request, PermissionDenied)
 
 
-class TethysMfaRequiredMiddleware():
+class TethysMfaRequiredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        mfa_required = getattr(settings, 'MFA_REQUIRED', False)
-        sso_mfa_required = getattr(settings, 'SSO_MFA_REQUIRED', False)
-        admin_mfa_required = getattr(settings, 'ADMIN_MFA_REQUIRED', True)
+        mfa_required = getattr(settings, "MFA_REQUIRED", False)
+        sso_mfa_required = getattr(settings, "SSO_MFA_REQUIRED", False)
+        admin_mfa_required = getattr(settings, "ADMIN_MFA_REQUIRED", True)
 
         # Override MFA_REQUIRED setting for API Token authentication
-        if mfa_required and 'Authorization' in request.headers \
-                and TokenAuthentication.keyword in request.headers['Authorization']:
+        if (
+            mfa_required
+            and "Authorization" in request.headers
+            and TokenAuthentication.keyword in request.headers["Authorization"]
+        ):
             # Verify Token
             try:
                 ta = TokenAuthentication()
@@ -103,8 +110,13 @@ class TethysMfaRequiredMiddleware():
                 pass
 
         # Override MFA_REQUIRED setting for users logged in with SSO
-        has_social_auth_attr = getattr(request.user, 'social_auth', None) is not None
-        if mfa_required and not sso_mfa_required and has_social_auth_attr and request.user.social_auth.count() > 0:
+        has_social_auth_attr = getattr(request.user, "social_auth", None) is not None
+        if (
+            mfa_required
+            and not sso_mfa_required
+            and has_social_auth_attr
+            and request.user.social_auth.count() > 0
+        ):
             mfa_required = False
 
         # Override MFA_REQUIRED setting for staff users
@@ -112,15 +124,20 @@ class TethysMfaRequiredMiddleware():
             mfa_required = False
 
         if mfa_required and not has_mfa(request, request.user.username):
-            if '/mfa' not in request.path \
-                    and '/devices' not in request.path \
-                    and '/oauth2' not in request.path \
-                    and '/accounts' not in request.path \
-                    and '/user' not in request.path \
-                    and '/captcha' not in request.path \
-                    and request.path != '/':
-                messages.error(request, 'You must configure Multi Factor Authentication to continue.')
-                return redirect('mfa_home')
+            if (
+                "/mfa" not in request.path
+                and "/devices" not in request.path
+                and "/oauth2" not in request.path
+                and "/accounts" not in request.path
+                and "/user" not in request.path
+                and "/captcha" not in request.path
+                and request.path != "/"
+            ):
+                messages.error(
+                    request,
+                    "You must configure Multi Factor Authentication to continue.",
+                )
+                return redirect("mfa_home")
 
         response = self.get_response(request)
 

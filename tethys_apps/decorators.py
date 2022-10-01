@@ -22,15 +22,19 @@ from tethys_portal.views import error as tethys_portal_error
 from .base import has_permission
 
 
-def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+def login_required(
+    function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None
+):
     """
     Decorator for Tethys App controllers that checks whether a user has a permission.
     """
+
     def decorator(controller_func):
         def wrapper(request, *args, **kwargs):
 
-            if not getattr(settings, 'ENABLE_OPEN_PORTAL', False):
+            if not getattr(settings, "ENABLE_OPEN_PORTAL", False):
                 from django.contrib.auth.decorators import login_required as lr
+
                 dec = lr(redirect_field_name=redirect_field_name, login_url=login_url)
                 controller = dec(controller_func)
                 return controller(request, *args, **kwargs)
@@ -38,6 +42,7 @@ def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login
                 return controller_func(request, *args, **kwargs)
 
         return wraps(controller_func)(wrapper)
+
     return decorator if function is None else decorator(function)
 
 
@@ -103,14 +108,14 @@ def permission_required(*args, **kwargs):
 
     """  # noqa: E501
 
-    use_or = kwargs.pop('use_or', False)
-    message = kwargs.pop('message', None)
+    use_or = kwargs.pop("use_or", False)
+    message = kwargs.pop("message", None)
     message = message or "We're sorry, but the operation you requested cannot be found."
-    raise_exception = kwargs.pop('raise_exception', False)
+    raise_exception = kwargs.pop("raise_exception", False)
     perms = [arg for arg in args if isinstance(arg, str)]
 
     if not perms:
-        raise ValueError('Must supply at least one permission to test.')
+        raise ValueError("Must supply at least one permission to test.")
 
     def decorator(controller_func):
         def _wrapped_controller(*args, **kwargs):
@@ -133,7 +138,7 @@ def permission_required(*args, **kwargs):
             if request_args_index > 0:
                 the_self = args[0]
 
-            args = args[request_args_index+1:]
+            args = args[request_args_index + 1 :]
 
             # OR Loop
             if use_or:
@@ -163,21 +168,24 @@ def permission_required(*args, **kwargs):
                         messages.add_message(request, messages.WARNING, message)
 
                         # Default redirect URL
-                        redirect_url = reverse('app_library')
+                        redirect_url = reverse("app_library")
 
                         # If there is a referer (i.e.: we followed a link to get here)
-                        if 'HTTP_REFERER' in request.META:
+                        if "HTTP_REFERER" in request.META:
                             # Try to redirect to the referer URL
-                            referer = request.META['HTTP_REFERER']
+                            referer = request.META["HTTP_REFERER"]
                             parsed_referer = urlparse(referer)
 
                             # But avoid an infinite redirect loop (if referer is self somehow)
                             if parsed_referer.path != request.path:
                                 # e.g. hostname:port
-                                request_host_parts = request.get_host().split(':')
+                                request_host_parts = request.get_host().split(":")
 
                                 # Only attempt redirect if host names are the same
-                                if len(request_host_parts) > 0 and parsed_referer.hostname == request_host_parts[0]:
+                                if (
+                                    len(request_host_parts) > 0
+                                    and parsed_referer.hostname == request_host_parts[0]
+                                ):
                                     redirect_url = parsed_referer.path
 
                         # Redirect to apps library with message
@@ -186,14 +194,20 @@ def permission_required(*args, **kwargs):
                     # If not authenticated...
                     else:
                         # User feedback
-                        messages.add_message(request, messages.INFO, "You must be logged in to access this feature.")
+                        messages.add_message(
+                            request,
+                            messages.INFO,
+                            "You must be logged in to access this feature.",
+                        )
 
                         # Redirect to login page
-                        return redirect(reverse('accounts:login') + '?next=' + request.path)
+                        return redirect(
+                            reverse("accounts:login") + "?next=" + request.path
+                        )
 
                 else:
                     # Return Error 404: Not Found in production to prevent directory enumeration
-                    if not getattr(settings, 'DEBUG', False):
+                    if not getattr(settings, "DEBUG", False):
                         return tethys_portal_error.handler_404(request)
                     return tethys_portal_error.handler_403(request)
 
@@ -204,5 +218,7 @@ def permission_required(*args, **kwargs):
                 response = controller_func(request, *args, **kwargs)
 
             return response
+
         return wraps(controller_func)(_wrapped_controller)
+
     return decorator

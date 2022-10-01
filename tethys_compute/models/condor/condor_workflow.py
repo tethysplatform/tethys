@@ -18,7 +18,7 @@ from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
 from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class CondorWorkflow(CondorBase, CondorPyWorkflow):
@@ -39,18 +39,20 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
     def _update_status(self, *args, **kwargs):
         if not self.execute_time:
-            return 'SUB'
+            return "SUB"
         try:
             # get the status of the condorpy job/workflow
             condor_status = self.condor_object.status
 
-            if condor_status == 'Running':
-                condor_status = 'Various'
+            if condor_status == "Running":
+                condor_status = "Various"
                 statuses = self.statuses
 
-                running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
+                running_statuses = (
+                    statuses["Unexpanded"] + statuses["Idle"] + statuses["Running"]
+                )
                 if not running_statuses:
-                    condor_status = 'Various-Complete'
+                    condor_status = "Various-Complete"
 
                 # Handle case where DAG has been submitted (i.e.: condor_status is running)
                 # but jobs have not started (i.e.: all statuses at 0 count)
@@ -59,12 +61,14 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
                     num_statuses += val
 
                 if not num_statuses:
-                    condor_status = 'Idle'
+                    condor_status = "Idle"
 
         except Exception as e:
-            log.error('Unexpected exception encountered while attempting to update '
-                      'CondorWorkflow status: {}'.format(str(e)))
-            condor_status = 'Submission_err'
+            log.error(
+                "Unexpected exception encountered while attempting to update "
+                "CondorWorkflow status: {}".format(str(e))
+            )
+            condor_status = "Submission_err"
 
         self._status = self.STATUS_MAP[condor_status]
         self.save()
@@ -87,20 +91,21 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         log_folder_list = dict()
         # The first item of the log_folder_list is always the workflow log
         workflow_name = self.name.replace(" ", "_")
-        log_folder_list['workflow'] = {
-            'out': f'{workflow_name}.dag.dagman.out',
-            'log': f'{workflow_name}.dag.dagman.log',
-            'error': f'{workflow_name}.dag.lib.err',
+        log_folder_list["workflow"] = {
+            "out": f"{workflow_name}.dag.dagman.out",
+            "log": f"{workflow_name}.dag.dagman.log",
+            "error": f"{workflow_name}.dag.lib.err",
         }
         for job_node in self.nodes:
             job_name = job_node.name
-            log_file_path = os.path.join(job_name, 'logs', '*.log')
-            error_file_path = os.path.join(job_name, 'logs', '*.err')
-            out_file_path = os.path.join(job_name, 'logs', '*.out')
-            log_folder_list[job_name] = {'log': log_file_path,
-                                         'error': error_file_path,
-                                         'output': out_file_path,
-                                         }
+            log_file_path = os.path.join(job_name, "logs", "*.log")
+            error_file_path = os.path.join(job_name, "logs", "*.err")
+            out_file_path = os.path.join(job_name, "logs", "*.out")
+            log_folder_list[job_name] = {
+                "log": log_file_path,
+                "error": error_file_path,
+                "output": out_file_path,
+            }
         return log_folder_list
 
 

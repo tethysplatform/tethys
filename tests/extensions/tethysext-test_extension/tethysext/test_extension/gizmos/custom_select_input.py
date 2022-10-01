@@ -5,10 +5,20 @@ class CustomSelectInput(TethysGizmoOptions):
     """
     Custom select input gizmo.
     """
-    gizmo_name = 'custom_select_input'
 
-    def __init__(self, name, display_text='', options=(), initial=(), multiselect=False,
-                 disabled=False, error='', **kwargs):
+    gizmo_name = "custom_select_input"
+
+    def __init__(
+        self,
+        name,
+        display_text="",
+        options=(),
+        initial=(),
+        multiselect=False,
+        disabled=False,
+        error="",
+        **kwargs
+    ):
         """
         constructor
         """
@@ -29,25 +39,29 @@ class CustomSelectInput(TethysGizmoOptions):
         """
         JavaScript vendor libraries.
         """
-        return ('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js',)
+        return (
+            "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js",
+        )
 
     @staticmethod
     def get_vendor_css():
         """
         CSS vendor libraries.
         """
-        return ('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css',)
+        return (
+            "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css",
+        )
 
     @staticmethod
     def get_gizmo_js():
         """
         JavaScript specific to gizmo.
         """
-        return ('test_extension/gizmos/custom_select_input/custom_select_input.js',)
+        return ("test_extension/gizmos/custom_select_input/custom_select_input.js",)
 
     @staticmethod
     def get_gizmo_css():
         """
         CSS specific to gizmo .
         """
-        return ('test_extension/gizmos/custom_select_input/custom_select_input.css',)
+        return ("test_extension/gizmos/custom_select_input/custom_select_input.css",)

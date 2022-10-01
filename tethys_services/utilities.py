@@ -21,7 +21,11 @@ from django.shortcuts import redirect
 from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_apps.base.app_base import TethysAppBase
-from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
+from .models import (
+    DatasetService as DsModel,
+    SpatialDatasetService as SdsModel,
+    WebProcessingService as WpsModel,
+)
 from tethys_dataset_services.engines import HydroShareDatasetEngine
 
 
@@ -44,12 +48,15 @@ def ensure_oauth2(provider):
     Note that calling get_dataset_engine for a hydroshare dataset engine will throw an error
     if it is not called in a function that is decorated with the ensure_oauth2 decorator.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
             user = request.user
             # Assemble redirect response
-            redirect_url = reverse('social:begin', args=[provider]) + '?next={0}'.format(request.path)
+            redirect_url = reverse(
+                "social:begin", args=[provider]
+            ) + "?next={0}".format(request.path)
             redirect_response = redirect(redirect_url)
 
             try:
@@ -69,30 +76,38 @@ def ensure_oauth2(provider):
                 access_token = social.get_access_token(strategy)
                 if social.access_token_expired():
                     try:
-                        logger.debug('token is not valid, attempting to refresh using refresh token')
+                        logger.debug(
+                            "token is not valid, attempting to refresh using refresh token"
+                        )
                         social.refresh_token(strategy)
                         access_token = social.get_access_token(strategy)
                     except requests.exceptions.HTTPError:
-                        logger.debug('there was an error refreshing the token - redirecting user to re-authenticate')
+                        logger.debug(
+                            "there was an error refreshing the token - redirecting user to re-authenticate"
+                        )
                         return redirect_response
 
                 request.social_access_token = access_token
 
             return func(request, *args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
-def initialize_engine_object(engine, endpoint, apikey=None, username=None, password=None, request=None):
+def initialize_engine_object(
+    engine, endpoint, apikey=None, username=None, password=None, request=None
+):
     """
     Initialize a DatasetEngine object from a string that points at the engine class.
     """
     # Constants
-    HYDROSHARE_OAUTH_PROVIDER_NAME = 'hydroshare'
+    HYDROSHARE_OAUTH_PROVIDER_NAME = "hydroshare"
 
     # Derive import parts from engine string
-    engine_split = engine.split('.')
-    module_string = '.'.join(engine_split[:-1])
+    engine_split = engine.split(".")
+    module_string = ".".join(engine_split[:-1])
     engine_class_string = engine_split[-1]
 
     # Import
@@ -106,12 +121,14 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
         try:
             # social = user.social_auth.get(provider='google-oauth2')
             social = user.social_auth.get(provider=HYDROSHARE_OAUTH_PROVIDER_NAME)
-            apikey = social.extra_data['access_token']
+            apikey = social.extra_data["access_token"]
         except ObjectDoesNotExist:
             # User is not associated with that provider
             # Need to prompt for association
-            raise AuthException("HydroShare authentication required. To automate the authentication prompt decorate "
-                                "your controller function with the @ensure_oauth('hydroshare') decorator.")
+            raise AuthException(
+                "HydroShare authentication required. To automate the authentication prompt decorate "
+                "your controller function with the @ensure_oauth('hydroshare') decorator."
+            )
         except AttributeError:
             # Anonymous User...
             raise
@@ -120,10 +137,7 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
 
     # Create Engine Object
     engine_instance = EngineClass(
-        endpoint=endpoint,
-        apikey=apikey,
-        username=username,
-        password=password
+        endpoint=endpoint, apikey=apikey, username=username, password=password
     )
     return engine_instance
 
@@ -145,9 +159,11 @@ def list_dataset_engines(request=None):
                 apikey=site_dataset_service.apikey,
                 username=site_dataset_service.username,
                 password=site_dataset_service.password,
-                request=request
+                request=request,
             )
-            dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
+            dataset_service_object.public_endpoint = (
+                site_dataset_service.public_endpoint
+            )
 
             dataset_service_engines.append(dataset_service_object)
 
@@ -185,7 +201,7 @@ def get_dataset_engine(name, app_class=None, request=None):
                     apikey=app_dataset_service.apikey,
                     username=app_dataset_service.username,
                     password=app_dataset_service.password,
-                    request=request
+                    request=request,
                 )
 
     # If the dataset engine cannot be found in the app_class, check database for site-wide dataset engines
@@ -203,14 +219,18 @@ def get_dataset_engine(name, app_class=None, request=None):
                     apikey=site_dataset_service.apikey,
                     username=site_dataset_service.username,
                     password=site_dataset_service.password,
-                    request=request
+                    request=request,
                 )
 
-                dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
+                dataset_service_object.public_endpoint = (
+                    site_dataset_service.public_endpoint
+                )
                 return dataset_service_object
 
-    raise NameError(f'Could not find dataset service with name "{name}". Please check that dataset service with that '
-                    f'name exists in your app.py.')
+    raise NameError(
+        f'Could not find dataset service with name "{name}". Please check that dataset service with that '
+        f"name exists in your app.py."
+    )
 
 
 def list_spatial_dataset_engines():
@@ -229,9 +249,11 @@ def list_spatial_dataset_engines():
                 endpoint=site_spatial_dataset_service.endpoint,
                 apikey=site_spatial_dataset_service.apikey,
                 username=site_spatial_dataset_service.username,
-                password=site_spatial_dataset_service.password
+                password=site_spatial_dataset_service.password,
             )
-            spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
+            spatial_dataset_object.public_endpoint = (
+                site_spatial_dataset_service.public_endpoint
+            )
             spatial_dataset_service_engines.append(spatial_dataset_object)
 
     return spatial_dataset_service_engines
@@ -267,7 +289,7 @@ def get_spatial_dataset_engine(name, app_class=None):
                     endpoint=app_spatial_dataset_service.endpoint,
                     apikey=app_spatial_dataset_service.apikey,
                     username=app_spatial_dataset_service.username,
-                    password=app_spatial_dataset_service.password
+                    password=app_spatial_dataset_service.password,
                 )
 
     # If the dataset engine cannot be found in the app_class, check database for site-wide dataset engines
@@ -284,14 +306,18 @@ def get_spatial_dataset_engine(name, app_class=None):
                     endpoint=site_spatial_dataset_service.endpoint,
                     apikey=site_spatial_dataset_service.apikey,
                     username=site_spatial_dataset_service.username,
-                    password=site_spatial_dataset_service.password
+                    password=site_spatial_dataset_service.password,
                 )
 
-                spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
+                spatial_dataset_object.public_endpoint = (
+                    site_spatial_dataset_service.public_endpoint
+                )
                 return spatial_dataset_object
 
-    raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with '
-                    'that name exists in either the Admin Settings or in your app.py.'.format(name))
+    raise NameError(
+        'Could not find spatial dataset service with name "{0}". Please check that dataset service with '
+        "that name exists in either the Admin Settings or in your app.py.".format(name)
+    )
 
 
 def abstract_is_link(process):
@@ -309,7 +335,7 @@ def abstract_is_link(process):
     except AttributeError:
         return False
 
-    if abstract[:4] == 'http':
+    if abstract[:4] == "http":
         return True
 
     else:
@@ -331,8 +357,10 @@ def activate_wps(wps, endpoint, name):
         wps.getcapabilities()
     except HTTPError as e:
         if e.code == 404:
-            e.msg = f'The WPS service could not be found at given endpoint "{endpoint}" for site WPS service ' \
-                    f'named "{name}". Check the configuration of the WPS service'
+            e.msg = (
+                f'The WPS service could not be found at given endpoint "{endpoint}" for site WPS service '
+                f'named "{name}". Check the configuration of the WPS service'
+            )
             raise e
         else:
             raise e
@@ -366,13 +394,17 @@ def list_wps_service_engines(app_class=None):
     if app_wps_services:
         # Search for match
         for app_wps_service in app_wps_services:
-            wps = WebProcessingService(app_wps_service.endpoint,
-                                       username=app_wps_service.username,
-                                       password=app_wps_service.password,
-                                       verbose=False,
-                                       skip_caps=True)
+            wps = WebProcessingService(
+                app_wps_service.endpoint,
+                username=app_wps_service.username,
+                password=app_wps_service.password,
+                verbose=False,
+                skip_caps=True,
+            )
 
-            activated_wps = activate_wps(wps=wps, endpoint=app_wps_service.endpoint, name=app_wps_service.name)
+            activated_wps = activate_wps(
+                wps=wps, endpoint=app_wps_service.endpoint, name=app_wps_service.name
+            )
 
             if activated_wps:
                 wps_services_list.append(activated_wps)
@@ -383,14 +415,18 @@ def list_wps_service_engines(app_class=None):
     for site_wps_service in site_wps_services:
 
         # Create OWSLib WebProcessingService engine object
-        wps = WebProcessingService(site_wps_service.endpoint,
-                                   username=site_wps_service.username,
-                                   password=site_wps_service.password,
-                                   verbose=False,
-                                   skip_caps=True)
+        wps = WebProcessingService(
+            site_wps_service.endpoint,
+            username=site_wps_service.username,
+            password=site_wps_service.password,
+            verbose=False,
+            skip_caps=True,
+        )
 
         # Initialize the object with get capabilities call
-        activated_wps = activate_wps(wps=wps, endpoint=site_wps_service.endpoint, name=site_wps_service.name)
+        activated_wps = activate_wps(
+            wps=wps, endpoint=site_wps_service.endpoint, name=site_wps_service.name
+        )
 
         if activated_wps:
             wps_services_list.append(activated_wps)
@@ -428,10 +464,14 @@ def get_wps_service_engine(name, app_class=None):
                     username=app_wps_service.username,
                     password=app_wps_service.password,
                     verbose=False,
-                    skip_caps=True
+                    skip_caps=True,
                 )
 
-                return activate_wps(wps=wps, endpoint=app_wps_service.endpoint, name=app_wps_service.name)
+                return activate_wps(
+                    wps=wps,
+                    endpoint=app_wps_service.endpoint,
+                    name=app_wps_service.name,
+                )
 
     # If the wps engine cannot be found in the app_class, check database for site-wide wps engines
     site_wps_services = WpsModel.objects.all()
@@ -448,11 +488,17 @@ def get_wps_service_engine(name, app_class=None):
                     username=site_wps_service.username,
                     password=site_wps_service.password,
                     verbose=False,
-                    skip_caps=True
+                    skip_caps=True,
                 )
 
                 # Initialize the object with get capabilities call
-                return activate_wps(wps=wps, endpoint=site_wps_service.endpoint, name=site_wps_service.name)
+                return activate_wps(
+                    wps=wps,
+                    endpoint=site_wps_service.endpoint,
+                    name=site_wps_service.name,
+                )
 
-    raise NameError('Could not find wps service with name "{0}". Please check that a wps service with that name '
-                    'exists in the admin console or in your app.py.'.format(name))
+    raise NameError(
+        'Could not find wps service with name "{0}". Please check that a wps service with that name '
+        "exists in the admin console or in your app.py.".format(name)
+    )

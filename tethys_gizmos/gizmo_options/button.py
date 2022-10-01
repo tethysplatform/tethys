@@ -9,7 +9,7 @@
 """
 from .base import TethysGizmoOptions
 
-__all__ = ['ButtonGroup', 'Button']
+__all__ = ["ButtonGroup", "Button"]
 
 
 class ButtonGroup(TethysGizmoOptions):
@@ -69,9 +69,10 @@ class ButtonGroup(TethysGizmoOptions):
         {% gizmo vertical_buttons %}
 
     """  # noqa: E501
+
     gizmo_name = "button_group"
 
-    def __init__(self, buttons, vertical=False, attributes='', classes=''):
+    def __init__(self, buttons, vertical=False, attributes="", classes=""):
         """
         Constructor
         """
@@ -192,10 +193,21 @@ class Button(TethysGizmoOptions):
         {% gizmo previous_button %}
         {% gizmo next_button %}
     """  # noqa: E501
+
     gizmo_name = "button"
 
-    def __init__(self, display_text='', name='', style='', icon='', href='',
-                 submit=False, disabled=False, attributes=None, classes=''):
+    def __init__(
+        self,
+        display_text="",
+        name="",
+        style="",
+        icon="",
+        href="",
+        submit=False,
+        disabled=False,
+        attributes=None,
+        classes="",
+    ):
         """
         Constructor
         """

@@ -19,30 +19,31 @@ from model_utils.managers import InheritanceManager
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class TethysJob(models.Model):
     """
     Base class for all job types. This is intended to be an abstract class that is not directly instantiated.
     """
+
     class Meta:
-        verbose_name = 'Job'
+        verbose_name = "Job"
 
     objects = InheritanceManager()
 
     STATUSES = (
-        ('PEN', 'Pending'),
-        ('SUB', 'Submitted'),
-        ('RUN', 'Running'),
-        ('VAR', 'Various'),
-        ('PAS', 'Paused'),
-        ('COM', 'Complete'),
-        ('ERR', 'Error'),
-        ('ABT', 'Aborted'),
-        ('VCP', 'Various-Complete'),
-        ('RES', 'Results-Ready'),
-        ('OTH', 'Other')
+        ("PEN", "Pending"),
+        ("SUB", "Submitted"),
+        ("RUN", "Running"),
+        ("VAR", "Various"),
+        ("PAS", "Paused"),
+        ("COM", "Complete"),
+        ("ERR", "Error"),
+        ("ABT", "Aborted"),
+        ("VCP", "Various-Complete"),
+        ("RES", "Results-Ready"),
+        ("OTH", "Other"),
     )
 
     VALID_STATUSES = [v for v, _ in STATUSES]
@@ -54,18 +55,20 @@ class TethysJob(models.Model):
     ACTIVE_STATUSES = DISPLAY_STATUSES[1:5]
     TERMINAL_STATUSES = DISPLAY_STATUSES[5:]
 
-    OTHER_STATUS_KEY = '__other_status__'
+    OTHER_STATUS_KEY = "__other_status__"
 
     name = models.CharField(max_length=1024)
-    description = models.CharField(max_length=2048, blank=True, default='')
+    description = models.CharField(max_length=2048, blank=True, default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    groups = models.ManyToManyField(Group, verbose_name='groups', related_name='tethys_jobs', blank=True)
+    groups = models.ManyToManyField(
+        Group, verbose_name="groups", related_name="tethys_jobs", blank=True
+    )
     label = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
     start_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
-    workspace = models.CharField(max_length=1024, default='')
+    workspace = models.CharField(max_length=1024, default="")
     extended_properties = models.JSONField(default=dict, null=True, blank=True)
     status_message = models.CharField(max_length=2048, blank=True, null=True)
     _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
@@ -87,14 +90,16 @@ class TethysJob(models.Model):
         Returns a ``datetime.timedelta`` of the minimum time between updating the status of a job.
 
         """
-        if not hasattr(self, '_update_status_interval'):
+        if not hasattr(self, "_update_status_interval"):
             self._update_status_interval = datetime.timedelta(seconds=10)
         return self._update_status_interval
 
     @property
     def last_status_update(self):
-        if not getattr(self, '_last_status_update', None):
-            self._last_status_update = self.execute_time or timezone.now() - self.update_status_interval
+        if not getattr(self, "_last_status_update", None):
+            self._last_status_update = (
+                self.execute_time or timezone.now() - self.update_status_interval
+            )
         return self._last_status_update
 
     @property
@@ -107,9 +112,9 @@ class TethysJob(models.Model):
         It may be set as an attribute in which case ``update_status`` is called.
         """
         self.update_status()
-        field = self._meta.get_field('_status')
+        field = self._meta.get_field("_status")
         status = self._get_FIELD_display(field)
-        if self._status == 'OTH':
+        if self._status == "OTH":
             status = self.extended_properties.get(self.OTHER_STATUS_KEY, status)
         return status
 
@@ -124,7 +129,7 @@ class TethysJob(models.Model):
             end_time = self.completion_time or datetime.datetime.now(start_time.tzinfo)
             run_time = end_time - start_time
         else:
-            return ''
+            return ""
 
         return run_time
 
@@ -135,9 +140,9 @@ class TethysJob(models.Model):
         try:
             self._execute(*args, **kwargs)
             self.execute_time = timezone.now()
-            self._status = 'SUB'
+            self._status = "SUB"
         except Exception:
-            self._status = 'ERR'
+            self._status = "ERR"
         self.save()
 
     def update_status(self, status=None, *args, **kwargs):
@@ -163,24 +168,24 @@ class TethysJob(models.Model):
                     status = self.REVERSE_STATUSES[status]
                 else:
                     self.extended_properties[self.OTHER_STATUS_KEY] = status
-                    status = 'OTH'
-            if status != 'OTH':
+                    status = "OTH"
+            if status != "OTH":
                 self.extended_properties.pop(self.OTHER_STATUS_KEY, None)
             self._status = status
             self.save()
 
         # Update status if status not given and still pending/running
-        elif old_status in ['PEN', 'SUB', 'RUN', 'VAR'] and self.is_time_to_update():
+        elif old_status in ["PEN", "SUB", "RUN", "VAR"] and self.is_time_to_update():
             self._update_status(*args, **kwargs)
             self._last_status_update = timezone.now()
 
         # Post-process status after update if old status was pending/running
-        if old_status in ['PEN', 'SUB', 'RUN', 'VAR']:
-            if self._status == 'RUN' and (old_status == 'PEN' or old_status == 'SUB'):
+        if old_status in ["PEN", "SUB", "RUN", "VAR"]:
+            if self._status == "RUN" and (old_status == "PEN" or old_status == "SUB"):
                 self.start_time = timezone.now()
             if self._status in ["COM", "VCP", "RES"]:
                 self.process_results()
-            elif self._status == 'ERR' or self._status == 'ABT':
+            elif self._status == "ERR" or self._status == "ABT":
                 self.completion_time = timezone.now()
 
         self.save()
@@ -204,7 +209,9 @@ class TethysJob(models.Model):
             A function handle or None if function cannot be resolved.
         """
         if self._process_results_function:
-            function_extractor = TethysFunctionExtractor(self._process_results_function, None)
+            function_extractor = TethysFunctionExtractor(
+                self._process_results_function, None
+            )
             if function_extractor.valid:
                 return function_extractor.function
 
@@ -213,20 +220,20 @@ class TethysJob(models.Model):
         if isinstance(function, str):
             self._process_results_function = function
             return
-        module_path = inspect.getmodule(function).__name__.split('.')
+        module_path = inspect.getmodule(function).__name__.split(".")
         module_path.append(function.__name__)
-        self._process_results_function = '.'.join(module_path)
+        self._process_results_function = ".".join(module_path)
 
     def process_results(self, *args, **kwargs):
         """
         Process the results.
         """
-        log.debug('Started processing results for job: {}'.format(self))
+        log.debug("Started processing results for job: {}".format(self))
         self._process_results(*args, **kwargs)
         self.completion_time = timezone.now()
-        self._status = 'COM'
+        self._status = "COM"
         self.save()
-        log.debug('Finished processing results for job: {}'.format(self))
+        log.debug("Finished processing results for job: {}".format(self))
 
     def resubmit(self, *args, **kwargs):
         self._resubmit(*args, **kwargs)

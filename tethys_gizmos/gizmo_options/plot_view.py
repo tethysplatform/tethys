@@ -2,20 +2,30 @@
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
-__all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
-           'PiePlot', 'BarPlot', 'TimeSeries', 'AreaRange', 'HeatMap']
+__all__ = [
+    "PlotObject",
+    "LinePlot",
+    "PolarPlot",
+    "ScatterPlot",
+    "PiePlot",
+    "BarPlot",
+    "TimeSeries",
+    "AreaRange",
+    "HeatMap",
+]
 
 
 class PlotViewBase(TethysGizmoOptions):
     """
     Plot view classes inherit from this class.
     """
-    gizmo_name = "plot_view"
-    version_d3 = vendor_static_dependencies['d3'].version
-    version_d3_tip = vendor_static_dependencies['d3-tip'].version
-    version_highcharts = vendor_static_dependencies['highcharts'].version
 
-    def __init__(self, width='500px', height='500px', engine='d3'):
+    gizmo_name = "plot_view"
+    version_d3 = vendor_static_dependencies["d3"].version
+    version_d3_tip = vendor_static_dependencies["d3-tip"].version
+    version_highcharts = vendor_static_dependencies["highcharts"].version
+
+    def __init__(self, width="500px", height="500px", engine="d3"):
         """
         Constructor
         """
@@ -25,7 +35,7 @@ class PlotViewBase(TethysGizmoOptions):
         self.width = width
         self.height = height
 
-        if engine not in ('d3', 'highcharts'):
+        if engine not in ("d3", "highcharts"):
             raise ValueError('Parameter "engine" must be either "d3" or "highcharts".')
 
         self.engine = engine
@@ -39,9 +49,15 @@ class PlotViewBase(TethysGizmoOptions):
         """
 
         return (
-            *vendor_static_dependencies['highcharts'].get_js_urls(version=cls.version_highcharts),
-            vendor_static_dependencies['d3'].get_custom_version_url(url_type='js', version=cls.version_d3),
-            vendor_static_dependencies['d3-tip'].get_custom_version_url(url_type='js', version=cls.version_d3_tip),
+            *vendor_static_dependencies["highcharts"].get_js_urls(
+                version=cls.version_highcharts
+            ),
+            vendor_static_dependencies["d3"].get_custom_version_url(
+                url_type="js", version=cls.version_d3
+            ),
+            vendor_static_dependencies["d3-tip"].get_custom_version_url(
+                url_type="js", version=cls.version_d3_tip
+            ),
         )
 
     @staticmethod
@@ -50,7 +66,7 @@ class PlotViewBase(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return 'tethys_gizmos/js/plot_view.js',
+        return ("tethys_gizmos/js/plot_view.js",)
 
     @staticmethod
     def get_gizmo_css():
@@ -58,7 +74,7 @@ class PlotViewBase(TethysGizmoOptions):
         CSS specific to gizmo to be placed in the
         {% block content_dependent_styles %} block
         """
-        return 'tethys_gizmos/css/plot_view.css',
+        return ("tethys_gizmos/css/plot_view.css",)
 
 
 class PlotObject(TethysGizmoOptions):
@@ -66,8 +82,20 @@ class PlotObject(TethysGizmoOptions):
     Base Plot Object that is constructed by plot views.
     """
 
-    def __init__(self, chart=None, title='', subtitle='', legend=None, display_legend=True,
-                 tooltip=True, x_axis=None, y_axis=None, tooltip_format=None, plotOptions=None, **kwargs):
+    def __init__(
+        self,
+        chart=None,
+        title="",
+        subtitle="",
+        legend=None,
+        display_legend=True,
+        tooltip=True,
+        x_axis=None,
+        y_axis=None,
+        tooltip_format=None,
+        plotOptions=None,
+        **kwargs
+    ):
         """
         Constructor
         """
@@ -79,18 +107,18 @@ class PlotObject(TethysGizmoOptions):
         self.yAxis = y_axis or {}
         self.plotOptions = plotOptions or {}
 
-        if title != '':
-            self.title = {'text': title}
+        if title != "":
+            self.title = {"text": title}
 
-        if subtitle != '':
-            self.subtitle = {'text': subtitle}
+        if subtitle != "":
+            self.subtitle = {"text": subtitle}
 
         if display_legend:
             default_legend = {
-                'layout': 'vertical',
-                'align': 'right',
-                'verticalAlign': 'middle',
-                'borderWidth': 0
+                "layout": "vertical",
+                "align": "right",
+                "verticalAlign": "middle",
+                "borderWidth": 0,
             }
             self.legend = legend or default_legend
 
@@ -177,56 +205,73 @@ class LinePlot(PlotViewBase):
 
     """
 
-    def __init__(self, series, height='500px', width='500px', engine='d3', title='', subtitle='', spline=False,
-                 x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(
+        self,
+        series,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        spline=False,
+        x_axis_title="",
+        x_axis_units="",
+        y_axis_title="",
+        y_axis_units="",
+        **kwargs
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
 
-        chart = kwargs.pop('chart', None)
+        chart = kwargs.pop("chart", None)
 
         if not chart:
             if spline:
-                chart = {'type': 'spline'}
+                chart = {"type": "spline"}
             else:
-                chart = {'type': 'line'}
+                chart = {"type": "line"}
 
         if x_axis_title:
             x_axis = {
-                'title': {
-                    'enabled': True,
-                    'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
+                "title": {
+                    "enabled": True,
+                    "text": "{0} ({1})".format(x_axis_title, x_axis_units),
                 },
-                'labels': {'units': x_axis_units}
+                "labels": {"units": x_axis_units},
             }
         else:
-            x_axis = {
-                'labels': {'units': x_axis_units}
-            }
+            x_axis = {"labels": {"units": x_axis_units}}
 
         if y_axis_title:
             y_axis = {
-                'title': {
-                    'enabled': True,
-                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+                "title": {
+                    "enabled": True,
+                    "text": "{0} ({1})".format(y_axis_title, y_axis_units),
                 },
-                'labels': {'units': y_axis_units}
+                "labels": {"units": y_axis_units},
             }
         else:
-            y_axis = {
-                'labels': {'units': y_axis_units}
-            }
+            y_axis = {"labels": {"units": y_axis_units}}
 
         tooltip_format = {
-            'headerFormat': '<b>{series.name}</b><br/>',
-            'pointFormat': '{point.x} %s: {point.y} %s' % (x_axis_units, y_axis_units)
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.x} %s: {point.y} %s" % (x_axis_units, y_axis_units),
         }
 
         # Initialize the plot view object
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            tooltip_format=tooltip_format,
+            **kwargs
+        )
 
 
 class PolarPlot(PlotViewBase):
@@ -287,8 +332,17 @@ class PolarPlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='', categories=None,
-                 **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        categories=None,
+        **kwargs
+    ):
         """
         Constructor
         """
@@ -296,33 +350,33 @@ class PolarPlot(PlotViewBase):
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
         categories = categories or []
-        chart = kwargs.pop('chart', None)
-        x_axis = kwargs.pop('x_axis', None)
-        y_axis = kwargs.pop('y_axis', None)
+        chart = kwargs.pop("chart", None)
+        x_axis = kwargs.pop("x_axis", None)
+        y_axis = kwargs.pop("y_axis", None)
 
         if not chart:
-            chart = {
-                'polar': True,
-                'type': 'line'
-            }
+            chart = {"polar": True, "type": "line"}
 
         if not x_axis:
             x_axis = {
-                'categories': categories,
-                'tickmarkPlacement': 'on',
-                'lineWidth': 0
+                "categories": categories,
+                "tickmarkPlacement": "on",
+                "lineWidth": 0,
             }
 
         if not y_axis:
-            y_axis = {
-                'gridLineInterpolation': 'polygon',
-                'lineWidth': 0,
-                'min': 0
-            }
+            y_axis = {"gridLineInterpolation": "polygon", "lineWidth": 0, "min": 0}
 
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      x_axis=x_axis, y_axis=y_axis, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            **kwargs
+        )
 
 
 class ScatterPlot(PlotViewBase):
@@ -423,46 +477,63 @@ class ScatterPlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
-                 x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        x_axis_title="",
+        x_axis_units="",
+        y_axis_title="",
+        y_axis_units="",
+        **kwargs
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
-        chart = kwargs.pop('chart', None)
+        chart = kwargs.pop("chart", None)
 
         if not chart:
-            chart = {
-                'type': 'scatter',
-                'zoomType': 'xy'
-            }
+            chart = {"type": "scatter", "zoomType": "xy"}
 
         if x_axis_title:
             x_axis = {
-                'title': {
-                    'enabled': True,
-                    'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
+                "title": {
+                    "enabled": True,
+                    "text": "{0} ({1})".format(x_axis_title, x_axis_units),
                 }
             }
 
         if y_axis_title:
             y_axis = {
-                'title': {
-                    'enabled': True,
-                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+                "title": {
+                    "enabled": True,
+                    "text": "{0} ({1})".format(y_axis_title, y_axis_units),
                 }
             }
 
         tooltip_format = {
-            'headerFormat': '<b>{series.name}</b><br/>',
-            'pointFormat': '{point.x} %s: {point.y} %s' % (x_axis_units, y_axis_units)
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.x} %s: {point.y} %s" % (x_axis_units, y_axis_units),
         }
 
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            tooltip_format=tooltip_format,
+            **kwargs
+        )
 
 
 class PiePlot(PlotViewBase):
@@ -513,7 +584,16 @@ class PiePlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='', **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        **kwargs
+    ):
         """
         Constructor
 
@@ -522,29 +602,32 @@ class PiePlot(PlotViewBase):
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
-        chart = kwargs.pop('chart', None)
+        chart = kwargs.pop("chart", None)
 
         if not chart:
-            chart = {
-                'plotShadow': False
-            }
+            chart = {"plotShadow": False}
 
         plotOptions = {
-            'pie': {
-                'allowPointSelect': True,
-                'cursor': 'pointer',
-                'dataLabels': {
-                    'enabled': False
-                },
-                'showInLegend': True
+            "pie": {
+                "allowPointSelect": True,
+                "cursor": "pointer",
+                "dataLabels": {"enabled": False},
+                "showInLegend": True,
             }
         }
         tooltip_format = {
-            'pointFormat': '{series.name}: <b>{point.percentage:.1f}%</b>'
+            "pointFormat": "{series.name}: <b>{point.percentage:.1f}%</b>"
         }
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            plotOptions=plotOptions,
+            tooltip_format=tooltip_format,
+            **kwargs
+        )
 
 
 class BarPlot(PlotViewBase):
@@ -614,9 +697,22 @@ class BarPlot(PlotViewBase):
 
     """
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
-                 horizontal=False, categories=None, axis_title='', axis_units='', group_tools=True,
-                 y_min=0, **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        horizontal=False,
+        categories=None,
+        axis_title="",
+        axis_units="",
+        group_tools=True,
+        y_min=0,
+        **kwargs
+    ):
         """
         Constructor
         """
@@ -624,68 +720,52 @@ class BarPlot(PlotViewBase):
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
         categories = categories or []
-        chart = kwargs.pop('chart', None)
-        y_axis = kwargs.pop('y_axis', None)
+        chart = kwargs.pop("chart", None)
+        y_axis = kwargs.pop("y_axis", None)
 
         if not chart:
             if not horizontal:
-                chart = {
-                    'type': 'column'
-                }
-                plotOptions = {
-                    'column': {
-                        'pointPadding': 0.2,
-                        'borderWidth': 0
-                    }
-                }
+                chart = {"type": "column"}
+                plotOptions = {"column": {"pointPadding": 0.2, "borderWidth": 0}}
             else:
-                chart = {
-                    'type': 'bar'
-                }
-                plotOptions = {
-                    'bar': {
-                        'dataLabels': {
-                            'enabled': True
-                        }
-                    }
-                }
+                chart = {"type": "bar"}
+                plotOptions = {"bar": {"dataLabels": {"enabled": True}}}
 
-        x_axis = {
-            'categories': categories,
-            'crosshair': True
-        }
+        x_axis = {"categories": categories, "crosshair": True}
 
         if not y_axis:
             if axis_units:
                 y_axis = {
-                    'min': y_min,
-                    'title': {
-                        'text': '{0} ({1})'.format(axis_title, axis_units)
-                    }
+                    "min": y_min,
+                    "title": {"text": "{0} ({1})".format(axis_title, axis_units)},
                 }
 
             else:
-                y_axis = {
-                    'min': y_min,
-                    'title': {
-                        'text': axis_title
-                    }
-                }
+                y_axis = {"min": y_min, "title": {"text": axis_title}}
 
         if group_tools:
             tooltip_format = {
-                'headerFormat': '<span style="font-size:10px">{point.key}</span><table>',
-                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>'
-                               + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (axis_units),
-                'footerFormat': '</table>',
-                'shared': True,
-                'useHTML': True
+                "headerFormat": '<span style="font-size:10px">{point.key}</span><table>',
+                "pointFormat": '<tr><td style="color:{series.color};padding:0">{series.name}: </td>'
+                + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>'
+                % (axis_units),
+                "footerFormat": "</table>",
+                "shared": True,
+                "useHTML": True,
             }
 
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis,
-                                      y_axis=y_axis, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            plotOptions=plotOptions,
+            tooltip_format=tooltip_format,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            **kwargs
+        )
 
 
 class TimeSeries(PlotViewBase):
@@ -757,44 +837,54 @@ class TimeSeries(PlotViewBase):
         {% gizmo timeseries_plot %}
     """
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
-                 y_axis_units='', y_min=0, **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        y_axis_title="",
+        y_axis_units="",
+        y_min=0,
+        **kwargs
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
-        chart = kwargs.pop('chart', None)
-        x_axis = kwargs.pop('x_axis', None)
-        y_axis = kwargs.pop('y_axis', None)
+        chart = kwargs.pop("chart", None)
+        x_axis = kwargs.pop("x_axis", None)
+        y_axis = kwargs.pop("y_axis", None)
 
         if not chart:
-            chart = {
-                'type': 'area',
-                'zoomType': 'x'
-            }
+            chart = {"type": "area", "zoomType": "x"}
 
         if not x_axis:
-            x_axis = {
-                'type': 'datetime'
-            }
+            x_axis = {"type": "datetime"}
 
         if not y_axis:
             y_axis = {
-                'title': {
-                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
-                },
-                'min': y_min
+                "title": {"text": "{0} ({1})".format(y_axis_title, y_axis_units)},
+                "min": y_min,
             }
 
-        tooltip_format = {
-            'pointFormat': '{point.y} %s' % (y_axis_units)
-        }
+        tooltip_format = {"pointFormat": "{point.y} %s" % (y_axis_units)}
 
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            tooltip_format=tooltip_format,
+            **kwargs
+        )
 
 
 class AreaRange(PlotViewBase):
@@ -884,43 +974,54 @@ class AreaRange(PlotViewBase):
 
     """  # noqa: E501
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
-                 y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        y_axis_title="",
+        y_axis_units="",
+        **kwargs
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
-        chart = kwargs.pop('chart', None)
-        x_axis = kwargs.pop('x_axis', None)
-        y_axis = kwargs.pop('y_axis', None)
+        chart = kwargs.pop("chart", None)
+        x_axis = kwargs.pop("x_axis", None)
+        y_axis = kwargs.pop("y_axis", None)
 
         if not chart:
-            chart = {
-            }
+            chart = {}
 
         if not x_axis:
-            x_axis = {
-                'type': 'datetime'
-            }
+            x_axis = {"type": "datetime"}
 
         if not y_axis:
-            y_axis = {
-                'title': {
-                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
-                }
-            }
+            y_axis = {"title": {"text": "{0} ({1})".format(y_axis_title, y_axis_units)}}
 
         tooltip_format = {
-            'crosshairs': True,
-            'shared': True,
-            'valueSuffix': y_axis_units
+            "crosshairs": True,
+            "shared": True,
+            "valueSuffix": y_axis_units,
         }
 
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            tooltip_format=tooltip_format,
+            **kwargs
+        )
 
 
 class HeatMap(PlotViewBase):
@@ -1004,37 +1105,50 @@ class HeatMap(PlotViewBase):
 
     """  # noqa: E501
 
-    def __init__(self, series=None, height='500px', width='500px', engine='d3', title='', subtitle='',
-                 x_categories=None, y_categories=None, tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):
+    def __init__(
+        self,
+        series=None,
+        height="500px",
+        width="500px",
+        engine="d3",
+        title="",
+        subtitle="",
+        x_categories=None,
+        y_categories=None,
+        tooltip_phrase_one="",
+        tooltip_phrase_two="",
+        **kwargs
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__(height=height, width=width, engine=engine)
         series = series or []
-        chart = kwargs.pop('chart', None)
+        chart = kwargs.pop("chart", None)
 
         if not chart:
-            chart = {
-                'type': 'heatmap',
-                'marginTop': 40,
-                'marginBottom': 80
-            }
+            chart = {"type": "heatmap", "marginTop": 40, "marginBottom": 80}
 
         x_axis = {
-            'categories': x_categories or [],
+            "categories": x_categories or [],
         }
 
-        y_axis = {
-            'categories': y_categories or [],
-            'title': 'null'
-        }
+        y_axis = {"categories": y_categories or [], "title": "null"}
 
         tooltip_format = {
-            'phrase_one': tooltip_phrase_one,
-            'phrase_two': tooltip_phrase_two
+            "phrase_one": tooltip_phrase_one,
+            "phrase_two": tooltip_phrase_two,
         }
 
         # Initialize super class
-        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis,
-                                      y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(
+            chart=chart,
+            title=title,
+            subtitle=subtitle,
+            series=series,
+            x_axis=x_axis,
+            y_axis=y_axis,
+            tooltip_format=tooltip_format,
+            **kwargs
+        )

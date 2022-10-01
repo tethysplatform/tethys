@@ -13,16 +13,17 @@ from tethys_apps.utilities import get_active_app
 from tethys_quotas.models.resource_quota import ResourceQuota
 from tethys_quotas.utilities import passes_quota
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 def enforce_quota(codename):
     """
-        Decorator to enforce custom quotas
+    Decorator to enforce custom quotas
 
-        Args:
-            codename (string): codename of quota to enforce
+    Args:
+        codename (string): codename of quota to enforce
     """  # noqa: E501
+
     def decorator(controller):
         def wrapper(*args, **kwargs):
             try:
@@ -33,18 +34,22 @@ def enforce_quota(codename):
                         break
 
                 if request is None:
-                    raise ValueError('Invalid request')
+                    raise ValueError("Invalid request")
 
                 rq = ResourceQuota.objects.get(codename=codename)
 
-                if rq.applies_to == 'django.contrib.auth.models.User':
+                if rq.applies_to == "django.contrib.auth.models.User":
                     entity = request.user
-                elif rq.applies_to == 'tethys_apps.models.TethysApp':
+                elif rq.applies_to == "tethys_apps.models.TethysApp":
                     entity = get_active_app(request)
                     if not entity:
-                        raise ValueError('Request could not be used to find app')
+                        raise ValueError("Request could not be used to find app")
                 else:
-                    raise ValueError('ResourceQuota that applies_to {} is not supported'.format(rq.applies_to))
+                    raise ValueError(
+                        "ResourceQuota that applies_to {} is not supported".format(
+                            rq.applies_to
+                        )
+                    )
 
                 assert passes_quota(entity, codename)
 
@@ -52,8 +57,12 @@ def enforce_quota(codename):
                 log.warning(str(e))
 
             except ResourceQuota.DoesNotExist:
-                log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+                log.warning(
+                    "ResourceQuota with codename {} does not exist.".format(codename)
+                )
 
             return controller(*args, **kwargs)
+
         return wraps(controller)(wrapper)
+
     return decorator

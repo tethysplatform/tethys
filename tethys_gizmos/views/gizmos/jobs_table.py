@@ -8,10 +8,10 @@ from tethys_gizmos.gizmo_options.jobs_table import JobsTable
 from bokeh.embed import server_document
 from tethys_sdk.gizmos import SelectInput
 
-log = logging.getLogger('tethys.tethys_gizmos.views.jobs_table')
+log = logging.getLogger("tethys.tethys_gizmos.views.jobs_table")
 
 
-def perform_action(request, job_id, action, success_message='', error_message=None):
+def perform_action(request, job_id, action, success_message="", error_message=None):
     try:
         job = TethysJob.objects.get_subclass(id=job_id)
         getattr(job, action)()
@@ -20,13 +20,17 @@ def perform_action(request, job_id, action, success_message='', error_message=No
     except Exception as e:
         success = False
         log.exception(e)
-        log.error(f'The following error occurred when running "{action}" on job {job_id}: {str(e)}')
-        message = error_message or f'Unable to {action} job {job_id}.'
-    return JsonResponse({'success': success, 'message': message})
+        log.error(
+            f'The following error occurred when running "{action}" on job {job_id}: {str(e)}'
+        )
+        message = error_message or f"Unable to {action} job {job_id}."
+    return JsonResponse({"success": success, "message": message})
 
 
 def resubmit(request, job_id):
-    return perform_action(request, job_id, 'resubmit', f'Successfully resubmitted job: {job_id}.')
+    return perform_action(
+        request, job_id, "resubmit", f"Successfully resubmitted job: {job_id}."
+    )
 
 
 def delete(request, job_id):
@@ -35,12 +39,12 @@ def delete(request, job_id):
         job.clean_on_delete = True
         job.delete()
         success = True
-        message = ''
+        message = ""
     except Exception as e:
         success = True
         message = str(e)
-        log.error(f'The following error occurred when deleting job {job_id}: {message}')
-    return JsonResponse({'success': success, 'message': message})
+        log.error(f"The following error occurred when deleting job {job_id}: {message}")
+    return JsonResponse({"success": success, "message": message})
 
 
 def show_log(request, job_id):
@@ -51,24 +55,24 @@ def show_log(request, job_id):
 
         sub_job_options = [(k, k) for k in data.keys()]
         sub_job_select = SelectInput(
-            display_text='Select Log:',
-            name='sub_job_select',
+            display_text="Select Log:",
+            name="sub_job_select",
             multiple=False,
             options=sub_job_options,
-            attributes={'data-job-id': job_id}
+            attributes={"data-job-id": job_id},
         )
 
-        context = {'sub_job_select': sub_job_select, 'log_options': {}}
+        context = {"sub_job_select": sub_job_select, "log_options": {}}
 
         for k, v in data.items():
             if isinstance(v, dict):
-                context['log_options'][f'log_select_{k}'] = SelectInput(
-                    name=f'log_{k}',
+                context["log_options"][f"log_select_{k}"] = SelectInput(
+                    name=f"log_{k}",
                     multiple=False,
                     options=[(key, key) for key in v.keys()],
                 )
 
-        html = render_to_string('tethys_gizmos/gizmos/job_logs.html', context)
+        html = render_to_string("tethys_gizmos/gizmos/job_logs.html", context)
 
         def remove_callables(item):
             if callable(item):
@@ -78,15 +82,27 @@ def show_log(request, job_id):
                     item[k] = remove_callables(v)
                 return item
             else:
-                return item.replace('\n', '<br/>')
+                return item.replace("\n", "<br/>")
+
         log_contents = remove_callables(data)
 
-        return JsonResponse({'success': True, 'html': html, 'log_contents': log_contents})
+        return JsonResponse(
+            {"success": True, "html": html, "log_contents": log_contents}
+        )
     except Exception as e:
         message = str(e)
-        log.error('The following error occurred when retrieving logs for job %s: %s', job_id, message)
+        log.error(
+            "The following error occurred when retrieving logs for job %s: %s",
+            job_id,
+            message,
+        )
 
-        return JsonResponse({'success': False, 'error_message': 'ERROR: An error occurred while retrieving job logs.'})
+        return JsonResponse(
+            {
+                "success": False,
+                "error_message": "ERROR: An error occurred while retrieving job logs.",
+            }
+        )
 
 
 def get_log_content(request, job_id, key1, key2=None):
@@ -98,19 +114,25 @@ def get_log_content(request, job_id, key1, key2=None):
         if key2 is not None:
             log_func = log_func[key2]
         content = log_func() if callable(log_func) else log_func
-        content = content.replace('\n', '<br/>')
+        content = content.replace("\n", "<br/>")
 
-        return JsonResponse({'success': True, 'content': content})
+        return JsonResponse({"success": True, "content": content})
     except Exception as e:
         if key2 is None:
-            key2 = ''  # for error message formatting
+            key2 = ""  # for error message formatting
         message = str(e)
-        log.error('The following error occurred when retrieving log content for log %s in job %s: %s',
-                  job_id, f'{key1} {key2}', message)
-        return JsonResponse({
-            'success': False,
-            'error_message': f'ERROR: An error occurred while retrieving log content for: {key1} {key2}'
-        })
+        log.error(
+            "The following error occurred when retrieving log content for log %s in job %s: %s",
+            job_id,
+            f"{key1} {key2}",
+            message,
+        )
+        return JsonResponse(
+            {
+                "success": False,
+                "error_message": f"ERROR: An error occurred while retrieving log content for: {key1} {key2}",
+            }
+        )
 
 
 def update_row(request, job_id):
@@ -120,18 +142,33 @@ def update_row(request, job_id):
         status = job.status
         status_msg = job.status_message
         statuses = None
-        if status in ['Various', 'Various-Complete']:
+        if status in ["Various", "Various-Complete"]:
             # Hard code statues for the gizmo showcase
-            if job.label == 'gizmos_showcase':
+            if job.label == "gizmos_showcase":
                 if isinstance(job, CondorWorkflow):
-                    statuses = {'Completed': 20, 'Error': 20, 'Running': 40, 'Aborted': 0}
+                    statuses = {
+                        "Completed": 20,
+                        "Error": 20,
+                        "Running": 40,
+                        "Aborted": 0,
+                    }
                 else:
-                    statuses = {'Completed': 40, 'Error': 10, 'Running': 30, 'Aborted': 5}
-                    if status == 'Various-Complete':
-                        statuses = {'Completed': 80, 'Error': 15, 'Running': 0, 'Aborted': 5}
+                    statuses = {
+                        "Completed": 40,
+                        "Error": 10,
+                        "Running": 30,
+                        "Aborted": 5,
+                    }
+                    if status == "Various-Complete":
+                        statuses = {
+                            "Completed": 80,
+                            "Error": 15,
+                            "Running": 0,
+                            "Aborted": 5,
+                        }
             elif isinstance(job, CondorWorkflow):
                 num_statuses = 0
-                statuses = {'Completed': 0, 'Error': 0, 'Running': 0, 'Aborted': 0}
+                statuses = {"Completed": 0, "Error": 0, "Running": 0, "Aborted": 0}
                 for key, value in job.statuses.items():
                     if key in statuses:
                         num_statuses += value
@@ -140,33 +177,45 @@ def update_row(request, job_id):
                 # Handle case with CondorWorkflows where DAG has started working,
                 # but jobs have not necessarily started yet.
                 if isinstance(job, CondorWorkflow) and not num_statuses:
-                    status = 'Submitted'
+                    status = "Submitted"
 
         if isinstance(job, DaskJob):
             # Display results ready as running on jobs table
-            if status == 'Results-Ready':
-                status = 'Running'
+            if status == "Results-Ready":
+                status = "Running"
 
-        row = JobsTable.get_row(job, data['column_fields'], data.get('actions'))
-        data.update({'job': job, 'row': row, 'job_status': status,
-                     'job_statuses': statuses, 'delay_loading_status': False, 'error_message': status_msg})
+        row = JobsTable.get_row(job, data["column_fields"], data.get("actions"))
+        data.update(
+            {
+                "job": job,
+                "row": row,
+                "job_status": status,
+                "job_statuses": statuses,
+                "delay_loading_status": False,
+                "error_message": status_msg,
+            }
+        )
         success = True
-        html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
+        html = render_to_string("tethys_gizmos/gizmos/job_row.html", data)
     except Exception as e:
-        error_msg = 'Updating row for job {} failed: {}'.format(job_id, str(e))
+        error_msg = "Updating row for job {} failed: {}".format(job_id, str(e))
         log.warning(error_msg)
-        user_friendly_error = 'An unexpected error occurred while updating this row. Press the "Refresh Status" ' \
-                              'button to update the row manually.'
+        user_friendly_error = (
+            'An unexpected error occurred while updating this row. Press the "Refresh Status" '
+            "button to update the row manually."
+        )
         success = False
         status = None
-        html = render_to_string('tethys_gizmos/gizmos/job_row_error.html',
-                                {
-                                    'job_id': job_id,
-                                    'error_msg': user_friendly_error,
-                                    'num_cols': len(data.get('column_fields', [1]))
-                                })
+        html = render_to_string(
+            "tethys_gizmos/gizmos/job_row_error.html",
+            {
+                "job_id": job_id,
+                "error_msg": user_friendly_error,
+                "num_cols": len(data.get("column_fields", [1])),
+            },
+        )
 
-    return JsonResponse({'success': success, 'status': status, 'html': html})
+    return JsonResponse({"success": success, "status": status, "html": html})
 
 
 def update_workflow_nodes_row(request, job_id):
@@ -176,43 +225,45 @@ def update_workflow_nodes_row(request, job_id):
         status = job.status
 
         # Hard code example for gizmos_showcase
-        if job.label == 'gizmos_showcase':
+        if job.label == "gizmos_showcase":
             dag = {
-                'a': {
-                    'status': 'com',
-                    'parents': [],
-                    'cluster_id': 1,
-                    'display': 'Job A'
+                "a": {
+                    "status": "com",
+                    "parents": [],
+                    "cluster_id": 1,
+                    "display": "Job A",
                 },
-                'b': {
-                    'status': 'err',
-                    'parents': ['a'],
-                    'cluster_id': 2,
-                    'display': 'Job B'
+                "b": {
+                    "status": "err",
+                    "parents": ["a"],
+                    "cluster_id": 2,
+                    "display": "Job B",
                 },
-                'c': {
-                    'status': 'run',
-                    'parents': ['a'],
-                    'cluster_id': 3,
-                    'display': 'Job C'
+                "c": {
+                    "status": "run",
+                    "parents": ["a"],
+                    "cluster_id": 3,
+                    "display": "Job C",
                 },
-                'd': {
-                    'status': 'sub',
-                    'parents': ['a'],
-                    'cluster_id': 4,
-                    'display': 'Job D'
+                "d": {
+                    "status": "sub",
+                    "parents": ["a"],
+                    "cluster_id": 4,
+                    "display": "Job D",
                 },
-                'e': {
-                    'status': 'pen',
-                    'parents': ['c', 'd'],
-                    'cluster_id': 5,
-                    'display': 'Job E'
+                "e": {
+                    "status": "pen",
+                    "parents": ["c", "d"],
+                    "cluster_id": 5,
+                    "display": "Job E",
                 },
-                'f': {
-                    'status': 'abt',
-                    'parents': ['b', ],
-                    'cluster_id': 0,
-                    'display': 'Job F'
+                "f": {
+                    "status": "abt",
+                    "parents": [
+                        "b",
+                    ],
+                    "cluster_id": 0,
+                    "display": "Job F",
                 },
             }
 
@@ -225,24 +276,28 @@ def update_workflow_nodes_row(request, job_id):
                     parents.append(parent.job.name)
 
                 job_name = node.job.name
-                display_job_name = job_name.replace('_', ' ').replace('-', ' ').title()
+                display_job_name = job_name.replace("_", " ").replace("-", " ").title()
                 dag[node.job.name] = {
-                    'cluster_id': node.job.cluster_id,
-                    'display': display_job_name,
-                    'status': CondorWorkflow.STATUS_MAP[node.job.status].lower(),
-                    'parents': parents
+                    "cluster_id": node.job.cluster_id,
+                    "display": display_job_name,
+                    "status": CondorWorkflow.STATUS_MAP[node.job.status].lower(),
+                    "parents": parents,
                 }
 
         success = True
     except Exception as e:
-        log.error('The following error occurred when updating details row for job %s: %s', job_id, str(e))
+        log.error(
+            "The following error occurred when updating details row for job %s: %s",
+            job_id,
+            str(e),
+        )
         success = False
         status = None
 
-    return JsonResponse({'success': success, 'status': status, 'dag': dag})
+    return JsonResponse({"success": success, "status": status, "dag": dag})
 
 
-def bokeh_row(request, job_id, type='individual-graph'):
+def bokeh_row(request, job_id, type="individual-graph"):
     """
     Returns an embeded bokeh document in json. Javascript can use this method to inject bokeh document to jobs table.
     """
@@ -256,12 +311,12 @@ def bokeh_row(request, job_id, type='individual-graph'):
         base_link = dask_scheduler.dashboard
 
         # Append http if not exists
-        if 'http' not in base_link:
-            base_link = 'http://' + base_link
+        if "http" not in base_link:
+            base_link = "http://" + base_link
 
         # Add forward slash if not exist
-        if base_link[-1] != '/':
-            base_link = base_link + '/'
+        if base_link[-1] != "/":
+            base_link = base_link + "/"
 
         # use bokeh server_document to embed
         url_link = base_link + type
@@ -271,22 +326,26 @@ def bokeh_row(request, job_id, type='individual-graph'):
         success = True
 
     except Exception as e:
-        log.error('The following error occurred when getting bokeh chart '
-                  'from scheduler {} for job {}: {}'.format(dask_scheduler.name, job_id, str(e)))
+        log.error(
+            "The following error occurred when getting bokeh chart "
+            "from scheduler {} for job {}: {}".format(
+                dask_scheduler.name, job_id, str(e)
+            )
+        )
         return
 
     # Render bokeh app into a string to pass in JsonResponse
-    html = render_to_string('tethys_gizmos/gizmos/bokeh_application.html', context)
-    return JsonResponse({'success': success, 'status': status, 'html': html})
+    html = render_to_string("tethys_gizmos/gizmos/bokeh_application.html", context)
+    return JsonResponse({"success": success, "status": status, "html": html})
 
 
 def _parse_value(val):
-    if val in ('True', 'true'):
+    if val in ("True", "true"):
         return True
-    elif val in ('False', 'false'):
+    elif val in ("False", "false"):
         return False
-    elif val.startswith('['):
-        return [f.strip('\'\" ') for f in val.strip('[]').split(',')]
+    elif val.startswith("["):
+        return [f.strip("'\" ") for f in val.strip("[]").split(",")]
     else:
         return val
 
@@ -294,7 +353,7 @@ def _parse_value(val):
 def reconstruct_post_dict(request):
     data = {key: _parse_value(val) for key, val in request.POST.items()}
     # parse out dictionaries from POST items
-    parts = [re.split('[\[\]]+', k)[:-1] for k in data.keys() if '[' in k]  # noqa: W605
+    parts = [re.split("[\[\]]+", k)[:-1] for k in data.keys() if "[" in k]  # noqa: W605
     for p in parts:
         name = p[0]
         keys = p[1:]

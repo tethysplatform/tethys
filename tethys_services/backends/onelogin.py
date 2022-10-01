@@ -10,26 +10,29 @@ from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 class OneLoginOIDC(OpenIdConnectAuth):
     """OneLogin OpenIDConnect authentication backend."""
-    name = 'onelogin-oidc'
+
+    name = "onelogin-oidc"
 
     @property
     def OIDC_ENDPOINT(self):
-        subdomain = self.setting('SUBDOMAIN')
+        subdomain = self.setting("SUBDOMAIN")
         if not subdomain:
-            raise ValueError('You must specify your OneLogin subdomain via the "SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN" '
-                             'setting (e.g. https://my-org.onelogin.com).')
+            raise ValueError(
+                'You must specify your OneLogin subdomain via the "SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN" '
+                "setting (e.g. https://my-org.onelogin.com)."
+            )
 
-        if subdomain[-1] == '/':
+        if subdomain[-1] == "/":
             subdomain = subdomain[0:-1]
 
-        return subdomain + '/oidc/2'
+        return subdomain + "/oidc/2"
 
     def find_valid_key(self, id_token):
         for key in self.get_jwks_keys():
             rsakey = jwk.construct(key, algorithm=ALGORITHMS.RS256)
-            message, encoded_sig = id_token.rsplit('.', 1)
-            decoded_sig = base64url_decode(encoded_sig.encode('utf-8'))
-            if rsakey.verify(message.encode('utf-8'), decoded_sig):
+            message, encoded_sig = id_token.rsplit(".", 1)
+            decoded_sig = base64url_decode(encoded_sig.encode("utf-8"))
+            if rsakey.verify(message.encode("utf-8"), decoded_sig):
                 return key
 
     def validate_and_return_id_token(self, id_token, access_token):
@@ -42,14 +45,14 @@ class OneLoginOIDC(OpenIdConnectAuth):
         key = self.find_valid_key(id_token)
 
         if not key:
-            raise AuthTokenError(self, 'Signature verification failed')
+            raise AuthTokenError(self, "Signature verification failed")
 
         rsakey = jwk.construct(key, algorithm=ALGORITHMS.RS256)
 
         try:
             claims = jwt.decode(
                 id_token,
-                rsakey.to_pem().decode('utf-8'),
+                rsakey.to_pem().decode("utf-8"),
                 algorithms=[ALGORITHMS.HS256, ALGORITHMS.RS256, ALGORITHMS.ES256],
                 audience=client_id,
                 issuer=self.id_token_issuer(),
@@ -57,11 +60,11 @@ class OneLoginOIDC(OpenIdConnectAuth):
                 options=self.JWT_DECODE_OPTIONS,
             )
         except ExpiredSignatureError:
-            raise AuthTokenError(self, 'Signature has expired')
+            raise AuthTokenError(self, "Signature has expired")
         except JWTClaimsError as error:
             raise AuthTokenError(self, str(error))
         except JWTError:
-            raise AuthTokenError(self, 'Invalid signature')
+            raise AuthTokenError(self, "Invalid signature")
 
         self.validate_claims(claims)
 

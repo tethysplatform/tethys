@@ -1,6 +1,6 @@
-
 class DaskJobException(Exception):
     """
-       Custom Dask job exception.
+    Custom Dask job exception.
     """
+
     pass

@@ -16,6 +16,8 @@ class TethysLayoutPropertyException(Exception):
             property_name (str): Name of the TethysLayout class property.
             layout_class (TethysLayout): Child class of TethysLayout.
         """
-        msg = f'You must define the "{property_name}" property ' \
-              f'on your {layout_class.__name__} class to use this feature.'
+        msg = (
+            f'You must define the "{property_name}" property '
+            f"on your {layout_class.__name__} class to use this feature."
+        )
         super().__init__(msg, *args, **kwargs)

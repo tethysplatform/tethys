@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0005_auto_20211221_2313'),
+        ("tethys_compute", "0005_auto_20211221_2313"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='condorpyjob',
-            name='_attributes',
+            model_name="condorpyjob",
+            name="_attributes",
             field=models.JSONField(blank=True, default=dict, null=True),
         ),
     ]

@@ -15,7 +15,7 @@ from tethys_apps.models import TethysApp
 from tethys_quotas.handlers.base import ResourceQuotaHandler
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class ResourceQuota(models.Model):
@@ -36,11 +36,11 @@ class ResourceQuota(models.Model):
     """  # noqa: E501
 
     class Meta:
-        verbose_name = 'Resource Quota'
+        verbose_name = "Resource Quota"
 
     codename = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=2048, blank=True, default='')
+    description = models.CharField(max_length=2048, blank=True, default="")
     default = models.FloatField()
     units = models.CharField(max_length=100)
     applies_to = models.TextField()
@@ -73,12 +73,18 @@ class ResourceQuota(models.Model):
             if obj.function and issubclass(obj.function, ResourceQuotaHandler):
                 self._handler = class_path
             else:
-                raise ValueError("{} must be a subclass of ResourceQuotaHandler".format(class_path))
+                raise ValueError(
+                    "{} must be a subclass of ResourceQuotaHandler".format(class_path)
+                )
         elif inspect.isclass(class_path):
             if issubclass(class_path, ResourceQuotaHandler):
-                self._handler = "{}.{}".format(class_path.__module__, class_path.__name__)
+                self._handler = "{}.{}".format(
+                    class_path.__module__, class_path.__name__
+                )
             else:
-                raise ValueError("{} must be a subclass of ResourceQuotaHandler".format(class_path))
+                raise ValueError(
+                    "{} must be a subclass of ResourceQuotaHandler".format(class_path)
+                )
 
     def check_quota(self, entity):
         """

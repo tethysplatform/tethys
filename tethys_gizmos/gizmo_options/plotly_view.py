@@ -3,7 +3,7 @@ import plotly.offline as opy
 
 from .base import TethysGizmoOptions
 
-__all__ = ['PlotlyView']
+__all__ = ["PlotlyView"]
 
 
 class PlotlyView(TethysGizmoOptions):
@@ -200,22 +200,33 @@ class PlotlyView(TethysGizmoOptions):
         {% gizmo heat_map %}
 
     """
+
     gizmo_name = "plotly_view"
 
-    def __init__(self, plot_input, height=None, width='100%',
-                 attributes='', classes='', divid='', hidden=False,
-                 show_link=False):
+    def __init__(
+        self,
+        plot_input,
+        height=None,
+        width="100%",
+        attributes="",
+        classes="",
+        divid="",
+        hidden=False,
+        show_link=False,
+    ):
         """
         Constructor
         """
         # Initialize the super class
         super().__init__()
 
-        self.plotly_div = opy.plot(plot_input,
-                                   auto_open=False,
-                                   output_type='div',
-                                   include_plotlyjs=False,
-                                   show_link=show_link)
+        self.plotly_div = opy.plot(
+            plot_input,
+            auto_open=False,
+            output_type="div",
+            include_plotlyjs=False,
+            show_link=show_link,
+        )
         self.height = height
         self.width = width
         self.attributes = attributes
@@ -229,4 +240,4 @@ class PlotlyView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('://plotly-load_from_python.js',)
+        return ("://plotly-load_from_python.js",)

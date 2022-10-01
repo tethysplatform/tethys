@@ -20,7 +20,7 @@ from .utilities import get_active_app, user_can_access_app
 from .models import ProxyApp
 from .decorators import login_required
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 @login_required()
@@ -48,7 +48,9 @@ def library(request):
     proxy_apps = ProxyApp.objects.all()
 
     for proxy_app in proxy_apps:
-        if request.user.is_staff or (proxy_app.enabled and proxy_app.show_in_apps_library):
+        if request.user.is_staff or (
+            proxy_app.enabled and proxy_app.show_in_apps_library
+        ):
             configured_apps.append(proxy_app)
 
     # sort apps alphabetically
@@ -58,9 +60,13 @@ def library(request):
     configured_apps.sort(key=lambda a: a.order)
 
     # Define the context object
-    context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
+    context = {
+        "apps": {"configured": configured_apps, "unconfigured": unconfigured_apps}
+    }
 
-    template = get_custom_template('Apps Library Template', 'tethys_apps/app_library.html')
+    template = get_custom_template(
+        "Apps Library Template", "tethys_apps/app_library.html"
+    )
 
     return render(request, template, context)
 
@@ -70,12 +76,12 @@ def handoff_capabilities(request, app_name):
     """
     Show handoff capabilities of the app name provided.
     """
-    app_name = app_name.replace('-', '_')
+    app_name = app_name.replace("-", "_")
 
     manager = TethysAppBase.get_handoff_manager()
     handlers = manager.get_capabilities(app_name, external_only=True, jsonify=True)
 
-    return HttpResponse(handlers, content_type='application/javascript')
+    return HttpResponse(handlers, content_type="application/javascript")
 
 
 @login_required()
@@ -83,7 +89,7 @@ def handoff(request, app_name, handler_name):
     """
     Handle handoff requests.
     """
-    app_name = app_name.replace('-', '_')
+    app_name = app_name.replace("-", "_")
 
     manager = TethysAppBase.get_handoff_manager()
 
@@ -99,46 +105,47 @@ def send_beta_feedback_email(request):
     post = request.POST
 
     # Get url and parts
-    url = post.get('betaFormUrl')
+    url = post.get("betaFormUrl")
 
     # Get app
     app = get_active_app(url=url)
 
-    if app is None or not hasattr(app, 'feedback_emails'):
-        json = {'success': False,
-                'error': 'App not found or feedback_emails not defined in app.py'}
+    if app is None or not hasattr(app, "feedback_emails"):
+        json = {
+            "success": False,
+            "error": "App not found or feedback_emails not defined in app.py",
+        }
         return JsonResponse(json)
 
     # Formulate email
-    subject = 'User Feedback for {0}'.format(app.name.encode('utf-8'))
+    subject = "User Feedback for {0}".format(app.name.encode("utf-8"))
 
-    message = 'User: {0}\n'\
-              'User Local Time: {1}\n'\
-              'UTC Offset in Hours: {2}\n'\
-              'App URL: {3}\n'\
-              'User Agent: {4}\n'\
-              'Vendor: {5}\n'\
-              'Comments:\n' \
-              '{6}'.\
-        format(
-            post.get('betaUser'),
-            post.get('betaSubmitLocalTime'),
-            post.get('betaSubmitUTCOffset'),
-            post.get('betaFormUrl'),
-            post.get('betaFormUserAgent'),
-            post.get('betaFormVendor'),
-            post.get('betaUserComments')
+    message = (
+        "User: {0}\n"
+        "User Local Time: {1}\n"
+        "UTC Offset in Hours: {2}\n"
+        "App URL: {3}\n"
+        "User Agent: {4}\n"
+        "Vendor: {5}\n"
+        "Comments:\n"
+        "{6}".format(
+            post.get("betaUser"),
+            post.get("betaSubmitLocalTime"),
+            post.get("betaSubmitUTCOffset"),
+            post.get("betaFormUrl"),
+            post.get("betaFormUserAgent"),
+            post.get("betaFormVendor"),
+            post.get("betaUserComments"),
         )
+    )
 
     try:
         send_mail(subject, message, from_email=None, recipient_list=app.feedback_emails)
     except Exception as e:
-        json = {'success': False,
-                'error': 'Failed to send email: ' + str(e)}
+        json = {"success": False, "error": "Failed to send email: " + str(e)}
         return JsonResponse(json)
 
-    json = {'success': True,
-            'result': 'Emails sent to specified developers'}
+    json = {"success": True, "result": "Emails sent to specified developers"}
     return JsonResponse(json)
 
 
@@ -149,9 +156,9 @@ def update_job_status(request, job_id):
     try:
         job = TethysJob.objects.filter(id=job_id)[0]
         job.status
-        json = {'success': True}
+        json = {"success": True}
     except Exception:
-        json = {'success': False}
+        json = {"success": False}
 
     return JsonResponse(json)
 
@@ -161,16 +168,22 @@ def update_dask_job_status(request, key):
     Callback endpoint for dask jobs to update status.
     """
     params = request.GET
-    status = params.get('status', None)
-    log.debug('Recieved update status for DaskJob<key: {} status: {}>'.format(key, status))
+    status = params.get("status", None)
+    log.debug(
+        "Recieved update status for DaskJob<key: {} status: {}>".format(key, status)
+    )
 
     try:
         job = DaskJob.objects.filter(key=key)[0]
         job_status = job.DASK_TO_STATUS_TYPES[status]
-        log.debug('Mapped dask status "{}" to tethys job status: "{}"'.format(status, job_status))
+        log.debug(
+            'Mapped dask status "{}" to tethys job status: "{}"'.format(
+                status, job_status
+            )
+        )
         job.status = job_status
-        json = {'success': True}
+        json = {"success": True}
     except Exception:
-        json = {'success': False}
+        json = {"success": False}
 
     return JsonResponse(json)

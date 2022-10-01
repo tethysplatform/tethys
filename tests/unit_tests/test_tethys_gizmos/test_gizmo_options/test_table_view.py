@@ -10,12 +10,14 @@ class TestTableView(unittest.TestCase):
         pass
 
     def test_TableView(self):
-        rows = [('Bill', '30', 'contractor'),
-                ('Fred', '18', 'programmer'),
-                ('Bob', '26', 'boss')]
-        column_names = ['Name', 'Age', 'Job']
+        rows = [
+            ("Bill", "30", "contractor"),
+            ("Fred", "18", "programmer"),
+            ("Bob", "26", "boss"),
+        ]
+        column_names = ["Name", "Age", "Job"]
 
         result = gizmo_table_view.TableView(rows=rows, column_names=column_names)
 
-        self.assertEqual(rows, result['rows'])
-        self.assertEqual(column_names, result['column_names'])
+        self.assertEqual(rows, result["rows"])
+        self.assertEqual(column_names, result["column_names"])

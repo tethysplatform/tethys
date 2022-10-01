@@ -18,10 +18,16 @@ from tethys_compute.models.basic_job import BasicJob  # noqa: F401
 from tethys_compute.models.condor.condor_base import CondorBase  # noqa: F401
 from tethys_compute.models.condor.condor_py_job import CondorPyJob  # noqa: F401
 from tethys_compute.models.condor.condor_job import CondorJob  # noqa: F401
-from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow  # noqa: F401
+from tethys_compute.models.condor.condor_py_workflow import (
+    CondorPyWorkflow,
+)  # noqa: F401
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow  # noqa: F401
-from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode  # noqa: F401
-from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode  # noqa: F401
+from tethys_compute.models.condor.condor_workflow_node import (
+    CondorWorkflowNode,
+)  # noqa: F401
+from tethys_compute.models.condor.condor_workflow_job_node import (
+    CondorWorkflowJobNode,
+)  # noqa: F401
 
 from tethys_compute.models.dask.dask_job import DaskJob
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler  # noqa: F401
@@ -32,6 +38,6 @@ from tethys_compute.models.dask.dask_scheduler import DaskScheduler  # noqa: F40
 @receiver(post_save, sender=BasicJob)
 @receiver(post_save, sender=TethysJob)
 def tethys_job_post_save(sender, instance, raw, using, update_fields, **kwargs):
-    if instance.name.find('{id}') >= 0:
+    if instance.name.find("{id}") >= 0:
         instance.name = instance.name.format(id=instance.id)
         instance.save()

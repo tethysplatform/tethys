@@ -1,7 +1,7 @@
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
-__all__ = ['ESRIMap', 'EMView', 'EMLayer']
+__all__ = ["ESRIMap", "EMView", "EMLayer"]
 
 
 class ESRIMap(TethysGizmoOptions):
@@ -59,10 +59,13 @@ class ESRIMap(TethysGizmoOptions):
         {% gizmo esri_map_view_options %}
 
     """  # noqa: E501
-    gizmo_name = "esri_map"
-    version = vendor_static_dependencies['arcgis'].version
 
-    def __init__(self, height='100%', width='100%', basemap='topo-vector', view=None, layers=None):
+    gizmo_name = "esri_map"
+    version = vendor_static_dependencies["arcgis"].version
+
+    def __init__(
+        self, height="100%", width="100%", basemap="topo-vector", view=None, layers=None
+    ):
         """
         Constructor
         """
@@ -72,7 +75,7 @@ class ESRIMap(TethysGizmoOptions):
         self.height = height
         self.width = width
         self.basemap = basemap
-        self.view = view or {'center': [-100, 40], 'zoom': 2}
+        self.view = view or {"center": [-100, 40], "zoom": 2}
         self.layers = layers or []
 
     @classmethod
@@ -81,7 +84,11 @@ class ESRIMap(TethysGizmoOptions):
         Javascript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['arcgis'].get_custom_version_url(url_type='js', version=cls.version),
+        return (
+            vendor_static_dependencies["arcgis"].get_custom_version_url(
+                url_type="js", version=cls.version
+            ),
+        )
 
     @staticmethod
     def get_gizmo_js():
@@ -89,7 +96,7 @@ class ESRIMap(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return 'tethys_gizmos/js/esri_map.js',
+        return ("tethys_gizmos/js/esri_map.js",)
 
     @classmethod
     def get_vendor_css(cls):
@@ -97,7 +104,11 @@ class ESRIMap(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return vendor_static_dependencies['arcgis'].get_custom_version_url(url_type='css', version=cls.version),
+        return (
+            vendor_static_dependencies["arcgis"].get_custom_version_url(
+                url_type="css", version=cls.version
+            ),
+        )
 
 
 class EMView(SecondaryGizmoOptions):
@@ -118,6 +129,7 @@ class EMView(SecondaryGizmoOptions):
         )
 
     """  # noqa: E501
+
     def __init__(self, center, zoom):
         """
         Constructor
@@ -155,6 +167,7 @@ class EMLayer(SecondaryGizmoOptions):
         )
 
     """  # noqa: E501
+
     def __init__(self, type, url):
         """
         Constructor

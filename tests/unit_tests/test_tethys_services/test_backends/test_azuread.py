@@ -1,10 +1,12 @@
 from django import test
-from tethys_services.backends.azuread import AzureADB2COAuth2MultiTenant, AzureADTenantOAuth2MultiTenant
+from tethys_services.backends.azuread import (
+    AzureADB2COAuth2MultiTenant,
+    AzureADTenantOAuth2MultiTenant,
+)
 from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 
 class AzureADB2COAuth2MultiTenantBackendTest(test.SimpleTestCase):
-
     def setUp(self):
         pass
 
@@ -17,7 +19,6 @@ class AzureADB2COAuth2MultiTenantBackendTest(test.SimpleTestCase):
 
 
 class AzureADTenantOAuth2MultiTenantBackendTest(test.SimpleTestCase):
-
     def setUp(self):
         pass
 

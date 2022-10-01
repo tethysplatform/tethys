@@ -7,4 +7,4 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-default_app_config = 'tethys_compute.apps.TethysComputeConfig'
+default_app_config = "tethys_compute.apps.TethysComputeConfig"

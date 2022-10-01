@@ -10,11 +10,11 @@ class TestMessageBox(unittest.TestCase):
         pass
 
     def test_MessageBox(self):
-        name = 'MB Name'
-        title = 'MB Title'
+        name = "MB Name"
+        title = "MB Title"
 
         result = gizmo_message_box.MessageBox(name=name, title=title)
 
         # Check Result
-        self.assertEqual(name, result['name'])
-        self.assertEqual(title, result['title'])
+        self.assertEqual(name, result["name"])
+        self.assertEqual(title, result["title"])

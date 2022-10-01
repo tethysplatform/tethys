@@ -4,6 +4,7 @@ from social_core.utils import setting_name
 
 class MultiTenantMixin:
     """Mixin class that adds support for multi-tenant use. Note must be used with BaseAuth class."""
+
     _tenant = None
     _tenant_settings = None
 
@@ -11,7 +12,11 @@ class MultiTenantMixin:
         """Return setting from tenant_settings if found there, otherwise default behavior."""
         # If the setting is in the MULTI_TENANT settings, return that value
         expanded_setting_name = setting_name(self.name, name)
-        if name != 'MULTI_TENANT' and self.tenant_settings and expanded_setting_name in self.tenant_settings:
+        if (
+            name != "MULTI_TENANT"
+            and self.tenant_settings
+            and expanded_setting_name in self.tenant_settings
+        ):
             return self.tenant_settings.get(expanded_setting_name)
         return super().setting(name, default)
 
@@ -26,7 +31,7 @@ class MultiTenantMixin:
             return None
 
         if self._tenant_settings is None:
-            multi_tenant_settings = self.setting('MULTI_TENANT')
+            multi_tenant_settings = self.setting("MULTI_TENANT")
             if not multi_tenant_settings:
                 return None
 
@@ -59,12 +64,16 @@ class MultiTenantMixin:
         normalized_tenant = val.lower()
 
         # Validate tenant before saving
-        multi_tenant_setting_name = setting_name(self.name, 'MULTI_TENANT')
-        multi_tenant_settings = self.setting('MULTI_TENANT')
+        multi_tenant_setting_name = setting_name(self.name, "MULTI_TENANT")
+        multi_tenant_settings = self.setting("MULTI_TENANT")
         if not multi_tenant_settings:
-            raise ImproperlyConfigured(f'Backend "{self.name}" not configured for multi-tenant: '
-                                       f'{multi_tenant_setting_name} setting not found.')
+            raise ImproperlyConfigured(
+                f'Backend "{self.name}" not configured for multi-tenant: '
+                f"{multi_tenant_setting_name} setting not found."
+            )
         if normalized_tenant not in multi_tenant_settings:
-            raise ValueError(f'Tenant "{normalized_tenant}" not found in {multi_tenant_setting_name}.')
+            raise ValueError(
+                f'Tenant "{normalized_tenant}" not found in {multi_tenant_setting_name}.'
+            )
 
         self._tenant = normalized_tenant

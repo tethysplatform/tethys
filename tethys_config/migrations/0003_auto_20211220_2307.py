@@ -8,9 +8,7 @@ from tethys_config.init import tethys4_site_settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_config', '0002_auto_20200410_1731'),
+        ("tethys_config", "0002_auto_20200410_1731"),
     ]
 
-    operations = [
-        migrations.RunPython(tethys4_site_settings, lambda a, s: None)
-    ]
+    operations = [migrations.RunPython(tethys4_site_settings, lambda a, s: None)]

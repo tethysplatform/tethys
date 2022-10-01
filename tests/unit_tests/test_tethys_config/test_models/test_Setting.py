@@ -12,25 +12,28 @@ class SettingTest(TethysTestCase):
         pass
 
     def test_Setting_unicode(self):
-        set_title = Setting.objects.get(name='Site Title')
+        set_title = Setting.objects.get(name="Site Title")
 
         # Check result
-        self.assertEqual('Site Title', str(set_title))
+        self.assertEqual("Site Title", str(set_title))
 
     def test_Setting_str(self):
-        set_title = Setting.objects.get(name='Site Title')
+        set_title = Setting.objects.get(name="Site Title")
 
         # Check result
-        self.assertEqual('Site Title', str(set_title))
+        self.assertEqual("Site Title", str(set_title))
 
     def test_Setting_as_dict(self):
         set_all = Setting.as_dict()
 
         # Check result
         self.assertIsInstance(set_all, dict)
-        self.assertIn('site_title', set_all)
+        self.assertIn("site_title", set_all)
 
-    @mock.patch('tethys_config.models.Setting.objects.get', return_value=mock.MagicMock(content='/test.html'))
+    @mock.patch(
+        "tethys_config.models.Setting.objects.get",
+        return_value=mock.MagicMock(content="/test.html"),
+    )
     def test_get_custom_template(self, _):
-        result = get_custom_template('name', None)
-        self.assertEqual('test.html', result)
+        result = get_custom_template("name", None)
+        self.assertEqual("test.html", result)

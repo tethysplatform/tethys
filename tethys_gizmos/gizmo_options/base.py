@@ -17,7 +17,7 @@ class TethysGizmoOptions(dict):
 
     gizmo_name = "tethys_gizmo_options"
 
-    def __init__(self, attributes=None, classes=''):
+    def __init__(self, attributes=None, classes=""):
         """
         Constructor for Tethys Gizmo Options base.
         """
@@ -31,10 +31,10 @@ class TethysGizmoOptions(dict):
 
         if isinstance(attributes, str):
             # 'key="value" key2="value with spaces"'
-            pattern = r'(\w+)='
+            pattern = r"(\w+)="
             pairs = re.split(pattern, attributes)
             if pairs:
-                pairs = [x.strip().strip('\'').strip('\"') for x in pairs]
+                pairs = [x.strip().strip("'").strip('"') for x in pairs]
                 attributes = dict()
                 for i in range(1, len(pairs), 2):
                     attributes[pairs[i]] = pairs[i + 1]
@@ -47,14 +47,14 @@ class TethysGizmoOptions(dict):
         """
         Tethys gizmo JavaScript files applicable to all gizmos
         """
-        return 'tethys_gizmos/js/tethys_gizmos.js',
+        return ("tethys_gizmos/js/tethys_gizmos.js",)
 
     @staticmethod
     def get_tethys_gizmos_css():
         """
         Tethys gizmo CSS files applicable to all gizmos
         """
-        return 'tethys_gizmos/css/tethys_gizmos.css',
+        return ("tethys_gizmos/css/tethys_gizmos.css",)
 
     @staticmethod
     def get_vendor_js():

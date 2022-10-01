@@ -16,7 +16,7 @@ from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_job import CondorPyJob
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class CondorJob(CondorBase, CondorPyJob):
