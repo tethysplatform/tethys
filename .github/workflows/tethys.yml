@@ -18,6 +18,13 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
+  black-lint:
+    name: Lint with Black
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+
   tests:
     name: Tests (${{ matrix.platform }})
     runs-on: ${{ matrix.platform }}
