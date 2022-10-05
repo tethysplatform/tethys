@@ -182,7 +182,7 @@ With the code committed to your local git repository, you can push the code to G
 .. code-block:: bash
 
     git remote add origin git@github.com:<USERNAME>/tethysapp-earth_engine.git
-    git push -u origin master
+    git push -u origin main
 
 4. You should see output similar to the following:
 
@@ -196,8 +196,8 @@ With the code committed to your local git repository, you can push the code to G
     Total 59 (delta 3), reused 0 (delta 0)
     remote: Resolving deltas: 100% (3/3), done.
     To github.com:<USERNAME>/tethysapp-earth_engine.git
-     * [new branch]      master -> master
-    Branch 'master' set up to track remote branch 'master' from 'origin'.
+     * [new branch]      main -> main
+    Branch 'main' set up to track remote branch 'main' from 'origin'.
 
 5. Navigate to: `<https://github.com/\<USERNAME\>/tethysapp-earth_engine>`_, refreshing the page if necessary to see your code on GitHub.
 

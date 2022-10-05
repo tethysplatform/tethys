@@ -58,7 +58,7 @@ Each option is also descriped here:
   * `-p, --port <PORT>`:
           Port on which to serve Tethys. Default is 8000.
   * `-b, --branch <BRANCH_NAME>`:
-          Branch to checkout from version control. Default is 'master'.
+          Branch to checkout from version control. Default is 'main'.
   * `-c, --conda-home <PATH>`:
           Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda/.
 

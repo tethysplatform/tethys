@@ -145,7 +145,7 @@ All Dockerfiles must begin with a `FROM <https://docs.docker.com/engine/referenc
 
 .. note::
 
-    The ``latest`` portion of the image name is a tag that specifies the latest released version will be used for the build. Alternatively, you can replace the ``latest`` tag with either a specific version of Tethys Platform (e.g. ``3.3.0``) or with the ``master`` tag to use the latest development version. For a list of all available tags see: `tethysplatform/tethys-core Tags <https://hub.docker.com/r/tethysplatform/tethys-core/tags>`_.
+    The ``latest`` portion of the image name is a tag that specifies the latest released version will be used for the build. Alternatively, you can replace the ``latest`` tag with either a specific version of Tethys Platform (e.g. ``3.3.0``) or with the ``dev`` tag to use the latest development version. For a list of all available tags see: `tethysplatform/tethys-core Tags <https://hub.docker.com/r/tethysplatform/tethys-core/tags>`_.
 
 
 2. Define environment variables
