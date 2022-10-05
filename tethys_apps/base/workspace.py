@@ -127,7 +127,7 @@ class TethysWorkspace:
             ]
         return directories
 
-    def clear(self, exclude=list, exclude_files=False, exclude_directories=False):
+    def clear(self, exclude=None, exclude_files=False, exclude_directories=False):
         """
         Remove all files and directories in the workspace.
 
@@ -153,6 +153,9 @@ class TethysWorkspace:
             workspace.clear(exclude=['file1.txt', '/full/path/to/directory1', 'directory2', '/full/path/to/file2.txt'])
 
         """
+        if exclude is None:
+            exclude = list()
+
         files = [
             f
             for f in os.listdir(self._path)
