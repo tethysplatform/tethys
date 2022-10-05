@@ -80,10 +80,13 @@ class PermissionGroup:
 
     """
 
-    def __init__(self, name, permissions=list):
+    def __init__(self, name, permissions=None):
         """
         Constructor
         """
+        if permissions is None:
+            permissions = list()
+
         self.name = name
         self.permissions = permissions
 

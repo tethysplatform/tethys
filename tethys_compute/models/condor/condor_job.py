@@ -31,7 +31,10 @@ class CondorJob(CondorBase, CondorPyJob):
         """
         return self.condorpy_job
 
-    def _execute(self, queue=None, options=list):
+    def _execute(self, queue=None, options=None):
+        if options is None:
+            options = list()
+
         self.num_jobs = queue or self.num_jobs
         super()._execute(queue=self.num_jobs, options=options)
 
