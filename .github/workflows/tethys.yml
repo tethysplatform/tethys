@@ -69,7 +69,9 @@ jobs:
 
   docker-build:
     name: Docker Build
-    needs: tests
+    needs:
+      - tests
+      - black-lint
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -101,7 +103,9 @@ jobs:
 
   conda-build:
     name: Conda Build
-    needs: tests
+    needs:
+      - tests
+      - black-lint
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
