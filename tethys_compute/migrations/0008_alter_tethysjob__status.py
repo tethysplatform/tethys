@@ -6,13 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0007_scheduler_settings'),
+        ("tethys_compute", "0007_scheduler_settings"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tethysjob',
-            name='_status',
-            field=models.CharField(choices=[('PEN', 'Pending'), ('SUB', 'Submitted'), ('RUN', 'Running'), ('VAR', 'Various'), ('PAS', 'Paused'), ('COM', 'Complete'), ('ERR', 'Error'), ('ABT', 'Aborted'), ('VCP', 'Various-Complete'), ('RES', 'Results-Ready'), ('OTH', 'Other')], default='PEN', max_length=3),
+            model_name="tethysjob",
+            name="_status",
+            field=models.CharField(
+                choices=[
+                    ("PEN", "Pending"),
+                    ("SUB", "Submitted"),
+                    ("RUN", "Running"),
+                    ("VAR", "Various"),
+                    ("PAS", "Paused"),
+                    ("COM", "Complete"),
+                    ("ERR", "Error"),
+                    ("ABT", "Aborted"),
+                    ("VCP", "Various-Complete"),
+                    ("RES", "Results-Ready"),
+                    ("OTH", "Other"),
+                ],
+                default="PEN",
+                max_length=3,
+            ),
         ),
     ]

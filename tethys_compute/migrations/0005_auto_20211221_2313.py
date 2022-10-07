@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0004_auto_20211221_2300'),
+        ("tethys_compute", "0004_auto_20211221_2300"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='condorpyworkflow',
-            name='_max_jobs',
+            model_name="condorpyworkflow",
+            name="_max_jobs",
             field=models.JSONField(blank=True, default=dict, null=True),
         ),
         migrations.AlterField(
-            model_name='condorworkflownode',
-            name='variables',
+            model_name="condorworkflownode",
+            name="variables",
             field=models.JSONField(blank=True, default=dict, null=True),
         ),
         migrations.AlterField(
-            model_name='tethysjob',
-            name='extended_properties',
+            model_name="tethysjob",
+            name="extended_properties",
             field=models.JSONField(blank=True, default=dict, null=True),
         ),
     ]

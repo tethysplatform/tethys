@@ -6,7 +6,6 @@ from tethys_config.admin import SettingInline, SettingCategoryAdmin
 
 
 class TethysConfigAdminTest(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -14,8 +13,8 @@ class TethysConfigAdminTest(unittest.TestCase):
         pass
 
     def test_SettingInline(self):
-        expected_fields = ('name', 'content', 'date_modified')
-        expected_readonly_fields = ('name', 'date_modified')
+        expected_fields = ("name", "content", "date_modified")
+        expected_readonly_fields = ("name", "date_modified")
         ret = SettingInline(mock.MagicMock(), mock.MagicMock())
 
         self.assertEqual(expected_fields, ret.fields)
@@ -25,8 +24,8 @@ class TethysConfigAdminTest(unittest.TestCase):
         self.assertIsNotNone(ret.formfield_overrides)
 
     def test_SettingCategoryAdmin(self):
-        expected_fields = ('name',)
-        expected_readonly_fields = ('name',)
+        expected_fields = ("name",)
+        expected_readonly_fields = ("name",)
         expected_inlines = [SettingInline]
         ret = SettingCategoryAdmin(mock.MagicMock(), mock.MagicMock())
 
@@ -46,6 +45,7 @@ class TethysConfigAdminTest(unittest.TestCase):
 
     def test_admin_site_register(self):
         from django.contrib import admin
+
         registry = admin.site._registry
         self.assertIn(SettingsCategory, registry)
         self.assertIsInstance(registry[SettingsCategory], SettingCategoryAdmin)

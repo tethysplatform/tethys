@@ -12,19 +12,19 @@ from django.urls import re_path
 def build_application(asgi_app):
     from tethys_apps.urls import app_websocket_urls, http_handler_patterns
 
-    application = ProtocolTypeRouter({
-        'http': AuthMiddlewareStack(
-            URLRouter([
-                *http_handler_patterns,
-                re_path(r'', asgi_app),
-            ])
-        ),
-        'websocket': AuthMiddlewareStack(
-            URLRouter(
-                app_websocket_urls
-            )
-        )
-    })
+    application = ProtocolTypeRouter(
+        {
+            "http": AuthMiddlewareStack(
+                URLRouter(
+                    [
+                        *http_handler_patterns,
+                        re_path(r"", asgi_app),
+                    ]
+                )
+            ),
+            "websocket": AuthMiddlewareStack(URLRouter(app_websocket_urls)),
+        }
+    )
     return application
 
 

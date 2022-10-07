@@ -9,7 +9,7 @@
 """
 from .base import TethysGizmoOptions
 
-__all__ = ['TableView']
+__all__ = ["TableView"]
 
 
 class TableView(TethysGizmoOptions):
@@ -74,10 +74,23 @@ class TableView(TethysGizmoOptions):
         {% gizmo table_view_edit %}
 
     """  # noqa: E501
+
     gizmo_name = "table_view"
 
-    def __init__(self, rows, column_names='', hover=False, striped=False, bordered=False, condensed=False,
-                 dark=False, editable_columns='', row_ids='', attributes=None, classes=''):
+    def __init__(
+        self,
+        rows,
+        column_names="",
+        hover=False,
+        striped=False,
+        bordered=False,
+        condensed=False,
+        dark=False,
+        editable_columns="",
+        row_ids="",
+        attributes=None,
+        classes="",
+    ):
         """
         Constructor
         """

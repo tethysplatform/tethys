@@ -13,12 +13,12 @@ from tethys_compute.models import Scheduler, CondorScheduler
 class CondorSchedulerTest(TethysTestCase):
     def set_up(self):
         self.scheduler = CondorScheduler(
-            name='test_scheduler',
-            host='localhost',
-            username='tethys_super',
-            password='pass',
-            private_key_path='test_path',
-            private_key_pass='test_pass'
+            name="test_scheduler",
+            host="localhost",
+            username="tethys_super",
+            password="pass",
+            private_key_path="test_path",
+            private_key_pass="test_pass",
         )
         self.scheduler.save()
 
@@ -26,27 +26,27 @@ class CondorSchedulerTest(TethysTestCase):
         self.scheduler.delete()
 
     def test_CondorScheduler(self):
-        ret = CondorScheduler.objects.get(name='test_scheduler')
+        ret = CondorScheduler.objects.get(name="test_scheduler")
 
         # Check result
         self.assertIsInstance(ret, CondorScheduler)
-        self.assertEqual('test_scheduler', ret.name)
-        self.assertEqual('localhost', ret.host)
-        self.assertEqual('tethys_super', ret.username)
-        self.assertEqual('pass', ret.password)
-        self.assertEqual('test_path', ret.private_key_path)
-        self.assertEqual('test_pass', ret.private_key_pass)
-        self.assertEqual('HTCondor Scheduler', ret._meta.verbose_name)
-        self.assertEqual('HTCondor Schedulers', ret._meta.verbose_name_plural)
+        self.assertEqual("test_scheduler", ret.name)
+        self.assertEqual("localhost", ret.host)
+        self.assertEqual("tethys_super", ret.username)
+        self.assertEqual("pass", ret.password)
+        self.assertEqual("test_path", ret.private_key_path)
+        self.assertEqual("test_pass", ret.private_key_pass)
+        self.assertEqual("HTCondor Scheduler", ret._meta.verbose_name)
+        self.assertEqual("HTCondor Schedulers", ret._meta.verbose_name_plural)
 
     def test_CondorScheduler_inheritance(self):
-        ret = Scheduler.objects.get_subclass(name='test_scheduler')
+        ret = Scheduler.objects.get_subclass(name="test_scheduler")
 
         # Check result
         self.assertIsInstance(ret, CondorScheduler)
-        self.assertEqual('test_scheduler', ret.name)
-        self.assertEqual('localhost', ret.host)
-        self.assertEqual('tethys_super', ret.username)
-        self.assertEqual('pass', ret.password)
-        self.assertEqual('test_path', ret.private_key_path)
-        self.assertEqual('test_pass', ret.private_key_pass)
+        self.assertEqual("test_scheduler", ret.name)
+        self.assertEqual("localhost", ret.host)
+        self.assertEqual("tethys_super", ret.username)
+        self.assertEqual("pass", ret.password)
+        self.assertEqual("test_path", ret.private_key_path)
+        self.assertEqual("test_pass", ret.private_key_pass)

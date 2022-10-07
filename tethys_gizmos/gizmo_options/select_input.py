@@ -11,7 +11,7 @@ import json
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
-__all__ = ['SelectInput']
+__all__ = ["SelectInput"]
 
 
 class SelectInput(TethysGizmoOptions):
@@ -92,11 +92,24 @@ class SelectInput(TethysGizmoOptions):
         {% gizmo select_input_multiple %}
 
     """  # noqa: E501
+
     gizmo_name = "select_input"
 
-    def __init__(self, name, display_text='', initial=None, multiple=False, original=False,
-                 select2_options=None, options='', disabled=False, error='', success='',
-                 attributes=None, classes=''):
+    def __init__(
+        self,
+        name,
+        display_text="",
+        initial=None,
+        multiple=False,
+        original=False,
+        select2_options=None,
+        options="",
+        disabled=False,
+        error="",
+        success="",
+        attributes=None,
+        classes="",
+    ):
         """
         Constructor
         """
@@ -111,7 +124,9 @@ class SelectInput(TethysGizmoOptions):
         self.initial = initial
         self.multiple = multiple
         self.original = original
-        self.placeholder = False if select2_options is None else 'placeholder' in select2_options
+        self.placeholder = (
+            False if select2_options is None else "placeholder" in select2_options
+        )
         self.select2_options = json.dumps(select2_options)
         self.options = options
         self.disabled = disabled
@@ -124,7 +139,7 @@ class SelectInput(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['select2'].js_url,
+        return (vendor_static_dependencies["select2"].js_url,)
 
     @staticmethod
     def get_vendor_css():
@@ -132,7 +147,7 @@ class SelectInput(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return vendor_static_dependencies['select2'].css_url,
+        return (vendor_static_dependencies["select2"].css_url,)
 
     @staticmethod
     def get_gizmo_js():
@@ -140,4 +155,4 @@ class SelectInput(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return 'tethys_gizmos/js/select_input.js',
+        return ("tethys_gizmos/js/select_input.js",)

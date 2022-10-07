@@ -35,7 +35,7 @@ def tethys_command_parser():
     """
     # Create parsers
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(title='Commands', dest='sub-command')
+    subparsers = parser.add_subparsers(title="Commands", dest="sub-command")
     subparsers.required = True
 
     add_version_parser(subparsers)
@@ -65,8 +65,8 @@ def tethys_command():
     args, unknown_args = parser.parse_known_args()
     if not unknown_args:
         args.func(args)
-    elif 'accepts_unknown_args' in str(args):
+    elif "accepts_unknown_args" in str(args):
         args.func(args, unknown_args)
     else:
-        msg = 'unrecognized arguments: %s'
-        parser.error(msg % ' '.join(unknown_args))
+        msg = "unrecognized arguments: %s"
+        parser.error(msg % " ".join(unknown_args))

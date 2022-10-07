@@ -6,12 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_apps', '0001_initial_30'),
+        ("tethys_apps", "0001_initial_30"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='tethysapp',
-            options={'verbose_name': 'Tethys App', 'verbose_name_plural': 'Installed Apps'},
+            name="tethysapp",
+            options={
+                "verbose_name": "Tethys App",
+                "verbose_name_plural": "Installed Apps",
+            },
         ),
     ]

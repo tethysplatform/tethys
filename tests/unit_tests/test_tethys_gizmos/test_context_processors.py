@@ -10,7 +10,7 @@ class TestContextProcessor(unittest.TestCase):
         pass
 
     def test_tethys_gizmos_context(self):
-        result = gizmos_context_processor.tethys_gizmos_context('request')
+        result = gizmos_context_processor.tethys_gizmos_context("request")
 
         # Check Result
-        self.assertEqual({'gizmos_rendered': []}, result)
+        self.assertEqual({"gizmos_rendered": []}, result)

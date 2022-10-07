@@ -26,13 +26,17 @@ from tethys_apps.harvester import SingletonHarvester
 from ..gizmo_options.base import TethysGizmoOptions
 import tethys_sdk.gizmos
 
-GIZMO_NAME_PROPERTY = 'gizmo_name'
+GIZMO_NAME_PROPERTY = "gizmo_name"
 GIZMO_NAME_MAP = {}
 EXTENSION_PATH_MAP = {}
 
 # Add gizmos to GIZMO_NAME_MAP
-for name, cls in tethys_sdk.gizmos.__dict__.items():
-    if inspect.isclass(cls) and issubclass(cls, TethysGizmoOptions) and hasattr(cls, GIZMO_NAME_PROPERTY):
+for _, cls in tethys_sdk.gizmos.__dict__.items():
+    if (
+        inspect.isclass(cls)
+        and issubclass(cls, TethysGizmoOptions)
+        and hasattr(cls, GIZMO_NAME_PROPERTY)
+    ):
         GIZMO_NAME_MAP[cls.gizmo_name] = cls
 
 
@@ -40,28 +44,34 @@ for name, cls in tethys_sdk.gizmos.__dict__.items():
 harvester = SingletonHarvester()
 extension_modules = harvester.extension_modules
 
-for module_name, extension_module in extension_modules.items():
+for _, extension_module in extension_modules.items():
     try:
-        gizmo_module = __import__('{}.gizmos'.format(extension_module), fromlist=[''])
-        for name, cls in gizmo_module.__dict__.items():
-            if inspect.isclass(cls) and issubclass(cls, TethysGizmoOptions) and hasattr(cls, GIZMO_NAME_PROPERTY):
+        gizmo_module = __import__("{}.gizmos".format(extension_module), fromlist=[""])
+        for _, cls in gizmo_module.__dict__.items():
+            if (
+                inspect.isclass(cls)
+                and issubclass(cls, TethysGizmoOptions)
+                and hasattr(cls, GIZMO_NAME_PROPERTY)
+            ):
                 GIZMO_NAME_MAP[cls.gizmo_name] = cls
                 gizmo_module_path = gizmo_module.__path__[0]
-                EXTENSION_PATH_MAP[cls.gizmo_name] = os.path.abspath(os.path.dirname(gizmo_module_path))
+                EXTENSION_PATH_MAP[cls.gizmo_name] = os.path.abspath(
+                    os.path.dirname(gizmo_module_path)
+                )
     except ImportError:
         # TODO: Add Log?
         continue
 
 register = template.Library()
 
-MODALS_OUTPUT_TYPE = 'modals'
-CSS_OUTPUT_TYPE = 'css'
-CSS_GLOBAL_OUTPUT_TYPE = 'global_css'
-JS_OUTPUT_TYPE = 'js'
-JS_GLOBAL_OUTPUT_TYPE = 'global_js'
-CSS_EXTENSION = 'css'
-JS_EXTENSION = 'js'
-EXTERNAL_INDICATOR = '://'
+MODALS_OUTPUT_TYPE = "modals"
+CSS_OUTPUT_TYPE = "css"
+CSS_GLOBAL_OUTPUT_TYPE = "global_css"
+JS_OUTPUT_TYPE = "js"
+JS_GLOBAL_OUTPUT_TYPE = "global_js"
+CSS_EXTENSION = "css"
+JS_EXTENSION = "js"
+EXTERNAL_INDICATOR = "://"
 CSS_OUTPUT_TYPES = (CSS_OUTPUT_TYPE, CSS_GLOBAL_OUTPUT_TYPE)
 JS_OUTPUT_TYPES = (JS_OUTPUT_TYPE, JS_GLOBAL_OUTPUT_TYPE)
 GLOBAL_OUTPUT_TYPES = (CSS_GLOBAL_OUTPUT_TYPE, JS_GLOBAL_OUTPUT_TYPE)
@@ -72,6 +82,7 @@ class HighchartsDateEncoder(DjangoJSONEncoder):
     """
     Special Json Encoder for Tethys
     """
+
     def default(self, obj):
         # Highcharts date serializer
         if isinstance(obj, datetime):
@@ -80,9 +91,8 @@ class HighchartsDateEncoder(DjangoJSONEncoder):
 
 
 class SetVarNode(template.Node):
-
     def __init__(self, var_name, var_value):
-        self.var_names = var_name.split('.')
+        self.var_names = var_name.split(".")
         self.var_name = self.var_names.pop()
         self.var_value = var_value
 
@@ -90,24 +100,26 @@ class SetVarNode(template.Node):
         try:
             value = template.Variable(self.var_value).resolve(context)
         except template.VariableDoesNotExist:
-            value = ''
+            value = ""
 
         for name in self.var_names:
             context = context[name]
 
         context[self.var_name] = value
 
-        return ''
+        return ""
 
 
-@register.tag(name='set')
+@register.tag(name="set")
 def set_var(parser, token):
     """
     {% set some_var = '123' %}
     """
     parts = token.split_contents()
     if len(parts) < 4:
-        raise template.TemplateSyntaxError("'set' tag must be of the form: {% set <var_name> = <var_value> %}")
+        raise template.TemplateSyntaxError(
+            "'set' tag must be of the form: {% set <var_name> = <var_value> %}"
+        )
 
     return SetVarNode(parts[1], parts[3])
 
@@ -148,7 +160,7 @@ def jsonify(data):
 
 @register.filter
 def codify(data):
-    return data.lower().replace(' ', '-')
+    return data.lower().replace(" ", "-")
 
 
 @register.filter
@@ -166,6 +178,7 @@ class TethysGizmoIncludeDependency(template.Node):
     """
     Custom template include node that returns Tethys gizmos
     """
+
     def __init__(self, gizmo_name, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._load_gizmo_name(gizmo_name)
@@ -179,23 +192,25 @@ class TethysGizmoIncludeDependency(template.Node):
         if self.gizmo_name is not None:
             # Handle case where gizmo_name is a string literal
             if self.gizmo_name[0] in ('"', "'"):
-                self.gizmo_name = self.gizmo_name.replace("'", '')
-                self.gizmo_name = self.gizmo_name.replace('"', '')
+                self.gizmo_name = self.gizmo_name.replace("'", "")
+                self.gizmo_name = self.gizmo_name.replace('"', "")
 
     def _load_gizmos_rendered(self, context):
         """
         This loads the rendered gizmos into context
         """
         # Add gizmo name to 'gizmos_rendered' context variable (used to load static  libraries
-        if 'gizmos_rendered' not in context:
-            context.update({'gizmos_rendered': []})
+        if "gizmos_rendered" not in context:
+            context.update({"gizmos_rendered": []})
 
         # add the gizmo in the tag to gizmos_rendered list
         if self.gizmo_name is not None:
-            if self.gizmo_name not in context['gizmos_rendered']:
+            if self.gizmo_name not in context["gizmos_rendered"]:
                 if self.gizmo_name not in GIZMO_NAME_MAP:
-                    raise TemplateSyntaxError('The gizmo name "{0}" is invalid.'.format(self.gizmo_name))
-                context['gizmos_rendered'].append(self.gizmo_name)
+                    raise TemplateSyntaxError(
+                        'The gizmo name "{0}" is invalid.'.format(self.gizmo_name)
+                    )
+                context["gizmos_rendered"].append(self.gizmo_name)
 
     def render(self, context):
         """
@@ -207,13 +222,14 @@ class TethysGizmoIncludeDependency(template.Node):
             if settings.TEMPLATE_DEBUG:
                 raise e
 
-        return ''
+        return ""
 
 
 class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
     """
     Custom template include node that returns Tethys gizmos
     """
+
     def __init__(self, options, gizmo_name, *args, **kwargs):
         self.options = options
         super().__init__(gizmo_name, *args, **kwargs)
@@ -226,19 +242,23 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
                 if hasattr(resolved_options, GIZMO_NAME_PROPERTY):
                     self._load_gizmo_name(resolved_options.gizmo_name)
                 else:
-                    raise TemplateSyntaxError('A valid gizmo name is required for this input format.')
+                    raise TemplateSyntaxError(
+                        "A valid gizmo name is required for this input format."
+                    )
 
             self._load_gizmos_rendered(context)
 
             # Derive path to gizmo template
             if self.gizmo_name not in EXTENSION_PATH_MAP:
                 # Determine path to gizmo template
-                gizmo_templates_root = os.path.join('tethys_gizmos', 'gizmos')
+                gizmo_templates_root = os.path.join("tethys_gizmos", "gizmos")
 
             else:
-                gizmo_templates_root = os.path.join(EXTENSION_PATH_MAP[self.gizmo_name], 'templates', 'gizmos')
+                gizmo_templates_root = os.path.join(
+                    EXTENSION_PATH_MAP[self.gizmo_name], "templates", "gizmos"
+                )
 
-            gizmo_file_name = '{0}.html'.format(self.gizmo_name)
+            gizmo_file_name = "{0}.html".format(self.gizmo_name)
             template_name = os.path.join(gizmo_templates_root, gizmo_file_name)
 
             # reset gizmo_name in case Node is rendered with different options
@@ -249,13 +269,15 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
             return t.render(resolved_options)
 
         except Exception:
-            if hasattr(settings, 'TEMPLATES'):
+            if hasattr(settings, "TEMPLATES"):
                 for template_settings in settings.TEMPLATES:
-                    if 'OPTIONS' in template_settings \
-                            and 'debug' in template_settings['OPTIONS'] \
-                            and template_settings['OPTIONS']['debug']:
+                    if (
+                        "OPTIONS" in template_settings
+                        and "debug" in template_settings["OPTIONS"]
+                        and template_settings["OPTIONS"]["debug"]
+                    ):
                         raise
-            return ''
+            return ""
 
 
 @register.tag
@@ -292,7 +314,9 @@ def gizmo(parser, token):
     elif len(gizmo_arg_list) == 2:
         gizmo_name, gizmo_options = gizmo_arg_list
     else:
-        raise TemplateSyntaxError('"gizmo" tag takes at least one argument: the gizmo options object.')
+        raise TemplateSyntaxError(
+            '"gizmo" tag takes at least one argument: the gizmo options object.'
+        )
 
     return TethysGizmoIncludeNode(gizmo_options, gizmo_name)
 
@@ -322,7 +346,9 @@ def import_gizmo_dependency(parser, token):
         tag_name, gizmo_name = token.split_contents()
 
     except ValueError:
-        raise TemplateSyntaxError('"%s" tag requires exactly one argument' % token.contents.split()[0])
+        raise TemplateSyntaxError(
+            '"%s" tag requires exactly one argument' % token.contents.split()[0]
+        )
 
     return TethysGizmoIncludeDependency(gizmo_name)
 
@@ -354,7 +380,7 @@ class TethysGizmoDependenciesNode(template.Node):
     def load_gizmos(self, context):
         # initialize lists to store gizmo dependencies
         for output_type in VALID_OUTPUT_TYPES:
-            list_name = f'gizmo_{output_type}_list'
+            list_name = f"gizmo_{output_type}_list"
             if list_name not in context.render_context:
                 context.render_context[list_name] = []
 
@@ -363,31 +389,41 @@ class TethysGizmoDependenciesNode(template.Node):
             for key in dict_element:
                 resolved_options = template.Variable(key).resolve(context)
                 if hasattr(resolved_options, GIZMO_NAME_PROPERTY):
-                    if resolved_options.gizmo_name not in context['gizmos_rendered']:
-                        context['gizmos_rendered'].append(resolved_options.gizmo_name)
+                    if resolved_options.gizmo_name not in context["gizmos_rendered"]:
+                        context["gizmos_rendered"].append(resolved_options.gizmo_name)
 
-        for rendered_gizmo in context['gizmos_rendered']:
+        for rendered_gizmo in context["gizmos_rendered"]:
             # Retrieve the "gizmo_dependencies" module and find the appropriate function
             dependencies_module = GIZMO_NAME_MAP[rendered_gizmo]
 
             for dependency in dependencies_module.get_gizmo_css():
-                self._append_dependency(dependency, context.render_context['gizmo_css_list'])
+                self._append_dependency(
+                    dependency, context.render_context["gizmo_css_list"]
+                )
             for dependency in dependencies_module.get_gizmo_js():
-                self._append_dependency(dependency, context.render_context['gizmo_js_list'])
+                self._append_dependency(
+                    dependency, context.render_context["gizmo_js_list"]
+                )
             for dependency in dependencies_module.get_vendor_css():
-                self._append_dependency(dependency, context.render_context['gizmo_global_css_list'])
+                self._append_dependency(
+                    dependency, context.render_context["gizmo_global_css_list"]
+                )
             for dependency in dependencies_module.get_vendor_js():
-                self._append_dependency(dependency, context.render_context['gizmo_global_js_list'])
+                self._append_dependency(
+                    dependency, context.render_context["gizmo_global_js_list"]
+                )
             for modal in dependencies_module.get_gizmo_modals():
-                context.render_context['gizmo_modals_list'].append(modal)
+                context.render_context["gizmo_modals_list"].append(modal)
 
         # Add the main gizmo dependencies last
         for dependency in TethysGizmoOptions.get_tethys_gizmos_css():
-            self._append_dependency(dependency, context.render_context['gizmo_css_list'])
+            self._append_dependency(
+                dependency, context.render_context["gizmo_css_list"]
+            )
         for dependency in TethysGizmoOptions.get_tethys_gizmos_js():
-            self._append_dependency(dependency, context.render_context['gizmo_js_list'])
+            self._append_dependency(dependency, context.render_context["gizmo_js_list"])
 
-        context.render_context['gizmo_dependencies_loaded'] = True
+        context.render_context["gizmo_dependencies_loaded"] = True
 
     def render(self, context):
         """
@@ -396,43 +432,53 @@ class TethysGizmoDependenciesNode(template.Node):
         # NOTE: Use render_context as it is recommended to do so here
         # https://docs.djangoproject.com/en/1.10/howto/custom-template-tags/
 
-        if 'gizmo_dependencies_loaded' not in context.render_context:
+        if "gizmo_dependencies_loaded" not in context.render_context:
             self.load_gizmos(context)
 
         # Create markup tags
         tags = []
 
         if self.output_type == MODALS_OUTPUT_TYPE:
-            for dependency in context.render_context['gizmo_modals_list']:
+            for dependency in context.render_context["gizmo_modals_list"]:
                 tags.append(dependency)
 
         if self.output_type == CSS_GLOBAL_OUTPUT_TYPE or self.output_type is None:
-            for dependency in context.render_context['gizmo_global_css_list']:
+            for dependency in context.render_context["gizmo_global_css_list"]:
                 tags.append('<link href="{0}" rel="stylesheet" />'.format(dependency))
 
         if self.output_type == CSS_OUTPUT_TYPE or self.output_type is None:
-            for dependency in context.render_context['gizmo_css_list']:
+            for dependency in context.render_context["gizmo_css_list"]:
                 tags.append('<link href="{0}" rel="stylesheet" />'.format(dependency))
 
         if self.output_type == JS_GLOBAL_OUTPUT_TYPE or self.output_type is None:
-            for dependency in context.render_context['gizmo_global_js_list']:
-                if dependency.endswith('plotly-load_from_python.js'):
-                    tags.append(''.join(
-                        [
-                            '<script type="text/javascript">',
-                            get_plotlyjs(),
-                            '</script>',
-                        ])
+            for dependency in context.render_context["gizmo_global_js_list"]:
+                if dependency.endswith("plotly-load_from_python.js"):
+                    tags.append(
+                        "".join(
+                            [
+                                '<script type="text/javascript">',
+                                get_plotlyjs(),
+                                "</script>",
+                            ]
+                        )
                     )
                 else:
-                    tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
+                    tags.append(
+                        '<script src="{0}" type="text/javascript"></script>'.format(
+                            dependency
+                        )
+                    )
 
         if self.output_type == JS_OUTPUT_TYPE or self.output_type is None:
-            for dependency in context.render_context['gizmo_js_list']:
-                tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
+            for dependency in context.render_context["gizmo_js_list"]:
+                tags.append(
+                    '<script src="{0}" type="text/javascript"></script>'.format(
+                        dependency
+                    )
+                )
 
         # Combine all tag
-        tags_string = '\n'.join(tags)
+        tags_string = "\n".join(tags)
         return tags_string
 
 
@@ -454,8 +500,10 @@ def gizmo_dependencies(parser, token):
 
     bits = token.split_contents()
     if len(bits) > 2:
-        raise TemplateSyntaxError(f'"gizmo_dependencies" takes at most one argument: the type of dependencies to '
-                                  f'output. Must be one of {VALID_OUTPUT_TYPES}')
+        raise TemplateSyntaxError(
+            f'"gizmo_dependencies" takes at most one argument: the type of dependencies to '
+            f"output. Must be one of {VALID_OUTPUT_TYPES}"
+        )
 
     elif len(bits) == 2:
         output_type = bits[1]
@@ -467,7 +515,9 @@ def gizmo_dependencies(parser, token):
 
         # Check for valid values
         if output_type not in VALID_OUTPUT_TYPES:
-            raise TemplateSyntaxError(f'Invalid output type specified: "{output_type}" as given, '
-                                      f'but must be one of {VALID_OUTPUT_TYPES}')
+            raise TemplateSyntaxError(
+                f'Invalid output type specified: "{output_type}" as given, '
+                f"but must be one of {VALID_OUTPUT_TYPES}"
+            )
 
     return TethysGizmoDependenciesNode(output_type)

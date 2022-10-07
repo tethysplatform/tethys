@@ -5,52 +5,183 @@ import json
 
 from tethys_gizmos.gizmo_options import MVLayer
 
-log = logging.getLogger(f'tethys.{__name__}')
+log = logging.getLogger(f"tethys.{__name__}")
 
 _COLOR_RAMPS = {
-    "Default": ["#fff100", "#ff8c00", "#e81123", "#ec008c", "#68217a", "#00188f", "#00bcf2", "#00b294", "#009e49",
-                "#bad80a"],
-    "Blue": ["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c", "#083582",
-             "#022259"],
-    "Blue and Red": ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee090", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4",
-                     "#313695"],
-    "Elevated": ["#96D257", "#278C39", "#2A7B45", "#829C41", "#DBB82E", "#AE4818", "#842511", "#61370F", "#806346",
-                 "#C2C2C2", "#FFFFFF"],
-    "Flower Field": ["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff",
-                     "#00bfa0", "#f0cccc"],
-    "Galaxy Berries": ["#0040bf", "#a3cc52", "#b9a087", "#a01fcc", "#5bb698", "#5e851e", "#d1943f",
-                       "#96aedc", "#629ed9", "#8a64b3"],
-    "Heat Map": ["#90a1be", "#a761aa", "#af4980", "#b83055", "#c80000", "#d33300", "#de6600", "#e99900", "#f4cc00",
-                 "#ffff00"],
-    "Olive Harmony": ["#437a75", "#d9d78c", "#bf7860", "#72231f", "#afbfa2", "#5a9bc8", "#89a6a6", "#99905c",
-                      "#414b8c", "#a664a0"],
-    "Mother Earth": ["#a03500", "#d9b400", "#3264c8", "#72b38e", "#986ba1", "#b9a087", "#4c91bf", "#a5d236",
-                     "#96aedc", "#ad8516"],
-    "Rainbow": ["#fff100", "#ff8c00", "#e81123", "#ec008c", "#68217a", "#00188f", "#00bcf2", "#00b294", "#009e49",
-                "#bad80a"],
-    "Rainforest Frogs": ["#dc4b00", "#3c6ccc", "#d9dc00", "#91d900", "#986ba1", "#d99f00", "#4db478",
-                         "#4cafdc", "#96aedc", "#d7a799"],
-    "Retro FLow": ["#007fd9", "#443dbf", "#881fc5", "#bf00bf", "#d43f70", "#d9874c", "#b6a135", "#adbf27",
-                   "#c4dc66", "#ebe498"],
-    "Sunset Fade": ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e",
-                    "#c5d96d", "#ebdc78"],
+    "Default": [
+        "#fff100",
+        "#ff8c00",
+        "#e81123",
+        "#ec008c",
+        "#68217a",
+        "#00188f",
+        "#00bcf2",
+        "#00b294",
+        "#009e49",
+        "#bad80a",
+    ],
+    "Blue": [
+        "#f7fbff",
+        "#deebf7",
+        "#c6dbef",
+        "#9ecae1",
+        "#6baed6",
+        "#4292c6",
+        "#2171b5",
+        "#08519c",
+        "#083582",
+        "#022259",
+    ],
+    "Blue and Red": [
+        "#a50026",
+        "#d73027",
+        "#f46d43",
+        "#fdae61",
+        "#fee090",
+        "#e0f3f8",
+        "#abd9e9",
+        "#74add1",
+        "#4575b4",
+        "#313695",
+    ],
+    "Elevated": [
+        "#96D257",
+        "#278C39",
+        "#2A7B45",
+        "#829C41",
+        "#DBB82E",
+        "#AE4818",
+        "#842511",
+        "#61370F",
+        "#806346",
+        "#C2C2C2",
+        "#FFFFFF",
+    ],
+    "Flower Field": [
+        "#e60049",
+        "#0bb4ff",
+        "#50e991",
+        "#e6d800",
+        "#9b19f5",
+        "#ffa300",
+        "#dc0ab4",
+        "#b3d4ff",
+        "#00bfa0",
+        "#f0cccc",
+    ],
+    "Galaxy Berries": [
+        "#0040bf",
+        "#a3cc52",
+        "#b9a087",
+        "#a01fcc",
+        "#5bb698",
+        "#5e851e",
+        "#d1943f",
+        "#96aedc",
+        "#629ed9",
+        "#8a64b3",
+    ],
+    "Heat Map": [
+        "#90a1be",
+        "#a761aa",
+        "#af4980",
+        "#b83055",
+        "#c80000",
+        "#d33300",
+        "#de6600",
+        "#e99900",
+        "#f4cc00",
+        "#ffff00",
+    ],
+    "Olive Harmony": [
+        "#437a75",
+        "#d9d78c",
+        "#bf7860",
+        "#72231f",
+        "#afbfa2",
+        "#5a9bc8",
+        "#89a6a6",
+        "#99905c",
+        "#414b8c",
+        "#a664a0",
+    ],
+    "Mother Earth": [
+        "#a03500",
+        "#d9b400",
+        "#3264c8",
+        "#72b38e",
+        "#986ba1",
+        "#b9a087",
+        "#4c91bf",
+        "#a5d236",
+        "#96aedc",
+        "#ad8516",
+    ],
+    "Rainbow": [
+        "#fff100",
+        "#ff8c00",
+        "#e81123",
+        "#ec008c",
+        "#68217a",
+        "#00188f",
+        "#00bcf2",
+        "#00b294",
+        "#009e49",
+        "#bad80a",
+    ],
+    "Rainforest Frogs": [
+        "#dc4b00",
+        "#3c6ccc",
+        "#d9dc00",
+        "#91d900",
+        "#986ba1",
+        "#d99f00",
+        "#4db478",
+        "#4cafdc",
+        "#96aedc",
+        "#d7a799",
+    ],
+    "Retro FLow": [
+        "#007fd9",
+        "#443dbf",
+        "#881fc5",
+        "#bf00bf",
+        "#d43f70",
+        "#d9874c",
+        "#b6a135",
+        "#adbf27",
+        "#c4dc66",
+        "#ebe498",
+    ],
+    "Sunset Fade": [
+        "#b30000",
+        "#7c1158",
+        "#4421af",
+        "#1a53ff",
+        "#0d88e6",
+        "#00b7c7",
+        "#5ad45a",
+        "#8be04e",
+        "#c5d96d",
+        "#ebdc78",
+    ],
 }
 
 _THREDDS_PALETTES = [
-    'boxfill/alg',
-    'boxfill/alg2',
-    'boxfill/ferret',
-    'boxfill/greyscale',
-    'boxfill/ncview',
-    'boxfill/occam',
-    'boxfill/occam_pastel-30',
-    'boxfill/rainbow',
-    'boxfill/redblue',
-    'boxfill/sst_36',
+    "boxfill/alg",
+    "boxfill/alg2",
+    "boxfill/ferret",
+    "boxfill/greyscale",
+    "boxfill/ncview",
+    "boxfill/occam",
+    "boxfill/occam_pastel-30",
+    "boxfill/rainbow",
+    "boxfill/redblue",
+    "boxfill/sst_36",
 ]
 
 _DEFAULT_TILE_GRID = {
-    'resolutions': [
+    "resolutions": [
         156543.03390625,
         78271.516953125,
         39135.7584765625,
@@ -81,11 +212,11 @@ _DEFAULT_TILE_GRID = {
         0.0011663364910055,
         0.0005831682455027,
         0.0002915841227514,
-        0.0001457920613757
+        0.0001457920613757,
     ],
-    'extent': [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-    'origin': [0.0, 0.0],
-    'tileSize': [256, 256]
+    "extent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+    "origin": [0.0, 0.0],
+    "tileSize": [256, 256],
 }
 
 
@@ -93,22 +224,40 @@ class MapLayoutMixin:
     """
     Provides helper methods for creating MVLayer objects with the extra attributes that are needed by the MapLayout. Use this Mixin to add this functionality to classes that may be used outside of the MapLayout scope (e.g. processing workflows that need to create layer objects for MapLayouts).
     """  # noqa: E501
+
     COLOR_RAMPS = copy.deepcopy(_COLOR_RAMPS)
     THREDDS_PALETTES = copy.deepcopy(_THREDDS_PALETTES)
     DEFAULT_TILE_GRID = copy.deepcopy(_DEFAULT_TILE_GRID)
 
     map_extent = None
-    _default_popup_excluded_properties = ['id', 'type', 'layer_name']
+    _default_popup_excluded_properties = ["id", "type", "layer_name"]
 
     @classmethod
     def get_vector_style_map(cls):
         raise NotImplementedError
 
     @classmethod
-    def _build_mv_layer(cls, layer_source, layer_name, layer_title, layer_variable, options, layer_id=None,
-                        extent=None, visible=True, public=True, selectable=False, plottable=False, has_action=False,
-                        excluded_properties=None, popup_title=None, geometry_attribute=None, style_map=None,
-                        show_download=False, times=None):
+    def _build_mv_layer(
+        cls,
+        layer_source,
+        layer_name,
+        layer_title,
+        layer_variable,
+        options,
+        layer_id=None,
+        extent=None,
+        visible=True,
+        public=True,
+        selectable=False,
+        plottable=False,
+        has_action=False,
+        excluded_properties=None,
+        popup_title=None,
+        geometry_attribute=None,
+        style_map=None,
+        show_download=False,
+        times=None,
+    ):
         """
         Build an MVLayer object with supplied arguments.
         Args:
@@ -139,31 +288,31 @@ class MapLayoutMixin:
             popup_title = layer_title
 
         data = {
-            'layer_id': str(layer_id) if layer_id else layer_name,
-            'layer_name': layer_name,
-            'popup_title': popup_title,
-            'layer_variable': layer_variable,
-            'toggle_status': public,
+            "layer_id": str(layer_id) if layer_id else layer_name,
+            "layer_name": layer_name,
+            "popup_title": popup_title,
+            "layer_variable": layer_variable,
+            "toggle_status": public,
         }
 
         # Process excluded properties
         properties_to_exclude = copy.deepcopy(cls._default_popup_excluded_properties)
 
         if plottable:
-            properties_to_exclude.append('plot')
+            properties_to_exclude.append("plot")
 
         if excluded_properties and isinstance(excluded_properties, (list, tuple)):
             for ep in excluded_properties:
                 if ep not in properties_to_exclude:
                     properties_to_exclude.append(ep)
 
-        data.update({'excluded_properties': properties_to_exclude})
+        data.update({"excluded_properties": properties_to_exclude})
 
         if plottable:
-            data.update({'plottable': plottable})
+            data.update({"plottable": plottable})
 
         if has_action:
-            data.update({'has_action': has_action})
+            data.update({"has_action": has_action})
 
         if not extent:
             extent = cls.map_extent
@@ -172,7 +321,7 @@ class MapLayoutMixin:
         layer_options = {"visible": visible, "show_download": show_download}
 
         if style_map:
-            layer_options.update({'style_map': style_map})
+            layer_options.update({"style_map": style_map})
 
         mv_layer = MVLayer(
             source=layer_source,
@@ -192,7 +341,15 @@ class MapLayoutMixin:
         return mv_layer
 
     @classmethod
-    def build_layer_group(cls, id, display_name, layers, layer_control='checkbox', visible=True, public=True):
+    def build_layer_group(
+        cls,
+        id,
+        display_name,
+        layers,
+        layer_control="checkbox",
+        visible=True,
+        public=True,
+    ):
         """
         Build a layer group object.
 
@@ -206,16 +363,18 @@ class MapLayoutMixin:
         Returns:
             dict: Layer group definition.
         """
-        if layer_control not in ['checkbox', 'radio']:
-            raise ValueError('Invalid layer_control. Must be on of "checkbox" or "radio".')
+        if layer_control not in ["checkbox", "radio"]:
+            raise ValueError(
+                'Invalid layer_control. Must be on of "checkbox" or "radio".'
+            )
 
         layer_group = {
-            'id': id,
-            'display_name': display_name,
-            'control': layer_control,
-            'layers': layers,
-            'visible': visible,
-            'toggle_status': public,
+            "id": id,
+            "display_name": display_name,
+            "control": layer_control,
+            "layers": layers,
+            "visible": visible,
+            "toggle_status": public,
         }
         return layer_group
 
@@ -231,13 +390,13 @@ class MapLayoutMixin:
             str: parameter string.
         """
         if not kwargs:
-            return ''
+            return ""
 
         joined_pairs = []
         for k, v in kwargs.items():
-            joined_pairs.append(':'.join([k, str(v)]))
+            joined_pairs.append(":".join([k, str(v)]))
 
-        param_string = ';'.join(joined_pairs)
+        param_string = ";".join(joined_pairs)
         return param_string
 
     @classmethod
@@ -253,79 +412,117 @@ class MapLayoutMixin:
             dict: Legend data associated with the layer.
         """
         legend = None
-        layer_id = layer.data.get('layer_id') if layer.data.get('layer_id') else layer.data.get('layer_name')
-        legend_id = f'legend-for-{layer_id}'
+        layer_id = (
+            layer.data.get("layer_id")
+            if layer.data.get("layer_id")
+            else layer.data.get("layer_name")
+        )
+        legend_id = f"legend-for-{layer_id}"
 
         if ":" in legend_id:
             legend_id = legend_id.replace(":", "_")
 
-        if layer.data.get('color_ramp_division_kwargs') is not None:
-            div_kwargs = layer.data.get('color_ramp_division_kwargs')
-            min_value = div_kwargs['min_value']
-            max_value = div_kwargs['max_value']
-            color_ramp = div_kwargs['color_ramp'] if 'color_ramp' in div_kwargs.keys() else 'Default'
-            prefix = div_kwargs['prefix'] if 'prefix' in div_kwargs.keys() else 'val'
-            color_prefix = div_kwargs['color_prefix'] if 'color_prefix' in div_kwargs.keys() else 'color'
-            first_division = div_kwargs['first_division'] if 'first_division' in div_kwargs.keys() else 1
-
-            legend = {
-                'type': 'custom-divisions',
-                'legend_id': legend_id,
-                'title': layer.legend_title,
-                'divisions': dict(),
-                'color_list': list(cls.COLOR_RAMPS.keys()),
-                'layer_id': layer_id,
-                'min_value': min_value,
-                'max_value': max_value,
-                'color_ramp': color_ramp,
-                'prefix': prefix,
-                'color_prefix': color_prefix,
-                'first_division': first_division,
-                'units': units,
-                'select_options': [(c, c) for c in cls.COLOR_RAMPS.keys()],
-                'initial_option': color_ramp,
-            }
-
-            divisions = cls.generate_custom_color_ramp_divisions(**layer.data['color_ramp_division_kwargs'])
-
-            for label in divisions.keys():
-                if color_prefix in label and int(label.replace(color_prefix, '')) >= first_division:
-                    legend['divisions'][float(divisions[label.replace(color_prefix, prefix)])] = divisions[
-                        label]
-            legend['divisions'] = collections.OrderedDict(
-                sorted(legend['divisions'].items())
+        if layer.data.get("color_ramp_division_kwargs") is not None:
+            div_kwargs = layer.data.get("color_ramp_division_kwargs")
+            min_value = div_kwargs["min_value"]
+            max_value = div_kwargs["max_value"]
+            color_ramp = (
+                div_kwargs["color_ramp"]
+                if "color_ramp" in div_kwargs.keys()
+                else "Default"
+            )
+            prefix = div_kwargs["prefix"] if "prefix" in div_kwargs.keys() else "val"
+            color_prefix = (
+                div_kwargs["color_prefix"]
+                if "color_prefix" in div_kwargs.keys()
+                else "color"
+            )
+            first_division = (
+                div_kwargs["first_division"]
+                if "first_division" in div_kwargs.keys()
+                else 1
             )
 
-        elif 'options' in layer and layer.options.get('serverType') == 'thredds':
-            wms_url = layer.options.get('url')
-            wms_params = layer.options.get('params')
-            if not wms_params:
-                log.error(f'No params found for given layer: {layer}')
-                return None
-            wms_layer_name = wms_params.get('LAYERS')
+            legend = {
+                "type": "custom-divisions",
+                "legend_id": legend_id,
+                "title": layer.legend_title,
+                "divisions": dict(),
+                "color_list": list(cls.COLOR_RAMPS.keys()),
+                "layer_id": layer_id,
+                "min_value": min_value,
+                "max_value": max_value,
+                "color_ramp": color_ramp,
+                "prefix": prefix,
+                "color_prefix": color_prefix,
+                "first_division": first_division,
+                "units": units,
+                "select_options": [(c, c) for c in cls.COLOR_RAMPS.keys()],
+                "initial_option": color_ramp,
+            }
 
-            select_options = [('Default', '')]
-            select_options.extend([(p.replace('boxfill/', '').title(), p) for p in cls.THREDDS_PALETTES])
-            default_palette = wms_params.get('STYLES') or 'Default'
+            divisions = cls.generate_custom_color_ramp_divisions(
+                **layer.data["color_ramp_division_kwargs"]
+            )
+
+            for label in divisions.keys():
+                if (
+                    color_prefix in label
+                    and int(label.replace(color_prefix, "")) >= first_division
+                ):
+                    legend["divisions"][
+                        float(divisions[label.replace(color_prefix, prefix)])
+                    ] = divisions[label]
+            legend["divisions"] = collections.OrderedDict(
+                sorted(legend["divisions"].items())
+            )
+
+        elif "options" in layer and layer.options.get("serverType") == "thredds":
+            wms_url = layer.options.get("url")
+            wms_params = layer.options.get("params")
+            if not wms_params:
+                log.error(f"No params found for given layer: {layer}")
+                return None
+            wms_layer_name = wms_params.get("LAYERS")
+
+            select_options = [("Default", "")]
+            select_options.extend(
+                [(p.replace("boxfill/", "").title(), p) for p in cls.THREDDS_PALETTES]
+            )
+            default_palette = wms_params.get("STYLES") or "Default"
 
             legend = {
-                'type': 'wms-legend',
-                'legend_id': legend_id,
-                'layer_id': layer_id,
-                'title': layer.legend_title,
-                'palettes': cls.THREDDS_PALETTES,
-                'default_palette': default_palette,
-                'select_options': select_options,
-                'initial_option': default_palette,
-                'url': f'{wms_url}?REQUEST=GetLegendGraphic&LAYER={wms_layer_name}',
+                "type": "wms-legend",
+                "legend_id": legend_id,
+                "layer_id": layer_id,
+                "title": layer.legend_title,
+                "palettes": cls.THREDDS_PALETTES,
+                "default_palette": default_palette,
+                "select_options": select_options,
+                "initial_option": default_palette,
+                "url": f"{wms_url}?REQUEST=GetLegendGraphic&LAYER={wms_layer_name}",
             }
 
         return legend
 
     @classmethod
-    def build_geojson_layer(cls, geojson, layer_name, layer_title, layer_variable, layer_id='', visible=True,
-                            public=True, selectable=False, plottable=False, has_action=False, extent=None,
-                            popup_title=None, excluded_properties=None, show_download=False):
+    def build_geojson_layer(
+        cls,
+        geojson,
+        layer_name,
+        layer_title,
+        layer_variable,
+        layer_id="",
+        visible=True,
+        public=True,
+        selectable=False,
+        plottable=False,
+        has_action=False,
+        extent=None,
+        popup_title=None,
+        excluded_properties=None,
+        show_download=False,
+    ):
         """
         Build an MVLayer object with supplied arguments.
 
@@ -352,12 +549,12 @@ class MapLayoutMixin:
         style_map = cls.get_vector_style_map()
 
         # Bind geometry features to layer via layer name
-        for feature in geojson['features']:
-            feature.setdefault('properties', {})
-            feature['properties']['layer_name'] = layer_name
+        for feature in geojson["features"]:
+            feature.setdefault("properties", {})
+            feature["properties"]["layer_name"] = layer_name
 
         mv_layer = cls._build_mv_layer(
-            layer_source='GeoJSON',
+            layer_source="GeoJSON",
             layer_id=layer_id,
             layer_name=layer_name,
             layer_title=layer_title,
@@ -378,11 +575,32 @@ class MapLayoutMixin:
         return mv_layer
 
     @classmethod
-    def build_wms_layer(cls, endpoint, layer_name, layer_title, layer_variable, viewparams=None, env=None,
-                        visible=True, tiled=True, selectable=False, plottable=False, has_action=False, extent=None,
-                        public=True, geometry_attribute='geometry', layer_id='', excluded_properties=None,
-                        popup_title=None, color_ramp_division_kwargs=None, times=None, server_type='geoserver',
-                        cross_origin=None, styles=None, legend_image_url=None):
+    def build_wms_layer(
+        cls,
+        endpoint,
+        layer_name,
+        layer_title,
+        layer_variable,
+        viewparams=None,
+        env=None,
+        visible=True,
+        tiled=True,
+        selectable=False,
+        plottable=False,
+        has_action=False,
+        extent=None,
+        public=True,
+        geometry_attribute="geometry",
+        layer_id="",
+        excluded_properties=None,
+        popup_title=None,
+        color_ramp_division_kwargs=None,
+        times=None,
+        server_type="geoserver",
+        cross_origin=None,
+        styles=None,
+        legend_image_url=None,
+    ):
         """
         Build an WMS MVLayer object with supplied arguments.
 
@@ -415,49 +633,48 @@ class MapLayoutMixin:
             MVLayer: the MVLayer object.
         """  # noqa: E501
         # Build params
-        params = {'LAYERS': layer_name}
+        params = {"LAYERS": layer_name}
 
         if tiled:
-            params.update({
-                'TILED': True,
-                'TILESORIGIN': '0.0,0.0'
-            })
+            params.update({"TILED": True, "TILESORIGIN": "0.0,0.0"})
 
         if viewparams:
-            params['VIEWPARAMS'] = viewparams
+            params["VIEWPARAMS"] = viewparams
 
         if styles:
-            params['STYLES'] = styles
+            params["STYLES"] = styles
 
         if env:
-            params['ENV'] = env
+            params["ENV"] = env
 
         if times:
             times = json.dumps(times)
 
         if color_ramp_division_kwargs:
             # Create color ramp and add them to ENV
-            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(**color_ramp_division_kwargs)
-            if 'ENV' in params.keys() and params['ENV']:
-                params['ENV'] += ";" + cls.build_param_string(**color_ramp_divisions)
+            color_ramp_divisions = cls.generate_custom_color_ramp_divisions(
+                **color_ramp_division_kwargs
+            )
+            if "ENV" in params.keys() and params["ENV"]:
+                params["ENV"] += ";" + cls.build_param_string(**color_ramp_divisions)
             else:
-                params['ENV'] = cls.build_param_string(**color_ramp_divisions)
+                params["ENV"] = cls.build_param_string(**color_ramp_divisions)
 
         # Build options
         options = {
-            'url': endpoint,
-            'params': params,
-            'serverType': server_type,
-            'crossOrigin': cross_origin,
+            "url": endpoint,
+            "params": params,
+            "serverType": server_type,
+            "crossOrigin": cross_origin,
         }
 
         if tiled:
-            options['tileGrid'] = cls.DEFAULT_TILE_GRID
+            options["tileGrid"] = cls.DEFAULT_TILE_GRID
 
         mv_layer = cls._build_mv_layer(
             layer_id=layer_id,
             layer_name=layer_name,
-            layer_source='TileWMS' if tiled else 'ImageWMS',
+            layer_source="TileWMS" if tiled else "ImageWMS",
             layer_title=layer_title,
             layer_variable=layer_variable,
             options=options,
@@ -476,8 +693,18 @@ class MapLayoutMixin:
         return mv_layer
 
     @classmethod
-    def build_arc_gis_layer(cls, endpoint, layer_name, layer_title, layer_variable, layer_id=None, visible=True,
-                            selectable=False, extent=None, public=True):
+    def build_arc_gis_layer(
+        cls,
+        endpoint,
+        layer_name,
+        layer_title,
+        layer_variable,
+        layer_id=None,
+        visible=True,
+        selectable=False,
+        extent=None,
+        public=True,
+    ):
         """
         Build an AcrGIS Map Server MVLayer object with supplied arguments.
 
@@ -498,10 +725,10 @@ class MapLayoutMixin:
         mv_layer = cls._build_mv_layer(
             layer_id=layer_id,
             layer_name=layer_name,
-            layer_source='TileArcGISRest',
+            layer_source="TileArcGISRest",
             layer_title=layer_title,
             layer_variable=layer_variable,
-            options={'url': endpoint},
+            options={"url": endpoint},
             extent=extent,
             visible=visible,
             public=public,
@@ -511,9 +738,20 @@ class MapLayoutMixin:
         return mv_layer
 
     @classmethod
-    def generate_custom_color_ramp_divisions(cls, min_value, max_value, num_divisions=10, value_precision=2,
-                                             first_division=1, top_offset=0, bottom_offset=0, prefix='val',
-                                             color_ramp=None, color_prefix='color', no_data_value=None):
+    def generate_custom_color_ramp_divisions(
+        cls,
+        min_value,
+        max_value,
+        num_divisions=10,
+        value_precision=2,
+        first_division=1,
+        top_offset=0,
+        bottom_offset=0,
+        prefix="val",
+        color_ramp=None,
+        color_prefix="color",
+        no_data_value=None,
+    ):
         """
         Generate custom color ramp divisions.
 
@@ -546,15 +784,17 @@ class MapLayoutMixin:
         b = max_val - (m * max_div)
 
         for i in range(min_div, max_div + 1):
-            divisions[f'{prefix}{i}'] = f"{(m * i + b):.{value_precision}f}"
+            divisions[f"{prefix}{i}"] = f"{(m * i + b):.{value_precision}f}"
 
             if color_ramp in cls.COLOR_RAMPS.keys():
-                divisions[f'{color_prefix}{i}'] = \
-                    f"{cls.COLOR_RAMPS[color_ramp][(i - first_division) % len(cls.COLOR_RAMPS[color_ramp])]}"
+                divisions[
+                    f"{color_prefix}{i}"
+                ] = f"{cls.COLOR_RAMPS[color_ramp][(i - first_division) % len(cls.COLOR_RAMPS[color_ramp])]}"
             else:
                 # use default color ramp
-                divisions[f'{color_prefix}{i}'] = \
-                    f"{cls.COLOR_RAMPS['Default'][(i - first_division) % len(cls.COLOR_RAMPS['Default'])]}"
+                divisions[
+                    f"{color_prefix}{i}"
+                ] = f"{cls.COLOR_RAMPS['Default'][(i - first_division) % len(cls.COLOR_RAMPS['Default'])]}"
         if no_data_value is not None:
-            divisions['val_no_data'] = no_data_value
+            divisions["val_no_data"] = no_data_value
         return divisions

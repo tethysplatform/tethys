@@ -18,6 +18,7 @@ class CondorPyJob(models.Model):
     """
     Database model for condorpy jobs
     """
+
     condorpyjob_id = models.AutoField(primary_key=True)
     _attributes = models.JSONField(default=dict, null=True, blank=True)
     _num_jobs = models.IntegerField(default=1)
@@ -28,20 +29,20 @@ class CondorPyJob(models.Model):
 
     def __init__(self, *args, **kwargs):
         # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes
-        attributes = kwargs.pop('attributes', dict())
-        _attributes = kwargs.get('_attributes', dict())
+        attributes = kwargs.pop("attributes", dict())
+        _attributes = kwargs.get("_attributes", dict())
         attributes.update(_attributes)
-        condorpy_template_name = kwargs.pop('condorpy_template_name', None)
+        condorpy_template_name = kwargs.pop("condorpy_template_name", None)
         if condorpy_template_name is not None:
             template = self.get_condorpy_template(condorpy_template_name)
             template.update(attributes)
             attributes = template
-        kwargs['_attributes'] = attributes
+        kwargs["_attributes"] = attributes
         super().__init__(*args, **kwargs)
 
     @classmethod
     def get_condorpy_template(cls, template_name):
-        template_name = template_name or 'base'
+        template_name = template_name or "base"
         template = getattr(Templates, template_name, None)
         if not template:
             template = Templates.base
@@ -50,12 +51,14 @@ class CondorPyJob(models.Model):
     @property
     def condorpy_job(self):
 
-        if not hasattr(self, '_condorpy_job'):
-            job = Job(name=self.name.replace(' ', '_'),
-                      attributes=self.attributes,
-                      num_jobs=self.num_jobs,
-                      remote_input_files=self.remote_input_files,
-                      working_directory=self.workspace)
+        if not hasattr(self, "_condorpy_job"):
+            job = Job(
+                name=self.name.replace(" ", "_"),
+                attributes=self.attributes,
+                num_jobs=self.num_jobs,
+                remote_input_files=self.remote_input_files,
+                working_directory=self.workspace,
+            )
 
             self._condorpy_job = job
         return self._condorpy_job

@@ -34,24 +34,26 @@ def profile(request):
     """
     user = request.user
     user_token, token_created = Token.objects.get_or_create(user=user)
-    codename = 'user_workspace_quota'
+    codename = "user_workspace_quota"
     rqh = WorkspaceQuotaHandler(user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(user, codename)
     quota = _check_quota_helper(quota)
     user_has_mfa = has_mfa(username=user.username, request=request)
-    mfa_is_required = getattr(django_settings, 'MFA_REQUIRED', False)
+    mfa_is_required = getattr(django_settings, "MFA_REQUIRED", False)
     show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
 
     context = {
-        'user_token': user_token.key,
-        'current_use': current_use,
-        'quota': quota,
-        'has_mfa': user_has_mfa,
-        'mfa_required': mfa_is_required,
-        'show_user_token_mfa': show_user_token_mfa
+        "user_token": user_token.key,
+        "current_use": current_use,
+        "quota": quota,
+        "has_mfa": user_has_mfa,
+        "mfa_required": mfa_is_required,
+        "show_user_token_mfa": show_user_token_mfa,
     }
-    template = get_custom_template('User Page Template', 'tethys_portal/user/profile.html')
+    template = get_custom_template(
+        "User Page Template", "tethys_portal/user/profile.html"
+    )
     return render(request, template, context)
 
 
@@ -64,14 +66,14 @@ def settings(request):
     # Get the user object from model
     user = request.user
 
-    if request.method == 'POST' and 'user-settings-submit' in request.POST:
+    if request.method == "POST" and "user-settings-submit" in request.POST:
         # Create a form populated with request data
         form = UserSettingsForm(request.POST)
 
         if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            email = form.cleaned_data['email']
+            first_name = form.cleaned_data["first_name"]
+            last_name = form.cleaned_data["last_name"]
+            email = form.cleaned_data["email"]
 
             # Update the User Model
             user.first_name = first_name
@@ -82,32 +84,34 @@ def settings(request):
             user.save()
 
             # Redirect
-            return redirect('user:profile')
+            return redirect("user:profile")
     else:
         # Create a form populated with data from the instance user
         form = UserSettingsForm(instance=user)
 
     # Create template context object
     user_token, token_created = Token.objects.get_or_create(user=user)
-    codename = 'user_workspace_quota'
+    codename = "user_workspace_quota"
     rqh = WorkspaceQuotaHandler(user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(user, codename)
     quota = _check_quota_helper(quota)
     user_has_mfa = has_mfa(username=request.user.username, request=request)
-    mfa_is_required = getattr(django_settings, 'MFA_REQUIRED', False)
+    mfa_is_required = getattr(django_settings, "MFA_REQUIRED", False)
     show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
 
     context = {
-        'form': form,
-        'user_token': user_token.key,
-        'current_use': current_use,
-        'quota': quota,
-        'has_mfa': user_has_mfa,
-        'mfa_required': mfa_is_required,
-        'show_user_token_mfa': show_user_token_mfa
+        "form": form,
+        "user_token": user_token.key,
+        "current_use": current_use,
+        "quota": quota,
+        "has_mfa": user_has_mfa,
+        "mfa_required": mfa_is_required,
+        "show_user_token_mfa": show_user_token_mfa,
     }
-    template = get_custom_template('User Settings Page Template', 'tethys_portal/user/settings.html')
+    template = get_custom_template(
+        "User Settings Page Template", "tethys_portal/user/settings.html"
+    )
     return render(request, template, context)
 
 
@@ -121,7 +125,7 @@ def change_password(request):
     request_user = request.user
 
     # Handle form
-    if request.method == 'POST' and 'change-password-submit' in request.POST:
+    if request.method == "POST" and "change-password-submit" in request.POST:
         # Create a form populated with request data
         form = UserPasswordChangeForm(user=request.user, data=request.POST)
 
@@ -135,16 +139,16 @@ def change_password(request):
             form.save()
 
             # Return to the settings page
-            return redirect('user:settings')
+            return redirect("user:settings")
 
     else:
         # Create a form populated with data from the instance user
         form = UserPasswordChangeForm(user=request_user)
 
     # Create template context object
-    context = {'form': form}
+    context = {"form": form}
 
-    return render(request, 'tethys_portal/user/change_password.html', context)
+    return render(request, "tethys_portal/user/change_password.html", context)
 
 
 @login_required()
@@ -153,9 +157,8 @@ def social_disconnect(request, provider, association_id):
     Display a confirmation for disconnect a social account.
     """
 
-    context = {'provider': provider,
-               'association_id': association_id}
-    return render(request, 'tethys_portal/user/disconnect.html', context)
+    context = {"provider": provider, "association_id": association_id}
+    return render(request, "tethys_portal/user/disconnect.html", context)
 
 
 @login_required()
@@ -164,7 +167,7 @@ def delete_account(request):
     Handle account delete requests.
     """
     # Handle form submission
-    if request.method == 'POST' and 'delete-account-submit' in request.POST:
+    if request.method == "POST" and "delete-account-submit" in request.POST:
         # Delete user
         request.user.delete()
 
@@ -172,14 +175,14 @@ def delete_account(request):
         logout(request)
 
         # Give feedback
-        messages.success(request, 'Your account has been successfully deleted.')
+        messages.success(request, "Your account has been successfully deleted.")
 
         # Redirect to home
-        return redirect('home')
+        return redirect("home")
 
     context = {}
 
-    return render(request, 'tethys_portal/user/delete.html', context)
+    return render(request, "tethys_portal/user/delete.html", context)
 
 
 @login_required()
@@ -191,7 +194,7 @@ def clear_workspace(request, root_url):
     app = TethysApp.objects.get(root_url=root_url)
 
     # Handle form submission
-    if request.method == 'POST' and 'clear-workspace-submit' in request.POST:
+    if request.method == "POST" and "clear-workspace-submit" in request.POST:
         app = get_app_class(app)
 
         user = request.user
@@ -202,14 +205,14 @@ def clear_workspace(request, root_url):
         app.post_delete_user_workspace(user)
 
         # Give feedback
-        messages.success(request, 'Your workspace has been successfully cleared.')
+        messages.success(request, "Your workspace has been successfully cleared.")
 
         # Redirect to home
-        return redirect('user:manage_storage')
+        return redirect("user:manage_storage")
 
-    context = {'app_name': app.name}
+    context = {"app_name": app.name}
 
-    return render(request, 'tethys_portal/user/clear_workspace.html', context)
+    return render(request, "tethys_portal/user/clear_workspace.html", context)
 
 
 @login_required()
@@ -223,24 +226,25 @@ def manage_storage(request):
 
     for app in apps:
         workspace = _get_user_workspace(app, user)
-        app.current_use = _convert_storage_units('gb', workspace.get_size('gb'))
+        app.current_use = _convert_storage_units("gb", workspace.get_size("gb"))
 
-    codename = 'user_workspace_quota'
+    codename = "user_workspace_quota"
     rqh = WorkspaceQuotaHandler(user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(user, codename)
     quota = _check_quota_helper(quota)
 
-    context = {'apps': apps,
-               'current_use': current_use,
-               'quota': quota,
-               }
+    context = {
+        "apps": apps,
+        "current_use": current_use,
+        "quota": quota,
+    }
 
-    return render(request, 'tethys_portal/user/manage_storage.html', context)
+    return render(request, "tethys_portal/user/manage_storage.html", context)
 
 
 def _check_quota_helper(quota):
-    if quota['quota']:
-        return _convert_storage_units(quota['units'], quota['quota'])
+    if quota["quota"]:
+        return _convert_storage_units(quota["units"], quota["quota"])
     else:
         return None

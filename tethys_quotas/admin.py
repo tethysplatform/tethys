@@ -17,8 +17,18 @@ from tethys_quotas.models import ResourceQuota, UserQuota, TethysAppQuota
 
 @admin.register(ResourceQuota)
 class ResourceQuotaAdmin(admin.ModelAdmin):
-    readonly_fields = ('codename', 'name', 'description', 'units', 'applies_to')
-    fields = ('name', 'description', 'default', 'units', 'codename', 'applies_to', 'help', 'active', 'impose_default')
+    readonly_fields = ("codename", "name", "description", "units", "applies_to")
+    fields = (
+        "name",
+        "description",
+        "default",
+        "units",
+        "codename",
+        "applies_to",
+        "help",
+        "active",
+        "impose_default",
+    )
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -28,7 +38,7 @@ class ResourceQuotaAdmin(admin.ModelAdmin):
 
 
 class TethysQuotasSettingInline(admin.TabularInline):
-    template = 'tethys_quotas/admin/edit_inline/tabular.html'
+    template = "tethys_quotas/admin/edit_inline/tabular.html"
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -38,21 +48,23 @@ class TethysQuotasSettingInline(admin.TabularInline):
 
 
 class UserQuotasSettingInline(TethysQuotasSettingInline):
-    readonly_fields = ('name', 'description', 'default', 'units')
-    fields = ('name', 'description', 'value', 'default', 'units')
+    readonly_fields = ("name", "description", "default", "units")
+    fields = ("name", "description", "value", "default", "units")
     model = UserQuota
 
     def get_queryset(self, request):
         qs = super(UserQuotasSettingInline, self).get_queryset(request)
 
-        resource_quota_qs = ResourceQuota.objects.filter(applies_to='django.contrib.auth.models.User')
+        resource_quota_qs = ResourceQuota.objects.filter(
+            applies_to="django.contrib.auth.models.User"
+        )
         if resource_quota_qs.exists():
             resource_quota = resource_quota_qs.first()
 
             if not resource_quota.active:
                 return None
 
-            user_id = request.resolver_match.kwargs.get('object_id')
+            user_id = request.resolver_match.kwargs.get("object_id")
 
             # new user form case
             if not user_id:
@@ -79,7 +91,10 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
                 rq = arg.resource_quota
 
         content_type = ContentType.objects.get_for_model(rq.__class__)
-        admin_url = reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(rq.id,))
+        admin_url = reverse(
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model),
+            args=(rq.id,),
+        )
         return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def description(*args):
@@ -96,7 +111,7 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
                 if rq.impose_default:
                     return rq.default
                 else:
-                    return '--'
+                    return "--"
 
     def units(*args):
         for arg in args:
@@ -105,21 +120,23 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
 
 
 class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
-    readonly_fields = ('name', 'description', 'default', 'units')
-    fields = ('name', 'description', 'value', 'default', 'units')
+    readonly_fields = ("name", "description", "default", "units")
+    fields = ("name", "description", "value", "default", "units")
     model = TethysAppQuota
 
     def get_queryset(self, request):
         qs = super(TethysAppQuotasSettingInline, self).get_queryset(request)
 
-        resource_quota_qs = ResourceQuota.objects.filter(applies_to='tethys_apps.models.TethysApp')
+        resource_quota_qs = ResourceQuota.objects.filter(
+            applies_to="tethys_apps.models.TethysApp"
+        )
         if resource_quota_qs.exists():
             resource_quota = resource_quota_qs.first()
 
             if not resource_quota.active:
                 return None
 
-            tethys_app_id = request.resolver_match.kwargs['object_id']
+            tethys_app_id = request.resolver_match.kwargs["object_id"]
             tethys_app = TethysApp.objects.get(id=tethys_app_id)
 
             qs = qs.filter(entity=tethys_app)
@@ -141,7 +158,10 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
                 rq = arg.resource_quota
 
         content_type = ContentType.objects.get_for_model(rq.__class__)
-        admin_url = reverse("admin:{}_{}_change".format(content_type.app_label, content_type.model), args=(rq.id,))
+        admin_url = reverse(
+            "admin:{}_{}_change".format(content_type.app_label, content_type.model),
+            args=(rq.id,),
+        )
         return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def description(*args):
@@ -158,10 +178,13 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
                 if rq.impose_default:
                     return rq.default
                 else:
-                    return '--'
+                    return "--"
 
         content_type = ContentType.objects.get_for_model(rq.__class__)
-        admin_url = reverse("admin:{}_{}_change".format(content_type.app_label, content_type.model), args=(rq.id,))
+        admin_url = reverse(
+            "admin:{}_{}_change".format(content_type.app_label, content_type.model),
+            args=(rq.id,),
+        )
         return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def units(*args):

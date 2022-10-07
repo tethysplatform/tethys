@@ -25,28 +25,58 @@ from django.conf import settings
 # NOTE: No obvious way to automatically anticipate all the sub modules without
 # installing the package, which is what we are trying to avoid.
 MOCK_MODULES = [
-    'bokeh', 'bokeh.core.templates', 'bokeh.document', 'bokeh.embed', 'bokeh.embed.elements', 'bokeh.embed.util',
-    'bokeh.resources', 'bokeh.settings', 'bokeh.server.django', 'bokeh.server.django.consumers', 'bokeh.util.compiler',
-    'channels', 'channels.consumer',
-    'conda', 'conda.cli', 'conda.cli.python_api',
-    'condorpy',
-    'django_gravatar',
-    'dask', 'dask.delayed', 'dask.distributed',
-    'distributed', 'distributed.protocol', 'distributed.protocol.serialize',
-    'distro',
-    'docker', 'docker.types', 'docker.errors',
-    'guardian', 'guardian.admin', 'guardian.models', 'guardian.shortcuts',
-    'mfa', 'mfa.models',
-    'model_utils', 'model_utils.managers',
-    'plotly', 'plotly.offline',
-    'shapefile',
-    'siphon', 'siphon.catalog', 'siphon.http_util',
-    'social_core', 'social_core.exceptions',
-    'social_django', 'social_django.utils',
-    'sqlalchemy', 'sqlalchemy.orm',
-    'tethys_apps.harvester', 'tethys_apps.models',  # Mocked to prevent issues with loading apps during docs build.
-    'tethys_compute.utilities',  # Mocked to prevent issues with DictionaryField and List Field during docs build.
-    'yaml'
+    "bokeh",
+    "bokeh.core.templates",
+    "bokeh.document",
+    "bokeh.embed",
+    "bokeh.embed.elements",
+    "bokeh.embed.util",
+    "bokeh.resources",
+    "bokeh.settings",
+    "bokeh.server.django",
+    "bokeh.server.django.consumers",
+    "bokeh.util.compiler",
+    "channels",
+    "channels.consumer",
+    "conda",
+    "conda.cli",
+    "conda.cli.python_api",
+    "condorpy",
+    "django_gravatar",
+    "dask",
+    "dask.delayed",
+    "dask.distributed",
+    "distributed",
+    "distributed.protocol",
+    "distributed.protocol.serialize",
+    "distro",
+    "docker",
+    "docker.types",
+    "docker.errors",
+    "guardian",
+    "guardian.admin",
+    "guardian.models",
+    "guardian.shortcuts",
+    "mfa",
+    "mfa.models",
+    "model_utils",
+    "model_utils.managers",
+    "plotly",
+    "plotly.offline",
+    "shapefile",
+    "siphon",
+    "siphon.catalog",
+    "siphon.http_util",
+    "social_core",
+    "social_core.exceptions",
+    "social_django",
+    "social_django.utils",
+    "sqlalchemy",
+    "sqlalchemy.orm",
+    "tethys_apps.harvester",
+    "tethys_apps.models",  # Mocked to prevent issues with loading apps during docs build.
+    "tethys_compute.utilities",  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+    "yaml",
 ]
 
 
@@ -58,32 +88,34 @@ class MockModule(mock.MagicMock):
         return mock.MagicMock()
 
 
-print('NOTE: The following modules are mocked to prevent timeouts during the docs build process on RTD:')
-print('{}'.format(', '.join(MOCK_MODULES)))
+print(
+    "NOTE: The following modules are mocked to prevent timeouts during the docs build process on RTD:"
+)
+print("{}".format(", ".join(MOCK_MODULES)))
 sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
 
 # Fixes django settings module problem
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
 installed_apps = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'tethys_config',
-    'tethys_quotas',
-    'tethys_apps',
-    'tethys_gizmos',
-    'tethys_services',
-    'tethys_compute',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "tethys_config",
+    "tethys_quotas",
+    "tethys_apps",
+    "tethys_gizmos",
+    "tethys_services",
+    "tethys_compute",
 ]
 
 settings.configure(
     INSTALLED_APPS=installed_apps,
     DEBUG=True,
-    SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs"
+    SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs",
 )
 django.setup()
 
@@ -101,74 +133,79 @@ django.setup()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx_autodoc_typehints',
-    'sphinx.ext.extlinks',
-    'sphinx.ext.todo',
-    'sphinxarg.ext'
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.todo",
+    "sphinxarg.ext",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'Tethys Platform'
-copyright = u'2022, Tethys Platform'
+project = "Tethys Platform"
+copyright = "2022, Tethys Platform"
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
+on_rtd = os.environ.get("READTHEDOCS") == "True"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-release = version('tethys-platform')
+release = version("tethys-platform")
 
 # major/minor
-version = '.'.join(release.split('.')[:2])
+version = ".".join(release.split(".")[:2])
 
 # A string of reStructuredText that will be included at the end of every source
 # file that is read. This is the right place to add substitutions that should be
 # available in every file.
 
 git_directory = Path(__file__).parent.parent
-ret = subprocess.run(['git', '-C', git_directory, 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True)
-branch = ret.stdout.decode().strip() if ret.returncode == 0 else 'release'
+ret = subprocess.run(
+    ["git", "-C", git_directory, "rev-parse", "--abbrev-ref", "HEAD"],
+    capture_output=True,
+)
+branch = ret.stdout.decode().strip() if ret.returncode == 0 else "release"
 
 rst_epilog = """
 .. |branch| replace:: {branch}
-""".format(branch=branch)
+""".format(
+    branch=branch
+)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # -- Options for HTML output ----------------------------------------------
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = 'images/default_favicon.ico'
+html_favicon = "images/default_favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 html_css_files = [
-    'css/tethys.css',
+    "css/tethys.css",
 ]
 
 # If true, SmartyPants will be used to convert quotes and dashes to
@@ -176,27 +213,33 @@ html_css_files = [
 smartquotes = False
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'TethysPlatformdoc'
+htmlhelp_basename = "TethysPlatformdoc"
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'TethysPlatform.tex', u'Tethys Platform Documentation',
-   u'Nathan Swain', 'manual'),
+    (
+        "index",
+        "TethysPlatform.tex",
+        "Tethys Platform Documentation",
+        "Nathan Swain",
+        "manual",
+    ),
 ]
 
 # markup to shorten external links (see: http://www.sphinx-doc.org/en/stable/ext/extlinks.html)
-install_tethys_link = 'https://raw.githubusercontent.com/tethysplatform/tethys/{}/scripts/install_tethys.%s'.\
-    format(branch)
+install_tethys_link = "https://raw.githubusercontent.com/tethysplatform/tethys/{}/scripts/install_tethys.%s".format(
+    branch
+)
 
-extlinks = {'install_tethys': (install_tethys_link, None)}
+extlinks = {"install_tethys": (install_tethys_link, None)}
 
 # -- Options for manual page output ---------------------------------------
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tethysplatform', u'Tethys Platform Documentation', [u'Nathan Swain'], 1)
+    ("index", "tethysplatform", "Tethys Platform Documentation", ["Nathan Swain"], 1)
 ]
 
 # -- Options for Texinfo output -------------------------------------------
@@ -205,9 +248,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'TethysPlatform', u'Tethys Platform Documentation',
-   u'Nathan Swain', 'TethysPlatform', 'One line description of project.',
-   'Miscellaneous'),
+    (
+        "index",
+        "TethysPlatform",
+        "Tethys Platform Documentation",
+        "Nathan Swain",
+        "TethysPlatform",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 # If this is True, todo and todolist produce output, else they produce nothing. The default is False.
@@ -216,7 +265,7 @@ todo_include_todos = True
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
-html_theme = 'sphinx_materialdesign_theme'
+html_theme = "sphinx_materialdesign_theme"
 
 html_theme_options = {
     # Specify a list of menu in Header.
@@ -231,44 +280,46 @@ html_theme_options = {
     # Specify the icon name.
     # For details see link.
     # https://material.io/icons/
-    'header_links': [
-        ('Home', 'index', False, 'home'),
-        ('Tutorials', 'tutorials', False, 'assignment'),
-        ('SDK', 'tethys_sdk', False, 'build'),
-        ('Template Gizmos', 'tethys_sdk/gizmos', False, 'widgets'),
-        ('CLI', 'tethys_cli', False, 'keyboard_arrow_right'),
-        ('Tethys Portal', 'tethys_portal', False, 'web'),
-        ('Software Suite', 'software_suite', False, 'developer_board'),
-        ('Migrate Apps', 'whats_new/app_migration', False, 'open_in_browser'),
-        ("Issues", "https://github.com/tethysplatform/tethys/issues", True, 'bug_report'),
-        ("GitHub", "https://github.com/tethysplatform/tethys", True, 'launch')
+    "header_links": [
+        ("Home", "index", False, "home"),
+        ("Tutorials", "tutorials", False, "assignment"),
+        ("SDK", "tethys_sdk", False, "build"),
+        ("Template Gizmos", "tethys_sdk/gizmos", False, "widgets"),
+        ("CLI", "tethys_cli", False, "keyboard_arrow_right"),
+        ("Tethys Portal", "tethys_portal", False, "web"),
+        ("Software Suite", "software_suite", False, "developer_board"),
+        ("Migrate Apps", "whats_new/app_migration", False, "open_in_browser"),
+        (
+            "Issues",
+            "https://github.com/tethysplatform/tethys/issues",
+            True,
+            "bug_report",
+        ),
+        ("GitHub", "https://github.com/tethysplatform/tethys", True, "launch"),
     ],
-
     # Customize css colors.
     # For details see link.
     # https://getmdl.io/customize/index.html
     #
     # Values: amber, blue, brown, cyan deep_orange, deep_purple, green, grey, indigo, light_blue,
     #         light_green, lime, orange, pink, purple, red, teal, yellow(Default: indigo)
-    'primary_color': 'blue',
+    "primary_color": "blue",
     # Values: Same as primary_color. (Default: pink)
-    'accent_color': 'light_blue',
-
+    "accent_color": "light_blue",
     # Customize layout.
     # For details see link.
     # https://getmdl.io/components/index.html#layout-section
-    'fixed_drawer': False,
-    'fixed_header': True,
-    'header_waterfall': True,
-    'header_scroll': False,
-
+    "fixed_drawer": False,
+    "fixed_header": True,
+    "header_waterfall": True,
+    "header_scroll": False,
     # Render title in header.
     # Values: True, False (Default: False)
-    'show_header_title': True,
+    "show_header_title": True,
     # Render title in drawer.
     # Values: True, False (Default: True)
-    'show_drawer_title': False,
+    "show_drawer_title": False,
     # Render footer.
     # Values: True, False (Default: True)
-    'show_footer': True
+    "show_footer": True,
 }

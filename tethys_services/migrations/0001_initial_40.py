@@ -6,77 +6,206 @@ import tethys_services.models
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_services', '0001_initial_30'), ('tethys_services', '0002_auto_20211221_2300')]
+    replaces = [
+        ("tethys_services", "0001_initial_30"),
+        ("tethys_services", "0002_auto_20211221_2300"),
+    ]
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DatasetService',
+            name="DatasetService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30, unique=True)),
-                ('engine', models.CharField(choices=[('tethys_dataset_services.engines.CkanDatasetEngine', 'CKAN'), ('tethys_dataset_services.engines.HydroShareDatasetEngine', 'HydroShare')], default='tethys_dataset_services.engines.CkanDatasetEngine', max_length=200)),
-                ('endpoint', models.CharField(max_length=1024, validators=[tethys_services.models.validate_dataset_service_endpoint])),
-                ('public_endpoint', models.CharField(blank=True, max_length=1024, validators=[tethys_services.models.validate_dataset_service_endpoint])),
-                ('apikey', models.CharField(blank=True, max_length=100)),
-                ('username', models.CharField(blank=True, max_length=100)),
-                ('password', models.CharField(blank=True, max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30, unique=True)),
+                (
+                    "engine",
+                    models.CharField(
+                        choices=[
+                            (
+                                "tethys_dataset_services.engines.CkanDatasetEngine",
+                                "CKAN",
+                            ),
+                            (
+                                "tethys_dataset_services.engines.HydroShareDatasetEngine",
+                                "HydroShare",
+                            ),
+                        ],
+                        default="tethys_dataset_services.engines.CkanDatasetEngine",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "endpoint",
+                    models.CharField(
+                        max_length=1024,
+                        validators=[
+                            tethys_services.models.validate_dataset_service_endpoint
+                        ],
+                    ),
+                ),
+                (
+                    "public_endpoint",
+                    models.CharField(
+                        blank=True,
+                        max_length=1024,
+                        validators=[
+                            tethys_services.models.validate_dataset_service_endpoint
+                        ],
+                    ),
+                ),
+                ("apikey", models.CharField(blank=True, max_length=100)),
+                ("username", models.CharField(blank=True, max_length=100)),
+                ("password", models.CharField(blank=True, max_length=100)),
             ],
             options={
-                'verbose_name': 'Dataset Service',
-                'verbose_name_plural': 'Dataset Services',
+                "verbose_name": "Dataset Service",
+                "verbose_name_plural": "Dataset Services",
             },
         ),
         migrations.CreateModel(
-            name='PersistentStoreService',
+            name="PersistentStoreService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30, unique=True)),
-                ('host', models.CharField(default='localhost', max_length=255)),
-                ('port', models.IntegerField(default=5435, validators=[tethys_services.models.validate_persistent_store_port])),
-                ('username', models.CharField(blank=True, max_length=100)),
-                ('password', models.CharField(blank=True, max_length=100)),
-                ('engine', models.CharField(choices=[('postgresql', 'PostgreSQL')], default='postgresql', max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30, unique=True)),
+                ("host", models.CharField(default="localhost", max_length=255)),
+                (
+                    "port",
+                    models.IntegerField(
+                        default=5435,
+                        validators=[
+                            tethys_services.models.validate_persistent_store_port
+                        ],
+                    ),
+                ),
+                ("username", models.CharField(blank=True, max_length=100)),
+                ("password", models.CharField(blank=True, max_length=100)),
+                (
+                    "engine",
+                    models.CharField(
+                        choices=[("postgresql", "PostgreSQL")],
+                        default="postgresql",
+                        max_length=50,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Persistent Store Service',
-                'verbose_name_plural': 'Persistent Store Services',
+                "verbose_name": "Persistent Store Service",
+                "verbose_name_plural": "Persistent Store Services",
             },
         ),
         migrations.CreateModel(
-            name='SpatialDatasetService',
+            name="SpatialDatasetService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30, unique=True)),
-                ('engine', models.CharField(choices=[('tethys_dataset_services.engines.GeoServerSpatialDatasetEngine', 'GeoServer'), ('thredds-engine', 'THREDDS')], default='tethys_dataset_services.engines.GeoServerSpatialDatasetEngine', max_length=200)),
-                ('endpoint', models.CharField(max_length=1024, validators=[tethys_services.models.validate_spatial_dataset_service_endpoint])),
-                ('public_endpoint', models.CharField(blank=True, max_length=1024, validators=[tethys_services.models.validate_spatial_dataset_service_endpoint])),
-                ('apikey', models.CharField(blank=True, max_length=100)),
-                ('username', models.CharField(blank=True, max_length=100)),
-                ('password', models.CharField(blank=True, max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30, unique=True)),
+                (
+                    "engine",
+                    models.CharField(
+                        choices=[
+                            (
+                                "tethys_dataset_services.engines.GeoServerSpatialDatasetEngine",
+                                "GeoServer",
+                            ),
+                            ("thredds-engine", "THREDDS"),
+                        ],
+                        default="tethys_dataset_services.engines.GeoServerSpatialDatasetEngine",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "endpoint",
+                    models.CharField(
+                        max_length=1024,
+                        validators=[
+                            tethys_services.models.validate_spatial_dataset_service_endpoint
+                        ],
+                    ),
+                ),
+                (
+                    "public_endpoint",
+                    models.CharField(
+                        blank=True,
+                        max_length=1024,
+                        validators=[
+                            tethys_services.models.validate_spatial_dataset_service_endpoint
+                        ],
+                    ),
+                ),
+                ("apikey", models.CharField(blank=True, max_length=100)),
+                ("username", models.CharField(blank=True, max_length=100)),
+                ("password", models.CharField(blank=True, max_length=100)),
             ],
             options={
-                'verbose_name': 'Spatial Dataset Service',
-                'verbose_name_plural': 'Spatial Dataset Services',
+                "verbose_name": "Spatial Dataset Service",
+                "verbose_name_plural": "Spatial Dataset Services",
             },
         ),
         migrations.CreateModel(
-            name='WebProcessingService',
+            name="WebProcessingService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30, unique=True)),
-                ('endpoint', models.CharField(max_length=1024, validators=[tethys_services.models.validate_wps_service_endpoint])),
-                ('public_endpoint', models.CharField(blank=True, max_length=1024, validators=[tethys_services.models.validate_wps_service_endpoint])),
-                ('username', models.CharField(blank=True, max_length=100)),
-                ('password', models.CharField(blank=True, max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30, unique=True)),
+                (
+                    "endpoint",
+                    models.CharField(
+                        max_length=1024,
+                        validators=[
+                            tethys_services.models.validate_wps_service_endpoint
+                        ],
+                    ),
+                ),
+                (
+                    "public_endpoint",
+                    models.CharField(
+                        blank=True,
+                        max_length=1024,
+                        validators=[
+                            tethys_services.models.validate_wps_service_endpoint
+                        ],
+                    ),
+                ),
+                ("username", models.CharField(blank=True, max_length=100)),
+                ("password", models.CharField(blank=True, max_length=100)),
             ],
             options={
-                'verbose_name': 'Web Processing Service',
-                'verbose_name_plural': 'Web Processing Services',
+                "verbose_name": "Web Processing Service",
+                "verbose_name_plural": "Web Processing Services",
             },
         ),
     ]

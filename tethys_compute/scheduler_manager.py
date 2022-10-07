@@ -38,7 +38,7 @@ def get_scheduler(name):
         return schedulers[0]
 
 
-def create_scheduler(name, host, scheduler_type='condor', **kwargs):
+def create_scheduler(name, host, scheduler_type="condor", **kwargs):
     """
     Creates a new scheduler of the type given.
 
@@ -54,21 +54,34 @@ def create_scheduler(name, host, scheduler_type='condor', **kwargs):
     Note:
         The newly created scheduler object is not committed to the database.
     """
-    if scheduler_type.lower() not in ['dask', 'condor']:
-        raise ValueError('"{}" is not a valid scheduler_type. Must be either "dask" or "condor".'.format(
-            scheduler_type)
+    if scheduler_type.lower() not in ["dask", "condor"]:
+        raise ValueError(
+            '"{}" is not a valid scheduler_type. Must be either "dask" or "condor".'.format(
+                scheduler_type
+            )
         )
 
     try:
-        if scheduler_type.lower() == 'dask':
+        if scheduler_type.lower() == "dask":
             return create_dask_scheduler(name, host, **kwargs)
-        elif scheduler_type.lower() == 'condor':
+        elif scheduler_type.lower() == "condor":
             return create_condor_scheduler(name, host, **kwargs)
     except TypeError:
-        raise ValueError('Invalid argument(s) for {} scheduler: {}.'.format(scheduler_type, ', '.join(kwargs.keys())))
+        raise ValueError(
+            "Invalid argument(s) for {} scheduler: {}.".format(
+                scheduler_type, ", ".join(kwargs.keys())
+            )
+        )
 
 
-def create_condor_scheduler(name, host, username=None, password=None, private_key_path=None, private_key_pass=None):
+def create_condor_scheduler(
+    name,
+    host,
+    username=None,
+    password=None,
+    private_key_path=None,
+    private_key_pass=None,
+):
     """
     Creates a new condor scheduler
 
@@ -86,12 +99,20 @@ def create_condor_scheduler(name, host, username=None, password=None, private_ke
     Note:
         The newly created condor scheduler object is not committed to the database.
     """
-    condor_scheduler = CondorScheduler(name, host, username=username, password=password,
-                                       private_key_path=private_key_path, private_key_pass=private_key_pass)
+    condor_scheduler = CondorScheduler(
+        name,
+        host,
+        username=username,
+        password=password,
+        private_key_path=private_key_path,
+        private_key_pass=private_key_pass,
+    )
     return condor_scheduler
 
 
-def create_dask_scheduler(name, host, timeout=None, heartbeat_interval=None, dashboard=None):
+def create_dask_scheduler(
+    name, host, timeout=None, heartbeat_interval=None, dashboard=None
+):
     """
     Creates a new dask scheduler
 
@@ -108,6 +129,11 @@ def create_dask_scheduler(name, host, timeout=None, heartbeat_interval=None, das
     Note:
         The newly created dask scheduler object is not committed to the database.
     """
-    dask_scheduler = DaskScheduler(name, host, timeout=timeout,
-                                   heartbeat_interval=heartbeat_interval, dashboard=dashboard)
+    dask_scheduler = DaskScheduler(
+        name,
+        host,
+        timeout=timeout,
+        heartbeat_interval=heartbeat_interval,
+        dashboard=dashboard,
+    )
     return dask_scheduler

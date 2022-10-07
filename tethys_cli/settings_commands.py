@@ -24,28 +24,34 @@ TETHYS_HOME = Path(get_tethys_home_dir())
 
 
 def add_settings_parser(subparsers):
-    settings_parser = subparsers.add_parser('settings', help='Tethys settings configuration command.')
+    settings_parser = subparsers.add_parser(
+        "settings", help="Tethys settings configuration command."
+    )
     settings_parser.add_argument(
-        '-s', '--set',
-        dest='set_kwargs',
-        help='Key Value pairs to add to the settings in the portal_config.yml file. Hierarchical keys can be '
-             'specified with dot notation. (e.g. DATABASES.default.NAME)',
+        "-s",
+        "--set",
+        dest="set_kwargs",
+        help="Key Value pairs to add to the settings in the portal_config.yml file. Hierarchical keys can be "
+        "specified with dot notation. (e.g. DATABASES.default.NAME)",
         nargs=2,
-        action='append',
+        action="append",
     )
     settings_parser.add_argument(
-        '-g', '--get',
-        dest='get_key',
-        help='Retrieve the resolved value of a key from settings if it exists. Otherwise, attempt to return the value '
-             'of the key from the portal_config.yml',
-        nargs='?',
-        const='all',
+        "-g",
+        "--get",
+        dest="get_key",
+        help="Retrieve the resolved value of a key from settings if it exists. Otherwise, attempt to return the value "
+        "of the key from the portal_config.yml",
+        nargs="?",
+        const="all",
     )
     settings_parser.add_argument(
-        '-r', '--rm', '--remove',
-        dest='rm_key',
-        help='Removes a key from the portal_config.yml file if it exists. Hierarchical keys can be specified with '
-             'dot notation. (e.g. DATABASES.default.NAME)',
+        "-r",
+        "--rm",
+        "--remove",
+        dest="rm_key",
+        help="Removes a key from the portal_config.yml file if it exists. Hierarchical keys can be specified with "
+        "dot notation. (e.g. DATABASES.default.NAME)",
         nargs=1,
     )
     settings_parser.set_defaults(
@@ -54,25 +60,32 @@ def add_settings_parser(subparsers):
 
 
 def read_settings():
-    portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
+    portal_yaml_file = TETHYS_HOME / "portal_config.yml"
     tethys_settings = {}
     if portal_yaml_file.exists():
         with portal_yaml_file.open() as portal_yaml:
-            tethys_settings = yaml.safe_load(portal_yaml).get('settings') or {}
+            tethys_settings = yaml.safe_load(portal_yaml).get("settings") or {}
     return tethys_settings
 
 
 def write_settings(tethys_settings):
-    portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
+    portal_yaml_file = TETHYS_HOME / "portal_config.yml"
     portal_settings = {}
     if portal_yaml_file.exists():
-        with portal_yaml_file.open('r') as portal_yaml:
+        with portal_yaml_file.open("r") as portal_yaml:
             portal_settings = yaml.safe_load(portal_yaml) or {}
     else:
-        write_warning('No Tethys Portal configuration file was found. Generating one now...')
+        write_warning(
+            "No Tethys Portal configuration file was found. Generating one now..."
+        )
 
-    portal_settings['settings'] = tethys_settings
-    args = Namespace(type='portal_config', tethys_portal_settings=portal_settings, directory=None, overwrite=True)
+    portal_settings["settings"] = tethys_settings
+    args = Namespace(
+        type="portal_config",
+        tethys_portal_settings=portal_settings,
+        directory=None,
+        overwrite=True,
+    )
     generate_command(args)
 
 
@@ -87,19 +100,22 @@ def set_settings(tethys_settings, kwargs):
 
 
 def get_setting(tethys_settings, key):
-    if key == 'all':
-        all_settings = {k: getattr(settings, k) for k in dir(settings) if not k.startswith('_')
-                        and not k == 'is_overridden'}
+    if key == "all":
+        all_settings = {
+            k: getattr(settings, k)
+            for k in dir(settings)
+            if not k.startswith("_") and not k == "is_overridden"
+        }
         write_info(pformat(all_settings))
         return
     try:
         value = getattr(settings, key)
-        write_info(f'{key}: {pformat(value)}')
+        write_info(f"{key}: {pformat(value)}")
     except AttributeError:
         result = _get_dict_key_handle(tethys_settings, key)
         if result is not None:
             d, k = result
-            write_info(f'{key}: {pformat(d[k])}')
+            write_info(f"{key}: {pformat(d[k])}")
 
 
 def remove_setting(tethys_settings, key):
@@ -111,7 +127,7 @@ def remove_setting(tethys_settings, key):
 
 
 def _get_dict_key_handle(d, key, not_exists_okay=False):
-    keys = key.split('.')
+    keys = key.split(".")
     values = [d]
     for k in keys:
         try:
@@ -124,7 +140,7 @@ def _get_dict_key_handle(d, key, not_exists_okay=False):
                 else:
                     return values[-1], k
             else:
-                write_error(f'The setting {key} does not exists.')
+                write_error(f"The setting {key} does not exists.")
                 return
 
     return values[-2], k

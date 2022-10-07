@@ -25,6 +25,7 @@ class ResourceQuotaHandler(object):
         __init__(entity, args, kwargs): constructor
         entity(auth.User or TethysApp): the entity to evaluate.
     """  # noqa: E501
+
     codename = ""
     name = ""
     description = ""
@@ -53,7 +54,7 @@ class ResourceQuotaHandler(object):
         # self.codename isn't complete because the actual ResourceQuota codename is 'applies_to' specific
         codename = "{}_{}".format(self.entity.__class__.__name__.lower(), self.codename)
         resource_available = get_resource_available(self.entity, codename)
-        if resource_available and resource_available['resource_available'] == 0:
+        if resource_available and resource_available["resource_available"] == 0:
             return False
         else:
             return True

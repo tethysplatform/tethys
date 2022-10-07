@@ -7,4 +7,4 @@ def csv(request, csv_url):
     """
     Test Handoff handler.
     """
-    return 'test_app:home'
+    return "test_app:home"

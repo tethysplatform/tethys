@@ -15,19 +15,19 @@ from tethys_apps.admin import TethysAppSettingInline
 
 
 class SettingInline(TethysAppSettingInline):
-    fields = ('name', 'content', 'date_modified')
-    readonly_fields = ('name', 'date_modified')
+    fields = ("name", "content", "date_modified")
+    readonly_fields = ("name", "date_modified")
     model = Setting
     extra = 0
 
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 65})},
+        models.TextField: {"widget": Textarea(attrs={"rows": 2, "cols": 65})},
     }
 
 
 class SettingCategoryAdmin(admin.ModelAdmin):
-    fields = ('name',)
-    readonly_fields = ('name',)
+    fields = ("name",)
+    readonly_fields = ("name",)
     inlines = [SettingInline]
 
     def has_delete_permission(self, request, obj=None):

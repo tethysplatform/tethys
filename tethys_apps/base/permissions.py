@@ -38,7 +38,9 @@ class Permission:
         self.description = description
 
     def _repr(self):
-        return '<Permission name="{0}" description="{1}">'.format(self.name, self.description)
+        return '<Permission name="{0}" description="{1}">'.format(
+            self.name, self.description
+        )
 
     def __str__(self):
         return self._repr()
@@ -78,10 +80,13 @@ class PermissionGroup:
 
     """
 
-    def __init__(self, name, permissions=[]):
+    def __init__(self, name, permissions=None):
         """
         Constructor
         """
+        if permissions is None:
+            permissions = list()
+
         self.name = name
         self.permissions = permissions
 
@@ -128,7 +133,7 @@ def has_permission(request, perm, user=None):
     if user is None:
         user = request.user
 
-    namespaced_perm = 'tethys_apps.' + app.package + ':' + perm
+    namespaced_perm = "tethys_apps." + app.package + ":" + perm
 
     # Check permission
     if user.has_perm(namespaced_perm, app):

@@ -18,12 +18,12 @@ from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
 
-log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.jobs_table')
+log = logging.getLogger("tethys.tethys_gizmos.gizmo_options.jobs_table")
 
-__all__ = ['JobsTable', 'CustomJobAction']
+__all__ = ["JobsTable", "CustomJobAction"]
 
 
-JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions'])
+JobsTableRow = namedtuple("JobsTableRow", ["columns", "actions"])
 
 
 def add_static_method(cls):
@@ -31,8 +31,10 @@ def add_static_method(cls):
         @wraps(func)
         def wrapper(_, *args, **kwargs):
             return func(*args, **kwargs)
+
         setattr(cls, func.__name__, wrapper)
         return func
+
     return outer
 
 
@@ -41,8 +43,10 @@ def add_method(cls):
         @wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
+
         setattr(cls, func.__name__, wrapper)
         return func
+
     return outer
 
 
@@ -91,8 +95,17 @@ class CustomJobAction:
         <https://github.com/tethysplatform/tethysapp-gizmo_showcase/blob/main/tethysapp/gizmo_showcase/controllers/processing.py>`_
 
     """  # noqa: E501
-    def __init__(self, label, callback_or_url=None, enabled_callback=None, confirmation_message=None,
-                 show_overlay=False, modal_url=None, job_type=None):
+
+    def __init__(
+        self,
+        label,
+        callback_or_url=None,
+        enabled_callback=None,
+        confirmation_message=None,
+        show_overlay=False,
+        modal_url=None,
+        job_type=None,
+    ):
         from tethys_compute.models import TethysJob
 
         job_type = job_type or TethysJob
@@ -110,21 +123,25 @@ class CustomJobAction:
                     f'or the "modal_url" argument.'
                 )
         else:
-            if isinstance(callback_or_url, str) and (':' in callback_or_url or '/' in callback_or_url):
+            if isinstance(callback_or_url, str) and (
+                ":" in callback_or_url or "/" in callback_or_url
+            ):
                 self.url = callback_or_url
             else:
                 self.callback = self.register_callback(callback_or_url, job_type)
         if enabled_callback:
-            self.register_callback(enabled_callback, job_type, self.get_enabled_callback_name(label))
+            self.register_callback(
+                enabled_callback, job_type, self.get_enabled_callback_name(label)
+            )
 
     @property
     def properties(self):
         return {
-            'callback': self.callback,
-            'url': self.url,
-            'modal_url': self.modal_url,
-            'confirmation_message': self.confirmation_message,
-            'show_overlay': self.show_overlay,
+            "callback": self.callback,
+            "url": self.url,
+            "modal_url": self.modal_url,
+            "confirmation_message": self.confirmation_message,
+            "show_overlay": self.show_overlay,
         }
 
     @staticmethod
@@ -141,7 +158,7 @@ class CustomJobAction:
 
     @staticmethod
     def get_enabled_callback_name(label):
-        return f'custom_action_{label}_enabled'
+        return f"custom_action_{label}_enabled"
 
 
 class JobsTable(TethysGizmoOptions):
@@ -250,12 +267,30 @@ class JobsTable(TethysGizmoOptions):
         <https://github.com/tethysplatform/tethysapp-gizmo_showcase>`_
 
     """  # noqa: E501
+
     gizmo_name = "jobs_table"
 
-    def __init__(self, jobs, column_fields, show_status=True, show_actions=True,
-                 monitor_url='', results_url='', hover=False, striped=False, bordered=False, condensed=False,
-                 attributes=None, classes='', refresh_interval=5000, delay_loading_status=True,
-                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None):
+    def __init__(
+        self,
+        jobs,
+        column_fields,
+        show_status=True,
+        show_actions=True,
+        monitor_url="",
+        results_url="",
+        hover=False,
+        striped=False,
+        bordered=False,
+        condensed=False,
+        attributes=None,
+        classes="",
+        refresh_interval=5000,
+        delay_loading_status=True,
+        show_detailed_status=False,
+        actions=None,
+        enable_data_table=False,
+        data_table_options=None,
+    ):
         """
         Constructor
         """
@@ -281,65 +316,86 @@ class JobsTable(TethysGizmoOptions):
         self.delay_loading_status = delay_loading_status
         self.show_detailed_status = show_detailed_status
         self.enable_data_table = enable_data_table
-        self.data_table_options = data_table_options or {'ordering': True, 'searching': False, 'paging': False}
+        self.data_table_options = data_table_options or {
+            "ordering": True,
+            "searching": False,
+            "paging": False,
+        }
 
-        actions = actions or ['run', 'resubmit', '|', 'logs', 'monitor', 'results', '|', 'terminate', 'delete']
+        actions = actions or [
+            "run",
+            "resubmit",
+            "|",
+            "logs",
+            "monitor",
+            "results",
+            "|",
+            "terminate",
+            "delete",
+        ]
 
         default_actions_args = dict(
             run=dict(
-                label='Run',
-                callback_or_url='execute',
-                enabled_callback=lambda job, job_status: job_status == 'Pending',
+                label="Run",
+                callback_or_url="execute",
+                enabled_callback=lambda job, job_status: job_status == "Pending",
             ),
             pause=dict(
-                label='Pause',
-                callback_or_url='pause',
-                enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
+                label="Pause",
+                callback_or_url="pause",
+                enabled_callback=lambda job, job_status: job_status
+                in TethysJob.RUNNING_STATUSES,
             ),
             resume=dict(
-                label='Resume',
-                callback_or_url='resume',
-                enabled_callback=lambda job, job_status: job_status == 'Paused',
+                label="Resume",
+                callback_or_url="resume",
+                enabled_callback=lambda job, job_status: job_status == "Paused",
             ),
             resubmit=dict(
-                label='Resubmit',
-                callback_or_url='resubmit',
-                enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
+                label="Resubmit",
+                callback_or_url="resubmit",
+                enabled_callback=lambda job, job_status: job_status
+                in TethysJob.TERMINAL_STATUSES,
                 show_overlay=True,
             ),
             logs=dict(
-                label='View Logs',
-                enabled_callback=lambda job, job_status: job_status not in TethysJob.PRE_RUNNING_STATUSES,
-                modal_url='logs',  # Note: this is just a placeholder and is not actually used
+                label="View Logs",
+                enabled_callback=lambda job, job_status: job_status
+                not in TethysJob.PRE_RUNNING_STATUSES,
+                modal_url="logs",  # Note: this is just a placeholder and is not actually used
             ),
             monitor=dict(
-                label='Monitor Job',
-                enabled_callback=lambda job, job_status: job_status in TethysJob.RUNNING_STATUSES,
+                label="Monitor Job",
+                enabled_callback=lambda job, job_status: job_status
+                in TethysJob.RUNNING_STATUSES,
             ),
             results=dict(
-                label='View Results',
-                enabled_callback=lambda job, job_status: job_status in TethysJob.TERMINAL_STATUSES,
+                label="View Results",
+                enabled_callback=lambda job, job_status: job_status
+                in TethysJob.TERMINAL_STATUSES,
             ),
             terminate=dict(
-                label='Terminate',
-                callback_or_url='stop',
-                enabled_callback=lambda job, job_status: job_status in TethysJob.ACTIVE_STATUSES,
-                confirmation_message='Are you sure you want to terminate this job?',
+                label="Terminate",
+                callback_or_url="stop",
+                enabled_callback=lambda job, job_status: job_status
+                in TethysJob.ACTIVE_STATUSES,
+                confirmation_message="Are you sure you want to terminate this job?",
                 show_overlay=True,
             ),
             delete=dict(
-                label='Delete',
-                callback_or_url='delete',
-                enabled_callback=lambda job, job_status: job_status not in TethysJob.ACTIVE_STATUSES,
-                confirmation_message='Are you sure you want to permanently delete this job?',
+                label="Delete",
+                callback_or_url="delete",
+                enabled_callback=lambda job, job_status: job_status
+                not in TethysJob.ACTIVE_STATUSES,
+                confirmation_message="Are you sure you want to permanently delete this job?",
                 show_overlay=True,
             ),
         )
 
-        for action_name, url in (('monitor', monitor_url), ('results', results_url)):
+        for action_name, url in (("monitor", monitor_url), ("results", results_url)):
             if url:
                 kwargs = default_actions_args[action_name]
-                kwargs['callback_or_url'] = url
+                kwargs["callback_or_url"] = url
                 if action_name in actions:
                     actions[actions.index(action_name)] = kwargs
                 else:
@@ -350,8 +406,8 @@ class JobsTable(TethysGizmoOptions):
         self.actions = dict()
 
         for i, action in enumerate(actions):
-            if action == '|':
-                self.actions[f'_sep_{i}'] = {'sep': i}
+            if action == "|":
+                self.actions[f"_sep_{i}"] = {"sep": i}
                 # the value dict (i.e. {'sep': i}) needs to have some value in it for the POST request to keep it
                 continue
             if isinstance(action, str):
@@ -359,7 +415,9 @@ class JobsTable(TethysGizmoOptions):
                     kwargs = default_actions_args[action]
                     action = CustomJobAction(**kwargs)
                 except KeyError:
-                    raise ValueError(f'The action "{action}" is not a valid default action.')
+                    raise ValueError(
+                        f'The action "{action}" is not a valid default action.'
+                    )
             elif isinstance(action, tuple) or isinstance(action, list):
                 action = CustomJobAction(*action)
             elif isinstance(action, dict):
@@ -393,21 +451,30 @@ class JobsTable(TethysGizmoOptions):
                 column_name, field = field
             else:
                 column_name = field
-                if field.startswith('extended_properties'):
-                    column_name = field.split('.')[-1]
-                column_name = column_name.title().replace('_', ' ')
+                if field.startswith("extended_properties"):
+                    column_name = field.split(".")[-1]
+                column_name = column_name.title().replace("_", " ")
             try:
-                if not field.startswith('extended_properties'):
-                    getattr(first_job, field)  # verify that the field name is a valid attribute on the job
+                if not field.startswith("extended_properties"):
+                    getattr(
+                        first_job, field
+                    )  # verify that the field name is a valid attribute on the job
                 self.column_names.append(column_name)
                 self.column_fields.append(field)
             except AttributeError:
-                log.warning('Column %s was not added because the %s has no attribute %s.',
-                            column_name, str(first_job), field)
+                log.warning(
+                    "Column %s was not added because the %s has no attribute %s.",
+                    column_name,
+                    str(first_job),
+                    field,
+                )
 
         for job in sorted(jobs):
             row_values = self.get_row(
-                job, self.column_fields, deepcopy(self.actions), delay_loading_status=self.delay_loading_status
+                job,
+                self.column_fields,
+                deepcopy(self.actions),
+                delay_loading_status=self.delay_loading_status,
             )
             self.rows.append(row_values)
 
@@ -429,44 +496,45 @@ class JobsTable(TethysGizmoOptions):
         row_values = list()
         extended_properties = job.extended_properties
         for attribute in job_attributes:
-            if attribute.startswith('extended_properties'):
-                parts = attribute.split('.')
+            if attribute.startswith("extended_properties"):
+                parts = attribute.split(".")
                 keys = parts[1:-1]
                 cur_dict = extended_properties
                 for key in keys:
                     cur_dict = cur_dict.get(key, {})
-                value = cur_dict.get(parts[-1], '')
+                value = cur_dict.get(parts[-1], "")
             else:
                 value = getattr(job, attribute)
                 # Truncate fractional seconds
-                if attribute == 'run_time':
-                    value = str(value).split('.')[0]
+                if attribute == "run_time":
+                    value = str(value).split(".")[0]
 
             row_values.append(value)
 
         job_status = None if delay_loading_status else job.status
 
         for action, properties in job_actions.items():
-            properties['enabled'] = getattr(
-                job, CustomJobAction.get_enabled_callback_name(action), lambda js: True)(job_status)
+            properties["enabled"] = getattr(
+                job, CustomJobAction.get_enabled_callback_name(action), lambda js: True
+            )(job_status)
 
         return JobsTableRow(row_values, actions=job_actions)
 
     @staticmethod
     def get_gizmo_css():
         return (
-            'tethys_gizmos/css/jobs_table.css',
+            "tethys_gizmos/css/jobs_table.css",
             *SelectInput.get_vendor_css(),
         )
 
     @staticmethod
     def get_vendor_js():
         return (
-            vendor_static_dependencies['d3'].js_url,
-            vendor_static_dependencies['lodash'].js_url,
-            vendor_static_dependencies['graphlib'].js_url,
-            vendor_static_dependencies['dagre'].js_url,
-            vendor_static_dependencies['dagre-d3'].js_url,
+            vendor_static_dependencies["d3"].js_url,
+            vendor_static_dependencies["lodash"].js_url,
+            vendor_static_dependencies["graphlib"].js_url,
+            vendor_static_dependencies["dagre"].js_url,
+            vendor_static_dependencies["dagre-d3"].js_url,
             *SelectInput.get_vendor_js(),
         )
 
@@ -475,15 +543,17 @@ class JobsTable(TethysGizmoOptions):
         """
         JavaScript specific to gizmo to be placed in the {% block scripts %} block
         """
-        return (
-            'tethys_gizmos/js/jobs_table.js',
-        )
+        return ("tethys_gizmos/js/jobs_table.js",)
 
     @staticmethod
     def get_gizmo_modals():
-        modals_file = Path(__file__).parents[1] / 'templates' / 'tethys_gizmos' / 'gizmos' / 'jobs_table_modals.html'
+        modals_file = (
+            Path(__file__).parents[1]
+            / "templates"
+            / "tethys_gizmos"
+            / "gizmos"
+            / "jobs_table_modals.html"
+        )
         with modals_file.open() as f:
             modals = f.read()
-        return (
-            modals,
-        )
+        return (modals,)

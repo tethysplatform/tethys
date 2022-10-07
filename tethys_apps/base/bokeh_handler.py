@@ -25,12 +25,13 @@ def with_request(handler):
     @wraps(handler)
     def wrapper(doc: Document):
         bokeh_request = doc.session_context.request
-        bokeh_request.pop('scheme')
+        bokeh_request.pop("scheme")
         django_request = HttpRequest()
         for k, v in bokeh_request.items():
             setattr(django_request, k, v)
         doc.request = django_request
         return handler(doc)
+
     return wrapper
 
 
@@ -41,17 +42,23 @@ def with_workspaces(handler):
         doc.user_workspace = get_user_workspace(doc.request, doc.request.user)
         doc.app_workspace = get_app_workspace(doc.request)
         return handler(doc)
+
     return wrapper
 
 
 def _get_bokeh_controller(template=None, app_package=None):
-    template = template or 'tethys_apps/bokeh_default.html' if app_package is None else 'tethys_apps/bokeh_base.html'
-    extends_template = f'{app_package}/base.html' if app_package else None
+    template = (
+        template or "tethys_apps/bokeh_default.html"
+        if app_package is None
+        else "tethys_apps/bokeh_base.html"
+    )
+    extends_template = f"{app_package}/base.html" if app_package else None
 
     def bokeh_controller(request):
         script = server_document(request.get_full_path())
-        context = {'script': script}
+        context = {"script": script}
         if extends_template:
-            context['extends_template'] = extends_template
+            context["extends_template"] = extends_template
         return render(request, template, context)
+
     return bokeh_controller

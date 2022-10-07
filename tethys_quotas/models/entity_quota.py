@@ -14,7 +14,7 @@ from model_utils.managers import InheritanceManager
 from tethys_quotas.models.resource_quota import ResourceQuota
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class EntityQuota(models.Model):
@@ -27,7 +27,7 @@ class EntityQuota(models.Model):
     """  # noqa: E501
 
     class Meta:
-        verbose_name = 'Entity Quota'
+        verbose_name = "Entity Quota"
 
     objects = InheritanceManager()
 

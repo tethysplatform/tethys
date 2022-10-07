@@ -14,9 +14,9 @@ class SettingsCategory(models.Model):
     name = models.TextField(max_length=30)
 
     class Meta:
-        verbose_name = 'Settings Category'
-        verbose_name_plural = 'Site Settings'
-        ordering = ['pk']
+        verbose_name = "Settings Category"
+        verbose_name_plural = "Site Settings"
+        ordering = ["pk"]
 
     def __str__(self):
         return self.name
@@ -25,7 +25,7 @@ class SettingsCategory(models.Model):
 class Setting(models.Model):
     name = models.TextField(max_length=30)
     content = models.TextField(max_length=500, blank=True)
-    date_modified = models.DateTimeField('date modified', auto_now=True)
+    date_modified = models.DateTimeField("date modified", auto_now=True)
     category = models.ForeignKey(SettingsCategory, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -38,7 +38,7 @@ class Setting(models.Model):
         settings_dict = dict()
 
         for setting in all_settings:
-            code_name = setting.name.lower().replace(' ', '_')
+            code_name = setting.name.lower().replace(" ", "_")
             settings_dict[code_name] = setting.content
 
         return settings_dict
@@ -47,7 +47,11 @@ class Setting(models.Model):
 def get_custom_template(name, default):
     custom_template = Setting.objects.get(name=name).content
     if custom_template:
-        template = custom_template.lstrip('/') if custom_template.startswith('/') else custom_template
+        template = (
+            custom_template.lstrip("/")
+            if custom_template.startswith("/")
+            else custom_template
+        )
     else:
         template = default
     return template

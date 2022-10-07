@@ -6,10 +6,10 @@ from distributed.protocol.serialize import serialize, deserialize
 
 class DaskSerializedField(models.Field):
 
-    description = 'A field the automatically serializes and deserializes using Dask serialization.'
+    description = "A field the automatically serializes and deserializes using Dask serialization."
 
     def get_internal_type(self):
-        return 'TextField'
+        return "TextField"
 
     def from_db_value(self, value, *args, **kwargs):
         """
@@ -21,7 +21,7 @@ class DaskSerializedField(models.Field):
         try:
             return deserialize(*make_tuple(value))
         except Exception:
-            raise ValidationError('Unable to deserialize value: {}'.format(str(value)))
+            raise ValidationError("Unable to deserialize value: {}".format(str(value)))
 
     def to_python(self, value):
         """
@@ -33,7 +33,7 @@ class DaskSerializedField(models.Field):
         try:
             return deserialize(*make_tuple(value))
         except Exception:
-            raise ValidationError('Unable to deserialize value: {}'.format(value))
+            raise ValidationError("Unable to deserialize value: {}".format(value))
 
     def get_prep_value(self, value):
         """
@@ -43,7 +43,7 @@ class DaskSerializedField(models.Field):
             serialize_tuple = serialize(value)
             return str(serialize_tuple)
         except Exception:
-            raise ValidationError('Unable to serialize value: {}'.format(value))
+            raise ValidationError("Unable to serialize value: {}".format(value))
 
     def value_to_string(self, obj):
         """

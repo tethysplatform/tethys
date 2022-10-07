@@ -11,7 +11,7 @@ from .base import TethysGizmoOptions
 from tethys_portal.dependencies import vendor_static_dependencies
 
 
-__all__ = ['DatePicker']
+__all__ = ["DatePicker"]
 
 
 class DatePicker(TethysGizmoOptions):
@@ -77,13 +77,33 @@ class DatePicker(TethysGizmoOptions):
         {% gizmo date_picker_error %}
 
     """  # noqa: E501
-    gizmo_name = "date_picker"
-    version = vendor_static_dependencies['bootstrap-datepicker'].version
 
-    def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
-                 days_of_week_disabled='', end_date='', format='', min_view_mode='days', multidate=1, start_date='',
-                 start_view='month', today_button=False, today_highlight=False, week_start=0, initial='',
-                 disabled=False, error='', attributes=None, classes=''):
+    gizmo_name = "date_picker"
+    version = vendor_static_dependencies["bootstrap-datepicker"].version
+
+    def __init__(
+        self,
+        name,
+        display_text="",
+        autoclose=False,
+        calendar_weeks=False,
+        clear_button=False,
+        days_of_week_disabled="",
+        end_date="",
+        format="",
+        min_view_mode="days",
+        multidate=1,
+        start_date="",
+        start_view="month",
+        today_button=False,
+        today_highlight=False,
+        week_start=0,
+        initial="",
+        disabled=False,
+        error="",
+        attributes=None,
+        classes="",
+    ):
         """
         Constructor
         """
@@ -115,9 +135,11 @@ class DatePicker(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['bootstrap-datepicker'].get_custom_version_url(
-            url_type='css', version=cls.version
-        ),
+        return (
+            vendor_static_dependencies["bootstrap-datepicker"].get_custom_version_url(
+                url_type="css", version=cls.version
+            ),
+        )
 
     @classmethod
     def get_vendor_js(cls):
@@ -125,6 +147,8 @@ class DatePicker(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['bootstrap-datepicker'].get_custom_version_url(
-            url_type='js', version=cls.version
-        ),
+        return (
+            vendor_static_dependencies["bootstrap-datepicker"].get_custom_version_url(
+                url_type="js", version=cls.version
+            ),
+        )

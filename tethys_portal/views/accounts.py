@@ -25,17 +25,17 @@ def login_view(request):
     """
     # Only allow users to access login page if they are not logged in
     if not request.user.is_anonymous:
-        return redirect('user:profile')
+        return redirect("user:profile")
 
     # Handle form
-    if request.method == 'POST' and 'login-submit' in request.POST:
+    if request.method == "POST" and "login-submit" in request.POST:
         # Create login form bound to request data
         form = LoginForm(request.POST)
 
         # Validate the form
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
 
             # Authenticate
             user = authenticate(request, username=username, password=password)
@@ -53,24 +53,35 @@ def login_view(request):
                 else:
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
-                    messages.error(request, "Sorry, but your account has been disabled. Please contact the site "
-                                            "administrator for more details.")
+                    messages.error(
+                        request,
+                        "Sorry, but your account has been disabled. Please contact the site "
+                        "administrator for more details.",
+                    )
             else:
                 # User was not authenticated, return errors
-                messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
-                                          "password and try again.")
+                messages.warning(
+                    request,
+                    "Whoops! We were not able to log you in. Please check your username and "
+                    "password and try again.",
+                )
 
     else:
         # Create new empty login form
         form = LoginForm()
 
     # Determine if signup is disabled or not
-    signup_enabled = settings.ENABLE_OPEN_SIGNUP if hasattr(settings, 'ENABLE_OPEN_SIGNUP') else False
+    signup_enabled = (
+        settings.ENABLE_OPEN_SIGNUP
+        if hasattr(settings, "ENABLE_OPEN_SIGNUP")
+        else False
+    )
 
-    context = {'form': form,
-               'signup_enabled': signup_enabled}
+    context = {"form": form, "signup_enabled": signup_enabled}
 
-    template = get_custom_template('Login Page Template', 'tethys_portal/accounts/login.html')
+    template = get_custom_template(
+        "Login Page Template", "tethys_portal/accounts/login.html"
+    )
 
     return render(request, template, context)
 
@@ -82,14 +93,14 @@ def register(request):
     """
     # Only allow users to access register page if they are not logged in
     if not request.user.is_anonymous:
-        return redirect('user:profile')
+        return redirect("user:profile")
 
     # Disallow access to this page if open signup is disabled
-    if not hasattr(settings, 'ENABLE_OPEN_SIGNUP') or not settings.ENABLE_OPEN_SIGNUP:
-        return redirect('accounts:login')
+    if not hasattr(settings, "ENABLE_OPEN_SIGNUP") or not settings.ENABLE_OPEN_SIGNUP:
+        return redirect("accounts:login")
 
     # Handle form
-    if request.method == 'POST' and 'register-submit' in request.POST:
+    if request.method == "POST" and "register-submit" in request.POST:
         # Create form bound to request data
         form = RegisterForm(request.POST)
 
@@ -114,26 +125,34 @@ def register(request):
                     login(request, user)
 
                     # Redirect after logged in using next parameter or default to user profile
-                    if 'next' in request.GET:
-                        return redirect(request.GET['next'])
+                    if "next" in request.GET:
+                        return redirect(request.GET["next"])
                     else:
-                        return redirect('user:profile')
+                        return redirect("user:profile")
                 else:
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
-                    messages.error(request, "Sorry, but your account has been disabled. Please contact the site "
-                                            "administrator for more details.")
+                    messages.error(
+                        request,
+                        "Sorry, but your account has been disabled. Please contact the site "
+                        "administrator for more details.",
+                    )
             else:
                 # User was not authenticated, return errors
-                messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
-                                          "password and try again.")
+                messages.warning(
+                    request,
+                    "Whoops! We were not able to log you in. Please check your username and "
+                    "password and try again.",
+                )
 
     else:
         # Create new empty form
         form = RegisterForm()
 
-    context = {'form': form}
-    template = get_custom_template('Register Page Template', 'tethys_portal/accounts/register.html')
+    context = {"form": form}
+    template = get_custom_template(
+        "Register Page Template", "tethys_portal/accounts/register.html"
+    )
     return render(request, template, context)
 
 
@@ -144,8 +163,8 @@ def logout_view(request):
     # Present goodbye message and logout if not anonymous
     if not request.user.is_anonymous:
         name = request.user.first_name or request.user.username
-        messages.success(request, 'Goodbye, {0}. Come back soon!'.format(name))
+        messages.success(request, "Goodbye, {0}. Come back soon!".format(name))
         logout(request)
 
     # Redirect home
-    return redirect('home')
+    return redirect("home")

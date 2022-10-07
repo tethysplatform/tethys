@@ -15,5 +15,5 @@ from tethys_compute.models import (
     CondorJob,
     CondorWorkflow,
     CondorWorkflowJobNode,
-    DaskJob
+    DaskJob,
 )

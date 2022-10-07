@@ -10,5 +10,5 @@ class TestApps(unittest.TestCase):
         pass
 
     def test_TethysServiceConfig(self):
-        self.assertEqual('tethys_services', TethysServicesConfig.name)
+        self.assertEqual("tethys_services", TethysServicesConfig.name)
         self.assertEqual("Tethys Services", TethysServicesConfig.verbose_name)

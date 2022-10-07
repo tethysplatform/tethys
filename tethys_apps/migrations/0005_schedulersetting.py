@@ -7,18 +7,43 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0006_alter_condorpyjob__attributes'),
-        ('tethys_apps', '0004_auto_20211221_2300'),
+        ("tethys_compute", "0006_alter_condorpyjob__attributes"),
+        ("tethys_apps", "0004_auto_20211221_2300"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SchedulerSetting',
+            name="SchedulerSetting",
             fields=[
-                ('tethysappsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.tethysappsetting')),
-                ('engine', models.CharField(choices=[('htcondor', 'HTCondor'), ('dask', 'Dask')], default='htcondor', max_length=200)),
-                ('scheduler_service', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='tethys_compute.scheduler')),
+                (
+                    "tethysappsetting_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="tethys_apps.tethysappsetting",
+                    ),
+                ),
+                (
+                    "engine",
+                    models.CharField(
+                        choices=[("htcondor", "HTCondor"), ("dask", "Dask")],
+                        default="htcondor",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "scheduler_service",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tethys_compute.scheduler",
+                    ),
+                ),
             ],
-            bases=('tethys_apps.tethysappsetting',),
+            bases=("tethys_apps.tethysappsetting",),
         ),
     ]

@@ -11,10 +11,17 @@ import logging
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
-log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.map_view')
+log = logging.getLogger("tethys.tethys_gizmos.gizmo_options.map_view")
 
-__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer',
-           'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
+__all__ = [
+    "MapView",
+    "MVDraw",
+    "MVView",
+    "MVLayer",
+    "MVLegendClass",
+    "MVLegendImageClass",
+    "MVLegendGeoServerImageClass",
+]
 
 
 class MapView(TethysGizmoOptions):
@@ -313,12 +320,26 @@ class MapView(TethysGizmoOptions):
         {% gizmo map_view_options %}
 
     """  # noqa: E501
-    gizmo_name = "map_view"
-    ol_version = vendor_static_dependencies['openlayers'].version
 
-    def __init__(self, height='100%', width='100%', basemap=None, view=None,
-                 controls=None, layers=None, draw=None, legend=False, attributes=None, classes='',
-                 disable_basemap=False, feature_selection=None, show_clicks=False):
+    gizmo_name = "map_view"
+    ol_version = vendor_static_dependencies["openlayers"].version
+
+    def __init__(
+        self,
+        height="100%",
+        width="100%",
+        basemap=None,
+        view=None,
+        controls=None,
+        layers=None,
+        draw=None,
+        legend=False,
+        attributes=None,
+        classes="",
+        disable_basemap=False,
+        feature_selection=None,
+        show_clicks=False,
+    ):
         """
         Constructor
         """
@@ -328,7 +349,7 @@ class MapView(TethysGizmoOptions):
         self.height = height
         self.width = width
         self.basemap = basemap
-        self.view = view or {'center': [-100, 40], 'zoom': 2}
+        self.view = view or {"center": [-100, 40], "zoom": 2}
         self.controls = controls or []
         self.layers = layers or []
         self.draw = draw
@@ -343,10 +364,11 @@ class MapView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['openlayers'].get_custom_version_url(
-            url_type='js',
-            version=cls.ol_version
-        ),
+        return (
+            vendor_static_dependencies["openlayers"].get_custom_version_url(
+                url_type="js", version=cls.ol_version
+            ),
+        )
 
     @staticmethod
     def get_gizmo_js():
@@ -354,8 +376,10 @@ class MapView(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return ('tethys_gizmos/js/gizmo_utilities.js',
-                'tethys_gizmos/js/tethys_map_view.js')
+        return (
+            "tethys_gizmos/js/gizmo_utilities.js",
+            "tethys_gizmos/js/tethys_map_view.js",
+        )
 
     @classmethod
     def get_vendor_css(cls):
@@ -363,10 +387,11 @@ class MapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return vendor_static_dependencies['openlayers'].get_custom_version_url(
-            url_type='css',
-            version=cls.ol_version
-        ),
+        return (
+            vendor_static_dependencies["openlayers"].get_custom_version_url(
+                url_type="css", version=cls.ol_version
+            ),
+        )
 
     @staticmethod
     def get_gizmo_css():
@@ -374,7 +399,7 @@ class MapView(TethysGizmoOptions):
         CSS specific to gizmo to be placed in the
         {% block content_dependent_styles %} block
         """
-        return 'tethys_gizmos/css/tethys_map_view.min.css',
+        return ("tethys_gizmos/css/tethys_map_view.min.css",)
 
 
 class MVView(SecondaryGizmoOptions):
@@ -450,26 +475,51 @@ class MVDraw(SecondaryGizmoOptions):
 
     """  # noqa: E501
 
-    def __init__(self, controls=None,
-                 initial='Pan', output_format='GeoJSON', line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
-                 point_color="#ffcc33", initial_features=None, snapping_enabled=True, snapping_options=None,
-                 snapping_layer=None, feature_selection=False, legend_title='Drawing Layer', data=None):
+    def __init__(
+        self,
+        controls=None,
+        initial="Pan",
+        output_format="GeoJSON",
+        line_color="#ffcc33",
+        fill_color="rgba(255, 255, 255, 0.2)",
+        point_color="#ffcc33",
+        initial_features=None,
+        snapping_enabled=True,
+        snapping_options=None,
+        snapping_layer=None,
+        feature_selection=False,
+        legend_title="Drawing Layer",
+        data=None,
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__()
 
-        self.controls = controls or ['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box', 'Pan']
+        self.controls = controls or [
+            "Modify",
+            "Delete",
+            "Move",
+            "Point",
+            "LineString",
+            "Polygon",
+            "Box",
+            "Pan",
+        ]
 
         # Validate initial
-        if initial not in self.controls and initial != 'Pan':
-            raise ValueError('Value of "initial" must be contained in the "controls" list.')
+        if initial not in self.controls and initial != "Pan":
+            raise ValueError(
+                'Value of "initial" must be contained in the "controls" list.'
+            )
 
         snapping_layer = snapping_layer or {}
         if len(snapping_layer) > 1:
-            raise ValueError('The snapping_layer parameter of MVDraw object is not valid: {}. '
-                             'Only one key allowed.'.format(snapping_layer))
+            raise ValueError(
+                "The snapping_layer parameter of MVDraw object is not valid: {}. "
+                "Only one key allowed.".format(snapping_layer)
+            )
 
         self.initial = initial
         self.initial_features = initial_features
@@ -484,11 +534,17 @@ class MVDraw(SecondaryGizmoOptions):
         self.data = data or dict()
 
         for key, value in snapping_layer.items():
-            root = key.split('.')[0]
+            root = key.split(".")[0]
 
-            if root in ['data', 'legend_title', 'legend_extent', 'legend_extent_projection', 'legend_classes',
-                        'editable']:
-                new_root = 'tethys_' + root
+            if root in [
+                "data",
+                "legend_title",
+                "legend_extent",
+                "legend_extent_projection",
+                "legend_classes",
+                "editable",
+            ]:
+                new_root = "tethys_" + root
                 new_key = key.replace(root, new_root, 1)
                 snapping_layer = {new_key: value}
 
@@ -666,9 +722,21 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """  # noqa: E501
 
-    def __init__(self, source, options, legend_title, layer_options=None, editable=True,
-                 legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326',
-                 feature_selection=None, geometry_attribute=None, data=None, times=None):
+    def __init__(
+        self,
+        source,
+        options,
+        legend_title,
+        layer_options=None,
+        editable=True,
+        legend_classes=None,
+        legend_extent=None,
+        legend_extent_projection="EPSG:4326",
+        feature_selection=None,
+        geometry_attribute=None,
+        data=None,
+        times=None,
+    ):
         """
         Constructor
         """
@@ -686,11 +754,13 @@ class MVLayer(SecondaryGizmoOptions):
         self.geometry_attribute = geometry_attribute
         self.data = data or dict()
         self.times = times
-        if source == 'GeoJSON':
-            self.geometry_attribute = 'geometry'
+        if source == "GeoJSON":
+            self.geometry_attribute = "geometry"
 
         if self.feature_selection and not self.geometry_attribute:
-            log.warning(f"geometry_attribute not defined for layer '{legend_title}' -using default value 'the_geom'")
+            log.warning(
+                f"geometry_attribute not defined for layer '{legend_title}' -using default value 'the_geom'"
+            )
 
 
 class MVLegendClass(SecondaryGizmoOptions):
@@ -714,7 +784,7 @@ class MVLegendClass(SecondaryGizmoOptions):
 
     """  # noqa: E501
 
-    def __init__(self, type, value, fill='', stroke='', ramp=None):
+    def __init__(self, type, value, fill="", stroke="", ramp=None):
         """
         Constructor
         """
@@ -722,16 +792,23 @@ class MVLegendClass(SecondaryGizmoOptions):
         # Initialize super class
         super().__init__()
 
-        self.LEGEND_TYPE = 'mvlegend'
-        self.POINT_TYPE = 'point'
-        self.LINE_TYPE = 'line'
-        self.POLYGON_TYPE = 'polygon'
-        self.RASTER_TYPE = 'raster'
-        self.VALID_TYPES = [self.POINT_TYPE, self.LINE_TYPE, self.POLYGON_TYPE, self.RASTER_TYPE]
+        self.LEGEND_TYPE = "mvlegend"
+        self.POINT_TYPE = "point"
+        self.LINE_TYPE = "line"
+        self.POLYGON_TYPE = "polygon"
+        self.RASTER_TYPE = "raster"
+        self.VALID_TYPES = [
+            self.POINT_TYPE,
+            self.LINE_TYPE,
+            self.POLYGON_TYPE,
+            self.RASTER_TYPE,
+        ]
 
         if type not in self.VALID_TYPES:
-            raise ValueError('"{0}" is not a valid MVLegendClass type. Use either '
-                             '"point", "line", "polygon", or "raster".'.format(type))
+            raise ValueError(
+                '"{0}" is not a valid MVLegendClass type. Use either '
+                '"point", "line", "polygon", or "raster".'.format(type)
+            )
 
         self.type = type
         self.value = value
@@ -740,13 +817,17 @@ class MVLegendClass(SecondaryGizmoOptions):
             if fill:
                 self.fill = fill
             else:
-                raise ValueError('Argument "fill" must be specified for MVLegendClass of type "point".')
+                raise ValueError(
+                    'Argument "fill" must be specified for MVLegendClass of type "point".'
+                )
 
         elif type == self.LINE_TYPE:
             if stroke:
                 self.stroke = stroke
             else:
-                raise ValueError('Argument "line" must be specified for MVLegendClass of type "line".')
+                raise ValueError(
+                    'Argument "line" must be specified for MVLegendClass of type "line".'
+                )
 
         elif type == self.POLYGON_TYPE:
             if fill and stroke:
@@ -756,13 +837,17 @@ class MVLegendClass(SecondaryGizmoOptions):
                 self.line = fill
                 self.fill = fill
             else:
-                raise ValueError('Argument "fill" must be specified for MVLegendClass of type "polygon".')
+                raise ValueError(
+                    'Argument "fill" must be specified for MVLegendClass of type "polygon".'
+                )
 
         elif type == self.RASTER_TYPE:
             if ramp:
                 self.ramp = ramp
             else:
-                raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
+                raise ValueError(
+                    'Argument "ramp" must be specified for MVLegendClass of type "raster".'
+                )
 
 
 class MVLegendImageClass(SecondaryGizmoOptions):
@@ -789,7 +874,7 @@ class MVLegendImageClass(SecondaryGizmoOptions):
         # Initialize super class
         super().__init__()
 
-        self.LEGEND_TYPE = 'mvlegendimage'
+        self.LEGEND_TYPE = "mvlegendimage"
         self.value = value
         self.image_url = image_url
 
@@ -822,10 +907,12 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
         """
         Constructor
         """
-        image_url = "{0}/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&" \
-                    "STYLE={1}&FORMAT=image/png&WIDTH={2}&HEIGHT={3}&" \
-                    "LEGEND_OPTIONS=forceRule:true&" \
-                    "LAYER={4}".format(geoserver_url, style, width, height, layer)
+        image_url = (
+            "{0}/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&"
+            "STYLE={1}&FORMAT=image/png&WIDTH={2}&HEIGHT={3}&"
+            "LEGEND_OPTIONS=forceRule:true&"
+            "LAYER={4}".format(geoserver_url, style, width, height, layer)
+        )
 
         # Initialize super class
         super().__init__(value, image_url)

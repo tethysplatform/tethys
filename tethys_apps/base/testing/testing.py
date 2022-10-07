@@ -4,7 +4,10 @@ from django.test import Client
 from django.test import TestCase
 
 from tethys_apps.base.app_base import TethysAppBase
-from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name
+from tethys_apps.base.testing.environment import (
+    is_testing_environment,
+    get_test_db_name,
+)
 
 
 class TethysTestCase(TestCase):
@@ -13,10 +16,12 @@ class TethysTestCase(TestCase):
     creating test case classes within your app. Note that every specific test written within your custom class
     inheriting from this class must begin with the word "test" or it will not be executed during testing.
     """
+
     def setUp(self):
         # Resets the apps database and app permissions (workaround since Django's testing framework refreshes the
         # core db after each individual test)
         from tethys_apps.harvester import SingletonHarvester
+
         harvester = SingletonHarvester()
         harvester.harvest()
         logging.disable(logging.CRITICAL)
@@ -61,25 +66,31 @@ class TethysTestCase(TestCase):
         from tethys_apps.models import TethysApp
 
         if not is_testing_environment():
-            raise EnvironmentError('This function will only execute properly if executed in the testing environment.')
+            raise EnvironmentError(
+                "This function will only execute properly if executed in the testing environment."
+            )
 
         if not issubclass(app_class, TethysAppBase):
-            raise TypeError('The app_class argument was not of the correct type. '
-                            'It must be a class that inherits from <TethysAppBase>.')
+            raise TypeError(
+                "The app_class argument was not of the correct type. "
+                "It must be a class that inherits from <TethysAppBase>."
+            )
 
         db_app = TethysApp.objects.get(package=app_class.package)
 
         ps_database_settings = db_app.persistent_store_database_settings
         for db_setting in ps_database_settings:
-            create_store_success = app_class.create_persistent_store(db_name=db_setting.name,
-                                                                     connection_name=None,
-                                                                     spatial=db_setting.spatial,
-                                                                     initializer=db_setting.initializer,
-                                                                     refresh=True,
-                                                                     force_first_time=True)
+            create_store_success = app_class.create_persistent_store(
+                db_name=db_setting.name,
+                connection_name=None,
+                spatial=db_setting.spatial,
+                initializer=db_setting.initializer,
+                refresh=True,
+                force_first_time=True,
+            )
 
             if not create_store_success:
-                raise SystemError('The test store was not able to be created')
+                raise SystemError("The test store was not able to be created")
 
     @staticmethod
     def destroy_test_persistent_stores_for_app(app_class):
@@ -92,11 +103,15 @@ class TethysTestCase(TestCase):
             None
         """
         if not is_testing_environment():
-            raise EnvironmentError('This function will only execute properly if executed in the testing environment.')
+            raise EnvironmentError(
+                "This function will only execute properly if executed in the testing environment."
+            )
 
         if not issubclass(app_class, TethysAppBase):
-            raise TypeError('The app_class argument was not of the correct type. '
-                            'It must be a class that inherits from <TethysAppBase>.')
+            raise TypeError(
+                "The app_class argument was not of the correct type. "
+                "It must be a class that inherits from <TethysAppBase>."
+            )
 
         for db_name in app_class.list_persistent_store_databases(static_only=True):
             test_db_name = get_test_db_name(db_name)
@@ -115,7 +130,10 @@ class TethysTestCase(TestCase):
             User object
         """
         from django.contrib.auth.models import User
-        return User.objects.create_user(username=username, password=password, email=email)
+
+        return User.objects.create_user(
+            username=username, password=password, email=email
+        )
 
     @staticmethod
     def create_test_superuser(username, password, email=None):
@@ -130,7 +148,10 @@ class TethysTestCase(TestCase):
             User object
         """
         from django.contrib.auth.models import User
-        return User.objects.create_superuser(username=username, password=password, email=email)
+
+        return User.objects.create_superuser(
+            username=username, password=password, email=email
+        )
 
     @staticmethod
     def get_test_client():

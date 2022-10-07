@@ -11,11 +11,11 @@ def clear_workspace(request, app_id):
     """
     Handle clear workspace requests.
     """
-    url = reverse('admin:tethys_apps_tethysapp_change', args=(app_id,))
+    url = reverse("admin:tethys_apps_tethysapp_change", args=(app_id,))
     app = get_app_class(TethysApp.objects.get(id=app_id))
 
     # Handle form submission
-    if request.method == 'POST' and 'clear-workspace-submit' in request.POST:
+    if request.method == "POST" and "clear-workspace-submit" in request.POST:
         workspace = _get_app_workspace(app)
 
         app.pre_delete_app_workspace()
@@ -23,11 +23,13 @@ def clear_workspace(request, app_id):
         app.post_delete_app_workspace()
 
         # Give feedback
-        messages.success(request, 'Your workspace has been successfully cleared.')
+        messages.success(request, "Your workspace has been successfully cleared.")
 
         # Redirect to home
         return redirect(url)
 
-    context = {'app_name': app.name, 'change_url': url}
+    context = {"app_name": app.name, "change_url": url}
 
-    return render(request, 'tethys_portal/admin/tethys_app/clear_workspace.html', context)
+    return render(
+        request, "tethys_portal/admin/tethys_app/clear_workspace.html", context
+    )

@@ -9,7 +9,7 @@
 """
 from .base import TethysGizmoOptions
 
-__all__ = ['MessageBox']
+__all__ = ["MessageBox"]
 
 
 class MessageBox(TethysGizmoOptions):
@@ -57,10 +57,21 @@ class MessageBox(TethysGizmoOptions):
             {% gizmo message_box %}
         {% endblock %}
     """  # noqa: E501
+
     gizmo_name = "message_box"
 
-    def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok',
-                 affirmative_attributes='', width=560, attributes=None, classes=''):
+    def __init__(
+        self,
+        name,
+        title,
+        message="",
+        dismiss_button="Cancel",
+        affirmative_button="Ok",
+        affirmative_attributes="",
+        width=560,
+        attributes=None,
+        classes="",
+    ):
         """
         Constructor
         """

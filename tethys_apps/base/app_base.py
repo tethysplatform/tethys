@@ -15,7 +15,11 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
 from django.utils.functional import classproperty
 
-from .testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
+from .testing.environment import (
+    is_testing_environment,
+    get_test_db_name,
+    TESTING_DB_FLAG,
+)
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
@@ -28,20 +32,21 @@ try:
 except ImportError:
     has_bokeh_django = False
 
-tethys_log = logging.getLogger('tethys.app_base')
+tethys_log = logging.getLogger("tethys.app_base")
 
-DEFAULT_CONTROLLER_MODULES = ['controllers', 'consumers', 'handlers']
+DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers"]
 
 
 class TethysBase(TethysBaseMixin):
     """
     Abstract base class of app and extension classes.
     """
-    name = ''
-    description = ''
-    package = ''
-    catch_all = ''
-    root_url = ''
+
+    name = ""
+    description = ""
+    package = ""
+    catch_all = ""
+    root_url = ""
     index = None
     controller_modules = []
 
@@ -51,19 +56,20 @@ class TethysBase(TethysBaseMixin):
         self._registered_url_maps = None
 
         # TODO remove compatibility code in v4.1
-        if self.index is not None and ':' in self.index:
+        if self.index is not None and ":" in self.index:
             old_index = self.index
-            self.index = self.index.split(':')[-1]
+            self.index = self.index.split(":")[-1]
 
             # print deprecation warning
             from tethys_cli.cli_colors import write_warning
+
             write_warning(
-                f'Deprecation Warning: '
+                f"Deprecation Warning: "
                 f'The app "{self.name}" has an index attribute that includes the URL namespace ("{old_index}").\n'
                 f'  Including the URL namespace as part of the "index" attribute is now deprecated, '
-                f'and support for it will be removed in Tethys v4.1.\n'
+                f"and support for it will be removed in Tethys v4.1.\n"
                 f'  Please change the "index" attribute to only include the controller name '
-                f'(i.e. index = \'{self.index}\')'
+                f"(i.e. index = '{self.index}')"
             )
 
     @classproperty
@@ -76,7 +82,7 @@ class TethysBase(TethysBaseMixin):
 
     @classproperty
     def db_object(cls):
-        if getattr(cls, '_django_db_obj', None) is None:
+        if getattr(cls, "_django_db_obj", None) is None:
             _django_db_obj = cls.db_model.objects.get(package=cls.package)
         return _django_db_obj
 
@@ -103,29 +109,35 @@ class TethysBase(TethysBaseMixin):
         """
 
         if isinstance(ref, str):
-            full_controller_path = '.'.join([cls.package_namespace, ref])
-            controller_parts = full_controller_path.split('.')
-            module_name = '.'.join(controller_parts[:-1])
+            full_controller_path = ".".join([cls.package_namespace, ref])
+            controller_parts = full_controller_path.split(".")
+            module_name = ".".join(controller_parts[:-1])
             function_name = controller_parts[-1]
             try:
                 module = __import__(module_name, fromlist=[function_name])
             except Exception as e:
-                error_msg = f'The following error occurred while trying to import the {ref_type} function ' \
-                            f'"{ref}":\n {traceback.format_exc(2)}'
+                error_msg = (
+                    f"The following error occurred while trying to import the {ref_type} function "
+                    f'"{ref}":\n {traceback.format_exc(2)}'
+                )
                 tethys_log.error(error_msg)
                 raise e
             try:
                 ref_function = getattr(module, function_name)
             except AttributeError as e:
-                error_msg = f'The following error occurred while trying to access the {ref_type} function ' \
-                            f'"{ref}":\n {traceback.format_exc(2)}'
+                error_msg = (
+                    f"The following error occurred while trying to access the {ref_type} function "
+                    f'"{ref}":\n {traceback.format_exc(2)}'
+                )
                 tethys_log.error(error_msg)
                 raise e
         else:
             ref_function = ref
         return ref_function
 
-    def _resolve_bokeh_handler(self, namespace, url_map, handler_function, handler_patterns):
+    def _resolve_bokeh_handler(
+        self, namespace, url_map, handler_function, handler_patterns
+    ):
         """
         Create and add url patterns for bokeh handler
 
@@ -143,23 +155,24 @@ class TethysBase(TethysBaseMixin):
         """
         if not has_bokeh_django:
             from tethys_cli.cli_colors import write_error
+
             write_error(
                 f'ERROR! The the "{self.name}" app has a Bokeh-type handler "{handler_function.__name__}", '
                 f'but the "bokeh_django" package is not installed. '
                 f'Please install "bokeh_django" for the app to function properly.'
             )
             return
-        base_app_endpoint = '/'.join(['apps', self.root_url])
+        base_app_endpoint = "/".join(["apps", self.root_url])
         stripped_url = url_map.url.replace("^", "").replace("$", "")
 
         # Build the full URL endpoint for the Bokeh App
-        if stripped_url in [r'', r'/']:
+        if stripped_url in [r"", r"/"]:
             bokeh_app_endpoint = base_app_endpoint
         else:
-            if stripped_url.endswith('/'):
+            if stripped_url.endswith("/"):
                 stripped_url = stripped_url[:-1]
 
-            bokeh_app_endpoint = '/'.join([base_app_endpoint, stripped_url])
+            bokeh_app_endpoint = "/".join([base_app_endpoint, stripped_url])
 
         # Create Bokeh app
         bokeh_app = autoload(bokeh_app_endpoint, handler_function)
@@ -169,24 +182,24 @@ class TethysBase(TethysBaseMixin):
             # Add suffix
             url_pattern = bokeh_app.url + suffix
             # Strip out the app root endpoint portion
-            url_pattern = url_pattern.replace(f'{base_app_endpoint}/', '')
-            return f'^{url_pattern}$'
+            url_pattern = url_pattern.replace(f"{base_app_endpoint}/", "")
+            return f"^{url_pattern}$"
 
         http_url = re_path(
-            urlpattern('/autoload.js'),
+            urlpattern("/autoload.js"),
             AutoloadJsConsumer.as_asgi(**asgi_kwargs),
-            name=f'{url_map.name}_bokeh_autoload'
+            name=f"{url_map.name}_bokeh_autoload",
         )
 
         ws_url = re_path(
-            urlpattern('/ws'),
+            urlpattern("/ws"),
             WSConsumer.as_asgi(**asgi_kwargs),
-            name=f'{url_map.name}_bokeh_ws'
+            name=f"{url_map.name}_bokeh_ws",
         )
 
         # Append to namespace list
-        handler_patterns['http'][namespace].append(http_url)
-        handler_patterns['websocket'][namespace].append(ws_url)
+        handler_patterns["http"][namespace].append(http_url)
+        handler_patterns["websocket"][namespace].append(ws_url)
 
     def register_url_maps(self, set_index=True):
         """
@@ -243,8 +256,10 @@ class TethysBase(TethysBaseMixin):
 
         index = self.index if set_index else None
 
-        controller_modules = [f'{self.package_namespace}.{self.package}.{module_name}' for module_name in
-                              set(DEFAULT_CONTROLLER_MODULES + self.controller_modules)]
+        controller_modules = [
+            f"{self.package_namespace}.{self.package}.{module_name}"
+            for module_name in set(DEFAULT_CONTROLLER_MODULES + self.controller_modules)
+        ]
         return register_controllers(
             root_url=self.root_url,
             modules=controller_modules,
@@ -258,11 +273,12 @@ class TethysBase(TethysBaseMixin):
         try:
             self._registered_url_maps = self.url_maps()
             from tethys_cli.cli_colors import write_warning
+
             write_warning(
                 f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
-                'This method is now deprecated. '
+                "This method is now deprecated. "
                 'Please use the new "controller", "consumer", and "handler" decorators to register URL maps '
-                '(see docs: http://docs.tethysplatform.org/en/stable/tethys_sdk/routing.html).'
+                "(see docs: http://docs.tethysplatform.org/en/stable/tethys_sdk/routing.html)."
             )
         except AttributeError:
             pass
@@ -278,7 +294,7 @@ class TethysBase(TethysBaseMixin):
         Generate the url pattern lists for  app and namespace them accordingly.
         """
         if self._url_patterns is None:
-            url_patterns = {'http': dict(), 'websocket': dict()}
+            url_patterns = {"http": dict(), "websocket": dict()}
 
             for url_map in self.registered_url_maps:
                 namespace = self.url_namespace
@@ -287,8 +303,12 @@ class TethysBase(TethysBaseMixin):
                     url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
-                controller_function = self._resolve_ref_function(url_map.controller, 'controller')
-                django_url = re_path(url_map.url, controller_function, name=url_map.name)
+                controller_function = self._resolve_ref_function(
+                    url_map.controller, "controller"
+                )
+                django_url = re_path(
+                    url_map.url, controller_function, name=url_map.name
+                )
 
                 # Append to namespace list
                 url_patterns[url_map.protocol][namespace].append(django_url)
@@ -302,22 +322,26 @@ class TethysBase(TethysBaseMixin):
         Generate the url pattern lists for  app and namespace them accordingly.
         """
         if self._handler_patterns is None:
-            handler_patterns = {'http': dict(), 'websocket': dict()}
+            handler_patterns = {"http": dict(), "websocket": dict()}
 
             for url_map in self.registered_url_maps:
                 if url_map.handler:
                     namespace = self.url_namespace
 
-                    if namespace not in handler_patterns['http']:
-                        handler_patterns['http'][namespace] = []
+                    if namespace not in handler_patterns["http"]:
+                        handler_patterns["http"][namespace] = []
 
-                    if namespace not in handler_patterns['websocket']:
-                        handler_patterns['websocket'][namespace] = []
+                    if namespace not in handler_patterns["websocket"]:
+                        handler_patterns["websocket"][namespace] = []
 
                     # Create django url routing objects
-                    handler_function = self._resolve_ref_function(url_map.handler, 'handler')
-                    if url_map.handler_type == 'bokeh':
-                        self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
+                    handler_function = self._resolve_ref_function(
+                        url_map.handler, "handler"
+                    )
+                    if url_map.handler_type == "bokeh":
+                        self._resolve_bokeh_handler(
+                            namespace, url_map, handler_function, handler_patterns
+                        )
 
             self._handler_patterns = handler_patterns
 
@@ -345,21 +369,22 @@ class TethysExtensionBase(TethysBase):
         """
         String representation
         """
-        return '<TethysExt: {0}>'.format(self.name)
+        return "<TethysExt: {0}>".format(self.name)
 
     def __repr__(self):
         """
         String representation
         """
-        return '<TethysExt: {0}>'.format(self.name)
+        return "<TethysExt: {0}>".format(self.name)
 
     @classproperty
     def package_namespace(cls):
-        return 'tethysext'
+        return "tethysext"
 
     @classproperty
     def db_model(cls):
         from tethys_apps.models import TethysExtension
+
         return TethysExtension
 
     def sync_with_tethys_db(self):
@@ -368,11 +393,12 @@ class TethysExtensionBase(TethysBase):
         """
         from django.conf import settings
         from tethys_apps.models import TethysExtension
+
         try:
             # Query to see if installed extension is in the database
-            db_extensions = TethysExtension.objects. \
-                filter(package__exact=self.package). \
-                all()
+            db_extensions = TethysExtension.objects.filter(
+                package__exact=self.package
+            ).all()
 
             # If the extension is not in the database, then add it
             if len(db_extensions) == 0:
@@ -390,13 +416,15 @@ class TethysExtensionBase(TethysBase):
                 db_extension.root_url = self.root_url
                 db_extension.save()
 
-                if hasattr(settings, 'DEBUG') and settings.DEBUG:
+                if hasattr(settings, "DEBUG") and settings.DEBUG:
                     db_extension.name = self.name
                     db_extension.description = self.description
                     db_extension.save()
         except ProgrammingError:
-            tethys_log.warning("Unable to sync extension with database. tethys_apps_tethysextension "
-                               "table does not exist")
+            tethys_log.warning(
+                "Unable to sync extension with database. tethys_apps_tethysextension "
+                "table does not exist"
+            )
         except Exception as e:
             tethys_log.error(e)
 
@@ -418,10 +446,11 @@ class TethysAppBase(TethysBase):
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
     """
-    index = ''
-    icon = ''
-    color = ''
-    tags = ''
+
+    index = ""
+    icon = ""
+    color = ""
+    tags = ""
     enable_feedback = False
     feedback_emails = []
     enabled = True
@@ -431,21 +460,22 @@ class TethysAppBase(TethysBase):
         """
         String representation
         """
-        return '<TethysApp: {0}>'.format(self.name)
+        return "<TethysApp: {0}>".format(self.name)
 
     def __repr__(self):
         """
         String representation
         """
-        return '<TethysApp: {0}>'.format(self.name)
+        return "<TethysApp: {0}>".format(self.name)
 
     @classproperty
     def package_namespace(cls):
-        return 'tethysapp'
+        return "tethysapp"
 
     @classproperty
     def db_model(cls):
         from tethys_apps.models import TethysApp
+
         return TethysApp
 
     def custom_settings(self):
@@ -780,14 +810,16 @@ class TethysAppBase(TethysBase):
 
         perms = self.permissions()
         # add default access_app permission
-        app_permissions = {f'{self.package}:access_app': f'{self.package} | Can access app'}
+        app_permissions = {
+            f"{self.package}:access_app": f"{self.package} | Can access app"
+        }
         app_groups = dict()
 
         # Name spaced prefix for app permissions
         # e.g. my_first_app:view_things
         # e.g. my_first_app | View things
-        perm_codename_prefix = self.package + ':'
-        perm_name_prefix = self.package + ' | '
+        perm_codename_prefix = self.package + ":"
+        perm_name_prefix = self.package + " | "
 
         if perms is not None:
             # Thing is either a Permission or a PermissionGroup object
@@ -814,19 +846,22 @@ class TethysAppBase(TethysBase):
                         group_permissions.append(permission_codename)
 
                     # Store all groups for all apps
-                    app_groups[group_name] = {'permissions': group_permissions, 'app_package': self.package}
+                    app_groups[group_name] = {
+                        "permissions": group_permissions,
+                        "app_package": self.package,
+                    }
 
         # Get the TethysApp content type
         tethys_content_type = ContentType.objects.get(
-            app_label='tethys_apps',
-            model='tethysapp'
+            app_label="tethys_apps", model="tethysapp"
         )
 
         # Remove any permissions that no longer exist
-        db_app_permissions = Permission.objects.\
-            filter(content_type=tethys_content_type).\
-            filter(codename__icontains=perm_codename_prefix).\
-            all()
+        db_app_permissions = (
+            Permission.objects.filter(content_type=tethys_content_type)
+            .filter(codename__icontains=perm_codename_prefix)
+            .all()
+        )
 
         for db_app_permission in db_app_permissions:
             # Delete the permission if the permission is no longer required by this app
@@ -848,7 +883,7 @@ class TethysAppBase(TethysBase):
                 p = Permission(
                     name=app_permissions[perm],
                     codename=perm,
-                    content_type=tethys_content_type
+                    content_type=tethys_content_type,
                 )
                 p.save()
 
@@ -858,10 +893,12 @@ class TethysAppBase(TethysBase):
         db_app_names = [db_app.package for db_app in db_apps]
 
         for db_group in db_groups:
-            db_group_name_parts = db_group.name.split(':')
+            db_group_name_parts = db_group.name.split(":")
 
             # Only perform maintenance on groups that belong to Tethys Apps
-            if (len(db_group_name_parts) > 1) and (db_group_name_parts[0] in db_app_names):
+            if (len(db_group_name_parts) > 1) and (
+                db_group_name_parts[0] in db_app_names
+            ):
 
                 # Delete groups that is no longer required by this app
                 if db_group.name not in app_groups:
@@ -870,8 +907,7 @@ class TethysAppBase(TethysBase):
         # Create groups that need to be created
         for group in app_groups:
             # Look up the app
-            db_app = TethysApp.objects.get(
-                package=app_groups[group]['app_package'])
+            db_app = TethysApp.objects.get(package=app_groups[group]["app_package"])
 
             # Create group if it doesn't exist
             try:
@@ -885,7 +921,7 @@ class TethysAppBase(TethysBase):
                     remove_perm(p, g, db_app)
 
                 # Assign the permission to the group and the app instance
-                for p in app_groups[group]['permissions']:
+                for p in app_groups[group]["permissions"]:
                     assign_perm(p, g, db_app)
 
             except Group.DoesNotExist:
@@ -894,7 +930,7 @@ class TethysAppBase(TethysBase):
                 g.save()
 
                 # Assign the permission to the group and the app instance
-                for p in app_groups[group]['permissions']:
+                for p in app_groups[group]["permissions"]:
                     assign_perm(p, g, db_app)
 
     @classmethod
@@ -912,6 +948,7 @@ class TethysAppBase(TethysBase):
         Get the JobManager for the app.
         """
         from tethys_compute.job_manager import JobManager
+
         app = cls()
         job_manager = JobManager(app)
         return job_manager
@@ -997,6 +1034,7 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
         scheduler_settings = db_app.scheduler_settings
@@ -1005,7 +1043,7 @@ class TethysAppBase(TethysBase):
             scheduler_setting = scheduler_settings.get(name=name)
             return scheduler_setting.get_value()
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('SchedulerSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist("SchedulerSetting", name, cls.name)
 
     @classmethod
     def get_custom_setting(cls, name):
@@ -1028,13 +1066,14 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         custom_settings = db_app.custom_settings
         try:
             custom_setting = custom_settings.get(name=name)
             return custom_setting.get_value()
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist("CustomTethysAppSetting", name, cls.name)
 
     @classmethod
     def set_custom_setting(cls, name, value):
@@ -1055,23 +1094,35 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         custom_settings = db_app.custom_settings
         try:
             custom_setting = custom_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist("CustomTethysAppSetting", name, cls.name)
 
         type_matches = False
-        if custom_setting.type == 'STRING':
+        if custom_setting.type == "STRING":
             type_matches = isinstance(value, str)
-        elif custom_setting.type == 'INTEGER':
+        elif custom_setting.type == "INTEGER":
             type_matches = isinstance(value, int)
-        elif custom_setting.type == 'FLOAT':
+        elif custom_setting.type == "FLOAT":
             type_matches = isinstance(value, float)
-        elif custom_setting.type == 'BOOLEAN':
-            type_matches = str(value).lower() in ['true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0']
-        elif custom_setting.type == 'UUID':
+        elif custom_setting.type == "BOOLEAN":
+            type_matches = str(value).lower() in [
+                "true",
+                "false",
+                "yes",
+                "no",
+                "t",
+                "f",
+                "y",
+                "n",
+                "1",
+                "0",
+            ]
+        elif custom_setting.type == "UUID":
             try:
                 type_matches = bool(uuid.UUID(str(value)))
             except ValueError:
@@ -1081,11 +1132,12 @@ class TethysAppBase(TethysBase):
             custom_setting.value = value
             custom_setting.save()
         else:
-            raise ValidationError(f'Value must be of type {custom_setting.type}.')
+            raise ValidationError(f"Value must be of type {custom_setting.type}.")
 
     @classmethod
-    def get_dataset_service(cls, name, as_public_endpoint=False, as_endpoint=False,
-                            as_engine=False):
+    def get_dataset_service(
+        cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False
+    ):
         """
         Retrieves dataset service engine assigned to named DatasetServiceSetting for the app.
 
@@ -1108,20 +1160,31 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
         dataset_services_settings = db_app.dataset_services_settings
 
         try:
             dataset_services_setting = dataset_services_settings.get(name=name)
-            dataset_services_setting.get_value(as_public_endpoint=as_public_endpoint, as_endpoint=as_endpoint,
-                                               as_engine=as_engine)
+            dataset_services_setting.get_value(
+                as_public_endpoint=as_public_endpoint,
+                as_endpoint=as_endpoint,
+                as_engine=as_engine,
+            )
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('DatasetServiceSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist("DatasetServiceSetting", name, cls.name)
 
     @classmethod
-    def get_spatial_dataset_service(cls, name, as_public_endpoint=False, as_endpoint=False, as_wms=False,
-                                    as_wfs=False, as_engine=False):
+    def get_spatial_dataset_service(
+        cls,
+        name,
+        as_public_endpoint=False,
+        as_endpoint=False,
+        as_wms=False,
+        as_wfs=False,
+        as_engine=False,
+    ):
         """
         Retrieves spatial dataset service engine assigned to named SpatialDatasetServiceSetting for the app.
 
@@ -1147,24 +1210,31 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
         spatial_dataset_service_settings = db_app.spatial_dataset_service_settings
 
         try:
             spatial_dataset_service_setting = spatial_dataset_service_settings.get(
-                name=name)
+                name=name
+            )
             return spatial_dataset_service_setting.get_value(
                 as_public_endpoint=as_public_endpoint,
                 as_endpoint=as_endpoint,
-                as_wms=as_wms, as_wfs=as_wfs,
-                as_engine=as_engine
+                as_wms=as_wms,
+                as_wfs=as_wfs,
+                as_engine=as_engine,
             )
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist(
+                "SpatialDatasetServiceSetting", name, cls.name
+            )
 
     @classmethod
-    def get_web_processing_service(cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False):
+    def get_web_processing_service(
+        cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False
+    ):
         """
         Retrieves web processing service engine assigned to named WebProcessingServiceSetting for the app.
 
@@ -1187,14 +1257,20 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         wps_services_settings = db_app.wps_services_settings
         try:
             wps_service_setting = wps_services_settings.objects.get(name=name)
-            return wps_service_setting.get_value(as_public_endpoint=as_public_endpoint,
-                                                 as_endpoint=as_endpoint, as_engine=as_engine)
+            return wps_service_setting.get_value(
+                as_public_endpoint=as_public_endpoint,
+                as_endpoint=as_endpoint,
+                as_engine=as_engine,
+            )
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist(
+                "WebProcessingServiceSetting", name, cls.name
+            )
 
     @classmethod
     def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False):
@@ -1223,6 +1299,7 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
 
@@ -1230,11 +1307,17 @@ class TethysAppBase(TethysBase):
             # Return as_engine if the other two are False
             as_engine = not as_sessionmaker and not as_url
             ps_connection_setting = ps_connection_settings.get(name=name)
-            return ps_connection_setting.get_value(as_url=as_url, as_sessionmaker=as_sessionmaker, as_engine=as_engine)
+            return ps_connection_setting.get_value(
+                as_url=as_url, as_sessionmaker=as_sessionmaker, as_engine=as_engine
+            )
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist(
+                "PersistentStoreConnectionSetting", name, cls.name
+            )
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreConnectionSetting', name)
+            cls._log_tethys_app_setting_not_assigned_error(
+                "PersistentStoreConnectionSetting", name
+            )
 
     @classmethod
     def get_persistent_store_database(cls, name, as_url=False, as_sessionmaker=False):
@@ -1262,6 +1345,7 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
 
@@ -1271,16 +1355,31 @@ class TethysAppBase(TethysBase):
             # Return as_engine if the other two are False
             as_engine = not as_sessionmaker and not as_url
             ps_database_setting = ps_database_settings.get(name=verified_name)
-            return ps_database_setting.get_value(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker,
-                                                 as_engine=as_engine)
+            return ps_database_setting.get_value(
+                with_db=True,
+                as_url=as_url,
+                as_sessionmaker=as_sessionmaker,
+                as_engine=as_engine,
+            )
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting', verified_name, cls.name)
+            raise TethysAppSettingDoesNotExist(
+                "PersistentStoreDatabaseSetting", verified_name, cls.name
+            )
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreDatabaseSetting', verified_name)
+            cls._log_tethys_app_setting_not_assigned_error(
+                "PersistentStoreDatabaseSetting", verified_name
+            )
 
     @classmethod
-    def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
-                                force_first_time=False):
+    def create_persistent_store(
+        cls,
+        db_name,
+        connection_name,
+        spatial=False,
+        initializer="",
+        refresh=False,
+        force_first_time=False,
+    ):
         """
         Creates a new persistent store database for the app. This method is idempotent.
 
@@ -1311,6 +1410,7 @@ class TethysAppBase(TethysBase):
         # Get named persistent store service connection
         from tethys_apps.models import TethysApp
         from tethys_apps.models import PersistentStoreDatabaseSetting
+
         db_app = TethysApp.objects.get(package=cls.package)
 
         # Get connection service
@@ -1321,7 +1421,9 @@ class TethysAppBase(TethysBase):
         else:
             verified_db_name = db_name
             if connection_name is None:
-                raise ValueError('The connection_name cannot be None unless running in the testing environment.')
+                raise ValueError(
+                    "The connection_name cannot be None unless running in the testing environment."
+                )
 
         try:
             if connection_name is None:
@@ -1332,16 +1434,24 @@ class TethysAppBase(TethysBase):
         except ObjectDoesNotExist:
             if connection_name is None:
                 raise TethysAppSettingDoesNotExist(
-                    'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name),
-                    connection_name, cls.name)
+                    'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(
+                        db_name
+                    ),
+                    connection_name,
+                    cls.name,
+                )
             else:
-                raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting ', connection_name, cls.name)
+                raise TethysAppSettingDoesNotExist(
+                    "PersistentStoreConnectionSetting ", connection_name, cls.name
+                )
 
         ps_service = ps_setting.persistent_store_service
 
         # Check if persistent store database setting already exists before creating it
         try:
-            db_setting = db_app.persistent_store_database_settings.get(name=verified_db_name)
+            db_setting = db_app.persistent_store_database_settings.get(
+                name=verified_db_name
+            )
             db_setting.persistent_store_service = ps_service
             db_setting.initializer = initializer
             db_setting.save()
@@ -1349,11 +1459,11 @@ class TethysAppBase(TethysBase):
             # Create new PersistentStoreDatabaseSetting
             db_setting = PersistentStoreDatabaseSetting(
                 name=verified_db_name,
-                description='',
+                description="",
                 required=False,
                 initializer=initializer,
                 spatial=spatial,
-                dynamic=True
+                dynamic=True,
             )
 
             # Assign the connection service
@@ -1364,7 +1474,9 @@ class TethysAppBase(TethysBase):
             db_app.save()
 
         # Create the new database
-        db_setting.create_persistent_store_database(refresh=refresh, force_first_time=force_first_time)
+        db_setting.create_persistent_store_database(
+            refresh=refresh, force_first_time=force_first_time
+        )
         return True
 
     @classmethod
@@ -1395,6 +1507,7 @@ class TethysAppBase(TethysBase):
 
         # Get the setting
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
         verified_name = name if not is_testing_environment() else get_test_db_name(name)
@@ -1433,15 +1546,23 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
 
         if dynamic_only:
-            ps_database_settings = ps_database_settings.filter(persistentstoredatabasesetting__dynamic=True)
+            ps_database_settings = ps_database_settings.filter(
+                persistentstoredatabasesetting__dynamic=True
+            )
         elif static_only:
-            ps_database_settings = ps_database_settings.filter(persistentstoredatabasesetting__dynamic=False)
-        return [ps_database_setting.name for ps_database_setting in ps_database_settings
-                if TESTING_DB_FLAG not in ps_database_setting.name]
+            ps_database_settings = ps_database_settings.filter(
+                persistentstoredatabasesetting__dynamic=False
+            )
+        return [
+            ps_database_setting.name
+            for ps_database_setting in ps_database_settings
+            if TESTING_DB_FLAG not in ps_database_setting.name
+        ]
 
     @classmethod
     def list_persistent_store_connections(cls):
@@ -1462,10 +1583,14 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
-        return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings
-                if TESTING_DB_FLAG not in ps_connection_setting.name]
+        return [
+            ps_connection_setting.name
+            for ps_connection_setting in ps_connection_settings
+            if TESTING_DB_FLAG not in ps_connection_setting.name
+        ]
 
     @classmethod
     def persistent_store_exists(cls, name):
@@ -1492,6 +1617,7 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
+
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
 
@@ -1518,8 +1644,7 @@ class TethysAppBase(TethysBase):
         try:
             # Make pass to add apps to db that are newly installed
             # Query to see if installed app is in the database
-            db_apps = TethysApp.objects.\
-                filter(package__exact=self.package).all()
+            db_apps = TethysApp.objects.filter(package__exact=self.package).all()
 
             # If the app is not in the database, then add it
             if len(db_apps) == 0:
@@ -1535,7 +1660,7 @@ class TethysAppBase(TethysBase):
                     color=self.color,
                     tags=self.tags,
                     enabled=self.enabled,
-                    show_in_apps_library=self.show_in_apps_library
+                    show_in_apps_library=self.show_in_apps_library,
                 )
                 db_app.save()
 
@@ -1576,7 +1701,7 @@ class TethysAppBase(TethysBase):
                 db_app.save()
 
                 # In debug mode, update all fields, not just developer priority attributes
-                if hasattr(settings, 'DEBUG') and settings.DEBUG:
+                if hasattr(settings, "DEBUG") and settings.DEBUG:
                     db_app.name = self.name
                     db_app.description = self.description
                     db_app.icon = self.icon
@@ -1593,8 +1718,10 @@ class TethysAppBase(TethysBase):
             elif len(db_apps) >= 2:
                 pass
         except ProgrammingError:
-            tethys_log.warning("Unable to sync app with database. tethys_apps_tethysapp "
-                               "table does not exist")
+            tethys_log.warning(
+                "Unable to sync app with database. tethys_apps_tethysapp "
+                "table does not exist"
+            )
         except Exception as e:
             tethys_log.error(e)
 
@@ -1622,12 +1749,16 @@ class TethysAppBase(TethysBase):
             setting_name (str, required):
                 Name attribute of the setting.
         """
-        tethys_log.warning('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
-                           'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
-                           'Please visit the setting page for the app {3} and assign all required settings.'
-                           .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
-                                   cls.name.encode('utf-8'))
-                           )
+        tethys_log.warning(
+            "Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} "
+            'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
+            "Please visit the setting page for the app {3} and assign all required settings.".format(
+                traceback.format_stack(limit=3)[0],
+                setting_type,
+                setting_name,
+                cls.name.encode("utf-8"),
+            )
+        )
 
     @classmethod
     def pre_delete_user_workspace(cls, user):

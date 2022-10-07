@@ -18,102 +18,97 @@ def home_controller(request):
     Controller for the app home page.
     """
     save_button = Button(
-        display_text='',
-        name='save-button',
-        icon='glyphicon glyphicon-floppy-disk',
-        style='success',
-        attributes={
-            'data-toggle': 'tooltip',
-            'data-placement': 'top',
-            'title': 'Save'
-        }
+        display_text="",
+        name="save-button",
+        icon="glyphicon glyphicon-floppy-disk",
+        style="success",
+        attributes={"data-toggle": "tooltip", "data-placement": "top", "title": "Save"},
     )
 
     edit_button = Button(
-        display_text='',
-        name='edit-button',
-        icon='glyphicon glyphicon-edit',
-        style='warning',
-        attributes={
-            'data-toggle': 'tooltip',
-            'data-placement': 'top',
-            'title': 'Edit'
-        }
+        display_text="",
+        name="edit-button",
+        icon="glyphicon glyphicon-edit",
+        style="warning",
+        attributes={"data-toggle": "tooltip", "data-placement": "top", "title": "Edit"},
     )
 
     remove_button = Button(
-        display_text='',
-        name='remove-button',
-        icon='glyphicon glyphicon-remove',
-        style='danger',
+        display_text="",
+        name="remove-button",
+        icon="glyphicon glyphicon-remove",
+        style="danger",
         attributes={
-            'data-toggle': 'tooltip',
-            'data-placement': 'top',
-            'title': 'Remove'
-        }
+            "data-toggle": "tooltip",
+            "data-placement": "top",
+            "title": "Remove",
+        },
     )
 
     previous_button = Button(
-        display_text='Previous',
-        name='previous-button',
+        display_text="Previous",
+        name="previous-button",
         attributes={
-            'data-toggle': 'tooltip',
-            'data-placement': 'top',
-            'title': 'Previous'
-        }
+            "data-toggle": "tooltip",
+            "data-placement": "top",
+            "title": "Previous",
+        },
     )
 
     next_button = Button(
-        display_text='Next',
-        name='next-button',
-        attributes={
-            'data-toggle': 'tooltip',
-            'data-placement': 'top',
-            'title': 'Next'
-        }
+        display_text="Next",
+        name="next-button",
+        attributes={"data-toggle": "tooltip", "data-placement": "top", "title": "Next"},
     )
 
     script = server_document(request.build_absolute_uri())
 
     context = {
-        'save_button': save_button,
-        'edit_button': edit_button,
-        'remove_button': remove_button,
-        'previous_button': previous_button,
-        'next_button': next_button,
-        'script': script
+        "save_button": save_button,
+        "edit_button": edit_button,
+        "remove_button": remove_button,
+        "previous_button": previous_button,
+        "next_button": next_button,
+        "script": script,
     }
 
-    return render(request, 'test_app/home.html', context)
+    return render(request, "test_app/home.html", context)
 
 
 @handler(
     controller=home_controller,
 )
 def home(doc):
-    data = {'x': [0, 1, 2, 3, 4, 5], 'y': [0, 10, 20, 30, 40, 50]}
+    data = {"x": [0, 1, 2, 3, 4, 5], "y": [0, 10, 20, 30, 40, 50]}
     source = ColumnDataSource(data=data)
 
-    plot = figure(x_axis_type="linear", y_range=(0, 50), title="Test App Bokeh + Channels Plot", height=250)
+    plot = figure(
+        x_axis_type="linear",
+        y_range=(0, 50),
+        title="Test App Bokeh + Channels Plot",
+        height=250,
+    )
     plot.line(x="x", y="y", source=source)
 
     def callback(attr: str, old: Any, new: Any) -> None:
         if new == 1:
-            data['y'] = [0, 10, 20, 30, 40, 50]
+            data["y"] = [0, 10, 20, 30, 40, 50]
         else:
-            data['y'] = [i * new for i in [0, 10, 20, 30, 40, 50]]
+            data["y"] = [i * new for i in [0, 10, 20, 30, 40, 50]]
         source.data = dict(ColumnDataSource(data=data).data)
-        plot.y_range.end = max(data['y'])
+        plot.y_range.end = max(data["y"])
 
-    slider = Slider(start=1, end=5, value=1, step=1, title="Test App Bokeh + Channels Controller")
+    slider = Slider(
+        start=1, end=5, value=1, step=1, title="Test App Bokeh + Channels Controller"
+    )
     slider.on_change("value", callback)
 
     doc.add_root(column(slider, plot))
 
 
 @consumer(
-    name='ws',
-    url='test-app-ws/',
+    name="ws",
+    url="test-app-ws/",
 )
 class TestWS(WebsocketConsumer):
     def connect(self):
@@ -121,11 +116,9 @@ class TestWS(WebsocketConsumer):
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['client_message']
+        message = text_data_json["client_message"]
 
-        self.send(text_data=json.dumps({
-            'server_message': message
-        }))
+        self.send(text_data=json.dumps({"server_message": message}))
 
     def disconnect(self, close_code):
         pass

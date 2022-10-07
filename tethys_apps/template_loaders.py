@@ -42,7 +42,7 @@ class TethysTemplateLoader(BaseLoader):
         one of the template_dirs it is excluded from the result set.
         """
         if not template_dirs:
-            template_dirs = get_directories_in_tethys(('templates',))
+            template_dirs = get_directories_in_tethys(("templates",))
         for template_dir in template_dirs:
             try:
                 name = safe_join(template_dir, template_name)

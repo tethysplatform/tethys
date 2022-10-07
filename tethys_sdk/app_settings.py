@@ -17,5 +17,5 @@ from tethys_apps.models import (
     SchedulerSetting,
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
-    TethysAppSettingNotAssigned
+    TethysAppSettingNotAssigned,
 )

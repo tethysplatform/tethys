@@ -9,4 +9,4 @@
 """
 
 # Load the custom app config
-default_app_config = 'tethys_apps.apps.TethysAppsConfig'
+default_app_config = "tethys_apps.apps.TethysAppsConfig"

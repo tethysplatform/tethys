@@ -15,12 +15,12 @@ class TestTethysFunctionExtractor(unittest.TestCase):
         pass
 
     def test_init(self):
-        path = 'tethysapp-test_app.tethysapp.test_app.controller.home'
+        path = "tethysapp-test_app.tethysapp.test_app.controller.home"
         result = tethys_function_extractor.TethysFunctionExtractor(path=path)
 
         # Check Result
         self.assertEqual(path, result.path)
-        self.assertEqual('tethysapp', result.prefix)
+        self.assertEqual("tethysapp", result.prefix)
 
     def test_init_func(self):
         result = tethys_function_extractor.TethysFunctionExtractor(path=test_func)
@@ -30,21 +30,21 @@ class TestTethysFunctionExtractor(unittest.TestCase):
         self.assertTrue(result.valid)
 
     def test_valid(self):
-        path = 'test_app.model.test_initializer'
+        path = "test_app.model.test_initializer"
         result = tethys_function_extractor.TethysFunctionExtractor(path=path).valid
 
         # Check Result
         self.assertTrue(result)
 
     def test_function(self):
-        path = 'test_app.model.test_initializer'
+        path = "test_app.model.test_initializer"
         result = tethys_function_extractor.TethysFunctionExtractor(path=path).function
 
         # Check Result
         self.assertIsInstance(result, types.FunctionType)
 
     def test_function_error(self):
-        path = 'test_app1.foo'
+        path = "test_app1.foo"
         app = tethys_function_extractor.TethysFunctionExtractor(path=path, throw=True)
 
         def test_function_import():

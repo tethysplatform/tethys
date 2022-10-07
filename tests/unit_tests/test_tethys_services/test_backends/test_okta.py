@@ -1,10 +1,12 @@
 from django import test
-from tethys_services.backends.okta import OktaOpenIdConnectMultiTenant, OktaOauth2MultiTenant
+from tethys_services.backends.okta import (
+    OktaOpenIdConnectMultiTenant,
+    OktaOauth2MultiTenant,
+)
 from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 
 class OktaOpenIdConnectMultiTenantBackendTest(test.SimpleTestCase):
-
     def setUp(self):
         pass
 
@@ -17,7 +19,6 @@ class OktaOpenIdConnectMultiTenantBackendTest(test.SimpleTestCase):
 
 
 class OktaOauth2MultiTenantBackendTest(test.SimpleTestCase):
-
     def setUp(self):
         pass
 

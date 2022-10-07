@@ -14,6 +14,7 @@ class Scheduler(models.Model):
     """
     Generic scheduler.
     """
+
     objects = InheritanceManager()
 
     name = models.CharField(max_length=1024)

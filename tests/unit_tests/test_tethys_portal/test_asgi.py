@@ -4,7 +4,6 @@ import tethys_portal.asgi as asgi
 
 
 class TestAsgiApplication(TethysTestCase):
-
     def set_up(self):
         pass
 
@@ -13,5 +12,5 @@ class TestAsgiApplication(TethysTestCase):
 
     def test_application(self):
         application = asgi.application
-        self.assertIn('websocket', application.application_mapping)
-        self.assertIn('http', application.application_mapping)
+        self.assertIn("websocket", application.application_mapping)
+        self.assertIn("http", application.application_mapping)

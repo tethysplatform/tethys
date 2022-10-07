@@ -14,6 +14,7 @@ class CondorPyWorkflow(models.Model):
     """
     Database model for condorpy workflows
     """
+
     condorpyworkflow_id = models.AutoField(primary_key=True)
     _max_jobs = models.JSONField(default=dict, null=True, blank=True)
     _config = models.CharField(max_length=1024, null=True, blank=True)
@@ -23,12 +24,13 @@ class CondorPyWorkflow(models.Model):
         """
         Returns: an instance of a condorpy Workflow
         """
-        if not hasattr(self, '_condorpy_workflow'):
-            workflow = Workflow(name=self.name.replace(' ', '_'),
-                                max_jobs=self.max_jobs,
-                                config=self.config,
-                                working_directory=self.workspace
-                                )
+        if not hasattr(self, "_condorpy_workflow"):
+            workflow = Workflow(
+                name=self.name.replace(" ", "_"),
+                max_jobs=self.max_jobs,
+                config=self.config,
+                working_directory=self.workspace,
+            )
 
             self._condorpy_workflow = workflow
             self.load_nodes()

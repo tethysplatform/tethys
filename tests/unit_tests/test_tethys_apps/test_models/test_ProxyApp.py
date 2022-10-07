@@ -4,12 +4,11 @@ from tethys_apps.models import ProxyApp
 
 
 class ProxyAppTests(TethysTestCase):
-
     def set_up(self):
-        self.app_name = 'My Proxy App for Testing'
-        self.endpoint = 'http://foo.example.com/my-proxy-app'
-        self.logo = 'http://foo.example.com/my-proxy-app/logo.png'
-        self.description = 'This is an app that is not here.'
+        self.app_name = "My Proxy App for Testing"
+        self.endpoint = "http://foo.example.com/my-proxy-app"
+        self.logo = "http://foo.example.com/my-proxy-app/logo.png"
+        self.description = "This is an app that is not here."
         self.tags = '"Water","Earth","Fire","Air"'
 
     def test_Meta(self):
@@ -18,10 +17,10 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
-        self.assertEqual('Proxy App', proxy_app._meta.verbose_name)
-        self.assertEqual('Proxy Apps', proxy_app._meta.verbose_name_plural)
+        self.assertEqual("Proxy App", proxy_app._meta.verbose_name)
+        self.assertEqual("Proxy Apps", proxy_app._meta.verbose_name_plural)
 
     def test_properties(self):
         proxy_app = ProxyApp.objects.create(
@@ -29,7 +28,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
         self.assertTrue(proxy_app.proxied)
         self.assertEqual(self.endpoint, proxy_app.url)
@@ -41,7 +40,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
 
         ret = str(proxy_app)
@@ -54,7 +53,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
         proxy_app.save()
 
@@ -68,9 +67,9 @@ class ProxyAppTests(TethysTestCase):
         self.assertTrue(ret.show_in_apps_library)
 
     def test_endpoint_validator(self):
-        bad_endpoint = 'not a url'
-        http_url = 'http://foo.com'
-        https_url = 'https://foo.com'
+        bad_endpoint = "not a url"
+        http_url = "http://foo.com"
+        https_url = "https://foo.com"
 
         # Bad URL
         a = ProxyApp.objects.create(
@@ -78,14 +77,17 @@ class ProxyAppTests(TethysTestCase):
             endpoint=bad_endpoint,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
 
         with self.assertRaises(ValidationError) as cm:
             a.clean_fields()
 
-        self.assertIn('endpoint', str(cm.exception))
-        self.assertIn('Invalid Endpoint: Must be prefixed with "http://" or "https://".', str(cm.exception))
+        self.assertIn("endpoint", str(cm.exception))
+        self.assertIn(
+            'Invalid Endpoint: Must be prefixed with "http://" or "https://".',
+            str(cm.exception),
+        )
 
         # HTTP
         b = ProxyApp.objects.create(
@@ -93,7 +95,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=http_url,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
         b_exception_raised = False
 
@@ -110,7 +112,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=https_url,
             logo_url=self.logo,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
 
         c_exception_raised = False
@@ -123,9 +125,9 @@ class ProxyAppTests(TethysTestCase):
         self.assertFalse(c_exception_raised)
 
     def test_log_url_validator(self):
-        bad_url = 'not a url'
-        http_url = 'http://foo.com'
-        https_url = 'https://foo.com'
+        bad_url = "not a url"
+        http_url = "http://foo.com"
+        https_url = "https://foo.com"
 
         # Bad URL
         a = ProxyApp.objects.create(
@@ -133,14 +135,17 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=bad_url,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
 
         with self.assertRaises(ValidationError) as cm:
             a.clean_fields()
 
-        self.assertIn('logo_url', str(cm.exception))
-        self.assertIn('Invalid Endpoint: Must be prefixed with "http://" or "https://".', str(cm.exception))
+        self.assertIn("logo_url", str(cm.exception))
+        self.assertIn(
+            'Invalid Endpoint: Must be prefixed with "http://" or "https://".',
+            str(cm.exception),
+        )
 
         # HTTP
         b = ProxyApp.objects.create(
@@ -148,7 +153,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=http_url,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
         b_exception_raised = False
 
@@ -165,7 +170,7 @@ class ProxyAppTests(TethysTestCase):
             endpoint=self.endpoint,
             logo_url=https_url,
             description=self.description,
-            tags=self.tags
+            tags=self.tags,
         )
 
         c_exception_raised = False

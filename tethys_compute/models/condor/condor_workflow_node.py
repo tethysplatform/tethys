@@ -19,20 +19,26 @@ class CondorWorkflowNode(models.Model):
     """
     Base class for CondorWorkflow Nodes
     """
-    TYPES = (('JOB', 'JOB'),
-             ('DAT', 'DATA'),
-             ('SUB', 'SUBDAG'),
-             ('SPL', 'SPLICE'),
-             ('FIN', 'FINAL'),
-             )
+
+    TYPES = (
+        ("JOB", "JOB"),
+        ("DAT", "DATA"),
+        ("SUB", "SUBDAG"),
+        ("SPL", "SPLICE"),
+        ("FIN", "FINAL"),
+    )
 
     TYPE_DICT = {k: v for v, k in TYPES}
 
     objects = InheritanceManager()
 
     name = models.CharField(max_length=1024)
-    workflow = models.ForeignKey(CondorPyWorkflow, on_delete=models.CASCADE, related_name='node_set')
-    parent_nodes = models.ManyToManyField('self', related_name='children_nodes', symmetrical=False)
+    workflow = models.ForeignKey(
+        CondorPyWorkflow, on_delete=models.CASCADE, related_name="node_set"
+    )
+    parent_nodes = models.ManyToManyField(
+        "self", related_name="children_nodes", symmetrical=False
+    )
     pre_script = models.CharField(max_length=1024, null=True, blank=True)
     pre_script_args = models.CharField(max_length=1024, null=True, blank=True)
     post_script = models.CharField(max_length=1024, null=True, blank=True)
@@ -59,23 +65,24 @@ class CondorWorkflowNode(models.Model):
 
     @property
     def condorpy_node(self):
-        if not hasattr(self, '_condorpy_node'):
-            condorpy_node = Node(job=self.job,
-                                 pre_script=self.pre_script,
-                                 pre_script_args=self.pre_script_args,
-                                 post_script=self.post_script,
-                                 post_script_args=self.post_script_args,
-                                 variables=self.variables,
-                                 priority=self.priority,
-                                 category=self.category,
-                                 retry=self.retry,
-                                 pre_skip=self.pre_skip,
-                                 abort_dag_on=self.abort_dag_on,
-                                 abort_dag_on_return_value=self.abort_dag_on_return_value,
-                                 dir=self.dir,
-                                 noop=self.noop,
-                                 done=self.done
-                                 )
+        if not hasattr(self, "_condorpy_node"):
+            condorpy_node = Node(
+                job=self.job,
+                pre_script=self.pre_script,
+                pre_script_args=self.pre_script_args,
+                post_script=self.post_script,
+                post_script_args=self.post_script_args,
+                variables=self.variables,
+                priority=self.priority,
+                category=self.category,
+                retry=self.retry,
+                pre_skip=self.pre_skip,
+                abort_dag_on=self.abort_dag_on,
+                abort_dag_on_return_value=self.abort_dag_on_return_value,
+                dir=self.dir,
+                noop=self.noop,
+                done=self.done,
+            )
             self._condorpy_node = condorpy_node
         return self._condorpy_node
 

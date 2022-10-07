@@ -6,18 +6,24 @@ from ..models import SettingsCategory, Setting
 
 
 NEW_SETTINGS = (
-    ('Custom Templates', [
-        "Login Page Template",
-        "Register Page Template",
-        "User Page Template",
-        "User Settings Page Template",
-    ]),
-    ('Custom Styles', [
-        "Accounts Base CSS",
-        "Login CSS",
-        "Register CSS",
-        "User Base CSS",
-    ]),
+    (
+        "Custom Templates",
+        [
+            "Login Page Template",
+            "Register Page Template",
+            "User Page Template",
+            "User Settings Page Template",
+        ],
+    ),
+    (
+        "Custom Styles",
+        [
+            "Accounts Base CSS",
+            "Login CSS",
+            "Register CSS",
+            "User Base CSS",
+        ],
+    ),
 )
 
 
@@ -34,9 +40,9 @@ def add_new_settings(apps, schema_editor):
             try:
                 category.setting_set.get(name=setting_name)
             except Setting.DoesNotExist:
-                category.setting_set.create(name=setting_name,
-                                            content="",
-                                            date_modified=now)
+                category.setting_set.create(
+                    name=setting_name, content="", date_modified=now
+                )
 
         category.save()
 
@@ -57,9 +63,7 @@ def remove_new_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_config', '0004_auto_20211221_2300'),
+        ("tethys_config", "0004_auto_20211221_2300"),
     ]
 
-    operations = [
-        migrations.RunPython(add_new_settings, remove_new_settings)
-    ]
+    operations = [migrations.RunPython(add_new_settings, remove_new_settings)]

@@ -13,14 +13,15 @@ from django.contrib.auth.models import User
 from tethys_quotas.models.entity_quota import EntityQuota
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class UserQuota(EntityQuota):
     """
     entity_id (IntegerField): id of the entity.
     """
+
     class Meta:
-        verbose_name = 'User Quota'
+        verbose_name = "User Quota"
 
     entity = models.ForeignKey(User, on_delete=models.CASCADE)

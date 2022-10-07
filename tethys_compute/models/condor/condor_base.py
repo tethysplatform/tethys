@@ -25,20 +25,24 @@ class CondorBase(TethysJob):
     """
     Base class for CondorJob and CondorWorkflow
     """
+
     cluster_id = models.IntegerField(blank=True, default=0)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
-    scheduler = models.ForeignKey(CondorScheduler, on_delete=models.SET_NULL, blank=True, null=True)
+    scheduler = models.ForeignKey(
+        CondorScheduler, on_delete=models.SET_NULL, blank=True, null=True
+    )
 
-    STATUS_MAP = {'Unexpanded': 'SUB',
-                  'Idle': 'SUB',
-                  'Running': 'RUN',
-                  'Removed': 'ABT',
-                  'Completed': 'COM',
-                  'Held': 'ERR',
-                  'Submission_err': 'ERR',
-                  'Various': 'VAR',
-                  'Various-Complete': 'VCP',
-                  }
+    STATUS_MAP = {
+        "Unexpanded": "SUB",
+        "Idle": "SUB",
+        "Running": "RUN",
+        "Removed": "ABT",
+        "Completed": "COM",
+        "Held": "ERR",
+        "Submission_err": "ERR",
+        "Various": "VAR",
+        "Various-Complete": "VCP",
+    }
 
     @property
     def condor_object(self):
@@ -55,7 +59,7 @@ class CondorBase(TethysJob):
                 username=self.scheduler.username,
                 password=self.scheduler.password,
                 private_key=self.scheduler.private_key_path,
-                private_key_pass=self.scheduler.private_key_pass
+                private_key_pass=self.scheduler.private_key_pass,
             )
             self.remote_id = self.remote_id or condor_object._remote_id
             condor_object._remote_id = self.remote_id
@@ -70,8 +74,10 @@ class CondorBase(TethysJob):
 
     @property
     def statuses(self):
-        updated = (timezone.now() - self.last_status_update) < self.update_status_interval
-        if not (hasattr(self, '_statuses') and updated):
+        updated = (
+            timezone.now() - self.last_status_update
+        ) < self.update_status_interval
+        if not (hasattr(self, "_statuses") and updated):
             self._statuses = self.condor_object.statuses
 
         return self._statuses
@@ -83,18 +89,20 @@ class CondorBase(TethysJob):
 
     def _update_status(self, *args, **kwargs):
         if not self.execute_time:
-            return 'PEN'
+            return "PEN"
         try:
             # get the status of the condorpy job/workflow
             condor_status = self.condor_object.status
 
-            if condor_status == 'Various':
+            if condor_status == "Various":
                 statuses = self.statuses
-                running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
+                running_statuses = (
+                    statuses["Unexpanded"] + statuses["Idle"] + statuses["Running"]
+                )
                 if not running_statuses:
-                    condor_status = 'Various-Complete'
+                    condor_status = "Various-Complete"
         except Exception:
-            condor_status = 'Submission_err'
+            condor_status = "Submission_err"
 
         self._status = self.STATUS_MAP[condor_status]
         self.save()
@@ -114,7 +122,7 @@ class CondorBase(TethysJob):
     @abstractmethod
     def _log_files(self):
         """
-            Build a nested dictionary with all the log files we want to retrieve.
+        Build a nested dictionary with all the log files we want to retrieve.
         """
         pass
 
@@ -145,7 +153,7 @@ class CondorBase(TethysJob):
         return contents
 
     def get_remote_log_content(self, log_file):
-        content, _ = self.condor_object._execute(['cat', log_file])
+        content, _ = self.condor_object._execute(["cat", log_file])
         return content
 
     @staticmethod
@@ -156,10 +164,10 @@ class CondorBase(TethysJob):
                 with file_path.open() as f:
                     return f.read()
             else:
-                return f'{file_name} does not exist'
+                return f"{file_name} does not exist"
         except Exception as e:
             log.exception(e)
-            return f'There was an error while reading {file_name}'
+            return f"There was an error while reading {file_name}"
 
     def _get_logs(self):
         """
@@ -171,7 +179,9 @@ class CondorBase(TethysJob):
         # Check to see if local log files exist. If not get log contents from remote.
         logs_exist = self._check_local_logs_exist(log_contents)
         if not logs_exist:
-            log_contents = self._get_lazy_log_content(log_files, self.get_remote_log_content)
+            log_contents = self._get_lazy_log_content(
+                log_files, self.get_remote_log_content
+            )
         return log_contents
 
     def pause(self):
@@ -197,7 +207,7 @@ class CondorBase(TethysJob):
         Return True if log content is not empty.
         """
         log_funcs = list()
-        for key, value in log_contents.items():
+        for _, value in log_contents.items():
             if isinstance(value, dict):
                 for child_value in value.values():
                     log_funcs.append(child_value)

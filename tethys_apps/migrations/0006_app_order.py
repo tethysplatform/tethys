@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_apps', '0005_schedulersetting'),
+        ("tethys_apps", "0005_schedulersetting"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='proxyapp',
-            name='order',
+            model_name="proxyapp",
+            name="order",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='tethysapp',
-            name='order',
+            model_name="tethysapp",
+            name="order",
             field=models.IntegerField(default=0),
         ),
     ]

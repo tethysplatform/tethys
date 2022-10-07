@@ -19,30 +19,30 @@ def tethys_apps_context(request):
         request: Django request object.
     """
     # Setup variables
-    context = {'tethys_app': None}
+    context = {"tethys_app": None}
 
     # Get the app
     app = get_active_app(request=request)
 
     if app is not None:
-        context['tethys_app'] = {
-            'id': app.id,
-            'name': app.name,
-            'index': app.index,
-            'icon': app.icon,
-            'color': app.color,
-            'tags': app.tags,
-            'description': app.description,
-            'namespace': app.url_namespace
+        context["tethys_app"] = {
+            "id": app.id,
+            "name": app.name,
+            "index": app.index,
+            "icon": app.icon,
+            "color": app.color,
+            "tags": app.tags,
+            "description": app.description,
+            "namespace": app.url_namespace,
         }
 
-        if hasattr(app, 'feedback_emails') and len(app.feedback_emails) > 0:
-            context['tethys_app']['feedback_emails'] = app.feedback_emails
+        if hasattr(app, "feedback_emails") and len(app.feedback_emails) > 0:
+            context["tethys_app"]["feedback_emails"] = app.feedback_emails
 
-            if hasattr(app, 'enable_feedback'):
-                context['tethys_app']['enable_feedback'] = app.enable_feedback
+            if hasattr(app, "enable_feedback"):
+                context["tethys_app"]["enable_feedback"] = app.enable_feedback
 
     # Dependency Versions
-    context.update({'tethys': vendor_static_dependencies})
+    context.update({"tethys": vendor_static_dependencies})
 
     return context

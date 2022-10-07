@@ -11,7 +11,7 @@ from json import dumps
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 
-__all__ = ['DataTableView']
+__all__ = ["DataTableView"]
 
 
 class DataTableView(TethysGizmoOptions):
@@ -104,14 +104,27 @@ class DataTableView(TethysGizmoOptions):
         {% gizmo datatable_with_extension %}
 
     """  # noqa: E501
+
     # UNSUPPORTED_EXTENSIONS = ('autoFill', 'select', 'keyTable', 'rowReorder')
     # SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns',
     #                         'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
-    version = vendor_static_dependencies['datatables'].version
+    version = vendor_static_dependencies["datatables"].version
 
-    def __init__(self, rows, column_names, footer=False, hover=False, striped=False, bordered=False,
-                 condensed=False, dark=False, attributes=None, classes='', **kwargs):
+    def __init__(
+        self,
+        rows,
+        column_names,
+        footer=False,
+        hover=False,
+        striped=False,
+        bordered=False,
+        condensed=False,
+        dark=False,
+        attributes=None,
+        classes="",
+        **kwargs
+    ):
         """
         Constructor
         """
@@ -137,7 +150,7 @@ class DataTableView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return vendor_static_dependencies['datatables_bs5'].css_url,
+        return (vendor_static_dependencies["datatables_bs5"].css_url,)
 
     @classmethod
     def get_vendor_js(cls):
@@ -146,8 +159,8 @@ class DataTableView(TethysGizmoOptions):
         {% block global_scripts %} block
         """
         return (
-            vendor_static_dependencies['datatables'].js_url,
-            vendor_static_dependencies['datatables_bs5'].js_url,
+            vendor_static_dependencies["datatables"].js_url,
+            vendor_static_dependencies["datatables_bs5"].js_url,
         )
 
     @staticmethod
@@ -156,4 +169,4 @@ class DataTableView(TethysGizmoOptions):
         JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
-        return 'tethys_gizmos/js/datatable_view.js',
+        return ("tethys_gizmos/js/datatable_view.js",)
