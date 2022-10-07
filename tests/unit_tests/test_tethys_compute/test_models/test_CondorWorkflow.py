@@ -121,6 +121,24 @@ class CondorWorkflowTest(TethysTestCase):
         # Check cluster_id from _execute in condorbase
         self.assertEqual(111, self.condorworkflow.cluster_id)
 
+    @mock.patch(
+        "tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes"
+    )
+    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
+    def test_execute_no_options(self, mock_co, mock_ln):
+        # Mock submit to return a 111 cluster id
+        mock_co.submit.return_value = 111
+
+        # Execute
+        self.condorworkflow._execute()
+
+        # We already tested load_nodes in CondorPyWorkflow, just mocked to make sure it's called here.
+        mock_ln.assert_called()
+        mock_co.submit.assert_called_with(options=[])
+
+        # Check cluster_id from _execute in condorbase
+        self.assertEqual(111, self.condorworkflow.cluster_id)
+
     def test_get_job(self):
         ret = self.condorworkflow.get_job(job_name="Node_1")
 
