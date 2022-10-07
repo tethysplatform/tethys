@@ -24,7 +24,9 @@ class TethysStaticFinder(BaseFinder):
 
     def __init__(self, apps=None, *args, **kwargs):
         # List of locations with static files
-        self.locations = get_directories_in_tethys(('static', 'public'), with_app_name=True)
+        self.locations = get_directories_in_tethys(
+            ("static", "public"), with_app_name=True
+        )
 
         # Maps dir paths to an appropriate storage instance
         self.storages = SortedDict()
@@ -55,10 +57,10 @@ class TethysStaticFinder(BaseFinder):
         absolute path (or ``None`` if no match).
         """
         if prefix:
-            prefix = '%s%s' % (prefix, os.sep)
+            prefix = "%s%s" % (prefix, os.sep)
             if not path.startswith(prefix):
                 return None
-            path = path[len(prefix):]
+            path = path[len(prefix) :]
         path = safe_join(root, path)
         if os.path.exists(path):
             return path
@@ -67,7 +69,7 @@ class TethysStaticFinder(BaseFinder):
         """
         List all files in all locations.
         """
-        for prefix, root in self.locations:
+        for _, root in self.locations:
             storage = self.storages[root]
             for path in utils.get_files(storage, ignore_patterns):
                 yield path, storage

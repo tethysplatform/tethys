@@ -9,15 +9,14 @@ from tethys_apps.base.testing.environment import set_testing_environment
 
 
 class HarvesterTest(unittest.TestCase):
-
     def setUp(self):
         set_testing_environment(False)
 
     def tearDown(self):
         set_testing_environment(True)
 
-    @mock.patch('tethys_apps.harvester.tethys_log')
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log")
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
     def test_harvest_extensions_apps(self, mock_stdout, _):
         """
         Test for SingletonHarvester.harvest.
@@ -28,12 +27,12 @@ class HarvesterTest(unittest.TestCase):
         shv = SingletonHarvester()
         shv.harvest()
 
-        self.assertIn('Loading Tethys Extensions...', mock_stdout.getvalue())
-        self.assertIn('Tethys Extensions Loaded:', mock_stdout.getvalue())
-        self.assertIn('test_extension', mock_stdout.getvalue())
+        self.assertIn("Loading Tethys Extensions...", mock_stdout.getvalue())
+        self.assertIn("Tethys Extensions Loaded:", mock_stdout.getvalue())
+        self.assertIn("test_extension", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('pkgutil.iter_modules')
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("pkgutil.iter_modules")
     def test_harvest_extensions_exception(self, mock_pkgutil, mock_stdout):
         """
         Test for SingletonHarvester.harvest.
@@ -47,12 +46,12 @@ class HarvesterTest(unittest.TestCase):
         shv = SingletonHarvester()
         shv.harvest_extensions()
 
-        self.assertIn('Loading Tethys Extensions...', mock_stdout.getvalue())
-        self.assertNotIn('Tethys Extensions Loaded:', mock_stdout.getvalue())
-        self.assertNotIn('test_extension', mock_stdout.getvalue())
+        self.assertIn("Loading Tethys Extensions...", mock_stdout.getvalue())
+        self.assertNotIn("Tethys Extensions Loaded:", mock_stdout.getvalue())
+        self.assertNotIn("test_extension", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('pkgutil.iter_modules')
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("pkgutil.iter_modules")
     def test_harvest_apps_exception(self, mock_pkgutil, mock_stdout):
         """
         Test for SingletonHarvester.harvest.
@@ -66,9 +65,9 @@ class HarvesterTest(unittest.TestCase):
         shv = SingletonHarvester()
         shv.harvest_apps()
 
-        self.assertIn('Loading Tethys Apps...', mock_stdout.getvalue())
-        self.assertNotIn('Tethys Apps Loaded:', mock_stdout.getvalue())
-        self.assertNotIn('test_app', mock_stdout.getvalue())
+        self.assertIn("Loading Tethys Apps...", mock_stdout.getvalue())
+        self.assertNotIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+        self.assertNotIn("test_app", mock_stdout.getvalue())
 
     def test_harvest_get_url_patterns(self):
         """
@@ -76,16 +75,16 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         shv = SingletonHarvester()
-        app_url_patterns = shv.get_url_patterns()['app_url_patterns']
-        ext_url_patterns = shv.get_url_patterns()['ext_url_patterns']
-        app_ws_patterns = shv.get_url_patterns()['ws_url_patterns']
+        app_url_patterns = shv.get_url_patterns()["app_url_patterns"]
+        ext_url_patterns = shv.get_url_patterns()["ext_url_patterns"]
+        app_ws_patterns = shv.get_url_patterns()["ws_url_patterns"]
 
         self.assertGreaterEqual(len(app_url_patterns), 1)
-        self.assertIn('test_app', app_url_patterns)
+        self.assertIn("test_app", app_url_patterns)
         self.assertGreaterEqual(len(ext_url_patterns), 1)
-        self.assertIn('test_extension', ext_url_patterns)
+        self.assertIn("test_extension", ext_url_patterns)
         self.assertGreaterEqual(len(app_ws_patterns), 1)
-        self.assertIn('test_app', app_ws_patterns)
+        self.assertIn("test_app", app_ws_patterns)
 
     def test_harvest_validate_extension(self):
         """
@@ -105,18 +104,20 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        mock_args.icon = '/foo_icon'  # prepended slash
-        mock_args.color = 'foo_color'  # missing prepended #, not 6 or 3 digit hex color
+        mock_args.icon = "/foo_icon"  # prepended slash
+        mock_args.color = "foo_color"  # missing prepended #, not 6 or 3 digit hex color
 
         shv = SingletonHarvester()
         validate = shv._validate_app(mock_args)
 
-        self.assertEqual('foo_icon', validate.icon)
-        self.assertEqual('', validate.color)
+        self.assertEqual("foo_icon", validate.icon)
+        self.assertEqual("", validate.color)
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    def test_harvest_extension_instances_ImportError(self, mock_logexception, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.exception")
+    def test_harvest_extension_instances_ImportError(
+        self, mock_logexception, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_extension_instances
         With an ImportError exception thrown due to invalid argument information passed
@@ -125,7 +126,7 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        dict_ext = {'foo': 'foo_ext'}
+        dict_ext = {"foo": "foo_ext"}
         mock_args = dict_ext
 
         shv = SingletonHarvester()
@@ -137,12 +138,14 @@ class HarvesterTest(unittest.TestCase):
         self.assertEqual(valid_ext_instances, shv.extensions)
         self.assertEqual(valid_extension_modules, shv.extension_modules)
         mock_logexception.assert_called_once()
-        self.assertIn('Tethys Extensions Loaded:', mock_stdout.getvalue())
+        self.assertIn("Tethys Extensions Loaded:", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    @mock.patch('tethys_apps.harvester.issubclass')
-    def test_harvest_extension_instances_TypeError(self, mock_subclass, mock_logexception, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.exception")
+    @mock.patch("tethys_apps.harvester.issubclass")
+    def test_harvest_extension_instances_TypeError(
+        self, mock_subclass, mock_logexception, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_extension_instances
         With a TypeError exception mocked up
@@ -152,7 +155,7 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        dict_ext = {'test_extension': 'tethysext.test_extension'}
+        dict_ext = {"test_extension": "tethysext.test_extension"}
         mock_args = dict_ext
         mock_subclass.side_effect = TypeError
 
@@ -166,10 +169,10 @@ class HarvesterTest(unittest.TestCase):
         self.assertEqual(valid_extension_modules, shv.extension_modules)
         mock_logexception.assert_not_called()
         mock_subclass.assert_called()
-        self.assertIn('Tethys Extensions Loaded:', mock_stdout.getvalue())
+        self.assertIn("Tethys Extensions Loaded:", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.exception')
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.exception")
     def test_harvest_app_instances_ImportError(self, mock_logexception, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
@@ -179,7 +182,7 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        list_apps = {'__init__.py': '__init__.py', 'foo': 'foo'}
+        list_apps = {"__init__.py": "__init__.py", "foo": "foo"}
         mock_args = list_apps
 
         shv = SingletonHarvester()
@@ -189,12 +192,14 @@ class HarvesterTest(unittest.TestCase):
 
         self.assertEqual(valid_app_instance_list, shv.apps)
         mock_logexception.assert_called_once()
-        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    @mock.patch('tethys_apps.harvester.issubclass')
-    def test_harvest_app_instances_TypeError(self, mock_subclass, mock_logexception, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.exception")
+    @mock.patch("tethys_apps.harvester.issubclass")
+    def test_harvest_app_instances_TypeError(
+        self, mock_subclass, mock_logexception, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_app_instances
         :param mock_subclass:  mock for the TypeError exception
@@ -203,7 +208,7 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
-        list_apps = {'test_app': 'tethysapp.test_app'}
+        list_apps = {"test_app": "tethysapp.test_app"}
 
         mock_args = list_apps
         mock_subclass.side_effect = TypeError
@@ -216,12 +221,17 @@ class HarvesterTest(unittest.TestCase):
         self.assertEqual(valid_app_instance_list, shv.apps)
         mock_logexception.assert_not_called()
         mock_subclass.assert_called()
-        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    @mock.patch('tethysapp.test_app.app.TestApp.registered_url_maps', new_callable=mock.PropertyMock)
-    def test_harvest_app_instances_load_url_patterns_exception(self, mock_url_maps, mock_logexception, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.exception")
+    @mock.patch(
+        "tethysapp.test_app.app.TestApp.registered_url_maps",
+        new_callable=mock.PropertyMock,
+    )
+    def test_harvest_app_instances_load_url_patterns_exception(
+        self, mock_url_maps, mock_logexception, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_app_instances
         For the app url patterns exception
@@ -231,7 +241,7 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        mock_args = {'test_app': 'tethysapp.test_app'}
+        mock_args = {"test_app": "tethysapp.test_app"}
         mock_url_maps.side_effect = ImportError
 
         shv = SingletonHarvester()
@@ -239,12 +249,17 @@ class HarvesterTest(unittest.TestCase):
 
         mock_logexception.assert_called()
         mock_url_maps.assert_called()
-        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    @mock.patch('tethysapp.test_app.app.TestApp.registered_url_maps', new_callable=mock.PropertyMock)
-    def test_harvest_app_instances_load_handler_patterns_exception(self, mock_url_maps, mock_logexception, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.exception")
+    @mock.patch(
+        "tethysapp.test_app.app.TestApp.registered_url_maps",
+        new_callable=mock.PropertyMock,
+    )
+    def test_harvest_app_instances_load_handler_patterns_exception(
+        self, mock_url_maps, mock_logexception, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_app_instances
         For the app url patterns exception
@@ -254,8 +269,8 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        mock_args = {'test_app': 'tethysapp.test_app'}
-        mock_url_maps.side_effect = ['', ImportError]
+        mock_args = {"test_app": "tethysapp.test_app"}
+        mock_url_maps.side_effect = ["", ImportError]
 
         shv = SingletonHarvester()
         shv._harvest_app_instances(mock_args)
@@ -263,12 +278,14 @@ class HarvesterTest(unittest.TestCase):
         mock_logexception.assert_called()
         mock_url_maps.assert_called()
         # raise RuntimeError(str(mock_url_maps.call_args_list))
-        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.warning')
-    @mock.patch('tethysapp.test_app.app.TestApp.register_app_permissions')
-    def test_harvest_app_instances_programming_error(self, mock_permissions, mock_logwarning, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.warning")
+    @mock.patch("tethysapp.test_app.app.TestApp.register_app_permissions")
+    def test_harvest_app_instances_programming_error(
+        self, mock_permissions, mock_logwarning, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_app_instances
         For the app permissions exception (ProgrammingError)
@@ -278,7 +295,7 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        list_apps = {'test_app': 'tethysapp.test_app'}
+        list_apps = {"test_app": "tethysapp.test_app"}
 
         mock_permissions.side_effect = ProgrammingError
 
@@ -287,13 +304,15 @@ class HarvesterTest(unittest.TestCase):
 
         mock_logwarning.assert_called()
         mock_permissions.assert_called()
-        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
-        self.assertIn('test_app', mock_stdout.getvalue())
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+        self.assertIn("test_app", mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.warning')
-    @mock.patch('tethysapp.test_app.app.TestApp.register_app_permissions')
-    def test_harvest_app_instances_object_does_not_exist(self, mock_permissions, mock_logwarning, mock_stdout):
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.warning")
+    @mock.patch("tethysapp.test_app.app.TestApp.register_app_permissions")
+    def test_harvest_app_instances_object_does_not_exist(
+        self, mock_permissions, mock_logwarning, mock_stdout
+    ):
         """
         Test for SingletonHarvester._harvest_app_instances
         For the app permissions exception (ObjectDoesNotExist)
@@ -303,7 +322,7 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        list_apps = {'test_app': 'tethysapp.test_app'}
+        list_apps = {"test_app": "tethysapp.test_app"}
 
         mock_permissions.side_effect = ObjectDoesNotExist
 
@@ -312,5 +331,5 @@ class HarvesterTest(unittest.TestCase):
 
         mock_logwarning.assert_called()
         mock_permissions.assert_called()
-        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
-        self.assertIn('test_app', mock_stdout.getvalue())
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+        self.assertIn("test_app", mock_stdout.getvalue())

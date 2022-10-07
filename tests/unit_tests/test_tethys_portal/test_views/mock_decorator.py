@@ -6,5 +6,7 @@ def mock_decorator(*_, **__):
         @wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator

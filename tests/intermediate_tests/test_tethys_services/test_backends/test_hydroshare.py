@@ -36,7 +36,9 @@ class HydroShareBackendTest(TestCase):
 
     def setUp(self):
 
-        self.backend_module_path = "tethys_services.backends.hydroshare.HydroShareOAuth2"
+        self.backend_module_path = (
+            "tethys_services.backends.hydroshare.HydroShareOAuth2"
+        )
         self.Backend_Class = module_member(self.backend_module_path)
         self.client_complete_url = "https://apps.hydroshare.org/complete/hydroshare/"
 
@@ -82,9 +84,11 @@ class HydroShareBackendTest(TestCase):
         # expect for only 1 user: anonymous user
         self.assertEqual(User.objects.all().count(), 1)
         # manually create a new user named self.social_username
-        self.user = User.objects.create_user(username=self.social_username,
-                                             email=self.social_email,
-                                             password='top_secret')
+        self.user = User.objects.create_user(
+            username=self.social_username,
+            email=self.social_email,
+            password="top_secret",
+        )
         # expect for 2 users: anonymous and self.social_username
         self.assertEqual(User.objects.all().count(), 2)
 
@@ -96,7 +100,9 @@ class HydroShareBackendTest(TestCase):
         # test username
         self.assertEqual(User.objects.filter(username=username_new).count(), 1)
         self.assertTrue(len(username_new) > len(self.social_username))
-        self.assertEqual(username_new[0:len(self.social_username)], self.social_username)
+        self.assertEqual(
+            username_new[0 : len(self.social_username)], self.social_username
+        )
 
         # check extra_data
         extra_data_dict = social.extra_data
@@ -114,9 +120,7 @@ class HydroShareBackendTest(TestCase):
         self.assertEqual(User.objects.all().count(), 1)
         # manually create a new user named self.social_username
         user_sherry = User.objects.create_user(
-            username="sherry",
-            email="sherry@byu.edu",
-            password='top_secret'
+            username="sherry", email="sherry@byu.edu", password="top_secret"
         )
         logger.debug(user_sherry.is_authenticated())
         logger.debug(user_sherry.is_active)
@@ -153,26 +157,33 @@ class HydroShareBackendTest(TestCase):
         start_query = parse_qs(urlparse(start_url).query)
 
         # set 'state' in client
-        backend.data.update({'state': start_query['state']})
+        backend.data.update({"state": start_query["state"]})
 
-        m.get(backend.USER_DATA_URL,
-              json={"username": self.social_username,
-                    "email": self.social_email},
-              status_code=200)
+        m.get(
+            backend.USER_DATA_URL,
+            json={"username": self.social_username, "email": self.social_email},
+            status_code=200,
+        )
 
-        m.post(backend.ACCESS_TOKEN_URL,
-               json={'access_token': self.access_token,
-                     'token_type': self.token_type,
-                     'expires_in': self.expires_in,
-                     'scope': self.scope,
-                     'refresh_token': self.refresh_token},
-               status_code=200)
+        m.post(
+            backend.ACCESS_TOKEN_URL,
+            json={
+                "access_token": self.access_token,
+                "token_type": self.token_type,
+                "expires_in": self.expires_in,
+                "scope": self.scope,
+                "refresh_token": self.refresh_token,
+            },
+            status_code=200,
+        )
 
         def _login(backend, user, social_user):
-            backend.strategy.session_set('username', user.username)
+            backend.strategy.session_set("username", user.username)
 
         do_complete(backend, user=user, login=_login)
 
-        social = backend.strategy.storage.user.get_social_auth(backend.name, self.social_username)
+        social = backend.strategy.storage.user.get_social_auth(
+            backend.name, self.social_username
+        )
 
-        return strategy.session_get('username'), social, backend
+        return strategy.session_get("username"), social, backend

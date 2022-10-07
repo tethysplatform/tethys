@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0002_tethysjob_groups'),
+        ("tethys_compute", "0002_tethysjob_groups"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tethysjob',
-            name='status_message',
+            model_name="tethysjob",
+            name="status_message",
             field=models.CharField(blank=True, max_length=2048, null=True),
         ),
     ]

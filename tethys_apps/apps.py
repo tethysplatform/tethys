@@ -13,8 +13,8 @@ from tethys_apps.harvester import SingletonHarvester
 
 
 class TethysAppsConfig(AppConfig):
-    name = 'tethys_apps'
-    verbose_name = 'Tethys Apps'
+    name = "tethys_apps"
+    verbose_name = "Tethys Apps"
 
     def ready(self):
         """

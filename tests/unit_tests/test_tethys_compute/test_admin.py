@@ -3,12 +3,16 @@ from unittest import mock
 
 from django import forms
 
-from tethys_compute.admin import JobAdmin, CondorSchedulerAdmin, DaskSchedulerAdmin, CondorSchedulerAdminForm
+from tethys_compute.admin import (
+    JobAdmin,
+    CondorSchedulerAdmin,
+    DaskSchedulerAdmin,
+    CondorSchedulerAdminForm,
+)
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 
 
 class TestTethysComputeAdmin(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -20,20 +24,30 @@ class TestTethysComputeAdmin(unittest.TestCase):
         mock_admin2 = mock.MagicMock()
 
         sa = DaskSchedulerAdmin(mock_admin, mock_admin2)
-        self.assertListEqual(['name', 'host', 'timeout', 'heartbeat_interval', 'append_link'],
-                             sa.list_display)
+        self.assertListEqual(
+            ["name", "host", "timeout", "heartbeat_interval", "append_link"],
+            sa.list_display,
+        )
 
     def test_CondorSchedulerAdminForm(self):
         mock_args = mock.MagicMock()
-        expected_fields = ('name', 'host', 'port', 'username', 'password', 'private_key_path', 'private_key_pass')
+        expected_fields = (
+            "name",
+            "host",
+            "port",
+            "username",
+            "password",
+            "private_key_path",
+            "private_key_pass",
+        )
 
         ret = CondorSchedulerAdminForm(mock_args)
         self.assertEqual(CondorScheduler, ret.Meta.model)
         self.assertEqual(expected_fields, ret.Meta.fields)
-        self.assertTrue('password' in ret.Meta.widgets)
-        self.assertIsInstance(ret.Meta.widgets['password'], forms.PasswordInput)
-        self.assertTrue('private_key_pass' in ret.Meta.widgets)
-        self.assertIsInstance(ret.Meta.widgets['private_key_pass'], forms.PasswordInput)
+        self.assertTrue("password" in ret.Meta.widgets)
+        self.assertIsInstance(ret.Meta.widgets["password"], forms.PasswordInput)
+        self.assertTrue("private_key_pass" in ret.Meta.widgets)
+        self.assertIsInstance(ret.Meta.widgets["private_key_pass"], forms.PasswordInput)
 
     def test_condor_scheduler_admin(self):
         mock_admin = mock.MagicMock()
@@ -41,8 +55,7 @@ class TestTethysComputeAdmin(unittest.TestCase):
 
         sa = CondorSchedulerAdmin(mock_admin, mock_admin2)
         self.assertListEqual(
-            sa.list_display,
-            ['name', 'host', 'port', 'username', 'private_key_path']
+            sa.list_display, ["name", "host", "port", "username", "private_key_path"]
         )
 
     def test_job_admin(self):
@@ -50,9 +63,20 @@ class TestTethysComputeAdmin(unittest.TestCase):
         mock_admin2 = mock.MagicMock()
 
         ja = JobAdmin(mock_admin, mock_admin2)
-        self.assertListEqual(['name', 'description', 'label', 'user', 'creation_time', 'execute_time',
-                              'completion_time', 'status'], ja.list_display)
-        self.assertEqual(('name',), ja.list_display_links)
+        self.assertListEqual(
+            [
+                "name",
+                "description",
+                "label",
+                "user",
+                "creation_time",
+                "execute_time",
+                "completion_time",
+                "status",
+            ],
+            ja.list_display,
+        )
+        self.assertEqual(("name",), ja.list_display_links)
 
     def test_job_admin_has_add_permission(self):
         mock_admin = mock.MagicMock()
@@ -82,8 +106,11 @@ class TestTethysComputeAdmin(unittest.TestCase):
 
         sa = DaskSchedulerAdmin(mock_admin, mock_admin2)
 
-        mock_object = mock.MagicMock(dashboard='test_daskboard', id='123')
+        mock_object = mock.MagicMock(dashboard="test_daskboard", id="123")
 
         res = sa.append_link(mock_object)
 
-        self.assertEqual('<a href="../../dask-dashboard/status/123" target="_blank">Launch DashBoard</a>', res)
+        self.assertEqual(
+            '<a href="../../dask-dashboard/status/123" target="_blank">Launch DashBoard</a>',
+            res,
+        )

@@ -19,14 +19,15 @@ from tethys_compute.models.condor.condor_job import CondorJob
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from tethys_apps.base.workspace import _get_user_workspace
 
-log = logging.getLogger('tethys.tethys_compute.job_manager')
+log = logging.getLogger("tethys.tethys_compute.job_manager")
 
-JOB_TYPES = {'CONDOR': CondorJob,
-             'CONDORJOB': CondorJob,
-             'CONDORWORKFLOW': CondorWorkflow,
-             'BASIC': BasicJob,
-             'DASK': DaskJob,
-             }
+JOB_TYPES = {
+    "CONDOR": CondorJob,
+    "CONDORJOB": CondorJob,
+    "CONDORWORKFLOW": CondorWorkflow,
+    "BASIC": BasicJob,
+    "DASK": DaskJob,
+}
 
 
 class JobManager:
@@ -67,7 +68,9 @@ class JobManager:
         if isinstance(job_type, str):
             job_type = JOB_TYPES[job_type]
         user_workspace = _get_user_workspace(self.app, user)
-        kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
+        kwrgs = dict(
+            name=name, user=user, label=self.label, workspace=user_workspace.path
+        )
         kwrgs.update(kwargs)
         job = job_type(**kwrgs)
 
@@ -77,7 +80,7 @@ class JobManager:
             job.groups.add(groups)
         return job
 
-    def list_jobs(self, user=None, groups=None, order_by='id', filters=None):
+    def list_jobs(self, user=None, groups=None, order_by="id", filters=None):
         """
         Lists all the jobs from current app for current user.
 
@@ -93,18 +96,22 @@ class JobManager:
             A list of jobs created in the app (and by the user if the user argument is passed in).
         """  # noqa: E501
         if user and groups:
-            raise ValueError("The user and groups parameters are mutually exclusive and cannot be passed together. "
-                             "Please choose one or the other.")
+            raise ValueError(
+                "The user and groups parameters are mutually exclusive and cannot be passed together. "
+                "Please choose one or the other."
+            )
         filters = filters or dict()
-        if 'label' not in filters.keys():
-            filters['label'] = self.label
+        if "label" not in filters.keys():
+            filters["label"] = self.label
 
         if groups:
-            filters['groups__in'] = groups
+            filters["groups__in"] = groups
         elif user:
-            filters['user'] = user
+            filters["user"] = user
 
-        jobs = TethysJob.objects.filter(**filters).order_by(order_by).select_subclasses()
+        jobs = (
+            TethysJob.objects.filter(**filters).order_by(order_by).select_subclasses()
+        )
 
         return jobs
 
@@ -120,10 +127,10 @@ class JobManager:
             A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
         """  # noqa: E501
         filters = filters or dict()
-        filters.setdefault('label', self.label)
-        filters['id'] = job_id
+        filters.setdefault("label", self.label)
+        filters["id"] = job_id
         if user:
-            filters['user'] = user
+            filters["user"] = user
 
         try:
             job = TethysJob.objects.get_subclass(**filters)
@@ -136,6 +143,6 @@ class JobManager:
         """
         Get the absolute url to call to update job status
         """
-        relative_uri = reverse('update_job_status', kwargs={'job_id': job_id})
+        relative_uri = reverse("update_job_status", kwargs={"job_id": job_id})
         absolute_uri = request.build_absolute_uri(relative_uri)
         return absolute_uri

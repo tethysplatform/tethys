@@ -15,5 +15,5 @@ def tethys_gizmos_context(request):
     """
 
     # Setup variables
-    context = {'gizmos_rendered': []}
+    context = {"gizmos_rendered": []}
     return context

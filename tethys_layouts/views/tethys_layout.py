@@ -13,20 +13,21 @@ from django.shortcuts import render
 
 from tethys_sdk.base import TethysController
 
-log = logging.getLogger(f'tethys.{__name__}')
+log = logging.getLogger(f"tethys.{__name__}")
 
 
 class TethysLayout(TethysController):
     """
     Base controller for all Tethys Layout views. Pass kwargs to as_controller() to override TethysLayout properties.
     """
-    template_name = ''
+
+    template_name = ""
 
     app = None
     back_url = None
-    base_template = 'tethys_layouts/tethys_layout.html'
-    layout_title = ''
-    layout_subtitle = ''
+    base_template = "tethys_layouts/tethys_layout.html"
+    layout_title = ""
+    layout_subtitle = ""
 
     def get(self, request, *args, **kwargs):
         """
@@ -52,14 +53,16 @@ class TethysLayout(TethysController):
         context.update(self.kwargs)
 
         # Add base view variables to context
-        context.update({
-            'base_template': self.base_template,
-            'back_url': self.back_url,
-            'is_in_debug': settings.DEBUG,
-            'nav_title': self.layout_title,
-            'nav_subtitle': self.layout_subtitle,
-            'open_portal_mode': getattr(settings, 'ENABLE_OPEN_PORTAL', False),
-        })
+        context.update(
+            {
+                "base_template": self.base_template,
+                "back_url": self.back_url,
+                "is_in_debug": settings.DEBUG,
+                "nav_title": self.layout_title,
+                "nav_subtitle": self.layout_subtitle,
+                "open_portal_mode": getattr(settings, "ENABLE_OPEN_PORTAL", False),
+            }
+        )
 
         # Default Permissions
         permissions = dict()
@@ -96,13 +99,13 @@ class TethysLayout(TethysController):
         Returns:
             callable: the method or None if not found.
         """
-        if request.method == 'POST':
-            method = request.POST.get('method', '')
-        elif request.method == 'GET':
-            method = request.GET.get('method', '')
+        if request.method == "POST":
+            method = request.POST.get("method", "")
+        elif request.method == "GET":
+            method = request.GET.get("method", "")
         else:
             return None
-        python_method = method.replace('-', '_')
+        python_method = method.replace("-", "_")
         the_method = getattr(self, python_method, None)
         return the_method
 

@@ -5,7 +5,6 @@ import tethys_portal
 
 
 class TethysPortalInitTests(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -14,5 +13,5 @@ class TethysPortalInitTests(unittest.TestCase):
 
     def test__version__(self):
         reload(tethys_portal)
-        self.assertTrue(getattr(tethys_portal, '__version__', False))
+        self.assertTrue(getattr(tethys_portal, "__version__", False))
         self.assertIsNotNone(tethys_portal.__version__)

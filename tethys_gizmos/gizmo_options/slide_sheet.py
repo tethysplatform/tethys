@@ -45,10 +45,17 @@ class SlideSheet(TethysGizmoOptions):
 
     """  # noqa: E501
 
-    gizmo_name = 'slide_sheet'
+    gizmo_name = "slide_sheet"
 
-    def __init__(self, id: str = 'slide-sheet', content_template: str = '', title: str = '',
-                 attributes: dict = dict, classes: str = '', **kwargs):
+    def __init__(
+        self,
+        id: str = "slide-sheet",
+        content_template: str = "",
+        title: str = "",
+        attributes: dict = dict,
+        classes: str = "",
+        **kwargs
+    ):
         # Initialize parent
         super(SlideSheet, self).__init__(attributes=attributes, classes=classes)
 
@@ -65,11 +72,11 @@ class SlideSheet(TethysGizmoOptions):
         """
         JavaScript specific to gizmo.
         """
-        return ('tethys_gizmos/js/slide_sheet.js',)
+        return ("tethys_gizmos/js/slide_sheet.js",)
 
     @staticmethod
     def get_gizmo_css():
         """
         CSS specific to gizmo .
         """
-        return ('tethys_gizmos/css/slide_sheet.css',)
+        return ("tethys_gizmos/css/slide_sheet.css",)

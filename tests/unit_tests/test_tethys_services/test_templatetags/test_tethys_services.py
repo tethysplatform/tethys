@@ -6,7 +6,6 @@ from tethys_services.templatetags.tethys_services import is_complex_data
 
 
 class TethysServicesIsComplexDataTests(unittest.TestCase):
-
     def setUp(self):
         pass
 

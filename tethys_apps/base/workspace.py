@@ -18,7 +18,7 @@ from django.utils.functional import SimpleLazyObject
 
 from tethys_quotas.utilities import passes_quota, _get_storage_units
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class TethysWorkspace:
@@ -79,10 +79,17 @@ class TethysWorkspace:
 
         """
         if full_path:
-            files = [os.path.join(self._path, f) for f in os.listdir(self._path) if
-                     os.path.isfile(os.path.join(self._path, f))]
+            files = [
+                os.path.join(self._path, f)
+                for f in os.listdir(self._path)
+                if os.path.isfile(os.path.join(self._path, f))
+            ]
         else:
-            files = [f for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
+            files = [
+                f
+                for f in os.listdir(self._path)
+                if os.path.isfile(os.path.join(self._path, f))
+            ]
         return files
 
     def directories(self, full_path=False):
@@ -107,13 +114,20 @@ class TethysWorkspace:
 
         """
         if full_path:
-            directories = [os.path.join(self._path, d) for d in os.listdir(self._path) if
-                           os.path.isdir(os.path.join(self._path, d))]
+            directories = [
+                os.path.join(self._path, d)
+                for d in os.listdir(self._path)
+                if os.path.isdir(os.path.join(self._path, d))
+            ]
         else:
-            directories = [d for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
+            directories = [
+                d
+                for d in os.listdir(self._path)
+                if os.path.isdir(os.path.join(self._path, d))
+            ]
         return directories
 
-    def clear(self, exclude=[], exclude_files=False, exclude_directories=False):
+    def clear(self, exclude=None, exclude_files=False, exclude_directories=False):
         """
         Remove all files and directories in the workspace.
 
@@ -139,8 +153,19 @@ class TethysWorkspace:
             workspace.clear(exclude=['file1.txt', '/full/path/to/directory1', 'directory2', '/full/path/to/file2.txt'])
 
         """
-        files = [f for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
-        directories = [d for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
+        if exclude is None:
+            exclude = list()
+
+        files = [
+            f
+            for f in os.listdir(self._path)
+            if os.path.isfile(os.path.join(self._path, f))
+        ]
+        directories = [
+            d
+            for d in os.listdir(self._path)
+            if os.path.isdir(os.path.join(self._path, d))
+        ]
 
         if not exclude_files:
             for file in files:
@@ -176,8 +201,14 @@ class TethysWorkspace:
 
         """  # noqa: E501
         # Sanitize to prevent backing into other directories or entering the home directory
-        full_path = item.replace('../', '').replace('./', '').replace('..\\', '').\
-            replace('.\\', '').replace('~/', '').replace('~\\', '')
+        full_path = (
+            item.replace("../", "")
+            .replace("./", "")
+            .replace("..\\", "")
+            .replace(".\\", "")
+            .replace("~/", "")
+            .replace("~\\", "")
+        )
 
         if self._path not in full_path:
             full_path = os.path.join(self._path, full_path)
@@ -187,16 +218,18 @@ class TethysWorkspace:
         elif os.path.isfile(full_path):
             os.remove(full_path)
 
-    def get_size(self, units='b'):
+    def get_size(self, units="b"):
         total_size = 0
         for file in self.files(True):
             total_size += os.path.getsize(file)
 
-        if units.lower() == 'b':
+        if units.lower() == "b":
             conversion_factor = 1
         else:
             storage_units = _get_storage_units()
-            conversion_factor = [item[0] for item in storage_units if units.upper() in item[1]][0]
+            conversion_factor = [
+                item[0] for item in storage_units if units.upper() in item[1]
+            ][0]
 
         return total_size / conversion_factor
 
@@ -212,20 +245,27 @@ def _get_user_workspace(app_class, user_or_request):
     Returns:
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
     """
-    username = ''
+    username = ""
 
     from django.contrib.auth.models import User
-    if isinstance(user_or_request, User) or isinstance(user_or_request, SimpleLazyObject):
+
+    if isinstance(user_or_request, User) or isinstance(
+        user_or_request, SimpleLazyObject
+    ):
         username = user_or_request.username
     elif isinstance(user_or_request, HttpRequest):
         username = user_or_request.user.username
     elif user_or_request is None:
-        username = 'anonymous_user'
+        username = "anonymous_user"
     else:
-        raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
+        raise ValueError(
+            "Invalid type for argument 'user': must be either an User or HttpRequest object."
+        )
 
     project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
-    workspace_directory = os.path.join(project_directory, 'workspaces', 'user_workspaces', username)
+    workspace_directory = os.path.join(
+        project_directory, "workspaces", "user_workspaces", username
+    )
     return TethysWorkspace(workspace_directory)
 
 
@@ -259,25 +299,33 @@ def get_user_workspace(app_class_or_request, user_or_request) -> TethysWorkspace
     from django.contrib.auth.models import User
 
     # Get app
-    if isinstance(app_class_or_request, TethysAppBase) or \
-       (isinstance(app_class_or_request, type) and issubclass(app_class_or_request, TethysAppBase)):
+    if isinstance(app_class_or_request, TethysAppBase) or (
+        isinstance(app_class_or_request, type)
+        and issubclass(app_class_or_request, TethysAppBase)
+    ):
         app = app_class_or_request
     elif isinstance(app_class_or_request, HttpRequest):
         app = get_active_app(app_class_or_request, get_class=True)
     else:
-        raise ValueError(f'Argument "app_class_or_request" must be of type TethysAppBase or HttpRequest: '
-                         f'"{type(app_class_or_request)}" given.')
+        raise ValueError(
+            f'Argument "app_class_or_request" must be of type TethysAppBase or HttpRequest: '
+            f'"{type(app_class_or_request)}" given.'
+        )
 
     # Get user
-    if isinstance(user_or_request, User) or isinstance(user_or_request, SimpleLazyObject):
+    if isinstance(user_or_request, User) or isinstance(
+        user_or_request, SimpleLazyObject
+    ):
         user = user_or_request
     elif isinstance(user_or_request, HttpRequest):
         user = user_or_request.user
     else:
-        raise ValueError(f'Argument "user_or_request" must be of type HttpRequest or User: '
-                         f'"{type(user_or_request)}" given.')
+        raise ValueError(
+            f'Argument "user_or_request" must be of type HttpRequest or User: '
+            f'"{type(user_or_request)}" given.'
+        )
 
-    assert passes_quota(user, 'user_workspace_quota')
+    assert passes_quota(user, "user_workspace_quota")
 
     return _get_user_workspace(app, user)
 
@@ -312,6 +360,7 @@ def user_workspace(controller):
             return render(request, 'my_first_app/template.html', context)
 
     """  # noqa:E501
+
     @wraps(controller)
     def wrapper(*args, **kwargs):
         request = None
@@ -321,11 +370,14 @@ def user_workspace(controller):
                 break
 
         if request is None:
-            raise ValueError('No request given. The user_workspace decorator only works on controllers.')
+            raise ValueError(
+                "No request given. The user_workspace decorator only works on controllers."
+            )
 
         the_workspace = get_user_workspace(request, request.user)
 
         return controller(*args, user_workspace=the_workspace, **kwargs)
+
     return wrapper
 
 
@@ -340,7 +392,7 @@ def _get_app_workspace(app_class):
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
     """
     project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
-    workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
+    workspace_directory = os.path.join(project_directory, "workspaces", "app_workspace")
     return TethysWorkspace(workspace_directory)
 
 
@@ -376,14 +428,17 @@ def get_app_workspace(app_or_request) -> TethysWorkspace:
     # Get the active app
     if isinstance(app_or_request, HttpRequest):
         app = get_active_app(app_or_request, get_class=True)
-    elif isinstance(app_or_request, TethysAppBase) or \
-            (isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)):
+    elif isinstance(app_or_request, TethysAppBase) or (
+        isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)
+    ):
         app = app_or_request
     else:
-        raise ValueError(f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '
-                         f'"{type(app_or_request)}" given.')
+        raise ValueError(
+            f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '
+            f'"{type(app_or_request)}" given.'
+        )
 
-    assert passes_quota(app, 'app_workspace_quota')
+    assert passes_quota(app, "app_workspace_quota")
 
     return _get_app_workspace(app)
 
@@ -418,6 +473,7 @@ def app_workspace(controller):
             return render(request, 'my_first_app/template.html', context)
 
     """  # noqa:E501
+
     @wraps(controller)
     def wrapper(*args, **kwargs):
         request = None
@@ -427,9 +483,12 @@ def app_workspace(controller):
                 break
 
         if request is None:
-            raise ValueError('No request given. The app_workspace decorator only works on controllers.')
+            raise ValueError(
+                "No request given. The app_workspace decorator only works on controllers."
+            )
 
         the_workspace = get_app_workspace(request)
 
         return controller(*args, app_workspace=the_workspace, **kwargs)
+
     return wrapper

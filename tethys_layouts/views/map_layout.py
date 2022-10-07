@@ -26,9 +26,16 @@ from tethys_layouts.exceptions import TethysLayoutPropertyException
 from tethys_layouts.mixins.map_layout import MapLayoutMixin
 from tethys_layouts.views.tethys_layout import TethysLayout
 from tethys_sdk.permissions import has_permission
-from tethys_sdk.gizmos import ToggleSwitch, CesiumMapView, MapView, MVView, SlideSheet, SelectInput
+from tethys_sdk.gizmos import (
+    ToggleSwitch,
+    CesiumMapView,
+    MapView,
+    MVView,
+    SlideSheet,
+    SelectInput,
+)
 
-log = logging.getLogger(f'tethys.{__name__}')
+log = logging.getLogger(f"tethys.{__name__}")
 
 
 class MapLayout(TethysLayout, MapLayoutMixin):
@@ -69,23 +76,24 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         wide_nav (bool): Render Layout with a wider navigation menu on left. Defaults to False.
 
     """  # noqa:E501
+
     __metaclass__ = ABCMeta
 
     # Changing these will likely break the MapLayout
-    template_name = 'tethys_layouts/map_layout/map_layout.html'
-    http_method_names = ['get', 'post']
-    _geocode_endpoint = 'http://api.opencagedata.com/geocode/v1/geojson'
+    template_name = "tethys_layouts/map_layout/map_layout.html"
+    http_method_names = ["get", "post"]
+    _geocode_endpoint = "http://api.opencagedata.com/geocode/v1/geojson"
 
     # Required Properties
-    map_subtitle = ''
-    map_title = ''
+    map_subtitle = ""
+    map_title = ""
 
     # Optional Properties
     basemaps = [
-        'Stamen',
-        {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
-        'OpenStreetMap',
-        'ESRI',
+        "Stamen",
+        {"Stamen": {"layer": "toner", "control_label": "Black and White"}},
+        "OpenStreetMap",
+        "ESRI",
     ]
     cesium_ion_token = None
     default_center = [-98.583, 39.833]  # USA Center
@@ -94,17 +102,17 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     geocode_api_key = None
     enforce_permissions = False
     geocode_extent = None
-    geoserver_workspace = ''
+    geoserver_workspace = ""
     initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
     feature_selection_multiselect = False
     feature_selection_sensitivity = 4
-    layer_tab_name = 'Layers'
-    map_type = 'tethys_map_view'
+    layer_tab_name = "Layers"
+    map_type = "tethys_map_view"
     max_zoom = 28
     min_zoom = 0
     plot_slide_sheet = False
-    plotly_version = '2.3.0'
-    sds_setting_name = ''
+    plotly_version = "2.3.0"
+    sds_setting_name = ""
     show_custom_layer = False
     show_legends = False
     show_map_clicks = False
@@ -116,7 +124,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     @classproperty
     def map_extent(cls):
         """4-list<float>: Returns the default map extent (e.g.: [-180, 180, -90, 90])."""
-        if not getattr(cls, '_map_extent', None):
+        if not getattr(cls, "_map_extent", None):
             view, extent = cls._get_map_extent_and_view()
             cls._map_extent = extent
             cls._default_view = view
@@ -125,7 +133,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     @classproperty
     def default_view(cls):
         """MVView: Returns the default view for the map."""
-        if not getattr(cls, '_default_view', None):
+        if not getattr(cls, "_default_view", None):
             view, extent = cls._get_map_extent_and_view()
             cls._map_extent = extent
             cls._default_view = view
@@ -134,10 +142,10 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     @classproperty
     def sds_setting(cls):
         if not cls.sds_setting_name:
-            raise TethysLayoutPropertyException('sds_setting_name', MapLayout)
+            raise TethysLayoutPropertyException("sds_setting_name", MapLayout)
         if not cls.app:
-            log.debug(f'MapLayout.app: {cls.app}')
-            raise TethysLayoutPropertyException('app', MapLayout)
+            log.debug(f"MapLayout.app: {cls.app}")
+            raise TethysLayoutPropertyException("app", MapLayout)
         return cls.app.get_spatial_dataset_service(cls.sds_setting_name)
 
     # Methods to Override  -------------------------------------------------- #
@@ -164,7 +172,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         return cls.initial_map_extent
 
-    def get_plot_for_layer_feature(self, request, layer_name, feature_id, *args, **kwargs):
+    def get_plot_for_layer_feature(
+        self, request, layer_name, feature_id, *args, **kwargs
+    ):
         """
         Retrieves plot data for given feature on given layer.
 
@@ -175,22 +185,17 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             str, list<dict>, dict: plot title, data series, and layout options, respectively.
         """
-        layout = {
-            'xaxis': {
-                'title': layer_name
-            },
-            'yaxis': {
-                'title': 'Undefined'
-            }
-        }
+        layout = {"xaxis": {"title": layer_name}, "yaxis": {"title": "Undefined"}}
 
-        data = [{
-            'name': feature_id,
-            'mode': 'lines',
-            'x': [1, 2, 3, 4],
-            'y': [10, 15, 13, 17],
-        }]
-        return 'Undefined', data, layout
+        data = [
+            {
+                "name": feature_id,
+                "mode": "lines",
+                "x": [1, 2, 3, 4],
+                "y": [10, 15, 13, 17],
+            }
+        ]
+        return "Undefined", data, layout
 
     @classmethod
     def get_vector_style_map(cls):
@@ -200,43 +205,44 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             dict: the style map.
         """
-        color = 'navy'
+        color = "navy"
         style_map = {
-            'Point': {'ol.style.Style': {
-                'image': {'ol.style.Circle': {
-                    'radius': 5,
-                    'fill': {'ol.style.Fill': {
-                        'color': color,
-                    }},
-                    'stroke': {'ol.style.Stroke': {
-                        'color': color,
-                    }}
-                }}
-            }},
-            'LineString': {'ol.style.Style': {
-                'stroke': {'ol.style.Stroke': {
-                    'color': color,
-                    'width': 2
-                }}
-            }},
-            'Polygon': {'ol.style.Style': {
-                'stroke': {'ol.style.Stroke': {
-                    'color': color,
-                    'width': 2
-                }},
-                'fill': {'ol.style.Fill': {
-                    'color': 'rgba(0, 0, 255, 0.1)'
-                }}
-            }},
-            'MultiPolygon': {'ol.style.Style': {
-                'stroke': {'ol.style.Stroke': {
-                    'color': color,
-                    'width': 2
-                }},
-                'fill': {'ol.style.Fill': {
-                    'color': 'rgba(0, 0, 255, 0.1)'
-                }}
-            }},
+            "Point": {
+                "ol.style.Style": {
+                    "image": {
+                        "ol.style.Circle": {
+                            "radius": 5,
+                            "fill": {
+                                "ol.style.Fill": {
+                                    "color": color,
+                                }
+                            },
+                            "stroke": {
+                                "ol.style.Stroke": {
+                                    "color": color,
+                                }
+                            },
+                        }
+                    }
+                }
+            },
+            "LineString": {
+                "ol.style.Style": {
+                    "stroke": {"ol.style.Stroke": {"color": color, "width": 2}}
+                }
+            },
+            "Polygon": {
+                "ol.style.Style": {
+                    "stroke": {"ol.style.Stroke": {"color": color, "width": 2}},
+                    "fill": {"ol.style.Fill": {"color": "rgba(0, 0, 255, 0.1)"}},
+                }
+            },
+            "MultiPolygon": {
+                "ol.style.Style": {
+                    "stroke": {"ol.style.Stroke": {"color": color, "width": 2}},
+                    "fill": {"ol.style.Fill": {"color": "rgba(0, 0, 255, 0.1)"}},
+                }
+            },
         }
 
         return style_map
@@ -263,7 +269,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             JsonResponse: success.
         """
-        return JsonResponse({'success': True, 'message': 'Not Implemented.'})
+        return JsonResponse({"success": True, "message": "Not Implemented."})
 
     def remove_custom_layer(self, request, *args, **kwargs):
         """
@@ -275,7 +281,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             JsonResponse: success.
         """
-        return JsonResponse({'success': True, 'message': 'Not Implemented.'})
+        return JsonResponse({"success": True, "message": "Not Implemented."})
 
     # TethysLayout Method Implementations ----------------------------------- #
     def get_context(self, request, context, *args, **kwargs):
@@ -290,24 +296,26 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             dict: modified context dictionary.
         """  # noqa: E501
         # Compose the Map
-        log.debug('Building MapView...')
+        log.debug("Building MapView...")
         map_view = self._build_map_view(request, *args, **kwargs)
 
         # Add layers to the Map
-        log.debug('Composing layers...')
-        layer_groups = self.compose_layers(request=request, map_view=map_view, *args, **kwargs)
+        log.debug("Composing layers...")
+        layer_groups = self.compose_layers(
+            request=request, map_view=map_view, *args, **kwargs
+        )
         # Add layers to map view if not already added
         for layer_group in layer_groups:
-            for layer in layer_group['layers']:
+            for layer in layer_group["layers"]:
                 if layer not in map_view.layers:
                     map_view.layers.append(layer)
 
-        log.debug(f'Number of Layers: {len(map_view.layers)}')
+        log.debug(f"Number of Layers: {len(map_view.layers)}")
 
         # Check if we need to create a blank custom layer group
         create_custom_layer = True
         for layer_group in layer_groups:
-            if layer_group['id'] == 'custom_layers':
+            if layer_group["id"] == "custom_layers":
                 create_custom_layer = False
                 break
 
@@ -318,13 +326,13 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 id="custom_layers",
                 display_name="Custom Layers",
                 layers=[],
-                layer_control='checkbox',
-                visible=True
+                layer_control="checkbox",
+                visible=True,
             )
             layer_groups.append(custom_layers)
 
         # Build legends
-        log.debug('Building legends for each layer...')
+        log.debug("Building legends for each layer...")
         legends = []
         for layer in map_view.layers:
             legend = self.build_legend(layer)
@@ -332,60 +340,62 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 # Create color ramp selector
                 legend_select_input = SelectInput(
                     name=f'tethys-color-ramp-picker-{legend["legend_id"]}',
-                    options=legend.get('select_options'),
-                    initial=legend.get('initial_option'),
-                    classes='map-layout-color-ramp-picker',
+                    options=legend.get("select_options"),
+                    initial=legend.get("initial_option"),
+                    classes="map-layout-color-ramp-picker",
                     original=True,
                 )
                 legends.append((legend, legend_select_input))
 
         # Override MapView with CesiumMapView if Cesium is the chosen map_type.
         if self.map_type == "cesium_map_view":
-            log.debug('Converting MapView to CesiumMapView...')
+            log.debug("Converting MapView to CesiumMapView...")
             map_view = self._build_ceisum_map_view(map_view)
 
         # Prepare context
-        context.update({
-            'geocode_enabled': self.geocode_api_key is not None,
-            'layer_groups': layer_groups,
-            'layer_tab_name': self.layer_tab_name,
-            'legends': legends,
-            'map_extent': self.map_extent,
-            'map_type': self.map_type,
-            'map_view': map_view,
-            'nav_subtitle': self.map_subtitle,
-            'nav_title': self.map_title,
-            'plotly_version': self.plotly_version,
-            'show_custom_layer': self.show_custom_layer,
-            'show_properties_popup': self.show_properties_popup,
-            'show_map_click_popup': self.show_map_click_popup,
-            'show_legends': self.show_legends,
-            'wide_nav': self.wide_nav,
-            'workspace': self.geoserver_workspace,
-        })
+        context.update(
+            {
+                "geocode_enabled": self.geocode_api_key is not None,
+                "layer_groups": layer_groups,
+                "layer_tab_name": self.layer_tab_name,
+                "legends": legends,
+                "map_extent": self.map_extent,
+                "map_type": self.map_type,
+                "map_view": map_view,
+                "nav_subtitle": self.map_subtitle,
+                "nav_title": self.map_title,
+                "plotly_version": self.plotly_version,
+                "show_custom_layer": self.show_custom_layer,
+                "show_properties_popup": self.show_properties_popup,
+                "show_map_click_popup": self.show_map_click_popup,
+                "show_legends": self.show_legends,
+                "wide_nav": self.wide_nav,
+                "workspace": self.geoserver_workspace,
+            }
+        )
 
-        if context.get('show_public_toggle', False):
+        if context.get("show_public_toggle", False):
             layer_dropdown_toggle = ToggleSwitch(
-                display_text='',
-                name='layer-dropdown-toggle',
-                on_label='Yes',
-                off_label='No',
-                on_style='success',
-                off_style='danger',
+                display_text="",
+                name="layer-dropdown-toggle",
+                on_label="Yes",
+                off_label="No",
+                on_style="success",
+                off_style="danger",
                 initial=True,
-                size='small',
-                classes='layer-dropdown-toggle'
+                size="small",
+                classes="layer-dropdown-toggle",
             )
-            context.update({'layer_dropdown_toggle': layer_dropdown_toggle})
+            context.update({"layer_dropdown_toggle": layer_dropdown_toggle})
 
         # Add plot slide sheet
         plot_slidesheet = SlideSheet(
-            id='plot-slide-sheet',
-            title='Plot',
-            content_template='tethys_layouts/map_layout/map_plot.html'
+            id="plot-slide-sheet",
+            title="Plot",
+            content_template="tethys_layouts/map_layout/map_plot.html",
         )
 
-        context.update({'plot_slide_sheet': plot_slidesheet})
+        context.update({"plot_slide_sheet": plot_slidesheet})
         return context
 
     def get_permissions(self, request, permissions, *args, **kwargs):
@@ -400,16 +410,23 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             dict: modified permissions dictionary.
         """
         map_permissions = {
-            'can_download': not self.enforce_permissions or has_permission(request, 'can_download'),
-            'can_use_geocode': not self.enforce_permissions or has_permission(request, 'use_map_geocode'),
-            'can_use_plot': self.plot_slide_sheet and (
-                    not self.enforce_permissions or has_permission(request, 'use_map_plot')
+            "can_download": not self.enforce_permissions
+            or has_permission(request, "can_download"),
+            "can_use_geocode": not self.enforce_permissions
+            or has_permission(request, "use_map_geocode"),
+            "can_use_plot": self.plot_slide_sheet
+            and (
+                not self.enforce_permissions or has_permission(request, "use_map_plot")
             ),
-            'show_public_toggle': self.show_public_toggle and (
-                    not self.enforce_permissions or has_permission(request, 'toggle_public_layers')
+            "show_public_toggle": self.show_public_toggle
+            and (
+                not self.enforce_permissions
+                or has_permission(request, "toggle_public_layers")
             ),
-            'show_remove': not self.enforce_permissions or has_permission(request, 'remove_layers'),
-            'show_rename': not self.enforce_permissions or has_permission(request, 'rename_layers'),
+            "show_remove": not self.enforce_permissions
+            or has_permission(request, "remove_layers"),
+            "show_rename": not self.enforce_permissions
+            or has_permission(request, "rename_layers"),
         }
         return map_permissions
 
@@ -425,15 +442,17 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             MapView: the MapView gizmo.
         """
         map_view = MapView(
-            height='100%',
-            width='100%',
+            height="100%",
+            width="100%",
             controls=[
-                'Rotate',
-                'FullScreen',
-                {'ZoomToExtent': {
-                    'projection': 'EPSG:4326',
-                    'extent': self.map_extent
-                }}
+                "Rotate",
+                "FullScreen",
+                {
+                    "ZoomToExtent": {
+                        "projection": "EPSG:4326",
+                        "extent": self.map_extent,
+                    }
+                },
             ],
             layers=[],
             view=self.default_view,
@@ -444,14 +463,13 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         # Configure initial basemap visibility
         map_view.disable_basemap = self.should_disable_basemap(
-            request=request,
-            *args, **kwargs
+            request=request, *args, **kwargs
         )
 
         # Configure feature selection
         map_view.feature_selection = {
-            'multiselect': self.feature_selection_multiselect,
-            'sensitivity': self.feature_selection_sensitivity,
+            "multiselect": self.feature_selection_multiselect,
+            "sensitivity": self.feature_selection_sensitivity,
         }
 
         return map_view
@@ -467,8 +485,10 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             CesiumMapView: A CesiumMapView populated with translated layers.
         """
         if not self.cesium_ion_token:
-            raise RuntimeError('You must set the "cesium_ion_token" attribute of the '
-                               'MapLayout to use the Cesium "map_type".')
+            raise RuntimeError(
+                'You must set the "cesium_ion_token" attribute of the '
+                'MapLayout to use the Cesium "map_type".'
+            )
 
         # Translate the MapView.layers into Cesium layers and entities
         layers, entities = self._translate_layers_to_cesium(map_view.layers)
@@ -478,26 +498,26 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         cesium_map_view = CesiumMapView(
             cesium_ion_token=self.cesium_ion_token,
             options={
-                'contextOptions': {
-                    'webgl': {
-                        'xrCompatible': True,
-                        'alpha': True,
-                        'preserveDrawingBuffer': True,
+                "contextOptions": {
+                    "webgl": {
+                        "xrCompatible": True,
+                        "alpha": True,
+                        "preserveDrawingBuffer": True,
                     }
                 },
-                'vrButton': False,
-                'scene3DOnly': True,
+                "vrButton": False,
+                "scene3DOnly": True,
             },
             terrain={
-                'terrainProvider': {
-                    'Cesium.createWorldTerrain': {
-                        'requestVertexNormals': True,
-                        'requestWaterMask': True
+                "terrainProvider": {
+                    "Cesium.createWorldTerrain": {
+                        "requestVertexNormals": True,
+                        "requestWaterMask": True,
                     }
                 }
             },
             layers=layers,
-            entities=entities
+            entities=entities,
         )
         return cesium_map_view
 
@@ -520,11 +540,11 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         # Construct the default view
         view = MVView(
-            projection='EPSG:4326',
+            projection="EPSG:4326",
             center=center,
             zoom=cls.default_zoom,
             maxZoom=cls.max_zoom,
-            minZoom=cls.min_zoom
+            minZoom=cls.min_zoom,
         )
 
         return view, extent
@@ -543,9 +563,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         cesium_layers = []
         cesium_entities = []
         for layer in map_view_layers:
-            if layer['source'] in ['ImageWMS', 'TileWMS']:
+            if layer["source"] in ["ImageWMS", "TileWMS"]:
                 cesium_layers.append(layer)
-            elif layer['source'] in ['GeoJSON']:
+            elif layer["source"] in ["GeoJSON"]:
                 cesium_entities.append(layer)
 
         return cesium_layers, cesium_entities
@@ -562,64 +582,74 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             JsonResponse: title, data, and layout options for the plot.
         """
         # Get request parameters
-        layer_name = request.POST.get('layer_name', '')
-        feature_id = request.POST.get('feature_id', '')
+        layer_name = request.POST.get("layer_name", "")
+        feature_id = request.POST.get("feature_id", "")
 
         # Initialize MapManager
-        title, data, layout = self.get_plot_for_layer_feature(request, layer_name, feature_id, *args, **kwargs)
+        title, data, layout = self.get_plot_for_layer_feature(
+            request, layer_name, feature_id, *args, **kwargs
+        )
 
-        return JsonResponse({'title': title, 'data': data, 'layout': layout})
+        return JsonResponse({"title": title, "data": data, "layout": layout})
 
     def build_legend_item(self, request, *args, **kwargs):
         """
         A jQuery.load() handler method that renders the HTML for a legend.
         """
         # Get request parameters
-        legend_div_id = request.POST.get('div_id')
-        minimum = json.loads(request.POST.get('minimum'))
-        maximum = json.loads(request.POST.get('maximum'))
-        color_ramp = request.POST.get('color_ramp')
-        prefix = request.POST.get('prefix')
-        color_prefix = request.POST.get('color_prefix')
-        first_division = json.loads(request.POST.get('first_division'))
-        layer_id = request.POST.get('layer_id')
+        legend_div_id = request.POST.get("div_id")
+        minimum = json.loads(request.POST.get("minimum"))
+        maximum = json.loads(request.POST.get("maximum"))
+        color_ramp = request.POST.get("color_ramp")
+        prefix = request.POST.get("prefix")
+        color_prefix = request.POST.get("color_prefix")
+        first_division = json.loads(request.POST.get("first_division"))
+        layer_id = request.POST.get("layer_id")
 
         legend = {
-            'divisions': dict(),
+            "divisions": dict(),
         }
 
         divisions = self.generate_custom_color_ramp_divisions(
             min_value=minimum,
             max_value=maximum,
-            color_ramp=color_ramp, prefix=prefix,
+            color_ramp=color_ramp,
+            prefix=prefix,
             color_prefix=color_prefix,
-            first_division=first_division
+            first_division=first_division,
         )
 
         division_string = self.build_param_string(**divisions)
         for label in divisions.keys():
-            if color_prefix in label and int(label.replace(color_prefix, '')) >= first_division:
-                legend['divisions'][float(divisions[label.replace(color_prefix, prefix)])] = divisions[label]
+            if (
+                color_prefix in label
+                and int(label.replace(color_prefix, "")) >= first_division
+            ):
+                legend["divisions"][
+                    float(divisions[label.replace(color_prefix, prefix)])
+                ] = divisions[label]
 
-        legend['divisions'] = collections.OrderedDict(
-            sorted(legend['divisions'].items())
+        legend["divisions"] = collections.OrderedDict(
+            sorted(legend["divisions"].items())
         )
 
         r = render(
             request,
-            'tethys_layouts/map_layout/color_ramp_component.html',
-            {'legend': legend}
+            "tethys_layouts/map_layout/color_ramp_component.html",
+            {"legend": legend},
         )
 
-        html_str = str(r.content, 'utf-8')
-        response = JsonResponse({
-            'success': True,
-            'response': html_str,
-            'div_id': legend_div_id,
-            'color_ramp': color_ramp,
-            'division_string': division_string,
-            'layer_id': layer_id
-        })
+        html_str = str(r.content, "utf-8")
+        response = JsonResponse(
+            {
+                "success": True,
+                "response": html_str,
+                "div_id": legend_div_id,
+                "color_ramp": color_ramp,
+                "division_string": division_string,
+                "layer_id": layer_id,
+            }
+        )
         return response
 
     def build_layer_tree_item(self, request, *args, **kwargs):
@@ -631,106 +661,108 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         try:
             # Get request parameters
-            operation = request.POST.get('operation', 'create')
-            layer_group_name = request.POST.get('layer_group_name')
-            layer_group_id = request.POST.get('layer_group_id')
-            layer_names = json.loads(request.POST.get('layer_names'))
-            layer_ids = json.loads(request.POST.get('layer_ids'))
-            layer_legends = json.loads(request.POST.get('layer_legends'))
-            show_rename = json.loads(request.POST.get('show_rename', 'true'))
-            show_remove = json.loads(request.POST.get('show_remove', 'true'))
-            show_download = json.loads(request.POST.get('show_download', 'false'))
+            operation = request.POST.get("operation", "create")
+            layer_group_name = request.POST.get("layer_group_name")
+            layer_group_id = request.POST.get("layer_group_id")
+            layer_names = json.loads(request.POST.get("layer_names"))
+            layer_ids = json.loads(request.POST.get("layer_ids"))
+            layer_legends = json.loads(request.POST.get("layer_legends"))
+            show_rename = json.loads(request.POST.get("show_rename", "true"))
+            show_remove = json.loads(request.POST.get("show_remove", "true"))
+            show_download = json.loads(request.POST.get("show_download", "false"))
             layers = []
 
             # Reconstruct the MVLayer objects
             for i in range(len(layer_names)):
-                layers.append(self._build_mv_layer(
-                    layer_source="GeoJSON",
-                    layer_name=layer_ids[i],
-                    layer_title=layer_names[i],
-                    layer_variable=layer_legends[i],
-                    options=None,
-                ))
+                layers.append(
+                    self._build_mv_layer(
+                        layer_source="GeoJSON",
+                        layer_name=layer_ids[i],
+                        layer_title=layer_names[i],
+                        layer_variable=layer_legends[i],
+                        options=None,
+                    )
+                )
 
             # Build Layer groups
-            layer_group = self.build_layer_group(layer_group_id, layer_group_name, layers=layers)
+            layer_group = self.build_layer_group(
+                layer_group_id, layer_group_name, layers=layers
+            )
             context = {
-                'layer_group': layer_group,
-                'show_rename': show_rename,
-                'show_remove': show_remove,
-                'show_download': show_download
+                "layer_group": layer_group,
+                "show_rename": show_rename,
+                "show_remove": show_remove,
+                "show_download": show_download,
             }
 
-            if operation == 'create':
-                template = 'tethys_layouts/map_layout/layer_group_content.html'
+            if operation == "create":
+                template = "tethys_layouts/map_layout/layer_group_content.html"
             else:
                 # Only works for one layer at a time for now.
-                template = 'tethys_layouts/map_layout/layer_item_content.html'
-                context['layer'] = layers[0]
+                template = "tethys_layouts/map_layout/layer_item_content.html"
+                context["layer"] = layers[0]
 
             r = render(request, template, context)
 
-            html_str = str(r.content, 'utf-8')
-            return JsonResponse({'success': True, 'response': html_str})
+            html_str = str(r.content, "utf-8")
+            return JsonResponse({"success": True, "response": html_str})
         except Exception:
-            log.exception('An unexpected error has occurred.')
-            return JsonResponse({'success': False, 'error': 'An unexpected error has occurred.'})
+            log.exception("An unexpected error has occurred.")
+            return JsonResponse(
+                {"success": False, "error": "An unexpected error has occurred."}
+            )
 
     def find_location_by_query(self, request, *args, **kwargs):
-        """"
+        """ "
         An AJAX handler that performs geocoding queries.
 
         Args:
             request(HttpRequest): The request.
         """
-        if self.enforce_permissions and not has_permission(request, 'use_map_geocode'):
-            json = {'success': False,
-                    'error': 'Permission Denied: user does not have permission to use geocoding.'}
+        if self.enforce_permissions and not has_permission(request, "use_map_geocode"):
+            json = {
+                "success": False,
+                "error": "Permission Denied: user does not have permission to use geocoding.",
+            }
             return JsonResponse(json)
 
         if not self.geocode_api_key:
-            raise RuntimeError('Cannot run GeoCode query because no API token was supplied. Please provide the '
-                               'API key via the "geocode_api_key" attribute of the MapLayoutView.')
+            raise RuntimeError(
+                "Cannot run GeoCode query because no API token was supplied. Please provide the "
+                'API key via the "geocode_api_key" attribute of the MapLayoutView.'
+            )
 
-        query = request.POST.get('q', None)
+        query = request.POST.get("q", None)
 
-        params = {
-            'query': query,
-            'key': self.geocode_api_key
-        }
+        params = {"query": query, "key": self.geocode_api_key}
 
         if isinstance(self.geocode_extent, (list, tuple)):
             geocode_extent = [str(i) for i in self.geocode_extent]
-            params['bounds'] = ','.join(geocode_extent)
+            params["bounds"] = ",".join(geocode_extent)
 
-        response = requests.get(
-            url=self._geocode_endpoint,
-            params=params
-        )
+        response = requests.get(url=self._geocode_endpoint, params=params)
 
         if response.status_code != 200:
-            json = {'success': False,
-                    'error': response.text}
+            json = {"success": False, "error": response.text}
             return JsonResponse(json)
 
         # Construct friendly name for address select
         r_json = response.json()
 
         # Construct success json and parse out needed info
-        json = {'success': True,
-                'results': []}
+        json = {"success": True, "results": []}
 
-        for address in r_json['features']:
-            point = address['geometry']['coordinates']
+        for address in r_json["features"]:
+            point = address["geometry"]["coordinates"]
             scale = 0.001
 
-            if 'bounds' in address['properties']:
-                bounds = address['properties']['bounds']
+            if "bounds" in address["properties"]:
+                bounds = address["properties"]["bounds"]
 
-                minx = float(bounds['southwest']['lng'])
-                maxx = float(bounds['northeast']['lng'])
-                miny = float(bounds['southwest']['lat'])
-                maxy = float(bounds['northeast']['lat'])
+                minx = float(bounds["southwest"]["lng"])
+                maxx = float(bounds["northeast"]["lng"])
+                miny = float(bounds["southwest"]["lat"])
+                maxy = float(bounds["northeast"]["lat"])
 
                 diffx = maxx - minx
 
@@ -749,18 +781,20 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             bbox = [minx, miny, maxx, maxy]
 
             max_name_length = 40
-            display_name = address['properties']['formatted']
+            display_name = address["properties"]["formatted"]
             if len(display_name) > max_name_length:
-                display_name = display_name[:max_name_length] + '...'
+                display_name = display_name[:max_name_length] + "..."
 
             geocode_id = uuid.uuid4()
 
-            json['results'].append({
-                'text': display_name,
-                'point': point,
-                'bbox': bbox,
-                'id': 'geocode-' + str(geocode_id)
-            })
+            json["results"].append(
+                {
+                    "text": display_name,
+                    "point": point,
+                    "bbox": bbox,
+                    "id": "geocode-" + str(geocode_id),
+                }
+            )
 
         return JsonResponse(json)
 
@@ -775,17 +809,19 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             JsonResponse: success.
         """
-        json_data = json.loads(request.POST.get('data', ''))
-        layer_id = request.POST.get('id', '0')
-        json_type = json_data['features'][0]['geometry']['type']
+        json_data = json.loads(request.POST.get("data", ""))
+        layer_id = request.POST.get("id", "0")
+        json_type = json_data["features"][0]["geometry"]["type"]
         shape_types = {
-            'Polygon': shapefile.POLYGON,
-            'Point': shapefile.POINT,
-            'LineString': shapefile.POLYLINE,
+            "Polygon": shapefile.POLYGON,
+            "Point": shapefile.POINT,
+            "LineString": shapefile.POLYLINE,
         }
 
         if json_type not in shape_types:
-            raise ValueError('Only GeoJson of the following types are supported: Polygon, Point, or LineString')
+            raise ValueError(
+                "Only GeoJson of the following types are supported: Polygon, Point, or LineString"
+            )
 
         with tempfile.TemporaryDirectory() as tmpdir:
             shp_base = layer_id + "_" + json_type
@@ -795,28 +831,30 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 shpfile_obj.autoBalance = 1
 
                 # Define fields from geojson properties
-                columns_list = json_data['features'][0]['properties'].keys()
+                columns_list = json_data["features"][0]["properties"].keys()
                 for col in columns_list:
-                    shpfile_obj.field(str(col), 'C', '50')
+                    shpfile_obj.field(str(col), "C", "50")
 
                 # Extract geometry and attributes from geojson
                 geometries = list()
                 attributes = list()
-                for feature in json_data['features']:
-                    if feature['geometry']['type'] == json_type:
-                        geometries.append(feature['geometry']['coordinates'])
+                for feature in json_data["features"]:
+                    if feature["geometry"]["type"] == json_type:
+                        geometries.append(feature["geometry"]["coordinates"])
                     attributes_per_feature = list()
                     for attribute_feature in columns_list:
-                        attributes_per_feature.append(str(feature['properties'][str(attribute_feature)]))
+                        attributes_per_feature.append(
+                            str(feature["properties"][str(attribute_feature)])
+                        )
                     attributes.append(attributes_per_feature)
 
                 # Write geometry
                 for geo in geometries:
-                    if json_type == 'Polygon':
+                    if json_type == "Polygon":
                         shpfile_obj.poly(polys=geo)
-                    elif json_type == 'Point':
+                    elif json_type == "Point":
                         shpfile_obj.point(geo[0], geo[1])
-                    elif json_type == 'LineString':
+                    elif json_type == "LineString":
                         shpfile_obj.line(lines=[geo])
 
                 # Add records
@@ -824,20 +862,22 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                     shpfile_obj.record(*attr)
 
             # write projection file
-            with open(shp_file + '.prj', 'w') as prj_file:
-                prj_str = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],' \
-                        'PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'
+            with open(shp_file + ".prj", "w") as prj_file:
+                prj_str = (
+                    'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],'
+                    'PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'
+                )
                 prj_file.write(prj_str)
 
             in_memory = BytesIO()
-            shp_file_ext = ['prj', 'shp', 'dbf', 'shx']
+            shp_file_ext = ["prj", "shp", "dbf", "shx"]
 
             with ZipFile(in_memory, "w") as my_zip:
                 for ext in shp_file_ext:
-                    my_zip.write(f'{shp_file}.{ext}', f'{shp_base}.{ext}')
+                    my_zip.write(f"{shp_file}.{ext}", f"{shp_base}.{ext}")
 
-        response = HttpResponse(content_type='application/zip')
-        response['Content-Disposition'] = f'attachment; filename="{shp_base}.zip"'
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = f'attachment; filename="{shp_base}.zip"'
 
         in_memory.seek(0)
         response.write(in_memory.read())
@@ -849,10 +889,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         Get the public wms endpoint for GeoServer.
         """
-        wms_endpoint = cls.sds_setting.public_endpoint if public else cls.sds_setting.endpoint
-        wms_endpoint = wms_endpoint.replace('rest', 'wms')
+        wms_endpoint = (
+            cls.sds_setting.public_endpoint if public else cls.sds_setting.endpoint
+        )
+        wms_endpoint = wms_endpoint.replace("rest", "wms")
 
         # Add trailing slash for consistency.
-        if wms_endpoint[-1] != '/':
-            wms_endpoint += '/'
+        if wms_endpoint[-1] != "/":
+            wms_endpoint += "/"
         return wms_endpoint

@@ -2,39 +2,74 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-from tethys_config.init import initial_settings, reverse_init, custom_settings, reverse_custom
+from tethys_config.init import (
+    initial_settings,
+    reverse_init,
+    custom_settings,
+    reverse_custom,
+)
 
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_config', '0001_initial_30'), ('tethys_config', '0002_auto_20200410_1731'), ('tethys_config', '0003_auto_20211220_2307'), ('tethys_config', '0004_auto_20211221_2300'), ('tethys_config', '0005_add_new_settings')]
+    replaces = [
+        ("tethys_config", "0001_initial_30"),
+        ("tethys_config", "0002_auto_20200410_1731"),
+        ("tethys_config", "0003_auto_20211220_2307"),
+        ("tethys_config", "0004_auto_20211221_2300"),
+        ("tethys_config", "0005_add_new_settings"),
+    ]
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='SettingsCategory',
+            name="SettingsCategory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(max_length=30)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(max_length=30)),
             ],
             options={
-                'verbose_name': 'Settings Category',
-                'verbose_name_plural': 'Site Settings',
-                'ordering': ['pk'],
+                "verbose_name": "Settings Category",
+                "verbose_name_plural": "Site Settings",
+                "ordering": ["pk"],
             },
         ),
         migrations.CreateModel(
-            name='Setting',
+            name="Setting",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(max_length=30)),
-                ('content', models.TextField(blank=True, max_length=500)),
-                ('date_modified', models.DateTimeField(auto_now=True, verbose_name='date modified')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tethys_config.settingscategory')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(max_length=30)),
+                ("content", models.TextField(blank=True, max_length=500)),
+                (
+                    "date_modified",
+                    models.DateTimeField(auto_now=True, verbose_name="date modified"),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tethys_config.settingscategory",
+                    ),
+                ),
             ],
         ),
         migrations.RunPython(initial_settings, reverse_init),

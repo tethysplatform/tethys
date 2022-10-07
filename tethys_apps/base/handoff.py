@@ -39,7 +39,9 @@ class HandoffManager:
         """
         String representation
         """
-        return '<Handoff Manager: app={0}, handlers={1}>'.format(self.app, [handler.name for handler in self.handlers])
+        return "<Handoff Manager: app={0}, handlers={1}>".format(
+            self.app, [handler.name for handler in self.handlers]
+        )
 
     def get_capabilities(self, app_name=None, external_only=False, jsonify=False):
         """
@@ -84,7 +86,9 @@ class HandoffManager:
                 if handler.name == handler_name:
                     return handler
 
-    def handoff(self, request, handler_name, app_name=None, external_only=True, **kwargs):
+    def handoff(
+        self, request, handler_name, app_name=None, external_only=True, **kwargs
+    ):
         """
         Calls handler if it is not internal and if it exists for the app.
 
@@ -98,11 +102,13 @@ class HandoffManager:
             HttpResponse object.
         """  # noqa: E501
 
-        error = {"message": "",
-                 "code": 400,
-                 "status": "error",
-                 "app_name": app_name or self.app.name,
-                 "handler_name": handler_name}
+        error = {
+            "message": "",
+            "code": 400,
+            "status": "error",
+            "app_name": app_name or self.app.name,
+            "handler_name": handler_name,
+        }
 
         manager = self._get_handoff_manager_for_app(app_name)
 
@@ -113,12 +119,19 @@ class HandoffManager:
                     urlish = handler(request, **kwargs)
                     return redirect(urlish)
                 except TypeError as e:
-                    error['message'] = "HTTP 400 Bad Request: {0}. ".format(str(e))
-                    return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
+                    error["message"] = "HTTP 400 Bad Request: {0}. ".format(str(e))
+                    return HttpResponseBadRequest(
+                        json.dumps(error), content_type="application/javascript"
+                    )
 
-        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".\
-            format(manager.app.name, handler_name)
-        return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
+        error[
+            "message"
+        ] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(
+            manager.app.name, handler_name
+        )
+        return HttpResponseBadRequest(
+            json.dumps(error), content_type="application/javascript"
+        )
 
     def _get_handoff_manager_for_app(self, app_name):
         """
@@ -173,21 +186,26 @@ class HandoffHandler(TethysFunctionExtractor):
 
         # make each instance callable
         self.__class__ = type(self.__class__.__name__, (self.__class__,), {})
-        self.__class__.__call__ = lambda this, *args, **kwargs: this.function(*args, **kwargs)
+        self.__class__.__call__ = lambda this, *args, **kwargs: this.function(
+            *args, **kwargs
+        )
 
     def __repr__(self):
         """
         String representation
         """
-        return '<Handoff Handler: name={0}, handler={1}>'.format(self.name, self.handler)
+        return "<Handoff Handler: name={0}, handler={1}>".format(
+            self.name, self.handler
+        )
 
     def __dict__(self):
         """
         JSON representation
         """
-        return {'name': self.name,
-                'arguments': self.json_arguments,
-                }
+        return {
+            "name": self.name,
+            "arguments": self.json_arguments,
+        }
 
     @property
     def arguments(self):
@@ -202,7 +220,7 @@ class HandoffHandler(TethysFunctionExtractor):
         Returns self.arguments with the 'request' argument removed.
         """
         args = self.arguments
-        if 'request' in args:
-            index = args.index('request')
+        if "request" in args:
+            index = args.index("request")
             args.pop(index)
         return args

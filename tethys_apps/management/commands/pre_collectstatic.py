@@ -22,9 +22,14 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('-l', '--link', action='store_true', default=False,
-                            help='Link static directories of apps into STATIC_ROOT instead of copying them. '
-                                 'Not recommended.')
+        parser.add_argument(
+            "-l",
+            "--link",
+            action="store_true",
+            default=False,
+            help="Link static directories of apps into STATIC_ROOT instead of copying them. "
+            "Not recommended.",
+        )
 
     def handle(self, *args, **kwargs):
         """
@@ -32,33 +37,43 @@ class Command(BaseCommand):
         STATIC_ROOT parameter of the settings.py. Do this prior to running Django's collectstatic method.
         """  # noqa: E501
         if not settings.STATIC_ROOT:
-            print('WARNING: Cannot find the STATIC_ROOT setting. Please provide the path to the static directory using '
-                  'the STATIC_ROOT setting in the portal_config.yml file and try again.')
+            print(
+                "WARNING: Cannot find the STATIC_ROOT setting. Please provide the path to the static directory using "
+                "the STATIC_ROOT setting in the portal_config.yml file and try again."
+            )
             exit(1)
 
         # Read settings
         static_root = settings.STATIC_ROOT
 
         # Get a list of installed apps and extensions
-        installed_apps_and_extensions = get_installed_tethys_items(apps=True, extensions=True)
+        installed_apps_and_extensions = get_installed_tethys_items(
+            apps=True, extensions=True
+        )
 
         # Provide feedback to user
-        print('INFO: Collecting static and public directories of apps and extensions to "{0}".'.format(static_root))
+        print(
+            'INFO: Collecting static and public directories of apps and extensions to "{0}".'.format(
+                static_root
+            )
+        )
 
         # Get the link option
-        link_opt = kwargs.get('link')
+        link_opt = kwargs.get("link")
 
         for item, path in installed_apps_and_extensions.items():
             # Check for both variants of the static directory (named either public or static)
-            public_path = os.path.join(path, 'public')
-            static_path = os.path.join(path, 'static')
+            public_path = os.path.join(path, "public")
+            static_path = os.path.join(path, "static")
 
             if os.path.isdir(public_path):
                 item_static_source_dir = public_path
             elif os.path.isdir(static_path):
                 item_static_source_dir = static_path
             else:
-                print(f'WARNING: Cannot find a directory named "static" or "public" for app "{item}". Skipping...')
+                print(
+                    f'WARNING: Cannot find a directory named "static" or "public" for app "{item}". Skipping...'
+                )
                 continue
 
             # Path for app in the STATIC_ROOT directory
@@ -79,8 +94,16 @@ class Command(BaseCommand):
             # Create appropriate symbolic link
             if link_opt:
                 os.symlink(item_static_source_dir, item_static_root_dir)
-                print('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(item))
+                print(
+                    'INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(
+                        item
+                    )
+                )
 
             else:
                 shutil.copytree(item_static_source_dir, item_static_root_dir)
-                print('INFO: Successfully copied public directory to STATIC_ROOT for app "{0}".'.format(item))
+                print(
+                    'INFO: Successfully copied public directory to STATIC_ROOT for app "{0}".'.format(
+                        item
+                    )
+                )

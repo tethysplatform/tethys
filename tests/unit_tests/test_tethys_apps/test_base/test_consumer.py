@@ -18,16 +18,22 @@ class TestConsumer(TethysTestCase):
             os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
             settings.CHANNEL_LAYERS = {}
 
-            communicator = WebsocketCommunicator(TestWS.as_asgi(), "/ws/test-app/test-app-ws/")
+            communicator = WebsocketCommunicator(
+                TestWS.as_asgi(), "/ws/test-app/test-app-ws/"
+            )
             connected, subprotocol = await communicator.connect()
 
             # Test connection
             self.assertTrue(connected)
 
             # Test sending and receiving messages
-            await communicator.send_to(text_data=json.dumps({'client_message': "This is a consumer test"}))
+            await communicator.send_to(
+                text_data=json.dumps({"client_message": "This is a consumer test"})
+            )
             response = await communicator.receive_from()
-            self.assertEqual(json.loads(response)["server_message"], "This is a consumer test")
+            self.assertEqual(
+                json.loads(response)["server_message"], "This is a consumer test"
+            )
 
             # Close
             await communicator.disconnect()

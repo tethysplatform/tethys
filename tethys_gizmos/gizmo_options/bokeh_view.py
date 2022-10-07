@@ -8,7 +8,7 @@ from django.utils.functional import classproperty
 
 from .base import TethysGizmoOptions
 
-__all__ = ['BokehView']
+__all__ = ["BokehView"]
 
 
 class BokehView(TethysGizmoOptions):
@@ -220,11 +220,20 @@ class BokehView(TethysGizmoOptions):
         {% gizmo time_series_plot %}
         {% gizmo hexbin_plot %}
     """
+
     gizmo_name = "bokeh_view"
     _bk_resources = None
 
-    def __init__(self, plot_input, height=None, width='100%',
-                 attributes='', classes='', divid='', hidden=False):
+    def __init__(
+        self,
+        plot_input,
+        height=None,
+        width="100%",
+        attributes="",
+        classes="",
+        divid="",
+        hidden=False,
+    ):
         """
         Constructor
         """
@@ -240,19 +249,19 @@ class BokehView(TethysGizmoOptions):
     def bk_resources(cls):
         if cls._bk_resources is None:
             # configure bokeh resources
-            default = 'server' if settings.STATICFILES_USE_NPM else 'cdn'
+            default = "server" if settings.STATICFILES_USE_NPM else "cdn"
             mode = bk_settings.resources(default=default)
-            kwargs = {'mode': mode}
-            if mode == 'server':
-                kwargs['root_url'] = '/'
+            kwargs = {"mode": mode}
+            if mode == "server":
+                kwargs["root_url"] = "/"
             cls._bk_resources = Resources(**kwargs)
         return cls._bk_resources
 
     @classmethod
     def _get_bokeh_resources(cls, resource_type):
-        files = getattr(cls.bk_resources, f'{resource_type}_files')
-        if cls.bk_resources.mode == 'server':
-            files = [f[len('/static'):] for f in files]
+        files = getattr(cls.bk_resources, f"{resource_type}_files")
+        if cls.bk_resources.mode == "server":
+            files = [f[len("/static") :] for f in files]
         return files
 
     @classmethod
@@ -261,7 +270,7 @@ class BokehView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return cls._get_bokeh_resources('css')
+        return cls._get_bokeh_resources("css")
 
     @classmethod
     def get_vendor_js(cls):
@@ -269,4 +278,4 @@ class BokehView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return cls._get_bokeh_resources('js')
+        return cls._get_bokeh_resources("js")

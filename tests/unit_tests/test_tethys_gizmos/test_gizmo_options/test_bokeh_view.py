@@ -14,11 +14,11 @@ class TestBokehView(unittest.TestCase):
     def test_BokehView(self):
         plot = figure(plot_height=300)
         plot.circle([1, 2], [3, 4])
-        attr = {'title': 'test title', 'description': 'test attributes'}
+        attr = {"title": "test title", "description": "test attributes"}
         result = bokeh_view.BokehView(plot, attributes=attr)
 
-        self.assertIn('test attributes', result['attributes']['description'])
-        self.assertIn('Circle', result['script'])
+        self.assertIn("test attributes", result["attributes"]["description"])
+        self.assertIn("Circle", result["script"])
 
     def test_get_vendor_css(self):
         result = bokeh_view.BokehView.get_vendor_css()
@@ -26,20 +26,20 @@ class TestBokehView(unittest.TestCase):
 
     def test_get_vendor_js(self):
         result = bokeh_view.BokehView.get_vendor_js()
-        self.assertIn('.js', result[0])
-        self.assertNotIn('.css', result[0])
+        self.assertIn(".js", result[0])
+        self.assertNotIn(".css", result[0])
 
-    @mock.patch('tethys_gizmos.gizmo_options.bokeh_view.bk_settings')
+    @mock.patch("tethys_gizmos.gizmo_options.bokeh_view.bk_settings")
     def test_bokeh_resources(self, mock_bk_settings):
-        mock_bk_settings.resources.return_value = 'server'
+        mock_bk_settings.resources.return_value = "server"
         bokeh_resources = bokeh_view.BokehView.bk_resources
-        self.assertEqual(bokeh_resources.mode, 'server')
-        self.assertEqual(bokeh_resources.root_url, '/')
+        self.assertEqual(bokeh_resources.mode, "server")
+        self.assertEqual(bokeh_resources.root_url, "/")
 
-    @mock.patch('tethys_gizmos.gizmo_options.bokeh_view.BokehView.bk_resources')
+    @mock.patch("tethys_gizmos.gizmo_options.bokeh_view.BokehView.bk_resources")
     def test_get_bokeh_resources_server(self, mock_resources):
-        mock_resources.mode = 'server'
-        mock_resources.js_files = ['/static/test.js', '/static/test1.js']
-        files = bokeh_view.BokehView._get_bokeh_resources('js')
+        mock_resources.mode = "server"
+        mock_resources.js_files = ["/static/test.js", "/static/test1.js"]
+        files = bokeh_view.BokehView._get_bokeh_resources("js")
         for f in files:
-            self.assertNotIn('/static', f)
+            self.assertNotIn("/static", f)

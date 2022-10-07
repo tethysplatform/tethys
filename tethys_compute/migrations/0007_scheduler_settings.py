@@ -8,25 +8,31 @@ class Migration(migrations.Migration):
     replaces = []
 
     dependencies = [
-        ('tethys_compute', '0006_alter_condorpyjob__attributes'),
+        ("tethys_compute", "0006_alter_condorpyjob__attributes"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='condorscheduler',
-            name='port',
+            model_name="condorscheduler",
+            name="port",
             field=models.IntegerField(blank=True, default=22, null=True),
         ),
         migrations.AlterModelOptions(
-            name='condorscheduler',
-            options={'verbose_name': 'HTCondor Scheduler', 'verbose_name_plural': 'HTCondor Schedulers'},
+            name="condorscheduler",
+            options={
+                "verbose_name": "HTCondor Scheduler",
+                "verbose_name_plural": "HTCondor Schedulers",
+            },
         ),
         migrations.AlterModelOptions(
-            name='daskscheduler',
-            options={'verbose_name': 'Dask Scheduler', 'verbose_name_plural': 'Dask Schedulers'},
+            name="daskscheduler",
+            options={
+                "verbose_name": "Dask Scheduler",
+                "verbose_name_plural": "Dask Schedulers",
+            },
         ),
         migrations.AlterModelOptions(
-            name='scheduler',
-            options={'verbose_name': 'Scheduler', 'verbose_name_plural': 'Schedulers'},
+            name="scheduler",
+            options={"verbose_name": "Scheduler", "verbose_name_plural": "Schedulers"},
         ),
     ]

@@ -14,6 +14,7 @@ class CondorScheduler(Scheduler):
     """
     Scheduler for Condor jobs.
     """
+
     port = models.IntegerField(default=22, blank=True, null=True)
     username = models.CharField(max_length=1024, blank=True, null=True)
     password = models.CharField(max_length=1024, blank=True, null=True)
@@ -21,5 +22,5 @@ class CondorScheduler(Scheduler):
     private_key_pass = models.CharField(max_length=1024, blank=True, null=True)
 
     class Meta:
-        verbose_name = 'HTCondor Scheduler'
-        verbose_name_plural = 'HTCondor Schedulers'
+        verbose_name = "HTCondor Scheduler"
+        verbose_name_plural = "HTCondor Schedulers"

@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 def sync_resource_quota_handlers():
@@ -19,31 +19,39 @@ def sync_resource_quota_handlers():
     from tethys_quotas.handlers.base import ResourceQuotaHandler
     from tethys_sdk.quotas import codenames
 
-    if hasattr(settings, 'RESOURCE_QUOTA_HANDLERS'):
+    if hasattr(settings, "RESOURCE_QUOTA_HANDLERS"):
         quota_codenames = []
         for quota_class_str in settings.RESOURCE_QUOTA_HANDLERS:
             try:
-                components = quota_class_str.split('.')
-                mod = __import__('.'.join(components[:-1]), fromlist=[components[-1]])
+                components = quota_class_str.split(".")
+                mod = __import__(".".join(components[:-1]), fromlist=[components[-1]])
                 class_obj = getattr(mod, components[-1])
-            except:  # noqa: E722
-                log.warning("Unable to load ResourceQuotaHandler: {} is not correctly formatted class or does not exist"
-                            .format(quota_class_str))
+            except Exception:
+                log.warning(
+                    "Unable to load ResourceQuotaHandler: {} is not correctly formatted class or does not exist".format(
+                        quota_class_str
+                    )
+                )
                 continue
 
             if not issubclass(class_obj, ResourceQuotaHandler):
-                log.warning("Unable to load ResourceQuotaHandler: {} is not a subclass of ResourceQuotaHandler"
-                            .format(quota_class_str))
+                log.warning(
+                    "Unable to load ResourceQuotaHandler: {} is not a subclass of ResourceQuotaHandler".format(
+                        quota_class_str
+                    )
+                )
                 continue
             else:
                 for entity in class_obj.applies_to:
-                    entity_type = entity.split('.')[-1]
-                    codename = '{}_{}'.format(entity_type.lower(), class_obj.codename)
+                    entity_type = entity.split(".")[-1]
+                    codename = "{}_{}".format(entity_type.lower(), class_obj.codename)
                     quota_codenames.append(codename)
 
                     if not ResourceQuota.objects.filter(codename=codename).exists():
                         resource_quota = ResourceQuota(
-                            codename="{}_{}".format(entity_type.lower(), class_obj.codename),
+                            codename="{}_{}".format(
+                                entity_type.lower(), class_obj.codename
+                            ),
                             name="{} {}".format(entity_type, class_obj.name),
                             description=class_obj.description,
                             default=class_obj.default,
@@ -51,7 +59,7 @@ def sync_resource_quota_handlers():
                             applies_to=entity,
                             impose_default=True,
                             help=class_obj.help,
-                            _handler=quota_class_str
+                            _handler=quota_class_str,
                         )
                         resource_quota.save()
 
@@ -84,7 +92,7 @@ def passes_quota(entity, codename, raise_on_false=True):
         return passes
 
     except ResourceQuota.DoesNotExist:
-        log.info('ResourceQuota with codename {} does not exist.'.format(codename))
+        log.info("ResourceQuota with codename {} does not exist.".format(codename))
         return True
 
 
@@ -107,12 +115,16 @@ def get_resource_available(entity, codename):
         current_use = rqh.get_current_use()
 
     except ResourceQuota.DoesNotExist:
-        log.warning('Invalid Codename: ResourceQuota with codename {} does not exist.'.format(codename))
+        log.warning(
+            "Invalid Codename: ResourceQuota with codename {} does not exist.".format(
+                codename
+            )
+        )
         return None
 
     total_available = get_quota(entity, codename)
-    if total_available['quota']:
-        total_available = total_available['quota']
+    if total_available["quota"]:
+        total_available = total_available["quota"]
         resource_available = total_available - current_use
     else:
         return None
@@ -120,8 +132,7 @@ def get_resource_available(entity, codename):
     if resource_available < 0:
         resource_available = 0
 
-    return {'resource_available': resource_available,
-            'units': rq.units}
+    return {"resource_available": resource_available, "units": rq.units}
 
 
 def get_quota(entity, codename):
@@ -140,15 +151,19 @@ def get_quota(entity, codename):
     from tethys_quotas.models import ResourceQuota, UserQuota, TethysAppQuota
 
     result = {
-        'quota': None,
-        'units': None,
+        "quota": None,
+        "units": None,
     }
     try:
         rq = ResourceQuota.objects.get(codename=codename)
-        result['units'] = rq.units
+        result["units"] = rq.units
 
     except ResourceQuota.DoesNotExist:
-        log.warning('Invalid Codename: ResourceQuota with codename {} does not exist.'.format(codename))
+        log.warning(
+            "Invalid Codename: ResourceQuota with codename {} does not exist.".format(
+                codename
+            )
+        )
         return result
 
     if not rq.active:
@@ -168,14 +183,14 @@ def get_quota(entity, codename):
 
         quota = eq.value
         if quota:
-            result['quota'] = quota
+            result["quota"] = quota
             return result
 
     except (UserQuota.DoesNotExist, TethysAppQuota.DoesNotExist):
         pass
 
     if rq.impose_default:
-        result['quota'] = rq.default
+        result["quota"] = rq.default
 
     return result
 
@@ -190,7 +205,7 @@ def _convert_storage_units(units, amount):
 
     amount = amount * base_conversion[0]
 
-    for factor, suffix in base_units:
+    for factor, suffix in base_units:  # noqa: B007
         if amount >= factor:
             break
     amount = int(amount / factor)
@@ -205,10 +220,10 @@ def _convert_storage_units(units, amount):
 
 def _get_storage_units():
     return [
-        (1024 ** 5, ' PB'),
-        (1024 ** 4, ' TB'),
-        (1024 ** 3, ' GB'),
-        (1024 ** 2, ' MB'),
-        (1024 ** 1, ' KB'),
-        (1024 ** 0, (' byte', ' bytes')),
+        (1024**5, " PB"),
+        (1024**4, " TB"),
+        (1024**3, " GB"),
+        (1024**2, " MB"),
+        (1024**1, " KB"),
+        (1024**0, (" byte", " bytes")),
     ]

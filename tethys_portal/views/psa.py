@@ -16,30 +16,33 @@ from social_django.views import _do_login
 from tethys_portal.forms import SsoTenantForm
 from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
-NAMESPACE = getattr(settings, setting_name('URL_NAMESPACE'), None) or 'social'
-log = logging.getLogger(f'tethys.{__name__}')
+NAMESPACE = getattr(settings, setting_name("URL_NAMESPACE"), None) or "social"
+log = logging.getLogger(f"tethys.{__name__}")
 
 
 @never_cache
-@psa('social:complete')
+@psa("social:complete")
 def auth(request, backend):
     # Redirect to tenant page if MULTI_TENANT setting configured for supported backend
-    if isinstance(request.backend, MultiTenantMixin) and request.backend.setting('MULTI_TENANT', None) is not None:
-        return redirect('social:tenant', backend=backend)
+    if (
+        isinstance(request.backend, MultiTenantMixin)
+        and request.backend.setting("MULTI_TENANT", None) is not None
+    ):
+        return redirect("social:tenant", backend=backend)
     return do_auth(request.backend, redirect_name=REDIRECT_FIELD_NAME)
 
 
 @never_cache
 @csrf_exempt
-@psa('social:complete')
+@psa("social:complete")
 def complete(request, backend, *args, **kwargs):
     """Authentication complete view"""
     if isinstance(request.backend, MultiTenantMixin):
         # Get tenant name from session storage
-        saved_tenant = request.backend.strategy.session_get('tenant')
+        saved_tenant = request.backend.strategy.session_get("tenant")
         if saved_tenant is None:
             log.error('Session contains no value for "tenant".')
-            return redirect('accounts:login')
+            return redirect("accounts:login")
 
         try:
             # Setting the tenant on the backend performs normalization and validation of tenant
@@ -47,30 +50,38 @@ def complete(request, backend, *args, **kwargs):
             request.backend.tenant = saved_tenant
         except (ImproperlyConfigured, ValueError) as e:
             log.error(str(e))
-            return redirect('accounts:login')
+            return redirect("accounts:login")
 
-    return do_complete(request.backend, _do_login, user=request.user,
-                       redirect_name=REDIRECT_FIELD_NAME, request=request,
-                       *args, **kwargs)
+    return do_complete(
+        request.backend,
+        _do_login,
+        *args,
+        user=request.user,
+        redirect_name=REDIRECT_FIELD_NAME,
+        request=request,
+        **kwargs,
+    )
 
 
 @never_cache
-@psa('social:complete')
+@psa("social:complete")
 def tenant(request, backend):
     """
     Handle tenant page request.
     """
     # Send back to login of tenant page accessed for non-multi-tenant backend
     if not isinstance(request.backend, MultiTenantMixin):
-        log.error(f'Backend "{request.backend.name}" does not support MULTI_TENANT features.')
-        return redirect('accounts:login')
+        log.error(
+            f'Backend "{request.backend.name}" does not support MULTI_TENANT features.'
+        )
+        return redirect("accounts:login")
 
     # Get the Tenant alias to use for titles in the form
-    tenant_alias = getattr(settings, 'SSO_TENANT_ALIAS', 'Tenant').title()
+    tenant_alias = getattr(settings, "SSO_TENANT_ALIAS", "Tenant").title()
 
     # Handle form
-    if request.method == 'POST':
-        if 'sso-tenant-submit' not in request.POST:
+    if request.method == "POST":
+        if "sso-tenant-submit" not in request.POST:
             return HttpResponseBadRequest()
         else:
             # Create form bound to request data
@@ -78,31 +89,35 @@ def tenant(request, backend):
 
             # Validate the form
             if form.is_valid():
-                cleaned_tenant = form.cleaned_data.get('tenant')
+                cleaned_tenant = form.cleaned_data.get("tenant")
 
                 try:
                     # Setting the tenant on the backend performs normalization and validation of tenant
                     # Part of the validation is that the provided tenant is in the MULTI_TENANT setting.
                     request.backend.tenant = cleaned_tenant
-                    response = do_auth(request.backend, redirect_name=REDIRECT_FIELD_NAME)
+                    response = do_auth(
+                        request.backend, redirect_name=REDIRECT_FIELD_NAME
+                    )
                     return response
                 except ImproperlyConfigured as e:
                     # No MULTI_TENANT settings configured: log error and redirect back to login view
                     log.error(str(e))
-                    return redirect('accounts:login')
+                    return redirect("accounts:login")
                 except ValueError:
                     # Set form error and re-render form
-                    form.add_error('tenant', f'Invalid {tenant_alias.lower()} provided.')
+                    form.add_error(
+                        "tenant", f"Invalid {tenant_alias.lower()} provided."
+                    )
 
     else:
         # Create new empty form
         form = SsoTenantForm()
 
     context = {
-        'form': form,
-        'form_title': tenant_alias,
-        'page_title': tenant_alias,
-        'backend': backend
+        "form": form,
+        "form_title": tenant_alias,
+        "page_title": tenant_alias,
+        "backend": backend,
     }
 
-    return render(request, 'tethys_portal/accounts/sso_tenant.html', context)
+    return render(request, "tethys_portal/accounts/sso_tenant.html", context)

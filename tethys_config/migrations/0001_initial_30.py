@@ -9,29 +9,53 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='SettingsCategory',
+            name="SettingsCategory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(max_length=30)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(max_length=30)),
             ],
             options={
-                'verbose_name': 'Settings Category',
-                'verbose_name_plural': 'Site Settings',
+                "verbose_name": "Settings Category",
+                "verbose_name_plural": "Site Settings",
             },
         ),
         migrations.CreateModel(
-            name='Setting',
+            name="Setting",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(max_length=30)),
-                ('content', models.TextField(blank=True, max_length=500)),
-                ('date_modified', models.DateTimeField(auto_now=True, verbose_name='date modified')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tethys_config.SettingsCategory')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(max_length=30)),
+                ("content", models.TextField(blank=True, max_length=500)),
+                (
+                    "date_modified",
+                    models.DateTimeField(auto_now=True, verbose_name="date modified"),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tethys_config.SettingsCategory",
+                    ),
+                ),
             ],
         ),
         migrations.RunPython(initial_settings, reverse_init),

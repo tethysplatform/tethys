@@ -19,6 +19,7 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
 
     inherits from ResourceQuotaHandler
     """  # noqa: E501
+
     codename = "workspace_quota"
     name = "Workspace Quota"
     description = "Set quota on workspace storage for apps and users."
@@ -48,7 +49,9 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             harvester = SingletonHarvester()
             installed_apps = harvester.apps
 
-            tethys_app = next((x for x in installed_apps if x.name == self.entity.name), None)
+            tethys_app = next(
+                (x for x in installed_apps if x.name == self.entity.name), None
+            )
 
             if tethys_app is not None:
                 current_use = float(_get_app_workspace(tethys_app).get_size(self.units))

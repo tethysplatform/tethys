@@ -13,14 +13,15 @@ from tethys_quotas.models.entity_quota import EntityQuota
 from tethys_apps.models import TethysApp
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class TethysAppQuota(EntityQuota):
     """
     entity_id (IntegerField): id of the entity.
     """
+
     class Meta:
-        verbose_name = 'Tethys App Quota'
+        verbose_name = "Tethys App Quota"
 
     entity = models.ForeignKey(TethysApp, on_delete=models.CASCADE)

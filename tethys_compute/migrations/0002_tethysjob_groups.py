@@ -6,14 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0001_initial_30'),
+        ("tethys_compute", "0001_initial_30"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tethysjob',
-            name='groups',
-            field=models.ManyToManyField(blank=True, related_name='tethys_jobs', to='auth.Group',
-                                         verbose_name='groups'),
+            model_name="tethysjob",
+            name="groups",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="tethys_jobs",
+                to="auth.Group",
+                verbose_name="groups",
+            ),
         ),
     ]

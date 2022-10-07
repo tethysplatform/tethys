@@ -16,7 +16,7 @@ from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_job import CondorPyJob
 
 
-log = logging.getLogger('tethys.' + __name__)
+log = logging.getLogger("tethys." + __name__)
 
 
 class CondorJob(CondorBase, CondorPyJob):
@@ -31,7 +31,10 @@ class CondorJob(CondorBase, CondorPyJob):
         """
         return self.condorpy_job
 
-    def _execute(self, queue=None, options=[]):
+    def _execute(self, queue=None, options=None):
+        if options is None:
+            options = list()
+
         self.num_jobs = queue or self.num_jobs
         super()._execute(queue=self.num_jobs, options=options)
 

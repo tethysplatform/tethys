@@ -21,21 +21,36 @@ def get_oauth_hs(request):
 
             # find hydroshare backend
             if "hydroshare" in backend_name.lower():
-                user_id = social_auth_obj.extra_data['id']
+                user_id = social_auth_obj.extra_data["id"]
                 auth_server_hostname = backend_instance.auth_server_hostname
-                client_id = getattr(settings, "SOCIAL_AUTH_{0}_KEY".format(backend_name.upper()), 'None')
-                client_secret = getattr(settings, "SOCIAL_AUTH_{0}_SECRET".format(backend_name.upper()), 'None')
+                client_id = getattr(
+                    settings, "SOCIAL_AUTH_{0}_KEY".format(backend_name.upper()), "None"
+                )
+                client_secret = getattr(
+                    settings,
+                    "SOCIAL_AUTH_{0}_SECRET".format(backend_name.upper()),
+                    "None",
+                )
 
                 if hs is None:
                     # refresh token if expired
                     refresh_user_token(social_auth_obj)
 
-                    auth = hs_r.HydroShareAuthOAuth2(client_id, client_secret, token=social_auth_obj.extra_data)
+                    auth = hs_r.HydroShareAuthOAuth2(
+                        client_id, client_secret, token=social_auth_obj.extra_data
+                    )
                     hs = hs_r.HydroShare(auth=auth, hostname=auth_server_hostname)
-                    logger.debug("hs object initialized: {0} @ {1}".format(user_id, auth_server_hostname))
+                    logger.debug(
+                        "hs object initialized: {0} @ {1}".format(
+                            user_id, auth_server_hostname
+                        )
+                    )
                 else:
-                    raise Exception("Found another hydroshare oauth instance: {0} @ {1}".format(user_id,
-                                                                                                auth_server_hostname))
+                    raise Exception(
+                        "Found another hydroshare oauth instance: {0} @ {1}".format(
+                            user_id, auth_server_hostname
+                        )
+                    )
 
         if hs is None:
             raise Exception("Not logged in through HydroShare")
@@ -69,12 +84,12 @@ def _send_refresh_request(user_social):
     # update token_dict for backward compatible
     data = user_social.extra_data
     token_dict = {
-        'access_token': data['access_token'],
-        'token_type': data['token_type'],
-        'expires_in': data['expires_in'],
-        'expires_at': data['expires_at'],
-        'refresh_token': data['refresh_token'],
-        'scope': data['scope']
+        "access_token": data["access_token"],
+        "token_type": data["token_type"],
+        "expires_in": data["expires_in"],
+        "expires_at": data["expires_at"],
+        "refresh_token": data["refresh_token"],
+        "scope": data["scope"],
     }
     data["token_dict"] = token_dict
     user_social.set_extra_data(extra_data=data)
@@ -92,7 +107,7 @@ def refresh_user_token(user_social):
     """
     try:
         try:
-            expires_at = user_social.extra_data.get('expires_at')
+            expires_at = user_social.extra_data.get("expires_at")
         except Exception:
             _send_refresh_request(user_social)
             return

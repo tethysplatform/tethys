@@ -9,7 +9,7 @@
 """
 from .base import TethysGizmoOptions
 
-__all__ = ['TextInput']
+__all__ = ["TextInput"]
 
 
 class TextInput(TethysGizmoOptions):
@@ -66,10 +66,25 @@ class TextInput(TethysGizmoOptions):
         {% gizmo text_error_input %}
 
     """  # noqa: E501
+
     gizmo_name = "text_input"
 
-    def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='',
-                 icon_append='', disabled=False, error='', success='', attributes=None, classes=''):
+    def __init__(
+        self,
+        name,
+        display_text="",
+        initial="",
+        placeholder="",
+        prepend="",
+        append="",
+        icon_prepend="",
+        icon_append="",
+        disabled=False,
+        error="",
+        success="",
+        attributes=None,
+        classes="",
+    ):
         """
         Constructor
         """

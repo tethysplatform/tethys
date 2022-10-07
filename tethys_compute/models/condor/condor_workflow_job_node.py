@@ -20,11 +20,11 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
 
     @property
     def type(self):
-        return 'JOB'
+        return "JOB"
 
     @property
     def workspace(self):
-        return '.'
+        return "."
 
     @property
     def job(self):
@@ -36,5 +36,7 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
 
 
 @receiver(pre_save, sender=CondorWorkflowJobNode)
-def condor_workflow_job_node_pre_save(sender, instance, raw, using, update_fields, **kwargs):
+def condor_workflow_job_node_pre_save(
+    sender, instance, raw, using, update_fields, **kwargs
+):
     instance.update_database_fields()

@@ -22,22 +22,31 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('-f', '--force', action='store_true', default=False,
-                            help='Force the overwrite the app directory into its collected-to location.')
+        parser.add_argument(
+            "-f",
+            "--force",
+            action="store_true",
+            default=False,
+            help="Force the overwrite the app directory into its collected-to location.",
+        )
 
     def handle(self, *args, **options):
         """
         Symbolically link the static directories of each app into the static/public directory specified by the
         STATIC_ROOT parameter of the settings.py. Do this prior to running Django's collectstatic method.
         """
-        if not hasattr(settings, 'TETHYS_WORKSPACES_ROOT') or (hasattr(settings, 'TETHYS_WORKSPACES_ROOT')
-                                                               and not settings.TETHYS_WORKSPACES_ROOT):
-            print('WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting. '
-                  'Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT '
-                  'setting in the portal_config.yml file and try again.')
+        if not hasattr(settings, "TETHYS_WORKSPACES_ROOT") or (
+            hasattr(settings, "TETHYS_WORKSPACES_ROOT")
+            and not settings.TETHYS_WORKSPACES_ROOT
+        ):
+            print(
+                "WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting. "
+                "Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT "
+                "setting in the portal_config.yml file and try again."
+            )
             exit(1)
         # Get optional force arg
-        force = options['force']
+        force = options["force"]
 
         # Read settings
         workspaces_root = settings.TETHYS_WORKSPACES_ROOT
@@ -46,16 +55,20 @@ class Command(BaseCommand):
         installed_apps = get_installed_tethys_items(apps=True)
 
         # Provide feedback to user
-        print(f'INFO: Moving workspace directories of apps to "{workspaces_root}" and linking back.')
+        print(
+            f'INFO: Moving workspace directories of apps to "{workspaces_root}" and linking back.'
+        )
 
         for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
-            app_ws_path = os.path.join(path, 'workspaces')
+            app_ws_path = os.path.join(path, "workspaces")
             tethys_ws_root_path = os.path.join(workspaces_root, app)
 
             # Only perform if workspaces_path is a directory
             if not os.path.isdir(app_ws_path):
-                print(f'WARNING: The workspace_path for app "{app}" is not a directory. Making workspace directory...')
+                print(
+                    f'WARNING: The workspace_path for app "{app}" is not a directory. Making workspace directory...'
+                )
                 os.makedirs(app_ws_path, exist_ok=True)
 
             if not os.path.islink(app_ws_path):
@@ -74,13 +87,17 @@ class Command(BaseCommand):
                         # Move the directory to workspace root path
                         shutil.move(app_ws_path, tethys_ws_root_path)
                     else:
-                        print(f'WARNING: Workspace directory for app "{app}" already exists in the TETHYS_WORKSPACES_'
-                              f'ROOT directory. A symbolic link is being created to the existing directory. To force '
-                              f'overwrite the existing directory, re-run the command with the "-f" argument.')
+                        print(
+                            f'WARNING: Workspace directory for app "{app}" already exists in the TETHYS_WORKSPACES_'
+                            f"ROOT directory. A symbolic link is being created to the existing directory. To force "
+                            f'overwrite the existing directory, re-run the command with the "-f" argument.'
+                        )
                         shutil.rmtree(app_ws_path, ignore_errors=True)
 
                 # Create appropriate symbolic link
                 if os.path.isdir(tethys_ws_root_path):
                     os.symlink(tethys_ws_root_path, app_ws_path)
-                    print('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app '
-                          '"{0}".'.format(app))
+                    print(
+                        'INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app '
+                        '"{0}".'.format(app)
+                    )

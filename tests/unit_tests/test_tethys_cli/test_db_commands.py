@@ -18,34 +18,35 @@ from tethys_cli.db_commands import (
 
 
 class TestCommandTests(unittest.TestCase):
-
     def setUp(self):
-        run_process_patcher = mock.patch('tethys_cli.db_commands._run_process')
+        run_process_patcher = mock.patch("tethys_cli.db_commands._run_process")
         self.mock_run_process = run_process_patcher.start()
         self.addCleanup(run_process_patcher.stop)
 
         self.options = {
-            'db_dir': 'foo',
-            'db_alias': 'test',
-            'hostname': 'localhost',
-            'port': '0000',
-            'db_name': 'db_name',
-            'username': 'foo',
-            'password': 'bar',
-            'superuser_name': 'Foo',
-            'superuser_password': 'Bar',
-            'portal_superuser_name': 'PFoo',
-            'portal_superuser_email': 'PEmail',
-            'portal_superuser_password': 'PBar',
-            'no_confirmation': True
+            "db_dir": "foo",
+            "db_alias": "test",
+            "hostname": "localhost",
+            "port": "0000",
+            "db_name": "db_name",
+            "username": "foo",
+            "password": "bar",
+            "superuser_name": "Foo",
+            "superuser_password": "Bar",
+            "portal_superuser_name": "PFoo",
+            "portal_superuser_email": "PEmail",
+            "portal_superuser_password": "PBar",
+            "no_confirmation": True,
         }
 
-        process_args_patcher = mock.patch('tethys_cli.db_commands.process_args', return_value=self.options)
+        process_args_patcher = mock.patch(
+            "tethys_cli.db_commands.process_args", return_value=self.options
+        )
         self.mock_process_args = process_args_patcher.start()
         self.addCleanup(process_args_patcher.stop)
 
         # suppress warning about overriding DATABASES setting.
-        warnings.simplefilter('ignore', UserWarning)
+        warnings.simplefilter("ignore", UserWarning)
 
     def tearDown(self):
         # revert to normal warnings
@@ -58,127 +59,174 @@ class TestCommandTests(unittest.TestCase):
             kwargs.pop(k)
         return kwargs
 
-    @mock.patch('tethys_cli.db_commands.write_error')
-    @mock.patch('tethys_cli.db_commands.write_info')
-    @mock.patch('tethys_cli.db_commands.run_process')
-    def tests_db_command__run_process(self, mock_run_process, mock_write_info, mock_write_error):
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("tethys_cli.db_commands.write_info")
+    @mock.patch("tethys_cli.db_commands.run_process")
+    def tests_db_command__run_process(
+        self, mock_run_process, mock_write_info, mock_write_error
+    ):
         mock_args = mock.MagicMock()
-        msg = 'test msg'
-        err_msg = 'test err msg'
+        msg = "test msg"
+        err_msg = "test err msg"
 
         self.assertRaises(SystemExit, _run_process, mock_args, msg, err_msg)
         mock_run_process.assert_called_with(mock_args)
         mock_write_info.assert_called_with(msg)
         mock_write_error.assert_called_with(err_msg)
 
-    @mock.patch('tethys_cli.db_commands.write_error')
-    @mock.patch('tethys_cli.db_commands.write_info')
-    @mock.patch('tethys_cli.db_commands.run_process')
-    def tests_db_command__run_process_return_code(self, mock_run_process, mock_write_info, mock_write_error):
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("tethys_cli.db_commands.write_info")
+    @mock.patch("tethys_cli.db_commands.run_process")
+    def tests_db_command__run_process_return_code(
+        self, mock_run_process, mock_write_info, mock_write_error
+    ):
         mock_args = mock.MagicMock()
-        msg = 'test msg'
-        err_msg = 'test err msg'
+        msg = "test msg"
+        err_msg = "test err msg"
 
         _run_process(mock_args, msg, err_msg, exit_on_error=False)
         mock_run_process.assert_called_with(mock_args)
         mock_write_info.assert_called_with(msg)
         mock_write_error.assert_called_with(err_msg)
 
-    @mock.patch('tethys_cli.db_commands.Path')
-    @mock.patch('tethys_cli.db_commands.vars')
-    @override_settings(DATABASES={'test': {
-                'NAME': 'db_name',
-                'HOST': 'localhost',
-                'PORT': '0000',
-                'DIR': 'foo'
-    }})
+    @mock.patch("tethys_cli.db_commands.Path")
+    @mock.patch("tethys_cli.db_commands.vars")
+    @override_settings(
+        DATABASES={
+            "test": {
+                "NAME": "db_name",
+                "HOST": "localhost",
+                "PORT": "0000",
+                "DIR": "foo",
+            }
+        }
+    )
     def test_db_command_process_args(self, mock_vars, mock_path):
         path = mock.MagicMock()
         mock_path.return_value = path
         path.is_absolute.return_value = False
-        mock_args = mock.MagicMock(command='init', db_alias='test')
+        mock_args = mock.MagicMock(command="init", db_alias="test")
         mock_vars.return_value = dict(
-            username='foo',
-            password='bar',
-            superuser_name='Foo',
-            superuser_password='Bar',
-            portal_superuser_name='PFoo',
-            portal_superuser_email='PEmail',
-            portal_superuser_password='PBar',
+            username="foo",
+            password="bar",
+            superuser_name="Foo",
+            superuser_password="Bar",
+            portal_superuser_name="PFoo",
+            portal_superuser_email="PEmail",
+            portal_superuser_password="PBar",
             no_confirmation=True,
         )
         self.mock_run_process.return_value = 0
 
         options = process_args(mock_args)
         expected = self.options.copy()
-        expected.update(db_dir=path/'foo')
+        expected.update(db_dir=path / "foo")
         self.assertDictEqual(options, expected)
 
-    @mock.patch('tethys_cli.db_commands.Path')
-    @mock.patch('tethys_cli.db_commands.vars')
-    @override_settings(DATABASES={'test': {
-        'NAME': 'db_name',
-        'PORT': '0000',
-    }})
+    @mock.patch("tethys_cli.db_commands.Path")
+    @mock.patch("tethys_cli.db_commands.vars")
+    @override_settings(
+        DATABASES={
+            "test": {
+                "NAME": "db_name",
+                "PORT": "0000",
+            }
+        }
+    )
     def test_db_command_process_args_with_error(self, mock_vars, mock_path):
         path = mock.MagicMock()
         mock_path.return_value = path
         path.is_absolute.return_value = False
         mock_args = mock.MagicMock()
-        mock_args.command = 'init'
-        mock_args.db_alias = 'test'
+        mock_args.command = "init"
+        mock_args.db_alias = "test"
         mock_vars.return_value = dict(
-            username='foo',
-            password='bar',
-            superuser_name='Foo',
-            superuser_password='Bar',
-            portal_superuser_name='PFoo',
-            portal_superuser_email='PEmail',
-            portal_superuser_password='PBar',
+            username="foo",
+            password="bar",
+            superuser_name="Foo",
+            superuser_password="Bar",
+            portal_superuser_name="PFoo",
+            portal_superuser_email="PEmail",
+            portal_superuser_password="PBar",
         )
         self.mock_run_process.return_value = 0
         self.assertRaises(RuntimeError, process_args, mock_args)
 
     def test_db_command_init(self):
         mock_args = mock.MagicMock()
-        mock_args.command = 'init'
+        mock_args.command = "init"
         db_command(mock_args)
-        kwargs = self._get_kwargs(remove=['db_dir'])
-        self.mock_run_process.assert_called_with(['initdb', '-U', 'postgres', '-D', 'foo/data'],
-                                                 'Initializing Postgresql database server in "foo/data"...',
-                                                 'Could not initialize the Postgresql database.', **kwargs)
+        kwargs = self._get_kwargs(remove=["db_dir"])
+        self.mock_run_process.assert_called_with(
+            ["initdb", "-U", "postgres", "-D", "foo/data"],
+            'Initializing Postgresql database server in "foo/data"...',
+            "Could not initialize the Postgresql database.",
+            **kwargs,
+        )
 
-    @mock.patch('tethys_cli.db_commands.create_db_user')
+    @mock.patch("tethys_cli.db_commands.create_db_user")
     def test_db_command_create(self, mock_create_db_user):
         mock_args = mock.MagicMock()
-        mock_args.command = 'create'
+        mock_args.command = "create"
         db_command(mock_args)
         call_args = mock_create_db_user.call_args_list
-        kwargs = self._get_kwargs(remove=['superuser_name', 'superuser_password'])
+        kwargs = self._get_kwargs(remove=["superuser_name", "superuser_password"])
         self.assertEqual(call_args[1], mock.call(**kwargs))
-        kwargs.pop('db_name')
-        kwargs['username'] = self.options['superuser_name']
-        kwargs['password'] = self.options['superuser_password']
+        kwargs.pop("db_name")
+        kwargs["username"] = self.options["superuser_name"]
+        kwargs["password"] = self.options["superuser_password"]
         self.assertEqual(call_args[0], mock.call(is_superuser=True, **kwargs))
 
     def test_db_command_create_db_user(self):
         create_db_user(**self.options)
         call_args = self.mock_run_process.call_args_list
-        command = f"CREATE USER {self.options['username']} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD " \
+        command = (
+            f"CREATE USER {self.options['username']} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD "
             f"'{self.options['password']}';"
-        command = f"DO " \
-            f"$do$ " \
-            f"BEGIN " \
-            f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{self.options['username']}') THEN " \
-            f"    {command} " \
-            f"  END IF; " \
-            f"END " \
+        )
+        command = (
+            f"DO "
+            f"$do$ "
+            f"BEGIN "
+            f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{self.options['username']}') THEN "
+            f"    {command} "
+            f"  END IF; "
+            f"END "
             f"$do$;"
-        self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
-                                              '--command', command])
-        args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-E', 'utf-8', '-T', 'template0',
-                '-p', self.options['port'], '-O', self.options['username'], self.options['db_name']]
-        kwargs = self._get_kwargs(remove=['hostname', 'port', 'db_name', 'username', 'password'])
+        )
+        self.assertEqual(
+            call_args[0][0][0],
+            [
+                "psql",
+                "-h",
+                self.options["hostname"],
+                "-U",
+                "postgres",
+                "-p",
+                "0000",
+                "--command",
+                command,
+            ],
+        )
+        args = [
+            "createdb",
+            "-h",
+            self.options["hostname"],
+            "-U",
+            "postgres",
+            "-E",
+            "utf-8",
+            "-T",
+            "template0",
+            "-p",
+            self.options["port"],
+            "-O",
+            self.options["username"],
+            self.options["db_name"],
+        ]
+        kwargs = self._get_kwargs(
+            remove=["hostname", "port", "db_name", "username", "password"]
+        )
         self.mock_run_process.assert_called_with(
             args,
             'Creating Tethys database user "foo"...',
@@ -189,78 +237,123 @@ class TestCommandTests(unittest.TestCase):
     def test_db_command_create_db_user_with_superuser(self):
         create_db_user(is_superuser=True, **self.options)
         call_args = self.mock_run_process.call_args_list
-        command = f"CREATE USER {self.options['username']} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD " \
+        command = (
+            f"CREATE USER {self.options['username']} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD "
             f"'{self.options['password']}';"
-        command = f"DO " \
-            f"$do$ " \
-            f"BEGIN " \
-            f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{self.options['username']}') THEN " \
-            f"    {command} " \
-            f"  END IF; " \
-            f"END " \
+        )
+        command = (
+            f"DO "
+            f"$do$ "
+            f"BEGIN "
+            f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{self.options['username']}') THEN "
+            f"    {command} "
+            f"  END IF; "
+            f"END "
             f"$do$;"
-        self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
-                                              '--command', command])
+        )
+        self.assertEqual(
+            call_args[0][0][0],
+            [
+                "psql",
+                "-h",
+                self.options["hostname"],
+                "-U",
+                "postgres",
+                "-p",
+                "0000",
+                "--command",
+                command,
+            ],
+        )
 
     def test_db_command_start(self):
         mock_args = mock.MagicMock()
-        mock_args.command = 'start'
+        mock_args.command = "start"
         db_command(mock_args)
-        kwargs = self._get_kwargs(remove=['db_dir', 'port'])
-        self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', '-l',
-                                                  'foo/logfile', 'start', '-o', '-p 0000'],
-                                                 'Starting Postgresql database server in "foo/data" on port 0000...',
-                                                 'There was an error while starting the Postgresql database.', **kwargs)
+        kwargs = self._get_kwargs(remove=["db_dir", "port"])
+        self.mock_run_process.assert_called_with(
+            [
+                "pg_ctl",
+                "-U",
+                "postgres",
+                "-D",
+                "foo/data",
+                "-l",
+                "foo/logfile",
+                "start",
+                "-o",
+                "-p 0000",
+            ],
+            'Starting Postgresql database server in "foo/data" on port 0000...',
+            "There was an error while starting the Postgresql database.",
+            **kwargs,
+        )
 
     def test_db_command_stop(self):
         mock_args = mock.MagicMock()
-        mock_args.command = 'stop'
+        mock_args.command = "stop"
         db_command(mock_args)
-        kwargs = self._get_kwargs(remove=['db_dir'])
-        self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', 'stop'],
-                                                 'Stopping Postgresql database server...',
-                                                 'There was an error while stopping the Posgresql database.', **kwargs)
+        kwargs = self._get_kwargs(remove=["db_dir"])
+        self.mock_run_process.assert_called_with(
+            ["pg_ctl", "-U", "postgres", "-D", "foo/data", "stop"],
+            "Stopping Postgresql database server...",
+            "There was an error while stopping the Posgresql database.",
+            **kwargs,
+        )
 
     def test_db_command_status(self):
         mock_args = mock.MagicMock()
-        mock_args.command = 'status'
+        mock_args.command = "status"
         db_command(mock_args)
-        kwargs = self._get_kwargs(remove=['db_dir'])
-        self.mock_run_process.assert_called_with(['pg_ctl', 'status', '-D', 'foo/data'],
-                                                 'Checking status of Postgresql database server...',
-                                                 '', **kwargs)
+        kwargs = self._get_kwargs(remove=["db_dir"])
+        self.mock_run_process.assert_called_with(
+            ["pg_ctl", "status", "-D", "foo/data"],
+            "Checking status of Postgresql database server...",
+            "",
+            **kwargs,
+        )
 
-    @mock.patch('tethys_cli.db_commands.get_manage_path', return_value='foo/manage.py')
+    @mock.patch("tethys_cli.db_commands.get_manage_path", return_value="foo/manage.py")
     def test_db_command_migrate(self, mock_get_manage_path):
         mock_args = mock.MagicMock()
-        mock_args.command = 'migrate'
+        mock_args.command = "migrate"
         db_command(mock_args)
         mock_get_manage_path.assert_called()
-        kwargs = self._get_kwargs(remove=['db_alias'])
-        self.mock_run_process.assert_called_with(['python', 'foo/manage.py', 'migrate', '--database', 'test'],
-                                                 'Running migrations for Tethys database...', **kwargs)
+        kwargs = self._get_kwargs(remove=["db_alias"])
+        self.mock_run_process.assert_called_with(
+            ["python", "foo/manage.py", "migrate", "--database", "test"],
+            "Running migrations for Tethys database...",
+            **kwargs,
+        )
 
-    @mock.patch('tethys_cli.db_commands.write_info')
-    @mock.patch('tethys_cli.db_commands.write_error')
-    @mock.patch('django.contrib.auth.models.User.objects.create_superuser')
-    @mock.patch('tethys_cli.db_commands.load_apps')
-    def test_db_command_createsuperuser(self, mock_load_apps, mock_create_superuser, mock_write_error, _):
+    @mock.patch("tethys_cli.db_commands.write_info")
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("django.contrib.auth.models.User.objects.create_superuser")
+    @mock.patch("tethys_cli.db_commands.load_apps")
+    def test_db_command_createsuperuser(
+        self, mock_load_apps, mock_create_superuser, mock_write_error, _
+    ):
         from django.db.utils import IntegrityError
+
         mock_args = mock.MagicMock()
-        mock_args.command = 'createsuperuser'
+        mock_args.command = "createsuperuser"
         mock_create_superuser.side_effect = IntegrityError
         db_command(mock_args)
         mock_load_apps.assert_called()
-        mock_create_superuser.assert_called_with('PFoo', 'PEmail', 'PBar')
-        portal_superuser = self.options['portal_superuser_name']
-        mock_write_error.assert_called_with(f'Tethys Portal Superuser "{portal_superuser}" already exists.')
+        mock_create_superuser.assert_called_with("PFoo", "PEmail", "PBar")
+        portal_superuser = self.options["portal_superuser_name"]
+        mock_write_error.assert_called_with(
+            f'Tethys Portal Superuser "{portal_superuser}" already exists.'
+        )
 
-    @mock.patch('tethys_cli.db_commands.create_portal_superuser')
-    @mock.patch('tethys_cli.db_commands.migrate_tethys_db')
-    @mock.patch('tethys_cli.db_commands._prompt_if_error')
-    def test_db_command_configure(self, mock_prompt_err, mock_migrate, mock_createsuperuser):
+    @mock.patch("tethys_cli.db_commands.create_portal_superuser")
+    @mock.patch("tethys_cli.db_commands.migrate_tethys_db")
+    @mock.patch("tethys_cli.db_commands._prompt_if_error")
+    def test_db_command_configure(
+        self, mock_prompt_err, mock_migrate, mock_createsuperuser
+    ):
         mock_args = mock.MagicMock()
-        mock_args.command = 'configure'
+        mock_args.command = "configure"
         db_command(mock_args)
         kwargs = self._get_kwargs()
         calls = [
@@ -272,11 +365,11 @@ class TestCommandTests(unittest.TestCase):
         mock_migrate.assert_called_with(**self.options)
         mock_createsuperuser.assert_called_with(**self.options)
 
-    @mock.patch('tethys_cli.db_commands.write_info')
-    @mock.patch('tethys_apps.harvester.SingletonHarvester')
+    @mock.patch("tethys_cli.db_commands.write_info")
+    @mock.patch("tethys_apps.harvester.SingletonHarvester")
     def test_db_command_sync(self, MockSingletonHarvester, _):
         # mock the input args
-        args = mock.MagicMock(manage='', command='sync', port='8080')
+        args = mock.MagicMock(manage="", command="sync", port="8080")
 
         # call the testing method with the mock args
         db_command(args)
@@ -290,30 +383,30 @@ class TestCommandTests(unittest.TestCase):
         _prompt_if_error(mock_fn, **self.options)
         mock_fn.assert_called_with(exit_on_error=False, **self.options)
 
-    @mock.patch('tethys_cli.db_commands.input')
+    @mock.patch("tethys_cli.db_commands.input")
     def test__prompt_if_error_continue_yes(self, mock_input):
-        mock_fn = mock.MagicMock(__name__='mock_fn')
-        mock_input.side_effect = 'yes'
+        mock_fn = mock.MagicMock(__name__="mock_fn")
+        mock_input.side_effect = "yes"
         kwargs = self._get_kwargs()
         kwargs.update(no_confirmation=False)
         _prompt_if_error(mock_fn, **kwargs)
         mock_fn.assert_called_with(exit_on_error=False, **kwargs)
 
-    @mock.patch('tethys_cli.db_commands.input')
+    @mock.patch("tethys_cli.db_commands.input")
     def test__prompt_if_error_continue_no(self, mock_input):
-        mock_fn = mock.MagicMock(__name__='mock_fn')
-        mock_input.side_effect = 'no'
+        mock_fn = mock.MagicMock(__name__="mock_fn")
+        mock_input.side_effect = "no"
         kwargs = self._get_kwargs()
         kwargs.update(no_confirmation=False)
         self.assertRaises(SystemExit, _prompt_if_error, mock_fn, **kwargs)
         mock_fn.assert_called_with(exit_on_error=False, **kwargs)
 
-    @mock.patch('tethys_cli.db_commands.shutil.rmtree')
-    @mock.patch('tethys_cli.db_commands.write_error')
-    @mock.patch('tethys_cli.db_commands.stop_db_server')
+    @mock.patch("tethys_cli.db_commands.shutil.rmtree")
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("tethys_cli.db_commands.stop_db_server")
     def test_purge_db_server(self, mock_stop, mock_write_error, mock_rmtree):
         mock_args = mock.MagicMock()
-        mock_args.command = 'purge'
+        mock_args.command = "purge"
 
         kwargs = self._get_kwargs()
         kwargs.update(exit_on_error=False)
@@ -321,29 +414,33 @@ class TestCommandTests(unittest.TestCase):
         db_command(mock_args)
         mock_stop.assert_called_with(**kwargs)
         mock_write_error.assert_called_once()
-        mock_rmtree.assert_called_with(kwargs['db_dir'])
+        mock_rmtree.assert_called_with(kwargs["db_dir"])
 
-    @mock.patch('tethys_cli.db_commands.input')
-    @mock.patch('tethys_cli.db_commands.shutil.rmtree')
-    @mock.patch('tethys_cli.db_commands.write_error')
-    @mock.patch('tethys_cli.db_commands.stop_db_server')
-    def test_purge_db_server_continue_yes(self, mock_stop, mock_write_error, mock_rmtree, mock_input):
+    @mock.patch("tethys_cli.db_commands.input")
+    @mock.patch("tethys_cli.db_commands.shutil.rmtree")
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("tethys_cli.db_commands.stop_db_server")
+    def test_purge_db_server_continue_yes(
+        self, mock_stop, mock_write_error, mock_rmtree, mock_input
+    ):
         kwargs = self._get_kwargs()
         kwargs.update(exit_on_error=False, no_confirmation=False)
-        mock_input.side_effect = 'yes'
+        mock_input.side_effect = "yes"
         purge_db_server(**kwargs)
         mock_stop.assert_called_with(**kwargs)
         mock_write_error.assert_called_once()
-        mock_rmtree.assert_called_with(kwargs['db_dir'])
+        mock_rmtree.assert_called_with(kwargs["db_dir"])
 
-    @mock.patch('tethys_cli.db_commands.input')
-    @mock.patch('tethys_cli.db_commands.shutil.rmtree')
-    @mock.patch('tethys_cli.db_commands.write_error')
-    @mock.patch('tethys_cli.db_commands.stop_db_server')
-    def test_purge_db_server_continue_no(self, mock_stop, mock_write_error, mock_rmtree, mock_input):
+    @mock.patch("tethys_cli.db_commands.input")
+    @mock.patch("tethys_cli.db_commands.shutil.rmtree")
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("tethys_cli.db_commands.stop_db_server")
+    def test_purge_db_server_continue_no(
+        self, mock_stop, mock_write_error, mock_rmtree, mock_input
+    ):
         kwargs = self._get_kwargs()
         kwargs.update(exit_on_error=False, no_confirmation=False)
-        mock_input.side_effect = 'no'
+        mock_input.side_effect = "no"
         purge_db_server(**kwargs)
         mock_stop.assert_called_with(**kwargs)
         mock_write_error.assert_called_once()

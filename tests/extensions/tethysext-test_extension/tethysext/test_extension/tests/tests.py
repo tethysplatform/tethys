@@ -136,19 +136,23 @@ class TestExtensionTestCase(TethysTestCase):
         # prepended with "self." (i.e. self.c = ...) to make those variables "global" to this test class and able to be
         # used in each separate test function.
         c = self.get_test_client()
-        user = self.create_test_user(username="joe", password="secret", email="joe@some_site.com")
+        user = self.create_test_user(
+            username="joe", password="secret", email="joe@some_site.com"
+        )
         c.force_login(user)
 
         # Have the test client "browse" to your page
-        response = c.get('/extensions/test-extension/foo/')  # The final '/' is essential for all pages/controllers
+        response = c.get(
+            "/extensions/test-extension/foo/"
+        )  # The final '/' is essential for all pages/controllers
 
         # Test that the request processed correctly (with a 200 status code)
         self.assertEqual(response.status_code, 200)
 
-        '''
+        """
         NOTE: Next, you would likely test that your context variables returned as expected. That would look
         something like the following:
-        '''
+        """
 
         context = response.context
-        self.assertEqual(context['my_integer'], 10)
+        self.assertEqual(context["my_integer"], 10)

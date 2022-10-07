@@ -11,60 +11,117 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('tethys_apps', '0001_initial_30'),
+        ("tethys_apps", "0001_initial_30"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ResourceQuota',
+            name="ResourceQuota",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('codename', models.CharField(max_length=255, unique=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.CharField(blank=True, default='', max_length=2048)),
-                ('default', models.FloatField()),
-                ('units', models.CharField(max_length=100)),
-                ('applies_to', models.TextField()),
-                ('active', models.BooleanField(default=False)),
-                ('impose_default', models.BooleanField(default=True)),
-                ('help', models.TextField()),
-                ('_handler', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("codename", models.CharField(max_length=255, unique=True)),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "description",
+                    models.CharField(blank=True, default="", max_length=2048),
+                ),
+                ("default", models.FloatField()),
+                ("units", models.CharField(max_length=100)),
+                ("applies_to", models.TextField()),
+                ("active", models.BooleanField(default=False)),
+                ("impose_default", models.BooleanField(default=True)),
+                ("help", models.TextField()),
+                ("_handler", models.TextField()),
             ],
             options={
-                'verbose_name': 'Resource Quota',
+                "verbose_name": "Resource Quota",
             },
         ),
         migrations.CreateModel(
-            name='EntityQuota',
+            name="EntityQuota",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.IntegerField(blank=True, null=True)),
-                ('resource_quota', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tethys_quotas.ResourceQuota')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.IntegerField(blank=True, null=True)),
+                (
+                    "resource_quota",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tethys_quotas.ResourceQuota",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Entity Quota',
+                "verbose_name": "Entity Quota",
             },
         ),
         migrations.CreateModel(
-            name='UserQuota',
+            name="UserQuota",
             fields=[
-                ('entityquota_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_quotas.EntityQuota')),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "entityquota_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="tethys_quotas.EntityQuota",
+                    ),
+                ),
+                (
+                    "entity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'User Quota',
+                "verbose_name": "User Quota",
             },
-            bases=('tethys_quotas.entityquota',),
+            bases=("tethys_quotas.entityquota",),
         ),
         migrations.CreateModel(
-            name='TethysAppQuota',
+            name="TethysAppQuota",
             fields=[
-                ('entityquota_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_quotas.EntityQuota')),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tethys_apps.TethysApp')),
+                (
+                    "entityquota_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="tethys_quotas.EntityQuota",
+                    ),
+                ),
+                (
+                    "entity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tethys_apps.TethysApp",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Tethys App Quota',
+                "verbose_name": "Tethys App Quota",
             },
-            bases=('tethys_quotas.entityquota',),
+            bases=("tethys_quotas.entityquota",),
         ),
     ]
