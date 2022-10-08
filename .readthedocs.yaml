@@ -5,15 +5,13 @@ build:
     python: "mambaforge-4.10"
   jobs:
     post_checkout:
-      # Unshallow checkout for proper version determination
-      - git fetch --unshallow
       # Download and uncompress the binary: https://git-lfs.github.com/
       - wget https://github.com/git-lfs/git-lfs/releases/download/v3.2.0/git-lfs-linux-amd64-v3.2.0.tar.gz
       - tar xvfz git-lfs-linux-amd64-v3.2.0.tar.gz
       # Modify LFS config paths to point where git-lfs binary was downloaded
-      - git config filter.lfs.process "`pwd`/git-lfs-3.2.0 filter-process"
-      - git config filter.lfs.smudge  "`pwd`/git-lfs-3.2.0 smudge -- %f"
-      - git config filter.lfs.clean "`pwd`/git-lfs-3.2.0 clean -- %f"
+      - git config filter.lfs.process "`pwd`/git-lfs-3.2.0/git-lfs filter-process"
+      - git config filter.lfs.smudge  "`pwd`/git-lfs-3.2.0/git-lfs smudge -- %f"
+      - git config filter.lfs.clean "`pwd`/git-lfs-3.2.0/git-lfs clean -- %f"
       # Make LFS available in current repository
       - ./git-lfs-3.2.0/git-lfs install
       # Download content from remote
