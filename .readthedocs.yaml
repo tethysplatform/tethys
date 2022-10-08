@@ -13,11 +13,11 @@ build:
       - git config filter.lfs.smudge  "`pwd`/git-lfs-3.2.0 smudge -- %f"
       - git config filter.lfs.clean "`pwd`/git-lfs-3.2.0 clean -- %f"
       # Make LFS available in current repository
-      - ./git-lfs-3.2.0 install
+      - ./git-lfs-3.2.0/git-lfs install
       # Download content from remote
-      - ./git-lfs-3.2.0 fetch
+      - ./git-lfs-3.2.0/git-lfs fetch
       # Make local files to have the real content on them
-      - ./git-lfs-3.2.0 checkout
+      - ./git-lfs-3.2.0/git-lfs checkout
 conda:
   environment: docs/docs_environment.yml
 sphinx:
