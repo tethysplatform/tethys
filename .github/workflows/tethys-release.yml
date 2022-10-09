@@ -30,24 +30,19 @@ jobs:
         id: version
         uses: release-kit/semver@v1
       # Test version parser
-      - name: Use parsed version
+      - name: Log version
         run: |
-          echo "${{ steps.version.outputs.major }}"
-          echo "${{ steps.version.outputs.minor }}"
-          echo "${{ steps.version.outputs.patch }}"
-          echo "${{ steps.version.outputs.prerelease }}"
-          echo "${{ steps.version.outputs.build }}"
-          echo "${{ steps.version.outputs.full }}"
-          echo "${{ steps.version.outputs.tag }}"
+          echo "Major: ${{ steps.version.outputs.major }}"
+          echo "Minor: ${{ steps.version.outputs.minor }}"
+          echo "Patch: ${{ steps.version.outputs.patch }}"
+          echo "Prerelease: ${{ steps.version.outputs.prerelease }}"
+          echo "Build: ${{ steps.version.outputs.build }}"
+          echo "Full: ${{ steps.version.outputs.full }}"
+          echo "Tag: ${{ steps.version.outputs.tag }}"
       # Build the docker with version tag
       - name: Build With Tag
         run: |
           docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }} .;
-      # Tag with latest
-      - name: Tag with Latest
-        if: ${{ steps.version.outputs.prerelease != '' }}
-        run: |
-          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }} ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
       # Upload docker
       - name: Upload Docker With Tag
         run: |
@@ -55,10 +50,11 @@ jobs:
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
           # docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }};
       - name: Upload Docker With Latest
-        if: ${{ steps.version.outputs.prerelease != '' }}
+        if: ${{ steps.version.outputs.prerelease == '' }}
         run: |
           echo "Updating latest on the docker registry";
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
+          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }} ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
           # docker push ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
 
   conda-build:
