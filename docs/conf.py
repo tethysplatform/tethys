@@ -11,7 +11,7 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-from importlib.metadata import version
+from setuptools_scm import get_version
 import os
 from pathlib import Path
 import subprocess
@@ -163,7 +163,7 @@ on_rtd = os.environ.get("READTHEDOCS") == "True"
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-release = version("tethys-platform")
+release = get_version(root="..", relative_to=__file__)
 
 # major/minor
 version = ".".join(release.split(".")[:2])
