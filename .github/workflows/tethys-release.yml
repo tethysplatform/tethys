@@ -5,7 +5,7 @@ name: Tethys-CI
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 env:
   CONDA_BUILD_PIN_LEVEL: minor
@@ -25,20 +25,41 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      # Get Tag Name
-      - name: Get Tag
-        id: gitTag
-        uses: little-core-labs/get-git-tag@v3.0.2
-      # Build the docker for tag
+      # Parse version parts from tag
+      - name: Parse version from tag
+        id: version
+        uses: release-kit/semver@v1
+      # Test version parser
+      - name: Use parsed version
+        run: |
+          echo "${{ steps.version.outputs.major }}"
+          echo "${{ steps.version.outputs.minor }}"
+          echo "${{ steps.version.outputs.patch }}"
+          echo "${{ steps.version.outputs.prerelease }}"
+          echo "${{ steps.version.outputs.build }}"
+          echo "${{ steps.version.outputs.full }}"
+          echo "${{ steps.version.outputs.tag }}"
+      # Build the docker with version tag
       - name: Build With Tag
         run: |
-               docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:latest -t ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.gitTag.outputs.tag }} .;
+          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }} .;
+      # Tag with latest
+      - name: Tag with Latest
+        if: ${{ steps.version.outputs.prerelease != '' }}
+        run: |
+          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }} ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
       # Upload docker
       - name: Upload Docker With Tag
         run: |
           echo "Pushing to docker registry";
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.gitTag.outputs.tag }};
+          # docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }};
+      - name: Upload Docker With Latest
+        if: ${{ steps.version.outputs.prerelease != '' }}
+        run: |
+          echo "Updating latest on the docker registry";
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
+          # docker push ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
 
   conda-build:
     name: Conda Build (${{ matrix.platform }})
@@ -71,7 +92,7 @@ jobs:
       - name: Set Conda Build Path
         uses: allenevans/set-env@v2.0.0
         with:
-          CONDA_BLD_PATH: '/home/runner/conda-bld'
+          CONDA_BLD_PATH: "/home/runner/conda-bld"
       # Generate Conda Recipe With Constrained Dependencies
       - name: Generate Conda Recipe
         run: |
@@ -97,4 +118,4 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          # anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
