@@ -18,6 +18,9 @@ build:
       - ./git-lfs-3.2.0/git-lfs fetch
       # Make local files to have the real content on them
       - ./git-lfs-3.2.0/git-lfs checkout
+      # Cleanup
+      - rm -rf git-lfs-3.2.0
+      - rm git-lfs-linux-amd64-v3.2.0.tar.gz
     pre_install:
       # Configure git to ignore changes made by RTD
       # so correct version is set by setuptools_scm
