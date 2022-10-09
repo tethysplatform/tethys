@@ -23,7 +23,7 @@ build:
     pre_install:
       # Configure git to ignore changes made by RTD
       # so correct version is set by setuptools_scm
-      - git update-index --assume-unchanged docs/docs_environment.yml docs/conf.py "git-lfs-3.2.0/*"
+      - git update-index --assume-unchanged docs/docs_environment.yml docs/conf.py
       - git status
 conda:
   environment: docs/docs_environment.yml

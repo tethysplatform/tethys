@@ -33,3 +33,4 @@ tests/apps/*/dist/*
 build/
 dist/
 tethys_portal/_version.py
+git-lfs-*/*
