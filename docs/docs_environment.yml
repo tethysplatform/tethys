@@ -16,6 +16,7 @@ dependencies:
   - sphinx
   - sphinx-argparse
   - make
+  - setuptools_scm
   - pip:
       - sphinx_materialdesign_theme
       - sphinx-autobuild
