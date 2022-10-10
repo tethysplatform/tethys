@@ -29,7 +29,6 @@ jobs:
       - name: Parse version from tag
         id: version
         uses: release-kit/semver@v1
-      # Test version parser
       - name: Log version
         run: |
           echo "Major: ${{ steps.version.outputs.major }}"
@@ -49,7 +48,7 @@ jobs:
           echo "Pushing to docker registry";
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
           # docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.version.outputs.full }};
-      - name: Upload Docker With Latest
+      - name: Upload Docker With Latest Tag
         if: ${{ steps.version.outputs.prerelease == '' }}
         run: |
           echo "Updating latest on the docker registry";
@@ -71,6 +70,19 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      # Parse version parts from tag
+      - name: Parse version from tag
+        id: version
+        uses: release-kit/semver@v1
+      - name: Log version
+        run: |
+          echo "Major: ${{ steps.version.outputs.major }}"
+          echo "Minor: ${{ steps.version.outputs.minor }}"
+          echo "Patch: ${{ steps.version.outputs.patch }}"
+          echo "Prerelease: ${{ steps.version.outputs.prerelease }}"
+          echo "Build: ${{ steps.version.outputs.build }}"
+          echo "Full: ${{ steps.version.outputs.full }}"
+          echo "Tag: ${{ steps.version.outputs.tag }}"
       # Setup Tethys
       - name: Setup Tethys
         run: |
@@ -108,10 +120,20 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
           conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
-      # Upload Conda No Pull Request With Tag
-      - name: Upload Conda With Tag
+      # Upload to Anaconda Cloud
+      - name: Upload to Conda Release Channel
+        if: ${{ steps.version.outputs.prerelease == '' }}
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
+          echo "Publishing to release channel...";
           # anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+      - name: Upload to Conda Dev Channel
+        if: ${{ steps.version.outputs.prerelease != '' }}
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          echo "Publishing to dev channel...";
+          # anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
