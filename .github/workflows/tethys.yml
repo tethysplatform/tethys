@@ -16,6 +16,16 @@ on:
 env:
   CONDA_BUILD_PIN_LEVEL: minor
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TEST_IMAGE: tethys:dev
+  POSTGRES_DB: tethys_postgis
+  POSTGRES_PASSWORD: please_dont_use_default_passwords
+  POSTGRES_PORT: 5432
+  TETHYS_DB_HOST: 172.17.0.1
+  TETHYS_DB_PORT: 5432
+  TETHYS_DB_USERNAME: tethys_default
+  TETHYS_DB_PASSWORD: please_dont_use_default_passwords
+  TETHYS_DB_SUPERUSER: tethys_super
+  TETHYS_DB_SUPERUSER_PASS: please_dont_use_default_passwords
 
 jobs:
   black-lint:
@@ -88,6 +98,7 @@ jobs:
       - name: Build Without Tag
         run: |
           docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:dev .;
+          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:dev ${{ env.TEST_IMAGE }};
       # Upload docker if pull request no tag
       - name: Upload Docker No Tag
         if: ${{ github.event_name != 'pull_request' }}
@@ -100,6 +111,51 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "Uploading is skipped for pull requests."
+      # Save image as artifact for startup test job
+      - name: Upload Docker Artifact
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: ${{ env.TEST_IMAGE }}
+          retention_days: "1"
+
+  startup_test:
+    name: Docker Start-up Test
+    needs: [docker-build]
+    runs-on: ubuntu-latest
+    services:
+      tethys-postgis:
+        image: postgis/postgis:14-3.3
+        env:
+          POSTGRES_HOST: tethys-postgis
+          POSTGRES_PASSWORD: please_dont_use_default_passwords
+          POSTGRES_DB: tethys_postgis
+          POSTGRES_PORT: 5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    steps:
+      - name: Download Docker Artifact
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: ${{ env.TEST_IMAGE }}
+      - name: Run Salt Test
+        run: |
+          docker run --rm \
+            -e POSTGRES_DB=${{ env.POSTGRES_DB }} \
+            -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+            -e POSTGRES_PORT=${{ env.POSTGRES_PORT }} \
+            -e TETHYS_DB_HOST='${{ env.TETHYS_DB_HOST }}' \
+            -e TETHYS_DB_PORT=${{ env.TETHYS_DB_PORT }} \
+            -e TETHYS_DB_USERNAME=${{ env.TETHYS_DB_USERNAME }} \
+            -e TETHYS_DB_PASSWORD=${{ env.TETHYS_DB_PASSWORD }} \
+            -e TETHYS_DB_SUPERUSER=${{ env.TETHYS_DB_SUPERUSER }} \
+            -e TETHYS_DB_SUPERUSER_PASS=${{ env.TETHYS_DB_SUPERUSER_PASS }} \
+            ${{ env.TEST_IMAGE }} \
+            /bin/bash -c "cd /usr/lib/tethys && source ./run.sh --test"
 
   conda-build:
     name: Conda Build
