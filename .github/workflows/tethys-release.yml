@@ -41,7 +41,10 @@ jobs:
       # Build the docker with version tag
       - name: Build With Tag
         run: |
-          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:"${${{ steps.version.outputs.full }}//+/.}" .;
+          full_tag="${{ steps.version.outputs.full }}";
+          # no "+" characters allowed in Docker tags
+          safe_tag="${full_tag//+/-}";
+          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:"$safe_tag" .;
       # Authenticate docker
       - name: Authenticate Docker
         run: |
