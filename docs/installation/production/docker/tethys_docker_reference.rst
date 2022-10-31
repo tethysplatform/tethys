@@ -16,7 +16,7 @@ The official Tethys Docker images are located in the `tethysplatform/tethys-core
 +===============+======================================================================================================+
 | latest        | latest tagged released                                                                               |
 +---------------+------------------------------------------------------------------------------------------------------+
-| dev           | latest development build (what's in the main branch)                                               |
+| dev           | latest development build (what's in the main branch)                                                 |
 +---------------+------------------------------------------------------------------------------------------------------+
 | version       | Specify the version of Tethys image, for example: v3.0.5                                             |
 +---------------+------------------------------------------------------------------------------------------------------+

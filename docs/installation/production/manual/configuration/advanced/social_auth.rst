@@ -624,6 +624,22 @@ For more detailed information about using Okta social authentication see the fol
 OneLogin
 --------
 
+.. important::
+
+  Currently the ``OneLogin`` backend requires an older version (4.0.2) of the ``social-auth-core`` library than is currently installed by default with Tethys. To use the ``OneLogin`` backend you will need to ensure that your environment has ``social-auth-core==4.0.2``.
+
+  You can install the compatible version of ``social-auth-core`` into an existing environment with the following command:
+
+  .. code-block:: bash
+
+      conda install --experimental-solver libmamba -c conda-forge social-auth-core=4.0.2 openssl=1
+
+  Or you can ensure that you get the compatible version when you create your environment with this command:
+
+  .. code-block:: bash
+
+      conda create --experimental-solver libmamba -n tethys -c tethysplatform -c conda-forge tethys-platform social-auth-core=4.0.2
+
 1. Create an OneLogin Developer Account
 
     You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/developer-signup>`_.
