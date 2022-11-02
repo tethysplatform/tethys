@@ -43,7 +43,7 @@ dependencies:
   - condorpy
   - siphon
   - python-jose
-  - pyjwt<2.0.0
+  - pyjwt
 
   # datetime dependencies
   - arrow
