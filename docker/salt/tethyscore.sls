@@ -112,6 +112,7 @@ Generate_ASGI_Service_TethysCore:
   cmd.run:
     - name: >
         tethys gen asgi_service
+        --tethys-port {{ TETHYS_PORT }}
         --asgi-processes {{ ASGI_PROCESSES }}
         --conda-prefix {{ CONDA_HOME }}/envs/{{ CONDA_ENV_NAME }}
         --micromamba
