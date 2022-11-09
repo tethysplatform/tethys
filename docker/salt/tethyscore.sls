@@ -100,7 +100,11 @@ Generate_Tethys_Settings_TethysCore:
 
 Generate_NGINX_Settings_TethysCore:
   cmd.run:
-    - name: tethys gen nginx --client-max-body-size {{ CLIENT_MAX_BODY_SIZE }} --overwrite
+    - name: >
+        tethys gen nginx
+        --tethys-port {{ TETHYS_PORT }}
+        --client-max-body-size {{ CLIENT_MAX_BODY_SIZE }}
+        --overwrite
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Service_TethysCore:
