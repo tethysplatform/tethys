@@ -1,4 +1,8 @@
+ServerName {{ server_name }}
+
 {% if ssl %}
+Listen 443
+
 <VirtualHost *:443>
     SSLEngine on
     SSLProxyEngine On
@@ -8,10 +12,8 @@
 {% else %}
 <VirtualHost *:80>
 {% endif %}
-    ServerName {{ server_name }}
-
-    ProxyPass /static/ !
-    Alias /static/ {{ static_root }}
+    ProxyPass /static !
+    Alias /static {{ static_root }}
 
     <Directory {{ static_root }}>
         Require all granted

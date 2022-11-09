@@ -1,5 +1,6 @@
 {% set DEBUG = salt['environ.get']('DEBUG') %}
 {% set ALLOWED_HOSTS = salt['environ.get']('ALLOWED_HOSTS') %}
+{% set BYPASS_TETHYS_HOME_PAGE = salt['environ.get']('BYPASS_TETHYS_HOME_PAGE') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
 {% set NGINX_USER = salt['environ.get']('NGINX_USER') %}
@@ -14,7 +15,6 @@
 {% set TETHYS_DB_USERNAME = salt['environ.get']('TETHYS_DB_USERNAME') %}
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
 {% set TETHYS_PORT = salt['environ.get']('TETHYS_PORT') %}
-{% set TETHYS_PUBLIC_HOST = salt['environ.get']('TETHYS_PUBLIC_HOST') %}
 {% set OTHER_SETTINGS = salt['environ.get']('OTHER_SETTINGS') %}
 {% set TETHYS_DB_SUPERUSER = salt['environ.get']('TETHYS_DB_SUPERUSER') %}
 {% set TETHYS_DB_SUPERUSER_PASS = salt['environ.get']('TETHYS_DB_SUPERUSER_PASS') %}
@@ -86,6 +86,7 @@ Generate_Tethys_Settings_TethysCore:
         --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
         --set TETHYS_PORTAL_CONFIG.STATIC_ROOT {{ STATIC_ROOT }}
         --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT {{ WORKSPACE_ROOT }}
+        --set TETHYS_PORTAL_CONFIG.BYPASS_TETHYS_HOME_PAGE {{ BYPASS_TETHYS_HOME_PAGE }}
         --set RESOURCE_QUOTA_HANDLERS {{ QUOTA_HANDLERS }}
         --set ANALYTICS_CONFIG {{ DJANGO_ANALYTICAL }}
         --set AUTHENTICATION_BACKENDS {{ ADD_BACKENDS }}
@@ -94,13 +95,16 @@ Generate_Tethys_Settings_TethysCore:
         --set CHANNEL_LAYERS.default.CONFIG {{ CHANNEL_LAYERS_CONFIG }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
-        --set TETHYS_PUBLIC_HOST {{ TETHYS_PUBLIC_HOST }}
         {{ OTHER_SETTINGS }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:
   cmd.run:
-    - name: tethys gen nginx --client-max-body-size {{ CLIENT_MAX_BODY_SIZE }} --overwrite
+    - name: >
+        tethys gen nginx
+        --tethys-port {{ TETHYS_PORT }}
+        --client-max-body-size {{ CLIENT_MAX_BODY_SIZE }}
+        --overwrite
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Service_TethysCore:
@@ -112,6 +116,7 @@ Generate_ASGI_Service_TethysCore:
   cmd.run:
     - name: >
         tethys gen asgi_service
+        --tethys-port {{ TETHYS_PORT }}
         --asgi-processes {{ ASGI_PROCESSES }}
         --conda-prefix {{ CONDA_HOME }}/envs/{{ CONDA_ENV_NAME }}
         --micromamba

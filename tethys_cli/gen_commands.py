@@ -145,6 +145,18 @@ def add_gen_parser(subparsers):
         help="Add configuration settings for serving with SSL/HTTPS. "
         "Used for the Apache configuration file.",
     )
+    gen_parser.add_argument(
+        "--ssl_cert_path",
+        dest="ssl_cert",
+        help="Path to the certificate to use for SSL termination."
+        "Used for the Apache configuration file. Defaults to ''.",
+    )
+    gen_parser.add_argument(
+        "--ssl_key_path",
+        dest="ssl_key",
+        help="Path to the key to use for SSL termination."
+        "Used for the Apache configuration file. Defaults to ''.",
+    )
     gen_parser.set_defaults(
         func=generate_command,
         client_max_body_size="75M",
@@ -153,6 +165,9 @@ def add_gen_parser(subparsers):
         tethys_port=8000,
         overwrite=False,
         pin_level="none",
+        ssl=False,
+        ssl_cert="",
+        ssl_key="",
     )
 
 
@@ -197,8 +212,8 @@ def gen_apache(args):
 
     context = {
         "ssl": args.ssl,
-        "ssl_cert": "",
-        "ssl_key": "",
+        "ssl_cert": args.ssl_cert,
+        "ssl_key": args.ssl_key,
         "server_name": hostname,
         "static_root": static_root,
         "port": args.tethys_port,
