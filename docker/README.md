@@ -14,7 +14,6 @@ This project houses the docker file and scripts needed to make usable docker ima
 |PYTHON_VERSION         | Version of Python to use    |Build|2                        |
 |TETHYS_HOME            | Path to Tethys Home Dir     |Build|/usr/lib/tethys          |
 |TETHYS_PORT            | Port for external web access|Run  |80                       |
-|TETHYS_PUBLIC_HOST     | Public host and port        |Run  |127.0.0.1                |
 |TETHYS_DB_USERNAME     | Postgres connection username|Run  |tethys_default           |
 |TETHYS_DB_PASSWORD     | Postgres connection password|Run  |pass                     |
 |TETHYS_DB_HOST         | Postgres connection address |Run  |172.17.0.1               |

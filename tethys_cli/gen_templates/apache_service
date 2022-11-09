@@ -5,4 +5,4 @@ stopasgroup=true
 killasgroup=true
 autorestart=true
 startretries=1
-user=root
+user=apache
