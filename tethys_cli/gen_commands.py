@@ -153,31 +153,31 @@ def add_gen_parser(subparsers):
         "Used for the Apache configuration file.",
     )
     gen_parser.add_argument(
-        "--ssl_cert_path",
+        "--ssl-cert-path",
         dest="ssl_cert",
         help="Path to the certificate to use for SSL termination."
         "Used for the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
-        "--ssl_key_path",
+        "--ssl-key-path",
         dest="ssl_key",
         help="Path to the key to use for SSL termination."
         "Used for the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
-        "--ip_address",
+        "--ip-address",
         dest="ip_address",
         help="IP address for web server."
         "Used for security with the 'ssl' option in the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
-        "--additional_directive",
+        "--additional-directive",
         dest="additional_directives",
         action="append",
         help="Additional configuration directives to add to the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
-        "--run_as_user",
+        "--run-as-user",
         dest="run_as_user",
         help="The user to run the Supervisor Apache service as. Defaults to 'root'.",
     )
