@@ -5,4 +5,4 @@ stopasgroup=true
 killasgroup=true
 autorestart=true
 startretries=1
-user=apache
+user={{ run_as_user }}
