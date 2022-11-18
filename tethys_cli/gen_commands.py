@@ -231,6 +231,7 @@ def empty_context(args):
 
 
 def proxy_server_context(args):
+    args.server_port = args.server_port or (443 if args.ssl else 80)
     hostname = (
         str(settings.ALLOWED_HOSTS[0])
         if len(settings.ALLOWED_HOSTS) > 0
@@ -578,8 +579,6 @@ def generate_command(args):
     post_process_func = no_op
     if isinstance(context_func, tuple):
         context_func, post_process_func = context_func
-
-    args.server_port = args.server_port or (443 if args.ssl else 80)
 
     context = context_func(args)
 

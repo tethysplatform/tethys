@@ -27,6 +27,7 @@
 {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
 {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
 {% set WORKSPACE_ROOT = salt['environ.get']('WORKSPACE_ROOT') %}
+{% set BYPASS_TETHYS_HOME_PAGE = salt['environ.get']('BYPASS_TETHYS_HOME_PAGE') %}
 {% set QUOTA_HANDLERS = salt['environ.get']('QUOTA_HANDLERS') %}
 {% set DJANGO_ANALYTICAL = salt['environ.get']('DJANGO_ANALYTICAL') %}
 {% set ADD_BACKENDS = salt['environ.get']('ADD_BACKENDS') %}
