@@ -128,8 +128,8 @@ def add_gen_parser(subparsers):
         "--web-server-port",
         dest="server_port",
         help="Port for the proxy web server (i.e. Apache or Nginx) to listen on in production. "
-             "This is used when generating the Apache configuration files. "
-             "Defaults to 80 (or 443 if the --ssl option is used).",
+        "This is used when generating the Apache configuration files. "
+        "Defaults to 80 (or 443 if the --ssl option is used).",
     )
     gen_parser.add_argument(
         "--micromamba",
