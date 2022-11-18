@@ -258,7 +258,7 @@ def proxy_server_context(args):
 
 def gen_apache_service(args):
     context = {
-        'run_as_user': args.run_as_user,
+        "run_as_user": args.run_as_user,
     }
     return context
 
