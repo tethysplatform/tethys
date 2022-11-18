@@ -175,7 +175,7 @@ RUN apt-get -y remove gcc \
 # CONFIGURE  ENVIRONMENT#
 #########################
 ENV PATH ${CONDA_HOME}/miniconda/envs/tethys/bin:$PATH 
-VOLUME ["${TETHYS_HOME}/workspaces", "${TETHYS_HOME}/keys"]
+VOLUME ["${WORKSPACE_ROOT}", "${TETHYS_HOME}/keys"]
 EXPOSE 80
 
 ###############*

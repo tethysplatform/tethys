@@ -195,7 +195,7 @@ def add_gen_parser(subparsers):
         ssl_key="",
         ip_address="",
         additional_directives=[],
-        run_as_user='root',
+        run_as_user="root",
     )
 
 
