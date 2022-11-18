@@ -1,6 +1,5 @@
 {% set DEBUG = salt['environ.get']('DEBUG') %}
 {% set ALLOWED_HOSTS = salt['environ.get']('ALLOWED_HOSTS') %}
-{% set BYPASS_TETHYS_HOME_PAGE = salt['environ.get']('BYPASS_TETHYS_HOME_PAGE') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
 {% set NGINX_USER = salt['environ.get']('NGINX_USER') %}
