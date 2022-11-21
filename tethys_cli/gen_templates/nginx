@@ -7,13 +7,23 @@ upstream channels-backend {
 # configuration of the server
 server {
     # the port your site will be served on
-    listen      80;
+    listen      {{ server_port }}{% if ssl %} ssl{% endif %};
+
+    {%- if ssl %}
+    ssl_certificate {{ ssl_cert }}
+    ssl_certificate_key {{ ssl_key }}
+    {%- endif %}
+
     # the domain name it will serve for
     server_name {{ hostname }}; # substitute your machine's IP address or FQDN
     charset     utf-8;
 
     # max upload size
     client_max_body_size {{ client_max_body_size }};   # adjust to taste
+
+    {% for directive in additional_directives %}
+    {{ directive }}
+    {%- endfor %}
 
     # Tethys Workspaces
     location /workspaces  {

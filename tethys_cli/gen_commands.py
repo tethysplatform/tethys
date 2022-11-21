@@ -125,6 +125,13 @@ def add_gen_parser(subparsers):
         "Daphne, Nginx, and Apache configuration files. Defaults to 8000.",
     )
     gen_parser.add_argument(
+        "--web-server-port",
+        dest="server_port",
+        help="Port for the proxy web server (i.e. Apache or Nginx) to listen on in production. "
+        "This is used when generating the Apache configuration files. "
+        "Defaults to 80 (or 443 if the --ssl option is used).",
+    )
+    gen_parser.add_argument(
         "--micromamba",
         dest="micromamba",
         action="store_true",
@@ -146,16 +153,33 @@ def add_gen_parser(subparsers):
         "Used for the Apache configuration file.",
     )
     gen_parser.add_argument(
-        "--ssl_cert_path",
+        "--ssl-cert-path",
         dest="ssl_cert",
         help="Path to the certificate to use for SSL termination."
         "Used for the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
-        "--ssl_key_path",
+        "--ssl-key-path",
         dest="ssl_key",
         help="Path to the key to use for SSL termination."
         "Used for the Apache configuration file. Defaults to ''.",
+    )
+    gen_parser.add_argument(
+        "--ip-address",
+        dest="ip_address",
+        help="IP address for web server."
+        "Used for security with the 'ssl' option in the Apache configuration file. Defaults to ''.",
+    )
+    gen_parser.add_argument(
+        "--additional-directive",
+        dest="additional_directives",
+        action="append",
+        help="Additional configuration directives to add to the Apache configuration file. Defaults to ''.",
+    )
+    gen_parser.add_argument(
+        "--run-as-user",
+        dest="run_as_user",
+        help="The user to run the Supervisor Apache service as. Defaults to 'root'.",
     )
     gen_parser.set_defaults(
         func=generate_command,
@@ -163,11 +187,15 @@ def add_gen_parser(subparsers):
         asgi_processes=1,
         conda_prefix=False,
         tethys_port=8000,
+        server_port=None,
         overwrite=False,
         pin_level="none",
         ssl=False,
         ssl_cert="",
         ssl_key="",
+        ip_address="",
+        additional_directives=[],
+        run_as_user="root",
     )
 
 
@@ -202,26 +230,8 @@ def empty_context(args):
     return context
 
 
-def gen_apache(args):
-    hostname = (
-        str(settings.ALLOWED_HOSTS[0])
-        if len(settings.ALLOWED_HOSTS) > 0
-        else "127.0.0.1"
-    )
-    static_root = get_settings_value("STATIC_ROOT")
-
-    context = {
-        "ssl": args.ssl,
-        "ssl_cert": args.ssl_cert,
-        "ssl_key": args.ssl_key,
-        "server_name": hostname,
-        "static_root": static_root,
-        "port": args.tethys_port,
-    }
-    return context
-
-
-def gen_nginx(args):
+def proxy_server_context(args):
+    args.server_port = args.server_port or (443 if args.ssl else 80)
     hostname = (
         str(settings.ALLOWED_HOSTS[0])
         if len(settings.ALLOWED_HOSTS) > 0
@@ -231,11 +241,24 @@ def gen_nginx(args):
     static_root = get_settings_value("STATIC_ROOT")
 
     context = {
+        "ssl": args.ssl,
+        "ssl_cert": args.ssl_cert,
+        "ssl_key": args.ssl_key,
         "hostname": hostname,
-        "workspaces_root": workspaces_root,
+        "ip_address": args.ip_address,
         "static_root": static_root,
+        "workspaces_root": workspaces_root,
         "client_max_body_size": args.client_max_body_size,
         "port": args.tethys_port,
+        "server_port": args.server_port,
+        "additional_directives": args.additional_directives,
+    }
+    return context
+
+
+def gen_apache_service(args):
+    context = {
+        "run_as_user": args.run_as_user,
     }
     return context
 
@@ -311,11 +334,6 @@ def gen_portal_yaml(args):
             {"site_settings": tethys_portal_settings["site_settings"]}
         ),
     }
-    return context
-
-
-def gen_services_yaml(args):
-    context = {}
     return context
 
 
@@ -534,13 +552,13 @@ def write_path_to_console(file_path):
 
 
 GEN_COMMANDS = {
-    GEN_APACHE_OPTION: gen_apache,
-    GEN_APACHE_SERVICE_OPTION: empty_context,
+    GEN_APACHE_OPTION: proxy_server_context,
+    GEN_APACHE_SERVICE_OPTION: gen_apache_service,
     GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
-    GEN_NGINX_OPTION: gen_nginx,
+    GEN_NGINX_OPTION: proxy_server_context,
     GEN_NGINX_SERVICE_OPTION: empty_context,
     GEN_PORTAL_OPTION: gen_portal_yaml,
-    GEN_SERVICES_OPTION: gen_services_yaml,
+    GEN_SERVICES_OPTION: empty_context,
     GEN_INSTALL_OPTION: gen_install,
     GEN_META_YAML_OPTION: gen_meta_yaml,
     GEN_PACKAGE_JSON_OPTION: (gen_vendor_static_files, download_vendor_static_files),

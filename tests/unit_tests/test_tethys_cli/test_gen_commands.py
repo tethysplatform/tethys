@@ -13,6 +13,7 @@ from tethys_cli.gen_commands import (
     download_vendor_static_files,
     get_destination_path,
     GEN_APACHE_OPTION,
+    GEN_APACHE_SERVICE_OPTION,
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
     GEN_ASGI_SERVICE_OPTION,
@@ -92,7 +93,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_APACHE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_settings.side_effect = ["/foo/static"]
+        mock_settings.side_effect = ["/foo/workspace", "/foo/static"]
 
         generate_command(args=mock_args)
 
@@ -142,6 +143,24 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_write_info.assert_called_once()
 
+    @mock.patch("tethys_cli.gen_commands.write_info")
+    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    def test_generate_command_apache_service(
+        self, mock_os_path_isfile, mock_file, mock_write_info
+    ):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_APACHE_SERVICE_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+
+        mock_write_info.assert_called_once()
+
     @mock.patch("tethys_cli.gen_commands.os.path.isdir")
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
@@ -151,7 +170,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         self, mock_makedirs, mock_os_path_isfile, mock_file, mock_write_info, mock_isdir
     ):
         mock_args = mock.MagicMock(
-            type=GEN_PORTAL_OPTION, directory=None, spec=["overwrite"]
+            type=GEN_PORTAL_OPTION, directory=None, spec=["overwrite", "server_port"]
         )
         mock_os_path_isfile.return_value = False
         mock_isdir.side_effect = [
