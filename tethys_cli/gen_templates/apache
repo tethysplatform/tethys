@@ -1,23 +1,24 @@
-ServerName {{ server_name }}
+ServerName {{ hostname }}
 
-{% if ssl %}
-Listen 443
+Listen {% if ip_address %}{{ ip_address }}:{%- endif %}{{ server_port }}{% if ssl %} https{% endif %}
 
-<VirtualHost *:443>
+<VirtualHost *:{{ server_port }}>
+{%- if ssl %}
     SSLEngine on
     SSLProxyEngine On
     SSLCertificateFile {{ ssl_cert }}
     SSLCertificateKeyFile {{ ssl_key }}
+{%- endif %}
 
-{% else %}
-<VirtualHost *:80>
-{% endif %}
     ProxyPass /static !
     Alias /static {{ static_root }}
 
     <Directory {{ static_root }}>
         Require all granted
     </Directory>
+    {% for directive in additional_directives %}
+    {{ directive }}
+    {%- endfor %}
 
     ProxyRequests Off
     ProxyPreserveHost On
