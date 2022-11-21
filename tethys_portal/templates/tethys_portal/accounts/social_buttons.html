@@ -45,7 +45,7 @@
     </a>
   {% else %}
     <a class="btn btn-block btn-social btn-custom-oauth" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-      <i class="bi bi-unlock-alt"></i> {{ action }} with {{ backend }}
+      <i class="bi bi-unlock-fill"></i> {{ action }} with {{ backend }}
     </a>
   {% endif %}
 {% endfor %}
