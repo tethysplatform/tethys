@@ -1035,12 +1035,14 @@ class ProxyApp(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True)
-    endpoint = models.CharField(max_length=1024, validators=[validate_url])
-    logo_url = models.CharField(max_length=100, validators=[validate_url], blank=True)
+    endpoint = models.URLField(max_length=512)
+    logo_url = models.URLField(max_length=512, blank=True)
+    back_url = models.URLField(max_length=512, blank=True)
     description = models.TextField(max_length=2048, blank=True)
     tags = models.CharField(max_length=200, blank=True, default="")
     enabled = models.BooleanField(default=True)
     show_in_apps_library = models.BooleanField(default=True)
+    open_in_new_tab = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
 
     class Meta:
