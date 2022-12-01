@@ -493,7 +493,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                     ("Sst_36", "boxfill/sst_36"),
                 ],
                 "title": "Foo Bar",
-                "type": "wms-legend",
+                "type": "thredds-wms-legend",
                 "url": "http://example.com/thredds/wms?REQUEST=GetLegendGraphic&LAYER=foo_bar.nc",
             },
         )
@@ -514,7 +514,7 @@ class TestMapLayoutMixin(unittest.TestCase):
 
         self.assertIsNone(ret)
         mock_log.error.assert_called_with(
-            "No params found for given layer: {'source': 'TileWMS', 'legend_title': "
+            "Legend Creation Error: No params found for given layer: {'source': 'TileWMS', 'legend_title': "
             "'Foo Bar', 'options': {'url': 'http://example.com/thredds/wms', "
             "'serverType': 'thredds'}, 'editable': True, 'layer_options': None, "
             "'legend_classes': None, 'legend_extent': None, 'legend_extent_projection': "

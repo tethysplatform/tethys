@@ -516,7 +516,7 @@ class MapLayoutMixin:
                     }
                 )
 
-            if server_type == "geoserver":
+            elif server_type == "geoserver":
                 # Build legend select options from styles assigned to layer
                 select_options = None
                 wms_styles = []
@@ -547,7 +547,7 @@ class MapLayoutMixin:
                     }
                 )
 
-            return legend
+        return legend
 
     @classmethod
     def build_geojson_layer(
