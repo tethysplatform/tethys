@@ -477,7 +477,10 @@ class MapLayoutMixin:
                 sorted(legend["divisions"].items())
             )
 
-        elif "options" in layer:
+        elif "options" in layer and layer.options.get("serverType", "").lower() in (
+            "geoserver",
+            "thredds",
+        ):
             server_type = layer.options.get("serverType", "").lower()
             wms_url = layer.options.get("url")
             wms_params = layer.options.get("params")
