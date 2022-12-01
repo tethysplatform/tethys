@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_apps', '0001_initial_40'),
+        ("tethys_apps", "0001_initial_40"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='proxyapp',
-            name='back_url',
+            model_name="proxyapp",
+            name="back_url",
             field=models.URLField(blank=True, max_length=512),
         ),
         migrations.AddField(
-            model_name='proxyapp',
-            name='open_in_new_tab',
+            model_name="proxyapp",
+            name="open_in_new_tab",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='proxyapp',
-            name='endpoint',
+            model_name="proxyapp",
+            name="endpoint",
             field=models.URLField(max_length=512),
         ),
         migrations.AlterField(
-            model_name='proxyapp',
-            name='logo_url',
+            model_name="proxyapp",
+            name="logo_url",
             field=models.URLField(blank=True, max_length=512),
         ),
     ]

@@ -26,7 +26,6 @@ from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
-from tethys_services.models import validate_url
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
