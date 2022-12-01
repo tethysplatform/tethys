@@ -4,7 +4,7 @@
 Migrating Apps from Tethys 3 to 4
 *********************************
 
-**Last Updated:** May 2022
+**Last Updated:** December 2022
 
 This guide describes how to migrate Tethys 3 apps to work in Tethys 4. There are several "breaking" changes that were introduced in Tethys 4 that may cause apps developed in Tethys 3 to not load or function properly. Use the tips below to help you make the changes necessary for the app to function properly in Tethys 4.
 
@@ -36,7 +36,7 @@ should be changed to this:
 Controller Decorators
 =====================
 
-The ``url_maps()`` method is being deprecated in favor of the simpler ``controller`` decorator method introduced in Tethys 4. Therefore, it is recommended that apps are migrated to use the ``controller`` decorator and remove the ``url_maps()`` method from the :file:`app.py`. Use the following tips to help you migrate:
+The ``url_maps()`` method is being deprecated in favor of the simpler ``controller`` decorator method introduced in Tethys 4. The ``url_maps`` method is temporarily avilable in Tethys 4 to allow for easier app migration, but **support for the ``url_maps`` method will be dropped in Tethys 4.1.0**. It is required for migrated apps to use the ``controller`` decorator and remove the ``url_maps()`` method from the :file:`app.py`. Long warnings in the console will be displayed for apps still using the ``url_maps`` method in Tethys 4 to encourage users to migrate as soon as possible (don't wait for Tethys 4.1). Use the following tips to help you migrate:
 
 1. Review the :ref:`url_maps_api` documentation to become familiar with the ``controller`` decorator.
 2. If your app has a lot of controllers, use the ``url_maps()`` in :file:`app.py` to make a list of them. There should be one controller function or class for each ``UrlMap`` listed.
@@ -68,7 +68,7 @@ However, you may also use the ``controller_modules`` property of the :term:`app 
 Workspaces
 ==========
 
-The ``get_app_workspace()`` and ``get_user_workspace()`` methods of the :term:`app class` were deprecated in Tethys 3 in favor of the ``app_workspace`` and ``user_workspace`` decorators. However, it is recommended that you use the ``app_workspace`` and ``user_workspace`` arguments of the ``controller`` decorator to acquire workspaces in Tethys 4.
+It is recommended that you use the ``app_workspace`` and ``user_workspace`` arguments of the ``controller`` decorator to acquire workspaces in Tethys 4.
 
 For example, the following controllers:
 
@@ -110,6 +110,10 @@ should be refactored to use the ``controller`` decorator as follows:
         """Gets app workspace from the controller decorator."""
         aw_path = app_workspace.path
         ...
+
+.. note::
+
+    In rare cases when the ``controller`` decorator cannot be used to acquire workspaces, you may use the ``get_app_workspace()`` and ``get_user_workspace()`` methods of the app class. These methods are no longer deprecated. However, they will raise an exception if the quotas feature is enabled and the user or app is out of workspace. The ``controller`` decorator automatically handles these exceptions, but when using the ``get_app_workspace()`` and ``get_user_workspace()`` directly, you will need to handle those exceptions.
 
 Templates
 =========
