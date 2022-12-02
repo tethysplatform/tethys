@@ -20,7 +20,6 @@ from tethys_apps.exceptions import (
     PersistentStorePermissionError,
     PersistentStoreInitializerError,
 )
-from django.contrib.postgres.fields import ArrayField
 from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
@@ -55,10 +54,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     name = models.CharField(max_length=200, default="")
     description = models.TextField(max_length=1000, blank=True, default="")
     enable_feedback = models.BooleanField(default=False)
-    feedback_emails = ArrayField(
-        models.CharField(max_length=200, null=True, blank=True),
-        default=list,
-    )
+    feedback_emails = models.JSONField(default=list, null=True, blank=True)
     tags = models.CharField(max_length=200, blank=True, default="")
     enabled = models.BooleanField(default=True)
     show_in_apps_library = models.BooleanField(default=True)
