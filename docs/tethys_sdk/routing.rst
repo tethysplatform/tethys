@@ -4,11 +4,15 @@
 Routing API
 ***********
 
-**Last Updated:** March 2022
+**Last Updated:** December 2022
 
 Routing is the way a request to a URL is connected (or routed) to a function or class that is responsible for handling that request. When a request is submitted to Tethys, it matches the URL of that request against a list of registered URLs and calls the function or class that is registered with that URL. This connection between the URL and the function or class that handles it is also called a URL mapping. A function or class that is mapped to a URL endpoint is known as either a controller or a consumer (depending on the protocol used in the URL).
 
-Beginning in Tethys 4.0, registering a URL is done by decorating its function or class with one of the Tethys routing decorators (``controller`` or ``consumer``). The ``controller`` decorator is used to register a URL using the HTTP protocol, while the ``consumer`` decorator is used to register a URL using the :ref:`websocket <websockets>` protocol. 
+Beginning in Tethys 4.0, registering a URL is done by decorating its function or class with one of the Tethys routing decorators (``controller`` or ``consumer``). The ``controller`` decorator is used to register a URL using the HTTP protocol, while the ``consumer`` decorator is used to register a URL using the :ref:`websocket <websockets>` protocol.
+
+.. warning::
+
+  The ``url_maps`` method in the ``app.py`` is deprecated in favor of the new ``controller`` decorator approach (described below) and **WILL BE REMOVED in Tethys 4.1.0**. The ``url_maps`` method is temporarily available in Tethys 4.0 to allow for easier migration of apps to using the new ``controller`` decorator method. If you still wish to declare ``UrlMaps`` in the :file:`app.py`, use the new ``register_url_maps()`` method and then remove the ``url_maps()`` method (see: :ref:`register-url-maps-method`). Use of the ``url_maps`` method in Tethys 4.0.0 causes long warning messages to be displayed in the terminal to encourage users to migrate as soon as possible. **Don't wait until 4.1.0 to move to the ``controller`` decorator!**
 
 .. _controller-decorator:
 

@@ -1,9 +1,16 @@
 {% load static tags site_settings %}
 <div class="app-card-container position-relative" data-tags="{{ app|get_tag_class }}">
     {% if not unconfigured %}
-    <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}" {% if not app.show_in_apps_library %}title="Hidden"{% elif not app.enabled %}title="Disabled"{% else %}title="{{ app.name }}"{% endif %} href="{% if app.proxied %}{{ app.url }}{% else %}{% url app.index_url %}{% endif %}">
+    <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}"
+       title="{% if not app.show_in_apps_library %}Hidden{% elif not app.enabled %}Disabled{% else %}{{ app.name }}{% endif %}"
+       href="{% if app.proxied %}{{ app.url }}{% if app.back_url %}?back={{ app.back_url }}{% endif %}{% else %}{% url app.index_url %}{% endif %}"
+       {% if app.proxied and app.open_in_new_tab %}target="_blank"{% endif %}
+    >
     {% else %}
-    <a class="app-link-wrapper rounded d-block mt-4 unconfigured" title="Not Configured" href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
+    <a class="app-link-wrapper rounded d-block mt-4 unconfigured"
+       title="Not Configured"
+       href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/"
+    >
     {% endif %}
         <div class="card app-card text-center">
             <div class="card-body">

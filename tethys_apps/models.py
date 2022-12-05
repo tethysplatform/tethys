@@ -26,7 +26,6 @@ from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
-from tethys_services.models import validate_url
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
@@ -1035,12 +1034,14 @@ class ProxyApp(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True)
-    endpoint = models.CharField(max_length=1024, validators=[validate_url])
-    logo_url = models.CharField(max_length=100, validators=[validate_url], blank=True)
+    endpoint = models.URLField(max_length=512)
+    logo_url = models.URLField(max_length=512, blank=True)
+    back_url = models.URLField(max_length=512, blank=True)
     description = models.TextField(max_length=2048, blank=True)
     tags = models.CharField(max_length=200, blank=True, default="")
     enabled = models.BooleanField(default=True)
     show_in_apps_library = models.BooleanField(default=True)
+    open_in_new_tab = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
 
     class Meta:
