@@ -81,12 +81,12 @@
               {% for legend, legend_select_input in legends %}
                 <div id="{{ legend.legend_id }}" class="hidden legend-wrapper legend-group-item" data-legend-attrs="{{ legend|jsonify }}">
                   <span class="legend-title">{{ legend.title|title }}{% if legend.units %} ({{ legend.units }}){% endif %}</span>
-                  {% gizmo legend_select_input %}
+                  {% if legend_select_input %}{% gizmo legend_select_input %}{% endif %}
                   {% if legend.type == 'custom-divisions' %}
                     <div id="color-ramp-component-{{ legend.legend_id }}" class="color-ramp-component">
                       {% include "tethys_layouts/map_layout/color_ramp_component.html" %}
                     </div>
-                  {% elif legend.type == 'wms-legend' %}
+                  {% elif 'wms-legend' in legend.type %}
                     <img class="wms-legend-image" src="{{ legend.url }}">
                   {% endif %}
                 </div>

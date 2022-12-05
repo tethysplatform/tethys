@@ -337,14 +337,19 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         for layer in map_view.layers:
             legend = self.build_legend(layer)
             if legend is not None:
-                # Create color ramp selector
-                legend_select_input = SelectInput(
-                    name=f'tethys-color-ramp-picker-{legend["legend_id"]}',
-                    options=legend.get("select_options"),
-                    initial=legend.get("initial_option"),
-                    classes="map-layout-color-ramp-picker",
-                    original=True,
-                )
+                legend_select_options = legend.get("select_options")
+                if legend_select_options:
+                    # Create color ramp selector
+                    legend_select_input = SelectInput(
+                        name=f'tethys-color-ramp-picker-{legend["legend_id"]}',
+                        options=legend.get("select_options"),
+                        initial=legend.get("initial_option"),
+                        classes="map-layout-color-ramp-picker form-select-sm",
+                        original=True,
+                    )
+                else:
+                    legend_select_input = None
+
                 legends.append((legend, legend_select_input))
 
         # Override MapView with CesiumMapView if Cesium is the chosen map_type.

@@ -34,12 +34,22 @@ class ComposeLayersMapLayout(MapLayout):
 
     def compose_layers(self, request, map_view, *args, **kwargs):
         # Legends are built for thredds server layers
-        wms_layer = self.build_wms_layer(
-            endpoint="https://tethys2.byu.edu/thredds/wms/testAll/grace/GRC_jpl_tot.nc",
+        wms_thredds_layer = self.build_wms_layer(
+            endpoint="https://foo.bar.baz/thredds/wms/testAll/grace/GRC_jpl_tot.nc",
             server_type="thredds",
             layer_name="area",
-            layer_title="WMS Layer",
+            layer_title="WMS THREDDS Layer",
             layer_variable="grace",
+            visible=True,
+        )
+
+        wms_geoserver_layer = self.build_wms_layer(
+            endpoint="https://foo.bar.baz/geoserver",
+            server_type="geoserver",
+            layer_name="streams",
+            layer_title="WMS GeoServer Layer",
+            layer_variable="stream_network",
+            layer_id="stream_id",
             visible=True,
         )
 
@@ -76,7 +86,7 @@ class ComposeLayersMapLayout(MapLayout):
             extent=[-173, 17, -65, 72],
         )
 
-        layers = [wms_layer, geojson_layer, arc_gis_layer]
+        layers = [wms_thredds_layer, wms_geoserver_layer, geojson_layer, arc_gis_layer]
 
         layer_groups = [
             self.build_layer_group(
@@ -333,12 +343,12 @@ class TestMapLayout(TestCase):
         self.assertTrue(ret["geocode_enabled"])
         self.assertEqual(len(ret["layer_groups"]), 1)
         self.assertEqual(ret["layer_groups"][0]["display_name"], "Foo")
-        self.assertEqual(len(ret["layer_groups"][0]["layers"]), 3)
+        self.assertEqual(len(ret["layer_groups"][0]["layers"]), 4)
         self.assertEqual(ret["layer_tab_name"], "Foos")
         self.assertListEqual(ret["map_extent"], [10, 10, 20, 20])
         self.assertEqual(ret["map_type"], "tethys_map_view")
         self.assertIsInstance(ret["map_view"], MapView)
-        self.assertEqual(len(ret["map_view"].layers), 3)
+        self.assertEqual(len(ret["map_view"].layers), 4)
         self.assertEqual(ret["nav_title"], "Bar")
         self.assertEqual(ret["nav_subtitle"], "Baz")
         self.assertEqual(ret["plotly_version"], "1.2.3")
@@ -451,7 +461,7 @@ class TestMapLayout(TestCase):
 
         self.assertEqual(ret["map_type"], "cesium_map_view")
         self.assertIsInstance(ret["map_view"], CesiumMapView)
-        self.assertEqual(len(ret["map_view"].layers), 1)  # ArcGIS Layer not supported
+        self.assertEqual(len(ret["map_view"].layers), 2)  # ArcGIS Layer not supported
         self.assertEqual(len(ret["map_view"].entities), 1)
 
     @mock.patch("tethys_layouts.views.map_layout.log")
