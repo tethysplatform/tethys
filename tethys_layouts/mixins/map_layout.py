@@ -477,31 +477,78 @@ class MapLayoutMixin:
                 sorted(legend["divisions"].items())
             )
 
-        elif "options" in layer and layer.options.get("serverType") == "thredds":
+        elif "options" in layer and layer.options.get("serverType", "").lower() in (
+            "geoserver",
+            "thredds",
+        ):
+            server_type = layer.options.get("serverType", "").lower()
             wms_url = layer.options.get("url")
             wms_params = layer.options.get("params")
             if not wms_params:
-                log.error(f"No params found for given layer: {layer}")
+                log.error(
+                    f"Legend Creation Error: No params found for given layer: {layer}"
+                )
                 return None
-            wms_layer_name = wms_params.get("LAYERS")
 
-            select_options = [("Default", "")]
-            select_options.extend(
-                [(p.replace("boxfill/", "").title(), p) for p in cls.THREDDS_PALETTES]
-            )
-            default_palette = wms_params.get("STYLES") or "Default"
+            wms_layer_name_param = wms_params.get("LAYERS", "")
+            wms_styles_param = wms_params.get("STYLES", "")
 
             legend = {
-                "type": "wms-legend",
                 "legend_id": legend_id,
                 "layer_id": layer_id,
                 "title": layer.legend_title,
-                "palettes": cls.THREDDS_PALETTES,
-                "default_palette": default_palette,
-                "select_options": select_options,
-                "initial_option": default_palette,
-                "url": f"{wms_url}?REQUEST=GetLegendGraphic&LAYER={wms_layer_name}",
             }
+
+            if server_type == "thredds":
+                select_options = [("Default", "")]
+                select_options.extend(
+                    [
+                        (p.replace("boxfill/", "").title(), p)
+                        for p in cls.THREDDS_PALETTES
+                    ]
+                )
+                default_palette = wms_params.get("STYLES") or "Default"
+                legend.update(
+                    {
+                        "type": "thredds-wms-legend",
+                        "palettes": cls.THREDDS_PALETTES,
+                        "default_palette": default_palette,
+                        "select_options": select_options,
+                        "initial_option": default_palette,
+                        "url": f"{wms_url}?REQUEST=GetLegendGraphic&LAYER={wms_layer_name_param}",
+                    }
+                )
+
+            elif server_type == "geoserver":
+                # Build legend select options from styles assigned to layer
+                select_options = None
+                wms_styles = []
+                if wms_styles_param and len(wms_styles_param) > 0:
+                    wms_styles = wms_styles_param.split(",")
+
+                    # Only build select options if there is more than one style assigned
+                    if len(wms_styles) > 1:
+                        select_options = [("Default", "")]
+                        for wms_style in wms_styles:
+                            display_style = wms_style
+                            if ":" in display_style:
+                                display_style = display_style.split(":")[1]
+                            display_style = (
+                                display_style.replace("_", " ")
+                                .replace("-", " ")
+                                .title()
+                            )
+                            select_options.append((display_style, wms_style))
+
+                legend.update(
+                    {
+                        "type": "geoserver-wms-legend",
+                        "select_options": select_options,
+                        "initial_option": "Default" if select_options else None,
+                        "url": f"{wms_url}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png"
+                        f"&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100&LAYER={wms_layer_name_param}",
+                    }
+                )
 
         return legend
 

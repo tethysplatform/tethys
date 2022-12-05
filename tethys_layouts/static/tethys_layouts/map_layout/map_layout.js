@@ -1078,8 +1078,8 @@ var MAP_LAYOUT = (function() {
                 var legend_attrs = $(legend_wrapper).data('legend-attrs');
 
                 // Reload layer with new style
-                if (legend_attrs.type === 'wms-legend') {
-                    update_layer_style(legend_attrs.layer_id, selected_style, 'wms-style');
+                if (legend_attrs.type.includes('wms-legend')) {
+                    update_layer_style(legend_attrs.layer_id, selected_style, legend_attrs.type);
                     update_wms_legend(legend_wrapper, legend_attrs, selected_style);
                 } else if (legend_attrs.type === 'custom-divisions') {
                     update_division_legend_and_layer(legend_wrapper, legend_attrs, selected_style);
@@ -1093,7 +1093,7 @@ var MAP_LAYOUT = (function() {
         const params = existing_imagery_layer.getSource().getParams();
 
         // Update appropriate parameter based on the style type
-        if (style_type === 'wms-style') {
+        if (style_type.includes('wms-legend')) {
             params['STYLES'] = new_style;
         } else if (style_type === 'geoserver-env-string') {
             params['ENV'] = new_style;
@@ -1140,7 +1140,11 @@ var MAP_LAYOUT = (function() {
     update_wms_legend = function(legend_wrapper, legend_attrs, new_style) {
         var wms_url = legend_attrs.url;
         var wms_legend_image = $(legend_wrapper).find('.wms-legend-image');
-        wms_url += `&PALETTE=${new_style.replace('boxfill/', '')}`;
+        if (legend_attrs.type.includes("thredds")) {
+          wms_url += `&PALETTE=${new_style.replace('boxfill/', '')}`;
+        } else {
+          wms_url += `&STYLE=${new_style}`;
+        }
         wms_legend_image.attr('src', wms_url);
     };
 

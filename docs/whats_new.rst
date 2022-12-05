@@ -4,7 +4,7 @@
 What's New
 **********
 
-**Last Updated:** July 2022
+**Last Updated:** December 2022
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -38,7 +38,8 @@ Controller Decorators
 
 * Added three new decorators: ``controller``, ``consumer``, and ``handler``.
 * Use these decorators for mapping controllers, consumers, and handlers to URLs.
-* UrlMaps in app.py are no longer needed and the ``url_maps`` method is deprecated.
+* UrlMaps in app.py are no longer needed and the ``url_maps`` method is deprecated in favor of the new ``register_url_maps`` method.
+* IMPORTANT: The ``url_maps`` method is temporarily supported in Tethys Platform 4.0.0 to make migration of apps from Tethys 3 to 4 easier, but will be removed in 4.1.0.
 
 See: :ref:`url_maps_api`
 
@@ -52,7 +53,7 @@ See: :ref:`websockets` and :ref:`tutorials_websockets`
 Tethys Map Layout
 -----------------
 
-* The first Tethys Layout, a new way to quickly and easily a fully functioning views to Tethys Apps.
+* The first Tethys Layout, a new way to quickly and easily add fully functioning views to Tethys Apps.
 * A fully-featured, customizable map view with layer tree, address search, attribute popups, click-n-plot capability, and more.
 * Subclass the ``MapLayout`` class and override the ``compose_layers`` method to add layers.
 * Enable / disable functionality by setting class properties.
@@ -118,6 +119,29 @@ Apps Library
 * Additionally, apps (including proxy apps) have a new ``order`` attribute that enables the app sorting to be customized.
 
 See: :ref:`tethys_portal_app_settings`
+
+App Settings
+------------
+
+* The ``color`` setting is now exposed on the App Settings page for an app, allowing it to be overriden by portal administrators.
+* A new ``order`` setting give portal adminstrators control over the ordering of apps on the Apps Library page. Default ordering is alphabetical now.
+* The ``icon`` setting now accepts URLs to images hosted on external websites.
+* The new ``Scheduler Settings`` can be used to assign HTCondor and Dask Scheduler to apps as is done with other services.
+* Added explanations of each of the common app settings to the documentation for :ref:`portal_admin_common_app_settings`.
+
+See: :ref:`portal_admin_apps_and_exts`
+
+Proxy Apps
+----------
+
+* Added documentation for Proxy Apps in the Tethys Portal :ref:`portal_admin_pages` documentation.
+* Added two new properties for Proxy Apps: **Back url** and **Open in new tab**.
+* **Back url**: specify a back URL that will be appended to the app endpoint as a query param (e.g. if the back url ``https://my.back-url.org/`` is provided the app endpoint link will become ``https://my.portal.org/apps/foo?back=https://my.back-url.org/``).
+* **Open in new tab**: the proxy app will be opened in a new tab (default is to open proxy apps in a new tab now).
+* The Exit button in apps will now redirect to the URL in the ``back`` query parameter if it is provided.
+* This will allow for Proxy apps pointing to Tethys apps in other Tethys 4 portals to exit to the referring portal when the user is finished.
+
+See: :ref:`portal_admin_proxy_apps`
 
 Tethys Portal
 -------------

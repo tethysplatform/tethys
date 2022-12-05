@@ -493,7 +493,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                     ("Sst_36", "boxfill/sst_36"),
                 ],
                 "title": "Foo Bar",
-                "type": "wms-legend",
+                "type": "thredds-wms-legend",
                 "url": "http://example.com/thredds/wms?REQUEST=GetLegendGraphic&LAYER=foo_bar.nc",
             },
         )
@@ -514,13 +514,136 @@ class TestMapLayoutMixin(unittest.TestCase):
 
         self.assertIsNone(ret)
         mock_log.error.assert_called_with(
-            "No params found for given layer: {'source': 'TileWMS', 'legend_title': "
+            "Legend Creation Error: No params found for given layer: {'source': 'TileWMS', 'legend_title': "
             "'Foo Bar', 'options': {'url': 'http://example.com/thredds/wms', "
             "'serverType': 'thredds'}, 'editable': True, 'layer_options': None, "
             "'legend_classes': None, 'legend_extent': None, 'legend_extent_projection': "
             "'EPSG:4326', 'feature_selection': None, 'geometry_attribute': None, "
             "'data': {'layer_name': 'foo_bar.nc', 'layer_variable': 'baz'}, "
             "'times': None}"
+        )
+
+    def test_build_legend_geoserver_with_layer_id(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={"layer_name": "foo_bar", "layer_variable": "baz", "layer_id": "baz"},
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {"LAYERS": "foo_bar"},
+                "serverType": "geoserver",
+            },
+        )
+
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "initial_option": None,
+                "layer_id": "baz",
+                "legend_id": "legend-for-baz",
+                "select_options": None,
+                "title": "Foo Bar",
+                "type": "geoserver-wms-legend",
+                "url": "http://example.com:8181/geoserver/wms?REQUEST=GetLegendGraphic"
+                "&VERSION=1.0.0&FORMAT=image/png&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100"
+                "&LAYER=foo_bar",
+            },
+        )
+
+    def test_build_legend_geoserver_with_multiple_styles(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={"layer_name": "foo_bar", "layer_variable": "baz", "layer_id": "baz"},
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {"LAYERS": "foo_bar", "STYLES": "foo_style,bar_style"},
+                "serverType": "geoserver",
+            },
+        )
+
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "initial_option": "Default",
+                "layer_id": "baz",
+                "legend_id": "legend-for-baz",
+                "select_options": [
+                    ("Default", ""),
+                    ("Foo Style", "foo_style"),
+                    ("Bar Style", "bar_style"),
+                ],
+                "title": "Foo Bar",
+                "type": "geoserver-wms-legend",
+                "url": "http://example.com:8181/geoserver/wms?REQUEST=GetLegendGraphic"
+                "&VERSION=1.0.0&FORMAT=image/png&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100"
+                "&LAYER=foo_bar",
+            },
+        )
+
+    def test_build_legend_geoserver_with_multiple_styles_with_workspaces(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={"layer_name": "foo_bar", "layer_variable": "baz", "layer_id": "baz"},
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {
+                    "LAYERS": "foo_bar",
+                    "STYLES": "baz:foo_style,baz:bar_style",
+                },
+                "serverType": "geoserver",
+            },
+        )
+
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "initial_option": "Default",
+                "layer_id": "baz",
+                "legend_id": "legend-for-baz",
+                "select_options": [
+                    ("Default", ""),
+                    ("Foo Style", "baz:foo_style"),
+                    ("Bar Style", "baz:bar_style"),
+                ],
+                "title": "Foo Bar",
+                "type": "geoserver-wms-legend",
+                "url": "http://example.com:8181/geoserver/wms?REQUEST=GetLegendGraphic"
+                "&VERSION=1.0.0&FORMAT=image/png&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100"
+                "&LAYER=foo_bar",
+            },
+        )
+
+    def test_build_legend_geoserver_with_one_style(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={"layer_name": "foo_bar", "layer_variable": "baz", "layer_id": "baz"},
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {"LAYERS": "foo_bar", "STYLES": "foo_style"},
+                "serverType": "geoserver",
+            },
+        )
+
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "initial_option": None,
+                "layer_id": "baz",
+                "legend_id": "legend-for-baz",
+                "select_options": None,
+                "title": "Foo Bar",
+                "type": "geoserver-wms-legend",
+                "url": "http://example.com:8181/geoserver/wms?REQUEST=GetLegendGraphic"
+                "&VERSION=1.0.0&FORMAT=image/png&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100"
+                "&LAYER=foo_bar",
+            },
         )
 
     def test_build_geojson_layer_default(self):
@@ -821,7 +944,6 @@ class TestMapLayoutMixin(unittest.TestCase):
             env="foo:1;bar:baz",
             times=["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"],
         )
-        self.maxDiff = None
 
         self.assertIsInstance(ret, MVLayer)
         self.assertEqual(ret.source, "TileWMS")

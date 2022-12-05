@@ -1,8 +1,10 @@
+.. _portal_admin_pages:
+
 *******************
 Administrator Pages
 *******************
 
-**Last Updated:** October 2021
+**Last Updated:** December 2022
 
 Tethys Portal includes administration pages that can be used to manage the website (see Figure 1). The administration dashboard is only available to administrator users (staff users). You should have created a default administrator user when you installed Tethys Platform. If you are logged in as an administrator, you will be able to access the administrator dashboard by selecting the "Site Admin" option from the user drop down menu in the top right-hand corner of the page (when you are not in an app).
 
@@ -71,7 +73,7 @@ There are two ways to assign app permissions to users and groups. The first meth
 Change Group Method (Recommended)
 +++++++++++++++++++++++++++++++++
 
-To assign app permissions to a user using the ``Change Group`` method, go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. Select the link with the group name from the list. On the ``Change Group`` page you can assign a group permissions to access a specific app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box. Once an app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any. Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated to the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. The ``Change Group`` form then needs to be saved for changes to take effect.
+To assign app permissions to a user using the ``Change Group`` method, go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. Select the link with the group name from the list. On the ``Change Group`` page you can assign a group permissions to access a specific app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box (see Figures 4 and 5). Once an app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any. Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated to the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. The ``Change Group`` form then needs to be saved for changes to take effect.
 
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm4.png
    :width: 900px
@@ -90,7 +92,7 @@ To assign app permissions to a user using the ``Change Group`` method, go to the
 Object Permissions Method
 +++++++++++++++++++++++++
 
-To assign a singular app permission to a user using the ``Change Tethys App`` page, go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 4). On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button (see Figure 5). The same method can be used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page.
+To assign a singular app permission to a user using the ``Change Tethys App`` page, go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 6). On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button (see Figure 7). The same method can be used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page. Previously added App permissions will be listed in the table on this page and can be edited by clicking the ``Edit`` link (see Figure 8).
 
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm1.png
    :width: 900px
@@ -102,13 +104,10 @@ To assign a singular app permission to a user using the ``Change Tethys App`` pa
 
 **Figure 7.** Object Permissions page.
 
-Previously added App permissions can also be edited using this page.
-
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm3.png
    :width: 900px
 
 **Figure 8.** Link to edit Object Permissions.
-
 
 Anonymous User
 --------------
@@ -151,7 +150,14 @@ When a new document becomes active, users will be presented with a modal prompti
 Tethys Apps
 ===========
 
-The links under the ``TETHYS APPS`` heading can be used to manage settings for installed apps and extensions. Clicking on the ``Installed Apps`` or ``Installed Extensions`` links will show a list of installed apps or extensions. Clicking on a link for an installed app or extension will bring you to the settings page for that app or extension. There are several different types of app settings: Common Settings, Custom Settings, and Service Settings.
+The links under the ``TETHYS APPS`` heading can be used to manage settings for installed apps and extensions and proxy apps.
+
+.. _portal_admin_apps_and_exts:
+
+Installed Apps and Extensions
+-----------------------------
+
+Clicking on the ``Installed Apps`` or ``Installed Extensions`` links will show a list of installed apps or extensions. Clicking on a link for an installed app or extension will bring you to the settings page for that app or extension. There are several different types of app settings: Common Settings, Custom Settings, and Service Settings.
 
 An app can be disabled by unchecking the ``Enabled`` checkbox in the app settings page. A 404 error will be displayed in place of the disabled app if a user tries to open the app. Disabled apps appear as transparent apps in the ``Apps Library`` to admin users and users with permissions to access the app. Other users will not see the app in the ``Apps Library``.
 
@@ -159,10 +165,22 @@ An app can also be hidden from the ``Apps Library`` by unchecking the ``Show in 
 
 The order that the apps appear in the ``Apps Library`` (alphabetically by default) can be controlled using the ``Order`` setting on the app settings page. The apps will be displayed in assending order.
 
-Common Settings
----------------
+.. _portal_admin_common_app_settings:
 
-The Common Settings include those settings that are common to all apps or extension such as the ``Name``, ``Description``, ``Tags``, ``Order``, ``Enabled``, ``Show in apps library``, and ``Enable feedback`` (see Figure 11). Many of these settings correspond with attributes of the term:`app class` and can be overridden by the portal administrator. Others control the sorting order, visibility, or accessibility of the app.
+Common Settings
++++++++++++++++
+
+The Common Settings include those settings that are common to all apps or extension such as the ``Name``, ``Description``, ``Icon``, ``Color``, ``Tags``, ``Order``, ``Enabled``, ``Show in apps library``, and ``Enable feedback`` (see Figure 11). Many of these settings correspond with attributes of the term:`app class` and can be overridden by the portal administrator. Others control the sorting order, visibility, or accessibility of the app. A brief description of the common settings is provided below:
+
+* **Name**: The name of the app that will appear on the app tile on the Apps Library page (e.g.: "My First App").
+* **Description**: A description of the app that will be displayed when the user clicks on the info icon on the app tile.
+* **Icon**: Override the icon/logo of the app with a different icon. Accepts a relative path to a static file (e.g.: ``my-first-app/images/other-logo.png``) or a URL to an externally hosted image (e.g.: ``https://some.other-site.org/static/other-logo.png``).
+* **Color**: Override the theme color of the app (e.g.: ``#1A2B3C``).
+* **Tags**: One or more tags for an app. Wrap each tag in double quotes and separate by commas (e.g.: ``"Hydrology","Grided Data","THREDDS"``).
+* **Enabled**: Enable or disable the app. Disabled apps are not accessible to non-admin users.
+* **Show in apps library**: Display the app on the Apps Library page. The app is still accessible by URL, but no app tile will be shown in the apps library.
+* **Order**: Force the order that apps are listed on the Apps Library page. Default order is alphabetical.
+* **Enable feedback**: When on, a button that launches a feedback form added to every page of the app. The feedback will be emailed to users listed in the ``feedback_emails`` setting in the :file:`app.py`.
 
 .. figure:: ../images/site_admin/app_settings_top.png
     :width: 675px
@@ -170,7 +188,7 @@ The Common Settings include those settings that are common to all apps or extens
 **Figure 11.** App settings page showing Common Settings.
 
 Custom Settings
----------------
++++++++++++++++
 
 Custom Settings appear under the ``CUSTOM SETTINGS`` heading and are defined by the app developer (see Figure 12). Custom Settings have simple values such as strings, integers, floats, or booleans, but all are entered as text. For boolean type Custom Settings, type a valid boolean value such as ``True`` or ``False``.
 
@@ -182,7 +200,7 @@ Custom Settings appear under the ``CUSTOM SETTINGS`` heading and are defined by 
 .. _tethys_portal_service_settings:
 
 Service Settings
-----------------
+++++++++++++++++
 
 There are several different types of Service Settings including: ``Persistent Store Connection Settings``, ``Persistent Store Database Settings``, ``Dataset Service Settings``, ``Spatial Dataset Service Settings``, and ``Web Processing Service Settings`` (see Figure 13). These settings specify the types of services that the apps require. Use the drop down next to each Service Setting to assign a pre-registered ``Tethys Service`` to that app or use the *plus* button to create a new one.
 
@@ -194,6 +212,29 @@ There are several different types of Service Settings including: ``Persistent St
 .. tip::
 
     For information on how to define settings for your app see the :doc:`../tethys_sdk/app_settings` documentation. See :ref:`tethys_portal_tethys_services` for how to configure different ``Tethys Services``.
+
+.. _portal_admin_proxy_apps:
+
+Proxy Apps
+----------
+
+Proxy apps are links to external web applications or websites. They are represented in the App Library page with an app tile just like native Tethys Apps. To manage the Proxy Apps in a Tethys Portal, click on the ``Proxy Apps`` link under the ``TETHYS APPS`` heading. Click on the ``ADD PROXY APP`` button to create a new Proxy App. Proxy Apps have many of the same configuration options as normal Tethys Apps including ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library`` and ``Order``, but there are a few options that are specific to Proxy apps (see Figure 14). A brief description of each option is provided below:
+
+* **Name**: The name of the app that will appear on the app tile on the Apps Library page (e.g.: "My Proxy App").
+* **Endpoint**: The URL that will be opened when the user clicks on the app tile of the proxy app (e.g.: ``https://my.proxy.app/foo/``).
+* **Logo url**: The URL of the image that will be displayed on the app tile of the Proxy App (e.g.: ``https://my.proxy.app/static/foo-logo.org``).
+* **Back url**: A URL to suggest as the back URL; usually points to the referring portal. If the Proxy App is a Tethys App on another Tethys Portal (>4.0.0), the Exit button for the app will be set to this URL (e.g.: ``https://this.portal.org/apps/``).
+* **Description**: A description of the app that will be displayed when the user clicks on the info icon on the app tile.
+* **Tags**: One or more tags for an app. Wrap each tag in double quotes and separate by commas (e.g.: ``"Hydrology","Grided Data","THREDDS"``).
+* **Enabled**: Enable or disable the app. Disabled apps are not accessible to non-admin users.
+* **Show in apps library**: Display the app on the Apps Library page. The app is still accessible by URL, but no app tile will be shown in the apps library.
+* **Open in new tab**: Open the proxy app link in a new tab or window when on. Open it the same tab or window when off.
+* **Order**: Force the order that apps are listed on the Apps Library page. Default order is alphabetical.
+
+.. figure:: ../images/site_admin/new_proxy_app.png
+    :width: 675px
+
+**Figure 14.** The Add Proxy App dialog.
 
 Tethys Compute
 ==============
@@ -212,12 +253,12 @@ The links under the ``TETHYS COMPUTE`` heading can be used to manage ``Jobs`` an
 Tethys Portal
 =============
 
-The links under the ``TETHYS PORTAL`` heading can be used to customize the look of the Tethys Portal. For example, you can change the name, logo, and color theme of the portal (see Figure 9).
+The links under the ``TETHYS PORTAL`` heading can be used to customize the look of the Tethys Portal. For example, you can change the name, logo, and color theme of the portal (see Figure 15).
 
 .. figure:: ../images/tethys_portal/tethys_portal_home_page_settings.png
     :width: 500px
 
-**Figure 9.** Home page settings for Tethys Portal.
+**Figure 15.** Home page settings for Tethys Portal.
 
 .. tip::
 
@@ -235,7 +276,7 @@ The link under the ``TETHYS QUOTAS`` heading can be used to manage resource quot
 Resource Quotas
 ---------------
 
-``Resource Quotas`` shows a list of all loaded quotas. By default, all quotas are disabled when they are first loaded. Use this page to enable and customize the quotas for your portal (see Figure 10).
+``Resource Quotas`` shows a list of all loaded quotas. By default, all quotas are disabled when they are first loaded. Use this page to enable and customize the quotas for your portal (see Figure 16).
 
 All quotas have the following fields that can be customized:
 
@@ -247,14 +288,14 @@ All quotas have the following fields that can be customized:
 .. figure:: ../images/tethys_portal/tethys_portal_rq_settings.png
     :width: 675px
 
-**Figure 10.** Resource Quota settings page.
+**Figure 16.** Resource Quota settings page.
 
 .. _tethys_quotas_user_admin:
 
 User Workspace Quotas
 ---------------------
 
-To manage quotas specific to individual users, navigate to the user's settings page. Any applicable Resource Quotas will be listed in the User Quotas section. To set a custom quota for the user, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 11).
+To manage quotas specific to individual users, navigate to the user's settings page. Any applicable Resource Quotas will be listed in the User Quotas section. To set a custom quota for the user, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 17).
 
 .. tip::
 
@@ -263,26 +304,26 @@ To manage quotas specific to individual users, navigate to the user's settings p
 .. figure:: ../images/tethys_portal/tethys_portal_uq_settings.png
     :width: 675px
 
-**Figure 11.** User settings page showing User Quotas.
+**Figure 17.** User settings page showing User Quotas.
 
 .. _tethys_quotas_app_admin:
 
 App Workspace Quotas
 --------------------
 
-To manage quotas specific to individual apps, navigate to the specified app's settings page. Any applicable Resource Quotas will be listed in the Tethys App Quotas section. To set a custom quota for the app, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 12).
+To manage quotas specific to individual apps, navigate to the specified app's settings page. Any applicable Resource Quotas will be listed in the Tethys App Quotas section. To set a custom quota for the app, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 18).
 
 .. figure:: ../images/tethys_portal/tethys_portal_aq_settings.png
     :width: 675px
 
-**Figure 12.** App settings page showing Tethys App Quotas.
+**Figure 18.** App settings page showing Tethys App Quotas.
 
 .. _tethys_quotas_app_manage_storage:
 
 Manage App Storage
 ------------------
 
-Within the app settings page there is a ``Manage app storage`` section that provides a summary of the app workspace storage and the current quota being enforced on it (see Figure 6). To clear the workspace click the ``Clear Workspace`` button.
+Within the app settings page there is a ``Manage app storage`` section that provides a summary of the app workspace storage and the current quota being enforced on it (see Figure 11). To clear the workspace click the ``Clear Workspace`` button.
 
 .. warning::
     ``Clear Workspace`` will completely empty the app workspace.
