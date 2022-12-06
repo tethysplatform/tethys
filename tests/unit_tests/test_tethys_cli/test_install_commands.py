@@ -407,8 +407,9 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.find_and_link")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_apps.models.CustomSetting")
+    @mock.patch("tethys_apps.models.TethysApp")
     def test_configure_services_from_file(
-        self, mock_CustomSetting, mock_pretty_output, mock_find_and_link, mock_gas
+        self, mock_TethysApp, mock_CustomSetting, mock_pretty_output, mock_find_and_link, mock_gas
     ):
         app_name = "foo"
         invalid_custom_setting_name = "custom_setting_name"
@@ -505,12 +506,14 @@ class TestInstallServicesCommands(TestCase):
             app_name,
             mock_persistent_database_setting,
         )
+        mock_TethysApp.objects.get.assert_called_once()
 
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.install_commands.find_and_link")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_apps.models.TethysApp")
     def test_configure_services_from_file_no_settings_for_app(
-        self, mock_pretty_output, mock_find_and_link, mock_gas
+        self, mock_TethysApp, mock_pretty_output, mock_find_and_link, mock_gas
     ):
         app_name = "foo"
         persistent_setting_name = "persistent_setting_name"
@@ -532,6 +535,7 @@ class TestInstallServicesCommands(TestCase):
             po_call_args[0][0][0],
         )
         mock_find_and_link.assert_not_called()
+        mock_TethysApp.objects.get.assert_called_once()
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_run_portal_install_path_none(self, _):

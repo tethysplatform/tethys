@@ -3,7 +3,7 @@ import unittest
 from unittest import mock
 import uuid
 from django.db.utils import ProgrammingError
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 from tethys_apps.exceptions import (
@@ -1357,7 +1357,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertTrue(mock_ta().save.call_count == 2)
 
         # Check if add_settings is called 6 times
-        self.assertTrue(mock_ta().add_settings.call_count == 6)
+        self.assertTrue(mock_ta().sync_settings.call_count == 6)
 
     @mock.patch("django.conf.settings")
     @mock.patch("tethys_apps.models.TethysApp")
@@ -1374,7 +1374,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertTrue(mock_app.save.call_count == 2)
 
         # Check if add_settings is called 6 times
-        self.assertTrue(mock_app.add_settings.call_count == 6)
+        self.assertTrue(mock_app.sync_settings.call_count == 6)
 
     @mock.patch("django.conf.settings")
     @mock.patch("tethys_apps.models.TethysApp")
@@ -1418,6 +1418,30 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check if delete is called
         mock_ta.objects.filter().delete.assert_called()
+
+    @override_settings(DEBUG=True)
+    @mock.patch("tethys_cli.cli_colors.write_error")
+    @mock.patch("tethys_apps.base.app_base.input")
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_remove_from_db_prompt_yes(self, mock_ta, mock_input, mock_write_error):
+        mock_input.side_effect = 'y'
+        self.app.remove_from_db()
+
+        # Check if delete is called
+        mock_ta.objects.filter().delete.assert_called()
+        mock_write_error.assert_called_once()
+
+    @override_settings(DEBUG=True)
+    @mock.patch("tethys_cli.cli_colors.write_error")
+    @mock.patch("tethys_apps.base.app_base.input")
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_remove_from_db_prompt_no(self, mock_ta, mock_input, mock_write_error):
+        mock_input.side_effect = 'n'
+        self.app.remove_from_db()
+
+        # Check if delete is called
+        mock_ta.objects.filter().delete.assert_not_called()
+        mock_write_error.assert_called_once()
 
     @mock.patch("tethys_apps.base.app_base.tethys_log")
     @mock.patch("tethys_apps.models.TethysApp")

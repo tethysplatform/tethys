@@ -81,11 +81,25 @@ class TethysApp(models.Model, TethysBaseMixin):
             for setting in setting_list:
                 # Don't add the same setting twice
                 if self.settings_set.filter(name=setting.name):
-                    return
+                    continue
 
                 # Associate setting with this app
                 setting.tethys_app = self
                 setting.save()
+
+    def sync_settings(self, setting_list, existing_settings):
+        """
+        Ensure that all new settings are added to the db and obsolete settings are removed.
+        Args:
+            setting_list: List of current settings (as defined in app.py).
+            existing_settings: List of existing settings in the DB.
+        """
+        if setting_list is not None:
+            self.add_settings(setting_list)
+            setting_names = [setting.name for setting in setting_list]
+            for setting in existing_settings:
+                if setting.name not in setting_names:
+                    setting.delete()
 
     @property
     def settings(self):
