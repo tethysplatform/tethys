@@ -1,24 +1,19 @@
 # Most of your test classes should inherit from TethysTestCase
 from tethys_sdk.testing import TethysTestCase
 
-# Use if your app has persistent stores that will be tested against.
-# Your app class from app.py must be passed as an argument to the TethysTestCase functions to both
-# create and destroy the temporary persistent stores for your app used during testing
-# from ..app import {{class_name}}
-
-# Use if you'd like a simplified way to test rendered HTML templates.
-# You likely need to install BeautifulSoup, as it is not included by default in Tethys Platform
-#    1. Open a terminal
-#    2. Enter command ". /usr/lib/tethys/bin/activate" to activate the Tethys python environment
-#    3. Enter command "pip install beautifulsoup4"
-# For help, see https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+# For testing rendered HTML templates it may be helpful to use BeautifulSoup.
 # from bs4 import BeautifulSoup
+# For help, see https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+
 
 """
-To run any tests:
-    1. Open a terminal
-    2. Enter command ". /usr/lib/tethys/bin/activate" to activate the Tethys python environment
-    3. In portal_config.yml make sure that the default database user is set to tethys_super or is a super user of the database
+To run tests for an app:
+
+    1. Open a terminal and activate the Tethys environment::
+
+        conda activate tethys
+
+    2. In portal_config.yml make sure that the default database user is set to tethys_super or is a super user of the database
         DATABASES:
             default:
                 ENGINE: django.db.backends.postgresql_psycopg2
@@ -28,26 +23,13 @@ To run any tests:
                 HOST: 127.0.0.1
                 PORT: 5435
 
-    4. Enter tethys test command.
-       The general form is: "tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
-       See below for specific examples
+    3. From the root directory of your app, run the ``tethys manage test`` command::
 
-        To run all tests across this app:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}"
+        tethys manage test tethysapp/<app_name>/tests
 
-        To run all tests in this file:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests"
-
-        To run tests in the {{class_name}}TestCase class:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{class_name}}TestCase"
-
-        To run only the test_if_tethys_platform_is_great function in the {{class_name}}TestCase class:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{class_name}}TestCase.test_if_tethys_platform_is_great"
 
 To learn more about writing tests, see:
-    https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
-    https://docs.python.org/2.7/library/unittest.html#module-unittest
-"""
+    https://docs.tethysplatform.org/en/stable/tethys_sdk/testing.html
 
 
 class {{class_name}}TestCase(TethysTestCase):

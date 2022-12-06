@@ -14,9 +14,7 @@ Writing Tests
 -------------
 Tests should be written in a separate python script that is contained somewhere within your app's scaffold. By default, a ``tests`` directory already exists in the app-level directory and contains a ``tests.py`` script. Unless you have a good reason not to, it would be best to start writing your test code here.
 
-As an example, if wanting to automate the testing of a the map controller in the "My First App" from the tutorials, the ``tests.py`` script might be modified to look like the following:
-
-::
+As an example, if wanting to automate the testing of a the map controller in the "My First App" from the tutorials, the ``tests.py`` script might be modified to look like the following::
 
     from tethys_sdk.testing import TethysTestCase
     from ..app import MyFirstApp
@@ -25,14 +23,14 @@ As an example, if wanting to automate the testing of a the map controller in the
         def set_up(self):
             self.create_test_persistent_stores_for_app(MyFirstApp)
             self.create_test_user(username="joe", email="joe@some_site.com", password="secret")
-            self.c = self.get_test_client()
+            self.client = self.get_test_client()
 
         def tear_down(self):
             self.destroy_test_persistent_stores_for_app(MyFirstApp)
 
         def test_success_and_context(self):
-            self.c.force_login(self.user)
-            response = self.c.get('/apps/my-first-app/map/')
+            self.client.force_login(self.user)
+            response = self.client.get('/apps/my-first-app/map/')
 
             # Check that the response returned successfully
             self.assertEqual(response.status_code, 200)
@@ -46,27 +44,94 @@ https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
 
 https://docs.python.org/2.7/library/unittest.html#module-unittest
 
+Testing Controllers that Use OAuth2 Authentication
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Using the ``force_login`` method above works great for testing controllers where login is required. However, additional steps are required to test controllers that must be authenticated with a specific OAuth2 provider (i.e. specify the ``ensure_oauth_provider`` argument to the ``controller`` decorator). For example, if you have a controller like this::
+
+    @controller(
+      ensure_oauth2_provider="google-oauth2"
+    )
+    def home(request):
+      ...
+
+Then your test will need to define the ``UserSocialAuth`` database object to register the test user with the oauth provider. This can be done in the ``setUpClass`` method of your test class::
+
+    from unittest import mock
+    from social_django.models import UserSocialAuth
+    from tethys_sdk.testing import TethysTestCase
+
+
+    class MapControllerTestCase(TethysTestCase):
+
+        @classmethod
+        def setUpClass(cls):
+            super().setUpClass()
+            cls.client = cls.get_test_client()
+            cls.user = cls.create_test_user(username="joe", password="secret", email="joe@some_site.com")
+            UserSocialAuth(user=cls.user, provider="google-oauth2").save()
+
+
+Once the ``UserSocialAuth`` object is defined you can then use the ``force_login`` method as before::
+
+        def test_success_and_context(self):
+            self.client.force_login(self.user)
+            response = self.client.get('/apps/my-first-app/map/')
+
+            # Check that the response returned successfully
+            self.assertEqual(response.status_code, 200)
+
+            # Check that the response returned the context variable
+            self.assertIsNotNone(response.context['map_options'])
 Running Tests
 -------------
-To run any tests at an app level:
+To run tests for an app:
 
-    1. Open a terminal
-    2. Enter the Tethys Platform python environment:
-        ``. /usr/lib/tethys/bin/activate``
-    3. Enter app-level ``tethys test`` command.
-        ``tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
+    1. Open a terminal and activate the Tethys environment::
 
-    More specifically:
+        conda activate tethys
 
-To run all tests across an app:
-    Test command: ``tethys test -f tethys_apps.tethysapp.<app_name>``
-To run all tests within specific directory of an app:
-    Test command: ``tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>``
+    2. In portal_config.yml make sure that the default database user is set to ``tethys_super`` or is a super user of the database
+        DATABASES:
+            default:
+                ENGINE: django.db.backends.postgresql_psycopg2
+                NAME: tethys_platform
+                USER: tethys_super
+                PASSWORD: pass
+                HOST: 127.0.0.1
+                PORT: 5435
 
-And so forth... Thus, you can hone in on the exact tests that you want to run.
+    3. From the root directory of your app, run the ``tethys manage test`` command::
 
-  .. note::
-    Remember to append either ``-c`` or ``-C`` if you would like a coverage report at the end of the testing printed in your terminal, or opened in your browser as an interactive HTML page, respectively.
+        tethys manage test tethysapp/<app_name>/tests
+
+This will run all tests defined in the ``tests`` directory of your app. If you would like to run just a subset of tests then you can specify which tests to run with the following:
+
+To run all tests in a specific module within the ``tests`` directory::
+
+    tethys manage test tethysapp/<app_name>/tests/<module_name>
+
+    # or
+
+    tethys manage test tethysapp.<app_name>.tests.<module_name>
+
+To run all tests within specific class of a test module::
+
+  tethys manage test tethysapp.<app_name>.tests.<module_name>.<class_name>
+
+And to run a single test method within a test class::
+
+    tethys manage test tethysapp.<app_name>.tests.<module_name>.<class_name>.<method_name>
+
+For example, to run just the ``test_success_and_context`` test method defined above you would use the following command::
+
+    tethys manage tests tethysapp.my_first_app.tests.tests.MapControllerTestCase.test_success_and_context
+
+
+.. important::
+
+  When specifying the tests to run using a system path (e.g. ``tethysapp/<app_name>/tests/``) you must provide either an absolute path or the path relative to your current working directory.
+  When specifying the tests to run using a Python module (e.g. ``tethysapp.<app_name>.tests.<module_name>``) then your current working directory is irrelevant, but note that this format will only work for modules under the ``tests`` directory. You cannot specify the whole ``tests`` directory as a Python module.
 
 API Documentation
 -----------------
