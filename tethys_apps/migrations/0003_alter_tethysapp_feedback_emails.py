@@ -8,14 +8,14 @@ feedback_emails = {}
 
 
 def save_feedback_emails_as_json(apps, schema_editor):
-    TethysApp = apps.get_model('tethys_apps', 'TethysApp')
+    TethysApp = apps.get_model("tethys_apps", "TethysApp")
     db_alias = schema_editor.connection.alias
     for app in TethysApp.objects.using(db_alias).all():
         feedback_emails[app.id] = json.dumps(app.feedback_emails)
 
 
 def load_saved_feedback_emails(apps, schema_editor):
-    TethysApp = apps.get_model('tethys_apps', 'TethysApp')
+    TethysApp = apps.get_model("tethys_apps", "TethysApp")
     db_alias = schema_editor.connection.alias
     for app_id, emails in feedback_emails.items():
         app = TethysApp.objects.using(db_alias).get(id=app_id)
@@ -24,7 +24,7 @@ def load_saved_feedback_emails(apps, schema_editor):
 
 
 def save_feedback_emails_as_list(apps, schema_editor):
-    TethysApp = apps.get_model('tethys_apps', 'TethysApp')
+    TethysApp = apps.get_model("tethys_apps", "TethysApp")
     db_alias = schema_editor.connection.alias
     for app in TethysApp.objects.using(db_alias).all():
         feedback_emails[app.id]  = json.loads(app.feedback_emails)
@@ -33,18 +33,18 @@ def save_feedback_emails_as_list(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_apps', '0002_auto_20221130_2305'),
+        ("tethys_apps", "0002_auto_20221130_2305"),
     ]
 
     operations = [
         migrations.RunPython(save_feedback_emails_as_json, load_saved_feedback_emails),
         migrations.RemoveField(
-            model_name='tethysapp',
-            name='feedback_emails',
+            model_name="tethysapp",
+            name="feedback_emails",
         ),
         migrations.AddField(
-            model_name='tethysapp',
-            name='feedback_emails',
+            model_name="tethysapp",
+            name="feedback_emails",
             field=models.JSONField(blank=True, default=list, null=True),
         ),
         migrations.RunPython(load_saved_feedback_emails, save_feedback_emails_as_list)

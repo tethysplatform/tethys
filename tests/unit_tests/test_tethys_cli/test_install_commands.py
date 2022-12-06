@@ -409,7 +409,12 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_apps.models.CustomSetting")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_configure_services_from_file(
-        self, mock_TethysApp, mock_CustomSetting, mock_pretty_output, mock_find_and_link, mock_gas
+        self,
+        mock_TethysApp,
+        mock_CustomSetting,
+        mock_pretty_output,
+        mock_find_and_link,
+        mock_gas,
     ):
         app_name = "foo"
         invalid_custom_setting_name = "custom_setting_name"

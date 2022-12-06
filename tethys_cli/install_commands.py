@@ -417,7 +417,9 @@ def configure_services_from_file(services, app_name):
             for setting_name in current_services:
                 if service_type == "custom_setting":
                     try:
-                        custom_setting = CustomSetting.objects.get(name=setting_name, tethys_app=db_app.id)
+                        custom_setting = CustomSetting.objects.get(
+                            name=setting_name, tethys_app=db_app.id
+                        )
                     except ObjectDoesNotExist:
                         write_warning(
                             f'Custom setting named "{setting_name}" could not be found in app "{app_name}". '

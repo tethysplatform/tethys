@@ -95,12 +95,18 @@ class TethysAppTests(TethysTestCase):
 
         new_setting = TethysAppSetting(name="new_setting", required=False)
         existing_setting = TethysAppSetting(name="existing_setting", required=False)
-        obsolete_setting = TethysAppSetting(name="obsolete_setting", tethys_app=app, required=False)
+        obsolete_setting = TethysAppSetting(
+            name="obsolete_setting", tethys_app=app, required=False
+        )
         obsolete_setting.save()  # needs to be saved to it can be deleted.
 
-        self.test_app.sync_settings([existing_setting, new_setting], [existing_setting, obsolete_setting])
+        self.test_app.sync_settings(
+            [existing_setting, new_setting], [existing_setting, obsolete_setting]
+        )
 
-        settings = [setting for setting in app.settings if setting.__class__ == TethysAppSetting]
+        settings = [
+            setting for setting in app.settings if setting.__class__ == TethysAppSetting
+        ]
         self.assertEqual(2, len(settings))
         self.assertIn(new_setting, settings)
         self.assertNotIn(obsolete_setting, settings)

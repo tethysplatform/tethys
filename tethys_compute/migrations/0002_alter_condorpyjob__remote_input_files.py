@@ -7,14 +7,14 @@ remote_input_files = {}
 
 
 def save_remote_files_as_json(apps, schema_editor):
-    CondorPyJob = apps.get_model('tethys_compute', 'CondorPyJob')
+    CondorPyJob = apps.get_model("tethys_compute", "CondorPyJob")
     db_alias = schema_editor.connection.alias
     for job in CondorPyJob.objects.using(db_alias).all():
         remote_input_files[job.id] = json.dumps(job._remote_input_files)
 
 
 def load_saved_remote_files(apps, schema_editor):
-    CondorPyJob = apps.get_model('tethys_compute', 'CondorPyJob')
+    CondorPyJob = apps.get_model("tethys_compute", "CondorPyJob")
     db_alias = schema_editor.connection.alias
     for job_id, files in remote_input_files.items():
         job = CondorPyJob.objects.using(db_alias).get(id=job_id)
@@ -23,7 +23,7 @@ def load_saved_remote_files(apps, schema_editor):
 
 
 def save_remote_files_as_list(apps, schema_editor):
-    CondorPyJob = apps.get_model('tethys_compute', 'CondorPyJob')
+    CondorPyJob = apps.get_model("tethys_compute", "CondorPyJob")
     db_alias = schema_editor.connection.alias
     for job in CondorPyJob.objects.using(db_alias).all():
         remote_input_files[job.id] = json.loads(job._remote_input_files)
@@ -32,18 +32,18 @@ def save_remote_files_as_list(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_compute', '0001_initial_40'),
+        ("tethys_compute", "0001_initial_40"),
     ]
 
     operations = [
         migrations.RunPython(save_remote_files_as_json, load_saved_remote_files),
         migrations.RemoveField(
-            model_name='condorpyjob',
-            name='_remote_input_files',
+            model_name="condorpyjob",
+            name="_remote_input_files",
         ),
         migrations.AddField(
-            model_name='condorpyjob',
-            name='_remote_input_files',
+            model_name="condorpyjob",
+            name="_remote_input_files",
             field=models.JSONField(blank=True, default=list, null=True),
         ),
         migrations.RunPython(load_saved_remote_files, save_remote_files_as_list),

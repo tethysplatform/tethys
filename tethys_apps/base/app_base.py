@@ -1639,14 +1639,23 @@ class TethysAppBase(TethysBase):
         # custom settings
         db_app.sync_settings(self.custom_settings(), db_app.custom_settings)
         # dataset services settings
-        db_app.sync_settings(self.dataset_service_settings(), db_app.dataset_service_settings)
+        db_app.sync_settings(
+            self.dataset_service_settings(), db_app.dataset_service_settings
+        )
         # spatial dataset services settings
-        db_app.sync_settings(self.spatial_dataset_service_settings(), db_app.spatial_dataset_service_settings)
+        db_app.sync_settings(
+            self.spatial_dataset_service_settings(),
+            db_app.spatial_dataset_service_settings,
+        )
         # wps settings
-        db_app.sync_settings(self.web_processing_service_settings(), db_app.wps_services_settings)
+        db_app.sync_settings(
+            self.web_processing_service_settings(), db_app.wps_services_settings
+        )
         # persistent store settings
-        db_app.sync_settings(self.persistent_store_settings(),
-                             db_app.persistent_store_connection_settings)  # ?? , db_app.persistent_store_database_settings)
+        db_app.sync_settings(
+            self.persistent_store_settings(),
+            db_app.persistent_store_connection_settings
+        )  # ?? , db_app.persistent_store_database_settings)
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
 
@@ -1726,16 +1735,17 @@ class TethysAppBase(TethysBase):
         proceed = None if settings.DEBUG else True
         if proceed is None:
             from tethys_cli.cli_colors import write_error
+
             write_error(
                 f'There was an error loading the "{self.name}" app. '
-                f'Do you want to remove it from the database?'
+                f"Do you want to remove it from the database?"
             )
             while proceed is None:
 
-                response = input('[y/n]')
-                if response.lower() == 'y':
+                response = input("[y/n]")
+                if response.lower() == "y":
                     proceed = True
-                if response.lower() == 'n':
+                if response.lower() == "y":
                     proceed = False
 
         if proceed:

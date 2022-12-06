@@ -1424,7 +1424,7 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch("tethys_apps.base.app_base.input")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_remove_from_db_prompt_yes(self, mock_ta, mock_input, mock_write_error):
-        mock_input.side_effect = 'y'
+        mock_input.side_effect = "y"
         self.app.remove_from_db()
 
         # Check if delete is called
@@ -1436,7 +1436,7 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch("tethys_apps.base.app_base.input")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_remove_from_db_prompt_no(self, mock_ta, mock_input, mock_write_error):
-        mock_input.side_effect = 'n'
+        mock_input.side_effect = "n"
         self.app.remove_from_db()
 
         # Check if delete is called
