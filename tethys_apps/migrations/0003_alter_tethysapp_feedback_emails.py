@@ -27,7 +27,7 @@ def save_feedback_emails_as_list(apps, schema_editor):
     TethysApp = apps.get_model("tethys_apps", "TethysApp")
     db_alias = schema_editor.connection.alias
     for app in TethysApp.objects.using(db_alias).all():
-        feedback_emails[app.id]  = json.loads(app.feedback_emails)
+        feedback_emails[app.id] = json.loads(app.feedback_emails)
 
 
 class Migration(migrations.Migration):
@@ -47,5 +47,5 @@ class Migration(migrations.Migration):
             name="feedback_emails",
             field=models.JSONField(blank=True, default=list, null=True),
         ),
-        migrations.RunPython(load_saved_feedback_emails, save_feedback_emails_as_list)
+        migrations.RunPython(load_saved_feedback_emails, save_feedback_emails_as_list),
     ]

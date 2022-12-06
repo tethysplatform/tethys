@@ -1654,7 +1654,7 @@ class TethysAppBase(TethysBase):
         # persistent store settings
         db_app.sync_settings(
             self.persistent_store_settings(),
-            db_app.persistent_store_connection_settings
+            db_app.persistent_store_connection_settings,
         )  # ?? , db_app.persistent_store_database_settings)
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
