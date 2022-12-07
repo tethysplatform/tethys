@@ -139,11 +139,11 @@ LOGGING
 +--+--+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
 |  |  | level    | override the default level for the ``tethys`` logger. Defaults to ``'INFO'``.                                                                |
 +--+--+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
-|  | tethys.apps |define specific loggers or change the following default loggers:                                                                              |
+|  | tethysapp   |define specific loggers or change the following default loggers:                                                                              |
 +--+--+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
-|  |  | handlers | override the default handlers for the ``tethys.apps`` logger. Defaults to ``['console_verbose']``.                                           |
+|  |  | handlers | override the default handlers for the ``tethysapp`` logger. Defaults to ``['console_verbose']``.                                             |
 +--+--+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
-|  |  | level    | override the default level for the ``tethys.apps`` logger. Defaults to ``'INFO'``.                                                           |
+|  |  | level    | override the default level for the ``tethysapp`` logger. Defaults to ``'INFO'``.                                                             |
 +--+--+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 CAPTCHA_CONFIG
