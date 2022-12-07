@@ -30,7 +30,7 @@ To run tests for an app:
 
 To learn more about writing tests, see:
     https://docs.tethysplatform.org/en/stable/tethys_sdk/testing.html
-
+"""
 
 class {{class_name}}TestCase(TethysTestCase):
     """
