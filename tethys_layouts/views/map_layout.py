@@ -173,7 +173,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         return cls.initial_map_extent
 
     def get_plot_for_layer_feature(
-        self, request, layer_name, feature_id, layer_data, *args, **kwargs
+        self, request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs
     ):
         """
         Retrieves plot data for given feature on given layer.
@@ -590,10 +590,11 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         layer_name = request.POST.get("layer_name", "")
         feature_id = request.POST.get("feature_id", "")
         layer_data = json.loads(request.POST.get("layer_data", "{}"))
+        feature_props = json.loads(request.POST.get("feature_props", "{}"))
 
         # Initialize MapManager
         title, data, layout = self.get_plot_for_layer_feature(
-            request, layer_name, feature_id, layer_data, *args, **kwargs
+            request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs
         )
 
         return JsonResponse({"title": title, "data": data, "layout": layout})
