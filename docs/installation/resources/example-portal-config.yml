@@ -51,18 +51,22 @@ settings:
       PORT:  5436
       DIR: psql
 
-  LOGGING_CONFIG:
-    TETHYS_LOGGING:
-      handlers:
-        - console_verbose
-      level: INFO
-    TETHYS_APPS_LOGGING:
-      handlers:
-        - console_verbose
-      level: INFO
-    LOGGING_FORMATTERS: {}
-    LOGGING_HANDLERS: {}
-    LOGGERS: {}
+  # LOGGING:
+  #   formatters: {}
+  #   handlers: {}
+  #   loggers:
+  #     django:
+  #       handlers:
+  #       - console_simple
+  #       level: WARNING
+  #     tethys:
+  #       handlers:
+  #       - console_verbose
+  #       level: INFO
+  #     tethysapp:
+  #       handlers:
+  #       - console_verbose
+  #       level: INFO
 
   #  INSTALLED_APPS_OVERRIDE: []
   INSTALLED_APPS: []
