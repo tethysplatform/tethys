@@ -404,8 +404,8 @@ var MAP_LAYOUT = (function() {
         $('.btn-plot').on('click', function(e) {
             let layer_name = $(e.target).data('layer-id');
             let feature_id = $(e.target).data('feature-id');
-            let layer_data = JSON.parse(decodeURIComponent($(e.target).data('layer-data')));
-            let feature_props = JSON.parse(decodeURIComponent($(e.target).data('feature-props')));
+            let layer_data = decodeURIComponent($(e.target).data('layer-data'));
+            let feature_props = decodeURIComponent($(e.target).data('feature-props'));
 
             // Load the plot
             load_plot(e.target, layer_name, feature_id, layer_data, feature_props);
