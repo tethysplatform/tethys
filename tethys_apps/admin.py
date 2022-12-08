@@ -427,7 +427,7 @@ def register_custom_group():
 
         admin.site.unregister(Group)
         admin.site.register(Group, CustomGroup)
-    except ProgrammingError:
+    except (ProgrammingError, TypeError):
         tethys_log.warning("Unable to register CustomGroup.")
 
 
