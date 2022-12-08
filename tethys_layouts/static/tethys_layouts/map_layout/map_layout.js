@@ -357,6 +357,7 @@ var MAP_LAYOUT = (function() {
                     'role="button"' +
                     'data-feature-id="' + fid +'"' +
                     'data-layer-id="' + layer_id + '"' +
+                    'data-layer-data="' + JSON.stringify(layer.tethys_data) + '"'
                 '>Plot</a>' +
             '</div>';
 
@@ -402,9 +403,10 @@ var MAP_LAYOUT = (function() {
         $('.btn-plot').on('click', function(e) {
             let layer_name = $(e.target).data('layer-id');
             let feature_id = $(e.target).data('feature-id');
+            let layer_data = $(e.target).data('layer-data');
 
             // Load the plot
-            load_plot(e.target, layer_name, feature_id);
+            load_plot(e.target, layer_name, feature_id, layer_data);
             hide_properties_pop_up();
         });
     };
@@ -423,7 +425,7 @@ var MAP_LAYOUT = (function() {
         });
     };
 
-    load_plot = function(plot_button, layer_name, feature_id) {
+    load_plot = function(plot_button, layer_name, feature_id, layer_data) {
         // Disable plot button
         $(plot_button).attr('disabled', 'disabled');
 
@@ -434,7 +436,8 @@ var MAP_LAYOUT = (function() {
             data: {
                 'method': 'get-plot-data',
                 'layer_name': layer_name,
-                'feature_id': feature_id
+                'feature_id': feature_id,
+                'layer_data': layer_data,
             },
         }).done(function(data){
             // Update plot
