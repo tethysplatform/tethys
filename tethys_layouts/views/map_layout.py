@@ -156,6 +156,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Args:
             request(HttpRequest): A Django request object.
             map_view(MapView): The MapView gizmo to add layers to.
+            layer_data (dict): The MVLayer.data dictionary.
+            feature_props (dict): The properties of the selected feature.
 
         Returns:
             list<LayerGroupDicts>: The MapView, extent, and list of LayerGroup dictionaries.
@@ -173,7 +175,14 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         return cls.initial_map_extent
 
     def get_plot_for_layer_feature(
-        self, request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs
+        self,
+        request,
+        layer_name,
+        feature_id,
+        layer_data,
+        feature_props,
+        *args,
+        **kwargs,
     ):
         """
         Retrieves plot data for given feature on given layer.
