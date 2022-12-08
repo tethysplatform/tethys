@@ -354,10 +354,10 @@ var MAP_LAYOUT = (function() {
             '<div class="plot-btn-wrapper">' +
                 '<a class="btn btn-primary btn-popup btn-plot" ' +
                     'href="javascript:void(0);" ' +
-                    'role="button"' +
-                    'data-feature-id="' + fid +'"' +
-                    'data-layer-id="' + layer_id + '"' +
-                    'data-layer-data="' + JSON.stringify(layer.tethys_data) + '"'
+                    'role="button" ' +
+                    'data-feature-id="' + fid +'" ' +
+                    'data-layer-id="' + layer_id + '" ' +
+                    'data-layer-data=' + JSON.stringify(layer.tethys_data) +
                 '>Plot</a>' +
             '</div>';
 
