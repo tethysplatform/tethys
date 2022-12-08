@@ -51,9 +51,9 @@ d = {
                 "handlers": "override the default handlers for the ``tethys`` logger. Defaults to ``['console_verbose']``.",
                 "level": "override the default level for the ``tethys`` logger. Defaults to ``'INFO'``.",
             },
-            "tethys.apps": {
-                "handlers": "override the default handlers for the ``tethys.apps`` logger. Defaults to ``['console_verbose']``.",
-                "level": "override the default level for the ``tethys.apps`` logger. Defaults to ``'INFO'``.",
+            "tethysapp": {
+                "handlers": "override the default handlers for the ``tethysapp`` logger. Defaults to ``['console_verbose']``.",
+                "level": "override the default level for the ``tethysapp`` logger. Defaults to ``'INFO'``.",
             },
         },
     },

@@ -11,8 +11,6 @@ import os
 from condorpy import Templates, Job
 from django.db import models
 
-from django.contrib.postgres.fields import ArrayField
-
 
 class CondorPyJob(models.Model):
     """
@@ -22,10 +20,7 @@ class CondorPyJob(models.Model):
     condorpyjob_id = models.AutoField(primary_key=True)
     _attributes = models.JSONField(default=dict, null=True, blank=True)
     _num_jobs = models.IntegerField(default=1)
-    _remote_input_files = ArrayField(
-        models.CharField(max_length=1024, null=True, blank=True),
-        default=list,
-    )
+    _remote_input_files = models.JSONField(default=list, null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes
