@@ -357,7 +357,7 @@ var MAP_LAYOUT = (function() {
                     'role="button" ' +
                     'data-feature-id="' + fid +'" ' +
                     'data-layer-id="' + layer_id + '" ' +
-                    'data-layer-data=' + JSON.stringify(layer.tethys_data) +
+                    'data-layer-data="' + JSON.stringify(layer.tethys_data) + '"' +
                 '>Plot</a>' +
             '</div>';
 
