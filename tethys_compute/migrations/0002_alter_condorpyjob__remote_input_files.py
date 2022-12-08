@@ -10,14 +10,14 @@ def save_remote_files_as_json(apps, schema_editor):
     CondorPyJob = apps.get_model("tethys_compute", "CondorPyJob")
     db_alias = schema_editor.connection.alias
     for job in CondorPyJob.objects.using(db_alias).all():
-        remote_input_files[job.id] = json.dumps(job._remote_input_files)
+        remote_input_files[job.condorpyjob_id] = json.dumps(job._remote_input_files)
 
 
 def load_saved_remote_files(apps, schema_editor):
     CondorPyJob = apps.get_model("tethys_compute", "CondorPyJob")
     db_alias = schema_editor.connection.alias
     for job_id, files in remote_input_files.items():
-        job = CondorPyJob.objects.using(db_alias).get(id=job_id)
+        job = CondorPyJob.objects.using(db_alias).get(condorpyjob_id=job_id)
         job._remote_input_files = files
         job.save()
 
