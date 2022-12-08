@@ -404,17 +404,22 @@ def find_and_link(service_type, setting_name, service_id, app_name, setting):
 
 
 def configure_services_from_file(services, app_name):
-    from tethys_apps.models import CustomSetting
+    from tethys_apps.models import TethysApp, CustomSetting
 
     if services["version"]:
         del services["version"]
+
+    db_app = TethysApp.objects.get(package=app_name)
+
     for service_type in services:
         if services[service_type] is not None:
             current_services = services[service_type]
             for setting_name in current_services:
                 if service_type == "custom_setting":
                     try:
-                        custom_setting = CustomSetting.objects.get(name=setting_name)
+                        custom_setting = CustomSetting.objects.get(
+                            name=setting_name, tethys_app=db_app.id
+                        )
                     except ObjectDoesNotExist:
                         write_warning(
                             f'Custom setting named "{setting_name}" could not be found in app "{app_name}". '

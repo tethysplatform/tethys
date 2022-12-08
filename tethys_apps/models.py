@@ -20,7 +20,6 @@ from tethys_apps.exceptions import (
     PersistentStorePermissionError,
     PersistentStoreInitializerError,
 )
-from django.contrib.postgres.fields import ArrayField
 from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
@@ -55,10 +54,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     name = models.CharField(max_length=200, default="")
     description = models.TextField(max_length=1000, blank=True, default="")
     enable_feedback = models.BooleanField(default=False)
-    feedback_emails = ArrayField(
-        models.CharField(max_length=200, null=True, blank=True),
-        default=list,
-    )
+    feedback_emails = models.JSONField(default=list, null=True, blank=True)
     tags = models.CharField(max_length=200, blank=True, default="")
     enabled = models.BooleanField(default=True)
     show_in_apps_library = models.BooleanField(default=True)
@@ -85,11 +81,25 @@ class TethysApp(models.Model, TethysBaseMixin):
             for setting in setting_list:
                 # Don't add the same setting twice
                 if self.settings_set.filter(name=setting.name):
-                    return
+                    continue
 
                 # Associate setting with this app
                 setting.tethys_app = self
                 setting.save()
+
+    def sync_settings(self, setting_list, existing_settings):
+        """
+        Ensure that all new settings are added to the db and obsolete settings are removed.
+        Args:
+            setting_list: List of current settings (as defined in app.py).
+            existing_settings: List of existing settings in the DB.
+        """
+        if setting_list is not None:
+            self.add_settings(setting_list)
+            setting_names = [setting.name for setting in setting_list]
+            for setting in existing_settings:
+                if setting.name not in setting_names:
+                    setting.delete()
 
     @property
     def settings(self):

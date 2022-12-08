@@ -10,6 +10,7 @@ import logging
 import traceback
 import uuid
 
+from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
@@ -1634,6 +1635,33 @@ class TethysAppBase(TethysBase):
         ps_database_setting.persistent_store_database_exists()
         return True
 
+    def sync_all_settings(self, db_app):
+        # custom settings
+        db_app.sync_settings(self.custom_settings(), db_app.custom_settings)
+        # dataset services settings
+        db_app.sync_settings(
+            self.dataset_service_settings(), db_app.dataset_service_settings
+        )
+        # spatial dataset services settings
+        db_app.sync_settings(
+            self.spatial_dataset_service_settings(),
+            db_app.spatial_dataset_service_settings,
+        )
+        # wps settings
+        db_app.sync_settings(
+            self.web_processing_service_settings(), db_app.wps_services_settings
+        )
+        # persistent store settings
+        db_app.sync_settings(
+            self.persistent_store_settings(),
+            db_app.persistent_store_connection_settings
+            | db_app.persistent_store_database_settings,
+        )
+        # scheduler settings
+        db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
+
+        db_app.save()
+
     def sync_with_tethys_db(self):
         """
         Sync installed apps with database.
@@ -1664,20 +1692,7 @@ class TethysAppBase(TethysBase):
                 )
                 db_app.save()
 
-                # custom settings
-                db_app.add_settings(self.custom_settings())
-                # dataset services settings
-                db_app.add_settings(self.dataset_service_settings())
-                # spatial dataset services settings
-                db_app.add_settings(self.spatial_dataset_service_settings())
-                # wps settings
-                db_app.add_settings(self.web_processing_service_settings())
-                # persistent store settings
-                db_app.add_settings(self.persistent_store_settings())
-                # scheduler settings
-                db_app.add_settings(self.scheduler_settings())
-
-                db_app.save()
+                self.sync_all_settings(db_app)
 
             # If the app is in the database, update developer priority attributes
             elif len(db_apps) == 1:
@@ -1685,20 +1700,7 @@ class TethysAppBase(TethysBase):
                 db_app.index = self.index
                 db_app.root_url = self.root_url
 
-                # custom settings
-                db_app.add_settings(self.custom_settings())
-                # dataset services settings
-                db_app.add_settings(self.dataset_service_settings())
-                # spatial dataset services settings
-                db_app.add_settings(self.spatial_dataset_service_settings())
-                # wps settings
-                db_app.add_settings(self.web_processing_service_settings())
-                # persistent store settings
-                db_app.add_settings(self.persistent_store_settings())
-                # scheduler settings
-                db_app.add_settings(self.scheduler_settings())
-
-                db_app.save()
+                self.sync_all_settings(db_app)
 
                 # In debug mode, update all fields, not just developer priority attributes
                 if hasattr(settings, "DEBUG") and settings.DEBUG:
@@ -1731,11 +1733,28 @@ class TethysAppBase(TethysBase):
         """
         from tethys_apps.models import TethysApp
 
-        try:
-            # Attempt to delete the object
-            TethysApp.objects.filter(package__exact=self.package).delete()
-        except Exception as e:
-            tethys_log.error(e)
+        proceed = None if settings.DEBUG else True
+        if proceed is None:
+            from tethys_cli.cli_colors import write_error
+
+            write_error(
+                f'There was an error loading the "{self.name}" app. '
+                f"Do you want to remove it from the database?"
+            )
+            while proceed is None:
+
+                response = input("[y/n]")
+                if response.lower() == "y":
+                    proceed = True
+                if response.lower() == "n":
+                    proceed = False
+
+        if proceed:
+            try:
+                # Attempt to delete the object
+                TethysApp.objects.filter(package__exact=self.package).delete()
+            except Exception as e:
+                tethys_log.error(e)
 
     @classmethod
     def _log_tethys_app_setting_not_assigned_error(cls, setting_type, setting_name):
