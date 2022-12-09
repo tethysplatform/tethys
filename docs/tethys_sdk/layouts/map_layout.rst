@@ -573,13 +573,15 @@ In this example, the plot data is hard-coded for simplicity:
 
 .. code-block:: python
 
-    def get_plot_for_layer_feature(self, request, layer_name, feature_id, *args, **kwargs):
+    def get_plot_for_layer_feature(self, request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs):
         """
         Retrieves plot data for given feature on given layer.
 
         Args:
             layer_name (str): Name/id of layer.
             feature_id (str): ID of feature.
+            layer_data (dict): The MVLayer.data dictionary.
+            feature_props (dict): The properties of the selected feature.
 
         Returns:
             str, list<dict>, dict: plot title, data series, and layout options, respectively.
