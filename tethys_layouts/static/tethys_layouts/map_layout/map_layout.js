@@ -354,9 +354,11 @@ var MAP_LAYOUT = (function() {
             '<div class="plot-btn-wrapper">' +
                 '<a class="btn btn-primary btn-popup btn-plot" ' +
                     'href="javascript:void(0);" ' +
-                    'role="button"' +
-                    'data-feature-id="' + fid +'"' +
-                    'data-layer-id="' + layer_id + '"' +
+                    'role="button" ' +
+                    'data-feature-id="' + fid +'" ' +
+                    'data-layer-id="' + layer_id + '" ' +
+                    'data-layer-data="' + encodeURIComponent(JSON.stringify(layer.tethys_data)) + '"' +
+                    'data-feature-props="' + encodeURIComponent(JSON.stringify(feature.getProperties())) + '"' +
                 '>Plot</a>' +
             '</div>';
 
@@ -402,9 +404,11 @@ var MAP_LAYOUT = (function() {
         $('.btn-plot').on('click', function(e) {
             let layer_name = $(e.target).data('layer-id');
             let feature_id = $(e.target).data('feature-id');
+            let layer_data = decodeURIComponent($(e.target).data('layer-data'));
+            let feature_props = decodeURIComponent($(e.target).data('feature-props'));
 
             // Load the plot
-            load_plot(e.target, layer_name, feature_id);
+            load_plot(e.target, layer_name, feature_id, layer_data, feature_props);
             hide_properties_pop_up();
         });
     };
@@ -423,7 +427,7 @@ var MAP_LAYOUT = (function() {
         });
     };
 
-    load_plot = function(plot_button, layer_name, feature_id) {
+    load_plot = function(plot_button, layer_name, feature_id, layer_data, feature_props) {
         // Disable plot button
         $(plot_button).attr('disabled', 'disabled');
 
@@ -434,7 +438,9 @@ var MAP_LAYOUT = (function() {
             data: {
                 'method': 'get-plot-data',
                 'layer_name': layer_name,
-                'feature_id': feature_id
+                'feature_id': feature_id,
+                'layer_data': layer_data,
+                'feature_props': feature_props,
             },
         }).done(function(data){
             // Update plot
