@@ -333,10 +333,8 @@ class MapLayoutMixin:
             data=data,
             feature_selection=selectable,
             times=times,
+            geometry_attribute=geometry_attribute,
         )
-
-        if geometry_attribute:
-            mv_layer.geometry_attribute = geometry_attribute
 
         return mv_layer
 

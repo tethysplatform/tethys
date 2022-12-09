@@ -239,7 +239,7 @@ class TestMapLayout(TestCase):
         mock_request = mock.MagicMock()
         inst = MapLayout()
         plot_title, data, layout = inst.get_plot_for_layer_feature(
-            mock_request, "Foo", "12345"
+            mock_request, "Foo", "12345", {}, {}
         )
         self.assertEqual(plot_title, "Undefined")
         self.assertListEqual(
@@ -741,12 +741,16 @@ class TestMapLayout(TestCase):
         self.assertIn(geojson, ret2)
 
     def test_get_plot_data(self):
+        layer_data = {"layer_id": "24680"}
+        feature_props = {"id": "67890", "name": "foo"}
         request = self.factory.post(
             "/some/endpoint",
             data={
                 "method": "get-plot-data",
                 "layer_name": "Foo",
                 "feature_id": "12345",
+                "layer_data": json.dumps(layer_data),
+                "feature_props": json.dumps(feature_props),
             },
         )
 
