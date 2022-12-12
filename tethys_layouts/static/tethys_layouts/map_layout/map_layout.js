@@ -1763,9 +1763,9 @@ var MAP_LAYOUT = (function() {
             },
         }).done(function(data){
             if (operation == 'create') {
-                $('#' + tab_id).prepend(data.response);
+                $('#' + tab_id).append(data.response);
             } else {
-                $('#' + layer_group_id + '_associated_layers').prepend(data.response);
+                $('#' + layer_group_id + '_associated_layers').append(data.response);
             }
             init_new_layers_tab(layer_group_id);
         });
