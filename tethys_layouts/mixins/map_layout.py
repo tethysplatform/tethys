@@ -782,6 +782,53 @@ class MapLayoutMixin:
 
         return mv_layer
 
+    def build_custom_layer(self, service_type, service_endpoint, layer_name, layer_id, layer_title, visible=True):
+        """Rebuild a custom layer from saved attributes.
+
+        Args:
+            service_type (str): Type of map servce ("WMS" or "TileArcGISRest").
+            service_endpoint (str): Endpoint of the map service.
+            layer_name (str): Name of layer to render.add()
+            layer_id (str): Unique id of the layer.add()
+            layer_title (str): Display name of layer shown in legend and layer picker.
+            visible (str): The layer will be displayed by default if True.
+
+        Returns:
+            MVLayer: the MVLayer object.
+        """
+        if service_type.lower() == 'wms':
+            return self.build_wms_layer(
+                endpoint=service_endpoint,
+                server_type='thredds' if 'thredds' in service_endpoint else 'geoserver',
+                layer_name=layer_name,
+                layer_title=layer_title,
+                layer_id=layer_id,
+                layer_variable="custom",
+                visible=visible,
+            )
+
+        elif service_type.lower() == 'tilearcgisrest':
+            return self.build_arc_gis_layer(
+                endpoint=service_endpoint,
+                layer_name=layer_name,
+                layer_title=layer_title,
+                layer_id=layer_id,
+                layer_variable="custom",
+                visible=visible,
+            )
+
+    def build_custom_layer_group(self, layers=None, layer_control="checkbox", visible=True):
+        if layers is None:
+            layers = []
+
+        return self.build_layer_group(
+            id="custom_layers",
+            display_name="Custom Layers",
+            layers=layers,
+            layer_control=layer_control,
+            visible=visible,
+        )
+
     @classmethod
     def generate_custom_color_ramp_divisions(
         cls,

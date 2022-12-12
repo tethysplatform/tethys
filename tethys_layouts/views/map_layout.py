@@ -331,13 +331,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         # Create the Custom Layers layer group
         if self.show_custom_layer and create_custom_layer:
             log.debug('Creating the "Custom Layers" layer group...')
-            custom_layers = self.build_layer_group(
-                id="custom_layers",
-                display_name="Custom Layers",
-                layers=[],
-                layer_control="checkbox",
-                visible=True,
-            )
+            custom_layers = self.build_custom_layer_group()
             layer_groups.append(custom_layers)
 
         # Build legends
