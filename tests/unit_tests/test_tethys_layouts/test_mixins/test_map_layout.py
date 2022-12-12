@@ -246,8 +246,6 @@ class TestMapLayoutMixin(unittest.TestCase):
         )
 
     def test_build_custom_layer_group_default(self):
-        layers = [{"layer_name": "foo:bar"}, {"layer_name": "foo:baz"}]
-
         ret = MapLayoutMixin.build_custom_layer_group()
 
         self.assertDictEqual(
