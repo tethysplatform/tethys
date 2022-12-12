@@ -782,7 +782,16 @@ class MapLayoutMixin:
 
         return mv_layer
 
-    def build_custom_layer(self, service_type, service_endpoint, layer_name, layer_id, layer_title, visible=True):
+    @classmethod
+    def build_custom_layer(
+        cls,
+        service_type,
+        service_endpoint,
+        layer_name,
+        layer_id,
+        layer_title,
+        visible=True,
+    ):
         """Rebuild a custom layer from saved attributes.
 
         Args:
@@ -796,10 +805,10 @@ class MapLayoutMixin:
         Returns:
             MVLayer: the MVLayer object.
         """
-        if service_type.lower() == 'wms':
-            return self.build_wms_layer(
+        if service_type.lower() == "wms":
+            return cls.build_wms_layer(
                 endpoint=service_endpoint,
-                server_type='thredds' if 'thredds' in service_endpoint else 'geoserver',
+                server_type="thredds" if "thredds" in service_endpoint else "geoserver",
                 layer_name=layer_name,
                 layer_title=layer_title,
                 layer_id=layer_id,
@@ -807,8 +816,8 @@ class MapLayoutMixin:
                 visible=visible,
             )
 
-        elif service_type.lower() == 'tilearcgisrest':
-            return self.build_arc_gis_layer(
+        elif service_type.lower() == "tilearcgisrest":
+            return cls.build_arc_gis_layer(
                 endpoint=service_endpoint,
                 layer_name=layer_name,
                 layer_title=layer_title,
@@ -817,11 +826,14 @@ class MapLayoutMixin:
                 visible=visible,
             )
 
-    def build_custom_layer_group(self, layers=None, layer_control="checkbox", visible=True):
+    @classmethod
+    def build_custom_layer_group(
+        cls, layers=None, layer_control="checkbox", visible=True
+    ):
         if layers is None:
             layers = []
 
-        return self.build_layer_group(
+        return cls.build_layer_group(
             id="custom_layers",
             display_name="Custom Layers",
             layers=layers,

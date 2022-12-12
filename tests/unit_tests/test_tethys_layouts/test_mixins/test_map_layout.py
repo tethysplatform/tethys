@@ -245,6 +245,42 @@ class TestMapLayoutMixin(unittest.TestCase):
             str(cm.exception),
         )
 
+    def test_build_custom_layer_group_default(self):
+        layers = [{"layer_name": "foo:bar"}, {"layer_name": "foo:baz"}]
+
+        ret = MapLayoutMixin.build_custom_layer_group()
+
+        self.assertDictEqual(
+            ret,
+            {
+                "id": "custom_layers",
+                "display_name": "Custom Layers",
+                "control": "checkbox",
+                "layers": [],
+                "visible": True,
+                "toggle_status": True,
+            },
+        )
+
+    def test_build_custom_layer_group_custom_args(self):
+        layers = [{"layer_name": "foo:bar"}, {"layer_name": "foo:baz"}]
+
+        ret = MapLayoutMixin.build_custom_layer_group(
+            layers, layer_control="radio", visible=False
+        )
+
+        self.assertDictEqual(
+            ret,
+            {
+                "id": "custom_layers",
+                "display_name": "Custom Layers",
+                "control": "radio",
+                "layers": layers,
+                "visible": False,
+                "toggle_status": True,
+            },
+        )
+
     def test_build_param_string(self):
         kwargs = {
             "c3": "#fff100",
@@ -1015,6 +1051,137 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_name": "foo:bar",
                 "popup_title": "Foo Bar",
                 "layer_variable": "baz",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+            },
+        )
+
+    def test_build_custom_layer_geoserver_wms(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_custom_layer(
+            service_type="WMS",
+            service_endpoint="http://example.com/geoserver/wms",
+            layer_name="foo:bar",
+            layer_title="Foo Bar",
+            layer_id="12345",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileWMS")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertFalse(ret.feature_selection)
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.options,
+            {
+                "url": "http://example.com/geoserver/wms",
+                "params": {
+                    "LAYERS": "foo:bar",
+                    "TILED": True,
+                    "TILESORIGIN": "0.0,0.0",
+                },
+                "serverType": "geoserver",
+                "crossOrigin": None,
+                "tileGrid": _DEFAULT_TILE_GRID,
+            },
+        )
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "12345",
+                "layer_name": "foo:bar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "custom",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+            },
+        )
+
+    def test_build_custom_layer_thredds_wms(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_custom_layer(
+            service_type="WMS",
+            service_endpoint="https://tethys.byu.edu/thredds/wms/tethys/grace/GRC_jpl_tot.nc",
+            layer_name="foobar",
+            layer_title="Foo Bar",
+            layer_id="12345",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileWMS")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertFalse(ret.feature_selection)
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.options,
+            {
+                "url": "https://tethys.byu.edu/thredds/wms/tethys/grace/GRC_jpl_tot.nc",
+                "params": {
+                    "LAYERS": "foobar",
+                    "TILED": True,
+                    "TILESORIGIN": "0.0,0.0",
+                },
+                "serverType": "thredds",
+                "crossOrigin": None,
+                "tileGrid": _DEFAULT_TILE_GRID,
+            },
+        )
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "12345",
+                "layer_name": "foobar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "custom",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+            },
+        )
+
+    def test_build_custom_layer_arcgis(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_custom_layer(
+            service_type="TileArcGISRest",
+            service_endpoint="https://sampleserver1.arcgisonline.com"
+            "/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer",
+            layer_name="foo:bar",
+            layer_title="Foo Bar",
+            layer_id="12345",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileArcGISRest")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertEqual(
+            ret.options["url"],
+            "https://sampleserver1.arcgisonline.com"
+            "/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer",
+        )
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "12345",
+                "layer_name": "foo:bar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "custom",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
             },
