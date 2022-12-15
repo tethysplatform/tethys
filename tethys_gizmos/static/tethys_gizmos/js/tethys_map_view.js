@@ -1077,16 +1077,21 @@ var TETHYS_MAP_VIEW = (function() {
 
       view_obj = JSON.parse(view_json);
 
-      if ('projection' in view_obj && 'center' in view_obj) {
-        // Transform coordinates to default CRS
-        view_obj['center'] = ol.proj.transform(view_obj['center'], view_obj['projection'], DEFAULT_PROJECTION);
-        delete view_obj['projection'];
+      if ('extent' in view_obj && view_obj.extent && 'projection' in view_obj) {
+        let t_extent = ol.proj.transformExtent(view_obj.extent, view_obj.projection, DEFAULT_PROJECTION);
+        let view = m_map.getView();
+        view.setMaxZoom(view_obj.maxZoom);
+        view.setMinZoom(view_obj.minZoom);
+        view.fit(t_extent, m_map.getSize());
+      } else if ('center' in view_obj && view_obj.center && 'projection' in view_obj) {
+        view_obj.center = ol.proj.transform(view_obj.center, view_obj.projection, DEFAULT_PROJECTION);
+        delete view_obj.extent;
+        delete view_obj.projection;
+        m_map.setView(new ol.View(view_obj));
       }
-
-      m_map.setView(new ol.View(view_obj));
     }
 
-    //function to change size of the map when the map element size changes
+    // Change size of the map when the map element size changes
     $map_element.changeSize(function($this){
       m_map.updateSize();
     });

@@ -129,7 +129,6 @@ class TestMapLayout(TestCase):
             ],
         )
         self.assertIsNone(inst.cesium_ion_token)
-        self.assertListEqual(inst.default_center, [-98.583, 39.833])
         self.assertFalse(inst.default_disable_basemap)
         self.assertIsNone(inst.geocode_api_key)
         self.assertFalse(inst.enforce_permissions)
@@ -588,11 +587,9 @@ class TestMapLayout(TestCase):
 
     def test_build_map_extent_and_view(self):
         class ExtentMapLayout(MapLayout):
-            default_center = [0, 0]
             default_map_extent = [-20, -10, 10, 20]
             max_zoom = 13
             min_zoom = 3
-            default_zoom = 7
 
         ret1, ret2 = ExtentMapLayout().build_map_extent_and_view()
         self.assertIsInstance(ret1, MVView)
@@ -610,11 +607,9 @@ class TestMapLayout(TestCase):
 
     def test_build_map_extent_and_view_no_initial_extent(self):
         class ExtentMapLayout(MapLayout):
-            default_center = [0, 0]
             default_map_extent = None
             max_zoom = 13
             min_zoom = 3
-            default_zoom = 7
 
         ret1, ret2 = ExtentMapLayout().build_map_extent_and_view()
         self.assertIsInstance(ret1, MVView)

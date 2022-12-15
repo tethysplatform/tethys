@@ -48,10 +48,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         basemaps (list or str): Name of a basemap or list of basemaps that will be available on the map. Same as the MapView gizmo basemap argument. Does not apply to the Cesium renderer.
         base_template (str): Template to use as base template. Recommend overriding this to be your app's base template. Defaults to "tethys_layouts/tethys_layout.html".
         cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view". See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
-        default_center (2-list<float>): Coordinates of the initial center for the map. Defaults to [-98.583, 39.833].
         default_disable_basemap (bool) Set to True to disable the basemap.
         default_map_extent = The default BBOX extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
-        default_zoom (int): Default zoom level. Defaults to 4.
         enforce_permissions (bool): Enables permissions checks when True. Defaults to False.
         geocode_api_key (str): An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
         geocode_extent (4-list): Bounding box defining search area for address search feature (e.g.: [-65.69, 23.81, -129.17, 49.38]). Alternatively, set to 'map-extent' to use map extent.
@@ -96,10 +94,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         "ESRI",
     ]
     cesium_ion_token = None
-    default_center = [-98.583, 39.833]  # USA Center
     default_disable_basemap = False
-    default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
-    default_zoom = 4
+    default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:4326
     geocode_api_key = None
     enforce_permissions = False
     geocode_extent = None
@@ -155,18 +151,10 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         extent = self.default_map_extent
 
-        # Compute center
-        center = self.default_center
-        if extent and len(extent) >= 4:
-            center_x = (extent[0] + extent[2]) / 2.0
-            center_y = (extent[1] + extent[3]) / 2.0
-            center = [center_x, center_y]
-
         # Construct the default view
         view = MVView(
             projection="EPSG:4326",
-            center=center,
-            zoom=self.default_zoom,
+            extent=extent,
             maxZoom=self.max_zoom,
             minZoom=self.min_zoom,
         )

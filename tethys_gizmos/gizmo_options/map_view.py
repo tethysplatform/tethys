@@ -404,14 +404,15 @@ class MapView(TethysGizmoOptions):
 
 class MVView(SecondaryGizmoOptions):
     """
-    MVView objects are used to define the initial view of the Map View. The initial view is set by specifying a center and a zoom level.
+    MVView objects are used to define the initial view of the Map View. The initial view is set by specifying a center and a zoom level or an extent.
 
     Attributes:
         projection(str): Projection of the center coordinates given. This projection will be used to transform the coordinates into the default map projection (EPSG:3857).
-        center(list): An array with the coordinates of the center point of the initial view.
+        center(2-list<float>): An array with the coordinates of the center point of the initial view. Mutually exclusive with the "extent" argument.
         zoom(int or float): The zoom level for the initial view.
         maxZoom(int or float): The maximum zoom level allowed. Defaults to 28.
         minZoom(int or float): The minimum zoom level allowed. Defaults to 0.
+        extent(4-list<float>): The initial extent that will set the zoom level. Mutually exclusive with the "center" argument and the "zoom" argument has no effect.
 
     Example
 
@@ -424,21 +425,47 @@ class MVView(SecondaryGizmoOptions):
             maxZoom=18,
             minZoom=2
         )
+        
+        view_options = MVView(
+            projection='EPSG:4326',
+            extent=[-100, 35, -90, 45],
+            maxZoom=18,
+            minZoom=2
+        )
 
     """  # noqa: E501
 
-    def __init__(self, projection, center, zoom, maxZoom=28, minZoom=0):
+    def __init__(
+        self,
+        projection="EPSG:4326",
+        center=None,
+        zoom=4,
+        maxZoom=28,
+        minZoom=0,
+        extent=None,
+    ):
         """
         Constructor
         """
         # Initialize super class
         super().__init__()
 
+        if not center and not extent:
+            raise ValueError(
+                'Either the "center" argument or the "extent" argument is required: neither were provided.'
+            )
+
+        if extent and center:
+            raise ValueError(
+                'The "center" and "extent" arguments are mutually exclusive: provide one or the other, not both.'
+            )
+
         self.projection = projection
         self.center = center
         self.zoom = zoom
         self.maxZoom = maxZoom
         self.minZoom = minZoom
+        self.extent = extent
 
 
 class MVDraw(SecondaryGizmoOptions):

@@ -48,9 +48,7 @@ The following example demonstrates how to create a new ``MapLayout`` view:
             'Stamen',
             {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
         ]
-        default_center = [-98.583, 39.833]  # USA Center
         default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
-        default_zoom = 5
         max_zoom = 16
         min_zoom = 2
 
