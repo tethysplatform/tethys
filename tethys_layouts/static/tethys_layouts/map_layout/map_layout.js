@@ -142,9 +142,6 @@ var MAP_LAYOUT = (function() {
         // Get handle on map
 	    m_map = TETHYS_MAP_VIEW.getMap();
 
-	    // Set initial extent
-	    TETHYS_MAP_VIEW.zoomToExtent(m_extent);
-
 	    // Setup layer map
 	    m_layers = {};
 	    m_drawing_layer = null;
