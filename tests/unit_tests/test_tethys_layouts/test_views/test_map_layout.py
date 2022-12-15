@@ -22,7 +22,7 @@ class ComposeLayersMapLayout(MapLayout):
     map_subtitle = "Baz"
     geocode_api_key = "12345"
     layer_tab_name = "Foos"
-    initial_map_extent = [10, 10, 20, 20]
+    default_map_extent = [10, 10, 20, 20]
     map_type = "tethys_map_view"
     show_public_toggle = True
     plotly_version = "1.2.3"
@@ -135,7 +135,7 @@ class TestMapLayout(TestCase):
         self.assertFalse(inst.enforce_permissions)
         self.assertIsNone(inst.geocode_extent)
         self.assertEqual(inst.geoserver_workspace, "")
-        self.assertListEqual(inst.initial_map_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertListEqual(inst.default_map_extent, [-65.69, 23.81, -129.17, 49.38])
         self.assertFalse(inst.feature_selection_multiselect)
         self.assertEqual(inst.feature_selection_sensitivity, 4)
         self.assertEqual(inst.layer_tab_name, "Layers")
@@ -152,35 +152,6 @@ class TestMapLayout(TestCase):
         self.assertFalse(inst.show_properties_popup)
         self.assertFalse(inst.show_public_toggle)
         self.assertFalse(inst.wide_nav)
-
-    def test_map_extent(self):
-        class MapExtentMapLayout(MapLayout):
-            initial_map_extent = [-30, -15, 15, 30]
-
-        MapExtentMapLayout._map_extent = None
-        ret = MapExtentMapLayout.map_extent
-        self.assertListEqual(ret, [-30, -15, 15, 30])
-
-    def test_default_view(self):
-        class DefaultViewMapLayout(MapLayout):
-            initial_map_extent = [-30, -10, 10, 30]
-            default_zoom = 16
-            max_zoom = 22
-            min_zoom = 10
-
-        DefaultViewMapLayout._default_view = None
-        ret = DefaultViewMapLayout.default_view
-        self.assertIsInstance(ret, MVView)
-        self.assertDictEqual(
-            ret,
-            {
-                "center": [-10, 10],
-                "maxZoom": 22,
-                "minZoom": 10,
-                "projection": "EPSG:4326",
-                "zoom": 16,
-            },
-        )
 
     def test_sds_setting(self):
         mock_app = mock.MagicMock()
@@ -227,13 +198,6 @@ class TestMapLayout(TestCase):
         inst = MapLayout()
         ret = inst.compose_layers(mock_request, mock_map_view)
         self.assertListEqual(ret, list())
-
-    def test_get_initial_map_extent(self):
-        class ExtentMapLayout(MapLayout):
-            initial_map_extent = [-12.3, -23.4, 34.5, 45.6]
-
-        ret = ExtentMapLayout.get_initial_map_extent()
-        self.assertListEqual(ret, [-12.3, -23.4, 34.5, 45.6])
 
     def test_get_plot_for_layer_feature(self):
         mock_request = mock.MagicMock()
@@ -331,12 +295,6 @@ class TestMapLayout(TestCase):
     @mock.patch("tethys_layouts.views.map_layout.log")
     def test_get_context(self, _):
         request = self.factory.get("/some/endpoint")
-        ComposeLayersMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        ComposeLayersMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = ComposeLayersMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -366,12 +324,6 @@ class TestMapLayout(TestCase):
             show_custom_layer = True
 
         request = self.factory.get("/some/endpoint")
-        CustomLayerMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        CustomLayerMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = CustomLayerMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -404,12 +356,6 @@ class TestMapLayout(TestCase):
                 return layer_groups
 
         request = self.factory.get("/some/endpoint")
-        CustomLayerMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        CustomLayerMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = CustomLayerMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -428,12 +374,6 @@ class TestMapLayout(TestCase):
             cesium_ion_token = "987-654-321"
 
         request = self.factory.get("/some/endpoint")
-        CesiumComposeLayersMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        CesiumComposeLayersMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = CesiumComposeLayersMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -467,12 +407,6 @@ class TestMapLayout(TestCase):
     @mock.patch("tethys_layouts.views.map_layout.log")
     def test_get_context_public_toggle(self, _):
         request = self.factory.get("/some/endpoint")
-        ComposeLayersMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        ComposeLayersMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = ComposeLayersMapLayout()
         initial_context = dict(show_public_toggle=True)
         ret = inst.get_context(request, initial_context)
@@ -567,7 +501,7 @@ class TestMapLayout(TestCase):
 
     def test__build_map_view(self):
         class MapBuildingMapLayout(MapLayout):
-            initial_map_extent = [-10, -10, 10, 10]
+            default_map_extent = [-10, -10, 10, 10]
             default_disable_basemap = True
             feature_selection_multiselect = True
             feature_selection_sensitivity = 10
@@ -600,7 +534,7 @@ class TestMapLayout(TestCase):
 
     def test__build_map_view_custom_should_disable_basemap(self):
         class ShouldNotDisableBasemapMapLayout(MapLayout):
-            initial_map_extent = [-10, -10, 10, 10]
+            default_map_extent = [-10, -10, 10, 10]
             default_disable_basemap = True
             feature_selection_multiselect = True
             feature_selection_sensitivity = 10
@@ -652,15 +586,15 @@ class TestMapLayout(TestCase):
             'MapLayout to use the Cesium "map_type".',
         )
 
-    def test__get_map_extent_and_view(self):
+    def test_build_map_extent_and_view(self):
         class ExtentMapLayout(MapLayout):
             default_center = [0, 0]
-            initial_map_extent = [-20, -10, 10, 20]
+            default_map_extent = [-20, -10, 10, 20]
             max_zoom = 13
             min_zoom = 3
             default_zoom = 7
 
-        ret1, ret2 = ExtentMapLayout._get_map_extent_and_view()
+        ret1, ret2 = ExtentMapLayout().build_map_extent_and_view()
         self.assertIsInstance(ret1, MVView)
         self.assertDictEqual(
             ret1,
@@ -674,15 +608,15 @@ class TestMapLayout(TestCase):
         )
         self.assertListEqual(ret2, [-20, -10, 10, 20])
 
-    def test__get_map_extent_and_view_no_initial_extent(self):
+    def test_build_map_extent_and_view_no_initial_extent(self):
         class ExtentMapLayout(MapLayout):
             default_center = [0, 0]
-            initial_map_extent = None
+            default_map_extent = None
             max_zoom = 13
             min_zoom = 3
             default_zoom = 7
 
-        ret1, ret2 = ExtentMapLayout._get_map_extent_and_view()
+        ret1, ret2 = ExtentMapLayout().build_map_extent_and_view()
         self.assertIsInstance(ret1, MVView)
         self.assertDictEqual(
             ret1,

@@ -50,12 +50,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         cesium_ion_token (str): Cesium Ion API token. Required if map_type is "cesium_map_view". See: https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/
         default_center (2-list<float>): Coordinates of the initial center for the map. Defaults to [-98.583, 39.833].
         default_disable_basemap (bool) Set to True to disable the basemap.
+        default_map_extent = The default BBOX extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
         default_zoom (int): Default zoom level. Defaults to 4.
         enforce_permissions (bool): Enables permissions checks when True. Defaults to False.
         geocode_api_key (str): An Open Cage Geocoding API key. Required to enable address search/geocoding feature. See: https://opencagedata.com/api#quickstart
         geocode_extent (4-list): Bounding box defining search area for address search feature (e.g.: [-65.69, 23.81, -129.17, 49.38]). Alternatively, set to 'map-extent' to use map extent.
         geoserver_workspace (str): Name of the GeoServer workspace of layers if applicable. Defaults to None.
-        initial_map_extent = The initial zoom extent for the map. Defaults to [-65.69, 23.81, -129.17, 49.38].
         feature_selection_multiselect (bool): Set to True to enable multi-selection when feature selection is enabled. Defaults to False.
         feature_selection_sensitivity (int): Feature selection sensitivity/relative search radius. Defaults to 4.
         layer_tab_name (str) Name of the "Layers" tab. Defaults to "Layers".
@@ -98,12 +98,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     cesium_ion_token = None
     default_center = [-98.583, 39.833]  # USA Center
     default_disable_basemap = False
+    default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
     default_zoom = 4
     geocode_api_key = None
     enforce_permissions = False
     geocode_extent = None
     geoserver_workspace = ""
-    initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:2374
     feature_selection_multiselect = False
     feature_selection_sensitivity = 4
     layer_tab_name = "Layers"
@@ -120,24 +120,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     show_properties_popup = False
     show_public_toggle = False
     wide_nav = False
-
-    @classproperty
-    def map_extent(cls):
-        """4-list<float>: Returns the default map extent (e.g.: [-180, 180, -90, 90])."""
-        if not getattr(cls, "_map_extent", None):
-            view, extent = cls._get_map_extent_and_view()
-            cls._map_extent = extent
-            cls._default_view = view
-        return cls._map_extent
-
-    @classproperty
-    def default_view(cls):
-        """MVView: Returns the default view for the map."""
-        if not getattr(cls, "_default_view", None):
-            view, extent = cls._get_map_extent_and_view()
-            cls._map_extent = extent
-            cls._default_view = view
-        return cls._default_view
 
     @classproperty
     def sds_setting(cls):
@@ -164,15 +146,32 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """  # noqa:E501
         return list()
 
-    @classmethod
-    def get_initial_map_extent(cls):
+    def build_map_extent_and_view(self, request, *args, **kwargs):
         """
-        Get the initial extent for the map.
+        Builds the default MVView and BBOX extent for the map.
 
         Returns:
-            4-list<float>: The initial extent [minx, miny, maxx, maxy].
+            MVView, 4-list<float>: default view and extent of the project.
         """
-        return cls.initial_map_extent
+        extent = self.default_map_extent
+
+        # Compute center
+        center = self.default_center
+        if extent and len(extent) >= 4:
+            center_x = (extent[0] + extent[2]) / 2.0
+            center_y = (extent[1] + extent[3]) / 2.0
+            center = [center_x, center_y]
+
+        # Construct the default view
+        view = MVView(
+            projection="EPSG:4326",
+            center=center,
+            zoom=self.default_zoom,
+            maxZoom=self.max_zoom,
+            minZoom=self.min_zoom,
+        )
+
+        return view, extent
 
     def get_plot_for_layer_feature(
         self,
@@ -304,9 +303,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             dict: modified context dictionary.
         """  # noqa: E501
+        # Build MVView and extent
+        view, extent = self.build_map_extent_and_view(request, *args, **kwargs)
+
         # Compose the Map
         log.debug("Building MapView...")
-        map_view = self._build_map_view(request, *args, **kwargs)
+        map_view = self._build_map_view(request, view, extent, *args, **kwargs)
 
         # Add layers to the Map
         log.debug("Composing layers...")
@@ -367,7 +369,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 "layer_groups": layer_groups,
                 "layer_tab_name": self.layer_tab_name,
                 "legends": legends,
-                "map_extent": self.map_extent,
+                "map_extent": extent,
                 "map_type": self.map_type,
                 "map_view": map_view,
                 "nav_subtitle": self.map_subtitle,
@@ -439,12 +441,14 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         return map_permissions
 
     # Private View Helpers -------------------------------------------------- #
-    def _build_map_view(self, request, *args, **kwargs):
+    def _build_map_view(self, request, view, extent, *args, **kwargs):
         """
         Build the MapView gizmo.
 
         Args:
             request (HttpRequest): The request.
+            view (MVView): The MVView that defines the initial view of the map.
+            extent (4-list<float>): Map extent for home button (e.g.: [-180, 180, -90, 90]).
 
         Returns:
             MapView: the MapView gizmo.
@@ -458,12 +462,12 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                 {
                     "ZoomToExtent": {
                         "projection": "EPSG:4326",
-                        "extent": self.map_extent,
+                        "extent": extent,
                     }
                 },
             ],
             layers=[],
-            view=self.default_view,
+            view=view,
             basemap=self.basemaps,
             legend=False,
             show_clicks=self.show_map_clicks,
@@ -528,34 +532,6 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             entities=entities,
         )
         return cesium_map_view
-
-    @classmethod
-    def _get_map_extent_and_view(cls):
-        """
-        Get the default view and extent for the project.
-
-        Returns:
-            MVView, 4-list<float>: default view and extent of the project.
-        """
-        extent = cls.get_initial_map_extent()
-
-        # Compute center
-        center = cls.default_center
-        if extent and len(extent) >= 4:
-            center_x = (extent[0] + extent[2]) / 2.0
-            center_y = (extent[1] + extent[3]) / 2.0
-            center = [center_x, center_y]
-
-        # Construct the default view
-        view = MVView(
-            projection="EPSG:4326",
-            center=center,
-            zoom=cls.default_zoom,
-            maxZoom=cls.max_zoom,
-            minZoom=cls.min_zoom,
-        )
-
-        return view, extent
 
     def _translate_layers_to_cesium(self, map_view_layers):
         """

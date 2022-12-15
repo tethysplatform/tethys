@@ -49,7 +49,7 @@ The following example demonstrates how to create a new ``MapLayout`` view:
             {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
         ]
         default_center = [-98.583, 39.833]  # USA Center
-        initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
+        default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
         default_zoom = 5
         max_zoom = 16
         min_zoom = 2
@@ -807,24 +807,10 @@ Helper Methods and Properties
 
 These methods and properties simplify common workflows that are used in ``MapLayout`` implementations. Don't override these unless you know what you are doing.
 
-map_extent
-^^^^^^^^^^
+build_map_extent_and_view
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**property MapLayout.map_extent**
-
-    Returns the default map extent (e.g.: [-180, 180, -90, 90]).
-
-default_view
-^^^^^^^^^^^^
-
-**property MapLayout.default_view**
-
-    Returns the default view for the map.
-
-get_initial_map_extent
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. automethod:: tethys_layouts.views.map_layout.MapLayout.get_initial_map_extent
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.build_map_extent_and_view
 
 .. _map_layout_build_wms_layer:
 

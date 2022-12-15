@@ -59,7 +59,7 @@ Most of the configuration for a Layout is done by setting/overriding class prope
       map_subtitle = 'Subtitle'
       basemaps = ['OpenStreetMap', 'ESRI', 'Stamen']
       default_center = [-98.583, 39.833]  # USA Center
-      initial_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
+      default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
       default_zoom = 5
       max_zoom = 16
       min_zoom = 2
