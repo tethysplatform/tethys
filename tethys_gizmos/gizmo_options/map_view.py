@@ -425,7 +425,7 @@ class MVView(SecondaryGizmoOptions):
             maxZoom=18,
             minZoom=2
         )
-        
+
         view_options = MVView(
             projection='EPSG:4326',
             extent=[-100, 35, -90, 45],

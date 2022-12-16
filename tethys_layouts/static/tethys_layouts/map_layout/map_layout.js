@@ -349,7 +349,7 @@ var MAP_LAYOUT = (function() {
         // Build Plot Button Markup
         let plot_button =
             '<div class="plot-btn-wrapper">' +
-                '<a class="btn btn-primary btn-popup btn-plot" ' +
+                '<a class="btn btn-primary btn-popup btn-plot my-2" ' +
                     'href="javascript:void(0);" ' +
                     'role="button" ' +
                     'data-feature-id="' + fid +'" ' +
