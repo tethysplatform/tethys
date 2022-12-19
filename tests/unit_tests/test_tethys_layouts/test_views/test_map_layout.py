@@ -510,12 +510,12 @@ class TestMapLayout(TestCase):
             max_zoom = 12
 
         mock_request = mock.MagicMock()
+        extent = [-112, 42, -110, 40]
+        view = MVView(extent=extent)
         inst = MapBuildingMapLayout()
-        ret = inst._build_map_view(mock_request)
+        ret = inst._build_map_view(mock_request, view, extent)
         self.assertIsInstance(ret, MapView)
-        self.assertListEqual(
-            ret["controls"][2]["ZoomToExtent"]["extent"], [-10, -10, 10, 10]
-        )
+        self.assertListEqual(ret["controls"][2]["ZoomToExtent"]["extent"], extent)
         self.assertTrue(ret["disable_basemap"])
         self.assertTrue(ret["feature_selection"]["multiselect"])
         self.assertEqual(ret["feature_selection"]["sensitivity"], 10)
@@ -523,11 +523,12 @@ class TestMapLayout(TestCase):
         self.assertDictEqual(
             ret["view"],
             {
-                "center": [0, 0],
-                "maxZoom": 12,
-                "minZoom": 2,
+                "center": None,
+                "extent": extent,
+                "maxZoom": 28,
+                "minZoom": 0,
                 "projection": "EPSG:4326",
-                "zoom": 6,
+                "zoom": 4,
             },
         )
 
@@ -546,8 +547,10 @@ class TestMapLayout(TestCase):
                 return False
 
         mock_request = mock.MagicMock()
+        extent = [-112, 42, -110, 40]
+        view = MVView(extent=extent)
         inst = ShouldNotDisableBasemapMapLayout()
-        ret = inst._build_map_view(mock_request)
+        ret = inst._build_map_view(mock_request, view, extent)
         self.assertIsInstance(ret, MapView)
         self.assertFalse(ret["disable_basemap"])
 
@@ -587,43 +590,49 @@ class TestMapLayout(TestCase):
 
     def test_build_map_extent_and_view(self):
         class ExtentMapLayout(MapLayout):
-            default_map_extent = [-20, -10, 10, 20]
+            default_map_extent = [-20, -20, 10, 20]
             max_zoom = 13
             min_zoom = 3
 
-        ret1, ret2 = ExtentMapLayout().build_map_extent_and_view()
-        self.assertIsInstance(ret1, MVView)
+        mock_request = mock.MagicMock()
+        inst = ExtentMapLayout()
+        ret_view, ret_extent = inst.build_map_extent_and_view(mock_request)
+        self.assertIsInstance(ret_view, MVView)
         self.assertDictEqual(
-            ret1,
+            ret_view,
             {
-                "center": [-5.0, 5.0],
+                "center": None,
+                "extent": [-20, -20, 10, 20],
                 "maxZoom": 13,
                 "minZoom": 3,
                 "projection": "EPSG:4326",
-                "zoom": 7,
+                "zoom": 4,
             },
         )
-        self.assertListEqual(ret2, [-20, -10, 10, 20])
+        self.assertListEqual(ret_extent, [-20, -20, 10, 20])
 
-    def test_build_map_extent_and_view_no_initial_extent(self):
+    def test_build_map_extent_and_view_no_default_extent(self):
         class ExtentMapLayout(MapLayout):
-            default_map_extent = None
-            max_zoom = 13
             min_zoom = 3
+            max_zoom = 13
 
-        ret1, ret2 = ExtentMapLayout().build_map_extent_and_view()
-        self.assertIsInstance(ret1, MVView)
+        mock_request = mock.MagicMock()
+        ret_view, ret_extent = ExtentMapLayout().build_map_extent_and_view(mock_request)
+        self.assertIsInstance(ret_view, MVView)
         self.assertDictEqual(
-            ret1,
+            ret_view,
             {
-                "center": [0.0, 0.0],
+                "center": None,
+                "extent": [-65.69, 23.81, -129.17, 49.38],  # This is the default extent
                 "maxZoom": 13,
                 "minZoom": 3,
                 "projection": "EPSG:4326",
-                "zoom": 7,
+                "zoom": 4,
             },
         )
-        self.assertIsNone(ret2)
+        self.assertListEqual(
+            ret_extent, [-65.69, 23.81, -129.17, 49.38]
+        )  # This is the default extent
 
     def test__translate_layers_to_cesium(self):
         image_wms = MVLayer(
