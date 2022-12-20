@@ -255,7 +255,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         return self.default_disable_basemap
 
-    def save_custom_layers(self, request, *args, **kwargs):
+    def on_add_custom_layer(self, request, *args, **kwargs):
         """
         Implement this method to handle AJAX method that persists custom layers added to map by user.
 
@@ -265,19 +265,31 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Returns:
             JsonResponse: success.
         """
-        return JsonResponse({"success": True, "message": "Not Implemented."})
+        return JsonResponse({"success": False, "message": "Not Implemented."})
 
-    def remove_custom_layer(self, request, *args, **kwargs):
+    def on_rename_tree_item(self, request, *args, **kwargs):
         """
-        Implement this method to handle AJAX method that persists custom layers added to map by user.
+        Implement this method to persist "rename" actions on layers and layer groups.
 
         Args:
             request(HttpRequest): The request.
 
         Returns:
-            JsonResponse: success.
+            JsonResponse: with keys "success" (bool) and "message" (str).
         """
-        return JsonResponse({"success": True, "message": "Not Implemented."})
+        return JsonResponse({"success": False, "message": "Not Implemented."})
+
+    def on_remove_tree_item(self, request, *args, **kwargs):
+        """
+        Implement this method to persist "remove" actions on layers and layer groups.
+
+        Args:
+            request(HttpRequest): The request.
+
+        Returns:
+            JsonResponse: with keys "success" (bool) and "message" (str).
+        """
+        return JsonResponse({"success": False, "message": "Not Implemented."})
 
     # TethysLayout Method Implementations ----------------------------------- #
     def get_context(self, request, context, *args, **kwargs):
@@ -328,6 +340,9 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         log.debug("Building legends for each layer...")
         legends = []
         for layer in map_view.layers:
+            if not layer.data["show_legend"]:
+                continue
+
             legend = self.build_legend(layer)
             if legend is not None:
                 legend_select_options = legend.get("select_options")

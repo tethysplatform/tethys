@@ -316,7 +316,7 @@ var MAP_LAYOUT = (function() {
         let out = Plotly.validate(data, layout);
         if (out) {
             $(out).each(function(index, item) {
-                console.warn(`PlotlyValidationWarning: ${item.msg}`);
+                console.log(`PlotlyValidationWarning: ${item.msg}`);
             });
         }
 
@@ -721,14 +721,36 @@ var MAP_LAYOUT = (function() {
                 // Hide the modal
                 hide_action_modal();
 
-                // TODO: Save state to local storage
+                csrf_token = $("input[name=csrfmiddlewaretoken]").val();
+                $.ajax({
+                  type: "POST",
+                  url: "",
+                  data: {
+                    method: "on_rename_tree_item",
+                    new_name: new_name,
+                    current_name: current_name,
+                  },
+                  beforeSend: (xhr) => {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                  },
+                }).done(function(data) {
+                    if (data.success) {
+                        TETHYS_APP_BASE.alert("success", `Successfully renamed layer "${current_name}" to "${new_name}".`);
+                    } else {
+                        TETHYS_APP_BASE.alert("warning", `Unable to save new name for layer "${current_name}" permanently.`);
+                        console.log(data.message);
+                    }
+                });
             });
         });
     };
 
     init_remove_controls = function() {
         $('.remove-action').on('click', function(e) {
+            let removed_layer_ids = [];
             let $action_button = $(e.target);
+            // If button has custom layer container as parent, it is a button on a custom layer
+            let is_custom = $action_button.parents('#custom_layers_associated_layers').length > 0;
 
             if (!$action_button.hasClass('remove-action')) {
                 $action_button = $action_button.closest('.remove-action');
@@ -761,18 +783,19 @@ var MAP_LAYOUT = (function() {
             modal.action_button.on('click', function(e) {
                 // Reset the ui
                 reset_ui();
-                var uuid = '';
+                let layer_group_id = null;
                 if (remove_type === 'layer') {
                     // Remove layer from map
-                    var layer_id = $action_button.data('layer-id');
+                    let layer_id = $action_button.data('layer-id');
+                    removed_layer_ids.push(layer_id);
                     remove_layer_from_map(layer_id);
 
                     // Remove item from layers tree
                     let layer_list_item = $action_button.closest('.layer-list-item');
                     layer_list_item.remove();
-                }
-                else {
+                } else {
                     // Remove layers from map
+                    layer_group_id = $action_button.data('layer-group-id');
                     let $layer_group_item = $action_button.closest('.layer-group-item');
                     let $layer_list = $layer_group_item.next('.layer-list');
 
@@ -780,8 +803,9 @@ var MAP_LAYOUT = (function() {
 
                     // Remove all layers in layer group
                     $layer_visiblity_controls.each(function(index, item) {
-                        let layer_name = $(item).data('layer-id');
-                        remove_layer_from_map(layer_name);
+                        let layer_id = $(item).data('layer-id');
+                        removed_layer_ids.push(layer_id);
+                        remove_layer_from_map(layer_id);
                     });
 
                     // Remove layer group item
@@ -794,25 +818,29 @@ var MAP_LAYOUT = (function() {
                 // Hide the modal
                 hide_action_modal();
 
-                // TODO: Save state to local storage
-                // Save state of custom_layers to resource
-                if (remove_type === 'layer') {
-                    csrf_token = $('input[name=csrfmiddlewaretoken]').val()
-                    $.ajax({
-                        type: 'POST',
-                        url: '',
-                        data: {
-                            'method': 'remove_custom_layer',
-                            'layer_group_type': 'custom_layers',
-                            'layer_id': layer_id
-                        },
-                        beforeSend: xhr => {
-                            xhr.setRequestHeader('X-CSRFToken', csrf_token);
-                        },
-                    }).done(function (data) {
-
-                    })
-                }
+                // Call server callback method to persist removal
+                csrf_token = $("input[name=csrfmiddlewaretoken]").val();
+                $.ajax({
+                  type: "POST",
+                  url: "",
+                  data: {
+                    method: "on_remove_tree_item",
+                    layer_ids: removed_layer_ids,
+                    remove_type: remove_type,
+                    is_custom: is_custom,
+                    layer_group_id: layer_group_id,
+                  },
+                  beforeSend: (xhr) => {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                  },
+                }).done(function(data) {
+                    if (data.success) {
+                        TETHYS_APP_BASE.alert("success", `Successfully removed ${remove_type.replace('-', ' ')}.`);
+                    } else {
+                        TETHYS_APP_BASE.alert("warning", `Unable to remove ${remove_type.replace('-', ' ')} permanently.`);
+                        console.log(data.message);
+                    }
+                });
             });
         });
     };
@@ -1052,7 +1080,7 @@ var MAP_LAYOUT = (function() {
                     type: 'POST',
                     url: '',
                     data: {
-                        'method': 'save_custom_layers',
+                        'method': 'on_add_custom_layer',
                         'layer_title': new_name,
                         'layer_id': uuid,
                         'layer_name': service_layer_name,
@@ -1063,9 +1091,13 @@ var MAP_LAYOUT = (function() {
                         xhr.setRequestHeader('X-CSRFToken', csrf_token);
                     },
                 }).done(function (data) {
-
-                })
-                // TODO: Save state to local storage
+                    if (data.success) {
+                        TETHYS_APP_BASE.alert("success", `Successfully added layer "${service_layer_name}".`);
+                    } else {
+                        TETHYS_APP_BASE.alert("warning", `Unable to add layer permanently.`);
+                        console.log(data.message);
+                    }
+                });
             });
         });
 
