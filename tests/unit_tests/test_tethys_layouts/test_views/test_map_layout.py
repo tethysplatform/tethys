@@ -292,7 +292,7 @@ class TestMapLayout(TestCase):
             ret.content, b'{"success": false, "message": "Not Implemented."}'
         )
 
-    def test_on_remove_tree_item(self):
+    def test_on_rename_tree_item(self):
         mock_request = mock.MagicMock()
         inst = MapLayout()
         ret = inst.on_rename_tree_item(mock_request)
