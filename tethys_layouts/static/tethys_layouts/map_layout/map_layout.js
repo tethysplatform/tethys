@@ -30,6 +30,7 @@ var MAP_LAYOUT = (function() {
  	    m_layer_groups,                 // Layer and layer group metadata
  	    m_workspace,                    // Workspace from SpatialManager
  	    m_extent,                       // Home extent for map
+        m_capabilities,                 // WMS Capabilities 
  	    m_show_properties_popup,        // Show properties pop-up
  	    m_show_map_click_popup,         // Show the properties pop-up at the clicked point (instead of the centroid of the selected feature if feature selection is on)
  	    m_select_interaction,           // TethysMap select interaction for vector layers
@@ -145,6 +146,7 @@ var MAP_LAYOUT = (function() {
 	    // Setup layer map
 	    m_layers = {};
 	    m_drawing_layer = null;
+        m_capabilities = {};
 
 	    // Get id from tethys_data attribute
 	    m_map.getLayers().forEach(function(layer, index, array) {
@@ -154,6 +156,49 @@ var MAP_LAYOUT = (function() {
 	               console.log('Warning: layer_name already in layers map: "' + layer.tethys_data.layer_id + '".');
 	           }
 	           m_layers[layer.tethys_data.layer_id] = layer;
+
+               // Lookup extent from WMS GetCapabilities if applicable
+               let source = layer.getSource();
+               if ((source instanceof ol.source.TileWMS || source instanceof ol.source.ImageWMS) && !layer.tethys_legend_extent) {
+                    const capabilities_parser = new ol.format.WMSCapabilities();
+
+                    // Callback for then on GetCapabilities fetch requests
+                    let then_lookup_extent = function (capabilities) {
+                        let cap_layers = capabilities.Capability.Layer.Layer;
+                        let cap_layer = cap_layers.find(function(cl) {
+                            return source.getParams().LAYERS.includes(cl.Name);
+                        });
+
+                        if (cap_layer) {
+                            let BBOX_84 = cap_layer.BoundingBox.find(function(bb) {
+                                return ["CRS:84", "EPSG:4326"].includes(bb.crs);
+                            });
+
+                            if (BBOX_84) {
+                                layer.tethys_legend_extent = BBOX_84.extent;  // save to tethys_legend_extent
+                            }
+                        }
+
+                        return capabilities;
+                    };
+
+                    // Fetch the WMS GetCapabilities for each layer
+                    $.each(source.getUrls(), function(i, url) {
+                        let capabilities_url = `${url}?request=GetCapabilities`;
+                        
+                        // Use cache if layer on same server as previous lookup
+                        if (capabilities_url in m_capabilities) {
+                            m_capabilities[capabilities_url].then(then_lookup_extent);
+                        } 
+                        // Fetch GetCapabilities and save to cache
+                        else {
+                            m_capabilities[capabilities_url] = fetch(capabilities_url)
+                            .then(function(response){ return response.text(); })
+                            .then(function(text) { return capabilities_parser.read(text); })
+                            .then(then_lookup_extent);
+                        }
+                    });
+               }
 	        }
 	        // Handle drawing layer
 	        else if ('tethys_legend_title' in layer && layer.tethys_legend_title == 'Drawing Layer') {
