@@ -270,25 +270,25 @@ class TestMapLayout(TestCase):
 
         mock_request = mock.MagicMock()
         inst = DisableBasemapMapLayout()
-        ret = inst.save_custom_layers(mock_request)
+        ret = inst.should_disable_basemap(mock_request)
         self.assertTrue(ret)
 
-    def test_save_custom_layers(self):
+    def test_on_add_custom_layer(self):
         mock_request = mock.MagicMock()
         inst = MapLayout()
-        ret = inst.save_custom_layers(mock_request)
+        ret = inst.on_add_custom_layer(mock_request)
         self.assertEqual(ret.status_code, 200)
         self.assertEqual(
-            ret.content, b'{"success": true, "message": "Not Implemented."}'
+            ret.content, b'{"success": false, "message": "Not Implemented."}'
         )
 
-    def test_remove_custom_layer(self):
+    def test_on_remove_tree_item(self):
         mock_request = mock.MagicMock()
         inst = MapLayout()
-        ret = inst.remove_custom_layer(mock_request)
+        ret = inst.on_remove_tree_item(mock_request)
         self.assertEqual(ret.status_code, 200)
         self.assertEqual(
-            ret.content, b'{"success": true, "message": "Not Implemented."}'
+            ret.content, b'{"success": false, "message": "Not Implemented."}'
         )
 
     @mock.patch("tethys_layouts.views.map_layout.log")
@@ -991,6 +991,7 @@ class TestMapLayout(TestCase):
         controller = MapLayout.as_controller()
         ret = controller(request)
         ret_json = json.loads(ret.content)
+        self.maxDiff = None
         self.assertDictEqual(
             ret_json,
             {

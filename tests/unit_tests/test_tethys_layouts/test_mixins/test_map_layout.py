@@ -121,6 +121,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -150,6 +153,9 @@ class TestMapLayoutMixin(unittest.TestCase):
             style_map=copy.deepcopy(self.style_map),
             show_download=True,
             times=["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"],
+            removable=True,
+            renamable=True,
+            show_legend=False,
         )
 
         self.assertIsInstance(ret, MVLayer)
@@ -183,6 +189,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                     "foo",
                     "bar",
                 ],
+                "removable": True,
+                "renamable": True,
+                "show_legend": False,
             },
         )
 
@@ -202,6 +211,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layers": layers,
                 "visible": True,
                 "toggle_status": True,
+                "removable": False,
+                "renamable": False,
+                "collapsed": False,
             },
         )
 
@@ -215,6 +227,9 @@ class TestMapLayoutMixin(unittest.TestCase):
             layer_control="radio",
             visible=False,
             public=False,
+            removable=True,
+            renamable=True,
+            collapsed=True,
         )
 
         self.assertDictEqual(
@@ -226,6 +241,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layers": layers,
                 "visible": False,
                 "toggle_status": False,
+                "removable": True,
+                "renamable": True,
+                "collapsed": True,
             },
         )
 
@@ -257,6 +275,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layers": [],
                 "visible": True,
                 "toggle_status": True,
+                "removable": False,
+                "renamable": False,
+                "collapsed": False,
             },
         )
 
@@ -264,18 +285,27 @@ class TestMapLayoutMixin(unittest.TestCase):
         layers = [{"layer_name": "foo:bar"}, {"layer_name": "foo:baz"}]
 
         ret = MapLayoutMixin.build_custom_layer_group(
-            layers, layer_control="radio", visible=False
+            display_name="Foo Bar",
+            layers=layers,
+            layer_control="radio",
+            visible=False,
+            renamable=True,
+            removable=True,
+            collapsed=True,
         )
 
         self.assertDictEqual(
             ret,
             {
                 "id": "custom_layers",
-                "display_name": "Custom Layers",
+                "display_name": "Foo Bar",
                 "control": "radio",
                 "layers": layers,
                 "visible": False,
                 "toggle_status": True,
+                "removable": True,
+                "renamable": True,
+                "collapsed": True,
             },
         )
 
@@ -712,6 +742,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
         self.assertEqual(ret.options["type"], "FeatureCollection")
@@ -762,6 +795,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -806,6 +842,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -858,6 +897,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -910,6 +952,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -963,6 +1008,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -1015,6 +1063,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -1051,6 +1102,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -1098,6 +1152,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "custom",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": True,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -1145,6 +1202,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "custom",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": True,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -1182,6 +1242,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "custom",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": True,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 

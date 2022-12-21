@@ -670,6 +670,8 @@ class MapLayout(TethysLayout, MapLayoutMixin):
                         layer_title=layer_names[i],
                         layer_variable=layer_legends[i],
                         options=None,
+                        renamable=show_rename,
+                        removable=show_remove,
                     )
                 )
 
