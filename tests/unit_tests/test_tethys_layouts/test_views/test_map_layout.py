@@ -22,7 +22,7 @@ class ComposeLayersMapLayout(MapLayout):
     map_subtitle = "Baz"
     geocode_api_key = "12345"
     layer_tab_name = "Foos"
-    initial_map_extent = [10, 10, 20, 20]
+    default_map_extent = [10, 10, 20, 20]
     map_type = "tethys_map_view"
     show_public_toggle = True
     plotly_version = "1.2.3"
@@ -41,6 +41,7 @@ class ComposeLayersMapLayout(MapLayout):
             layer_title="WMS THREDDS Layer",
             layer_variable="grace",
             visible=True,
+            show_legend=False,
         )
 
         wms_geoserver_layer = self.build_wms_layer(
@@ -129,13 +130,12 @@ class TestMapLayout(TestCase):
             ],
         )
         self.assertIsNone(inst.cesium_ion_token)
-        self.assertListEqual(inst.default_center, [-98.583, 39.833])
         self.assertFalse(inst.default_disable_basemap)
         self.assertIsNone(inst.geocode_api_key)
         self.assertFalse(inst.enforce_permissions)
         self.assertIsNone(inst.geocode_extent)
         self.assertEqual(inst.geoserver_workspace, "")
-        self.assertListEqual(inst.initial_map_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertListEqual(inst.default_map_extent, [-65.69, 23.81, -129.17, 49.38])
         self.assertFalse(inst.feature_selection_multiselect)
         self.assertEqual(inst.feature_selection_sensitivity, 4)
         self.assertEqual(inst.layer_tab_name, "Layers")
@@ -152,35 +152,6 @@ class TestMapLayout(TestCase):
         self.assertFalse(inst.show_properties_popup)
         self.assertFalse(inst.show_public_toggle)
         self.assertFalse(inst.wide_nav)
-
-    def test_map_extent(self):
-        class MapExtentMapLayout(MapLayout):
-            initial_map_extent = [-30, -15, 15, 30]
-
-        MapExtentMapLayout._map_extent = None
-        ret = MapExtentMapLayout.map_extent
-        self.assertListEqual(ret, [-30, -15, 15, 30])
-
-    def test_default_view(self):
-        class DefaultViewMapLayout(MapLayout):
-            initial_map_extent = [-30, -10, 10, 30]
-            default_zoom = 16
-            max_zoom = 22
-            min_zoom = 10
-
-        DefaultViewMapLayout._default_view = None
-        ret = DefaultViewMapLayout.default_view
-        self.assertIsInstance(ret, MVView)
-        self.assertDictEqual(
-            ret,
-            {
-                "center": [-10, 10],
-                "maxZoom": 22,
-                "minZoom": 10,
-                "projection": "EPSG:4326",
-                "zoom": 16,
-            },
-        )
 
     def test_sds_setting(self):
         mock_app = mock.MagicMock()
@@ -227,13 +198,6 @@ class TestMapLayout(TestCase):
         inst = MapLayout()
         ret = inst.compose_layers(mock_request, mock_map_view)
         self.assertListEqual(ret, list())
-
-    def test_get_initial_map_extent(self):
-        class ExtentMapLayout(MapLayout):
-            initial_map_extent = [-12.3, -23.4, 34.5, 45.6]
-
-        ret = ExtentMapLayout.get_initial_map_extent()
-        self.assertListEqual(ret, [-12.3, -23.4, 34.5, 45.6])
 
     def test_get_plot_for_layer_feature(self):
         mock_request = mock.MagicMock()
@@ -307,36 +271,39 @@ class TestMapLayout(TestCase):
 
         mock_request = mock.MagicMock()
         inst = DisableBasemapMapLayout()
-        ret = inst.save_custom_layers(mock_request)
+        ret = inst.should_disable_basemap(mock_request)
         self.assertTrue(ret)
 
-    def test_save_custom_layers(self):
+    def test_on_add_custom_layer(self):
         mock_request = mock.MagicMock()
         inst = MapLayout()
-        ret = inst.save_custom_layers(mock_request)
+        ret = inst.on_add_custom_layer(mock_request)
         self.assertEqual(ret.status_code, 200)
         self.assertEqual(
-            ret.content, b'{"success": true, "message": "Not Implemented."}'
+            ret.content, b'{"success": false, "message": "Not Implemented."}'
         )
 
-    def test_remove_custom_layer(self):
+    def test_on_remove_tree_item(self):
         mock_request = mock.MagicMock()
         inst = MapLayout()
-        ret = inst.remove_custom_layer(mock_request)
+        ret = inst.on_remove_tree_item(mock_request)
         self.assertEqual(ret.status_code, 200)
         self.assertEqual(
-            ret.content, b'{"success": true, "message": "Not Implemented."}'
+            ret.content, b'{"success": false, "message": "Not Implemented."}'
+        )
+
+    def test_on_rename_tree_item(self):
+        mock_request = mock.MagicMock()
+        inst = MapLayout()
+        ret = inst.on_rename_tree_item(mock_request)
+        self.assertEqual(ret.status_code, 200)
+        self.assertEqual(
+            ret.content, b'{"success": false, "message": "Not Implemented."}'
         )
 
     @mock.patch("tethys_layouts.views.map_layout.log")
     def test_get_context(self, _):
         request = self.factory.get("/some/endpoint")
-        ComposeLayersMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        ComposeLayersMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = ComposeLayersMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -366,12 +333,6 @@ class TestMapLayout(TestCase):
             show_custom_layer = True
 
         request = self.factory.get("/some/endpoint")
-        CustomLayerMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        CustomLayerMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = CustomLayerMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -404,12 +365,6 @@ class TestMapLayout(TestCase):
                 return layer_groups
 
         request = self.factory.get("/some/endpoint")
-        CustomLayerMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        CustomLayerMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = CustomLayerMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -428,12 +383,6 @@ class TestMapLayout(TestCase):
             cesium_ion_token = "987-654-321"
 
         request = self.factory.get("/some/endpoint")
-        CesiumComposeLayersMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        CesiumComposeLayersMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = CesiumComposeLayersMapLayout()
         initial_context = dict()
         ret = inst.get_context(request, initial_context)
@@ -467,12 +416,6 @@ class TestMapLayout(TestCase):
     @mock.patch("tethys_layouts.views.map_layout.log")
     def test_get_context_public_toggle(self, _):
         request = self.factory.get("/some/endpoint")
-        ComposeLayersMapLayout._map_extent = (
-            None  # Override this to ensure not set from other tests
-        )
-        ComposeLayersMapLayout._default_view = (
-            None  # Override this to ensure not set from other tests
-        )
         inst = ComposeLayersMapLayout()
         initial_context = dict(show_public_toggle=True)
         ret = inst.get_context(request, initial_context)
@@ -567,7 +510,7 @@ class TestMapLayout(TestCase):
 
     def test__build_map_view(self):
         class MapBuildingMapLayout(MapLayout):
-            initial_map_extent = [-10, -10, 10, 10]
+            default_map_extent = [-10, -10, 10, 10]
             default_disable_basemap = True
             feature_selection_multiselect = True
             feature_selection_sensitivity = 10
@@ -577,12 +520,12 @@ class TestMapLayout(TestCase):
             max_zoom = 12
 
         mock_request = mock.MagicMock()
+        extent = [-112, 42, -110, 40]
+        view = MVView(extent=extent)
         inst = MapBuildingMapLayout()
-        ret = inst._build_map_view(mock_request)
+        ret = inst._build_map_view(mock_request, view, extent)
         self.assertIsInstance(ret, MapView)
-        self.assertListEqual(
-            ret["controls"][2]["ZoomToExtent"]["extent"], [-10, -10, 10, 10]
-        )
+        self.assertListEqual(ret["controls"][2]["ZoomToExtent"]["extent"], extent)
         self.assertTrue(ret["disable_basemap"])
         self.assertTrue(ret["feature_selection"]["multiselect"])
         self.assertEqual(ret["feature_selection"]["sensitivity"], 10)
@@ -590,17 +533,18 @@ class TestMapLayout(TestCase):
         self.assertDictEqual(
             ret["view"],
             {
-                "center": [0, 0],
-                "maxZoom": 12,
-                "minZoom": 2,
+                "center": None,
+                "extent": extent,
+                "maxZoom": 28,
+                "minZoom": 0,
                 "projection": "EPSG:4326",
-                "zoom": 6,
+                "zoom": 4,
             },
         )
 
     def test__build_map_view_custom_should_disable_basemap(self):
         class ShouldNotDisableBasemapMapLayout(MapLayout):
-            initial_map_extent = [-10, -10, 10, 10]
+            default_map_extent = [-10, -10, 10, 10]
             default_disable_basemap = True
             feature_selection_multiselect = True
             feature_selection_sensitivity = 10
@@ -613,8 +557,10 @@ class TestMapLayout(TestCase):
                 return False
 
         mock_request = mock.MagicMock()
+        extent = [-112, 42, -110, 40]
+        view = MVView(extent=extent)
         inst = ShouldNotDisableBasemapMapLayout()
-        ret = inst._build_map_view(mock_request)
+        ret = inst._build_map_view(mock_request, view, extent)
         self.assertIsInstance(ret, MapView)
         self.assertFalse(ret["disable_basemap"])
 
@@ -652,49 +598,51 @@ class TestMapLayout(TestCase):
             'MapLayout to use the Cesium "map_type".',
         )
 
-    def test__get_map_extent_and_view(self):
+    def test_build_map_extent_and_view(self):
         class ExtentMapLayout(MapLayout):
-            default_center = [0, 0]
-            initial_map_extent = [-20, -10, 10, 20]
+            default_map_extent = [-20, -20, 10, 20]
             max_zoom = 13
             min_zoom = 3
-            default_zoom = 7
 
-        ret1, ret2 = ExtentMapLayout._get_map_extent_and_view()
-        self.assertIsInstance(ret1, MVView)
+        mock_request = mock.MagicMock()
+        inst = ExtentMapLayout()
+        ret_view, ret_extent = inst.build_map_extent_and_view(mock_request)
+        self.assertIsInstance(ret_view, MVView)
         self.assertDictEqual(
-            ret1,
+            ret_view,
             {
-                "center": [-5.0, 5.0],
+                "center": None,
+                "extent": [-20, -20, 10, 20],
                 "maxZoom": 13,
                 "minZoom": 3,
                 "projection": "EPSG:4326",
-                "zoom": 7,
+                "zoom": 4,
             },
         )
-        self.assertListEqual(ret2, [-20, -10, 10, 20])
+        self.assertListEqual(ret_extent, [-20, -20, 10, 20])
 
-    def test__get_map_extent_and_view_no_initial_extent(self):
+    def test_build_map_extent_and_view_no_default_extent(self):
         class ExtentMapLayout(MapLayout):
-            default_center = [0, 0]
-            initial_map_extent = None
-            max_zoom = 13
             min_zoom = 3
-            default_zoom = 7
+            max_zoom = 13
 
-        ret1, ret2 = ExtentMapLayout._get_map_extent_and_view()
-        self.assertIsInstance(ret1, MVView)
+        mock_request = mock.MagicMock()
+        ret_view, ret_extent = ExtentMapLayout().build_map_extent_and_view(mock_request)
+        self.assertIsInstance(ret_view, MVView)
         self.assertDictEqual(
-            ret1,
+            ret_view,
             {
-                "center": [0.0, 0.0],
+                "center": None,
+                "extent": [-65.69, 23.81, -129.17, 49.38],  # This is the default extent
                 "maxZoom": 13,
                 "minZoom": 3,
                 "projection": "EPSG:4326",
-                "zoom": 7,
+                "zoom": 4,
             },
         )
-        self.assertIsNone(ret2)
+        self.assertListEqual(
+            ret_extent, [-65.69, 23.81, -129.17, 49.38]
+        )  # This is the default extent
 
     def test__translate_layers_to_cesium(self):
         image_wms = MVLayer(
@@ -1053,6 +1001,7 @@ class TestMapLayout(TestCase):
         controller = MapLayout.as_controller()
         ret = controller(request)
         ret_json = json.loads(ret.content)
+        self.maxDiff = None
         self.assertDictEqual(
             ret_json,
             {

@@ -121,6 +121,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -150,6 +153,9 @@ class TestMapLayoutMixin(unittest.TestCase):
             style_map=copy.deepcopy(self.style_map),
             show_download=True,
             times=["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"],
+            removable=True,
+            renamable=True,
+            show_legend=False,
         )
 
         self.assertIsInstance(ret, MVLayer)
@@ -183,6 +189,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                     "foo",
                     "bar",
                 ],
+                "removable": True,
+                "renamable": True,
+                "show_legend": False,
             },
         )
 
@@ -202,6 +211,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layers": layers,
                 "visible": True,
                 "toggle_status": True,
+                "removable": False,
+                "renamable": False,
+                "collapsed": False,
             },
         )
 
@@ -215,6 +227,9 @@ class TestMapLayoutMixin(unittest.TestCase):
             layer_control="radio",
             visible=False,
             public=False,
+            removable=True,
+            renamable=True,
+            collapsed=True,
         )
 
         self.assertDictEqual(
@@ -226,6 +241,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layers": layers,
                 "visible": False,
                 "toggle_status": False,
+                "removable": True,
+                "renamable": True,
+                "collapsed": True,
             },
         )
 
@@ -243,6 +261,52 @@ class TestMapLayoutMixin(unittest.TestCase):
         self.assertEqual(
             'Invalid layer_control. Must be on of "checkbox" or "radio".',
             str(cm.exception),
+        )
+
+    def test_build_custom_layer_group_default(self):
+        ret = MapLayoutMixin.build_custom_layer_group()
+
+        self.assertDictEqual(
+            ret,
+            {
+                "id": "custom_layers",
+                "display_name": "Custom Layers",
+                "control": "checkbox",
+                "layers": [],
+                "visible": True,
+                "toggle_status": True,
+                "removable": False,
+                "renamable": False,
+                "collapsed": False,
+            },
+        )
+
+    def test_build_custom_layer_group_custom_args(self):
+        layers = [{"layer_name": "foo:bar"}, {"layer_name": "foo:baz"}]
+
+        ret = MapLayoutMixin.build_custom_layer_group(
+            display_name="Foo Bar",
+            layers=layers,
+            layer_control="radio",
+            visible=False,
+            renamable=True,
+            removable=True,
+            collapsed=True,
+        )
+
+        self.assertDictEqual(
+            ret,
+            {
+                "id": "custom_layers",
+                "display_name": "Foo Bar",
+                "control": "radio",
+                "layers": layers,
+                "visible": False,
+                "toggle_status": True,
+                "removable": True,
+                "renamable": True,
+                "collapsed": True,
+            },
         )
 
     def test_build_param_string(self):
@@ -678,6 +742,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
         self.assertEqual(ret.options["type"], "FeatureCollection")
@@ -728,6 +795,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -772,6 +842,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -824,6 +897,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -876,6 +952,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -929,6 +1008,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -981,6 +1063,9 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 
@@ -1017,6 +1102,149 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "layer_variable": "baz",
                 "toggle_status": True,
                 "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
+            },
+        )
+
+    def test_build_custom_layer_geoserver_wms(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_custom_layer(
+            service_type="WMS",
+            service_endpoint="http://example.com/geoserver/wms",
+            layer_name="foo:bar",
+            layer_title="Foo Bar",
+            layer_id="12345",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileWMS")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertFalse(ret.feature_selection)
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.options,
+            {
+                "url": "http://example.com/geoserver/wms",
+                "params": {
+                    "LAYERS": "foo:bar",
+                    "TILED": True,
+                    "TILESORIGIN": "0.0,0.0",
+                },
+                "serverType": "geoserver",
+                "crossOrigin": None,
+                "tileGrid": _DEFAULT_TILE_GRID,
+            },
+        )
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "12345",
+                "layer_name": "foo:bar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "custom",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+                "removable": True,
+                "renamable": False,
+                "show_legend": True,
+            },
+        )
+
+    def test_build_custom_layer_thredds_wms(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_custom_layer(
+            service_type="WMS",
+            service_endpoint="https://tethys.byu.edu/thredds/wms/tethys/grace/GRC_jpl_tot.nc",
+            layer_name="foobar",
+            layer_title="Foo Bar",
+            layer_id="12345",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileWMS")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertFalse(ret.feature_selection)
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.options,
+            {
+                "url": "https://tethys.byu.edu/thredds/wms/tethys/grace/GRC_jpl_tot.nc",
+                "params": {
+                    "LAYERS": "foobar",
+                    "TILED": True,
+                    "TILESORIGIN": "0.0,0.0",
+                },
+                "serverType": "thredds",
+                "crossOrigin": None,
+                "tileGrid": _DEFAULT_TILE_GRID,
+            },
+        )
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "12345",
+                "layer_name": "foobar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "custom",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+                "removable": True,
+                "renamable": False,
+                "show_legend": True,
+            },
+        )
+
+    def test_build_custom_layer_arcgis(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_custom_layer(
+            service_type="TileArcGISRest",
+            service_endpoint="https://sampleserver1.arcgisonline.com"
+            "/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer",
+            layer_name="foo:bar",
+            layer_title="Foo Bar",
+            layer_id="12345",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileArcGISRest")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertEqual(
+            ret.options["url"],
+            "https://sampleserver1.arcgisonline.com"
+            "/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer",
+        )
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "12345",
+                "layer_name": "foo:bar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "custom",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+                "removable": True,
+                "renamable": False,
+                "show_legend": True,
             },
         )
 

@@ -20,10 +20,10 @@
       <i class="bi bi-three-dots-vertical"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labeledby="{{ layer.data.layer_id }}--context-menu">
-      {% if show_rename %}
+      {% if show_rename and layer.data.renamable %}
         <li><a class="dropdown-item rename-action" href="javascript:void(0);"><i class="bi bi-pencil"></i><span class="command-name">Rename</span></a></li>
       {% endif %}
-      {% if show_remove %}
+      {% if show_remove and layer.data.removable %}
         <li><a class="dropdown-item remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="{{ layer.data.layer_id }}"><i class="bi bi-trash"></i><span class="command-name">Remove</span></a></li>
       {% endif %}
       {% if show_public_toggle %}
@@ -33,7 +33,7 @@
                 {% if layer_group.toggle_status %} checked {% endif %}>
         </div>
       {% endif %}
-      {% if show_public_toggle or show_remove or show_rename %}
+      {% if show_public_toggle or show_remove and layer.data.removable or show_rename and layer.data.renamable %}
         <li><hr class="dropdown-divider"></li>
       {% endif %}
       <li><a class="dropdown-item zoom-to-layer-action" href="javascript:void(0);" data-layer-id="{{ layer.data.layer_id }}"><i class="bi bi-fullscreen"></i><span class="command-name">Zoom to Layer</span></a></li>
