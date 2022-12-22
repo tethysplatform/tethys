@@ -37,11 +37,57 @@ var TETHYS_APP_BASE = (function () {
     no_nav_handler,
     exit_app,
     toggle_nav,
-    csrf_safe_method;
+    csrf_safe_method,
+    alert;
 
   /************************************************************************
    *                    PRIVATE FUNCTION IMPLEMENTATIONS
    *************************************************************************/
+
+  // Create an alert message via JavaScript API
+  alert = function(style, message) {
+    // Validate
+    const validStyles = [
+      "primary", "secondary", "info", "success",
+      "warning", "danger", "light", "dark"
+    ];
+    if (!validStyles.includes(style)) {
+      console.log(`Invaid alert style: "${style}". Must be one of: "${validStyles.join('", "')}".`);
+      return;
+    }
+
+    if (!message) {
+      console.log('The "message" parameter is required for alert.');
+      return;
+    }
+
+    // Find or create flash messages div
+    let flashMessages = document.querySelector('.flash-messages');
+    if (!flashMessages) {
+      flashMessages = document.createElement('div');
+      flashMessages.classList.add('flash-messages');
+      document.body.appendChild(flashMessages);
+    }
+
+    // Build bootstrap-style alert
+    let alert = document.createElement('div');
+    flashMessages.appendChild(alert);
+    alert.classList.add(
+      "alert", `alert-${style}`, "alert-dismissible",
+      "fade", "show", "mx-auto"
+    );
+    alert.innerText = message;
+
+    // Add the close button
+    let closeButton = document.createElement("button");
+    alert.appendChild(closeButton);
+    closeButton.classList.add("btn-close");
+    closeButton.setAttribute("type", "button");
+    closeButton.setAttribute("data-bs-dismiss", "alert");
+    closeButton.setAttribute("aria-label", "close");
+
+    return alert;
+  };
 
   // Handle toggling nav effects
   toggle_nav = function () {
@@ -214,6 +260,7 @@ var TETHYS_APP_BASE = (function () {
   public_interface = {
     toggle_nav: toggle_nav,
     exit_app: exit_app,
+    alert: alert,
   };
 
   /************************************************************************

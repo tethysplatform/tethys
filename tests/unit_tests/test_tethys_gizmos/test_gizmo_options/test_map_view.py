@@ -48,10 +48,59 @@ class TestMapView(unittest.TestCase):
 
         # Check result
         self.assertIn(projection, result["projection"])
-        self.assertEqual(center, result["center"])
+        self.assertListEqual(center, result["center"])
         self.assertEqual(zoom, result["zoom"])
         self.assertEqual(maxZoom, result["maxZoom"])
         self.assertEqual(minZoom, result["minZoom"])
+
+    def test_MVView_center_defaults(self):
+        center = [-100, 40]
+
+        result = gizmo_map_view.MVView(center=center)
+
+        # Check result
+        self.assertEqual("EPSG:4326", result["projection"])
+        self.assertListEqual(center, result["center"])
+        self.assertEqual(4, result["zoom"])
+        self.assertEqual(28, result["maxZoom"])
+        self.assertEqual(0, result["minZoom"])
+        self.assertIsNone(result["extent"])
+
+    def test_MVView_extent_defaults(self):
+        extent = [-100, 40, -80, 60]
+
+        result = gizmo_map_view.MVView(extent=extent)
+
+        # Check result
+        self.assertEqual("EPSG:4326", result["projection"])
+        self.assertListEqual(extent, result["extent"])
+        self.assertEqual(4, result["zoom"])
+        self.assertEqual(28, result["maxZoom"])
+        self.assertEqual(0, result["minZoom"])
+        self.assertIsNone(result["center"])
+
+    def test_MVView_neither_extent_center(self):
+        with self.assertRaises(ValueError) as cm:
+            gizmo_map_view.MVView()
+
+        # Check result
+        self.assertEqual(
+            'Either the "center" argument or the "extent" argument is required: neither were provided.',
+            str(cm.exception),
+        )
+
+    def test_MVView_both_extent_center(self):
+        with self.assertRaises(ValueError) as cm:
+            gizmo_map_view.MVView(
+                center=[-100, 40],
+                extent=[-100, 40, -80, 60],
+            )
+
+        # Check result
+        self.assertEqual(
+            'The "center" and "extent" arguments are mutually exclusive: provide one or the other, not both.',
+            str(cm.exception),
+        )
 
     def test_MVDraw(self):
         controls = ["Modify", "Delete", "Move", "Point", "LineString", "Polygon", "Box"]

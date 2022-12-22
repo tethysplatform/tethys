@@ -10,33 +10,37 @@
 
   {# LAYER GROUP CONTEXT MENU #}
   {% if show_public_toggle or show_remove or show_rename %}
-    <div class="dropdown layers-context-menu float-end">
-      <button id="{{ layer_group.id }}--context-menu"
-              class="btn btn-sm layers-btn"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
-        <i class="bi bi-three-dots-vertical"></i>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labeledby="{{ layer_group.id }}--context-menu">
-        {% if show_rename %}
-          <li><a class="dropdown-item rename-action" href="javascript:void(0);"><i class="bi bi-pencil"></i><span class="command-name">Rename</span></a></li>
-        {% endif %}
-        {% if show_remove %}
-          <li><a class="dropdown-item remove-action" href="javascript:void(0);" data-remove-type="layer" data-layer-id="{{ layer.data.layer_name }}"><i class="bi bi-trash"></i><span class="command-name">Remove</span></a></li>
-        {% endif %}
-        {% if show_public_toggle %}
-          <div class="form-group">
-              <input class="form-control bootstrap-switch layer-dropdown-toggle" type="checkbox" data-size="small" data-on-text="Public"
-                  data-off-text="Private" data-on-color='success' data-off-color='danger'
-                  {% if layer_group.toggle_status %} checked {% endif %}>
-          </div>
-        {% endif %}
-        {% if layer_group.id == 'custom_layers' %}
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item add-layer-to-layer-group" href="javascript:void(0);"><i class="bi bi-plus"></i><span class="command-name">Add Layer</span></a></li>
-        {% endif %}
-      </ul>
-    </div>
+    {% if layer_group.id == 'custom_layers' or layer_group.renamable or layer_group.removable %}
+      <div class="dropdown layers-context-menu float-end">
+        <button id="{{ layer_group.id }}--context-menu"
+                class="btn btn-sm layers-btn"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labeledby="{{ layer_group.id }}--context-menu">
+          {% if show_rename and layer_group.renamable %}
+            <li><a class="dropdown-item rename-action" href="javascript:void(0);"><i class="bi bi-pencil"></i><span class="command-name">Rename</span></a></li>
+          {% endif %}
+          {% if show_remove and layer_group.removable %}
+            <li><a class="dropdown-item remove-action" href="javascript:void(0);" data-remove-type="layer-group" data-layer-group-id="{{ layer_group.id }}"><i class="bi bi-trash"></i><span class="command-name">Remove</span></a></li>
+          {% endif %}
+          {% if show_public_toggle %}
+            <div class="form-group">
+                <input class="form-control bootstrap-switch layer-dropdown-toggle" type="checkbox" data-size="small" data-on-text="Public"
+                    data-off-text="Private" data-on-color='success' data-off-color='danger'
+                    {% if layer_group.toggle_status %} checked {% endif %}>
+            </div>
+          {% endif %}
+          {% if layer_group.id == 'custom_layers' %}
+            {% if layer_group.renamable or layer_group.removable %}
+              <li><hr class="dropdown-divider"></li>
+            {% endif %}
+            <li><a class="dropdown-item add-layer-to-layer-group" href="javascript:void(0);"><i class="bi bi-plus"></i><span class="command-name">Add Layer</span></a></li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
   {% endif %}
   <a id="{{ layer_group.id }}--collapse"
      class="collapse-action btn btn-sm layers-btn float-end"

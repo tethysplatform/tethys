@@ -131,7 +131,7 @@ var TETHYS_MAP_VIEW = (function() {
       switch_interaction;
 
   // Feature Parser Methods
-  var geojsonify, wellknowtextify;
+  var geojsonify, wellknowtextify, gcollection_to_fcollection;
 
   // Attribute Table Methods
   var initialize_feature_properties, generate_feature_id, get_feature_properties;
@@ -462,7 +462,7 @@ var TETHYS_MAP_VIEW = (function() {
         button_left_offset = 4.5,
         initial_drawing_mode = 'Point';
 
-    var initial_features_obj, projection, format, proj_format, features = [];
+    var initial_features_str, projection, format, proj_format, features = [];
 
     if (is_defined(m_draw_options)) {
       // Customize styles
@@ -470,7 +470,7 @@ var TETHYS_MAP_VIEW = (function() {
       INITIAL_STROKE_COLOR = m_draw_options.line_color,
       INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
 
-      initial_features_obj = m_draw_options.initial_features;
+      initial_features_str = m_draw_options.initial_features;
 
       // Initialize the drawing layer
       m_drawing_source = new ol.source.Vector({wrapX: false});
@@ -483,27 +483,35 @@ var TETHYS_MAP_VIEW = (function() {
       }
 
       // Load initial features
-      if (is_defined(initial_features_obj)) {
-        // Determine projection
-        proj_format = new ol.format.GeoJSON();
-        projection = proj_format.readProjection(initial_features_obj);
-
+      if (is_defined(initial_features_str) && initial_features_str !== "") {
+        
         if (m_serialization_format === GEOJSON_FORMAT) {
           format = new ol.format.GeoJSON();
+
+          // Convert Geometry Collection to Feature Collection
+          if (initial_features_str.includes("GeometryCollection")) {
+            initial_features_str = gcollection_to_fcollection(initial_features_str);
+          }
+
+          // Determine projection
+          proj_format = new ol.format.GeoJSON();
+          projection = proj_format.readProjection(initial_features_str);
 
           // Read the features
           if (is_defined(projection)) {
             features = format.readFeatures(
-              initial_features_obj,
+              initial_features_str,
               {'dataProjection': projection, 'featureProjection': DEFAULT_PROJECTION}
             );
           } else {
-            features = format.readFeatures(initial_features_obj);
+            features = format.readFeatures(initial_features_str);
           }
         } else {
+          proj_format = new ol.format.WKT();
+          projection = proj_format.readProjection(initial_features_str);
           format = new ol.format.WKT();
 
-          $.each(initial_features_obj.features, function(index, feature) {
+          $.each(initial_features_str.features, function(index, feature) {
             var current_feature;
             if (is_defined(projection)) {
               current_feature = format.readFeatures(
@@ -1069,16 +1077,21 @@ var TETHYS_MAP_VIEW = (function() {
 
       view_obj = JSON.parse(view_json);
 
-      if ('projection' in view_obj && 'center' in view_obj) {
-        // Transform coordinates to default CRS
-        view_obj['center'] = ol.proj.transform(view_obj['center'], view_obj['projection'], DEFAULT_PROJECTION);
-        delete view_obj['projection'];
+      if ('extent' in view_obj && view_obj.extent && 'projection' in view_obj) {
+        let t_extent = ol.proj.transformExtent(view_obj.extent, view_obj.projection, DEFAULT_PROJECTION);
+        let view = m_map.getView();
+        view.setMaxZoom(view_obj.maxZoom);
+        view.setMinZoom(view_obj.minZoom);
+        view.fit(t_extent, m_map.getSize());
+      } else if ('center' in view_obj && view_obj.center && 'projection' in view_obj) {
+        view_obj.center = ol.proj.transform(view_obj.center, view_obj.projection, DEFAULT_PROJECTION);
+        delete view_obj.extent;
+        delete view_obj.projection;
+        m_map.setView(new ol.View(view_obj));
       }
-
-      m_map.setView(new ol.View(view_obj));
     }
 
-    //function to change size of the map when the map element size changes
+    // Change size of the map when the map element size changes
     $map_element.changeSize(function($this){
       m_map.updateSize();
     });
@@ -1471,6 +1484,43 @@ var TETHYS_MAP_VIEW = (function() {
     });
 
     return geometry_collection;
+  };
+
+  gcollection_to_fcollection = function(geojson_str) {
+    // Convert GeometryCollection geojson string to FeatureCollection geojson string
+    let geometry_collection = JSON.parse(geojson_str);
+
+    // Stub out the FeatureCollection
+    let feature_collection = {
+      "type": "FeatureCollection",
+      "features": [],
+    }
+
+    // Set CRS on FeatureCollection if defined on the GeometryCollection
+    if (geometry_collection.hasOwnProperty("crs")) {
+      feature_collection.crs = geometry_collection.crs;
+    }
+
+    // Convert each geometry to a Feature
+    for (let geometry of geometry_collection.geometries) {
+      let feature = {
+        "type": "Feature",
+        "geometry": {
+          "type": geometry.type,
+          "coordinates": geometry.coordinates,
+        }
+      };
+
+      // Add properties if they are present
+      if (geometry.hasOwnProperty("properties")) {
+        feature.properties = geometry.properties;
+      }
+
+      // Add to the FeatureCollection
+      feature_collection.features.push(feature);
+    }
+
+    return JSON.stringify(feature_collection);
   };
 
   /***********************************
