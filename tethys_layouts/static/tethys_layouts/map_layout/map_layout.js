@@ -30,6 +30,7 @@ var MAP_LAYOUT = (function() {
  	    m_layer_groups,                 // Layer and layer group metadata
  	    m_workspace,                    // Workspace from SpatialManager
  	    m_extent,                       // Home extent for map
+        m_capabilities,                 // WMS Capabilities 
  	    m_show_properties_popup,        // Show properties pop-up
  	    m_show_map_click_popup,         // Show the properties pop-up at the clicked point (instead of the centroid of the selected feature if feature selection is on)
  	    m_select_interaction,           // TethysMap select interaction for vector layers
@@ -142,12 +143,10 @@ var MAP_LAYOUT = (function() {
         // Get handle on map
 	    m_map = TETHYS_MAP_VIEW.getMap();
 
-	    // Set initial extent
-	    TETHYS_MAP_VIEW.zoomToExtent(m_extent);
-
 	    // Setup layer map
 	    m_layers = {};
 	    m_drawing_layer = null;
+        m_capabilities = {};
 
 	    // Get id from tethys_data attribute
 	    m_map.getLayers().forEach(function(layer, index, array) {
@@ -157,6 +156,49 @@ var MAP_LAYOUT = (function() {
 	               console.log('Warning: layer_name already in layers map: "' + layer.tethys_data.layer_id + '".');
 	           }
 	           m_layers[layer.tethys_data.layer_id] = layer;
+
+               // Lookup extent from WMS GetCapabilities if applicable
+               let source = layer.getSource();
+               if ((source instanceof ol.source.TileWMS || source instanceof ol.source.ImageWMS) && !layer.tethys_legend_extent) {
+                    const capabilities_parser = new ol.format.WMSCapabilities();
+
+                    // Callback for then on GetCapabilities fetch requests
+                    let then_lookup_extent = function (capabilities) {
+                        let cap_layers = capabilities.Capability.Layer.Layer;
+                        let cap_layer = cap_layers.find(function(cl) {
+                            return source.getParams().LAYERS.includes(cl.Name);
+                        });
+
+                        if (cap_layer) {
+                            let BBOX_84 = cap_layer.BoundingBox.find(function(bb) {
+                                return ["CRS:84", "EPSG:4326"].includes(bb.crs);
+                            });
+
+                            if (BBOX_84) {
+                                layer.tethys_legend_extent = BBOX_84.extent;  // save to tethys_legend_extent
+                            }
+                        }
+
+                        return capabilities;
+                    };
+
+                    // Fetch the WMS GetCapabilities for each layer
+                    $.each(source.getUrls(), function(i, url) {
+                        let capabilities_url = `${url}?request=GetCapabilities`;
+                        
+                        // Use cache if layer on same server as previous lookup
+                        if (capabilities_url in m_capabilities) {
+                            m_capabilities[capabilities_url].then(then_lookup_extent);
+                        } 
+                        // Fetch GetCapabilities and save to cache
+                        else {
+                            m_capabilities[capabilities_url] = fetch(capabilities_url)
+                            .then(function(response){ return response.text(); })
+                            .then(function(text) { return capabilities_parser.read(text); })
+                            .then(then_lookup_extent);
+                        }
+                    });
+               }
 	        }
 	        // Handle drawing layer
 	        else if ('tethys_legend_title' in layer && layer.tethys_legend_title == 'Drawing Layer') {
@@ -319,7 +361,7 @@ var MAP_LAYOUT = (function() {
         let out = Plotly.validate(data, layout);
         if (out) {
             $(out).each(function(index, item) {
-                console.warn(`PlotlyValidationWarning: ${item.msg}`);
+                console.log(`PlotlyValidationWarning: ${item.msg}`);
             });
         }
 
@@ -352,7 +394,7 @@ var MAP_LAYOUT = (function() {
         // Build Plot Button Markup
         let plot_button =
             '<div class="plot-btn-wrapper">' +
-                '<a class="btn btn-primary btn-popup btn-plot" ' +
+                '<a class="btn btn-primary btn-popup btn-plot my-2" ' +
                     'href="javascript:void(0);" ' +
                     'role="button" ' +
                     'data-feature-id="' + fid +'" ' +
@@ -724,14 +766,36 @@ var MAP_LAYOUT = (function() {
                 // Hide the modal
                 hide_action_modal();
 
-                // TODO: Save state to local storage
+                csrf_token = $("input[name=csrfmiddlewaretoken]").val();
+                $.ajax({
+                  type: "POST",
+                  url: "",
+                  data: {
+                    method: "on_rename_tree_item",
+                    new_name: new_name,
+                    current_name: current_name,
+                  },
+                  beforeSend: (xhr) => {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                  },
+                }).done(function(data) {
+                    if (data.success) {
+                        TETHYS_APP_BASE.alert("success", `Successfully renamed layer "${current_name}" to "${new_name}".`);
+                    } else {
+                        TETHYS_APP_BASE.alert("warning", `Unable to save new name for layer "${current_name}" permanently.`);
+                        console.log(data.message);
+                    }
+                });
             });
         });
     };
 
     init_remove_controls = function() {
         $('.remove-action').on('click', function(e) {
+            let removed_layer_ids = [];
             let $action_button = $(e.target);
+            // If button has custom layer container as parent, it is a button on a custom layer
+            let is_custom = $action_button.parents('#custom_layers_associated_layers').length > 0;
 
             if (!$action_button.hasClass('remove-action')) {
                 $action_button = $action_button.closest('.remove-action');
@@ -764,18 +828,19 @@ var MAP_LAYOUT = (function() {
             modal.action_button.on('click', function(e) {
                 // Reset the ui
                 reset_ui();
-                var uuid = '';
+                let layer_group_id = null;
                 if (remove_type === 'layer') {
                     // Remove layer from map
-                    var layer_id = $action_button.data('layer-id');
+                    let layer_id = $action_button.data('layer-id');
+                    removed_layer_ids.push(layer_id);
                     remove_layer_from_map(layer_id);
 
                     // Remove item from layers tree
                     let layer_list_item = $action_button.closest('.layer-list-item');
                     layer_list_item.remove();
-                }
-                else {
+                } else {
                     // Remove layers from map
+                    layer_group_id = $action_button.data('layer-group-id');
                     let $layer_group_item = $action_button.closest('.layer-group-item');
                     let $layer_list = $layer_group_item.next('.layer-list');
 
@@ -783,8 +848,9 @@ var MAP_LAYOUT = (function() {
 
                     // Remove all layers in layer group
                     $layer_visiblity_controls.each(function(index, item) {
-                        let layer_name = $(item).data('layer-id');
-                        remove_layer_from_map(layer_name);
+                        let layer_id = $(item).data('layer-id');
+                        removed_layer_ids.push(layer_id);
+                        remove_layer_from_map(layer_id);
                     });
 
                     // Remove layer group item
@@ -797,23 +863,29 @@ var MAP_LAYOUT = (function() {
                 // Hide the modal
                 hide_action_modal();
 
-                // TODO: Save state to local storage
-                // Save state of custom_layers to resource
-                if (remove_type === 'layer') {
-                    csrf_token = $('input[name=csrfmiddlewaretoken]').val()
-                    $.ajax({
-                        type: 'POST',
-                        url: '',
-                        data: {'method': 'remove_custom_layer',
-                               'layer_group_type': 'custom_layers',
-                               'layer_id': layer_id},
-                        beforeSend: xhr => {
-                            xhr.setRequestHeader('X-CSRFToken', csrf_token);
-                        },
-                    }).done(function (data) {
-
-                    })
-                }
+                // Call server callback method to persist removal
+                csrf_token = $("input[name=csrfmiddlewaretoken]").val();
+                $.ajax({
+                  type: "POST",
+                  url: "",
+                  data: {
+                    method: "on_remove_tree_item",
+                    layer_ids: removed_layer_ids,
+                    remove_type: remove_type,
+                    is_custom: is_custom,
+                    layer_group_id: layer_group_id,
+                  },
+                  beforeSend: (xhr) => {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                  },
+                }).done(function(data) {
+                    if (data.success) {
+                        TETHYS_APP_BASE.alert("success", `Successfully removed ${remove_type.replace('-', ' ')}.`);
+                    } else {
+                        TETHYS_APP_BASE.alert("warning", `Unable to remove ${remove_type.replace('-', ' ')} permanently.`);
+                        console.log(data.message);
+                    }
+                });
             });
         });
     };
@@ -984,18 +1056,17 @@ var MAP_LAYOUT = (function() {
             var uuid = generate_uuid();
             // Build Modal
             let modal_content = '<div class="form-group">'
-                              + '<label class="sr-only" for="new-name-field">New name:</label>'
-                              + '<input class="form-control" type="text" id="new-name-field" style="margin-bottom:10px" value="New Layer" autofocus onfocus="this.select();">'
+                              + '<label class="sr-only" for="new-name-field">Layer Title:</label>'
+                              + '<input class="form-control" type="text" id="new-name-field" style="margin-bottom:10px" placeholder="e.g.: State Population">'
                               + '<label class="sr-only" for="service-type">Map Service Type</label>'
                               + '<select class="form-control" style="margin-bottom:10px" id="service-type">'
                               + '<option value="WMS" selected>WMS</option>'
                               + '<option value="TileArcGISRest">ArcGIS Map Server</option>'
                               + '</select>'
                               + '<label class="sr-only" for="services-link">Service Link</label>'
-                              + '<input class="form-control" type="text" id="services-link" value="https://mrdata.usgs.gov/services/sgmc2" placeholder="Service Link (ex: https://mrdata.usgs.gov/services/sgmc2)" autofocus onfocus="this.select();">'
-                            //   + '<input class="form-control" type="text" id="services-link" value="https://mbmgmap.mtech.edu/arcgis/rest/services/geology_100k/geology_100k_legacy/MapServer" placeholder="Service Link (ex: https://mbmgmap.mtech.edu/arcgis/rest/services/geology_100k/geology_100k_legacy/MapServer)" autofocus onfocus="this.select();">'
+                              + '<input class="form-control" type="text" id="services-link" placeholder="e.g.: https://example.com/geoserver/topp/wms">'
                               + '<label class="sr-only" for="service-layer-name">Layer Name</label>'
-                              + '<input class="form-control" type="text" id="service-layer-name" value="Lithology" placeholder="Layer Name (ex: Lithology)" style="margin-top: 10px" autofocus onfocus="this.select();">'
+                              + '<input class="form-control" type="text" id="service-layer-name" placeholder="e.g.: topp:states" style="margin-top: 10px">'
                               + '</div>';
 
             let modal = build_action_modal('Add Layer', modal_content, 'Add', 'success');
@@ -1032,9 +1103,6 @@ var MAP_LAYOUT = (function() {
                         })
                 }
 
-                m_layers[uuid] = append_layer;
-                m_map.addLayer(append_layer);
-
                 // todo: add layer attributes (id, variable, etc.)
                 load_layers(
                     'layers-tab-panel', 
@@ -1056,19 +1124,25 @@ var MAP_LAYOUT = (function() {
                 $.ajax({
                     type: 'POST',
                     url: '',
-                    data: {'method': 'save_custom_layers',
-                           'layer_name': new_name,
-                           'uuid': uuid,
-                           'service_link': service_link,
-                           'service_type': service_type,
-                           'service_layer_name': service_layer_name,},
+                    data: {
+                        'method': 'on_add_custom_layer',
+                        'layer_title': new_name,
+                        'layer_id': uuid,
+                        'layer_name': service_layer_name,
+                        'service_endpoint': service_link,
+                        'service_type': service_type,
+                    },
                     beforeSend: xhr => {
                         xhr.setRequestHeader('X-CSRFToken', csrf_token);
                     },
                 }).done(function (data) {
-
-                })
-                // TODO: Save state to local storage
+                    if (data.success) {
+                        TETHYS_APP_BASE.alert("success", `Successfully added layer "${service_layer_name}".`);
+                    } else {
+                        TETHYS_APP_BASE.alert("warning", `Unable to add layer permanently.`);
+                        console.log(data.message);
+                    }
+                });
             });
         });
 
@@ -1740,7 +1814,7 @@ var MAP_LAYOUT = (function() {
         }
         for (i = 0; i < layer_data.length; i++) {
             m_layers[layer_ids[i]] = layer_data[i];
-            m_map.addLayer(layer_data[i]);
+            m_map.getLayers().insertAt(i + 1, layer_data[i]);
         }
         var operation = 'create'
         // If the layer group is already created, we will have the solution added to the same layer groups
@@ -1763,9 +1837,9 @@ var MAP_LAYOUT = (function() {
             },
         }).done(function(data){
             if (operation == 'create') {
-                $('#' + tab_id).prepend(data.response);
+                $('#' + tab_id).append(data.response);
             } else {
-                $('#' + layer_group_id + '_associated_layers').prepend(data.response);
+                $('#' + layer_group_id + '_associated_layers').append(data.response);
             }
             init_new_layers_tab(layer_group_id);
         });

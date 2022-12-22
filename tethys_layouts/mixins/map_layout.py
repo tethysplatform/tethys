@@ -257,6 +257,9 @@ class MapLayoutMixin:
         style_map=None,
         show_download=False,
         times=None,
+        renamable=False,
+        removable=False,
+        show_legend=True,
     ):
         """
         Build an MVLayer object with supplied arguments.
@@ -280,6 +283,10 @@ class MapLayoutMixin:
             times(list): List of time steps if layer is time-enabled. Times should be represented as strings in
                 ISO 8601 format (e.g.: ["20210322T112511Z", "20210322T122511Z", "20210322T132511Z"]). Currently
                 only supported in CesiumMapView.
+            renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
+
         Returns:
             MVLayer: the MVLayer object.
         """
@@ -293,6 +300,9 @@ class MapLayoutMixin:
             "popup_title": popup_title,
             "layer_variable": layer_variable,
             "toggle_status": public,
+            "renamable": renamable,
+            "removable": removable,
+            "show_legend": show_legend,
         }
 
         # Process excluded properties
@@ -347,6 +357,9 @@ class MapLayoutMixin:
         layer_control="checkbox",
         visible=True,
         public=True,
+        collapsed=False,
+        renamable=False,
+        removable=False,
     ):
         """
         Build a layer group object.
@@ -357,7 +370,11 @@ class MapLayoutMixin:
             layers(list<MVLayer>): List of layers to include in the layer group.
             layer_control(str): Type of control for layers. Either 'checkbox' or 'radio'. Defaults to checkbox.
             visible(bool): Whether layer group is initially visible. Defaults to True.
-            public(bool): enable public to see this layer group if True.
+            public(bool): Enable public to see this layer group if True.
+            collapsed(bool): Render layer group collapsed initially. Defaults to False.
+            renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+
         Returns:
             dict: Layer group definition.
         """
@@ -373,6 +390,9 @@ class MapLayoutMixin:
             "layers": layers,
             "visible": visible,
             "toggle_status": public,
+            "collapsed": collapsed,
+            "renamable": renamable,
+            "removable": removable,
         }
         return layer_group
 
@@ -567,6 +587,9 @@ class MapLayoutMixin:
         popup_title=None,
         excluded_properties=None,
         show_download=False,
+        renamable=False,
+        removable=False,
+        show_legend=True,
     ):
         """
         Build an MVLayer object with supplied arguments.
@@ -586,6 +609,9 @@ class MapLayoutMixin:
             popup_title(str): Title to display on feature popups. Defaults to layer title.
             excluded_properties(list): List of properties to exclude from feature popups.
             show_download(boolean): enable download geojson as shapefile. Default is False.
+            renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -615,6 +641,9 @@ class MapLayoutMixin:
             excluded_properties=excluded_properties,
             style_map=style_map,
             show_download=show_download,
+            renamable=renamable,
+            removable=removable,
+            show_legend=show_legend,
         )
 
         return mv_layer
@@ -644,7 +673,9 @@ class MapLayoutMixin:
         server_type="geoserver",
         cross_origin=None,
         styles=None,
-        legend_image_url=None,
+        renamable=False,
+        removable=False,
+        show_legend=True,
     ):
         """
         Build an WMS MVLayer object with supplied arguments.
@@ -672,7 +703,9 @@ class MapLayoutMixin:
             server_type (str): One of 'geoserver' or 'thredds'. Defaults to 'geoserver'.
             cross_origin (str): Value to pass to crossOrigin property. Defaults to None. See: https://openlayers.org/en/latest/apidoc/module-ol_source_TileWMS-TileWMS.html
             styles (str): Name of style to render the WMS. Defaults to None.
-            legend_image_url (str): URL for a legend image for the layer.
+            renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -733,6 +766,9 @@ class MapLayoutMixin:
             excluded_properties=excluded_properties,
             geometry_attribute=geometry_attribute,
             times=times,
+            renamable=renamable,
+            removable=removable,
+            show_legend=show_legend,
         )
 
         return mv_layer
@@ -749,6 +785,9 @@ class MapLayoutMixin:
         selectable=False,
         extent=None,
         public=True,
+        renamable=False,
+        removable=False,
+        show_legend=True,
     ):
         """
         Build an AcrGIS Map Server MVLayer object with supplied arguments.
@@ -762,6 +801,9 @@ class MapLayoutMixin:
             visible(bool): Layer is visible when True. Defaults to True.
             public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
             extent(list): Extent for the layer. Optional.
+            renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -778,9 +820,96 @@ class MapLayoutMixin:
             visible=visible,
             public=public,
             selectable=selectable,
+            renamable=renamable,
+            removable=removable,
+            show_legend=show_legend,
         )
 
         return mv_layer
+
+    @classmethod
+    def build_custom_layer(
+        cls,
+        service_type,
+        service_endpoint,
+        layer_name,
+        layer_id,
+        layer_title,
+        visible=True,
+    ):
+        """Rebuild a custom layer from saved attributes.
+
+        Args:
+            service_type (str): Type of map servce ("WMS" or "TileArcGISRest").
+            service_endpoint (str): Endpoint of the map service.
+            layer_name (str): Name of layer to render.add()
+            layer_id (str): Unique id of the layer.add()
+            layer_title (str): Display name of layer shown in legend and layer picker.
+            visible (str): The layer will be displayed by default if True.
+
+        Returns:
+            MVLayer: the MVLayer object.
+        """
+        if service_type.lower() == "wms":
+            return cls.build_wms_layer(
+                endpoint=service_endpoint,
+                server_type="thredds" if "thredds" in service_endpoint else "geoserver",
+                layer_name=layer_name,
+                layer_title=layer_title,
+                layer_id=layer_id,
+                layer_variable="custom",
+                removable=True,
+                visible=visible,
+            )
+
+        elif service_type.lower() == "tilearcgisrest":
+            return cls.build_arc_gis_layer(
+                endpoint=service_endpoint,
+                layer_name=layer_name,
+                layer_title=layer_title,
+                layer_id=layer_id,
+                layer_variable="custom",
+                removable=True,
+                visible=visible,
+            )
+
+    @classmethod
+    def build_custom_layer_group(
+        cls,
+        display_name="Custom Layers",
+        layers=None,
+        layer_control="checkbox",
+        visible=True,
+        collapsed=False,
+        renamable=False,
+        removable=False,
+    ):
+        """Build the Custom Layers layer group.
+
+        Args:
+            layers(list<MVLayer>): List of layers to include in the layer group.
+            layer_control(str): Type of control for layers. Either 'checkbox' or 'radio'. Defaults to checkbox.
+            visible(bool): Whether layer group is initially visible. Defaults to True.
+            collapsed(bool): Render layer group collapsed initially. Defaults to False.
+            renamable(bool): Show Rename option in layer context menu when True.
+            removable(bool): Show Remove option in layer context menu when True.
+
+        Returns:
+            dict: Layer group definition.
+        """
+        if layers is None:
+            layers = []
+
+        return cls.build_layer_group(
+            id="custom_layers",
+            display_name=display_name,
+            layers=layers,
+            layer_control=layer_control,
+            visible=visible,
+            collapsed=collapsed,
+            renamable=renamable,
+            removable=removable,
+        )
 
     @classmethod
     def generate_custom_color_ramp_divisions(
