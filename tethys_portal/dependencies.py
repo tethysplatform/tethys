@@ -79,7 +79,7 @@ class StaticDependency:
 
     def _get_url(self, url_type_or_path, version=None, debug=None, use_cdn=None):
         version = version or self.version
-        debug = debug or settings.DEBUG
+        debug = debug if debug is not None else settings.DEBUG
         use_cdn = use_cdn or self.use_cdn
 
         path = {
@@ -216,7 +216,8 @@ vendor_static_dependencies = {
     "doc_cookies": JsDelivrStaticDependency(
         npm_name="doc-cookies",
         version="1.1.0",
-        js_path="cookies.min.js",
+        js_path="cookies_min.js",
+        debug_path_converter=lambda path: path.replace("_min", ""),
     ),
     "graphlib": JsDelivrStaticDependency(
         npm_name="graphlib",

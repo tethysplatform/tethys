@@ -41,7 +41,6 @@ class ComposeLayersMapLayout(MapLayout):
             layer_title="WMS THREDDS Layer",
             layer_variable="grace",
             visible=True,
-            show_legend=False,
         )
 
         wms_geoserver_layer = self.build_wms_layer(
@@ -75,6 +74,7 @@ class ComposeLayersMapLayout(MapLayout):
             layer_variable="reference",
             visible=False,
             extent=[-63.69, 12.81, -129.17, 49.38],
+            show_legend=False,
         )
 
         arc_gis_layer = self.build_arc_gis_layer(
