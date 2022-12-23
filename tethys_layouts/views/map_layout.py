@@ -175,8 +175,11 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         Retrieves plot data for given feature on given layer.
 
         Args:
+            request(HttpRequest): A Django request object.
             layer_name(str): Name/id of layer.
             feature_id(str): Feature ID of feature.
+            layer_data(dict): Data attached to the layer with the data argument.
+            feature_props(dict): Feature type properties.
 
         Returns:
             str, list<dict>, dict: plot title, data series, and layout options, respectively.

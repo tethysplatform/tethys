@@ -7,7 +7,11 @@
 ********************************************************************************
 """
 from tethys_sdk.testing import TethysTestCase
-from tethys_apps.models import TethysApp, TethysAppSetting
+from tethys_apps.models import (
+    TethysApp,
+    TethysAppSetting,
+    PersistentStoreDatabaseSetting,
+)
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_services.models import (
     PersistentStoreService,
@@ -93,22 +97,43 @@ class TethysAppTests(TethysTestCase):
     def test_sync_settings(self):
         app = TethysApp.objects.get(package="test_app")
 
-        new_setting = TethysAppSetting(name="new_setting", required=False)
-        existing_setting = TethysAppSetting(name="existing_setting", required=False)
+        new_setting = TethysAppSetting(name="test_sync_new_setting", required=False)
+        existing_setting = TethysAppSetting(
+            name="test_sync_existing_setting", required=False
+        )
+        dynamic_setting = PersistentStoreDatabaseSetting(
+            tethys_app=app,
+            name="test_sync_dynamic_setting",
+            initializer="foo.bar",
+            dynamic=True,
+            required=False,
+        )
+        dynamic_setting.save()  # needs to be saved to verify it isn't deleted.
         obsolete_setting = TethysAppSetting(
-            name="obsolete_setting", tethys_app=app, required=False
+            name="test_sync_obsolete_setting", tethys_app=app, required=False
         )
         obsolete_setting.save()  # needs to be saved to it can be deleted.
 
         self.test_app.sync_settings(
-            [existing_setting, new_setting], [existing_setting, obsolete_setting]
+            [existing_setting, new_setting],
+            [existing_setting, obsolete_setting, dynamic_setting],
         )
 
         settings = [
-            setting for setting in app.settings if setting.__class__ == TethysAppSetting
+            setting
+            for setting in app.settings
+            if setting.name
+            in [
+                "test_sync_new_setting",
+                "test_sync_existing_setting",
+                "test_sync_dynamic_setting",
+                "test_sync_obsolete_setting",
+            ]
         ]
-        self.assertEqual(2, len(settings))
+        self.assertEqual(3, len(settings))
+        self.assertIn(existing_setting, settings)
         self.assertIn(new_setting, settings)
+        self.assertIn(dynamic_setting, settings)
         self.assertNotIn(obsolete_setting, settings)
 
     def test_settings_prop(self):
