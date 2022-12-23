@@ -79,7 +79,7 @@ class StaticDependency:
 
     def _get_url(self, url_type_or_path, version=None, debug=None, use_cdn=None):
         version = version or self.version
-        debug = debug if debug is None else settings.DEBUG
+        debug = debug if debug is not None else settings.DEBUG
         use_cdn = use_cdn or self.use_cdn
 
         path = {
