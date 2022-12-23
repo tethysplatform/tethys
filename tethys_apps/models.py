@@ -98,6 +98,10 @@ class TethysApp(models.Model, TethysBaseMixin):
             self.add_settings(setting_list)
             setting_names = [setting.name for setting in setting_list]
             for setting in existing_settings:
+                # Do not remove dynamically craeted settings
+                if getattr(setting, "dynamic", False) and setting.dynamic:
+                    continue
+
                 if setting.name not in setting_names:
                     setting.delete()
 
