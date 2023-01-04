@@ -5,13 +5,19 @@ changelog:
         - "major features"
         - "minor features"
         - "maintain dependencies"
+    - Experimental Features:
+      labels:
+        - experimental
     - Bug Fixes:
       labels:
         - bug
         - bugfix
-    - Security Improvements:
+    - Security:
       labels:
         - security
+    - Documentation:
+      labels:
+        - docs
     - Other Changes:
       labels:
         - "*"
@@ -19,3 +25,4 @@ changelog:
     labels:
       - "ignore for release"
       - contributing
+      - "continuous integration"
