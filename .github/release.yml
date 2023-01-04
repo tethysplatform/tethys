@@ -4,7 +4,6 @@ changelog:
       labels:
         - major features
         - minor features
-        - maintain dependencies
     - title: Experimental Features
       labels:
         - experimental
