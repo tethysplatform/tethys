@@ -1,0 +1,21 @@
+changelog:
+  categories:
+    - Features:
+      labels:
+        - "major features"
+        - "minor features"
+        - "maintain dependencies"
+    - Bug Fixes:
+      labels:
+        - bug
+        - bugfix
+    - Security Improvements:
+      labels:
+        - security
+    - Other Changes:
+      labels:
+        - "*"
+  exclude:
+    labels:
+      - "ignore for release"
+      - contributing
