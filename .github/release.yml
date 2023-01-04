@@ -1,28 +1,28 @@
 changelog:
   categories:
-    - Features:
+    - title: Features
       labels:
-        - "major features"
-        - "minor features"
-        - "maintain dependencies"
-    - Experimental Features:
+        - major features
+        - minor features
+        - maintain dependencies
+    - title: Experimental Features
       labels:
         - experimental
-    - Bug Fixes:
+    - title: Bug Fixes
       labels:
         - bug
         - bugfix
-    - Security:
+    - title: Security
       labels:
         - security
-    - Documentation:
+    - title: Documentation
       labels:
         - docs
-    - Other Changes:
+    - title: Other Changes
       labels:
         - "*"
   exclude:
     labels:
-      - "ignore for release"
+      - ignore for release
       - contributing
-      - "continuous integration"
+      - continuous integration
