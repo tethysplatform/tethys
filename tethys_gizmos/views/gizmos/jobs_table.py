@@ -41,7 +41,7 @@ def delete(request, job_id):
         success = True
         message = ""
     except Exception as e:
-        success = True
+        success = False
         message = str(e)
         log.error(f"The following error occurred when deleting job {job_id}: {message}")
     return JsonResponse({"success": success, "message": message})
