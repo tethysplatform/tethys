@@ -27,7 +27,7 @@ a. To install the ``tethys-platform`` into a new conda environment then run the 
 
 .. tip::
 
-    If conda is taking too long to solve the Tethys environment, try using the [experimental libmamba solver](https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community):
+    If conda is taking too long to solve the Tethys environment, try using the `experimental libmamba solver <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_:
 
     .. code-block:: bash
     
