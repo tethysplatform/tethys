@@ -1,7 +1,9 @@
+/* Header color */
 .bg-gray-dark {
     background-color: #1662a9;
 }
 
+/* Spacing between sections */
 section>section {
     padding-bottom: 0;
     padding-top: 0;
@@ -9,11 +11,22 @@ section>section {
     margin-top: 3rem;
 }
 
+/* Hide header buttons if screen gets too narrow */
+@media (max-width: 975px) {
+    header a {
+        display: none!important;
+    }
+}
+
+/* Make the sidebar nav not so wide */
+[data-sidebar-target=sidebar].isShown {
+    width: auto!important;
+}
+
 /* Read the docs version picker */
 .rst-versions.rst-badge {
-    top: 16px!important;
+    bottom: 16px!important;
     height: auto!important;
-    bottom: auto!important;
 }
 
 .rst-versions .rst-current-version {
