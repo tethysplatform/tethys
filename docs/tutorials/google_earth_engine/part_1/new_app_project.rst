@@ -50,19 +50,23 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
 
     # This file should be committed to your app code.
     version: 1.0
+    # This should be greater or equal to your tethys-platform in your environment
+    tethys_version: ">=4.0.0"
     # This should match the app - package name in your setup.py
     name: earth_engine
 
     requirements:
-      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-      skip: false
-      conda:
+    # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+    skip: false
+    conda:
         channels:
-          - conda-forge
+        - conda-forge
         packages:
-          - earthengine-api
-          - oauth2client
-      pip:
+        - earthengine-api
+        - oauth2client
+    pip:
+
+    npm:
 
     post:
 
@@ -85,18 +89,24 @@ Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-
 
 .. code-block:: python
 
+    from tethys_sdk.base import TethysAppBase
+
+
     class EarthEngine(TethysAppBase):
         """
-        Tethys app class for Google Earth Engine Tutorial.
+        Tethys app class for Earth Engine.
         """
 
         name = 'Google Earth Engine Tutorial'
-        index = 'earth_engine:home'
-        icon = 'earth_engine/images/earth-engine-logo.png'
-        package = 'earth_engine'
+        description = ''
+        package = 'earth_engine'  # WARNING: Do not change this value
+        index = 'home'
+        icon = f'{package}/images/earth-engine-logo.png'
         root_url = 'earth-engine'
         color = '#524745'
-        ...
+        tags = ''
+        enable_feedback = False
+        feedback_emails = []
 
 5. View Your New App
 ====================

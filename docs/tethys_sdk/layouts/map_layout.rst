@@ -788,15 +788,20 @@ should_disable_basemap
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.should_disable_basemap
 
-save_custom_layers
-^^^^^^^^^^^^^^^^^^
-
-.. automethod:: tethys_layouts.views.map_layout.MapLayout.save_custom_layers
-
-remove_custom_layer
+on_add_custom_layer
 ^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: tethys_layouts.views.map_layout.MapLayout.remove_custom_layer
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.on_add_custom_layer
+
+on_remove_tree_item
+^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.on_remove_tree_item
+
+on_rename_tree_item
+^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.on_rename_tree_item
 
 .. _map_layout_methods:
 
