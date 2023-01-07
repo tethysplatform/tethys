@@ -35,7 +35,7 @@ In this step you'll expand the GEE functions to include a function that can extr
 
 .. code-block:: bash
 
-    conda install -c conda-forge geojson
+    conda install -c conda-forge geojson pandas
 
 2. Add ``geojson`` as a dependency in the :file:`install.yml`:
 
@@ -43,6 +43,8 @@ In this step you'll expand the GEE functions to include a function that can extr
 
     # This file should be committed to your app code.
     version: 1.0
+    # This should be greater or equal to your tethys-platform in your environment
+    tethys_version: ">=4.0.0"
     # This should match the app - package name in your setup.py
     name: earth_engine
 
@@ -53,10 +55,13 @@ In this step you'll expand the GEE functions to include a function that can extr
         channels:
           - conda-forge
         packages:
-          - earthengine-api=0.1.205
+          - earthengine-api
           - oauth2client
           - geojson
+          - pandas
       pip:
+
+      npm:
 
     post:
 
@@ -311,7 +316,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
         name='load_plot',
         display_text='Plot AOI',
         style='outline-secondary',
-        attributes={'id': 'load_plot'}
+        attributes={'id': 'load_plot'},
     )
 
     context = {
@@ -343,7 +348,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
       <p class="help">Change variables to select a data product, then press "Load" to add that product to the map.</p>
       {% gizmo load_button %}
       {% gizmo clear_button %}
-      <p class="help">Draw an area of interest or drop a point, the press "Plot AOI" to view a plot of the data.</p>
+      <p class="help mt-2">Draw an area of interest or drop a point, the press "Plot AOI" to view a plot of the data.</p>
       {% gizmo plot_button %}
     {% endblock %}
 
@@ -378,7 +383,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
 .. code-block:: javascript
 
     $('#load_plot').on('click', function() {
-       $('#plot-modal').modal('show');
+        $('#plot-modal').modal('show');
     });
 
 4. Stub Out the Plot JavaScript Methods
@@ -418,7 +423,11 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
 .. code-block:: css
 
     #plot-loader {
-        margin: 65px 84px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+        flex-direction: column;
     }
 
     #plot-loader p {
@@ -427,6 +436,11 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
 
     #plot-modal .modal-body {
         min-height: 480px;
+    }
+
+    .modal-dialog {
+        max-width: 70vw;
+        margin: 1.75rem auto;
     }
 
 3. Include the :file:`plot.css` stylesheet in the :file:`home.html` template:
@@ -463,7 +477,7 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
 .. code-block:: javascript
 
     $('#load_plot').on('click', function() {
-       show_plot_modal();
+        show_plot_modal();
     });
 
 6. Verify that the loading GIF appears in the modal when it is opened. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Click on the **Plot AOI** button to open the modal. The modal should show the loading GIF and it should be centered in the modal.

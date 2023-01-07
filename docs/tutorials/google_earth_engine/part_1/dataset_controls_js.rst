@@ -239,8 +239,8 @@ Here is a brief explanation of each method that will be implemented in this step
 
 .. code-block:: javascript
 
-        bind_controls = function() {
-            $('#platform').on('change', function() {
+    bind_controls = function() {
+        $('#platform').on('change', function() {
             let platform = $('#platform').val();
 
             if (platform !== m_platform) {

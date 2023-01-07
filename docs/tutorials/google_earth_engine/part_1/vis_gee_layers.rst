@@ -474,7 +474,8 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
         name='clear_map',
         display_text='Clear',
         style='outline-secondary',
-        attributes={'id': 'clear_map'}
+        attributes={'id': 'clear_map'},
+        classes='mt-2',
     )
 
     context = {
