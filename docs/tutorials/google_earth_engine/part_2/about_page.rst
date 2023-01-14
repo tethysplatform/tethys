@@ -2,7 +2,7 @@
 Add About Page and Disclaimer Modal
 ***********************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will add an About page and a disclaimer modal. The requirements for the About page include a fixed width content area, two columns with text on the left and images on the right, and a list of sponsor logos at the bottom. The Disclaimer modal needs to be available from any page in the app and should also include the sponsor logos. The following topics will be reviewed in this tutorial:
 
@@ -35,20 +35,12 @@ If you wish to use the previous solution as a starting point:
 
 The first step to adding a new page to the app is to create a new controller and template for the page.
 
-1. Create new :file:`templates/earth_engine/about.html` template. Include the :file:`public/earth_engine/css/no_nav.css` stylesheet because this template overrides the navigation menu:
+1. Create new :file:`templates/earth_engine/about.html` template:
 
 .. code-block:: html+django
 
-    {% extends "earth_engine/base.html" %}
+    {% extends "tethys_apps/app_header_content.html" %}
     {% load static %}
-
-    {% block styles %}
-      {{ block.super }}
-      <link rel="stylesheet" href="{% static 'earth_engine/css/no_nav.css' %}" />
-    {% endblock %}
-
-    {% block app_navigation_override %}
-    {% endblock %}
 
     {% block app_content %}
     <h1>This is the About Page</h1>
@@ -71,42 +63,45 @@ The first step to adding a new page to the app is to create a new controller and
 2. Modify Header Buttons to Navigate between About Page and Home Page
 =====================================================================
 
-In this step you will add a new button to the page header that will link to the new About page. This button will be added in the base templat so the About link is available from any page of the app. You'll also move the Home button from the Viewer page to the base template so that it is available on every page, including the About page.
+In this step you will add a new button to the page header that will link to the new About page. This button will be added in the base template so the About link is available from any page that inherits from it, including the Viewer page. You'll also add it to the Home and About pages because they inherit from different base templates. 
 
-1. Move Home header button from :file:`templates/earth_engine/viewer.html` to :file:`templates/earth_engine/base.html`:
+To minimize the amount of code that is duplicated, you will create a new :file:`header_buttons.html` templateand use the Django ``include`` tag to insert it in each page.
+
+1. Create a new template :file:`templates/earth_engine/header_buttons.html` with the following contents:
+
+.. code-block:: html+django
+
+    <div class="header-button glyphicon-button">
+      <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
+    </div>
+    <div class="header-button glyphicon-button">
+      <a href="{% url 'earth_engine:about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
+    </div>
+
+2. Add the following lines to the :file:`templates/earth_engine/base.html`, :file:`templates/earth_engine/home.html`, and :file:`templates/earth_engine/about.html` templates:
 
 .. code-block:: html+django
 
     {% block header_buttons %}
-      <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
-      </div>
+      {% include "earth_engine/header_buttons.html" %}
     {% endblock %}
 
-.. important::
+3. The Home button is included in :file:`header_buttons.html` and provided by :file:`base.html`, so it will be removed from :file:`viewer.html`. Delete the ``header_buttons`` block in :file:`templates/earth_engine/viewer.html`:
 
-    Be sure to delete these lines in :file:`templates/earth_engine/viewer.html`.
+.. code-block:: diff
 
-2. Create new About header button in :file:`templates/earth_engine/base.html`:
+    -{% block header_buttons %}
+    -  <div class="header-button glyphicon-button">
+    -    <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
+    -  </div>
+    -{% endblock %}
 
-.. code-block:: html+django
-    :emphasize-lines: 5-7
-
-    {% block header_buttons %}
-      <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
-      </div>
-      <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
-      </div>
-    {% endblock %}
-
-3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the Home and About buttons in the header function as expected. Also navigate to the viewer page and verify that the Home and About buttons appear on that page as well.
+4. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the Home and About buttons in the header function as expected. Also navigate to the viewer page and verify that the Home and About buttons appear on that page as well.
 
 3. Build out About Page
 =======================
 
-In this step you'll build out the layout of the About page using the `Bootstrap Grid System <https://getbootstrap.com/docs/3.3/css/#grid>`_ as you did with the Home page. However, the about page will use the more rigid ``container`` element instead of a ``container-fluid`` element that was used on the Home page. The ``container`` element has a fixed width with wide margins that gives it a classic website look. The width of a ``container-fluid`` element, on the other hand, resizes dynamically or fluidly with the window.
+In this step you'll build out the layout of the About page using the `Bootstrap Grid System <https://getbootstrap.com/docs/5.2/layout/grid/>`_ as you did with the Home page. However, the about page will use the more rigid ``container`` element instead of a ``container-fluid`` element that was used on the Home page. The ``container`` element has a fixed width with wide margins that gives it a classic website look. The width of a ``container-fluid`` element, on the other hand, resizes dynamically or fluidly with the window.
 
 1. Create a ``<div>`` element with class ``container`` in the ``app_content`` block:
 
@@ -225,18 +220,16 @@ In this step you'll build out the layout of the About page using the `Bootstrap 
 4. Customize the About Page Styles
 ==================================
 
-As with the Home page, the `Bootstrap Grid System <https://getbootstrap.com/docs/3.3/css/#grid>`_ does a good job providing the base layout for the page, but there are a few tweaks that need to be made to finish the About page. In this step you will create a stylesheet for the About page and use it to polish the page styles.
+As with the Home page, the Bootstrap Grid System does a good job providing the base layout for the page, but there are a few tweaks that need to be made to finish the About page. In this step you will create a stylesheet for the About page and use it to polish the page styles.
 
 1. Create a new :file:`public/earth_engine/about.css` stylesheet.
 
-2. Include the new :file:`about.css` in :file:`templates/earth_engine/about.html`:
+2. Include the new :file:`about.css` by adding the ``styles`` block to the :file:`templates/earth_engine/about.html`:
 
 .. code-block:: html+django
-    :emphasize-lines: 4
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="{% static 'earth_engine/css/no_nav.css' %}" />
       <link rel="stylesheet" href="{% static 'earth_engine/css/about.css' %}" />
     {% endblock %}
 
@@ -286,57 +279,50 @@ As with the Home page, the `Bootstrap Grid System <https://getbootstrap.com/docs
 5. Create the Disclaimer Modal
 ==============================
 
-In this step you will create a new modal that will contain a disclaimer for the app. This modal will need to be available on all pages, so it will be added to the base template.
+In this step you will create a new modal that will contain a disclaimer for the app. This modal will need to be available on all pages, so a similar strategy will be used as was used with the header buttons.
 
 
-1. Create a new Bootstrap modal in :file:`templates/earth_engine/base.html`. Modals should be placed in the ``after_app_content`` block:
+1. Create a new :file:`templates/earth_engine/disclaimer.html` with the following contents:
 
 .. code-block:: html+django
 
-    {# Use the after_app_content block for modals #}
-    {% block after_app_content %}
-      {{ block.super }}
-      <!-- Info Modal -->
-      <div class="modal fade" id="disclaimer-modal" tabindex="-1" role="dialog" aria-labelledby="disclaimer-modal-label">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="modal-title" id="disclaimer-modal-label">Disclaimer</h2>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-            </div>
+    <div class="modal fade" id="disclaimer-modal" tabindex="-1" role="dialog" aria-labelledby="disclaimer-modal-label">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="disclaimer-modal-label">Disclaimer</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
           </div>
         </div>
       </div>
-      <!-- End Info Modal -->
-    {% endblock %}
+    </div>
 
-2. Add a header button to launch the modal in :file:`templates/earth_engine/base.html`:
+2. Add a header button to launch the modal in :file:`templates/earth_engine/header_buttons.html`:
 
 .. code-block:: html+django
-    :emphasize-lines: 9-11
 
-    {% block header_buttons %}
-      {{ block.super }}
-      <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
-      </div>
-      <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
-      </div>
       <div class="header-button glyphicon-button">
         <a data-bs-toggle="modal" data-bs-target="#disclaimer-modal" title="Disclaimer"><i class="bi bi-exclamation-diamond-fill"></i></a>
       </div>
+
+3. Add the following lines to the :file:`templates/earth_engine/base.html`, :file:`templates/earth_engine/home.html`, and :file:`templates/earth_engine/about.html` templates:
+
+.. code-block:: html+django
+
+    {% block after_app_content %}
+      {{ block.super }}
+      {% include "earth_engine/disclaimer.html" %}
     {% endblock %}
 
-3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the modal opens when the Disclaimer header button is pressed.
+4. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the modal opens when the Disclaimer header button is pressed.
 
-4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and attempt to open the disclaimer modal. It doesn't work, because the ``viewer.html`` template overrides the ``after_app_content`` block with its own modals for the functionality on the viewer page.
+5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and attempt to open the disclaimer modal. It doesn't work, because the ``viewer.html`` template overrides the ``after_app_content`` block with its own modals for the functionality on the viewer page.
 
-5. Include the ``block.super`` content in the ``after_app_content`` block of :file:`templates/earth_engine/viewer.html` to include the disclaimer modal from the ``base.html`` template when overriding the block in the ``viewer`` template:
+6. Include the ``block.super`` content in the ``after_app_content`` block of :file:`templates/earth_engine/viewer.html` to include the disclaimer modal from the ``base.html`` template when overriding the block in the ``viewer`` template:
 
 .. code-block:: html+django
     :emphasize-lines: 3
@@ -367,7 +353,7 @@ In this step you will create a new modal that will contain a disclaimer for the 
 
 6. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the modal opens when the Disclaimer header button is pressed. Press the **Plot AOI** button to verify that the *Area of Interest* modal still opens as well.
 
-7. Add the following content to the ``modal-body`` ``<div>`` element in :file:`templates/earth_engine/base.html`:
+7. Add the following content to the ``modal-body`` ``<div>`` element in :file:`templates/earth_engine/disclaimer.html`:
 
 .. code-block:: html+django
 
@@ -381,7 +367,7 @@ In this step you will create a new modal that will contain a disclaimer for the 
       </div>
     </div>
 
-8. Add the following content to the ``modal-footer`` ``<div>`` element in :file:`templates/earth_engine/base.html`:
+8. Add the following content to the ``modal-footer`` ``<div>`` element in :file:`templates/earth_engine/disclaimer.html`:
 
 .. code-block:: html+django
 
@@ -405,43 +391,38 @@ In this step you will create a new modal that will contain a disclaimer for the 
 
 In this step, you will add a new stylesheet for the disclaimer modal and add styles to adjust the presetnation of the modal and sponsor images.
 
-1. Create a new :file:`public/earth_engine/disclaimer_modal.css` stylesheet with the following contents:
+1. Add the following ``<style>`` element to the top of :file:`templates/earth_engine/disclaimer.html`:
 
-.. code-block:: css
+.. code-block:: html
 
-    #disclaimer-container {
-      height: 400px;
-      overflow-y: auto;
-    }
+    <style>
+      #disclaimer-modal .modal-dialog {
+        max-width: 600px;
+      }
 
-    #sponsors-container {
-      text-align: left;
-    }
-
-    #sponsors-container img {
-      height: 50px;
-      width: 50px;
-      margin-right: 10px;
-      border-radius: 5px;
-    }
-
-    #sponsors-container h6 {
+      #disclaimer-container {
+        height: 400px;
+        overflow-y: auto;
+      }
+      
+      #sponsors-container {
+        text-align: left;
+      }
+      
+      #sponsors-container img {
+        height: 50px;
+        width: 50px;
+        margin-right: 10px;
+        border-radius: 5px;
+      }
+      
+      #sponsors-container h6 {
         display: inline-block;
         margin-right: 10px;
-    }
+      }
+    </style>
 
-2. Include the new stylesheet in the ``content_dependent_styles`` block of the :file:`templates/earth_engine/base.html`:
-
-.. code-block:: html+django
-    :emphasize-lines: 4
-
-    {% block content_dependent_styles %}
-      {{ block.super }}
-      <link href="{% static 'earth_engine/css/main.css' %}" rel="stylesheet"/>
-      <link href="{% static 'earth_engine/css/disclaimer_modal.css' %}" rel="stylesheet"/>
-    {% endblock %}
-
-3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify the style changes worked. Hard-refresh the page if necessary (:kbd:`CTRL-SHIFT-R` or :kbd:`CTRL-F5`). Open the Disclaimer modal on the other pages of the app to verify that the modal looks the same on all pages.
+2. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify the style changes worked. Hard-refresh the page if necessary (:kbd:`CTRL-SHIFT-R` or :kbd:`CTRL-F5`). Open the Disclaimer modal on the other pages of the app to verify that the modal looks the same on all pages.
 
 7. Solution
 ===========

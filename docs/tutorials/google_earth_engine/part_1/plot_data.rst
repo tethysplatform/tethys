@@ -352,7 +352,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
       {% gizmo plot_button %}
     {% endblock %}
 
-3. Add a new `Bootstrap Modal <https://getbootstrap.com/docs/3.3/javascript/#modals>`_ for displaying the plot to the ``after_app_content`` block of the :file:`templates/earth_engine/home.html` template:
+3. Add a new `Bootstrap Modal <https://getbootstrap.com/docs/5.2/components/modal/>`_ for displaying the plot to the ``after_app_content`` block of the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
 

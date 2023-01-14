@@ -2,14 +2,14 @@
 File Upload
 ***********
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded. The following topics will be reviewed in this tutorial:
 
 * File Uploads via HTML Forms
 * Validating Form Data
 * User Workspaces
-* `Bootstrap Modals <https://getbootstrap.com/docs/3.4/javascript/#modals>`_
+* `Bootstrap Modals <https://getbootstrap.com/docs/5.2/components/modal/>`_
 * Manipulating Shapefiles in Python with `pyshp <https://pypi.org/project/pyshp/>`_
 * Temp Files
 
@@ -31,7 +31,7 @@ If you wish to use the previous solution as a starting point:
 1. Add New Modal for File Upload Form
 =====================================
 
-Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#modals>`_ with a button in the left navigation to open it.
+Create a new `Bootstrap Modal <https://getbootstrap.com/docs/5.2/components/modal/>`_ with a button in the left navigation to open it.
 
 1. Add a new button titled **Set Boundary** to the bottom of the ``viewer`` controller in :file:`controllers.py`:
 
@@ -81,9 +81,9 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
       <p class="help">Change variables to select a data product, then press "Load" to add that product to the map.</p>
       {% gizmo load_button %}
       {% gizmo clear_button %}
-      <p class="help">Draw an area of interest or drop a point, the press "Plot AOI" to view a plot of the data.</p>
+      <p class="help mt-2">Draw an area of interest or drop a point, the press "Plot AOI" to view a plot of the data.</p>
       {% gizmo plot_button %}
-      <p class="help">Upload a shapefile of a boundary to use to clip datasets and set the default extent.</p>
+      <p class="help mt-2">Upload a shapefile of a boundary to use to clip datasets and set the default extent.</p>
       {% gizmo set_boundary_button %}
     {% endblock %}
 
@@ -123,7 +123,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#mod
         attributes={
             'id': 'set_boundary',
             'data-bs-toggle': 'modal',
-            'data-bs-target': '#set-boundary-modal'  # ID of the Set Boundary Modal
+            'data-bs-target': '#set-boundary-modal',  # ID of the Set Boundary Modal
         }
     )
 
@@ -162,7 +162,7 @@ Add an HTML ``form`` element with the attributes that are required to perform a 
 
     The Cross Site Request Forgery (CSRF) token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
 
-3. Add a Bootstrap ``form-group`` with an ``<input>`` element of type ``file`` to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
+3. Add a ``<div>`` with an ``<input>`` element of type ``file`` to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
 
 .. code-block:: html+django
     :emphasize-lines: 6-9
@@ -172,9 +172,9 @@ Add an HTML ``form`` element with the attributes that are required to perform a 
         <p>Create a zip archive containing a shapefile and supporting files (i.e.: .shp, .shx, .dbf). Then use the file browser button below to select it.</p>
         <!-- This is required for POST method -->
         {% csrf_token %}
-        <div id="boundary-file-form-group" class="form-group">
-          <label class="control-label" for="boundary-file">Boundary Shapefile</label>
-          <input type="file" name="boundary-file" id="boundary-file" accept="zip">
+        <div id="boundary-file-form-group" class="mb-3">
+          <label class="form-label" for="boundary-file">Boundary Shapefile</label>
+          <input type="file" name="boundary-file" id="boundary-file" class="form-control" accept=".zip">
         </div>
       </form>
     </div>
@@ -196,7 +196,7 @@ Add an HTML ``form`` element with the attributes that are required to perform a 
 
 The ``action`` attribute of the HTML ``form`` element dictates endpoint to which to send the request. It is often set to a relative URL with a separate controller to handle the form submission (e.g. ``/apps/my-app/handle-file-upload``. If the ``action`` element is emtpy, then the form submission is submitted to the current URL, which means the same controller will handle the form submission as rendered it. This is the case with the file upload form you setup in the previous step. In this step you will add logic to the ``viewer`` controller to handle the file upload form submission. As this logic will get a little long, you'll first create a helper function that the ``viewer`` controller can call to handle the form submission.
 
-1. Create a new helper function called ``handle_shapefile_upload`` in :file:`controllers.py`:
+1. Create a new helper function called ``handle_shapefile_upload`` in :file:`helpers.py`:
 
 .. code-block:: python
 
@@ -214,7 +214,13 @@ The ``action`` attribute of the HTML ``form`` element dictates endpoint to which
         uploaded_file = request.FILES['boundary-file']
         print(uploaded_file)
 
-2. Call ``handle_shapefile_upload`` function in ``viewer`` controller in :file:`controllers.py` if a file has been uploaded. Also pass any error returned by the ``handle_shapefile_upload`` function to the context so that it can be displayed to the user:
+2. Import the ``handle_shapefile_upload`` function in :file:`controllers.py`:
+
+.. code-block:: python
+
+    from .helpers import handle_shapefile_upload
+
+3. Call ``handle_shapefile_upload`` function in ``viewer`` controller in :file:`controllers.py` if a file has been uploaded. Also pass any error returned by the ``handle_shapefile_upload`` function to the context so that it can be displayed to the user:
 
 .. code-block:: python
     :emphasize-lines: 1-4, 17
@@ -249,7 +255,7 @@ The ``action`` attribute of the HTML ``form`` element dictates endpoint to which
 
 With the ``handle_shapefile_upload`` helper function wired to be called by the ``viewer`` controller whenever a file is uploaded, you can now focus on building out the logic. The uploaded file is accessible through the ``request.FILES`` object and is stored in memory. To validate the file, you will need to write it to disk. In this step you will write the in-memory file to the temp directory. The built-in ``tempfile`` module makes it easy to write files to the temp directory in a cross-platform safe manner.
 
-1. Add the following imports and replace ``handle_shapefile_upload`` in :file:`controllers.py` with this updated version that writes the in-memory file to the temp directory:
+1. Add the following imports and replace ``handle_shapefile_upload`` in :file:`helpers.py` with this updated version that writes the in-memory file to the temp directory:
 
 .. code-block:: python
 
@@ -297,7 +303,7 @@ With the ``handle_shapefile_upload`` helper function wired to be called by the `
 
 Now that the file is written to disk, use the built-in ``zipfile`` module to verify that the file is a ZIP archive. This is most easily done by attempting to extract the file and then handling the exception if it is not a ZIP file. This is a convenient pattern for this implementation, because the next step will be to verify that the ZIP archive contains a shapefile which will require extracting.
 
-1. Add the following imports and modify ``handle_shapefile_upload`` in :file:`controllers.py` as follows:
+1. Add the following imports and modify ``handle_shapefile_upload`` in :file:`helpers.py` as follows:
 
 .. code-block:: python
 
@@ -339,20 +345,20 @@ Now that the file is written to disk, use the built-in ``zipfile`` module to ver
 2. Notice that the docstring for the ``handle_shapefile_upload`` helper function indicates that the return value should be an error string if there are errors. The logic added in the previous step includes the first ``return`` statement for the function, which occurs when the given file is not a ZIP file. Modify the Set Boundary form to display the error messages returned by the ``handle_shapefile_upload`` function. Replace the ``<div>`` with id ``boundary-file-form-group`` with this updated version in :file:`templates/earth_engine/viewer.html`:
 
 .. code-block:: html+django
-    :emphasize-lines: 1, 4-6
+    :emphasize-lines: 3-6
 
-    <div id="boundary-file-form-group" class="form-group{% if set_boundary_error %} has-error{% endif %}">
-      <label class="control-label" for="boundary-file">Boundary Shapefile</label>
-      <input type="file" name="boundary-file" id="boundary-file" accept="zip">
+    <div id="boundary-file-form-group" class="mb-3">
+      <label class="form-label" for="boundary-file">Boundary Shapefile</label>
+      <input type="file" name="boundary-file" id="boundary-file" class="form-control{% if set_boundary_error %} is-invalid{% endif %}" accept=".zip">
       {% if set_boundary_error %}
-      <p class="help-block">{{ set_boundary_error }}</p>
+      <p class="invalid-feedback">{{ set_boundary_error }}</p>
       {% endif %}
     </div>
 
 3. The modal is not open by default when the page loads, which is normally the desired behaviour. However, when the page refreshes after a form submission that yields errors, the errors will be obscured from the user until they open the dialog again. Automatically open the Set Boundary modal if there is an error to display. Replace the **INITIALIZATION / CONSTRUCTOR** section of :file:`public/js/gee_datasets.js` with the following:
 
 .. code-block:: javascript
-    :emphasize-lines: 21-24
+    :emphasize-lines: 21-26
 
     /************************************************************************
     *                  INITIALIZATION / CONSTRUCTOR
@@ -375,8 +381,10 @@ Now that the file is written to disk, use the built-in ``zipfile`` module to ver
         m_map = TETHYS_MAP_VIEW.getMap();
 
         // Open boundary file modal if it has an error
-        if ($('#boundary-file-form-group').hasClass('has-error')) {
-            $('#set-boundary-modal').modal('show');
+        if ($('#boundary-file').hasClass('is-invalid')) {
+            let boundary_modal_elem = document.getElementById('set-boundary-modal');
+            let boundary_modal_inst = bootstrap.Modal.getOrCreateInstance(boundary_modal_elem);
+            boundary_modal_inst.show();
         }
     });
 
@@ -400,6 +408,8 @@ In this step you will add the logic to validate that the file contained in the Z
 
     # This file should be committed to your app code.
     version: 1.0
+    # This should be greater or equal to your tethys-platform in your environment
+    tethys_version: ">=4.0.0"
     # This should match the app - package name in your setup.py
     name: earth_engine
 
@@ -419,10 +429,6 @@ In this step you will add the logic to validate that the file contained in the Z
     post:
 
 3. Add the following imports and create a new helper function ``find_shapefile`` in :file:`helpers.py`:
-
-.. code-block:: python
-
-    import os
 
 .. code-block:: python
 
@@ -451,12 +457,11 @@ In this step you will add the logic to validate that the file contained in the Z
         return shapefile_path
 
 
-4. Use the new ``find_shapefile`` helper function and ``pyshp`` in ``handle_shapefile_upload`` to validate that the unzipped directory contains a shapefile. Update ``handle_shapefile_upload`` in :file:`controllers.py`:
+4. Use the new ``find_shapefile`` helper function and ``pyshp`` in ``handle_shapefile_upload`` to validate that the unzipped directory contains a shapefile. Update ``handle_shapefile_upload`` in :file:`helpers.py`:
 
 .. code-block:: python
 
     import shapefile
-    from .helpers import find_shapefile
 
 .. code-block:: python
     :emphasize-lines: 31-45
@@ -560,10 +565,6 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
 .. code-block:: python
 
-    import shapefile
-
-.. code-block:: python
-
     def write_boundary_shapefile(shp_file, directory):
         """
         Write the shapefile to the given directory. The shapefile will be called "boundary.shp".
@@ -605,7 +606,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
     For more information about Tethys Workspaces, see :ref:`tethys_workspaces_api`.
 
-4. The ``viewer`` controller will need to be able to pass the ``user_workspace`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`controllers.py`:
+4. The ``viewer`` controller will need to be able to pass the ``user_workspace`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`helpers.py`:
 
 .. code-block:: python
     :emphasize-lines: 1
@@ -622,11 +623,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
             str: Error string if errors occurred.
         """
 
-5. Add logic to write the uploaded shapefile to the user workspace in ``handle_shapefile_upload`` in :file:`controllers.py`:
-
-.. code-block:: python
-
-    from .helpers import write_boundary_shapefile, prep_boundary_dir
+5. Add logic to write the uploaded shapefile to the user workspace in ``handle_shapefile_upload`` in :file:`helpers.py`:
 
 .. code-block:: python
     :emphasize-lines: 45-49
@@ -687,10 +684,6 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 6. Modify the ``handle_shapefile_upload`` call in the ``viewer`` controller in :file:`controllers.py` to pass the user workspace path:
 
 .. code-block:: python
-
-    from django.http import HttpResponseRedirect
-
-.. code-block:: python
     :emphasize-lines: 4
 
     # Handle Set Boundary Form
@@ -706,6 +699,10 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 As a final user experience improvement, issue a redirect response instead of the normal response when there are now errors. This will clear the form and reset the state of the page.
 
 1. Add the logic to the ``viewer`` controller in :file:`controllers.py`:
+
+.. code-block:: python
+
+    from django.http import HttpResponseRedirect
 
 .. code-block:: python
     :emphasize-lines: 6-8
