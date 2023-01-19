@@ -279,6 +279,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("value", models.CharField(blank=True, default="", max_length=1024)),
+                ("value_json", models.JSONField(blank=True, default=dict)),
+
                 ("default", models.CharField(blank=True, default="", max_length=1024)),
                 (
                     "type",
@@ -289,6 +291,8 @@ class Migration(migrations.Migration):
                             ("FLOAT", "Float"),
                             ("BOOLEAN", "Boolean"),
                             ("UUID", "UUID"),
+                            ("JSON", "Json"),
+
                         ],
                         default="STRING",
                         max_length=200,

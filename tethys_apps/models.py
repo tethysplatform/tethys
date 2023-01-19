@@ -299,7 +299,7 @@ class CustomSetting(TethysAppSetting):
         (TYPE_FLOAT, "Float"),
         (TYPE_BOOLEAN, "Boolean"),
         (TYPE_UUID, "UUID"),
-        (TYPE_JSON, "JSON"),
+        (TYPE_JSON, "Json"),
     )
     value = models.CharField(max_length=1024, blank=True, default="")
     value_json = models.JSONField(blank=True, default=dict)
