@@ -16,6 +16,9 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.db.utils import ProgrammingError
 from django.utils.html import format_html
 from django.shortcuts import reverse
+from django.db import models
+from django_json_widget.widgets import JSONEditorWidget
+
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
@@ -53,6 +56,14 @@ class CustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value", "required")
     model = CustomSetting
+
+class CustomJSONSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "type", "required")
+    fields = ("name", "description", "type", "value_json", "required")
+    model = CustomSetting
+    formfield_overrides = {
+        models.JSONField: {'widget': JSONEditorWidget},
+    }
 
 
 class DatasetServiceSettingInline(TethysAppSettingInline):
@@ -125,6 +136,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     )
     inlines = [
         CustomSettingInline,
+        CustomJSONSettingInline,
         PersistentStoreConnectionSettingInline,
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,

@@ -10,7 +10,7 @@
 import sqlalchemy
 import logging
 import uuid
-
+import json
 import django.dispatch
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -289,7 +289,8 @@ class CustomSetting(TethysAppSetting):
     TYPE_FLOAT = "FLOAT"
     TYPE_BOOLEAN = "BOOLEAN"
     TYPE_UUID = "UUID"
-    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID)
+    TYPE_JSON = "JSON"
+    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID,TYPE_JSON)
     VALID_BOOL_STRINGS = ("true", "false", "yes", "no", "t", "f", "y", "n", "1", "0")
     TRUTHY_BOOL_STRINGS = ("true", "yes", "t", "y", "1")
     TYPE_CHOICES = (
@@ -298,8 +299,11 @@ class CustomSetting(TethysAppSetting):
         (TYPE_FLOAT, "Float"),
         (TYPE_BOOLEAN, "Boolean"),
         (TYPE_UUID, "UUID"),
+        (TYPE_JSON, "JSON"),
     )
     value = models.CharField(max_length=1024, blank=True, default="")
+    value_json = models.JSONField(blank=True, default=dict)
+
     default = models.CharField(max_length=1024, blank=True, default="")
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
@@ -370,6 +374,9 @@ class CustomSetting(TethysAppSetting):
         if self.type == self.TYPE_UUID:
             return uuid.UUID(self.value)
 
+        if self.type == self.TYPE_JSON:
+            return json.loads(self.value)
+    
 
 @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
 def set_default_value(sender, instance, *args, **kwargs):

@@ -166,6 +166,7 @@ INSTALLED_APPS = portal_config_settings.pop(
         "django.contrib.staticfiles",
         "django_gravatar",
         "django_bootstrap5",
+        "django_json_widget",
         "termsandconditions",
         "tethys_apps",
         "tethys_compute",
