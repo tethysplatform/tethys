@@ -1,6 +1,8 @@
 from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import (
     CustomSetting,
+    JSONCustomSetting,
+    SecretCustomSetting,
     PersistentStoreDatabaseSetting,
     PersistentStoreConnectionSetting,
     DatasetServiceSetting,
@@ -55,6 +57,38 @@ class TestApp(TethysAppBase):
                 name="enable_feature",
                 type=CustomSetting.TYPE_BOOLEAN,
                 description="Enable this feature when True.",
+                required=False,
+            ),
+            JSONCustomSetting(
+                name="JSON_setting_not_default_value_required",
+                description="This is JSON setting without a default value",
+                required=True,
+            ),
+            JSONCustomSetting(
+                name="JSON_setting_not_default_value",
+                description="This is JSON setting without a default value",
+                required=False,
+            ),
+            JSONCustomSetting(
+                name="JSON_setting_default_value_required",
+                description="This is JSON setting with a default value",
+                required=True,
+                default={"Test": "JSON test String"},
+            ),
+            JSONCustomSetting(
+                name="JSON_setting_default_value",
+                description="This is JSON setting with a default value",
+                required=False,
+                default={"Test": "JSON test String"},
+            ),
+            SecretCustomSetting(
+                name="Secret_Test_required",
+                description="This is SECRET setting with required True",
+                required=True,
+            ),
+            SecretCustomSetting(
+                name="Secret_Test2_without_required",
+                description="This is SECRET setting with required False",
                 required=False,
             ),
         )

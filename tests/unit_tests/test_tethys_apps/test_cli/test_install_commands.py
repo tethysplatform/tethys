@@ -189,7 +189,7 @@ class TestServiceInstallHelpers(TestCase):
 class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_apps.cli.install_commands.find_and_link")
     @mock.patch("tethys_apps.cli.cli_colors.pretty_output")
-    @mock.patch("tethys_apps.models.CustomSetting")
+    @mock.patch("tethys_apps.models.CustomSettingBase")
     def test_configure_services(
         self, mock_customsettings, mock_pretty_output, mock_find_and_link
     ):

@@ -8,10 +8,10 @@
 ********************************************************************************
 """
 import sqlalchemy
+from django.dispatch import receiver
 import logging
 import uuid
-
-import django.dispatch
+import json
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
@@ -28,8 +28,8 @@ from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
-
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
+from tethys_apps.utilities import secrets_signed_unsigned_value
 
 log = logging.getLogger("tethys")
 
@@ -113,8 +113,10 @@ class TethysApp(models.Model, TethysBaseMixin):
 
     @property
     def custom_settings(self):
-        return self.settings_set.exclude(customsetting__isnull=True).select_subclasses(
-            "customsetting"
+        return (
+            self.settings_set.exclude(customsettingbase__isnull=True)
+            .select_subclasses("customsettingbase")
+            .select_subclasses()
         )
 
     @property
@@ -237,9 +239,85 @@ class TethysAppSetting(models.Model):
         raise NotImplementedError()
 
 
-class CustomSetting(TethysAppSetting):
+class CustomSettingBase(TethysAppSetting):
+    # value = models.CharField(max_length=1024, blank=True, default="")
+    # default = models.CharField(max_length=1024, blank=True, default="")
+    objects = InheritanceManager()
+    type_custom_setting = models.CharField(max_length=1024, blank=True, default="")
+
+
+class SecretCustomSetting(CustomSettingBase):
     """
-    Used to define a Custom Setting.
+    Used to define a Custom Secret Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import SecretCustomSetting
+
+        default_name_setting = SecretCustomSetting(
+            name='Github_Token',
+            description='Github repository secret token',
+            required=True,
+        )
+
+        max_count_setting = SecretCustomSetting(
+            name='Anaconda_Token',
+            description='Anaconda Organization secret token',
+            required=False
+        )
+    """  # noqa: E501
+
+    value = models.CharField(max_length=1024, blank=True, default="")
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+
+        if type(self.value) is not str:
+            raise ValidationError(
+                "Validation Error: Secret Custom Setting should be a String"
+            )
+
+        if self.value == "" and self.required:
+            raise ValidationError("Required.")
+
+        if self.value != "":
+            self.value = secrets_signed_unsigned_value(
+                self.name, self.value, self.tethys_app.package, is_signing=True
+            )
+
+    def get_value(self):
+        """
+        Get the value
+        """
+        if self.value == "" or self.value is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+
+            # None is a valid value to return in the case the value has not been set for this setting type
+            return None
+
+        secret_unsigned = secrets_signed_unsigned_value(
+            self.name, self.value, self.tethys_app.package, is_signing=False
+        )
+
+        return secret_unsigned
+
+
+class CustomSetting(CustomSettingBase):
+    """
+    Used to define a Custom Simple Setting.
 
     Attributes:
         name(str): Unique name used to identify the setting.
@@ -297,6 +375,7 @@ class CustomSetting(TethysAppSetting):
     TYPE_FLOAT = "FLOAT"
     TYPE_BOOLEAN = "BOOLEAN"
     TYPE_UUID = "UUID"
+
     VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID)
     VALID_BOOL_STRINGS = ("true", "false", "yes", "no", "t", "f", "y", "n", "1", "0")
     TRUTHY_BOOL_STRINGS = ("true", "yes", "t", "y", "1")
@@ -309,13 +388,13 @@ class CustomSetting(TethysAppSetting):
     )
     value = models.CharField(max_length=1024, blank=True, default="")
     default = models.CharField(max_length=1024, blank=True, default="")
+
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
         """
         Validate prior to saving changes.
         """
-
         if self.default != "":
             if self.value == "":
                 self.value = self.default
@@ -379,10 +458,110 @@ class CustomSetting(TethysAppSetting):
             return uuid.UUID(self.value)
 
 
-@django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
+class JSONCustomSetting(CustomSettingBase):
+    """
+    Used to define a Custom Json Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+        default(str): Value as a string that may be provided as a default.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import JSONCustomSetting
+
+        json_setting_1 = JSONCustomSetting(
+            name='JSON_setting_default_value_required',
+            description='This is JSON setting with a default value',
+            required=True,
+            default={"Test":"JSON test String"}
+        )
+
+        json_setting_2 = JSONCustomSetting(
+            name='JSON_setting_default_value',
+            description='This is JSON setting with a default value',
+            required=False,
+            default={"Test":"JSON test String"}
+        )
+
+        json_setting_3 = JSONCustomSetting(
+            name='JSON_setting_not_default_value',
+            description='This is JSON setting without a default value',
+            required=False,
+        )
+
+    """  # noqa: E501
+
+    value = models.JSONField(blank=True, default=dict)
+    default = models.JSONField(blank=True, default=dict)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if self.default:
+            if not self.value:
+                self.value = self.default
+        else:
+            if not self.default and self.required:
+                raise ValidationError("Required.")
+
+        if type(self.value) is dict:
+            try:
+                json.dumps(self.value)
+            except TypeError:
+                raise ValidationError("Value must be a valid JSON dict")
+        else:
+            raise ValidationError("Value must be a valid JSON dict")
+
+    def get_value(self):
+        """
+        Get the value
+        """
+
+        if self.default:
+            if not self.value:
+                self.value = self.default
+
+        if not self.value or self.value is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+
+            # None is a valid value to return in the case the value has not been set for this setting type
+            return None
+
+        return self.value
+
+
+@receiver(models.signals.post_init, sender=CustomSetting)
+@receiver(models.signals.post_init, sender=JSONCustomSetting)
 def set_default_value(sender, instance, *args, **kwargs):
     """
-    Set the default value for `value` on the `instance` of Setting.
+    Set the default value for `value` on the `instance` of a Custom Simple and Json Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(CustomSetting/JSONCustomSetting): The `CustomSetting`/`JSONCustomSetting` class that sent the signal.
+        instance(CustomSetting/JSONCustomSetting): The `CustomSetting`/`JSONCustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if not instance.value or instance.value == "":
+        instance.value = instance.default
+
+
+@receiver(models.signals.post_init, sender=CustomSetting)
+def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Custom Simple Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
@@ -392,8 +571,42 @@ def set_default_value(sender, instance, *args, **kwargs):
     Returns:
         None
     """
-    if not instance.value or instance.value == "":
-        instance.value = instance.default
+    if instance.type_custom_setting == "":
+        instance.type_custom_setting = "SIMPLE"
+
+
+@receiver(models.signals.post_init, sender=SecretCustomSetting)
+def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Custom Secret Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(SecretCustomSetting): The `SecretCustomSetting` class that sent the signal.
+        instance(SecretCustomSetting): The `SecretCustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if instance.type_custom_setting == "":
+        instance.type_custom_setting = "SECRET"
+
+
+@receiver(models.signals.post_init, sender=JSONCustomSetting)
+def set_default_custom_json_setting_type(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Custom JSON Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(JSONCustomSetting): The `JSONCustomSetting` class that sent the signal.
+        instance(JSONCustomSetting): The `JSONCustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if instance.type_custom_setting == "":
+        instance.type_custom_setting = "JSON"
 
 
 class DatasetServiceSetting(TethysAppSetting):

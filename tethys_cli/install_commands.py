@@ -1,6 +1,8 @@
 import yaml
 import json
 import os
+import getpass
+
 from pathlib import Path
 
 from subprocess import call, Popen, PIPE, STDOUT
@@ -9,7 +11,10 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import (
+    load_apps,
+    generate_salt_string,
+)
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
@@ -253,7 +258,10 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
+        CustomSettingBase,
         CustomSetting,
+        SecretCustomSetting,
+        JSONCustomSetting,
     )
 
     setting_type_dict = {
@@ -262,7 +270,10 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "spatial",
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
+        CustomSettingBase: "custom_setting_base",
         CustomSetting: "custom_setting",
+        SecretCustomSetting: "secret_custom_setting",
+        JSONCustomSetting: "json_custom_setting",
     }
 
     return setting_type_dict[type(setting)]
@@ -297,6 +308,67 @@ def run_interactive_services(app_name):
             f"Description: {setting.description}\n"
             f"Required: {setting.required}"
         )
+
+        # extra code to generate a salt string
+        if setting.type_custom_setting == "SECRET":
+            proceed = input(
+                "Do you want to generate a salt string for this secret or use the default behavior: [y/n]"
+            )
+            while proceed not in ["y", "n", "Y", "N"]:
+                proceed = input('Please enter either "y" or "n": ')
+
+            if proceed in ["y", "n", "Y", "N"]:
+                # with pretty_output(FG_GREEN) as p:
+                TETHYS_HOME = Path(get_tethys_home_dir())
+                secrets_yaml_file = TETHYS_HOME / "secrets.yml"
+                portal_secrets = {}
+
+                if proceed in ["y", "Y"] and not secrets_yaml_file.exists():
+                    write_warning("No secrets.yml found. Generating one...")
+                    call(["tethys", "gen", "secrets"])
+                    write_msg("secrets file generated.")
+                if secrets_yaml_file.exists():
+                    with secrets_yaml_file.open("r") as secrets_yaml:
+                        portal_secrets = yaml.safe_load(secrets_yaml) or {}
+                        if app_name not in portal_secrets["secrets"]:
+                            # always reset on a new install
+                            portal_secrets["secrets"][app_name] = {}
+                        if (
+                            "custom_settings_salt_strings"
+                            not in portal_secrets["secrets"][app_name]
+                        ):
+                            write_msg(
+                                f"No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one..."
+                            )
+                            portal_secrets["secrets"][app_name][
+                                "custom_settings_salt_strings"
+                            ] = {}
+
+                        if proceed in ["y", "Y"]:
+                            salt_string = generate_salt_string().decode()
+                            portal_secrets["secrets"][app_name][
+                                "custom_settings_salt_strings"
+                            ][setting.name] = salt_string
+                            msge = "Successfully created salt string for {0} Secret Custom Setting!".format(
+                                setting.name
+                            )
+                            write_msg(msge)
+                        else:
+                            if (
+                                setting.name
+                                in portal_secrets["secrets"][app_name][
+                                    "custom_settings_salt_strings"
+                                ]
+                            ):
+                                del portal_secrets["secrets"][app_name][
+                                    "custom_settings_salt_strings"
+                                ][setting.name]
+                        with secrets_yaml_file.open("w") as secrets_yaml:
+                            yaml.dump(portal_secrets, secrets_yaml)
+                            write_msg(
+                                f"custom_settings_salt_strings created for setting: {setting.name} in app {app_name}"
+                            )
+
         if hasattr(setting, "value"):
             while not valid:
                 write_msg(
@@ -305,18 +377,54 @@ def run_interactive_services(app_name):
                     )
                 )
                 try:
-                    value = get_interactive_input()
+                    value = ""
+                    if setting.type_custom_setting == "JSON":
+                        proceed = input(
+                            "Do you want to upload the json from a file: [y/n] "
+                        )
+                        while proceed not in ["y", "n", "Y", "N"]:
+                            proceed = input('Please enter either "y" or "n": ')
+
+                        if proceed in ["y", "Y"]:
+                            json_path = input(
+                                "Please provide a file containing a Json (e.g: /home/user/myjsonfile.json): "
+                            )
+                            try:
+                                with open(json_path) as json_file:
+                                    value = json.load(json_file)
+                            except FileNotFoundError:
+                                write_warning("The current file path was not found")
+                        else:
+                            # String with JSON format
+                            data_JSON_example = '{"size": "Medium", "price": 15.67, "toppings": ["Mushrooms", "Extra Cheese", "Pepperoni", "Basil"]}'
+                            write_msg(
+                                f"Please provide a Json string (e.g: {data_JSON_example})"
+                            )
+                            try:
+                                value = json.loads(get_interactive_input())
+                            except json.decoder.JSONDecodeError:
+                                write_msg("Invalid Json provided")
+                    else:
+                        if setting.type_custom_setting != "SECRET":
+                            value = get_interactive_input()
+                        else:
+                            value = getpass.getpass(prompt="")
                     if value != "":
                         try:
                             setting.value = value
                             setting.clean()
                             setting.save()
                             valid = True
-                            write_success(
-                                "{} successfully set with value: {}.".format(
-                                    setting.name, value
+                            if setting.type_custom_setting != "SECRET":
+                                write_success(
+                                    "{} successfully set with value: {}.".format(
+                                        setting.name, value
+                                    )
                                 )
-                            )
+                            else:
+                                write_success(
+                                    "{} successfully set".format(setting.name)
+                                )
                         except ValidationError:
                             write_error(
                                 "Incorrect value type given for custom setting '{}'. Please try again".format(
@@ -404,9 +512,9 @@ def find_and_link(service_type, setting_name, service_id, app_name, setting):
 
 
 def configure_services_from_file(services, app_name):
-    from tethys_apps.models import TethysApp, CustomSetting
+    from tethys_apps.models import TethysApp, CustomSettingBase
 
-    if services["version"]:
+    if "version" in services:
         del services["version"]
 
     db_app = TethysApp.objects.get(package=app_name)
@@ -415,10 +523,12 @@ def configure_services_from_file(services, app_name):
         if services[service_type] is not None:
             current_services = services[service_type]
             for setting_name in current_services:
-                if service_type == "custom_setting":
+                if service_type == "custom_settings":
                     try:
-                        custom_setting = CustomSetting.objects.get(
-                            name=setting_name, tethys_app=db_app.id
+                        custom_setting = (
+                            CustomSettingBase.objects.filter(tethys_app=db_app.id)
+                            .select_subclasses()
+                            .get(name=setting_name)
                         )
                     except ObjectDoesNotExist:
                         write_warning(
@@ -428,13 +538,26 @@ def configure_services_from_file(services, app_name):
                         continue
 
                     try:
-                        custom_setting.value = current_services[setting_name]
+                        if custom_setting.type_custom_setting == "JSON":
+                            try:
+                                with open(current_services[setting_name]) as json_file:
+                                    custom_setting.value = json.load(json_file)
+                            except TypeError:
+                                custom_setting.value = current_services[setting_name]
+                            except FileNotFoundError:
+                                custom_setting.value = current_services[setting_name]
+                                write_warning(
+                                    "The current file path was not found, assuming you provided a valid JSON"
+                                )
+                        else:
+                            custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
                         write_success(
                             f'CustomSetting: "{setting_name}" was assigned the value: '
                             f'"{current_services[setting_name]}"'
                         )
+
                     except ValidationError:
                         write_error(
                             "Incorrect value type given for custom setting '{}'. Please adjust "
@@ -456,7 +579,6 @@ def configure_services_from_file(services, app_name):
                     unlinked_settings = app_settings["unlinked_settings"]
 
                     setting_found = False
-
                     for setting in unlinked_settings:
                         if setting.name != setting_name:
                             continue
@@ -715,7 +837,6 @@ def install_command(args):
             run_interactive_services(app_name)
 
         write_success("Services Configuration Completed.")
-
         app_settings = get_app_settings(app_name)
 
         if app_settings is not None:

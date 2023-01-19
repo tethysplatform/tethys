@@ -17,6 +17,8 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.db.utils import ProgrammingError, OperationalError
 from django.utils.html import format_html
 from django.shortcuts import reverse
+from django.db import models
+from django_json_widget.widgets import JSONEditorWidget
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
@@ -28,6 +30,8 @@ from tethys_apps.models import (
     TethysApp,
     TethysExtension,
     CustomSetting,
+    SecretCustomSetting,
+    JSONCustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
@@ -36,6 +40,7 @@ from tethys_apps.models import (
     PersistentStoreDatabaseSetting,
     ProxyApp,
 )
+
 
 tethys_log = logging.getLogger("tethys." + __name__)
 
@@ -54,6 +59,49 @@ class CustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value", "required")
     model = CustomSetting
+
+
+class SecretCustomSettingForm(forms.ModelForm):
+    value = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "input-text with-border",
+                "placeholder": "secret custom setting",
+            }
+        )
+    )
+
+    class Meta:
+        model = SecretCustomSetting
+        fields = ["name", "description", "value", "required"]
+
+
+class SecretCustomSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "value", "required")
+    model = SecretCustomSetting
+    form = SecretCustomSettingForm
+
+
+class JSONCustomSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "value", "required")
+    model = JSONCustomSetting
+    options_default = {
+        "modes": ["code", "text"],
+        "search": False,
+        "navigationBar": False,
+    }
+
+    width_default = "100%"
+    height_default = "300px"
+    formfield_overrides = {
+        models.JSONField: {
+            "widget": JSONEditorWidget(
+                width=width_default, height=height_default, options=options_default
+            )
+        },
+    }
 
 
 class DatasetServiceSettingInline(TethysAppSettingInline):
@@ -126,6 +174,8 @@ class TethysAppAdmin(GuardedModelAdmin):
     )
     inlines = [
         CustomSettingInline,
+        JSONCustomSettingInline,
+        SecretCustomSettingInline,
         PersistentStoreConnectionSettingInline,
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,
