@@ -62,6 +62,7 @@ dependencies:
   - django-model-utils
   - django-guardian
   - django-gravatar2
+  - django-json-widget
   - django-mfa2
   - django-recaptcha2
   - django-simple-captcha
