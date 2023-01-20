@@ -26,6 +26,8 @@ section>section {
 /* Read the docs version picker */
 .rst-versions.rst-badge {
     bottom: 16px!important;
+    left: 16px!important;
+    right: auto!important;
     height: auto!important;
 }
 
