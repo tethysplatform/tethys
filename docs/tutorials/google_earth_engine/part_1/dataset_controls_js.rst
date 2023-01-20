@@ -2,7 +2,7 @@
 Add JavaScript for Dynamic Control Behavior
 *******************************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will add dynamic behavior to the dataset controls created in the previous step using JavaScript. The following topics will be reviewed in this tutorial:
 

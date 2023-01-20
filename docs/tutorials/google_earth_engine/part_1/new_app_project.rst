@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 

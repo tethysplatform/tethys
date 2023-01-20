@@ -2,7 +2,7 @@
 Visualize Google Earth Engine Datasets
 **************************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will load the GEE dataset the user has selected into the map view. The following topics will be reviewed in this tutorial:
 

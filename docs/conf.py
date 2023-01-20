@@ -236,7 +236,7 @@ todo_include_todos = True
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
-html_title = f"{project} {version} Documentation"
+html_title = f"{project} Documentation"
 html_short_title = "Tethys Docs"
 html_logo = "images/features/tethys-logo-75.png"
 html_favicon = "images/default_favicon.ico"
