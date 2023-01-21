@@ -302,23 +302,30 @@ class CustomSetting(TethysAppSetting):
         (TYPE_JSON, "Json"),
     )
     value = models.CharField(max_length=1024, blank=True, default="")
-    value_json = models.JSONField(blank=True, default=dict)
-
     default = models.CharField(max_length=1024, blank=True, default="")
+    value_json = models.JSONField(blank=True, default=dict)
+    default_json = models.JSONField(blank=True, default=dict)
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
         """
         Validate prior to saving changes.
-        """
-
-        if self.default != "":
-            if self.value == "":
-                self.value = self.default
-        else:
-            if self.value == "" and self.required:
-                raise ValidationError("Required.")
-
+        """        
+        if self.type != self.TYPE_JSON:
+            if self.default != "":
+                if self.value == "":
+                    self.value = self.default
+            else:
+                if self.value == "" and self.required:
+                    raise ValidationError("Required.")
+        else: 
+            if not self.default_json:
+                if not self.value_json:
+                    self.value_json = self.default_json
+            else:
+                if not self.value_json and self.required:
+                    raise ValidationError("Required.")
+            
         if self.value != "" and self.type == self.TYPE_FLOAT:
             try:
                 float(self.value)
@@ -335,6 +342,13 @@ class CustomSetting(TethysAppSetting):
             if self.value.lower() not in self.VALID_BOOL_STRINGS:
                 raise ValidationError("Value must be a boolean.")
 
+        
+        elif type(self.value_json) is not dict and self.type == self.TYPE_JSON:
+            try:
+                json.load(self.value_json)
+            except Exception:
+                raise ValidationError("Value must be a valid JSON string.")
+
         elif self.value != "" and self.type == self.TYPE_UUID:
             try:
                 uuid.UUID(self.value)
@@ -345,37 +359,53 @@ class CustomSetting(TethysAppSetting):
         """
         Get the value, automatically casting it to the correct type.
         """
-        if self.default != "":
-            if self.value == "":
-                self.value = self.default
+        if self.type != self.TYPE_JSON:
 
-        if self.value == "" or self.value is None:
-            if self.required:
-                raise TethysAppSettingNotAssigned(
-                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
-                    f"has not been assigned."
-                )
+            if self.default != "":
+                if self.value == "":
+                    self.value = self.default
 
-            # None is a valid value to return in the case the value has not been set for this setting type
-            return None
+            if self.value == "" or self.value is None:
+                if self.required:
+                    raise TethysAppSettingNotAssigned(
+                        f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                        f"has not been assigned."
+                    )
 
-        if self.type == self.TYPE_STRING:
-            return self.value
+                # None is a valid value to return in the case the value has not been set for this setting type
+                return None
 
-        if self.type == self.TYPE_FLOAT:
-            return float(self.value)
+            if self.type == self.TYPE_STRING:
+                return self.value
 
-        if self.type == self.TYPE_INTEGER:
-            return int(self.value)
+            if self.type == self.TYPE_FLOAT:
+                return float(self.value)
 
-        if self.type == self.TYPE_BOOLEAN:
-            return self.value.lower() in self.TRUTHY_BOOL_STRINGS
+            if self.type == self.TYPE_INTEGER:
+                return int(self.value)
 
-        if self.type == self.TYPE_UUID:
-            return uuid.UUID(self.value)
+            if self.type == self.TYPE_BOOLEAN:
+                return self.value.lower() in self.TRUTHY_BOOL_STRINGS
+
+            if self.type == self.TYPE_UUID:
+                return uuid.UUID(self.value)
 
         if self.type == self.TYPE_JSON:
-            return json.loads(self.value)
+            if not self.default_json:
+                if not self.value_json:
+                    self.value_json = self.default_json
+
+            if self.value_json == "" or self.value_json is None:
+                if self.required:
+                    raise TethysAppSettingNotAssigned(
+                        f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                        f"has not been assigned."
+                    )
+
+                # None is a valid value to return in the case the value has not been set for this setting type
+                return None
+            if self.type == self.TYPE_JSON:
+                return json.dumps(self.value_json)
     
 
 @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
@@ -393,7 +423,8 @@ def set_default_value(sender, instance, *args, **kwargs):
     """
     if not instance.value or instance.value == "":
         instance.value = instance.default
-
+    if not instance.value_json or not instance.value_json:
+        instance.value_json = instance.default_json
 
 class DatasetServiceSetting(TethysAppSetting):
     """
