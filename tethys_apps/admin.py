@@ -54,16 +54,32 @@ class TethysAppSettingInline(admin.TabularInline):
 
 class CustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
-    fields = ("name", "description", "type", "value", "required")
+    fields = ("name", "description", "type", "value","required")
     model = CustomSetting
+    def get_queryset(self, request):
+        qs = super(CustomSettingInline, self).get_queryset(request)
+        return qs.exclude(type="JSON")
+
 
 class CustomJSONSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value_json", "required")
     model = CustomSetting
-    formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+    options_default = {
+        "modes": ["code", "text"],
+        "search": False,
+        "navigationBar": False
     }
+
+    width_default = '100%'
+    height_default = '300px'
+    formfield_overrides = {
+        models.JSONField: {'widget': JSONEditorWidget(width=width_default, height=height_default, options=options_default)},
+    }
+    def get_queryset(self, request):
+        qs = super(CustomJSONSettingInline, self).get_queryset(request)
+        return qs.filter(type="JSON")
+
 
 
 class DatasetServiceSettingInline(TethysAppSettingInline):
