@@ -174,7 +174,7 @@ class Migration(migrations.Migration):
                 ),
                 ("value", models.CharField(blank=True, default="", max_length=1024)),
                 ("value_json", models.JSONField(blank=True, default=dict)),
-
+                ("default_json", models.JSONField(blank=True, default=dict)),
                 ("default", models.CharField(blank=True, default="", max_length=1024)),
                 (
                     "type",
