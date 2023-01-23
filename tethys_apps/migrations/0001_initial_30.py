@@ -185,6 +185,7 @@ class Migration(migrations.Migration):
                             ("FLOAT", "Float"),
                             ("BOOLEAN", "Boolean"),
                             ("JSON", "Json"),
+                            ("SECRET", "Secret"),
 
                         ],
                         default="STRING",

@@ -292,6 +292,7 @@ class Migration(migrations.Migration):
                             ("BOOLEAN", "Boolean"),
                             ("UUID", "UUID"),
                             ("JSON", "Json"),
+                            ("SECRET", "Secret")
 
                         ],
                         default="STRING",

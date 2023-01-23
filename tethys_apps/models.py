@@ -290,7 +290,9 @@ class CustomSetting(TethysAppSetting):
     TYPE_BOOLEAN = "BOOLEAN"
     TYPE_UUID = "UUID"
     TYPE_JSON = "JSON"
-    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID,TYPE_JSON)
+    TYPE_SECRET = "SECRET"
+
+    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID,TYPE_JSON, TYPE_SECRET)
     VALID_BOOL_STRINGS = ("true", "false", "yes", "no", "t", "f", "y", "n", "1", "0")
     TRUTHY_BOOL_STRINGS = ("true", "yes", "t", "y", "1")
     TYPE_CHOICES = (
@@ -300,6 +302,8 @@ class CustomSetting(TethysAppSetting):
         (TYPE_BOOLEAN, "Boolean"),
         (TYPE_UUID, "UUID"),
         (TYPE_JSON, "Json"),
+        (TYPE_SECRET, "Secret"),
+
     )
     value = models.CharField(max_length=1024, blank=True, default="")
     default = models.CharField(max_length=1024, blank=True, default="")
