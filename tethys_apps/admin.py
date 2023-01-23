@@ -9,6 +9,7 @@
 """
 import logging
 from django import forms
+from django.forms.models import BaseInlineFormSet
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import User, Group, Permission
@@ -58,7 +59,23 @@ class CustomSettingInline(TethysAppSettingInline):
     model = CustomSetting
     def get_queryset(self, request):
         qs = super(CustomSettingInline, self).get_queryset(request)
-        return qs.exclude(type="JSON")
+        return qs.exclude(type="JSON").exclude(type="SECRET")
+
+class CustomSecretSettingForm(forms.ModelForm):
+    # secret_setting = forms.CharField(widget=forms.PasswordInput)
+    value = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input-text with-border', 'placeholder': 'secret'}))
+    class Meta:
+        model = CustomSetting
+        fields = ["name", "description", "type", "value","required"]
+class CustomSecretSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "type", "required")
+    fields = ("name", "description", "type", "value","required")
+    model = CustomSetting
+    form = CustomSecretSettingForm
+
+    def get_queryset(self, request):
+        qs = super(CustomSecretSettingInline, self).get_queryset(request)
+        return qs.filter(type="SECRET")
 
 
 class CustomJSONSettingInline(TethysAppSettingInline):
@@ -153,6 +170,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     inlines = [
         CustomSettingInline,
         CustomJSONSettingInline,
+        CustomSecretSettingInline,
         PersistentStoreConnectionSettingInline,
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,
