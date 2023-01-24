@@ -7,7 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import yaml
 import sqlalchemy
+import os
+from django.core.signing import Signer
 import logging
 import uuid
 import json
@@ -26,8 +29,10 @@ from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
+from django.contrib.auth.hashers import check_password
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
+from tethys_apps.utilities import get_tethys_home_dir, get_active_app
 
 log = logging.getLogger("tethys")
 
@@ -393,6 +398,59 @@ class CustomSetting(TethysAppSetting):
 
             if self.type == self.TYPE_UUID:
                 return uuid.UUID(self.value)
+
+            if self.type == self.TYPE_SECRET:
+                # TETHYS_HOME = get_tethys_home_dir()
+                # env_file_path = os.path.join(TETHYS_HOME, "secrets.env")
+                # salt_string = ''
+                # try:
+                #     load_dotenv(env_file_path)
+                #     secret_name_env_file = f'{self.name}_{self.tethys_app.package}'.upper().replace(' ','_')
+                #     salt_string = os.getenv(secret_name_env_file)
+                # except FileNotFoundError:
+                #     log.info(
+                #         "Could not find the secrets.env file."
+                #     )
+                # except Exception:
+                #     log.exception(
+                #         "There was an error while attempting to read the settings from the secrets.env file."
+                #     )
+                # signer = Signer(salt=salt_string)
+                # secret_unsigned= signer.unsign_object(f'{self.value}')
+                # return secret_unsigned
+
+                TETHYS_HOME = get_tethys_home_dir()
+                signer = Signer()
+                secret_unsigned = ''
+                try:
+                    
+                    with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
+                        portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
+                        if bool(portal_config_app_settings):
+                            app_specific_settings = portal_config_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                            app_custom_setting_salt_string = app_specific_settings[self.name]
+                            signer = Signer(salt=app_custom_setting_salt_string)
+                            secret_unsigned= signer.unsign_object(f'{self.value}')
+
+                        else:
+                            log.info(
+                                "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                            )
+                            secret_unsigned = signer.unsign_object(f'{self.value}')
+                            
+
+                except FileNotFoundError:
+                    log.info(
+                        "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
+                        '"tethys gen portal_config"'
+                    )
+                except Exception:
+                    log.exception(
+                        "There was an error while attempting to read the settings from the portal_config.yml file."
+                    )
+
+                return secret_unsigned
+
 
         if self.type == self.TYPE_JSON:
             if not self.default_json:

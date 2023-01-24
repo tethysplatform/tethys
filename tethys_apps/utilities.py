@@ -58,7 +58,6 @@ def get_tethys_home_dir():
 
     return tethys_home
 
-
 def get_directories_in_tethys(directory_names, with_app_name=False):
     """
     # Locate given directories in tethys apps and extensions.

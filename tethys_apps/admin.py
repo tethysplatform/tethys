@@ -8,8 +8,10 @@
 ********************************************************************************
 """
 import logging
+import os
+import yaml
+from django.core.signing import Signer
 from django import forms
-from django.forms.models import BaseInlineFormSet
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import User, Group, Permission
@@ -19,7 +21,6 @@ from django.utils.html import format_html
 from django.shortcuts import reverse
 from django.db import models
 from django_json_widget.widgets import JSONEditorWidget
-
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
@@ -39,6 +40,9 @@ from tethys_apps.models import (
     PersistentStoreDatabaseSetting,
     ProxyApp,
 )
+from tethys_apps.utilities import get_tethys_home_dir
+
+
 
 tethys_log = logging.getLogger("tethys." + __name__)
 
@@ -67,6 +71,43 @@ class CustomSecretSettingForm(forms.ModelForm):
     class Meta:
         model = CustomSetting
         fields = ["name", "description", "type", "value","required"]
+    
+    def clean_value(self):
+        secret_unsigned = self.cleaned_data.get("value")
+        TETHYS_HOME = get_tethys_home_dir()
+        signer = Signer()
+        secret_signed = None
+        try:
+            
+            obj = super(CustomSecretSettingForm, self).save(commit=False)
+            breakpoint()
+            with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
+                portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
+                if bool(portal_config_app_settings):
+                    app_specific_settings = portal_config_app_settings[obj.tethys_app.package]['custom_settings_salt_strings']
+                    app_custom_setting_salt_string = app_specific_settings[obj.name]
+                    signer = Signer(salt=app_custom_setting_salt_string)
+                    secret_signed = signer.sign_object(secret_unsigned)
+
+                else:
+                    tethys_log.info(
+                        "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                     )
+                    secret_signed = signer.sign_object(secret_unsigned)
+                    
+
+        except FileNotFoundError:
+            tethys_log.info(
+                "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
+                '"tethys gen portal_config"'
+            )
+        except Exception:
+            tethys_log.exception(
+                "There was an error while attempting to read the settings from the portal_config.yml file."
+            )
+
+        return secret_signed
+
 class CustomSecretSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value","required")
