@@ -7,9 +7,9 @@ from subprocess import call, Popen, PIPE, STDOUT
 from argparse import Namespace
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
+from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success, pretty_output, FG_RED, FG_GREEN
 from tethys_cli.services_commands import services_list_command
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import load_apps,generate_salt_string
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
@@ -297,6 +297,49 @@ def run_interactive_services(app_name):
             f"Description: {setting.description}\n"
             f"Required: {setting.required}"
         )
+
+        ## extra code to generate a salt string
+        if setting.type == "SECRET":
+            proceed = input(
+                "Do you want to generate a salt string for this secret or use the default behavior: "
+            )
+            while proceed not in ["y", "n", "Y", "N"]:
+                proceed = input('Please enter either "y" or "n": ')
+
+            if proceed in ["y", "Y"]:
+                with pretty_output(FG_GREEN) as p:
+                    TETHYS_HOME = Path(get_tethys_home_dir())
+                    portal_yaml_file = TETHYS_HOME / "portal_config.yml"
+                    portal_settings = {}
+                    if portal_yaml_file.exists():
+                        with portal_yaml_file.open("r") as portal_yaml:
+                            portal_settings = yaml.safe_load(portal_yaml) or {}
+                            if not app_name in portal_settings["apps"]:
+                                portal_settings["apps"][app_name] = {}
+                            if not 'custom_settings_salt_strings' in portal_settings["apps"][app_name]:
+                                write_msg(
+                                    f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
+                                )
+                                portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
+                            
+                            salt_string = generate_salt_string().decode()
+                            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting] = salt_string
+                            with portal_yaml_file.open("w") as portal_yaml:
+                                yaml.dump(portal_settings, portal_yaml)
+                                write_msg(
+                                    f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
+                                )
+                    p.write(
+                        "Successfully created salt string for {0} Secret Custom Setting!".format(
+                            setting.name
+                        )
+                    )
+                exit(0)
+            else:
+                with pretty_output(FG_RED) as p:
+                    p.write("Aborted slat string generation, using default behavior")
+                exit(0)
+
         if hasattr(setting, "value"):
             while not valid:
                 write_msg(
@@ -307,6 +350,7 @@ def run_interactive_services(app_name):
                 try:
                     value = get_interactive_input()
                     if value != "":
+                        
                         try:
                             setting.value = value
                             setting.clean()
