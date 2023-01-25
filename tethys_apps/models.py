@@ -363,6 +363,24 @@ class CustomSetting(TethysAppSetting):
                 uuid.UUID(self.value)
             except Exception:
                 raise ValidationError("Value must be a uuid.")
+        elif self.value != "" and self.type == self.TYPE_SECRET:
+            TETHYS_HOME = get_tethys_home_dir()
+            signer = Signer()
+            with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
+                portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
+                if bool(portal_config_app_settings):
+                    if self.tethys_app.package in portal_config_app_settings:
+                        if 'custom_settings_salt_strings' in portal_config_app_settings[self.tethys_app.package]:
+                            app_specific_settings = portal_config_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                            app_custom_setting_salt_string = app_specific_settings[self.name]
+                            signer = Signer(salt=app_custom_setting_salt_string)
+                            self.value = signer.sign_object(self.value)
+
+                else:
+                    log.info(
+                        "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                     )
+                    self.value = signer.sign_object(self.value)
 
     def get_value(self):
         """
@@ -409,7 +427,9 @@ class CustomSetting(TethysAppSetting):
                     with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
                         portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
                         if bool(portal_config_app_settings):
+                            breakpoint()
                             app_specific_settings = portal_config_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+
                             app_custom_setting_salt_string = app_specific_settings[self.name]
                             signer = Signer(salt=app_custom_setting_salt_string)
                             secret_unsigned= signer.unsign_object(f'{self.value}')
