@@ -400,24 +400,6 @@ class CustomSetting(TethysAppSetting):
                 return uuid.UUID(self.value)
 
             if self.type == self.TYPE_SECRET:
-                # TETHYS_HOME = get_tethys_home_dir()
-                # env_file_path = os.path.join(TETHYS_HOME, "secrets.env")
-                # salt_string = ''
-                # try:
-                #     load_dotenv(env_file_path)
-                #     secret_name_env_file = f'{self.name}_{self.tethys_app.package}'.upper().replace(' ','_')
-                #     salt_string = os.getenv(secret_name_env_file)
-                # except FileNotFoundError:
-                #     log.info(
-                #         "Could not find the secrets.env file."
-                #     )
-                # except Exception:
-                #     log.exception(
-                #         "There was an error while attempting to read the settings from the secrets.env file."
-                #     )
-                # signer = Signer(salt=salt_string)
-                # secret_unsigned= signer.unsign_object(f'{self.value}')
-                # return secret_unsigned
 
                 TETHYS_HOME = get_tethys_home_dir()
                 signer = Signer()
