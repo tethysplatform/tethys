@@ -72,43 +72,43 @@ class CustomSecretSettingForm(forms.ModelForm):
         model = CustomSetting
         fields = ["name", "description", "type", "value","required"]
     
-    def clean_value(self):
-        secret_unsigned = self.cleaned_data.get("value")
-        TETHYS_HOME = get_tethys_home_dir()
-        signer = Signer()
-        secret_signed = None
-        try:
+    # def clean_value(self):
+    #     secret_unsigned = self.cleaned_data.get("value")
+    #     TETHYS_HOME = get_tethys_home_dir()
+    #     signer = Signer()
+    #     # secret_signed = None
+    #     try:
             
-            obj = super(CustomSecretSettingForm, self).save(commit=False)
-            breakpoint()
-            with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
-                portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
-                if bool(portal_config_app_settings):
-                    if obj.tethys_app.package in portal_config_app_settings:
-                        if 'custom_settings_salt_strings' in portal_config_app_settings[obj.tethys_app.package]:
-                            app_specific_settings = portal_config_app_settings[obj.tethys_app.package]['custom_settings_salt_strings']
-                            app_custom_setting_salt_string = app_specific_settings[obj.name]
-                            signer = Signer(salt=app_custom_setting_salt_string)
-                            secret_signed = signer.sign_object(secret_unsigned)
+    #         obj = super(CustomSecretSettingForm, self).save(commit=False)
+    #         breakpoint()
+    #         with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
+    #             portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
+    #             if bool(portal_config_app_settings):
+    #                 if obj.tethys_app.package in portal_config_app_settings:
+    #                     if 'custom_settings_salt_strings' in portal_config_app_settings[obj.tethys_app.package]:
+    #                         app_specific_settings = portal_config_app_settings[obj.tethys_app.package]['custom_settings_salt_strings']
+    #                         app_custom_setting_salt_string = app_specific_settings[obj.name]
+    #                         signer = Signer(salt=app_custom_setting_salt_string)
+    #                         secret_signed = signer.sign_object(secret_unsigned)
+    #                         return secret_signed
+    #             else:
+    #                 tethys_log.info(
+    #                     "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+    #                  )
+    #                 secret_signed = signer.sign_object(secret_unsigned)
+    #                 return  secret_signed
 
-                else:
-                    tethys_log.info(
-                        "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
-                     )
-                    secret_signed = signer.sign_object(secret_unsigned)
-                    
+    #     except FileNotFoundError:
+    #         tethys_log.info(
+    #             "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
+    #             '"tethys gen portal_config"'
+    #         )
+    #     except Exception:
+    #         tethys_log.exception(
+    #             "There was an error while attempting to read the settings from the portal_config.yml file."
+    #         )
 
-        except FileNotFoundError:
-            tethys_log.info(
-                "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
-                '"tethys gen portal_config"'
-            )
-        except Exception:
-            tethys_log.exception(
-                "There was an error while attempting to read the settings from the portal_config.yml file."
-            )
-
-        return secret_signed
+    #     return secret_unsigned
 
 class CustomSecretSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
