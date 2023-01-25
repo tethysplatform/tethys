@@ -1,8 +1,11 @@
+import yaml
+from pathlib import Path
 from django.core.exceptions import ValidationError
-from tethys_apps.utilities import get_app_settings, get_custom_setting
-from tethys_cli.cli_colors import pretty_output, BOLD, write_error, write_success
-from tethys_cli.cli_helpers import load_apps
+from tethys_apps.utilities import get_app_settings, get_custom_setting,get_tethys_home_dir
+from tethys_cli.cli_colors import pretty_output, BOLD, write_error, write_success, write_warning
+from tethys_cli.cli_helpers import load_apps, generate_salt_string
 
+TETHYS_HOME = Path(get_tethys_home_dir())
 
 def add_app_settings_parser(subparsers):
     # APP_SETTINGS COMMANDS
@@ -296,3 +299,41 @@ def app_settings_remove_command(args):
         exit(1)
 
     exit(0)
+
+def app_settings_create_salt_strings_command(args):
+    ## create the salt string setting
+    ### check if there is an apps: portion in the portal_config_yaml
+
+    ### if not create one and also one for the specific app, and a secrets portion for the app
+    ### add the salt string that was introduced by the user or generate one for them
+    ### else create the secrets portion
+    load_apps()
+    app_name = args.app
+    setting = args.setting
+    salt_string = generate_salt_string()
+    portal_yaml_file = TETHYS_HOME / "portal_config.yml"
+    portal_settings = {}
+    if portal_yaml_file.exists():
+        with portal_yaml_file.open("r") as portal_yaml:
+            portal_settings = yaml.safe_load(portal_yaml) or {}
+            if not portal_settings["apps"][app_name]:
+                write_warning(
+                    f'No app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
+                )
+                portal_settings["apps"][app_name] = ""
+            if not portal_settings["apps"][app_name]['custom_settings_salt_strings']:
+                write_warning(
+                    f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
+                )
+                portal_settings["apps"][app_name]['custom_settings_salt_strings'] = ""
+            portal_settings["apps"][app_name]['custom_settings_salt_strings'][setting] = salt_string
+            with portal_yaml_file.open("w") as portal_yaml:
+                yaml.dump(portal_settings, portal_yaml)
+                write_success(
+                    f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
+                )
+            exit(0)
+    
+
+
+

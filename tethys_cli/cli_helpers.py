@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import bcrypt
 
 import django
 
@@ -57,3 +58,7 @@ def load_apps():
     sys.stdout = open(os.devnull, "w")
     django.setup()
     sys.stdout = stdout
+
+def generate_salt_string():
+    salt = bcrypt.gensalt()
+    return salt
