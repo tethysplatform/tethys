@@ -67,7 +67,7 @@ class CustomSettingInline(TethysAppSettingInline):
 
 class CustomSecretSettingForm(forms.ModelForm):
     # secret_setting = forms.CharField(widget=forms.PasswordInput)
-    value = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input-text with-border', 'placeholder': 'secret'}))
+    value = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input-text with-border', 'placeholder': 'secret custom setting'}))
     class Meta:
         model = CustomSetting
         fields = ["name", "description", "type", "value","required"]
@@ -84,10 +84,12 @@ class CustomSecretSettingForm(forms.ModelForm):
             with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
                 portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
                 if bool(portal_config_app_settings):
-                    app_specific_settings = portal_config_app_settings[obj.tethys_app.package]['custom_settings_salt_strings']
-                    app_custom_setting_salt_string = app_specific_settings[obj.name]
-                    signer = Signer(salt=app_custom_setting_salt_string)
-                    secret_signed = signer.sign_object(secret_unsigned)
+                    if obj.tethys_app.package in portal_config_app_settings:
+                        if 'custom_settings_salt_strings' in portal_config_app_settings[obj.tethys_app.package]:
+                            app_specific_settings = portal_config_app_settings[obj.tethys_app.package]['custom_settings_salt_strings']
+                            app_custom_setting_salt_string = app_specific_settings[obj.name]
+                            signer = Signer(salt=app_custom_setting_salt_string)
+                            secret_signed = signer.sign_object(secret_unsigned)
 
                 else:
                     tethys_log.info(
