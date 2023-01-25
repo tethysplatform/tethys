@@ -128,6 +128,23 @@ def add_app_settings_parser(subparsers):
     )
     app_settings_remove_cmd.set_defaults(func=app_settings_remove_command)
 
+    # tethys generate a salt string for a custom secret setting in an app
+    app_settings_set_salt_string_custom_setting_secret_parser = app_settings_subparsers.add_parser(
+        "gen_salt", help="Set the value of a salt string for a secret custom setting " "for a specified app."
+    )
+    app_settings_set_salt_string_custom_setting_secret_parser.add_argument(
+        "app", help='The app ("<app_package>") with the setting to be set.'
+    )
+    app_settings_set_salt_string_custom_setting_secret_parser.add_argument(
+        "setting", help="The name of the setting to be set."
+    )
+    app_settings_set_salt_string_custom_setting_secret_parser.add_argument(
+        "-s",
+        "--salt_string",
+        required=False,
+        help="The salt string to use, if none is provided one will be generated."
+    )
+    app_settings_set_salt_string_custom_setting_secret_parser.set_defaults(func=app_settings_create_salt_strings_command)
 
 def app_settings_list_command(args):
     load_apps()
@@ -301,32 +318,45 @@ def app_settings_remove_command(args):
     exit(0)
 
 def app_settings_create_salt_strings_command(args):
-    ## create the salt string setting
-    ### check if there is an apps: portion in the portal_config_yaml
 
-    ### if not create one and also one for the specific app, and a secrets portion for the app
-    ### add the salt string that was introduced by the user or generate one for them
-    ### else create the secrets portion
     load_apps()
+
+    ## checking if the salt string si provided or not
+    if args.salt_string:
+        salt_string = args.salt_string
+    else:
+        salt_string = generate_salt_string().decode()
     app_name = args.app
     setting = args.setting
-    salt_string = generate_salt_string()
+    ## checking the type of setting and the type of custom setting
+    if get_custom_setting(app_name,setting) is None:
+        write_warning(
+            f'No secret custom setting for the app {app_name}'
+        )
+        exit(1)
+    else:
+        if get_custom_setting(app_name,setting).type != "SECRET":
+            write_warning(
+                f'The custom setting {setting} for the app {app_name} is not a a secret custom setting type, but a {get_custom_setting(app_name,setting).type} custom setting type'
+            )
+            exit(1)
+    
     portal_yaml_file = TETHYS_HOME / "portal_config.yml"
     portal_settings = {}
     if portal_yaml_file.exists():
         with portal_yaml_file.open("r") as portal_yaml:
             portal_settings = yaml.safe_load(portal_yaml) or {}
-            if not portal_settings["apps"][app_name]:
+            if not app_name in portal_settings["apps"]:
                 write_warning(
                     f'No app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
                 )
-                portal_settings["apps"][app_name] = ""
-            if not portal_settings["apps"][app_name]['custom_settings_salt_strings']:
+                portal_settings["apps"][app_name] = {}
+            if not 'custom_settings_salt_strings' in portal_settings["apps"][app_name]:
                 write_warning(
                     f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
                 )
-                portal_settings["apps"][app_name]['custom_settings_salt_strings'] = ""
-            portal_settings["apps"][app_name]['custom_settings_salt_strings'][setting] = salt_string
+                portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
+            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting] = salt_string
             with portal_yaml_file.open("w") as portal_yaml:
                 yaml.dump(portal_settings, portal_yaml)
                 write_success(
