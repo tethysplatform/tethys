@@ -424,7 +424,7 @@ class CustomSetting(TethysAppSetting):
                 TETHYS_HOME = get_tethys_home_dir()
                 signer = Signer()
                 secret_unsigned = ''
-                breakpoint()
+                # breakpoint()
                 
                 try:
                     

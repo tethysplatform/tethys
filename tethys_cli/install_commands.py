@@ -336,12 +336,9 @@ def run_interactive_services(app_name):
                             setting.name
                         )
                     )
-                # exit(0)
             else:
-                with pretty_output(FG_RED) as p:
-                    p.write("Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml")
-                # exit(0)
-
+                write_warning("Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml")
+                    
         if hasattr(setting, "value"):
             while not valid:
                 write_msg(

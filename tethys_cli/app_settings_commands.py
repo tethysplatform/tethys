@@ -148,7 +148,7 @@ def add_app_settings_parser(subparsers):
 
     # tethys generate a salt string for each custom secret setting in an app
     app_settings_set_salt_string_custom_settings_secrets_parser = app_settings_subparsers.add_parser(
-        "gen_salt_all", help="Set the value of a salt string for a secret custom setting " "for a specified app."
+        "gen_salt_all", help="Set the value of a salt string for each secret custom setting " "for a specified app."
     )
     app_settings_set_salt_string_custom_settings_secrets_parser.add_argument(
         "app", help='The app ("<app_package>") with the setting to be set.'
@@ -384,7 +384,7 @@ def app_settings_create_all_salt_strings_command(args):
     )
 
     try:
-        app = TethysApp.objects.get(package=app)
+        app = TethysApp.objects.get(package=app_name)
         for setting in CustomSetting.objects.filter(tethys_app=app):
             if setting.type == "SECRET": 
                 salt_string = generate_salt_string().decode()
