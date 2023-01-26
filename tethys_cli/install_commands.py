@@ -347,11 +347,45 @@ def run_interactive_services(app_name):
                     )
                 )
                 try:
-                    value = get_interactive_input()
+                    value = ""
+                    if setting.type == "JSON":
+                        proceed = input(
+                            "Do you want to upload the json from a file: [y/n]"
+                        )
+                        while proceed not in ["y", "n", "Y", "N"]:
+                            proceed = input('Please enter either "y" or "n": ')
+
+                        if proceed in ["y", "Y"]:
+                            json_path = proceed = input(
+                                "Please provide a file containing a Json (e.g: /home/user/myjsonfile.json)"
+                            )
+                            try:
+                            
+                                with open(json_path) as json_file:
+                                    json_data = json.load(json_file)
+                                    value = json.dumps(json_data)
+                            except FileNotFoundError:
+                                write_warning(
+                                    f'The current file path was not found'
+                                )
+                        else:
+                            # String with JSON format
+                            data_JSON_example =  '{ "size": "Medium", "price": 15.67, "toppings": ["Mushrooms", "Extra Cheese", "Pepperoni", "Basil"]}'
+                            write_msg(
+                                f'Please provide a Json string (e.g: {data_JSON_example})'
+                            )
+                            value = get_interactive_input()
+                    else:
+                        value = get_interactive_input()
+                    
                     if value != "":
                         
                         try:
-                            setting.value = value
+                            if setting.type != "JSON":
+                                setting.value = value
+                            else:
+                                setting.value_json = value
+
                             setting.clean()
                             setting.save()
                             valid = True
