@@ -301,7 +301,7 @@ def run_interactive_services(app_name):
         ## extra code to generate a salt string
         if setting.type == "SECRET":
             proceed = input(
-                "Do you want to generate a salt string for this secret or use the default behavior: "
+                "Do you want to generate a salt string for this secret or use the default behavior: [y/n]"
             )
             while proceed not in ["y", "n", "Y", "N"]:
                 proceed = input('Please enter either "y" or "n": ')
@@ -323,22 +323,24 @@ def run_interactive_services(app_name):
                                 portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
                             
                             salt_string = generate_salt_string().decode()
-                            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting] = salt_string
+                            # breakpoint()
+
+                            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
                             with portal_yaml_file.open("w") as portal_yaml:
                                 yaml.dump(portal_settings, portal_yaml)
                                 write_msg(
-                                    f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
+                                    f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
                                 )
                     p.write(
                         "Successfully created salt string for {0} Secret Custom Setting!".format(
                             setting.name
                         )
                     )
-                exit(0)
+                # exit(0)
             else:
                 with pretty_output(FG_RED) as p:
-                    p.write("Aborted slat string generation, using default behavior")
-                exit(0)
+                    p.write("Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml")
+                # exit(0)
 
         if hasattr(setting, "value"):
             while not valid:
@@ -761,7 +763,7 @@ def install_command(args):
             run_interactive_services(app_name)
 
         write_success("Services Configuration Completed.")
-
+        # breakpoint()
         app_settings = get_app_settings(app_name)
 
         if app_settings is not None:
