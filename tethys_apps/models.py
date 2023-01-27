@@ -328,7 +328,9 @@ class CustomSetting(TethysAppSetting):
             else:
                 if self.value == "" and self.required:
                     raise ValidationError("Required.")
-        else: 
+        else:
+            # breakpoint()
+
             if not self.default_json:
                 if not self.value_json:
                     self.value_json = self.default_json
@@ -352,10 +354,11 @@ class CustomSetting(TethysAppSetting):
             if self.value.lower() not in self.VALID_BOOL_STRINGS:
                 raise ValidationError("Value must be a boolean.")
 
-        
         elif type(self.value_json) is not dict and self.type == self.TYPE_JSON:
+            # breakpoint()
+
             try:
-                json.load(self.value_json)
+                json.loads(self.value_json)
             except Exception:
                 raise ValidationError("Value must be a valid JSON string.")
 
@@ -365,7 +368,7 @@ class CustomSetting(TethysAppSetting):
             except Exception:
                 raise ValidationError("Value must be a uuid.")
         elif self.value != "" and self.type == self.TYPE_SECRET:
-            breakpoint()
+            # breakpoint()
             TETHYS_HOME = get_tethys_home_dir()
             signer = Signer()
             with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
@@ -452,7 +455,7 @@ class CustomSetting(TethysAppSetting):
                     )
                 except signing.BadSignature:
                     log.warning(
-                        'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
+                        f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
                     )
                     # raise TethysAppSettingNotAssigned(
                     #     f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
