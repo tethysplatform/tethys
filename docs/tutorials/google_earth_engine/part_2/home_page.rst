@@ -464,7 +464,7 @@ The Bootstrap CSS framework provides a good base for styling pages in the apps. 
 
 9. Refresh the page to see how the styles change the look and feel of the page. Hard-refresh if necessary (:kbd:`CTRL-SHIFT-R` or :kbd:`CTRL-F5`).
 
-10. Notice the white space around the border of the page? This is padding in the content area of our base template. To remove the white space so the backdrop iimage fills the page, add the following lines to :file:`public/css/home.css`:
+10. Notice the white space around the border of the page? This is padding in the content area of our base template. To remove the white space so the backdrop image fills the page, add the following lines to :file:`public/css/home.css`:
 
 .. code-block:: css
 

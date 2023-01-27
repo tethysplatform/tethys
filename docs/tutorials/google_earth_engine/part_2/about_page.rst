@@ -65,7 +65,7 @@ The first step to adding a new page to the app is to create a new controller and
 
 In this step you will add a new button to the page header that will link to the new About page. This button will be added in the base template so the About link is available from any page that inherits from it, including the Viewer page. You'll also add it to the Home and About pages because they inherit from different base templates. 
 
-To minimize the amount of code that is duplicated, you will create a new :file:`header_buttons.html` templateand use the Django ``include`` tag to insert it in each page.
+To minimize the amount of code that is duplicated, you will create a new :file:`header_buttons.html` template and use the Django ``include`` tag to insert it in each page.
 
 1. Create a new template :file:`templates/earth_engine/header_buttons.html` with the following contents:
 

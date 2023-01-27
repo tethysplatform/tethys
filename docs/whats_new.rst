@@ -31,7 +31,7 @@ Bootstrap 5
 * Upgraded to use Bootstrap version 5 (Tethys 3 used version 3).
 * Tethys Portal overhauled and re-themed using new capabilities of Bootstrap 5.
 
-See: `Boostrap 5 Documentation <https://getbootstrap.com/docs/5.22/getting-started/introduction/>`_
+See: `Boostrap 5 Documentation <https://getbootstrap.com/docs/5.2/getting-started/introduction/>`_
 
 Controller Decorators
 ---------------------
