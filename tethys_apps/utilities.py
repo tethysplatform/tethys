@@ -209,7 +209,7 @@ def get_app_settings(app):
                     hasattr(setting, "web_processing_service")
                     and setting.web_processing_service
                 )
-                or (hasattr(setting, "value") and setting.value != "")
+                or ((hasattr(setting, "value") and setting.value != "") or (hasattr(setting, "value_json") and setting.value_json))
             ):
                 linked_settings.append(setting)
             else:
