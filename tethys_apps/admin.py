@@ -73,6 +73,8 @@ class CustomSecretSettingForm(forms.ModelForm):
         fields = ["name", "description", "type", "value","required"]
 
 class CustomSecretSettingInline(TethysAppSettingInline):
+    verbose_name = "Custom Secret Setting"
+    verbose_name_plural = "Custom Secret Settings"
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value","required")
     model = CustomSetting
@@ -84,6 +86,8 @@ class CustomSecretSettingInline(TethysAppSettingInline):
 
 
 class CustomJSONSettingInline(TethysAppSettingInline):
+    verbose_name = "Custom JSON Setting"
+    verbose_name_plural = "Custom JSON Settings"
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value_json", "required")
     model = CustomSetting
