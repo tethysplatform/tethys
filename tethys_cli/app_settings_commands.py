@@ -1,5 +1,8 @@
 import yaml
+import os
+import json
 from pathlib import Path
+from django.core.signing import Signer
 from django.core.exceptions import ValidationError,ObjectDoesNotExist, MultipleObjectsReturned
 from tethys_apps.utilities import get_app_settings, get_custom_setting,get_tethys_home_dir
 from tethys_cli.cli_colors import pretty_output, BOLD, write_error, write_success, write_warning
@@ -227,7 +230,24 @@ def app_settings_set_command(args):
         exit(1)
 
     try:
-        setting.value = args.value
+        value_json = '{}'
+        if setting.type == "JSON":
+            if os.path.exists(args.value):
+
+                with open(args.value) as json_file:
+                    write_warning(
+                        f'File found, extracting Json data int o Json String'
+                    )
+                    json_data = json.load(json_file)
+                    value_json = json.dumps(json_data)
+        
+                setting.value_json = value_json
+            else:
+                setting.value_json = args.value
+
+        else:
+            setting.value = args.value
+        
         setting.clean()
         setting.save()
     except ValidationError as e:
@@ -365,12 +385,25 @@ def app_settings_create_salt_strings_command(args):
                     f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
                 )
                 portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
-            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting] = salt_string
+            
+            ## get the last salt string
+            last_salt_string = ""
+            if portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting]:
+                last_salt_string = portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting]
+            signer = Signer(salt=last_salt_string)
+            secret_unsigned= signer.unsign_object(f'{get_custom_setting(app_name,setting).value}')
+            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting] = salt_string            
             with portal_yaml_file.open("w") as portal_yaml:
                 yaml.dump(portal_settings, portal_yaml)
                 write_success(
                     f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
                 )
+
+            # signer = Signer(salt=salt_string)
+            setting_obj = get_custom_setting(app_name,setting)
+            setting_obj.value = secret_unsigned
+            setting_obj.clean()
+            setting_obj.save()
             exit(0)
     
 
@@ -403,12 +436,23 @@ def app_settings_create_all_salt_strings_command(args):
                                 f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
                             )
                             portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
+
+                        last_salt_string = ""
+                        if portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name]:
+                            last_salt_string = portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name]
+                        signer = Signer(salt=last_salt_string)
+                        secret_unsigned= signer.unsign_object(f'{setting.value}')
                         portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
                         with portal_yaml_file.open("w") as portal_yaml:
                             yaml.dump(portal_settings, portal_yaml)
                             write_success(
                                 f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
                             )
+                        # signer = Signer(salt=salt_string)
+                        # setting.value = signer.sign_object(secret_unsigned)
+                        setting.value = secret_unsigned
+                        setting.clean()
+                        setting.save()
         exit(0)
     except ObjectDoesNotExist:
         try:
@@ -424,5 +468,5 @@ def app_settings_create_all_salt_strings_command(args):
     except Exception as e:
         write_error(str(e))
         write_error("Something went wrong. Please try again.")
-    pass
+    exit(0)
     
