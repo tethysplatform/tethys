@@ -53,12 +53,11 @@ class TestUtilites(unittest.TestCase):
         mock_user.social_auth.get.assert_called_once_with(provider="hydroshare")
         mock_ls.assert_called_once()
 
-    @mock.patch("tethys_services.utilities.logger")
     @mock.patch("tethys_services.utilities.load_strategy")
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
     def test_ensure_oauth2_token_expired(
-        self, mock_redirect, mock_reverse, mock_ls, mock_logger
+        self, mock_redirect, mock_reverse, mock_ls
     ):
         mock_user = mock.MagicMock()
         mock_social = mock.MagicMock()
@@ -72,9 +71,7 @@ class TestUtilites(unittest.TestCase):
         mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
         mock_redirect.assert_called_once()
         mock_user.social_auth.get.assert_called_once_with(provider="hydroshare")
-        mock_social.refresh_token.assert_called_once()
         mock_ls.assert_called_once()
-        mock_logger.debug.assert_called_once()
 
     @mock.patch("tethys_services.utilities.logger")
     @mock.patch("tethys_services.utilities.load_strategy")
@@ -87,7 +84,7 @@ class TestUtilites(unittest.TestCase):
         mock_social = mock.MagicMock()
         mock_user.social_auth.get.return_value = mock_social
         mock_social.get_backend_instance().user_data.return_value = None
-        mock_social.refresh_token.side_effect = requests.exceptions.HTTPError
+        mock_social.get_access_token.side_effect = requests.exceptions.HTTPError
         mock_request = mock.MagicMock(user=mock_user, path="path")
         mock_redirect_url = mock.MagicMock()
         mock_reverse.return_value = mock_redirect_url
@@ -96,9 +93,8 @@ class TestUtilites(unittest.TestCase):
         mock_reverse.assert_called_once_with("social:begin", args=["hydroshare"])
         mock_redirect.assert_called_once()
         mock_user.social_auth.get.assert_called_once_with(provider="hydroshare")
-        mock_social.refresh_token.assert_called_once()
         mock_ls.assert_called_once()
-        self.assertEqual(len(mock_logger.debug.call_args_list), 2)
+        mock_logger.debug.assert_called_once()
 
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
