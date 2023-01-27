@@ -350,14 +350,14 @@ def run_interactive_services(app_name):
                     value = ""
                     if setting.type == "JSON":
                         proceed = input(
-                            "Do you want to upload the json from a file: [y/n]"
+                            "Do you want to upload the json from a file: [y/n] "
                         )
                         while proceed not in ["y", "n", "Y", "N"]:
                             proceed = input('Please enter either "y" or "n": ')
 
                         if proceed in ["y", "Y"]:
-                            json_path = proceed = input(
-                                "Please provide a file containing a Json (e.g: /home/user/myjsonfile.json)"
+                            json_path = input(
+                                "Please provide a file containing a Json (e.g: /home/user/myjsonfile.json): "
                             )
                             try:
                             
@@ -370,7 +370,7 @@ def run_interactive_services(app_name):
                                 )
                         else:
                             # String with JSON format
-                            data_JSON_example =  '{ "size": "Medium", "price": 15.67, "toppings": ["Mushrooms", "Extra Cheese", "Pepperoni", "Basil"]}'
+                            data_JSON_example =  '{"size": "Medium", "price": 15.67, "toppings": ["Mushrooms", "Extra Cheese", "Pepperoni", "Basil"]}'
                             write_msg(
                                 f'Please provide a Json string (e.g: {data_JSON_example})'
                             )

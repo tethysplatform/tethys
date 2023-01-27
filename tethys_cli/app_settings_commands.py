@@ -398,8 +398,6 @@ def app_settings_create_salt_strings_command(args):
                 write_success(
                     f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
                 )
-
-            # signer = Signer(salt=salt_string)
             setting_obj = get_custom_setting(app_name,setting)
             setting_obj.value = secret_unsigned
             setting_obj.clean()
@@ -448,8 +446,6 @@ def app_settings_create_all_salt_strings_command(args):
                             write_success(
                                 f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
                             )
-                        # signer = Signer(salt=salt_string)
-                        # setting.value = signer.sign_object(secret_unsigned)
                         setting.value = secret_unsigned
                         setting.clean()
                         setting.save()
