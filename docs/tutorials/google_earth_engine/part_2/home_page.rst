@@ -2,7 +2,7 @@
 Add a Home Page
 ***************
 
-**Last Updated:** May 2020
+**Last Updated:** January 2023
 
 In this tutorial you will create a home page for the Google Earth Engine app that you created in :ref:`google_earth_engine_part_1`. This page will contain introductory information about that app. This will involve moving the current "home page", which contains the map viewer, to a new endpoint. Then you will set up a new controller and template for the new home page. The following topics will be reviewed in this tutorial:
 
@@ -52,12 +52,19 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 
     return render(request, 'earth_engine/viewer.html', context)
 
-4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the map view still functions as it should. Be sure to test loading a dataset or two and plot data at a location.
+4. Set custom URLs for the ``get_image_collection`` and  ``get_time_series_plot`` controllers in :file:`controllers.py`: so that their URLs are relative to the ``viewer`` url:
 
-    .. note::
-    
-        The root URL endpoint for the app (`<http://localhost:8000/apps/earth-engine/>`_) is not defined and will raise an error. This error will also be raised if you exit the app and launch it again, because the root URL endpoint is the default primary view of the app.
+.. code-block:: python
 
+    @controller(url='viewer/get-image-collection')
+    def get_image_collection(request):
+        ...
+
+.. code-block:: python
+
+    @controller(url='viewer/get-time-series-plot')
+    def get_time_series_plot(request):
+        ...
 
 2. Create New Home Endpoint
 ===========================
@@ -91,55 +98,32 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
 
 4. Exit the app and launch it again from the Apps Library to verify that loads the new home page.
 
+5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the map view still functions as it should. Be sure to test loading a dataset or two and plot data at a location.
+
 
 3. Remove Navigation from Home Page
 ===================================
 
-As the app is not very complex (i.e. it only has two pages), the navigation menu will not be needed. In this step you will remove it using the ``app_navigation_override`` block. Doing so also causes the hamburger menu in the header to be removed, which causes some styling issues. These will also be addressed by adding a new stylesheet to the page.
+As the app is not very complex (i.e. it only has two pages), the navigation menu will not be needed. Tethys Platform provides a variety of base templates including several without the navigation menu (see: :ref:`additional_base_templates`). In this step you remove the app navigation menu by changing the base template used by ``home.html``.
 
-1. Add the ``app_navigation_override`` block in :file:`templates/earth_engine/home.html` to remove the navigation panel from the home page:
+1. Change the ``extends`` tag in :file:`templates/earth_engine/home.html` to use the base template called ``app_header_content.html``:
 
-.. code-block:: html+django
+.. code-block:: diff
 
-    {% block app_navigation_override %}
+   -{% extends "earth_engine/base.html" %}
+   +{% extends "tethys_apps/app_header_content.html" %}
+    {% load tethys_gizmos static %}
+
+    {% block app_content %}
+    <h1>Home Page</h1>
     {% endblock %}
 
-2. Create a new :file:`public/css/no_nav.css` style sheet with styles to adjust the header appropriately when there is no navigation toggle button in the header:
-
-.. code-block:: css
-
-    #nav-title-wrapper {
-      margin-left: 15px;
-    }
-
-    #app-content-wrapper #app-content {
-      height: 100%;
-    }
-
-    #app-content-wrapper.show-nav #app-content {
-      padding-right: 0;
-      transform: none;
-    }
-
-    #inner-app-content {
-      padding: 0;
-    }
-
-3. Include the :file:`public/css/no_nav.css` stylesheet in :file:`templates/earth_engine/home.html`:
-
-.. code-block:: html+django
-
-    {% block styles %}
-      {{ block.super }}
-      <link rel="stylesheet" href="{% static 'earth_engine/css/no_nav.css' %}" />
-    {% endblock %}
-
-4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the app icon in the header has spacing on the left.
+2. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the navigation menu is gone.
 
 4. Layout Home Page Grid with Bootstrap
 =======================================
 
-In this step, you will create a responsive two column layout using the `Bootstrap Grid System <https://getbootstrap.com/docs/3.3/css/#grid>`_, which is part of the Bootstrap CSS framework. Bootstrap provides a number of simple recipes for implementing common HTML + CSS patterns. It is built-in with Tethys Platform, so no additional installation is required. 
+In this step, you will create a responsive two column layout using the `Bootstrap Grid System <https://getbootstrap.com/docs/5.2/layout/grid/>`_, which is part of the `Bootstrap CSS framework <https://getbootstrap.com/docs/5.2/getting-started/introduction/>`_. Bootstrap provides a number of simple recipes for implementing common HTML + CSS patterns. It is built-in with Tethys Platform, so no additional installation is required. 
 
 1. Create a ``<div>`` element with class ``container-fluid`` in the ``app_content`` block:
 
@@ -185,7 +169,7 @@ In this step, you will create a responsive two column layout using the `Bootstra
     
 .. note::
 
-    Each row in a `Bootstrap Grid <https://getbootstrap.com/docs/3.3/css/#grid>`_ can be divided into as many as 12 columns by specifying different numbers at the end of the ``col-md-X`` classes. A column of size 1 is effectively 1/12th of the width of the row. For example, to divide a row into two equal columns you would add two columns with size of 6 (6/12ths).
+    Each row in a Bootstrap Grid can be divided into as many as 12 columns by specifying different numbers at the end of the ``col-md-X`` classes. A column of size 1 is effectively 1/12th of the width of the row. For example, to divide a row into two equal columns you would add two columns with size of 6 (6/12ths).
     
     Our home page has two columns but instead of being evenly divided, one of them takes up 8 of the available 12 column widths and the other takes the remaining 4 column widths. This effectively give our columns a 2 to 1 ratio. 
 
@@ -247,7 +231,7 @@ In this step, you will create a responsive two column layout using the `Bootstra
 5. Create About Panel Content
 =============================
 
-In this step we'll add a the title and some filler content to the About panel of the home page. The filler content was generated using a `Lorem Ipsum <https://loremipsum.io/>`_ generator. This is a commonly used strategy that allows the developer to test the structure ans style of the page even if the content has not been finalized yet.
+In this step we'll add a the title and some filler content to the About panel of the home page. The filler content was generated using a `Lorem Ipsum <https://loremipsum.io/>`_ generator. This is a commonly used strategy that allows the developer to test the structure and style of the page even if the content has not been finalized yet.
 
 1. Add the title, "About", and a few paragraphs of filler text (lorem ipsum) to the ``<div>`` element with id ``about-container``. Use the ``info-title`` class on the title element to allow for consistent styling of all the titles in a later step. Place the placeholder filler text in ``<p>`` elements:
 
@@ -268,8 +252,8 @@ In this step we'll add a the title and some filler content to the About panel of
 .. code-block:: html+django
     :emphasize-lines: 5
 
-    <div class="info-container">
-      <h2 id="about-container" class="info-title">About</h2>
+    <div id="about-container" class="info-container">
+      <h2 class="info-title">About</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget est lorem ipsum dolor sit amet. Morbi tincidunt augue interdum velit euismod in pellentesque.</p>
       <p>Ac felis donec et odio pellentesque. Quis ipsum suspendisse ultrices gravida dictum fusce ut. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Sed euismod nisi porta lorem mollis. Nisi scelerisque eu ultrices vitae. Sit amet consectetur adipiscing elit duis. At in tellus integer feugiat scelerisque varius morbi enim.</p>
       <img id="feature-image" src="{% static 'earth_engine/images/earth-engine-viewer.png' %}">
@@ -281,7 +265,7 @@ In this step we'll add a the title and some filler content to the About panel of
 6. Create Resources Panel Content
 =================================
 
-In this step we'll add the content to the Resources panel of the home page. The Resouces panel needs to contain a list of links to external resources related to our app. `Boostrap Media Objects <https://getbootstrap.com/docs/3.3/components/#media>`_ will be used to represent our resource list. Each media object has a thumbnail image with the link, title, and short description. Once again, you'll use Lorem Ipsum as filler text.
+In this step we'll add the content to the Resources panel of the home page. The Resouces panel needs to contain a list of links to external resources related to our app.
 
 1. Add the title, "Resources", to the ``<div>`` element with id ``resources-container``. Again, use the ``info-title`` class on the title element.
 
@@ -302,44 +286,44 @@ In this step we'll add the content to the Resources panel of the home page. The 
 
     In addition to Lorem Ipsum generators, there are also `placeholder image generators <https://loremipsum.io/21-of-the-best-placeholder-image-generators/>`_ that can be used to generate placeholder images for development. Most of these services allow you to specify the size of the images and some of them allow you to specify text that is shown on the image. The images above were obtained from `PlaceIMG <http://placeimg.com/>`_.
 
-3. Add three resources to the ``<div>`` element with id ``resources-container``. Use `Boostrap Media Objects <https://getbootstrap.com/docs/3.3/components/#media>`_ to style each resource. Each media object/resource includes, a title, a short description and a thumbnail image. The image is wrapped in an ``<a>`` tag that can be used to provide a link to an external resource. Again, use the built-in ``static`` tag to get the paths for the images.
+3. Add three resources to the ``<div>`` element with id ``resources-container``. Use `Bootstrap Flex Utilities <https://getbootstrap.com/docs/5.2/utilities/flex/#media-object>`_ to create media "objects" for each resource. Each media object includes, a title, a short description and a thumbnail image. The image is wrapped in an ``<a>`` tag that can be used to provide a link to an external resource. Again, use the built-in ``static`` tag to get the paths for the images.
 
 .. code-block:: html+django
     :emphasize-lines: 3-37
 
     <div id="resources-container" class="info-container">
       <h2 class="info-title">Resources</h2>
-      <div class="media">
-        <div class="media-left">
+      <div class="d-flex align-items-center">
+        <div class="flex-shrink-0">
           <a href="#coast">
-            <img class="media-object" src="{% static 'earth_engine/images/coast_80_80.jpg' %}" alt="">
+            <img class="media-object" src="{% static 'earth_engine/images/coast_80_80.jpg' %}" alt="coast">
           </a>
         </div>
-        <div class="media-body">
+        <div class="media-body flex-grow-1 ms-3">
           <h4 class="media-heading">Lorem Ipsum Dolor</h4>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </div>
       </div>
 
-      <div class="media">
-        <div class="media-left">
+      <div class="d-flex align-items-center mt-2">
+        <div class="flex-shrink-0">
           <a href="#condensation">
-            <img class="media-object" src="{% static 'earth_engine/images/condensation_80_80.jpg' %}" alt="">
+            <img class="media-object" src="{% static 'earth_engine/images/condensation_80_80.jpg' %}" alt="condensation">
           </a>
         </div>
-        <div class="media-body">
+        <div class="media-body flex-grow-1 ms-3">
           <h4 class="media-heading">Ut Enim Ad Minim</h4>
           Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </div>
       </div>
 
-      <div class="media">
-        <div class="media-left">
+      <div class="d-flex align-items-center mt-2">
+        <div class="flex-shrink-0">
           <a href="#waterfall">
-            <img class="media-object" src="{% static 'earth_engine/images/waterfall_80_80.jpg' %}" alt="">
+            <img class="media-object" src="{% static 'earth_engine/images/waterfall_80_80.jpg' %}" alt="waterfall">
           </a>
         </div>
-        <div class="media-body">
+        <div class="media-body flex-grow-1 ms-3">
           <h4 class="media-heading">Duis Aute Irure</h4>
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </div>
@@ -374,14 +358,12 @@ The Bootstrap CSS framework provides a good base for styling pages in the apps. 
 
 1. Create a new :file:`public/css/home.css` stylesheet.
 
-2. Include the :file:`public/css/home.css` stylesheet in :file:`templates/earth_engine/home.html`:
+2. Include the :file:`public/css/home.css` stylesheet in :file:`templates/earth_engine/home.html` by adding the ``styles`` block:
 
 .. code-block:: html+django
-    :emphasize-lines: 4
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="{% static 'earth_engine/css/no_nav.css' %}" />
       <link rel="stylesheet" href="{% static 'earth_engine/css/home.css' %}" />
     {% endblock %}
 
@@ -481,6 +463,14 @@ The Bootstrap CSS framework provides a good base for styling pages in the apps. 
     }
 
 9. Refresh the page to see how the styles change the look and feel of the page. Hard-refresh if necessary (:kbd:`CTRL-SHIFT-R` or :kbd:`CTRL-F5`).
+
+10. Notice the white space around the border of the page? This is padding in the content area of our base template. To remove the white space so the backdrop image fills the page, add the following lines to :file:`public/css/home.css`:
+
+.. code-block:: css
+
+    #inner-app-content {
+      padding: 0;
+    }
 
 9. Add a Home Button to Viewer Page
 ===================================

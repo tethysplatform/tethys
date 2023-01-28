@@ -2,7 +2,7 @@
 Add a REST API
 **************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will add a REST API endpoint to the Earth Engine app. The REST API will provide a programmatic access point to the underlying ``get_time_series_from_image_collection`` method. This is the same method that is used retrieve the time series for the plot at an area of interest capability of the Viewer page. Topics covered in this tutorial include:
 
@@ -34,19 +34,19 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
 1. Create a new folder called :file:`controllers` in the :file:`earth_engine` directory with the following new empty Python modules in it:
 
-    * :file:`controllers/`
-        * :file:`__init__.py`
-        * :file:`home.py`
-        * :file:`viewer.py`
-        * :file:`rest.py`
+* :file:`controllers/`
+    * :file:`__init__.py`
+    * :file:`home.py`
+    * :file:`viewer.py`
+    * :file:`rest.py`
 
-    .. note::
+.. note::
 
-        A folder with a file named :file:`__init__.py` is called a Python package.
+    A folder with a file named :file:`__init__.py` is called a Python package.
 
-    .. warning::
+.. warning::
 
-        If you are using PyCharm, make sure it doesn't add an :file:`__init__.py` file in the :file:`tethysapp` directory. This will cause this app or other apps to stop working when installed in Tethys Platform.
+    If you are using PyCharm, make sure it doesn't add an :file:`__init__.py` file in the :file:`tethysapp` directory. This will cause this app or other apps to stop working when installed in Tethys Platform.
 
 2. Copy the ``home`` and ``about`` controller functions, with any imports they need into the new :file:`controllers/home.py` module:
 
@@ -76,26 +76,22 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         context = {}
         return render(request, 'earth_engine/about.html', context)
 
-3. Copy the ``viewer``, ``get_image_collection``, ``get_time_series_plot``, and ``handle_shapefile_upload`` controller functions with any imports they need into the new :file:`controllers/viewer.py` module:
+3. Copy the ``viewer``, ``get_image_collection``, and ``get_time_series_plot`` controller functions with any imports they need into the new :file:`controllers/viewer.py` module:
 
 .. code-block:: python
 
-    import os
-    import tempfile
-    import zipfile
-    import logging
     import datetime as dt
     import geojson
-    import ee
-    import shapefile
+    import logging
+    from simplejson.errors import JSONDecodeError
+
     from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseRedirect
     from django.shortcuts import render
-    from simplejson.errors import JSONDecodeError
-    from tethys_sdk.gizmos import SelectInput, DatePicker, Button, MapView, MVView, PlotlyView, MVDraw
     from tethys_sdk.routing import controller
-    from tethys_sdk.workspaces import user_workspace
-    from ..helpers import generate_figure, find_shapefile, write_boundary_shapefile, prep_boundary_dir
-    from ..gee.methods import get_image_collection_asset, get_time_series_from_image_collection, upload_shapefile_to_gee, \
+    from tethys_sdk.gizmos import SelectInput, DatePicker, Button, MapView, MVView, PlotlyView, MVDraw
+
+    from ..helpers import generate_figure, handle_shapefile_upload
+    from ..gee.methods import get_image_collection_asset, get_time_series_from_image_collection, \
         get_boundary_fc_props_for_user
     from ..gee.products import EE_PRODUCTS
 
@@ -103,7 +99,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
 .. code-block:: python
 
-    @controller(user_workspace=True)
+    @controller(user_workspace=True, url='viewer')
     def viewer(request, user_workspace):
         """
         Controller for the app viewer page.
@@ -114,7 +110,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         return render(request, 'earth_engine/viewer.html', context)
 
 
-    @controller
+    @controller(url='viewer/get-image-collection')
     def get_image_collection(request):
         """
         Controller to handle image collection requests.
@@ -125,25 +121,12 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         return JsonResponse(response_data)
 
 
-    @controller
+    @controller(url='viewer/get-time-series-plot')
     def get_time_series_plot(request):
 
         ...  # Code not shown for brevity
 
         return render(request, 'earth_engine/plot.html', context)
-
-    def handle_shapefile_upload(request, user_workspace):
-        """
-        Uploads shapefile to Google Earth Engine as an Asset.
-
-        Args:
-            request (django.Request): the request object.
-            user_workspace (tethys_sdk.workspaces.Workspace): the User workspace object.
-
-        Returns:
-            str: Error string if errors occurred.
-        """
-        ... # Code not shown for brevity
 
 5. Delete the old :file:`controllers.py` file.
 
@@ -240,7 +223,7 @@ In this step you'll define the parameters that the REST endpoint will accept. If
 
 .. code-block:: python
 
-    @controller(url='api/get-time-series')
+    @controller(url='api/get-time-series', login_required=False)
     @api_view(['GET', 'POST'])
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
@@ -321,7 +304,7 @@ In this step you'll add the validation logic for the ``platform``, ``sensor``, `
     from ..gee.products import EE_PRODUCTS
 
 .. code-block:: python
-    :emphasize-lines: 25-70
+    :emphasize-lines: 27-57
 
     @controller(url='api/get-time-series')
     @api_view(['GET', 'POST'])
@@ -469,37 +452,50 @@ In this step you'll add the validation logic for the ``start_date`` and ``end_da
 
     from ..helpers import compute_dates_for_product
 
-.. code-block:: python
-    :emphasize-lines: 1-2, 11-13, 24-26
+.. code-block:: diff
 
-    # Get initial default dates and date ranges for date picker controls
-    first_product_dates = compute_dates_for_product(first_product)
-
-    start_date = DatePicker(
-        name='start_date',
-        display_text='Start Date',
-        format='yyyy-mm-dd',
-        start_view='decade',
-        today_button=True,
-        today_highlight=True,
-        start_date=first_product_dates['beg_valid_date_range'],
-        end_date=first_product_dates['end_valid_date_range'],
-        initial=first_product_dates['default_start_date'],
-        autoclose=True
-    )
-
-    end_date = DatePicker(
-        name='end_date',
-        display_text='End Date',
-        format='yyyy-mm-dd',
-        start_view='decade',
-        today_button=True,
-        today_highlight=True,
-        start_date=first_product_dates['beg_valid_date_range'],
-        end_date=first_product_dates['end_valid_date_range'],
-        initial=first_product_dates['default_end_date'],
-        autoclose=True
-    )
+    -# Hardcode initial end date to today (since all of our datasets extend to present)
+    -today = dt.datetime.today()
+    -initial_end_date = today.strftime('%Y-%m-%d')
+    
+    -# Initial start date will a set number of days before the end date
+    -# NOTE: This assumes the start date of the dataset is at least 30+ days prior to today
+    -initial_end_date_dt = dt.datetime.strptime(initial_end_date, '%Y-%m-%d')
+    -initial_start_date_dt = initial_end_date_dt - dt.timedelta(days=30)
+    -initial_start_date = initial_start_date_dt.strftime('%Y-%m-%d')
+ 
+    -# Build date controls
+    -first_product_start_date = first_product.get('start_date', None)
+    -first_product_end_date = first_product.get('end_date', None) or initial_end_date
+ 
+    +# Get initial default dates and date ranges for date picker controls
+    +first_product_dates = compute_dates_for_product(first_product)
+ 
+     start_date = DatePicker(
+         name='start_date',
+         display_text='Start Date',
+         format='yyyy-mm-dd',
+         start_view='decade',
+         today_button=True,
+         today_highlight=True,
+    +    start_date=first_product_dates['beg_valid_date_range'],
+    +    end_date=first_product_dates['end_valid_date_range'],
+    +    initial=first_product_dates['default_start_date'],
+         autoclose=True
+     )
+ 
+     end_date = DatePicker(
+         name='end_date',
+         display_text='End Date',
+         format='yyyy-mm-dd',
+         start_view='decade',
+         today_button=True,
+         today_highlight=True,
+    +    start_date=first_product_dates['beg_valid_date_range'],
+    +    end_date=first_product_dates['end_valid_date_range'],
+    +    initial=first_product_dates['default_end_date'],
+         autoclose=True
+     )
 
 3. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to also use the ``compute_dates_for_product`` helper function as part of it's validation for the ``start_date`` and ``end_date`` parameters. Replace the ``response_data`` object with the following:
 
@@ -858,7 +854,92 @@ With the parameters properly vetted, you are now ready to call the ``get_time_se
     orient:series
     scale:250
 
-6. Press the **Send** button to ensure the API works as expected with the POST method.
+6. Press the **Send** button to ensure the API works as expected with the POST method. The response should look similar to the following:
+
+.. code-block:: json
+
+    {
+        "time_series": [
+            {
+                "Time": "{\"0\":1581724800000,\"1\":1581811200000,\"2\":1581897600000,\"3\":1581984000000,\"4\":1582070400000,\"5\":1582156800000,\"6\":1582243200000,\"7\":1582329600000,\"8\":1582416000000,\"9\":1582502400000,\"10\":1582588800000,\"11\":1582675200000,\"12\":1582761600000,\"13\":1582848000000,\"14\":1582934400000,\"15\":1583020800000,\"16\":1583107200000,\"17\":1583193600000,\"18\":1583280000000,\"19\":1583366400000,\"20\":1583452800000,\"21\":1583539200000,\"22\":1583625600000,\"23\":1583712000000,\"24\":1583798400000,\"25\":1583884800000,\"26\":1583971200000,\"27\":1584057600000,\"28\":1584144000000,\"29\":1584230400000,\"30\":1584316800000,\"31\":1584403200000,\"32\":1584489600000,\"33\":1584576000000,\"34\":1584662400000,\"35\":1584748800000,\"36\":1584835200000,\"37\":1584921600000,\"38\":1585008000000,\"39\":1585094400000,\"40\":1585180800000,\"41\":1585267200000,\"42\":1585353600000,\"43\":1585440000000,\"44\":1585526400000,\"45\":1585612800000,\"46\":1585699200000,\"47\":1585785600000,\"48\":1585872000000,\"49\":1585958400000,\"50\":1586044800000,\"51\":1586131200000,\"52\":1586217600000,\"53\":1586304000000,\"54\":1586390400000,\"55\":1586476800000,\"56\":1586563200000,\"57\":1586649600000,\"58\":1586736000000}",
+                "LST Day 1km": "{\"0\":null,\"1\":null,\"2\":15178.0,\"3\":15046.0,\"4\":14882.0,\"5\":null,\"6\":15409.0,\"7\":15030.0,\"8\":null,\"9\":15091.0,\"10\":null,\"11\":null,\"12\":null,\"13\":15470.0,\"14\":15252.0,\"15\":15511.0,\"16\":null,\"17\":null,\"18\":null,\"19\":null,\"20\":15595.0,\"21\":null,\"22\":15197.0,\"23\":null,\"24\":null,\"25\":15024.0,\"26\":14907.0,\"27\":15346.0,\"28\":null,\"29\":15627.0,\"30\":15120.0,\"31\":15024.0,\"32\":null,\"33\":null,\"34\":15139.0,\"35\":15090.0,\"36\":15626.0,\"37\":null,\"38\":15224.0,\"39\":null,\"40\":15013.0,\"41\":null,\"42\":null,\"43\":null,\"44\":null,\"45\":15295.0,\"46\":null,\"47\":15368.0,\"48\":15342.0,\"49\":null,\"50\":15053.0,\"51\":null,\"52\":15189.0,\"53\":null,\"54\":15094.0,\"55\":15107.0,\"56\":15415.0,\"57\":15263.0,\"58\":null}"
+            },
+            {
+                "Time": "{\"0\":1581724800000,\"1\":1581811200000,\"2\":1581897600000,\"3\":1581984000000,\"4\":1582070400000,\"5\":1582156800000,\"6\":1582243200000,\"7\":1582329600000,\"8\":1582416000000,\"9\":1582502400000,\"10\":1582588800000,\"11\":1582675200000,\"12\":1582761600000,\"13\":1582848000000,\"14\":1582934400000,\"15\":1583020800000,\"16\":1583107200000,\"17\":1583193600000,\"18\":1583280000000,\"19\":1583366400000,\"20\":1583452800000,\"21\":1583539200000,\"22\":1583625600000,\"23\":1583712000000,\"24\":1583798400000,\"25\":1583884800000,\"26\":1583971200000,\"27\":1584057600000,\"28\":1584144000000,\"29\":1584230400000,\"30\":1584316800000,\"31\":1584403200000,\"32\":1584489600000,\"33\":1584576000000,\"34\":1584662400000,\"35\":1584748800000,\"36\":1584835200000,\"37\":1584921600000,\"38\":1585008000000,\"39\":1585094400000,\"40\":1585180800000,\"41\":1585267200000,\"42\":1585353600000,\"43\":1585440000000,\"44\":1585526400000,\"45\":1585612800000,\"46\":1585699200000,\"47\":1585785600000,\"48\":1585872000000,\"49\":1585958400000,\"50\":1586044800000,\"51\":1586131200000,\"52\":1586217600000,\"53\":1586304000000,\"54\":1586390400000,\"55\":1586476800000,\"56\":1586563200000,\"57\":1586649600000,\"58\":1586736000000}",
+                "LST Day 1km": "{\"0\":14968.8013557598,\"1\":14732.0,\"2\":15140.6162672913,\"3\":14964.0387762783,\"4\":14997.5439551696,\"5\":null,\"6\":15329.096412742,\"7\":15040.9105709928,\"8\":14961.5659903202,\"9\":15247.6460587379,\"10\":15128.6494517054,\"11\":null,\"12\":null,\"13\":15315.9218134749,\"14\":15142.2256710748,\"15\":15489.6098782062,\"16\":null,\"17\":null,\"18\":14830.7316079983,\"19\":null,\"20\":15365.3874342389,\"21\":null,\"22\":15096.8693791135,\"23\":null,\"24\":14571.8987736331,\"25\":14941.6888052079,\"26\":14906.3561937113,\"27\":15206.5296095194,\"28\":null,\"29\":15568.0890033355,\"30\":15302.2537246606,\"31\":15168.7467805083,\"32\":14991.9650580776,\"33\":15031.5642354043,\"34\":14976.2529256142,\"35\":15015.4395296379,\"36\":15419.699948541,\"37\":null,\"38\":15306.6092905512,\"39\":15305.2591368269,\"40\":null,\"41\":null,\"42\":null,\"43\":14921.4426529555,\"44\":null,\"45\":15293.5047969806,\"46\":null,\"47\":15155.7042583175,\"48\":15072.2772985564,\"49\":14963.3847646173,\"50\":14974.3150231811,\"51\":null,\"52\":15099.3012719277,\"53\":null,\"54\":15242.5142541762,\"55\":15089.3998174908,\"56\":15442.3522075961,\"57\":15175.1380971884,\"58\":null}"
+            }
+        ],
+        "parameters": {
+            "platform": "modis",
+            "sensor": "terra",
+            "product": "temperature",
+            "index": "LST_Day_1km",
+            "start_date": "2020-02-15",
+            "end_date": "2020-04-14",
+            "reducer": "mean",
+            "orient": "series",
+            "scale": 250.0,
+            "geometry": {
+                "type": "GeometryCollection",
+                "geometries": [
+                    {
+                        "type": "Point",
+                        "properties": {
+                            "id": "drawing_layer.79c08238-4084-4825-9e76-f018527d45b7"
+                        },
+                        "crs": {
+                            "type": "link",
+                            "properties": {
+                                "href": "http://spatialreference.org/ref/epsg/4326/proj4/",
+                                "type": "proj4"
+                            }
+                        },
+                        "coordinates": [
+                            36.112061,
+                            -0.032959
+                        ]
+                    },
+                    {
+                        "type": "Polygon",
+                        "properties": {
+                            "id": "drawing_layer.ffa36dfd-5767-4946-890b-f4c0d9c0ff9f"
+                        },
+                        "crs": {
+                            "type": "link",
+                            "properties": {
+                                "href": "http://spatialreference.org/ref/epsg/4326/proj4/",
+                                "type": "proj4"
+                            }
+                        },
+                        "coordinates": [
+                            [
+                                [
+                                    36.749268,
+                                    0.186767
+                                ],
+                                [
+                                    36.694336,
+                                    -0.043945
+                                ],
+                                [
+                                    36.990967,
+                                    -0.043945
+                                ],
+                                [
+                                    36.914062,
+                                    0.175781
+                                ],
+                                [
+                                    36.749268,
+                                    0.186767
+                                ]
+                            ]
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 
 12. Solution
 ============

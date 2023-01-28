@@ -4,7 +4,7 @@
 Prepare App for Publishing and Deploy
 *************************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will prepare the app for publishing and deployment. The app source code will be published to `GitHub <https://github.com/>`_ under an `open source license <https://opensource.org/licenses>`_. Among other things, this will allow you to track future changes to the app and it will allow others to view the code and modify it for their own use. Having the app code published on GitHub will also make it easier to download when installing the app on a production server.
 
@@ -164,7 +164,7 @@ In this step you will add an appropriate open source license to your project. Th
 
 1. Navigate to `<https://opensource.org/licenses>`_ and peruse the list of Popular License.
 
-2. Click on the link for the `BSD 3-Clause "New" or "Revised" license <https://opensource.org/licenses/BSD-3-Clause>`_ or a license of your choice.
+2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/licenses/BSD-3-Clause>`_ or a license of your choice.
 
 3. Create a new file called :file:`LICENSE` in the same directory as the :file:`setup.py`.
 
@@ -195,7 +195,7 @@ In this step you will add appropriate metadata to the :file:`setup.py`. This met
         author='<YOUR NAME>',
         author_email='<YOUR EMAIL>',
         url='',  # The URL will be set in a future step.
-        license='BSD 3-Clause',
+        license='BSD-3-Clause',
         packages=find_namespace_packages(),
         package_data={'': resource_files},
         include_package_data=True,
@@ -250,20 +250,21 @@ Up to this point, the app has been installed in development mode (``tethys insta
 
 In a production environment you will want to install the app normally (``tethys install``). When a Python package is installed, the files are **copied** to the Python :file:`site-packages` directory. By default, only Python files (with the ``py`` extension) are copied to the :file:`site-packages` directory. Other types of files needed by a a Python package are referred to as "package data" or "resource files".
 
-Resource files that are required by in Tethys Apps include CSS, JavaScript, HTML, and images. Open :file:`setup.py` and inspect lines 12-13:
+Resource files that are required by in Tethys Apps include CSS, JavaScript, HTML, and images. Open :file:`setup.py` and inspect line 13:
 
-.. code-block::
+.. code-block:: python
 
-    resource_files = find_resource_files('tethysapp/' + app_package + '/templates', 'tethysapp/' + app_package)
-    resource_files += find_resource_files('tethysapp/' + app_package + '/public', 'tethysapp/' + app_package)
+    resource_files = find_all_resource_files(app_package, TethysAppBase.package_namespace)
 
-These lines use a helper function provided by Tethys Platform ``find_resource_files`` to automatically locate and include files in the :file:`templates` and :file:`public` directories. If your app had additional directories with non-python files that need to be included, you would need to add an additional call to ``find_resource_files`` like so:
+These lines use a helper function provided by Tethys Platform ``find_all_resource_files`` to automatically locate and include all files in the :file:`templates`, :file:`public`, and :file:`workspaces` directories. If your app had additional directories with non-python files that need to be included, you would need to add calls to another helper function, ``find_resource_files``, like so:
 
-.. code-block::
+.. code-block:: python
 
-    resource_files += find_resource_files('tethysapp/' + app_package + '<OTHER RESOURCE FILES DIR>', 'tethysapp/' + app_package)
+    from tethys_apps.app_installation import find_resource_files
 
-There are no additional resource files for the Earth Engine app, so no additional calls to ``find_resource_files`` are required.
+    resource_files += find_resource_files(f'{TethysAppBase.package_namespace}/{app_package}/<OTHER RESOURCE FILES DIR>', f'{TethysAppBase.package_namespace}/{app_package}')
+
+There are no additional resource files for the Earth Engine app, so no calls to ``find_resource_files`` are required.
 
 8. Solution
 ===========

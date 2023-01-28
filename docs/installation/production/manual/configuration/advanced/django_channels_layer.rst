@@ -60,7 +60,7 @@ If using Tethys Docker, the ``CHANNEL_LAYERS_BACKEND``, ``CHANNEL_LAYERS_CONFIG`
 
     ENV ASGI_PROCESSES 1
     ENV CHANNEL_LAYERS_BACKEND "channels_redis.core.RedisChannelLayer"
-    ENV CHANNEL_LAYERS_CONFIG "\"{\"hosts\": [[127.0.0.1, 6379]]}\""
+    ENV CHANNEL_LAYERS_CONFIG "\"{'hosts':[{'host':\ 'redis',\ 'port':\ 6379}]}\""
 
 Finally, make sure that a ``REDIS Server`` is running. This can easily be done with a ``Docker container`` either by running it directly or adding it to a docker-compose.
 
