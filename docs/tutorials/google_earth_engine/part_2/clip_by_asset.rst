@@ -2,7 +2,7 @@
 Clip by Asset
 *************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will use the shapefile uploaded using the file upload form to clip the dataset imagery. This will be done by uploading the shapefile to Google Earth Engine as an asset. Then the map will be reconfigured to check for the asset and clip the imagery if it exists. It will also use the bounding box of the asset to set the default map extent. The following topics will be reviewed in this tutorial:
 
@@ -45,12 +45,15 @@ In this step you will stub out a new GEE method called ``upload_shapefile_to_gee
         print(user.username)
         print(shp_file)
 
-2. Import the new ``upload_shapefile_to_gee`` function and call it in ``handle_shapefile_upload`` function in :file:`controllers.py` after validating the shapefile upload. Also add an additional ``except`` clause to handle any uncaught Google Earth Engine errors:
+2. Import the new ``upload_shapefile_to_gee`` function and call it in ``handle_shapefile_upload`` function in :file:`helpers.py` after validating the shapefile upload. Also add an additional ``except`` clause to handle any uncaught Google Earth Engine errors:
 
 .. code-block:: python
 
+    import logging
     import ee
     from .gee.methods import upload_shapefile_to_gee
+
+    log = logging.getLogger(f'tethys.apps.{__name__}')
 
 .. code-block:: python
     :emphasize-lines: 51-52, 57-60
@@ -471,7 +474,7 @@ In this step you will modify the ``get_image_collection_asset`` method to attemp
 .. code-block:: python
     :emphasize-lines: 22
 
-    @controller
+    @controller(url='viewer/get-image-collection')
     def get_image_collection(request):
         """
         Controller to handle image collection requests.

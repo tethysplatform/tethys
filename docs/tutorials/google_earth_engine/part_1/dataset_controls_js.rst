@@ -2,7 +2,7 @@
 Add JavaScript for Dynamic Control Behavior
 *******************************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will add dynamic behavior to the dataset controls created in the previous step using JavaScript. The following topics will be reviewed in this tutorial:
 
@@ -239,8 +239,8 @@ Here is a brief explanation of each method that will be implemented in this step
 
 .. code-block:: javascript
 
-        bind_controls = function() {
-            $('#platform').on('change', function() {
+    bind_controls = function() {
+        $('#platform').on('change', function() {
             let platform = $('#platform').val();
 
             if (platform !== m_platform) {

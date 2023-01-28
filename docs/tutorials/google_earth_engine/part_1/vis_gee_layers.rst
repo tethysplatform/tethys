@@ -2,7 +2,7 @@
 Visualize Google Earth Engine Datasets
 **************************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will load the GEE dataset the user has selected into the map view. The following topics will be reviewed in this tutorial:
 
@@ -474,7 +474,8 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
         name='clear_map',
         display_text='Clear',
         style='outline-secondary',
-        attributes={'id': 'clear_map'}
+        attributes={'id': 'clear_map'},
+        classes='mt-2',
     )
 
     context = {

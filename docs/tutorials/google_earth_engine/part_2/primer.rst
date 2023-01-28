@@ -2,7 +2,7 @@
 Part 2 Primer: Boostrap, CSS, Assets and More
 *********************************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 This tutorial extends the Earth Engine app developed in Part 1 and covers a wide range of additional topics for Tethys App development. In this tutorial you will learn how to add multiple pages to a Tethys App, create responsive layouts using the Boostrap CSS framework, upload files and manage them in the app, work with Google Earth Engine Assets, and add a REST API to your app.
 
@@ -11,7 +11,7 @@ This primer provides simple explanations for some of the concepts you and tools 
 Bootstrap CSS Framework
 =======================
 
-Bootstrap is self-described as "the most popular HTML, CSS, and JavaScript framework". It provides HTML patterns, CSS, and a bit of JavaScript for building responsive websites. Tethys Platform includes Bootstrap as one of its built-in tools, so there is no need to download or install the libraries to use it in your app. At the time of writing, Tethys Platform provided `Bootstrap version 3.4.1 <https://getbootstrap.com/docs/3.4/>`_, which is not the latest release. Take care to use the correct version of the documentation whenever you search for Bootstrap help.
+Bootstrap is self-described as "the most popular HTML, CSS, and JavaScript framework". It provides HTML patterns, CSS, and a bit of JavaScript for building responsive websites. Tethys Platform includes Bootstrap as one of its built-in tools, so there is no need to download or install the libraries to use it in your app. At the time of writing, Tethys Platform provided `Bootstrap version 5 <https://getbootstrap.com/docs/5.2/getting-started/introduction/>`_, which is not the latest release. Take care to use the correct version of the documentation whenever you search for Bootstrap help.
 
 Responsive Web Design
 ---------------------
@@ -21,17 +21,17 @@ Responsive web design is an approach to building websites that adjust to the dev
 Bootstrap Grid
 --------------
 
-Bootstrap provides a fluid grid system for creating just about any layout that you need. Using the grid system you can create a 2-column, 3-column, up to 12-column layout for larger screens. On narrow screens, no matter the layout, the columns stack on top of each other and fill the screen width. See `Bootstrap Grid System <https://getbootstrap.com/docs/3.4/css/#grid>`_ for more details and tips.
+Bootstrap provides a fluid grid system for creating just about any layout that you need. Using the grid system you can create a 2-column, 3-column, up to 12-column layout for larger screens. On narrow screens, no matter the layout, the columns stack on top of each other and fill the screen width. See `Bootstrap Grid System <https://getbootstrap.com/docs/5.2/layout/grid/>`_ for more details and tips.
 
 Bootstrap Containers
 --------------------
 
-The Bootstrap grid elements need to be placed inside one of the containers it provides. There are two types of containers to choose from: ``.container`` and ``.container-fluid``. Using ``.container`` will create a responsive, fixed-width page with large margins, while the ``.container-fluid`` element will create a full-width page that changes dynamically if the viewport changes size. Both types of containers will be demonstrated in this tutorial. See `Bootstrap Containers <https://getbootstrap.com/docs/3.4/css/#overview-container>`_ for more details.
+The Bootstrap grid elements need to be placed inside one of the containers it provides. There are two types of containers to choose from: ``.container`` and ``.container-fluid``. Using ``.container`` will create a responsive, fixed-width page with large margins, while the ``.container-fluid`` element will create a full-width page that changes dynamically if the viewport changes size. Both types of containers will be demonstrated in this tutorial. See `Bootstrap Containers <https://getbootstrap.com/docs/5.2/layout/containers/>`_ for more details.
 
 Modals
 ------
 
-Modals are a staple of web applications that can be used for dialogs and message boxes. Bootstrap provides a responsive modal with a JavaScript API to allow you bind to modal events and control it dynamically. See `Bootstrap Modals <https://getbootstrap.com/docs/3.4/javascript/#live-demo>`_ for more details.
+Modals are a staple of web applications that can be used for dialogs and message boxes. Bootstrap provides a responsive modal with a JavaScript API to allow you bind to modal events and control it dynamically. See `Bootstrap Modals <https://getbootstrap.com/docs/5.2/components/modal/>`_ for more details.
 
 CSS Primer for Tethys Developers
 ================================

@@ -390,7 +390,7 @@ app_navigation_items
 app_navigation_items
 --------------------
 
-Override or append to the app navigation list. These should be ``<li>`` elements according to the `Boostrap Vertical Nav <https://getbootstrap.com/docs/5.0/components/navs-tabs/#vertical>`_ structure. In addition, Tethys Platform provides the ``title`` and ``separator`` classes that can be used to split the navigation items into sections.
+Override or append to the app navigation list. These should be ``<li>`` elements according to the `Boostrap Vertical Nav <https://getbootstrap.com/docs/5.2/components/navs-tabs/#vertical>`_ structure. In addition, Tethys Platform provides the ``title`` and ``separator`` classes that can be used to split the navigation items into sections.
 
 Example:
 

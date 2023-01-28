@@ -2,7 +2,7 @@
 Build Dataset Selection Controls
 ********************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will add controls to the app that will eventually be used to select various Google Earth Engine datasets to display. The following topics will be reviewed in this tutorial:
 

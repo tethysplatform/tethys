@@ -110,6 +110,7 @@ installed_apps = [
     "tethys_gizmos",
     "tethys_services",
     "tethys_compute",
+    "tethys_layouts",
 ]
 
 settings.configure(
@@ -119,19 +120,7 @@ settings.configure(
 )
 django.setup()
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-# sys.path.insert(0, os.path.abspath('.'))
-
-# -- General configuration ------------------------------------------------
-
-# If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = '1.0'
-
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
+# Sphinx extensions
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
@@ -139,6 +128,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.todo",
     "sphinxarg.ext",
+    "sphinxawesome_theme",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -155,7 +145,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Tethys Platform"
-copyright = "2022, Tethys Platform"
+copyright = "2023, Tethys Platform"
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 on_rtd = os.environ.get("READTHEDOCS") == "True"
@@ -168,10 +158,7 @@ release = get_version(root="..", relative_to=__file__)
 # major/minor
 version = ".".join(release.split(".")[:2])
 
-# A string of reStructuredText that will be included at the end of every source
-# file that is read. This is the right place to add substitutions that should be
-# available in every file.
-
+# Determine branch
 git_directory = Path(__file__).parent.parent
 ret = subprocess.run(
     ["git", "-C", git_directory, "rev-parse", "--abbrev-ref", "HEAD"],
@@ -192,28 +179,12 @@ exclude_patterns = ["_build"]
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-# -- Options for HTML output ----------------------------------------------
-
-# The name of an image file (within the static path) to use as favicon of the
-# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
-# pixels large.
-html_favicon = "images/default_favicon.ico"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
-
-html_css_files = [
-    "css/tethys.css",
-]
-
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
 smartquotes = False
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "TethysPlatformdoc"
+htmlhelp_basename = f"{project}doc"
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
@@ -265,61 +236,37 @@ todo_include_todos = True
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
-html_theme = "sphinx_materialdesign_theme"
+html_title = f"{project} Documentation"
+html_short_title = "Tethys Docs"
+html_logo = "images/features/tethys-logo-75.png"
+html_favicon = "images/default_favicon.ico"
+html_static_path = ["_static"]
+html_css_files = [
+    "css/tethys.css",
+]
 
+html_theme = "sphinxawesome_theme"
 html_theme_options = {
-    # Specify a list of menu in Header.
-    # Tuples forms:
-    #  ('Name', 'external url or path of pages in the document', boolean, 'icon name')
-    #
-    # Third argument:
-    # True indicates an external link.
-    # False indicates path of pages in the document.
-    #
-    # Fourth argument:
-    # Specify the icon name.
-    # For details see link.
-    # https://material.io/icons/
-    "header_links": [
-        ("Home", "index", False, "home"),
-        ("Tutorials", "tutorials", False, "assignment"),
-        ("SDK", "tethys_sdk", False, "build"),
-        ("Template Gizmos", "tethys_sdk/gizmos", False, "widgets"),
-        ("CLI", "tethys_cli", False, "keyboard_arrow_right"),
-        ("Tethys Portal", "tethys_portal", False, "web"),
-        ("Software Suite", "software_suite", False, "developer_board"),
-        ("Migrate Apps", "whats_new/app_migration", False, "open_in_browser"),
-        (
-            "Issues",
-            "https://github.com/tethysplatform/tethys/issues",
-            True,
-            "bug_report",
-        ),
-        ("GitHub", "https://github.com/tethysplatform/tethys", True, "launch"),
-    ],
-    # Customize css colors.
-    # For details see link.
-    # https://getmdl.io/customize/index.html
-    #
-    # Values: amber, blue, brown, cyan deep_orange, deep_purple, green, grey, indigo, light_blue,
-    #         light_green, lime, orange, pink, purple, red, teal, yellow(Default: indigo)
-    "primary_color": "blue",
-    # Values: Same as primary_color. (Default: pink)
-    "accent_color": "light_blue",
-    # Customize layout.
-    # For details see link.
-    # https://getmdl.io/components/index.html#layout-section
-    "fixed_drawer": False,
-    "fixed_header": True,
-    "header_waterfall": True,
-    "header_scroll": False,
-    # Render title in header.
-    # Values: True, False (Default: False)
-    "show_header_title": True,
-    # Render title in drawer.
-    # Values: True, False (Default: True)
-    "show_drawer_title": False,
-    # Render footer.
-    # Values: True, False (Default: True)
-    "show_footer": True,
+    "extra_header_links": {
+        "Tutorials": "tutorials",
+        "SDK": "tethys_sdk",
+        "CLI": "tethys_cli",
+        "Tethys Portal": "tethys_portal",
+        "Migrate Apps": "whats_new/app_migration",
+        "GitHub": "https://github.com/tethysplatform/tethys",
+    },
+    "show_breadcrumbs": False,
+    "show_prev_next": True,
+    "show_scrolltop": True,
 }
+
+html_collapsible_definitions = True
+
+# Link icon for header links instead of pharagraph icons that are the default
+html_permalinks_icon = (
+    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
+    '<path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 '
+    "5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 "
+    '0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z">'
+    "</path></svg>"
+)
