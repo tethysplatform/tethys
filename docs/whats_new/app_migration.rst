@@ -139,7 +139,7 @@ needs to be changed to this:
 Theme and Styles
 ================
 
-The frontend CSS framework, Bootstrap, was upgraded from version 3 to version 5 in Tethys Platform 4. As a result, any Boostrap components that are used in templates will need to be updated to use the `Bootstrap 5 <https://getbootstrap.com/docs/5.0/getting-started/introduction/>`_ syntax so they function and look as expected. This section describes how to update the most common Bootstrap components that are used in Tethys Apps.
+The frontend CSS framework, Bootstrap, was upgraded from version 3 to version 5 in Tethys Platform 4. As a result, any Boostrap components that are used in templates will need to be updated to use the `Bootstrap 5 <https://getbootstrap.com/docs/5.2/getting-started/introduction/>`_ syntax so they function and look as expected. This section describes how to update the most common Bootstrap components that are used in Tethys Apps.
 
 .. note::
 
@@ -217,12 +217,12 @@ All Boostrap related data attributes on HTML elements now include a ``bs`` names
 
 1. Perform a project-wide search on your app source code for ``data-`` to find instances of data attributes.
 2. Review the tips below for Tooltips, Dropdowns, and Modals.
-3. Review the `Bootstrap 5 documentation <https://getbootstrap.com/docs/5.0/components/accordion/>`_ for details about changes to other components that your app uses that are not listed below.
+3. Review the `Bootstrap 5 documentation <https://getbootstrap.com/docs/5.2/components/accordion/>`_ for details about changes to other components that your app uses that are not listed below.
 
 Buttons
 -------
 
-The ``btn-default`` class no longer exists in Bootstrap 5. Change it to ``btn-outline-secondary`` for a similar looking button. Alternatively, choose from several new styles of buttons that can be found here: `Boostrap Buttons <https://getbootstrap.com/docs/5.0/components/buttons/>`_.
+The ``btn-default`` class no longer exists in Bootstrap 5. Change it to ``btn-outline-secondary`` for a similar looking button. Alternatively, choose from several new styles of buttons that can be found here: `Boostrap Buttons <https://getbootstrap.com/docs/5.2/components/buttons/>`_.
 
 Tooltips
 --------
@@ -471,7 +471,7 @@ Other Resources
 It is not possible to anticipate every migration step that will be needed. The suggestions are for the cases that will be most commonly encountered. The following resources may provide additional guidance for migrating your app(s).
 
 * Tethys is powered by Django. If your app makes uses of Django features directly, you may need to perform additional migration steps. See `Upgrading Django to a newer version <https://docs.djangoproject.com/en/3.2/howto/upgrade-version/>`_ and `Django 3.2 Release Notes <https://docs.djangoproject.com/en/3.2/releases/>`_.
-* Apps are styled using Bootstrap, a frontend CSS framework. If your app uses Bootstrap components other than those described above, use these links to help you migrate: `Migrating to v4 | Bootstrap <https://getbootstrap.com/docs/4.0/migration/>`_ and `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/5.0/migration/>`_.
+* Apps are styled using Bootstrap, a frontend CSS framework. If your app uses Bootstrap components other than those described above, use these links to help you migrate: `Migrating to v4 | Bootstrap <https://getbootstrap.com/docs/4.0/migration/>`_ and `Migrating to v5 | Bootstrap <https://getbootstrap.com/docs/5.2/migration/>`_.
 
 .. _app_migration_older_apps:
 

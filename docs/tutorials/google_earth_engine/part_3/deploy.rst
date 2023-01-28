@@ -2,7 +2,7 @@
 Deploy App to Production Server
 *******************************
 
-**Last Updated:** June 2022
+**Last Updated:** January 2023
 
 In this tutorial you will learn how to install the Google Earth Tethys app in a production environment. If you don't have access to a machine with a production installation of Tethys Platform, we recommend you create a new Virtual Machine and install Tethys on it. Refer to :ref:`production_installation`.
 

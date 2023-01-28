@@ -162,7 +162,7 @@ To use, add the following stylesheet to your HTML template in the ``styles`` blo
         <link href="{% static 'tethys_sdk/css/nav_tabs.css' %}" rel="stylesheet">
     {% endblock %}
 
-Then add Bootstrap tabs to the template in the ``app_navigation`` block as usual (see `Navs and tabs | Bootstrap <https://getbootstrap.com/docs/5.0/components/navs-tabs/#using-data-attributes>`_):
+Then add Bootstrap tabs to the template in the ``app_navigation`` block as usual (see `Navs and tabs | Bootstrap <https://getbootstrap.com/docs/5.2/components/navs-tabs/#using-data-attributes>`_):
 
 .. code-block:: html+django
 

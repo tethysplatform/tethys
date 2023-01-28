@@ -788,15 +788,20 @@ should_disable_basemap
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.should_disable_basemap
 
-save_custom_layers
-^^^^^^^^^^^^^^^^^^
-
-.. automethod:: tethys_layouts.views.map_layout.MapLayout.save_custom_layers
-
-remove_custom_layer
+on_add_custom_layer
 ^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: tethys_layouts.views.map_layout.MapLayout.remove_custom_layer
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.on_add_custom_layer
+
+on_remove_tree_item
+^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.on_remove_tree_item
+
+on_rename_tree_item
+^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.on_rename_tree_item
 
 .. _map_layout_methods:
 
@@ -866,10 +871,10 @@ Properties Popups
 
 .. _map_layout_js_show_properties_popup:
 
-show_properties_popup
-^^^^^^^^^^^^^^^^^^^^^
+show_properties_pop_up
+^^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.show_properties_popup(coordinates)**
+**MAP_LAYOUT.show_properties_pop_up(coordinates)**
 
     Show the properties popup at the location given.
 
@@ -879,28 +884,28 @@ show_properties_popup
 
 .. _map_layout_js_close_properties_popup:
 
-close_properties_popup
-^^^^^^^^^^^^^^^^^^^^^^
+close_properties_pop_up
+^^^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.close_properties_popup()** 
+**MAP_LAYOUT.close_properties_pop_up()** 
 
     Hides the properties popup and clears the features selected.
 
 .. _map_layout_js_hide_properties_popup:
 
-hide_properties_popup
-^^^^^^^^^^^^^^^^^^^^^
+hide_properties_pop_up
+^^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.hide_properties_popup()**
+**MAP_LAYOUT.hide_properties_pop_up()**
 
     Hides the properties popup without clearing selection.
 
 .. _map_layout_js_reset_properties_popup:
 
-reset_properties_popup
-^^^^^^^^^^^^^^^^^^^^^^
+reset_properties_pop_up
+^^^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.reset_properties_popup()**
+**MAP_LAYOUT.reset_properties_pop_up()**
 
     Empties content of properties popup and then hides it.
 

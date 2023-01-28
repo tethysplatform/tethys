@@ -363,7 +363,7 @@ c. Add the following contents to each ``.env`` file:
         # Don't change these parameters
         ASGI_PROCESSES=1
         CHANNEL_LAYERS_BACKEND=channels_redis.core.RedisChannelLayer
-        CHANNEL_LAYERS_CONFIG="\"{\"hosts\": [[\"redis\", 6379]]}\""  # Hostname is the name of the service
+        CHANNEL_LAYERS_CONFIG="\"{'hosts':[{'host':\ 'redis',\ 'port':\ 6379}]}\""  # Hostname is the name of the service
 
         # Database parameters
         TETHYS_DB_HOST=db  # Hostname is the name of the service

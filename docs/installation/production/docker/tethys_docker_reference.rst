@@ -219,6 +219,7 @@ The following environment variables can be used to set some of the Tethys Settin
 +---------------------------+------------------------------------------------------------------------------------------+
 | CHANNEL_LAYERS_CONFIG     | The Django Channel Layers configuration if a layer other than the default is being used. |
 |                           | Defaults to "\"{}}\"" (Empty).                                                           |
+|                           | For example: "\"{'hosts':[{'host':\ 'localhost',\ 'port':\ 6379}]}\""                    |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PRIVATE_KEY     | Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.      |
 |                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                                 |
