@@ -4,7 +4,7 @@
 Create Dockerfile
 *****************
 
-**Last Updated:** November 2021
+**Last Updated:** January 2023
 
 With Docker installed and a basic understanding of how it works under your belt, you are now ready to create a Docker image containing the Tethys Portal with your apps installed. In this tutorial you will create a Docker image with some of the tutorial apps installed. A similar process can be used to create a Docker image for your Tethys Portal.
 
@@ -43,7 +43,7 @@ a. Create the following text files in the :file:`tethys_portal_docker` directory
 
     .. code-block::
 
-        touch  README.md LICENSE Dockerfile
+        touch README.md LICENSE Dockerfile
 
 b. Add the following contents each the files:
 
@@ -145,7 +145,7 @@ All Dockerfiles must begin with a `FROM <https://docs.docker.com/engine/referenc
 
 .. note::
 
-    The ``latest`` portion of the image name is a tag that specifies the latest released version will be used for the build. Alternatively, you can replace the ``latest`` tag with either a specific version of Tethys Platform (e.g. ``3.3.0``) or with the ``dev`` tag to use the latest development version. For a list of all available tags see: `tethysplatform/tethys-core Tags <https://hub.docker.com/r/tethysplatform/tethys-core/tags>`_.
+    The ``latest`` portion of the image name is a tag that specifies the latest released version will be used for the build. Alternatively, you can replace the ``latest`` tag with either a specific version of Tethys Platform (e.g. ``4.0.0``) or with the ``dev`` tag to use the latest development version. For a list of all available tags see: `tethysplatform/tethys-core Tags <https://hub.docker.com/r/tethysplatform/tethys-core/tags>`_.
 
 
 2. Define environment variables
@@ -227,26 +227,18 @@ For this image we need to run the ``tethys install`` command for each of our app
     ###########
     # INSTALL #
     ###########
+    # Activate tethys conda environment during build
+    ARG MAMBA_DOCKERFILE_ACTIVATE=1
     # Bokeh App
-    RUN /bin/bash -c "cd ${TETHYS_HOME}/apps/tethysapp-bokeh_tutorial && \
-        . ${CONDA_HOME}/bin/activate tethys && \
-        tethys install --no-db-sync"
+    RUN tethys install --no-db-sync
     # Dam Inventory
-    RUN /bin/bash -c "cd ${TETHYS_HOME}/apps/tethysapp-dam_inventory && \
-        . ${CONDA_HOME}/bin/activate tethys && \
-        tethys install --no-db-sync"
+    RUN tethys install --no-db-sync
     # Earth Engine
-    RUN /bin/bash -c "cd ${TETHYS_HOME}/apps/tethysapp-earth_engine && \
-        . ${CONDA_HOME}/bin/activate tethys && \
-        tethys install --no-db-sync"
+    RUN tethys install --no-db-sync
     # PostGIS App
-    RUN /bin/bash -c "cd ${TETHYS_HOME}/apps/tethysapp-postgis_app && \
-        . ${CONDA_HOME}/bin/activate tethys && \
-        tethys install --no-db-sync"
+    RUN tethys install --no-db-sync
     # THREDDS Tutorial
-    RUN /bin/bash -c "cd ${TETHYS_HOME}/apps/tethysapp-thredds_tutorial && \
-        . ${CONDA_HOME}/bin/activate tethys && \
-        tethys install --no-db-sync"
+    RUN tethys install --no-db-sync
 
 .. note::
 
@@ -254,13 +246,11 @@ For this image we need to run the ``tethys install`` command for each of our app
 
 .. note::
 
-    Remember that commands are run by ``sh`` by default. When running ``tethys`` commands in a ``RUN`` instruction you should use ``bash`` to execute the ``activate`` and ``tethys`` commands as illustrated above. This pattern is summarized as follows:
+    Remember that commands are run by ``sh`` by default. To run ``tethys`` commands in a ``RUN`` instruction you need to activate the Tethys Conda environment. The following line has the effect of activating the Tethys Conda environment for any `RUN` instruction after it:
 
     .. code-block::
 
-        /bin/bash -c . "${CONDA_HOME}/bin/activate tethys && tethys <command>"
-
-    The ``-c`` option to the ``bash`` command allows you to specify a command to run. Place the command in quotes as shown above. The ``&&`` operator is used to join commands on one line. If the first command fails, the second will not be executed. Alternatively, you may use ``;`` operator to join commands and all of the commands will be executed regardless of the outcome of the previous commands.
+        ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 
 6. Expose ports (optional)

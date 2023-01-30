@@ -4,7 +4,7 @@
 Salt State Files
 ****************
 
-**Last Updated:** November 2021
+**Last Updated:** January 2023
 
 The Tethys Platform Docker uses `Salt States <https://docs.saltproject.io/en/getstarted/fundamentals/states.html>`_, one component of `Salt Stack <https://docs.saltproject.io/en/latest/topics/index.html>`_, to perform runtime initialization of Tethys and apps. Salt States are YAML files that specify the various commands to run when Tethys starts up. It is best understood through examples. For this Docker image, we'll create three Salt State files that will perform the following tasks:
 
@@ -50,7 +50,6 @@ Open the new :file:`tethys_services.sls` file and add the following lines to imp
 
 .. code-block::
 
-    {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
     {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
     {% set TETHYS_DB_HOST = salt['environ.get']('TETHYS_DB_HOST') %}
     {% set TETHYS_DB_PORT = salt['environ.get']('TETHYS_DB_PORT') %}
@@ -82,7 +81,7 @@ The `cmd.run <https://docs.saltproject.io/en/latest/ref/states/all/salt.states.c
 
     Create_PostGIS_Database_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create persistent -n {{ POSTGIS_SERVICE_NAME }} -c {{ POSTGIS_SERVICE_URL }}"
+        - name: "tethys services create persistent -n {{ POSTGIS_SERVICE_NAME }} -c {{ POSTGIS_SERVICE_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
@@ -103,7 +102,7 @@ Add the following lines to create the THREDDS Tethys Service:
 
     Create_THREDDS_Spatial_Dataset_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
+        - name: "tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
