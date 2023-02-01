@@ -1,6 +1,8 @@
 import yaml
 import json
 import os
+import getpass
+
 from pathlib import Path
 
 from subprocess import call, Popen, PIPE, STDOUT
@@ -382,8 +384,10 @@ def run_interactive_services(app_name):
                             )
                             value = get_interactive_input()
                     else:
-                        value = get_interactive_input()
-                    
+                        if setting.type_custom_setting != "SECRET":
+                            value = get_interactive_input()
+                        else:
+                            value =  getpass.getpass(prompt='')
                     if value != "":
                         
                         try:
