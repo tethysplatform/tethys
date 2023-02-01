@@ -11,6 +11,8 @@ import importlib
 import logging
 import os
 import pkgutil
+import yaml
+from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
@@ -573,3 +575,22 @@ def get_all_submodules(m):
     except AttributeError:
         pass
     return modules
+
+
+def delete_secrets(app_name):
+    TETHYS_HOME = Path(get_tethys_home_dir())
+    secrets_yaml_file = TETHYS_HOME / "secrets.yml"
+    portal_secrets = {}
+
+    if secrets_yaml_file.exists():
+        with secrets_yaml_file.open("r") as secrets_yaml:
+            portal_secrets = yaml.safe_load(secrets_yaml) or {}
+            if not app_name in portal_secrets["secrets"]:
+            ## always reset on a new install
+                portal_secrets["secrets"][app_name] = {}
+            if 'custom_settings_salt_strings' in portal_secrets["secrets"][app_name]:
+ 
+                portal_secrets["secrets"][app_name]["custom_settings_salt_strings"] = {}
+            
+            with secrets_yaml_file.open("w") as secrets_yaml:
+                yaml.dump(portal_secrets, secrets_yaml)
