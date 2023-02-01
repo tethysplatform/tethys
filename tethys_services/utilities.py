@@ -192,7 +192,6 @@ def get_dataset_engine(name, app_class=None, request=None):
     if app_dataset_services:
         # Search for match
         for app_dataset_service in app_dataset_services:
-
             # If match is found, initiate engine object
             if app_dataset_service.name == name:
                 return initialize_engine_object(
@@ -210,7 +209,6 @@ def get_dataset_engine(name, app_class=None, request=None):
     if site_dataset_services:
         # Search for match
         for site_dataset_service in site_dataset_services:
-
             # If match is found initiate engine object
             if site_dataset_service.name == name:
                 dataset_service_object = initialize_engine_object(
@@ -281,7 +279,6 @@ def get_spatial_dataset_engine(name, app_class=None):
     if app_spatial_dataset_services:
         # Search for match
         for app_spatial_dataset_service in app_spatial_dataset_services:
-
             # If match is found, initiate engine object
             if app_spatial_dataset_service.name == name:
                 return initialize_engine_object(
@@ -298,7 +295,6 @@ def get_spatial_dataset_engine(name, app_class=None):
     if site_spatial_dataset_services:
         # Search for match
         for site_spatial_dataset_service in site_spatial_dataset_services:
-
             # If match is found initiate engine object
             if site_spatial_dataset_service.name == name:
                 spatial_dataset_object = initialize_engine_object(
@@ -413,7 +409,6 @@ def list_wps_service_engines(app_class=None):
     site_wps_services = WpsModel.objects.all()
 
     for site_wps_service in site_wps_services:
-
         # Create OWSLib WebProcessingService engine object
         wps = WebProcessingService(
             site_wps_service.endpoint,
@@ -456,7 +451,6 @@ def get_wps_service_engine(name, app_class=None):
     if app_wps_services:
         # Search for match
         for app_wps_service in app_wps_services:
-
             # If match is found, initiate engine object
             if app_wps_service.name == name:
                 wps = WebProcessingService(
@@ -479,7 +473,6 @@ def get_wps_service_engine(name, app_class=None):
     if site_wps_services:
         # Search for match
         for site_wps_service in site_wps_services:
-
             # If match is found initiate engine object
             if site_wps_service.name == name:
                 # Create OWSLib WebProcessingService engine object

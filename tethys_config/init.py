@@ -257,7 +257,6 @@ def setting_defaults(category):
             "Register CSS",
             "User Base CSS",
         ]:
-
             category.setting_set.create(
                 name=setting_name, content="", date_modified=now
             )

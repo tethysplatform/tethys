@@ -10,7 +10,6 @@ from importlib import reload
 
 
 class TestGizmo(TethysGizmoOptions):
-
     gizmo_name = "test_gizmo"
 
     def __init__(self, name, *args, **kwargs):

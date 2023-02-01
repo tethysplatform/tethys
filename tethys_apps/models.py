@@ -440,7 +440,6 @@ class DatasetServiceSetting(TethysAppSetting):
             raise ValidationError("Required.")
 
     def get_value(self, as_public_endpoint=False, as_endpoint=False, as_engine=False):
-
         if not self.dataset_service:
             raise TethysAppSettingNotAssigned(
                 f"Cannot create engine or endpoint for DatasetServiceSetting "
@@ -515,7 +514,6 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
         as_engine=False,
         as_wcs=False,
     ):
-
         if not self.spatial_dataset_service:
             raise TethysAppSettingNotAssigned(
                 f"Cannot create engine or endpoint for SpatialDatasetServiceSetting "

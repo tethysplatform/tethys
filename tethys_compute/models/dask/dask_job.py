@@ -57,7 +57,6 @@ class DaskJob(TethysJob):
 
     @property
     def client(self):
-
         if self.scheduler:
             return self.scheduler.client
         else:

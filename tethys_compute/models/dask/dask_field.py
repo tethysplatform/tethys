@@ -5,7 +5,6 @@ from distributed.protocol.serialize import serialize, deserialize
 
 
 class DaskSerializedField(models.Field):
-
     description = "A field the automatically serializes and deserializes using Dask serialization."
 
     def get_internal_type(self):

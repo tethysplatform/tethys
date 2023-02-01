@@ -879,7 +879,6 @@ class ServicesCommandsTest(unittest.TestCase):
     def test_services_create_dataset_command_IndexError(
         self, mock_service, mock_pretty_output
     ):
-
         mock_args = mock.MagicMock()
         mock_args.connection = "IndexError:9876@IndexError"  # No 'http' or '://'
         mock_args.type = "HydroShare"
@@ -902,7 +901,6 @@ class ServicesCommandsTest(unittest.TestCase):
     def test_services_create_dataset_command_FormatError(
         self, mock_service, mock_pretty_output
     ):
-
         mock_args = mock.MagicMock()
         mock_args.connection = "foo:pass@http:://foo:1234"
         mock_args.public_endpoint = "foo@foo:foo"  # No 'http' or '://'
@@ -925,7 +923,6 @@ class ServicesCommandsTest(unittest.TestCase):
     def test_services_create_dataset_command_IntegrityError(
         self, mock_service, mock_pretty_output
     ):
-
         mock_args = mock.MagicMock()
         mock_args.connection = "foo:pass@http:://foo:1234"
         mock_args.public_endpoint = "http://foo:1234"
@@ -1012,7 +1009,6 @@ class ServicesCommandsTest(unittest.TestCase):
     def test_services_remove_dataset_command_proceed(
         self, mock_service, mock_exit, mock_pretty_output, mock_input
     ):
-
         mock_args = mock.MagicMock()
         mock_service.__str__.return_value = "Dataset"
 
@@ -1040,7 +1036,6 @@ class ServicesCommandsTest(unittest.TestCase):
     def test_services_create_wps_command_IndexError(
         self, mock_service, mock_pretty_output
     ):
-
         mock_args = mock.MagicMock()
         mock_args.connection = "IndexError:9876@IndexError"  # No 'http' or '://'
 
@@ -1062,7 +1057,6 @@ class ServicesCommandsTest(unittest.TestCase):
     def test_services_create_wps_command_IntegrityError(
         self, mock_service, mock_pretty_output
     ):
-
         mock_args = mock.MagicMock()
         mock_args.connection = "foo:pass@http:://foo:1234"
         mock_args.public_endpoint = "http://foo:1234"

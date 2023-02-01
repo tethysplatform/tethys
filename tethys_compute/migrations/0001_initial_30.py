@@ -9,7 +9,6 @@ import tethys_compute.models.dask.dask_field
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

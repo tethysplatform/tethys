@@ -20,7 +20,6 @@ class CLISiteCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.site_commands.update_site_settings_content")
     @mock.patch("tethys_cli.site_commands.load_apps")
     def test_gen_site_content(self, mock_load_apps, mock_update_settings):
-
         mock_args = mock.MagicMock(
             brand_text="New Title", restore_defaults=False, from_file=False
         )
@@ -131,7 +130,6 @@ class CLISiteCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.site_commands.timezone.now")
     @mock.patch("tethys_config.models.Setting.objects.filter")
     def test_update_site_settings_content(self, mock_filter, mock_now):
-
         update_site_settings_content({"brand_text": "New Title"})
         mock_filter.assert_called_with(name="Brand Text")
         call_args = mock_filter(name="Brand Text").update.call_args_list

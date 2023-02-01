@@ -35,7 +35,6 @@ class HydroShareBackendTest(TestCase):
     """
 
     def setUp(self):
-
         self.backend_module_path = (
             "tethys_services.backends.hydroshare.HydroShareOAuth2"
         )
@@ -149,7 +148,6 @@ class HydroShareBackendTest(TestCase):
         self.assertEqual(UserSocialAuth.objects.count(), 0)
 
     def run_oauth(self, m, user=None):
-
         strategy = DjangoStrategy(DjangoStorage)
         backend = self.Backend_Class(strategy, redirect_uri=self.client_complete_url)
 

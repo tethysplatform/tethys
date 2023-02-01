@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tethys_compute", "0006_alter_condorpyjob__attributes"),
         ("tethys_apps", "0004_auto_20211221_2300"),

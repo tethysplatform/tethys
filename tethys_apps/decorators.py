@@ -31,7 +31,6 @@ def login_required(
 
     def decorator(controller_func):
         def wrapper(request, *args, **kwargs):
-
             if not getattr(settings, "ENABLE_OPEN_PORTAL", False):
                 from django.contrib.auth.decorators import login_required as lr
 

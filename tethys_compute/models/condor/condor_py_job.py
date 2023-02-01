@@ -45,7 +45,6 @@ class CondorPyJob(models.Model):
 
     @property
     def condorpy_job(self):
-
         if not hasattr(self, "_condorpy_job"):
             job = Job(
                 name=self.name.replace(" ", "_"),

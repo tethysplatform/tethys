@@ -672,7 +672,6 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     def test_cm_start(self, mock_pretty_output):
-
         container = cli_docker_commands.PostGisContainerMetadata()
         msg = container.start()
         self.assertIsNone(msg)

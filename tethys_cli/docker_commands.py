@@ -961,7 +961,6 @@ def log_pull_stream(stream):
                     )
                 )
     else:
-
         TERMINAL_STATUSES = ["Already exists", "Download complete", "Pull complete"]
         PROGRESS_STATUSES = ["Downloading", "Extracting"]
         STATUSES = (

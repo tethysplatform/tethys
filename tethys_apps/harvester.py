@@ -181,7 +181,6 @@ class SingletonHarvester:
         loaded_extensions = []
 
         for extension_name, extension_package in extension_packages.items():
-
             try:
                 # Import the "ext" module from the extension package
                 ext_module = __import__(extension_package + ".ext", fromlist=[""])
@@ -252,7 +251,6 @@ class SingletonHarvester:
         valid_app_modules = {}
         loaded_apps = []
         for app_name, app_package in app_packages_list.items():
-
             # Skip these things
             if app_package in [
                 "__init__.py",

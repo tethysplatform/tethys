@@ -214,7 +214,6 @@ class DaskJobTest(TethysTestCase):
     @mock.patch("django.db.models.base.Model.save")
     @mock.patch("tethys_compute.models.dask.dask_scheduler.Client")
     def test_execute_future(self, mock_client, mock_save, mock_ff, mock_isinstance):
-
         mock_client.return_value = mock.MagicMock()
 
         mock_isinstance.side_effect = [True, False]
