@@ -161,6 +161,7 @@ def add_app_settings_parser(subparsers):
 def app_settings_list_command(args):
     load_apps()
     app_settings = get_app_settings(args.app)
+    # breakpoint()
     if app_settings is None:
         return
     unlinked_settings = app_settings["unlinked_settings"]
@@ -213,11 +214,11 @@ def app_settings_list_command(args):
             elif hasattr(setting, "web_processing_service"):
                 service_name = setting.web_processing_service.name
             elif hasattr(setting, "value"):
-                service_name = setting.value
-
+                service_name = str(setting.value)
+            
             with pretty_output() as p:
                 p.write(
-                    f"{setting.pk: <10}{setting.name: <40}{get_setting_type(setting): <15}{service_name: <20}"
+                    f"{setting.pk: <10}{setting.name: <40}{get_setting_type(setting): <15} {service_name: <20}"
                 )
 
 
@@ -231,7 +232,7 @@ def app_settings_set_command(args):
 
     try:
         value_json = '{}'
-        if setting.type == "JSON":
+        if setting.type_custom_setting == "JSON":
             if os.path.exists(args.value):
 
                 with open(args.value) as json_file:
@@ -241,9 +242,9 @@ def app_settings_set_command(args):
                     json_data = json.load(json_file)
                     value_json = json.dumps(json_data)
         
-                setting.value_json = value_json
+                setting.value = value_json
             else:
-                setting.value_json = args.value
+                setting.value = args.value
 
         else:
             setting.value = args.value
@@ -288,6 +289,9 @@ def get_setting_type(setting):
         DatasetServiceSetting,
         WebProcessingServiceSetting,
         CustomSetting,
+        CustomSimpleSetting,
+        CustomSecretSetting,
+        CustomJSONSetting,
     )
 
     setting_type_dict = {
@@ -297,6 +301,9 @@ def get_setting_type(setting):
         DatasetServiceSetting: "ds_dataset",
         WebProcessingServiceSetting: "wps",
         CustomSetting: "custom_setting",
+        CustomSimpleSetting: "custom_simple_setting",
+        CustomSecretSetting: "custom_secret_setting",
+        CustomJSONSetting: "custom_json_setting",
     }
 
     return setting_type_dict[type(setting)]
@@ -357,6 +364,7 @@ def app_settings_create_salt_strings_command(args):
         salt_string = generate_salt_string().decode()
     app_name = args.app
     setting = args.setting
+    breakpoint()
     ## checking the type of setting and the type of custom setting
     if get_custom_setting(app_name,setting) is None:
         write_warning(
@@ -364,37 +372,38 @@ def app_settings_create_salt_strings_command(args):
         )
         exit(1)
     else:
-        if get_custom_setting(app_name,setting).type != "SECRET":
+        if get_custom_setting(app_name,setting).type_custom_setting != "SECRET":
             write_warning(
-                f'The custom setting {setting} for the app {app_name} is not a a secret custom setting type, but a {get_custom_setting(app_name,setting).type} custom setting type'
+                f'The custom setting {setting} for the app {app_name} is not a a secret custom setting type, but a {get_custom_setting(app_name,setting).type_custom_setting} custom setting type'
             )
             exit(1)
     
-    portal_yaml_file = TETHYS_HOME / "portal_config.yml"
-    portal_settings = {}
-    if portal_yaml_file.exists():
-        with portal_yaml_file.open("r") as portal_yaml:
-            portal_settings = yaml.safe_load(portal_yaml) or {}
-            if not app_name in portal_settings["apps"]:
+    secrets_yaml_file = TETHYS_HOME / "secrets.yml"
+    secret_settings = {}
+    if secrets_yaml_file.exists():
+        with secrets_yaml_file.open("r") as secrets_yaml:
+            secret_settings = yaml.safe_load(secrets_yaml) or {}
+            if not app_name in secret_settings["secrets"]:
                 write_warning(
-                    f'No app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
+                    f'No app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
                 )
-                portal_settings["apps"][app_name] = {}
-            if not 'custom_settings_salt_strings' in portal_settings["apps"][app_name]:
+                secret_settings["secrets"][app_name] = {}
+            if not 'custom_settings_salt_strings' in secret_settings["secrets"][app_name]:
                 write_warning(
-                    f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
+                    f'No custom_settings_salt_strings in the app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
                 )
-                portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
+                secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
             
             ## get the last salt string
             last_salt_string = ""
-            if portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting]:
-                last_salt_string = portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting]
-            signer = Signer(salt=last_salt_string)
+            signer = Signer()
+            if setting in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]:
+                last_salt_string = secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting]
+                signer = Signer(salt=last_salt_string)
             secret_unsigned= signer.unsign_object(f'{get_custom_setting(app_name,setting).value}')
-            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting] = salt_string            
-            with portal_yaml_file.open("w") as portal_yaml:
-                yaml.dump(portal_settings, portal_yaml)
+            secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting] = salt_string            
+            with secrets_yaml_file.open("w") as secrets_yaml:
+                yaml.dump(secret_settings, secrets_yaml)
                 write_success(
                     f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
                 )
@@ -416,39 +425,42 @@ def app_settings_create_all_salt_strings_command(args):
 
     try:
         app = TethysApp.objects.get(package=app_name)
-        for setting in CustomSetting.objects.filter(tethys_app=app):
-            if setting.type == "SECRET": 
-                salt_string = generate_salt_string().decode()
-                portal_yaml_file = TETHYS_HOME / "portal_config.yml"
-                portal_settings = {}
-                if portal_yaml_file.exists():
-                    with portal_yaml_file.open("r") as portal_yaml:
-                        portal_settings = yaml.safe_load(portal_yaml) or {}
-                        if not app_name in portal_settings["apps"]:
-                            write_warning(
-                                f'No app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
-                            )
-                            portal_settings["apps"][app_name] = {}
-                        if not 'custom_settings_salt_strings' in portal_settings["apps"][app_name]:
-                            write_warning(
-                                f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
-                            )
-                            portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
+        # breakpoint()
+        for setting in CustomSetting.objects.filter(tethys_app=app).filter(type_custom_setting="SECRET").select_subclasses():
+            breakpoint()
+            # if setting.type_custom_setting == "SECRET": 
+            salt_string = generate_salt_string().decode()
+            secret_yaml_file = TETHYS_HOME / "secrets.yml"
+            secret_settings = {}
+            if secret_yaml_file.exists():
+                with secret_yaml_file.open("r") as secret_yaml:
+                    secret_settings = yaml.safe_load(secret_yaml) or {}
+                    if not app_name in secret_settings["secrets"]:
+                        write_warning(
+                            f'No app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
+                        )
+                        secret_settings["secrets"][app_name] = {}
+                    if not 'custom_settings_salt_strings' in secret_settings["secrets"][app_name]:
+                        write_warning(
+                            f'No custom_settings_salt_strings in the app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
+                        )
+                        secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
 
-                        last_salt_string = ""
-                        if portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name]:
-                            last_salt_string = portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name]
+                    last_salt_string = ""
+                    signer = Signer()
+                    if setting.name in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]:
+                        last_salt_string = secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name]
                         signer = Signer(salt=last_salt_string)
-                        secret_unsigned= signer.unsign_object(f'{setting.value}')
-                        portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
-                        with portal_yaml_file.open("w") as portal_yaml:
-                            yaml.dump(portal_settings, portal_yaml)
-                            write_success(
-                                f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
-                            )
-                        setting.value = secret_unsigned
-                        setting.clean()
-                        setting.save()
+                    secret_unsigned= signer.unsign_object(f'{setting.value}')
+                    secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
+                    with secret_yaml_file.open("w") as secret_yaml:
+                        yaml.dump(secret_settings, secret_yaml)
+                        write_success(
+                            f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
+                        )
+                    setting.value = secret_unsigned
+                    setting.clean()
+                    setting.save()
         exit(0)
     except ObjectDoesNotExist:
         try:

@@ -254,6 +254,9 @@ def get_setting_type(setting):
         DatasetServiceSetting,
         WebProcessingServiceSetting,
         CustomSetting,
+        CustomSimpleSetting,
+        CustomSecretSetting,
+        CustomJSONSetting,
     )
 
     setting_type_dict = {
@@ -263,6 +266,9 @@ def get_setting_type(setting):
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
         CustomSetting: "custom_setting",
+        CustomSimpleSetting: "custom_simple_setting",
+        CustomSecretSetting: "custom_secret_setting",
+        CustomJSONSetting: "custom_json_setting",
     }
 
     return setting_type_dict[type(setting)]
@@ -299,45 +305,44 @@ def run_interactive_services(app_name):
         )
 
         ## extra code to generate a salt string
-        if setting.type == "SECRET":
+        if setting.type_custom_setting == "SECRET":
             proceed = input(
                 "Do you want to generate a salt string for this secret or use the default behavior: [y/n]"
             )
             while proceed not in ["y", "n", "Y", "N"]:
                 proceed = input('Please enter either "y" or "n": ')
 
-            if proceed in ["y", "Y"]:
+            if proceed in ["y", "n", "Y", "N"]:
                 with pretty_output(FG_GREEN) as p:
                     TETHYS_HOME = Path(get_tethys_home_dir())
-                    portal_yaml_file = TETHYS_HOME / "portal_config.yml"
-                    portal_settings = {}
-                    if portal_yaml_file.exists():
-                        with portal_yaml_file.open("r") as portal_yaml:
-                            portal_settings = yaml.safe_load(portal_yaml) or {}
-                            if not app_name in portal_settings["apps"]:
-                                portal_settings["apps"][app_name] = {}
-                            if not 'custom_settings_salt_strings' in portal_settings["apps"][app_name]:
+                    secrets_yaml_file = TETHYS_HOME / "secrets.yml"
+                    portal_secrets = {}
+                    if secrets_yaml_file.exists():
+                        with secrets_yaml_file.open("r") as secrets_yaml:
+                            portal_secrets = yaml.safe_load(secrets_yaml) or {}
+                            if not app_name in portal_secrets["secrets"]:
+                            ## always reset on a new install
+                                portal_secrets["secrets"][app_name] = {}
+                            if not 'custom_settings_salt_strings' in portal_secrets["secrets"][app_name]:
                                 write_msg(
                                     f'No custom_settings_salt_strings in the app definition for the app {app_name} in the apps portion in the portal_config.yml. Generating one...'
                                 )
-                                portal_settings["apps"][app_name]["custom_settings_salt_strings"] = {}
+                                portal_secrets["secrets"][app_name]["custom_settings_salt_strings"] = {}
                             
-                            salt_string = generate_salt_string().decode()
-                            # breakpoint()
-
-                            portal_settings["apps"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
-                            with portal_yaml_file.open("w") as portal_yaml:
-                                yaml.dump(portal_settings, portal_yaml)
+                            if proceed in ["y","Y"]:
+                                salt_string = generate_salt_string().decode()
+                                portal_secrets["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
+                                msge = "Successfully created salt string for {0} Secret Custom Setting!".format(setting.name)
+                            else:
+                                if setting.name in portal_secrets["secrets"][app_name]["custom_settings_salt_strings"]:
+                                    msge ="Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml"
+                                    del portal_secrets["secrets"][app_name]["custom_settings_salt_strings"][setting.name]
+                            with secrets_yaml_file.open("w") as secrets_yaml:
+                                yaml.dump(portal_secrets, secrets_yaml)
                                 write_msg(
                                     f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
                                 )
-                    p.write(
-                        "Successfully created salt string for {0} Secret Custom Setting!".format(
-                            setting.name
-                        )
-                    )
-            else:
-                write_warning("Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml")
+                        p.write(msge)
                     
         if hasattr(setting, "value"):
             while not valid:
@@ -348,7 +353,7 @@ def run_interactive_services(app_name):
                 )
                 try:
                     value = ""
-                    if setting.type == "JSON":
+                    if setting.type_custom_setting == "JSON":
                         proceed = input(
                             "Do you want to upload the json from a file: [y/n] "
                         )
@@ -381,11 +386,11 @@ def run_interactive_services(app_name):
                     if value != "":
                         
                         try:
-                            if setting.type != "JSON":
-                                setting.value = value
-                            else:
-                                setting.value_json = value
-
+                            # if setting.type != "JSON":
+                                # setting.value = value
+                            # else:
+                                # setting.value_json = value
+                            setting.value = value
                             setting.clean()
                             setting.save()
                             valid = True
@@ -492,10 +497,13 @@ def configure_services_from_file(services, app_name):
         if services[service_type] is not None:
             current_services = services[service_type]
             for setting_name in current_services:
-                if service_type == "custom_setting":
+                if service_type == "custom_setting":                    
                     try:
-                        custom_setting = CustomSetting.objects.get(
-                            name=setting_name, tethys_app=db_app.id
+                        # custom_setting = CustomSetting.objects.get(
+                        #     name=setting_name, tethys_app=db_app.id
+                        # )
+                        custom_setting = CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
+                            name=setting_name
                         )
                     except ObjectDoesNotExist:
                         write_warning(

@@ -31,7 +31,9 @@ from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_apps.models import (
     TethysApp,
     TethysExtension,
-    CustomSetting,
+    CustomSimpleSetting,
+    CustomSecretSetting,
+    CustomJSONSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
@@ -57,40 +59,32 @@ class TethysAppSettingInline(admin.TabularInline):
         return False
 
 
-class CustomSettingInline(TethysAppSettingInline):
+class CustomSimpleSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value","required")
-    model = CustomSetting
-    def get_queryset(self, request):
-        qs = super(CustomSettingInline, self).get_queryset(request)
-        return qs.exclude(type="JSON").exclude(type="SECRET")
+    model = CustomSimpleSetting
+    # def get_queryset(self, request):
+    #     qs = super(CustomSettingInline, self).get_queryset(request)
+    #     return qs.exclude(type="JSON").exclude(type="SECRET")
 
 class CustomSecretSettingForm(forms.ModelForm):
-    # secret_setting = forms.CharField(widget=forms.PasswordInput)
     value = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input-text with-border', 'placeholder': 'secret custom setting'}))
     class Meta:
-        model = CustomSetting
-        fields = ["name", "description", "type", "value","required"]
+        model = CustomSecretSetting
+        fields = ["name", "description", "value","required"]
 
 class CustomSecretSettingInline(TethysAppSettingInline):
-    verbose_name = "Custom Secret Setting"
-    verbose_name_plural = "Custom Secret Settings"
-    readonly_fields = ("name", "description", "type", "required")
-    fields = ("name", "description", "type", "value","required")
-    model = CustomSetting
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "value","required")
+    model = CustomSecretSetting
     form = CustomSecretSettingForm
 
-    def get_queryset(self, request):
-        qs = super(CustomSecretSettingInline, self).get_queryset(request)
-        return qs.filter(type="SECRET")
 
 
 class CustomJSONSettingInline(TethysAppSettingInline):
-    verbose_name = "Custom JSON Setting"
-    verbose_name_plural = "Custom JSON Settings"
-    readonly_fields = ("name", "description", "type", "required")
-    fields = ("name", "description", "type", "value_json", "required")
-    model = CustomSetting
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "value","required")
+    model = CustomJSONSetting
     options_default = {
         "modes": ["code", "text"],
         "search": False,
@@ -102,9 +96,7 @@ class CustomJSONSettingInline(TethysAppSettingInline):
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget(width=width_default, height=height_default, options=options_default)},
     }
-    def get_queryset(self, request):
-        qs = super(CustomJSONSettingInline, self).get_queryset(request)
-        return qs.filter(type="JSON")
+
 
 
 
@@ -177,7 +169,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         "manage_app_storage",
     )
     inlines = [
-        CustomSettingInline,
+        CustomSimpleSettingInline,
         CustomJSONSettingInline,
         CustomSecretSettingInline,
         PersistentStoreConnectionSettingInline,

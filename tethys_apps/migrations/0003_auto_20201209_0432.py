@@ -11,7 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="customsetting",
+            model_name="customsimplesetting",
+            # model_name="customsetting",
             name="type",
             field=models.CharField(
                 choices=[

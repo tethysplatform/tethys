@@ -11,6 +11,9 @@
 # DO NOT ERASE
 from tethys_apps.models import (
     CustomSetting,
+    CustomSecretSetting,
+    CustomJSONSetting,
+    CustomSimpleSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,

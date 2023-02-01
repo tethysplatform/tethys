@@ -171,7 +171,7 @@ def get_app_settings(app):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSetting,
+        CustomSetting
     )
 
     try:
@@ -188,7 +188,7 @@ def get_app_settings(app):
             app_settings.append(setting)
         for setting in WebProcessingServiceSetting.objects.filter(tethys_app=app):
             app_settings.append(setting)
-        for setting in CustomSetting.objects.filter(tethys_app=app):
+        for setting in CustomSetting.objects.filter(tethys_app=app).select_subclasses():
             app_settings.append(setting)
 
         unlinked_settings = []
@@ -209,7 +209,7 @@ def get_app_settings(app):
                     hasattr(setting, "web_processing_service")
                     and setting.web_processing_service
                 )
-                or ((hasattr(setting, "value") and setting.value != "") or (hasattr(setting, "value_json") and setting.value_json))
+                or (hasattr(setting, "value") and setting.value != "")
             ):
                 linked_settings.append(setting)
             else:
@@ -253,9 +253,10 @@ def get_custom_setting(app_package, setting_name):
         app = TethysApp.objects.get(package=app_package)
     except TethysApp.DoesNotExist:
         return None
-
     try:
-        setting = CustomSetting.objects.get(tethys_app=app, name=setting_name)
+        breakpoint()
+        # setting = CustomSetting.objects.get(tethys_app=app, name=setting_name)
+        setting = CustomSetting.objects.filter(tethys_app=app).select_subclasses().get(name=setting_name)
     except CustomSetting.DoesNotExist:
         return None
 

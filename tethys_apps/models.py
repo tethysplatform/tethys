@@ -12,6 +12,7 @@ import sqlalchemy
 import os
 from django.core import signing
 from django.core.signing import Signer
+from django.dispatch import receiver
 import logging
 import uuid
 import json
@@ -119,7 +120,7 @@ class TethysApp(models.Model, TethysBaseMixin):
     def custom_settings(self):
         return self.settings_set.exclude(customsetting__isnull=True).select_subclasses(
             "customsetting"
-        )
+        ).select_subclasses()
 
     @property
     def dataset_service_settings(self):
@@ -235,7 +236,121 @@ class TethysAppSetting(models.Model):
         raise NotImplementedError()
 
 
+
 class CustomSetting(TethysAppSetting):
+    # value = models.CharField(max_length=1024, blank=True, default="")
+    # default = models.CharField(max_length=1024, blank=True, default="")
+    objects = InheritanceManager()
+    type_custom_setting = models.CharField(max_length=1024, blank=True, default="")
+    def get_value(self):
+        pass
+
+class CustomSecretSetting(CustomSetting):
+    value = models.CharField(max_length=1024, blank=True, default="")
+    default = models.CharField(max_length=1024, blank=True, default="")
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """        
+        if self.default != "":
+            if self.value == "":
+                self.value = self.default
+        else:
+            if self.value == "" and self.required:
+                raise ValidationError("Required.")
+   
+        if self.value != "" :
+            try:
+                TETHYS_HOME = get_tethys_home_dir()
+                signer = Signer()
+                with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
+                    secret_app_settings = yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+                    if bool(secret_app_settings):
+                        if self.tethys_app.package in secret_app_settings:
+                            if 'custom_settings_salt_strings' in secret_app_settings[self.tethys_app.package]:
+                                app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                                if self.name in app_specific_settings:
+                                    app_custom_setting_salt_string = app_specific_settings[self.name]
+                                    signer = Signer(salt=app_custom_setting_salt_string)
+                                    self.value = signer.sign_object(self.value)
+                                else:
+                                    self.value = signer.sign_object(self.value)
+
+                    else:
+                        log.info(
+                            "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                        )
+                        self.value = signer.sign_object(self.value)
+            except Exception:
+                raise ValidationError("Validation Error for Secret Custom Setting")
+    def get_value(self):
+        """
+        Get the value, automatically casting it to the correct type.
+        """
+        # breakpoint()
+
+        if self.default != "":
+            if self.value == "":
+                self.value = self.default
+
+        if self.value == "" or self.value is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+
+            # None is a valid value to return in the case the value has not been set for this setting type
+            return None
+
+        TETHYS_HOME = get_tethys_home_dir()
+        signer = Signer()
+        secret_unsigned = ''
+        # breakpoint()
+        
+        try:
+            
+            with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
+                secrets_app_settings = yaml.safe_load(secret_yaml).get("secrets", {}) or {}
+                if bool(secrets_app_settings):
+                    app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                    if self.name in app_specific_settings:
+                        app_custom_setting_salt_string = app_specific_settings[self.name]
+                        signer = Signer(salt=app_custom_setting_salt_string)
+                        secret_unsigned= signer.unsign_object(f'{self.value}')
+                    else:
+                        secret_unsigned = signer.unsign_object(f'{self.value}')
+
+                else:
+                    log.info(
+                        "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                    )
+                    secret_unsigned = signer.unsign_object(f'{self.value}')
+                
+
+        except FileNotFoundError:
+            log.info(
+                "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
+                '"tethys gen portal_config"'
+            )
+        except signing.BadSignature:
+            log.warning(
+                f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
+            )
+            # raise TethysAppSettingNotAssigned(
+            #     f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
+            # )
+
+        except Exception:
+            log.exception(
+                "There was an error while attempting to read the settings from the portal_config.yml file."
+            )
+
+        return secret_unsigned
+
+
+
+class CustomSimpleSetting(CustomSetting):
     """
     Used to define a Custom Setting.
 
@@ -313,31 +428,20 @@ class CustomSetting(TethysAppSetting):
     )
     value = models.CharField(max_length=1024, blank=True, default="")
     default = models.CharField(max_length=1024, blank=True, default="")
-    value_json = models.JSONField(blank=True, default=dict)
-    default_json = models.JSONField(blank=True, default=dict)
+
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
         """
         Validate prior to saving changes.
         """        
-        if self.type != self.TYPE_JSON:
-            if self.default != "":
-                if self.value == "":
-                    self.value = self.default
-            else:
-                if self.value == "" and self.required:
-                    raise ValidationError("Required.")
+        if self.default != "":
+            if self.value == "":
+                self.value = self.default
         else:
-            # breakpoint()
+            if self.value == "" and self.required:
+                raise ValidationError("Required.")
 
-            if not self.default_json:
-                if not self.value_json:
-                    self.value_json = self.default_json
-            else:
-                if not self.value_json and self.required:
-                    raise ValidationError("Required.")
-            
         if self.value != "" and self.type == self.TYPE_FLOAT:
             try:
                 float(self.value)
@@ -354,150 +458,95 @@ class CustomSetting(TethysAppSetting):
             if self.value.lower() not in self.VALID_BOOL_STRINGS:
                 raise ValidationError("Value must be a boolean.")
 
-        elif type(self.value_json) is not dict and self.type == self.TYPE_JSON:
-            # breakpoint()
-
-            try:
-                json.loads(self.value_json)
-            except Exception:
-                raise ValidationError("Value must be a valid JSON string.")
-
         elif self.value != "" and self.type == self.TYPE_UUID:
             try:
                 uuid.UUID(self.value)
             except Exception:
                 raise ValidationError("Value must be a uuid.")
-        elif self.value != "" and self.type == self.TYPE_SECRET:
-            # breakpoint()
-            try:
-                TETHYS_HOME = get_tethys_home_dir()
-                signer = Signer()
-                with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
-                    portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
-                    if bool(portal_config_app_settings):
-                        if self.tethys_app.package in portal_config_app_settings:
-                            if 'custom_settings_salt_strings' in portal_config_app_settings[self.tethys_app.package]:
-                                app_specific_settings = portal_config_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
-                                if self.name in app_specific_settings:
-                                    app_custom_setting_salt_string = app_specific_settings[self.name]
-                                    signer = Signer(salt=app_custom_setting_salt_string)
-                                    self.value = signer.sign_object(self.value)
-                                else:
-                                    self.value = signer.sign_object(self.value)
 
-                    else:
-                        log.info(
-                            "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
-                        )
-                        self.value = signer.sign_object(self.value)
+    def get_value(self):
+        breakpoint()
+        """
+        Get the value, automatically casting it to the correct type.
+        """
+        if self.default != "":
+            if self.value == "":
+                self.value = self.default
+
+        if self.value == "" or self.value is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+
+            # None is a valid value to return in the case the value has not been set for this setting type
+            return None
+
+        if self.type == self.TYPE_STRING:
+            return self.value
+
+        if self.type == self.TYPE_FLOAT:
+            return float(self.value)
+
+        if self.type == self.TYPE_INTEGER:
+            return int(self.value)
+
+        if self.type == self.TYPE_BOOLEAN:
+            return self.value.lower() in self.TRUTHY_BOOL_STRINGS
+
+        if self.type == self.TYPE_UUID:
+            return uuid.UUID(self.value)
+
+class CustomJSONSetting(CustomSetting):
+    value = models.JSONField(blank=True, default=dict)
+    default = models.JSONField(blank=True, default=dict)
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """        
+
+        if self.default:
+            if not self.value:
+                self.value = self.default
+        else:
+            if not self.default and self.required:
+                raise ValidationError("Required.")
+                
+        if type(self.value) is not dict:
+            
+            try:
+                json.loads(self.value)
             except Exception:
-                raise ValidationError("Validation Error for Secret Custom Setting")
+                raise ValidationError("Value must be a valid JSON string.")
+                
     def get_value(self):
         """
         Get the value, automatically casting it to the correct type.
         """
-        if self.type != self.TYPE_JSON:
+        
 
-            if self.default != "":
-                if self.value == "":
-                    self.value = self.default
+        if self.default:
+            if not self.value:
+                self.value = self.default
 
-            if self.value == "" or self.value is None:
-                if self.required:
-                    raise TethysAppSettingNotAssigned(
-                        f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
-                        f"has not been assigned."
-                    )
+        if not self.value or self.value is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
 
-                # None is a valid value to return in the case the value has not been set for this setting type
-                return None
-
-            if self.type == self.TYPE_STRING:
-                return self.value
-
-            if self.type == self.TYPE_FLOAT:
-                return float(self.value)
-
-            if self.type == self.TYPE_INTEGER:
-                return int(self.value)
-
-            if self.type == self.TYPE_BOOLEAN:
-                return self.value.lower() in self.TRUTHY_BOOL_STRINGS
-
-            if self.type == self.TYPE_UUID:
-                return uuid.UUID(self.value)
-
-            if self.type == self.TYPE_SECRET:
-
-                TETHYS_HOME = get_tethys_home_dir()
-                signer = Signer()
-                secret_unsigned = ''
-                # breakpoint()
-                
-                try:
-                    
-                    with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
-                        portal_config_app_settings = yaml.safe_load(portal_yaml).get("apps", {}) or {}
-                        if bool(portal_config_app_settings):
-                            # breakpoint()
-                            app_specific_settings = portal_config_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
-                            if self.name in app_specific_settings:
-                                # app_custom_setting_salt_string = app_specific_settings[self.name]
-                                # signer = Signer(salt=app_custom_setting_salt_string)
-                                # self.value = signer.sign_object(self.value)
-                                app_custom_setting_salt_string = app_specific_settings[self.name]
-                                signer = Signer(salt=app_custom_setting_salt_string)
-                                secret_unsigned= signer.unsign_object(f'{self.value}')
-                            else:
-                                secret_unsigned = signer.unsign_object(f'{self.value}')
-
-                        else:
-                            log.info(
-                                "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
-                            )
-                            secret_unsigned = signer.unsign_object(f'{self.value}')
-                        
-
-                except FileNotFoundError:
-                    log.info(
-                        "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
-                        '"tethys gen portal_config"'
-                    )
-                except signing.BadSignature:
-                    log.warning(
-                        f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
-                    )
-                    # raise TethysAppSettingNotAssigned(
-                    #     f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
-                    # )
-
-                except Exception:
-                    log.exception(
-                        "There was an error while attempting to read the settings from the portal_config.yml file."
-                    )
-
-                return secret_unsigned
+            # None is a valid value to return in the case the value has not been set for this setting type
+            return None
+        
+        return json.dumps(self.value)
 
 
-        if self.type == self.TYPE_JSON:
-            if not self.default_json:
-                if not self.value_json:
-                    self.value_json = self.default_json
-
-            if self.value_json == "" or self.value_json is None:
-                if self.required:
-                    raise TethysAppSettingNotAssigned(
-                        f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
-                        f"has not been assigned."
-                    )
-
-                # None is a valid value to return in the case the value has not been set for this setting type
-                return None
-            if self.type == self.TYPE_JSON:
-                return json.dumps(self.value_json)
-    
-
-@django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
+# @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
+@receiver(models.signals.post_init, sender=CustomSimpleSetting)
+@receiver(models.signals.post_init, sender=CustomJSONSetting)
+@receiver(models.signals.post_init, sender=CustomSecretSetting)
 def set_default_value(sender, instance, *args, **kwargs):
     """
     Set the default value for `value` on the `instance` of Setting.
@@ -512,8 +561,55 @@ def set_default_value(sender, instance, *args, **kwargs):
     """
     if not instance.value or instance.value == "":
         instance.value = instance.default
-    if not instance.value_json or not instance.value_json:
-        instance.value_json = instance.default_json
+
+# @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
+@receiver(models.signals.post_init, sender=CustomSimpleSetting)
+def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(CustomSetting): The `CustomSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if instance.type_custom_setting == "":
+        instance.type_custom_setting = "SIMPLE"
+
+@receiver(models.signals.post_init, sender=CustomSecretSetting)
+def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(CustomSetting): The `CustomSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if instance.type_custom_setting == "":
+        instance.type_custom_setting = "SECRET"
+
+@receiver(models.signals.post_init, sender=CustomJSONSetting)
+def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(CustomSetting): The `CustomSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if instance.type_custom_setting == "":
+        instance.type_custom_setting = "JSON"
 
 class DatasetServiceSetting(TethysAppSetting):
     """
@@ -1203,3 +1299,8 @@ class ProxyApp(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+
+    
