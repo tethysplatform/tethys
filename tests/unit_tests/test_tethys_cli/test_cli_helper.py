@@ -43,7 +43,6 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.subprocess.call")
     @mock.patch("tethys_cli.cli_helpers.set_testing_environment")
     def test_run_process(self, mock_te_call, mock_subprocess_call):
-
         # mock the process
         mock_process = ["test"]
 
@@ -56,7 +55,6 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.subprocess.call")
     @mock.patch("tethys_cli.cli_helpers.set_testing_environment")
     def test_run_process_keyboardinterrupt(self, mock_te_call, mock_subprocess_call):
-
         # mock the process
         mock_process = ["foo"]
 

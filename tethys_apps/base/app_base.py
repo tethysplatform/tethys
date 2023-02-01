@@ -900,7 +900,6 @@ class TethysAppBase(TethysBase):
             if (len(db_group_name_parts) > 1) and (
                 db_group_name_parts[0] in db_app_names
             ):
-
                 # Delete groups that is no longer required by this app
                 if db_group.name not in app_groups:
                     db_group.delete()
@@ -1742,7 +1741,6 @@ class TethysAppBase(TethysBase):
                 f"Do you want to remove it from the database?"
             )
             while proceed is None:
-
                 response = input("[y/n]")
                 if response.lower() == "y":
                     proceed = True

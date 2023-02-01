@@ -32,7 +32,6 @@ def get_captcha():
 
 
 class LoginForm(forms.Form):
-
     username = forms.RegexField(
         label="",
         max_length=150,

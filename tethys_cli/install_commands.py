@@ -458,7 +458,6 @@ def configure_services_from_file(services, app_name):
                     setting_found = False
 
                     for setting in unlinked_settings:
-
                         if setting.name != setting_name:
                             continue
 
@@ -483,7 +482,6 @@ def configure_services_from_file(services, app_name):
 
 
 def run_portal_install(app_name):
-
     file_path = Path(get_tethys_home_dir()) / "portal_config.yml"
 
     if not file_path.exists():

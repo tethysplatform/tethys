@@ -9,7 +9,6 @@ import tethys_services.models
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("tethys_apps", "0001_initial_30"),
         ("tethys_apps", "0002_auto_20200326_1657"),

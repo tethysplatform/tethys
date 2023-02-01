@@ -83,7 +83,6 @@ TETHYS_HOME = get_tethys_home_dir()
 
 
 def add_gen_parser(subparsers):
-
     # Setup generate command
     gen_parser = subparsers.add_parser(
         "gen",
@@ -319,7 +318,6 @@ def gen_portal_yaml(args):
     try:
         tethys_portal_settings.update(args.tethys_portal_settings)
     except AttributeError:
-
         write_info(
             "A Tethys Portal configuration file is being generated. "
             "Please review the file and fill in the appropriate settings."

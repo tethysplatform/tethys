@@ -61,7 +61,6 @@ def remove_new_settings(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tethys_config", "0004_auto_20211221_2300"),
     ]

@@ -897,7 +897,6 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.gen_commands.check_for_existing_file")
     @mock.patch("tethys_cli.gen_commands.os.path.isdir", return_value=True)
     def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
-
         mock_args = mock.MagicMock(
             type=GEN_PACKAGE_JSON_OPTION,
             directory=False,
