@@ -61,7 +61,6 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_shutil_copytree,
         mock_print,
     ):
-
         options = {"link": False}  # Don't create symbolic link (copy instead)
         static_root_dir = "/foo/static/root"
         app_source_dir = "/foo/sources/foo_app"
@@ -153,7 +152,6 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_shutil_copytree,
         mock_print,
     ):
-
         options = {"link": False}  # Don't create symbolic link (copy instead)
         static_root_dir = "/foo/static/root"
         app_source_dir = "/foo/sources/foo_app"

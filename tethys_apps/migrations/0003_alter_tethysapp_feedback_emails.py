@@ -31,7 +31,6 @@ def save_feedback_emails_as_list(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tethys_apps", "0002_auto_20221130_2305"),
     ]

@@ -6,7 +6,6 @@ from tethys_config.init import initial_settings, reverse_init
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []

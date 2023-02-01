@@ -154,7 +154,6 @@ class TestMapView(unittest.TestCase):
         self.assertDictEqual({"not_data.foo": "bar"}, result.snapping_layer)
 
     def test_MVDraw_invalid_initial_control(self):
-
         # Raise Error if Initial is not in Controls list
         self.assertRaises(ValueError, gizmo_map_view.MVDraw, initial="foo")
 

@@ -27,7 +27,6 @@ class SubfieldBase(type):
     """
 
     def __new__(cls, name, bases, attrs):
-
         new_class = super().__new__(cls, name, bases, attrs)
         new_class.contribute_to_class = make_contrib(
             new_class, attrs.get("contribute_to_class")

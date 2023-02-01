@@ -283,7 +283,6 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     def test_app_settings_create_ps_database_command_with_no_success(
         self, mock_database_settings, mock_exit
     ):
-
         # mock the args
         mock_arg = mock.MagicMock(app="foo")
         mock_arg.name = None
