@@ -239,8 +239,9 @@ def app_settings_set_command(args):
                     write_warning(
                         f'File found, extracting Json data int o Json String'
                     )
-                    json_data = json.load(json_file)
-                    value_json = json.dumps(json_data)
+                    value_json = json.load(json_file)
+                    # value_json = json.dumps(json_data)
+                    # value_json = json.dumps(json_data,sort_keys = True, indent = 4, ensure_ascii = False)
         
                 setting.value = value_json
             else:

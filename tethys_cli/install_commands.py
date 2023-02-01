@@ -317,6 +317,8 @@ def run_interactive_services(app_name):
                     TETHYS_HOME = Path(get_tethys_home_dir())
                     secrets_yaml_file = TETHYS_HOME / "secrets.yml"
                     portal_secrets = {}
+                    msge ="Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml"
+
                     if secrets_yaml_file.exists():
                         with secrets_yaml_file.open("r") as secrets_yaml:
                             portal_secrets = yaml.safe_load(secrets_yaml) or {}
@@ -335,14 +337,14 @@ def run_interactive_services(app_name):
                                 msge = "Successfully created salt string for {0} Secret Custom Setting!".format(setting.name)
                             else:
                                 if setting.name in portal_secrets["secrets"][app_name]["custom_settings_salt_strings"]:
-                                    msge ="Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml"
+                                    
                                     del portal_secrets["secrets"][app_name]["custom_settings_salt_strings"][setting.name]
                             with secrets_yaml_file.open("w") as secrets_yaml:
                                 yaml.dump(portal_secrets, secrets_yaml)
                                 write_msg(
                                     f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
                                 )
-                        p.write(msge)
+                    p.write(msge)
                     
         if hasattr(setting, "value"):
             while not valid:
@@ -367,8 +369,7 @@ def run_interactive_services(app_name):
                             try:
                             
                                 with open(json_path) as json_file:
-                                    json_data = json.load(json_file)
-                                    value = json.dumps(json_data)
+                                    value = json.load(json_file)
                             except FileNotFoundError:
                                 write_warning(
                                     f'The current file path was not found'
@@ -386,10 +387,6 @@ def run_interactive_services(app_name):
                     if value != "":
                         
                         try:
-                            # if setting.type != "JSON":
-                                # setting.value = value
-                            # else:
-                                # setting.value_json = value
                             setting.value = value
                             setting.clean()
                             setting.save()

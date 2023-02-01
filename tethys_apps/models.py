@@ -505,7 +505,7 @@ class CustomJSONSetting(CustomSetting):
         """
         Validate prior to saving changes.
         """        
-
+        breakpoint()
         if self.default:
             if not self.value:
                 self.value = self.default
@@ -516,7 +516,7 @@ class CustomJSONSetting(CustomSetting):
         if type(self.value) is not dict:
             
             try:
-                json.loads(self.value)
+                json.dumps(self.value)
             except Exception:
                 raise ValidationError("Value must be a valid JSON string.")
                 
@@ -540,7 +540,7 @@ class CustomJSONSetting(CustomSetting):
             # None is a valid value to return in the case the value has not been set for this setting type
             return None
         
-        return json.dumps(self.value)
+        return self.value
 
 
 # @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)

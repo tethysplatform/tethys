@@ -190,10 +190,9 @@ def get_app_settings(app):
             app_settings.append(setting)
         for setting in CustomSetting.objects.filter(tethys_app=app).select_subclasses():
             app_settings.append(setting)
-
+        # breakpoint()
         unlinked_settings = []
         linked_settings = []
-
         for setting in app_settings:
             if (
                 (
@@ -209,7 +208,7 @@ def get_app_settings(app):
                     hasattr(setting, "web_processing_service")
                     and setting.web_processing_service
                 )
-                or (hasattr(setting, "value") and setting.value != "")
+                or (hasattr(setting, "value") and (setting.value != "" and bool(setting.value)))
             ):
                 linked_settings.append(setting)
             else:
