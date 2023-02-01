@@ -25,7 +25,7 @@ dependencies:
   # database dependencies
   - postgresql
   - psycopg2
-  - sqlalchemy
+  - sqlalchemy=1.*  # TODO: what will it take to support sqlalchemy 2.0?
   - geoalchemy2
 
   # plotting dependencies
