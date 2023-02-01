@@ -223,7 +223,6 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_apps.cli.cli_colors.pretty_output")
     @mock.patch("tethys_apps.cli.install_commands.os")
     def test_run_portal_install_path_none(self, mock_os, _):
-
         mock_os.path.exists.return_value = False
 
         self.assertFalse(install_commands.run_portal_install(None, "foo"))

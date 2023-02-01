@@ -8,7 +8,6 @@ import tethys_compute.models.dask.dask_field
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("tethys_compute", "0001_initial_30"),
         ("tethys_compute", "0002_tethysjob_groups"),

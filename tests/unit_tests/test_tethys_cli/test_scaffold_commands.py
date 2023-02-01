@@ -142,7 +142,6 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger,
         mock_copy,
     ):
-
         # mock the input args
         mock_args = mock.MagicMock()
 

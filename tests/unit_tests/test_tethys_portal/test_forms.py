@@ -43,7 +43,6 @@ class TethysPortalFormsTests(TestCase):
     # Login Form
 
     def test_LoginForm_no_captcha(self):
-
         login_data = {"username": "admin", "password": "test1231"}
 
         with self.settings(ENABLE_CAPTCHA=False):
@@ -68,7 +67,6 @@ class TethysPortalFormsTests(TestCase):
             self.assertFalse(login_form.is_valid())
 
     def test_LoginForm_simple_captcha(self):
-
         login_data = {
             "username": "admin",
             "password": "test1231",

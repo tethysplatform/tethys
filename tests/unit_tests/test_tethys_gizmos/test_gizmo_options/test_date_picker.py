@@ -36,14 +36,12 @@ class TestButton(unittest.TestCase):
         self.assertIn(self.min_view_mode, self.gizmo["min_view_mode"])
 
     def test_get_vendor_css(self):
-
         result = gizmo_date_picker.DatePicker.get_vendor_css()
 
         self.assertIn("bootstrap-datepicker3.min.css", result[0])
         self.assertNotIn("bootstrap-datepicker.min.js", result[0])
 
     def test_get_vendor_js(self):
-
         result = gizmo_date_picker.DatePicker.get_vendor_js()
 
         self.assertIn("bootstrap-datepicker.min.js", result[0])

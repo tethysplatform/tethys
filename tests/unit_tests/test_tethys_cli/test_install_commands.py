@@ -544,7 +544,6 @@ class TestInstallServicesCommands(TestCase):
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_run_portal_install_path_none(self, _):
-
         self.mock_path.__truediv__().exists.return_value = False
 
         self.assertFalse(install_commands.run_portal_install("foo"))

@@ -11,7 +11,6 @@ from tethys_config.init import (
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("tethys_config", "0001_initial_30"),
         ("tethys_config", "0002_auto_20200410_1731"),
