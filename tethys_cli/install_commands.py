@@ -518,7 +518,16 @@ def configure_services_from_file(services, app_name):
                         if custom_setting.type_custom_setting == 'SECRET':
                             value_secret =  getpass.getpass(prompt=f'Please provide the value for the {custom_setting.name} secret custom setting:')
                             custom_setting.value = value_secret
-                        else:
+                        if custom_setting.type_custom_setting == 'JSON':
+                            try:
+                                with open(current_services[setting_name]) as json_file:
+                                        custom_setting.value = json.load(json_file)
+                            except FileNotFoundError:
+                                custom_setting.value = current_services[setting_name]
+                                write_warning(
+                                    f'The current file path was not found, assuming you provided a valid JSON'
+                                )
+                        if custom_setting.type_custom_setting == 'SIMPLE':
                             custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
@@ -617,6 +626,7 @@ def run_portal_install(app_name):
 
 
 def run_services(app_name, args):
+    breakpoint()
     file_path = (
         Path("./services.yml")
         if args.services_file is None
