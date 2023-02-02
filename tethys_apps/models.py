@@ -278,7 +278,7 @@ class CustomSecretSetting(CustomSetting):
 
                     else:
                         log.info(
-                            "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                            "There is not a an apps portion in the secrets.yml, please create one by running the following command"
                         )
                         self.value = signer.sign_object(self.value)
             except Exception:
@@ -323,27 +323,27 @@ class CustomSecretSetting(CustomSetting):
 
                 else:
                     log.info(
-                        "There is not a an apps portion in the portal_config.yml, please create one by running the following command"
+                        "There is not a an apps portion in the secrets.yml, please create one by running the following command"
                     )
                     secret_unsigned = signer.unsign_object(f'{self.value}')
                 
 
         except FileNotFoundError:
             log.info(
-                "Could not find the portal_config.yml file. To generate a new portal_config.yml run the command "
-                '"tethys gen portal_config"'
+                "Could not find the secrets.yml file. To generate a new secrets.yml run the command "
+                '"tethys gen secrets"'
             )
         except signing.BadSignature:
-            log.warning(
-                f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
-            )
-            # raise TethysAppSettingNotAssigned(
-            #     f'The salt string for the setting {self.name} has been changed, please enter secret custom setting in the app settings form again.'
+            # log.warning(
+            #     f'The salt string for the setting {self.name} has been changed or lost, please enter secret custom setting in the app settings form again.'
             # )
+            raise TethysAppSettingNotAssigned(
+                f'The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again.'
+            )
 
         except Exception:
             log.exception(
-                "There was an error while attempting to read the settings from the portal_config.yml file."
+                "There was an error while attempting to read the settings from the secrets.yml file."
             )
 
         return secret_unsigned
@@ -505,7 +505,6 @@ class CustomJSONSetting(CustomSetting):
         """
         Validate prior to saving changes.
         """        
-        breakpoint()
         if self.default:
             if not self.value:
                 self.value = self.default

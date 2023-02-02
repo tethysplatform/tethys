@@ -263,6 +263,22 @@ def get_custom_setting(app_package, setting_name):
 
     return setting
 
+def get_custom_secret_settings(app_package):
+
+    from tethys_apps.models import TethysApp, CustomSetting
+
+    try:
+        app = TethysApp.objects.get(package=app_package)
+    except TethysApp.DoesNotExist:
+        return None
+    try:
+        settings = CustomSetting.objects.filter(tethys_app=app).select_subclasses().filter(type_custom_setting="SECRET")
+    except CustomSetting.DoesNotExist:
+        return None
+
+    return settings
+
+
 
 def create_ps_database_setting(
     app_package,

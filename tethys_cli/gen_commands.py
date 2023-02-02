@@ -23,9 +23,11 @@ from jinja2 import Template
 from django.conf import settings
 
 import tethys_portal
-from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
+from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir,get_installed_tethys_items,get_custom_secret_settings
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
+from tethys_cli.cli_helpers import load_apps
+
 from .site_commands import SITE_SETTING_CATEGORIES
 
 has_conda = False
@@ -44,6 +46,7 @@ GEN_ASGI_SERVICE_OPTION = "asgi_service"
 GEN_NGINX_OPTION = "nginx"
 GEN_NGINX_SERVICE_OPTION = "nginx_service"
 GEN_PORTAL_OPTION = "portal_config"
+GEN_SECRETS_OPTION = "secrets"
 GEN_SERVICES_OPTION = "services"
 GEN_INSTALL_OPTION = "install"
 GEN_META_YAML_OPTION = "metayaml"
@@ -57,6 +60,7 @@ FILE_NAMES = {
     GEN_NGINX_OPTION: "tethys_nginx.conf",
     GEN_NGINX_SERVICE_OPTION: "nginx_supervisord.conf",
     GEN_PORTAL_OPTION: "portal_config.yml",
+    GEN_SECRETS_OPTION: "secrets.yml",
     GEN_SERVICES_OPTION: "services.yml",
     GEN_INSTALL_OPTION: "install.yml",
     GEN_META_YAML_OPTION: "meta.yaml",
@@ -71,6 +75,7 @@ VALID_GEN_OBJECTS = (
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
     GEN_PORTAL_OPTION,
+    GEN_SECRETS_OPTION,
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_META_YAML_OPTION,
@@ -336,6 +341,36 @@ def gen_portal_yaml(args):
     }
     return context
 
+def gen_secrets_yaml(args):
+    load_apps()
+    tethys_secrets_settings = {}
+    tethys_secrets_settings.setdefault("version", 1.0)
+    tethys_secrets_settings.setdefault("secrets", {})
+    installed_apps = get_installed_tethys_items(apps=True)
+    
+    for one_app in installed_apps.keys():
+        if one_app not in tethys_secrets_settings["secrets"]:
+            tethys_secrets_settings["secrets"][one_app] = {}
+            if "custom_settings_salt_strings" not in tethys_secrets_settings["secrets"][one_app]:
+                tethys_secrets_settings["secrets"][one_app]["custom_settings_salt_strings"] = {}
+
+        secret_settings = get_custom_secret_settings(one_app)
+        for secret_setting in secret_settings:
+            tethys_secrets_settings["secrets"][one_app]["custom_settings_salt_strings"][secret_setting.name] = ""
+
+
+    write_info(
+        "A Tethys Secrets file is being generated. "
+        "Please review the file and fill in the appropriate settings."
+    )
+    breakpoint()
+
+    context = {
+        "version": tethys_secrets_settings["version"],
+        "secrets": yaml.safe_dump({"secrets": tethys_secrets_settings["secrets"]}),
+    }
+    return context
+
 
 def derive_version_from_conda_environment(dep_str, level="none"):
     """
@@ -558,6 +593,7 @@ GEN_COMMANDS = {
     GEN_NGINX_OPTION: proxy_server_context,
     GEN_NGINX_SERVICE_OPTION: empty_context,
     GEN_PORTAL_OPTION: gen_portal_yaml,
+    GEN_SECRETS_OPTION: gen_secrets_yaml,
     GEN_SERVICES_OPTION: empty_context,
     GEN_INSTALL_OPTION: gen_install,
     GEN_META_YAML_OPTION: gen_meta_yaml,
