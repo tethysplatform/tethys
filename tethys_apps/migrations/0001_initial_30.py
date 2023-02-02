@@ -226,7 +226,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("value", models.CharField(blank=True, default="", max_length=1024)),
-                ("default", models.CharField(blank=True, default="", max_length=1024)),
             ],
             bases=("tethys_apps.customsetting",),
         ),

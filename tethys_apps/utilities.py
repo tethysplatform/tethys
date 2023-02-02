@@ -192,7 +192,6 @@ def get_app_settings(app):
             app_settings.append(setting)
         for setting in CustomSetting.objects.filter(tethys_app=app).select_subclasses():
             app_settings.append(setting)
-        # breakpoint()
         unlinked_settings = []
         linked_settings = []
         for setting in app_settings:
@@ -215,6 +214,8 @@ def get_app_settings(app):
                 linked_settings.append(setting)
             else:
                 unlinked_settings.append(setting)
+
+        breakpoint()
 
         return {
             "linked_settings": linked_settings,

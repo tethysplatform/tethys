@@ -247,17 +247,14 @@ class CustomSetting(TethysAppSetting):
 
 class CustomSecretSetting(CustomSetting):
     value = models.CharField(max_length=1024, blank=True, default="")
-    default = models.CharField(max_length=1024, blank=True, default="")
     def clean(self):
+        breakpoint()
         """
         Validate prior to saving changes.
         """        
-        if self.default != "":
-            if self.value == "":
-                self.value = self.default
-        else:
-            if self.value == "" and self.required:
-                raise ValidationError("Required.")
+
+        if self.value == "" and self.required:
+            raise ValidationError("Required.")
    
         if self.value != "" :
             try:
@@ -288,10 +285,6 @@ class CustomSecretSetting(CustomSetting):
         Get the value, automatically casting it to the correct type.
         """
         # breakpoint()
-
-        if self.default != "":
-            if self.value == "":
-                self.value = self.default
 
         if self.value == "" or self.value is None:
             if self.required:
@@ -334,9 +327,7 @@ class CustomSecretSetting(CustomSetting):
                 '"tethys gen secrets"'
             )
         except signing.BadSignature:
-            # log.warning(
-            #     f'The salt string for the setting {self.name} has been changed or lost, please enter secret custom setting in the app settings form again.'
-            # )
+
             raise TethysAppSettingNotAssigned(
                 f'The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again.'
             )
@@ -542,10 +533,8 @@ class CustomJSONSetting(CustomSetting):
         return self.value
 
 
-# @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
 @receiver(models.signals.post_init, sender=CustomSimpleSetting)
 @receiver(models.signals.post_init, sender=CustomJSONSetting)
-@receiver(models.signals.post_init, sender=CustomSecretSetting)
 def set_default_value(sender, instance, *args, **kwargs):
     """
     Set the default value for `value` on the `instance` of Setting.
