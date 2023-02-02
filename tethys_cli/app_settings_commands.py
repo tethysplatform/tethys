@@ -1,6 +1,7 @@
 import yaml
 import os
 import json
+import getpass
 from pathlib import Path
 from django.core.signing import Signer
 from django.core.exceptions import ValidationError,ObjectDoesNotExist, MultipleObjectsReturned
@@ -158,6 +159,20 @@ def add_app_settings_parser(subparsers):
     )
     app_settings_set_salt_string_custom_settings_secrets_parser.set_defaults(func=app_settings_create_all_salt_strings_command)
 
+    # tethys set the value for a custom secret in an app
+    app_settings_set_custom_setting_secret_parser = app_settings_subparsers.add_parser(
+        "set_secret", help="Set the value of a secret custom setting " "for a specified app."
+    )
+    app_settings_set_custom_setting_secret_parser.add_argument(
+        "app", help='The app ("<app_package>") with the setting to be set.'
+    )
+    app_settings_set_custom_setting_secret_parser.add_argument(
+        "setting", help="The name of the custom secret setting to be set."
+    )
+
+    app_settings_set_custom_setting_secret_parser.set_defaults(func=app_settings_set_secrets_command)
+
+
 def app_settings_list_command(args):
     load_apps()
     app_settings = get_app_settings(args.app)
@@ -240,12 +255,16 @@ def app_settings_set_command(args):
                         f'File found, extracting Json data int o Json String'
                     )
                     value_json = json.load(json_file)
-                    # value_json = json.dumps(json_data)
-                    # value_json = json.dumps(json_data,sort_keys = True, indent = 4, ensure_ascii = False)
         
                 setting.value = value_json
             else:
                 setting.value = args.value
+
+        if setting.type_custom_setting == "SECRET":
+            write_warning(
+                f'The setting {setting.name} is a secret custom setting, please use the function set_secret to set the value of a custom secret sectting'
+            )
+            exit(1)
 
         else:
             setting.value = args.value
@@ -262,6 +281,46 @@ def app_settings_set_command(args):
         f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set to "{args.value}".'
     )
     exit(0)
+
+
+def app_settings_set_secrets_command(args):
+    load_apps()
+    setting = get_custom_setting(args.app, args.setting)
+
+    if not setting:
+        write_error(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
+        exit(1)
+
+    try:
+        if setting.type_custom_setting == "JSON":
+            write_warning(
+                f'The settting {args.setting} is a Json Custom Setting, please enter a Secret Custom the Setting'
+            )
+            exit(1)
+        if setting.type_custom_setting == "SIMPLE":
+            write_warning(
+                f'The settting {args.setting} is a Simple Custom Setting, please enter a Secret Custom the Setting'
+            )
+            exit(1)
+        if setting.type_custom_setting == "SECRET":
+
+            value_secret =  getpass.getpass(prompt='Please provide the value for the secret custom setting:')
+            
+            setting.value = value_secret
+        
+        setting.clean()
+        setting.save()
+    except ValidationError as e:
+        write_error(
+            f'Value was not set: {",".join(e.messages)} "{args.value}" was given.'
+        )
+        exit(1)
+
+    write_success(
+        f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set'
+    )
+    exit(0)
+
 
 
 def app_settings_reset_command(args):
