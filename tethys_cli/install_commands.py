@@ -489,7 +489,7 @@ def find_and_link(service_type, setting_name, service_id, app_name, setting):
 def configure_services_from_file(services, app_name):
     from tethys_apps.models import TethysApp, CustomSetting
 
-    if services["version"]:
+    if "version" in services:
         del services["version"]
 
     db_app = TethysApp.objects.get(package=app_name)
@@ -498,7 +498,8 @@ def configure_services_from_file(services, app_name):
         if services[service_type] is not None:
             current_services = services[service_type]
             for setting_name in current_services:
-                if service_type == "custom_setting":                    
+                # breakpoint()
+                if service_type == "custom_settings":                    
                     try:
                         # custom_setting = CustomSetting.objects.get(
                         #     name=setting_name, tethys_app=db_app.id
@@ -514,13 +515,22 @@ def configure_services_from_file(services, app_name):
                         continue
 
                     try:
-                        custom_setting.value = current_services[setting_name]
+                        if custom_setting.type_custom_setting == 'SECRET':
+                            value_secret =  getpass.getpass(prompt=f'Please provide the value for the {custom_setting.name} secret custom setting:')
+                            custom_setting.value = value_secret
+                        else:
+                            custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
-                        write_success(
-                            f'CustomSetting: "{setting_name}" was assigned the value: '
-                            f'"{current_services[setting_name]}"'
-                        )
+                        if custom_setting.type_custom_setting != 'SECRET':
+                            write_success(
+                                f'CustomSetting: "{setting_name}" was assigned the value: '
+                                f'"{current_services[setting_name]}"'
+                            )
+                        else:
+                            write_success(
+                                f'CustomSetting: "{setting_name}" was assigned successfully'
+                            )
                     except ValidationError:
                         write_error(
                             "Incorrect value type given for custom setting '{}'. Please adjust "
