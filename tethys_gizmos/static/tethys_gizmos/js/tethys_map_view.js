@@ -468,9 +468,17 @@ var TETHYS_MAP_VIEW = (function() {
       // Customize styles
       INITIAL_FILL_COLOR = m_draw_options.fill_color,
       INITIAL_STROKE_COLOR = m_draw_options.line_color,
-      INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
+      INITIAL_POINT_FILL_COLOR = m_draw_options.point_color;
 
-      initial_features_str = m_draw_options.initial_features;
+      if (typeof m_draw_options.initial_features === 'string' || m_draw_options.initial_features instanceof String) {
+        initial_features_str = m_draw_options.initial_features;
+      }
+      else if (m_draw_options.initial_features) {
+        initial_features_str = JSON.stringify(m_draw_options.initial_features);
+      }
+      else {
+        initial_features_str = "";
+      }
 
       // Initialize the drawing layer
       m_drawing_source = new ol.source.Vector({wrapX: false});
