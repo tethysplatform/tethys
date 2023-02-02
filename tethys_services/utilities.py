@@ -66,26 +66,19 @@ def ensure_oauth2(provider):
                 return redirect_response
             except AttributeError:
                 # Anonymous User needs to be logged in and associated with that provider
-                # return redirect('/login/{0}/?next={1}'.format(provider, request.path))
                 return redirect_response
             except AuthAlreadyAssociated as e:
                 # Another user has already used the account to associate...
                 raise e
             else:
                 strategy = load_strategy()
-                access_token = social.get_access_token(strategy)
-                if social.access_token_expired():
-                    try:
-                        logger.debug(
-                            "token is not valid, attempting to refresh using refresh token"
-                        )
-                        social.refresh_token(strategy)
-                        access_token = social.get_access_token(strategy)
-                    except requests.exceptions.HTTPError:
-                        logger.debug(
-                            "there was an error refreshing the token - redirecting user to re-authenticate"
-                        )
-                        return redirect_response
+                try:
+                    access_token = social.get_access_token(strategy)
+                except requests.exceptions.HTTPError:
+                    logger.debug(
+                        "there was an error refreshing the token - redirecting user to re-authenticate"
+                    )
+                    return redirect_response
 
                 request.social_access_token = access_token
 
