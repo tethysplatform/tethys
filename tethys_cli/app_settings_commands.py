@@ -252,7 +252,7 @@ def app_settings_set_command(args):
 
                 with open(args.value) as json_file:
                     write_warning(
-                        f'File found, extracting Json data int o Json String'
+                        f'File found, extracting Json data'
                     )
                     value_json = json.load(json_file)
         
@@ -262,11 +262,11 @@ def app_settings_set_command(args):
 
         if setting.type_custom_setting == "SECRET":
             write_warning(
-                f'The setting {setting.name} is a secret custom setting, please use the function set_secret to set the value of a custom secret sectting'
+                f'The setting {setting.name} is a secret custom setting, please use the function set_secret to set the value of a custom secret setting'
             )
             exit(1)
 
-        else:
+        if setting.type_custom_setting == "SIMPLE":
             setting.value = args.value
         
         setting.clean()
