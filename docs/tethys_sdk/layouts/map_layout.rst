@@ -4,7 +4,7 @@
 Map Layout
 **********
 
-**Last Updated:** May 2022
+**Last Updated:** January 2023
 
 The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds. It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
 
@@ -871,10 +871,10 @@ Properties Popups
 
 .. _map_layout_js_show_properties_popup:
 
-show_properties_pop_up
-^^^^^^^^^^^^^^^^^^^^^^
+show_properties_popup
+^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.show_properties_pop_up(coordinates)**
+**MAP_LAYOUT.show_properties_popup(coordinates)**
 
     Show the properties popup at the location given.
 
@@ -884,28 +884,28 @@ show_properties_pop_up
 
 .. _map_layout_js_close_properties_popup:
 
-close_properties_pop_up
-^^^^^^^^^^^^^^^^^^^^^^^
+close_properties_popup
+^^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.close_properties_pop_up()** 
+**MAP_LAYOUT.close_properties_popup()** 
 
     Hides the properties popup and clears the features selected.
 
 .. _map_layout_js_hide_properties_popup:
 
-hide_properties_pop_up
-^^^^^^^^^^^^^^^^^^^^^^
+hide_properties_popup
+^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.hide_properties_pop_up()**
+**MAP_LAYOUT.hide_properties_popup()**
 
     Hides the properties popup without clearing selection.
 
 .. _map_layout_js_reset_properties_popup:
 
-reset_properties_pop_up
-^^^^^^^^^^^^^^^^^^^^^^^
+reset_properties_popup
+^^^^^^^^^^^^^^^^^^^^^^
 
-**MAP_LAYOUT.reset_properties_pop_up()**
+**MAP_LAYOUT.reset_properties_popup()**
 
     Empties content of properties popup and then hides it.
 
