@@ -6,9 +6,9 @@ from pathlib import Path
 from django.core.signing import Signer
 from django.core.exceptions import ValidationError,ObjectDoesNotExist, MultipleObjectsReturned
 from tethys_apps.utilities import get_app_settings, get_custom_setting,get_tethys_home_dir
-from tethys_cli.cli_colors import pretty_output, BOLD, write_error, write_success, write_warning
-from tethys_cli.cli_helpers import load_apps, generate_salt_string
-
+from tethys_cli.cli_colors import pretty_output, BOLD, write_error, write_success, write_warning,write_msg
+from tethys_cli.cli_helpers import load_apps, gen_salt_string_for_setting
+from subprocess import call
 TETHYS_HOME = Path(get_tethys_home_dir())
 
 def add_app_settings_parser(subparsers):
@@ -37,6 +37,13 @@ def add_app_settings_parser(subparsers):
     app_settings_set_parser.add_argument(
         "setting", help="The name of the setting to be set."
     )
+    # app_settings_set_parser.add_argument(
+    #     "-h",
+    #     "--hidden",
+    #     action="store_true",        
+    #     required=False,
+    #     help="Prompt for the settings value if the user wants to hide the settings value in the terminal"
+    # )
     app_settings_set_parser.add_argument("value", help="The value to set.")
     app_settings_set_parser.set_defaults(func=app_settings_set_command)
 
@@ -132,45 +139,26 @@ def add_app_settings_parser(subparsers):
     )
     app_settings_remove_cmd.set_defaults(func=app_settings_remove_command)
 
-    # tethys generate a salt string for a custom secret setting in an app
-    app_settings_set_salt_string_custom_setting_secret_parser = app_settings_subparsers.add_parser(
-        "gen_salt", help="Set the value of a salt string for a secret custom setting " "for a specified app."
-    )
-    app_settings_set_salt_string_custom_setting_secret_parser.add_argument(
-        "app", help='The app ("<app_package>") with the setting to be set.'
-    )
-    app_settings_set_salt_string_custom_setting_secret_parser.add_argument(
-        "setting", help="The name of the setting to be set."
-    )
-    app_settings_set_salt_string_custom_setting_secret_parser.add_argument(
-        "-s",
-        "--salt_string",
-        required=False,
-        help="The salt string to use, if none is provided one will be generated."
-    )
-    app_settings_set_salt_string_custom_setting_secret_parser.set_defaults(func=app_settings_create_salt_strings_command)
-
-    # tethys generate a salt string for each custom secret setting in an app
+    # tethys generate a salt string for each custom secret setting for each app
     app_settings_set_salt_string_custom_settings_secrets_parser = app_settings_subparsers.add_parser(
-        "gen_salt_all", help="Set the value of a salt string for each secret custom setting " "for a specified app."
+        "gen_salt", help="Set the value of a salt string for each secret custom setting " "for a specified app."
     )
     app_settings_set_salt_string_custom_settings_secrets_parser.add_argument(
-        "app", help='The app ("<app_package>") with the setting to be set.'
-    )
-    app_settings_set_salt_string_custom_settings_secrets_parser.set_defaults(func=app_settings_create_all_salt_strings_command)
+        "-a",
+        "--app",
+        required=False,
+        help='The app ("<app_package>") with the setting to be set.',
 
-    # tethys set the value for a custom secret in an app
-    app_settings_set_custom_setting_secret_parser = app_settings_subparsers.add_parser(
-        "set_secret", help="Set the value of a secret custom setting " "for a specified app."
     )
-    app_settings_set_custom_setting_secret_parser.add_argument(
-        "app", help='The app ("<app_package>") with the setting to be set.'
-    )
-    app_settings_set_custom_setting_secret_parser.add_argument(
-        "setting", help="The name of the custom secret setting to be set."
+    app_settings_set_salt_string_custom_settings_secrets_parser.add_argument(
+        "-s",
+        "--setting",
+        required=False,
+        help="The name of the setting to be set, if none is provided salt strings will be generated for all the settings."
     )
 
-    app_settings_set_custom_setting_secret_parser.set_defaults(func=app_settings_set_secrets_command)
+    app_settings_set_salt_string_custom_settings_secrets_parser.set_defaults(func=app_settings_gen_salt_strings_command)
+
 
 
 def app_settings_list_command(args):
@@ -240,17 +228,22 @@ def app_settings_list_command(args):
 def app_settings_set_command(args):
     load_apps()
     setting = get_custom_setting(args.app, args.setting)
-
+    actual_value = args.value
+    
     if not setting:
         write_error(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
         exit(1)
+    # if args.hidden:
+    #     actual_value =  getpass.getpass(prompt="Please input the setting's value:")
+    # else:
+    #     actual_value = args.value
 
     try:
         value_json = '{}'
         if setting.type_custom_setting == "JSON":
-            if os.path.exists(args.value):
+            if os.path.exists(actual_value):
 
-                with open(args.value) as json_file:
+                with open(actual_value) as json_file:
                     write_warning(
                         f'File found, extracting Json data'
                     )
@@ -258,17 +251,9 @@ def app_settings_set_command(args):
         
                 setting.value = value_json
             else:
-                setting.value = args.value
-
-        if setting.type_custom_setting == "SECRET":
-            write_warning(
-                f'The setting {setting.name} is a secret custom setting, please use the function set_secret to set the value of a custom secret setting'
-            )
-            exit(1)
-
-        if setting.type_custom_setting == "SIMPLE":
-            setting.value = args.value
-        
+                setting.value = actual_value
+            
+        setting.value = actual_value
         setting.clean()
         setting.save()
     except ValidationError as e:
@@ -281,47 +266,6 @@ def app_settings_set_command(args):
         f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set to "{args.value}".'
     )
     exit(0)
-
-
-def app_settings_set_secrets_command(args):
-    load_apps()
-    setting = get_custom_setting(args.app, args.setting)
-
-    if not setting:
-        write_error(f'No such Custom Setting "{args.setting}" for app "{args.app}".')
-        exit(1)
-
-    try:
-        if setting.type_custom_setting == "JSON":
-            write_warning(
-                f'The settting {args.setting} is a Json Custom Setting, please enter a Secret Custom the Setting'
-            )
-            exit(1)
-        if setting.type_custom_setting == "SIMPLE":
-            write_warning(
-                f'The settting {args.setting} is a Simple Custom Setting, please enter a Secret Custom the Setting'
-            )
-            exit(1)
-        if setting.type_custom_setting == "SECRET":
-
-            value_secret =  getpass.getpass(prompt='Please provide the value for the secret custom setting:')
-            
-            setting.value = value_secret
-        
-        setting.clean()
-        setting.save()
-    except ValidationError as e:
-        write_error(
-            f'Value was not set: {",".join(e.messages)} "{args.value}" was given.'
-        )
-        exit(1)
-
-    write_success(
-        f'Success! Custom Setting "{args.setting}" for app "{args.app}" was set'
-    )
-    exit(0)
-
-
 
 def app_settings_reset_command(args):
     load_apps()
@@ -413,128 +357,80 @@ def app_settings_remove_command(args):
 
     exit(0)
 
-def app_settings_create_salt_strings_command(args):
 
+def app_settings_gen_salt_strings_command(args):
     load_apps()
+    ## create a list for apps, settings, and salt strings
 
-    ## checking if the salt string si provided or not
-    if args.salt_string:
-        salt_string = args.salt_string
-    else:
-        salt_string = generate_salt_string().decode()
-    app_name = args.app
-    setting = args.setting
-    breakpoint()
-    ## checking the type of setting and the type of custom setting
-    if get_custom_setting(app_name,setting) is None:
-        write_warning(
-            f'No secret custom setting for the app {app_name}'
-        )
-        exit(1)
-    else:
-        if get_custom_setting(app_name,setting).type_custom_setting != "SECRET":
-            write_warning(
-                f'The custom setting {setting} for the app {app_name} is not a a secret custom setting type, but a {get_custom_setting(app_name,setting).type_custom_setting} custom setting type'
-            )
-            exit(1)
-    
-    secrets_yaml_file = TETHYS_HOME / "secrets.yml"
-    secret_settings = {}
-    if secrets_yaml_file.exists():
-        with secrets_yaml_file.open("r") as secrets_yaml:
-            secret_settings = yaml.safe_load(secrets_yaml) or {}
-            if not app_name in secret_settings["secrets"]:
-                write_warning(
-                    f'No app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
-                )
-                secret_settings["secrets"][app_name] = {}
-            if not 'custom_settings_salt_strings' in secret_settings["secrets"][app_name]:
-                write_warning(
-                    f'No custom_settings_salt_strings in the app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
-                )
-                secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
-            
-            ## get the last salt string
-            last_salt_string = ""
-            signer = Signer()
-            if setting in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]:
-                last_salt_string = secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting]
-                signer = Signer(salt=last_salt_string)
-            secret_unsigned= signer.unsign_object(f'{get_custom_setting(app_name,setting).value}')
-            secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting] = salt_string            
-            with secrets_yaml_file.open("w") as secrets_yaml:
-                yaml.dump(secret_settings, secrets_yaml)
-                write_success(
-                    f'custom_settings_salt_strings created for setting: {setting} in app {app_name}'
-                )
-            setting_obj = get_custom_setting(app_name,setting)
-            setting_obj.value = secret_unsigned
-            setting_obj.clean()
-            setting_obj.save()
-            exit(0)
-    
-
-def app_settings_create_all_salt_strings_command(args):
-    load_apps()
-    app_name = args.app
     from tethys_apps.models import (
         TethysApp,
         CustomSetting,
         TethysExtension
     )
-
+   
+    list_apps = []
+    list_settings = []
+    if not args.app and args.setting:
+        write_error(
+            'Please use the -a or --app flag to specify an application, and then use the -s / --setting flag to specify a setting. Command aborted.'
+        )
+        exit(1) 
     try:
-        app = TethysApp.objects.get(package=app_name)
-        # breakpoint()
-        for setting in CustomSetting.objects.filter(tethys_app=app).filter(type_custom_setting="SECRET").select_subclasses():
-            breakpoint()
-            # if setting.type_custom_setting == "SECRET": 
-            salt_string = generate_salt_string().decode()
-            secret_yaml_file = TETHYS_HOME / "secrets.yml"
-            secret_settings = {}
-            if secret_yaml_file.exists():
-                with secret_yaml_file.open("r") as secret_yaml:
-                    secret_settings = yaml.safe_load(secret_yaml) or {}
-                    if not app_name in secret_settings["secrets"]:
-                        write_warning(
-                            f'No app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
+        if args.app:
+            try:
+                list_apps.append(TethysApp.objects.get(package=args.app))
+            except ObjectDoesNotExist:
+                try:
+                    # Fail silently if the object is an Extension
+                    app = TethysApp.objects.get(package=args.app)
+                    TethysExtension.objects.get(package=app)
+                except ObjectDoesNotExist:
+                    # Write an error if the object is not a TethysApp or Extension
+                    write_error(
+                        'The app or extension you specified ("{0}") does not exist. Command aborted.'.format(
+                            args.app
                         )
-                        secret_settings["secrets"][app_name] = {}
-                    if not 'custom_settings_salt_strings' in secret_settings["secrets"][app_name]:
-                        write_warning(
-                            f'No custom_settings_salt_strings in the app definition for the app {app_name} in the secrets portion in the portal_config.yml. Generating one...'
-                        )
-                        secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
-
-                    last_salt_string = ""
-                    signer = Signer()
-                    if setting.name in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]:
-                        last_salt_string = secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name]
-                        signer = Signer(salt=last_salt_string)
-                    secret_unsigned= signer.unsign_object(f'{setting.value}')
-                    secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
-                    with secret_yaml_file.open("w") as secret_yaml:
-                        yaml.dump(secret_settings, secret_yaml)
-                        write_success(
-                            f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
-                        )
-                    setting.value = secret_unsigned
-                    setting.clean()
-                    setting.save()
-        exit(0)
-    except ObjectDoesNotExist:
-        try:
-            # Fail silently if the object is an Extension
-            TethysExtension.objects.get(package=app)
-        except ObjectDoesNotExist:
-            # Write an error if the object is not a TethysApp or Extension
-            write_error(
-                'The app or extension you specified ("{0}") does not exist. Command aborted.'.format(
-                    app
-                )
-            )
+                    )
+                    exit(1)
+            
+   
+        else:
+            # breakpoint()
+            list_apps = TethysApp.objects.all()
     except Exception as e:
         write_error(str(e))
         write_error("Something went wrong. Please try again.")
-    exit(0)
+        exit(1)
+
+    for app in list_apps:
+
+        app_name = app.package
+        write_success(
+            f'{app_name} application: '
+        )
+        if args.setting:
+            list_settings.append(get_custom_setting(app.package,args.setting))
+            if not list_settings[0]:
+                write_error(
+                    f'No custom settings with the name {args.setting} for the {app_name} exits.'
+                )
+                
+                exit(1) 
+        else:
+            list_settings = CustomSetting.objects.filter(tethys_app=app).filter(type_custom_setting="SECRET").select_subclasses()
+        for setting in list_settings:
+ 
+            secret_yaml_file = TETHYS_HOME / "secrets.yml"
+            if not secret_yaml_file.exists():
+                write_warning(
+                    f'No secrets.yml found. Generating one...'
+                )
+                call(["tethys", "gen", "secrets"])
+                write_msg(
+                    "secrets file generated."
+                )
+
+            gen_salt_string_for_setting(app_name,setting)
     
+    exit(0)
+

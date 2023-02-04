@@ -248,7 +248,7 @@ class CustomSetting(TethysAppSetting):
 class CustomSecretSetting(CustomSetting):
     value = models.CharField(max_length=1024, blank=True, default="")
     def clean(self):
-        breakpoint()
+        # breakpoint()
         """
         Validate prior to saving changes.
         """        
@@ -260,24 +260,28 @@ class CustomSecretSetting(CustomSetting):
             try:
                 TETHYS_HOME = get_tethys_home_dir()
                 signer = Signer()
-                with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
-                    secret_app_settings = yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
-                    if bool(secret_app_settings):
-                        if self.tethys_app.package in secret_app_settings:
-                            if 'custom_settings_salt_strings' in secret_app_settings[self.tethys_app.package]:
-                                app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
-                                if self.name in app_specific_settings:
-                                    app_custom_setting_salt_string = app_specific_settings[self.name]
-                                    signer = Signer(salt=app_custom_setting_salt_string)
-                                    self.value = signer.sign_object(self.value)
-                                else:
-                                    self.value = signer.sign_object(self.value)
+                if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+                    self.value = signer.sign_object(self.value)
+                else:   
+                    with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
+                        secret_app_settings = yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+                        if bool(secret_app_settings):
+                            if self.tethys_app.package in secret_app_settings:
+                                if 'custom_settings_salt_strings' in secret_app_settings[self.tethys_app.package]:
+                                    app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                                    if self.name in app_specific_settings:
+                                        app_custom_setting_salt_string = app_specific_settings[self.name]
+                                        signer = Signer(salt=app_custom_setting_salt_string)
+                                        self.value = signer.sign_object(self.value)
+                                    else:
+                                        self.value = signer.sign_object(self.value)
 
-                    else:
-                        log.info(
-                            "There is not a an apps portion in the secrets.yml, please create one by running the following command"
-                        )
-                        self.value = signer.sign_object(self.value)
+                        else:
+                            log.info(
+                                "There is not a an apps portion in the secrets.yml, please create one by running the following command"
+                            )
+                            self.value = signer.sign_object(self.value)
+
             except Exception:
                 raise ValidationError("Validation Error for Secret Custom Setting")
     def get_value(self):
@@ -302,30 +306,26 @@ class CustomSecretSetting(CustomSetting):
         # breakpoint()
         
         try:
-            
-            with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
-                secrets_app_settings = yaml.safe_load(secret_yaml).get("secrets", {}) or {}
-                if bool(secrets_app_settings):
-                    app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
-                    if self.name in app_specific_settings:
-                        app_custom_setting_salt_string = app_specific_settings[self.name]
-                        signer = Signer(salt=app_custom_setting_salt_string)
-                        secret_unsigned= signer.unsign_object(f'{self.value}')
+            if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+                secret_unsigned = signer.unsign_object(f'{self.value}')
+            else:  
+                with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
+                    secrets_app_settings = yaml.safe_load(secret_yaml).get("secrets", {}) or {}
+                    if bool(secrets_app_settings):
+                        app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                        if self.name in app_specific_settings:
+                            app_custom_setting_salt_string = app_specific_settings[self.name]
+                            signer = Signer(salt=app_custom_setting_salt_string)
+                            secret_unsigned= signer.unsign_object(f'{self.value}')
+                        else:
+                            secret_unsigned = signer.unsign_object(f'{self.value}')
+
                     else:
+                        log.info(
+                            "There is not a an apps portion in the secrets.yml, please create one by running the following command"
+                        )
                         secret_unsigned = signer.unsign_object(f'{self.value}')
-
-                else:
-                    log.info(
-                        "There is not a an apps portion in the secrets.yml, please create one by running the following command"
-                    )
-                    secret_unsigned = signer.unsign_object(f'{self.value}')
                 
-
-        except FileNotFoundError:
-            log.info(
-                "Could not find the secrets.yml file. To generate a new secrets.yml run the command "
-                '"tethys gen secrets"'
-            )
         except signing.BadSignature:
 
             raise TethysAppSettingNotAssigned(
@@ -456,7 +456,7 @@ class CustomSimpleSetting(CustomSetting):
                 raise ValidationError("Value must be a uuid.")
 
     def get_value(self):
-        breakpoint()
+        # breakpoint()
         """
         Get the value, automatically casting it to the correct type.
         """

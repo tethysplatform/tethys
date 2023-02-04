@@ -495,15 +495,13 @@ def configure_services_from_file(services, app_name):
     db_app = TethysApp.objects.get(package=app_name)
 
     for service_type in services:
+        breakpoint()
         if services[service_type] is not None:
             current_services = services[service_type]
             for setting_name in current_services:
-                # breakpoint()
+                
                 if service_type == "custom_settings":                    
                     try:
-                        # custom_setting = CustomSetting.objects.get(
-                        #     name=setting_name, tethys_app=db_app.id
-                        # )
                         custom_setting = CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
                             name=setting_name
                         )
@@ -515,9 +513,9 @@ def configure_services_from_file(services, app_name):
                         continue
 
                     try:
-                        if custom_setting.type_custom_setting == 'SECRET':
-                            value_secret =  getpass.getpass(prompt=f'Please provide the value for the {custom_setting.name} secret custom setting:')
-                            custom_setting.value = value_secret
+                        # if custom_setting.type_custom_setting == 'SECRET':
+                        #     value_secret =  getpass.getpass(prompt=f'Please provide the value for the {custom_setting.name} secret custom setting:')
+                        #     custom_setting.value = value_secret
                         if custom_setting.type_custom_setting == 'JSON':
                             try:
                                 with open(current_services[setting_name]) as json_file:
@@ -561,7 +559,7 @@ def configure_services_from_file(services, app_name):
                     unlinked_settings = app_settings["unlinked_settings"]
 
                     setting_found = False
-
+                    breakpoint()
                     for setting in unlinked_settings:
 
                         if setting.name != setting_name:
@@ -626,7 +624,7 @@ def run_portal_install(app_name):
 
 
 def run_services(app_name, args):
-    breakpoint()
+    # breakpoint()
     file_path = (
         Path("./services.yml")
         if args.services_file is None

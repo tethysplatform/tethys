@@ -215,7 +215,7 @@ def get_app_settings(app):
             else:
                 unlinked_settings.append(setting)
 
-        breakpoint()
+        # breakpoint()
 
         return {
             "linked_settings": linked_settings,
@@ -256,7 +256,7 @@ def get_custom_setting(app_package, setting_name):
     except TethysApp.DoesNotExist:
         return None
     try:
-        breakpoint()
+        # breakpoint()
         # setting = CustomSetting.objects.get(tethys_app=app, name=setting_name)
         setting = CustomSetting.objects.filter(tethys_app=app).select_subclasses().get(name=setting_name)
     except CustomSetting.DoesNotExist:
@@ -278,7 +278,6 @@ def get_custom_secret_settings(app_package):
         return None
 
     return settings
-
 
 
 def create_ps_database_setting(
