@@ -4,7 +4,7 @@
 Create Dockerfile
 *****************
 
-**Last Updated:** January 2023
+**Last Updated:** February 2023
 
 With Docker installed and a basic understanding of how it works under your belt, you are now ready to create a Docker image containing the Tethys Portal with your apps installed. In this tutorial you will create a Docker image with some of the tutorial apps installed. A similar process can be used to create a Docker image for your Tethys Portal.
 
@@ -27,7 +27,7 @@ Before you can start creating the :file:`Dockerfile` there is some setup that ne
 
 Create a new directory to house the :file:`Dockerfile` and other artifacts that will be used for the build.
 
-.. code-block::
+.. code-block:: bash
 
     mkdir tethys_portal_docker
     cd tethys_portal_docker
@@ -41,7 +41,7 @@ Create a new directory to house the :file:`Dockerfile` and other artifacts that 
 
 a. Create the following text files in the :file:`tethys_portal_docker` directory:
 
-    .. code-block::
+    .. code-block:: bash
 
         touch README.md LICENSE Dockerfile
 
@@ -74,7 +74,7 @@ b. Add the following contents each the files:
 
 Initialize a new Git repository in the :file:`tethys_portal_docker` directory. Then add all the files and create the first commit.
 
-.. code-block::
+.. code-block:: bash
 
     git init
     git add .
@@ -92,31 +92,31 @@ Add the app repositories as Git submodules as follows:
 
 **Bokeh App**:
 
-.. code-block::
+.. code-block:: bash
 
     git submodule add -b master https://github.com/tethysplatform/tethysapp-bokeh_tutorial
 
 **Dam Inventory**:
 
-.. code-block::
+.. code-block:: bash
 
     git submodule add -b advanced-solution https://github.com/tethysplatform/tethysapp-dam_inventory
 
 **Earth Engine**:
 
-.. code-block::
+.. code-block:: bash
 
     git submodule add -b prepare-publish-solution https://github.com/tethysplatform/tethysapp-earth_engine
 
 **PostGIS App**:
 
-.. code-block::
+.. code-block:: bash
 
     git submodule add -b master https://github.com/tethysplatform/tethysapp-postgis_app
 
 **THREDDS Tutorial**:
 
-.. code-block::
+.. code-block:: bash
 
     git submodule add -b plot-at-location-solution https://github.com/tethysplatform/tethysapp-thredds_tutorial
 
@@ -125,7 +125,7 @@ Add the app repositories as Git submodules as follows:
 
 Commit the new submodules configuration that was generated (:file:`.gitmodules`):
 
-.. code-block::
+.. code-block:: bash
 
     git commit -am "Added apps as submodules"
 
@@ -139,7 +139,7 @@ With the app source code checked out it is time to build out the Dockerfile. A :
 
 All Dockerfiles must begin with a `FROM <https://docs.docker.com/engine/reference/builder/#from>`_ instruction that specifies the base image or starting point for the image. Tethys Platform provides a :ref:`base image <docker_official_image_env>` that already has Tethys Platform installed. Add the ``FROM`` instruction to the top of the :file:`Dockerfile` as follows:
 
-.. code-block::
+.. code-block:: dockerfile
 
     FROM tethysplatform/tethys-core:latest
 
@@ -155,7 +155,7 @@ The `ENV <https://docs.docker.com/engine/reference/builder/#env>`_ instruction c
 
 For this image, define environment variables for the various settings for the apps that will be installed. Add the following lines to the :file:`Dockerfile`:
 
-.. code-block::
+.. code-block:: dockerfile
 
     ###############
     # ENVIRONMENT #
@@ -180,7 +180,7 @@ The `ADD <https://docs.docker.com/engine/reference/builder/#add>`_ and `COPY <ht
 
 Copy the directories containing the app source code to the ``${TETHYS_HOME}/apps`` directory, which is the recommended directory for app source code. Add the following lines to the :file:`Dockerfile`:
 
-.. code-block::
+.. code-block:: dockerfile
 
     #############
     # ADD FILES #
@@ -201,14 +201,14 @@ a. Download the following images to use in the custom theme for the Tethys Porta
 
 b. Create a new folder called :file:`images` in the :file:`tethys_portal_docker` directory:
 
-    .. code-block::
+    .. code-block:: bash
 
         mkdir images
 
 c. Add the downloaded images to the new :file:`images` directory.
 d. Add the following lines to the Dockefile to add the images to the container image in the tmp directory (they will need to be moved at runtime):
 
-    .. code-block::
+    .. code-block:: dockerfile
 
         ###################
         # ADD THEME FILES #
@@ -222,7 +222,7 @@ The `RUN <https://docs.docker.com/engine/reference/builder/#run>`_ instruction c
 
 For this image we need to run the ``tethys install`` command for each of our apps. The trickiest part about doing this in a Docker build is activating the ``tethys`` environment, which must be done for each ``RUN`` call. Add the following lines to the :file:`Dockerfile`:
 
-.. code-block::
+.. code-block:: dockerfile
 
     ###########
     # INSTALL #
@@ -230,15 +230,20 @@ For this image we need to run the ``tethys install`` command for each of our app
     # Activate tethys conda environment during build
     ARG MAMBA_DOCKERFILE_ACTIVATE=1
     # Bokeh App
-    RUN tethys install --no-db-sync
+    RUN cd ${TETHYS_HOME}/apps/tethysapp-bokeh_tutorial && \
+        tethys install --no-db-sync
     # Dam Inventory
-    RUN tethys install --no-db-sync
+    RUN cd ${TETHYS_HOME}/apps/tethysapp-dam_inventory && \
+        tethys install --no-db-sync
     # Earth Engine
-    RUN tethys install --no-db-sync
+    RUN cd ${TETHYS_HOME}/apps/tethysapp-earth_engine && \
+        tethys install --no-db-sync
     # PostGIS App
-    RUN tethys install --no-db-sync
+    RUN cd ${TETHYS_HOME}/apps/tethysapp-postgis_app && \
+        tethys install --no-db-sync
     # THREDDS Tutorial
-    RUN tethys install --no-db-sync
+    RUN cd ${TETHYS_HOME}/apps/tethysapp-thredds_tutorial && \
+        tethys install --no-db-sync
 
 .. note::
 
@@ -248,7 +253,7 @@ For this image we need to run the ``tethys install`` command for each of our app
 
     Remember that commands are run by ``sh`` by default. To run ``tethys`` commands in a ``RUN`` instruction you need to activate the Tethys Conda environment. The following line has the effect of activating the Tethys Conda environment for any `RUN` instruction after it:
 
-    .. code-block::
+    .. code-block:: dockerfile
 
         ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
@@ -258,7 +263,7 @@ For this image we need to run the ``tethys install`` command for each of our app
 
 The `EXPOSE <https://docs.docker.com/engine/reference/builder/#expose>`_ instruction is used to tell Docker which ports the application running inside the container listens on. In the :ref:`Tethys Platform Docker image <docker_official_image_env>`, Tethys Portal has been configured to run on port 80, which is the standard HTTP port. Add the following lines to the :file:`Dockerfile` to inform Docker of this fact:
 
-.. code-block::
+.. code-block:: dockerfile
 
     #########
     # PORTS #
@@ -278,7 +283,7 @@ The `WORKDIR <https://docs.docker.com/engine/reference/builder/#workdir>`_ instr
 
 Add the following lines to the :file:`Dockerfile`:
 
-.. code-block::
+.. code-block:: dockerfile
 
     #######
     # RUN #
@@ -295,7 +300,7 @@ Add the following lines to the :file:`Dockerfile`:
 
 Add the images to the repository and commit the changes to the :file:`Dockerfile`:
 
-.. code-block::
+.. code-block:: bash
 
     git add .
     git commit -m "Initial Dockerfile complete"
