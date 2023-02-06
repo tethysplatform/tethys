@@ -54,6 +54,14 @@ tutorial_repos = {
         "rest-api-solution": "rest-api-solution",
         "prepare-publish-solution": "prepare-publish-solution",
     },
+    "tethysplatform/tethys_portal_docker": {
+        "dockerfile-solution": "dockerfile-solution",
+        "salt-state-solution": "salt-state-solution",
+        "docker-compose-solution": "docker-compose-solution",
+    },
+    "tethysplatform/tethysapp-postgis_app": {
+        "main": "solution",
+    },
 }
 
 if __name__ == "__main__":

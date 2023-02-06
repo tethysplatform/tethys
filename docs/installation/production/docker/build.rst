@@ -4,11 +4,11 @@
 Build Docker Image
 ******************
 
-**Last Updated:** November 2021
+**Last Updated:** February 2023
 
 With the :file:`Dockerfile` and Salt State scripts complete, the custom Docker image can now be built. Change back into the :file:`tethys_portal_docker` directory if necessary and run the command:
 
-.. code-block::
+.. code-block:: bash
 
     docker build -t tethys-portal-docker .
 
@@ -18,16 +18,16 @@ With the :file:`Dockerfile` and Salt State scripts complete, the custom Docker i
 
 Run the following command to verify that the image was created:
 
-.. code-block::
+.. code-block:: bash
 
     docker images
 
 You should see an image with a repository "tethys-portal-docker" and tag "latest" in the list of images similar to this:
 
-.. code-block::
+.. code-block:: bash
 
     REPOSITORY             TAG       IMAGE ID       CREATED          SIZE
-    tethys-portal-docker   latest    426b6a6f36c5   1 minute ago   2.98GB
+    tethys-portal-docker   latest    426b6a6f36c5   1 minute ago   2.31GB
 
 Solution
 ========
