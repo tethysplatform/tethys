@@ -248,7 +248,6 @@ class CustomSetting(TethysAppSetting):
 class CustomSecretSetting(CustomSetting):
     value = models.CharField(max_length=1024, blank=True, default="")
     def clean(self):
-        # breakpoint()
         """
         Validate prior to saving changes.
         """        
@@ -271,7 +270,9 @@ class CustomSecretSetting(CustomSetting):
                                     app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
                                     if self.name in app_specific_settings:
                                         app_custom_setting_salt_string = app_specific_settings[self.name]
-                                        signer = Signer(salt=app_custom_setting_salt_string)
+                                        if app_custom_setting_salt_string != '':
+                                            signer = Signer(salt=app_custom_setting_salt_string)
+                                        
                                         self.value = signer.sign_object(self.value)
                                     else:
                                         self.value = signer.sign_object(self.value)
@@ -315,7 +316,8 @@ class CustomSecretSetting(CustomSetting):
                         app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
                         if self.name in app_specific_settings:
                             app_custom_setting_salt_string = app_specific_settings[self.name]
-                            signer = Signer(salt=app_custom_setting_salt_string)
+                            if app_custom_setting_salt_string != '':
+                                signer = Signer(salt=app_custom_setting_salt_string)
                             secret_unsigned= signer.unsign_object(f'{self.value}')
                         else:
                             secret_unsigned = signer.unsign_object(f'{self.value}')
@@ -338,7 +340,6 @@ class CustomSecretSetting(CustomSetting):
             )
 
         return secret_unsigned
-
 
 
 class CustomSimpleSetting(CustomSetting):

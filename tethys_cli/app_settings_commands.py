@@ -37,13 +37,7 @@ def add_app_settings_parser(subparsers):
     app_settings_set_parser.add_argument(
         "setting", help="The name of the setting to be set."
     )
-    # app_settings_set_parser.add_argument(
-    #     "-h",
-    #     "--hidden",
-    #     action="store_true",        
-    #     required=False,
-    #     help="Prompt for the settings value if the user wants to hide the settings value in the terminal"
-    # )
+
     app_settings_set_parser.add_argument("value", help="The value to set.")
     app_settings_set_parser.set_defaults(func=app_settings_set_command)
 
