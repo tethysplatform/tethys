@@ -4,7 +4,7 @@
 Salt State Files
 ****************
 
-**Last Updated:** November 2021
+**Last Updated:** February 2023
 
 The Tethys Platform Docker uses `Salt States <https://docs.saltproject.io/en/getstarted/fundamentals/states.html>`_, one component of `Salt Stack <https://docs.saltproject.io/en/latest/topics/index.html>`_, to perform runtime initialization of Tethys and apps. Salt States are YAML files that specify the various commands to run when Tethys starts up. It is best understood through examples. For this Docker image, we'll create three Salt State files that will perform the following tasks:
 
@@ -22,7 +22,7 @@ Complete the following steps to create Salt State files that initialize the Teth
 
 Create a new directory in :file:`tethys_portal_docker` called :file:`salt` to container the Salt State files:
 
-.. code-block::
+.. code-block:: bash
 
     mkdir salt
 
@@ -31,7 +31,7 @@ Create a new directory in :file:`tethys_portal_docker` called :file:`salt` to co
 
 Create the following empty Salt State files in the :file:`tethys_portal_docker/salt`
 
-.. code-block::
+.. code-block:: bash
 
     touch salt/tethys_services.sls salt/init_apps.sls salt/portal_theme.sls salt/top.sls
 
@@ -48,9 +48,8 @@ The first step to defining the Tethys Services will be to import the environment
 
 Open the new :file:`tethys_services.sls` file and add the following lines to import the needed environment variables:
 
-.. code-block::
+.. code-block:: sls
 
-    {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
     {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
     {% set TETHYS_DB_HOST = salt['environ.get']('TETHYS_DB_HOST') %}
     {% set TETHYS_DB_PORT = salt['environ.get']('TETHYS_DB_PORT') %}
@@ -58,31 +57,36 @@ Open the new :file:`tethys_services.sls` file and add the following lines to imp
     {% set TETHYS_DB_SUPERUSER_PASS = salt['environ.get']('TETHYS_DB_SUPERUSER_PASS') %}
     {% set THREDDS_TUTORIAL_TDS_USERNAME = salt['environ.get']('THREDDS_TUTORIAL_TDS_USERNAME') %}
     {% set THREDDS_TUTORIAL_TDS_PASSWORD = salt['environ.get']('THREDDS_TUTORIAL_TDS_PASSWORD') %}
-    {% set THREDDS_TUTORIAL_TDS_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PROTOCOL') %}
-    {% set THREDDS_TUTORIAL_TDS_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_HOST') %}
-    {% set THREDDS_TUTORIAL_TDS_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PORT') %}
+    {% set THREDDS_TUTORIAL_TDS_CATALOG = salt['environ.get']('THREDDS_TUTORIAL_TDS_CATALOG') %}
+    {% set THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL') %}
+    {% set THREDDS_TUTORIAL_TDS_PRIVATE_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_PRIVATE_HOST') %}
+    {% set THREDDS_TUTORIAL_TDS_PRIVATE_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PRIVATE_PORT') %}
+    {% set THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL') %}
+    {% set THREDDS_TUTORIAL_TDS_PUBLIC_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_PUBLIC_HOST') %}
+    {% set THREDDS_TUTORIAL_TDS_PUBLIC_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PUBLIC_PORT') %}
 
 **Custom Variables**
 
 You can also define custom variables in the Salt State files using `Jinja templating syntax <https://jinja.palletsprojects.com/en/3.0.x/templates/>`_. For this example, define the following variables for use in the Salt State steps:
 
 
-.. code-block::
+.. code-block:: sls
 
     {% set THREDDS_SERVICE_NAME = 'tethys_thredds' %}
     {% set POSTGIS_SERVICE_NAME = 'tethys_postgis' %}
-    {% set THREDDS_SERVICE_URL = THREDDS_TUTORIAL_TDS_USERNAME + ':' + THREDDS_TUTORIAL_TDS_PASSWORD + '@' + THREDDS_TUTORIAL_TDS_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_HOST + ':' + THREDDS_TUTORIAL_TDS_PORT %}
+    {% set THREDDS_SERVICE_PRIVATE_URL = THREDDS_TUTORIAL_TDS_USERNAME + ':' + THREDDS_TUTORIAL_TDS_PASSWORD + '@' + THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_PRIVATE_HOST + ':' + THREDDS_TUTORIAL_TDS_PRIVATE_PORT + THREDDS_TUTORIAL_TDS_CATALOG %}
+    {% set THREDDS_SERVICE_PUBLIC_URL = THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_PUBLIC_HOST + ':' + THREDDS_TUTORIAL_TDS_PUBLIC_PORT + THREDDS_TUTORIAL_TDS_CATALOG %}
     {% set POSTGIS_SERVICE_URL = TETHYS_DB_SUPERUSER + ':' + TETHYS_DB_SUPERUSER_PASS + '@' + TETHYS_DB_HOST + ':' + TETHYS_DB_PORT %}
 
 **Run Arbitrary Commands in Salt State Files**
 
 The `cmd.run <https://docs.saltproject.io/en/latest/ref/states/all/salt.states.cmd.html>`_ state module can be used to run arbitrary commands, similar to the ``RUN`` instruction in the Dockerfile. It is used in the :file:`tethys_services.sls` to run the ``tethys services`` commands that create the Tethys Services. Add the following lines to the :file:`tethys_services.sls` to create the PostGIS Tethys Service:
 
-.. code-block::
+.. code-block:: sls
 
     Create_PostGIS_Database_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create persistent -n {{ POSTGIS_SERVICE_NAME }} -c {{ POSTGIS_SERVICE_URL }}"
+        - name: "tethys services create persistent -n {{ POSTGIS_SERVICE_NAME }} -c {{ POSTGIS_SERVICE_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
@@ -99,11 +103,11 @@ The `cmd.run <https://docs.saltproject.io/en/latest/ref/states/all/salt.states.c
 
 Add the following lines to create the THREDDS Tethys Service:
 
-.. code-block::
+.. code-block:: sls
 
     Create_THREDDS_Spatial_Dataset_Service:
       cmd.run:
-        - name: ". {{ CONDA_HOME }}/bin/activate tethys && tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
+        - name: "tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_PRIVATE_URL }} -p {{ THREDDS_SERVICE_PUBLIC_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
@@ -111,7 +115,7 @@ Add the following lines to create the THREDDS Tethys Service:
 
 Finally, add the following lines to create the :file:`tethys_services_complete` file:
 
-.. code-block::
+.. code-block:: sls
 
     Flag_Tethys_Services_Setup_Complete:
       cmd.run:
@@ -124,10 +128,8 @@ Finally, add the following lines to create the :file:`tethys_services_complete` 
 
 The :file:`init_apps.sls` file will contain the steps required to initialize the apps, including connecting them with the Tethys Services they require. Other common initialization that needs to be performed includes initializing persistent stores and setting the values of other settings. Add the following contents to :file:`init_apps.sls`:
 
-.. code-block::
+.. code-block:: sls
 
-    {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
-    {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
     {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
     {% set DAM_INVENTORY_MAX_DAMS = salt['environ.get']('DAM_INVENTORY_MAX_DAMS') %}
     {% set EARTH_ENGINE_PRIVATE_KEY_FILE = salt['environ.get']('EARTH_ENGINE_PRIVATE_KEY_FILE') %}
@@ -137,16 +139,13 @@ The :file:`init_apps.sls` file will contain the steps required to initialize the
 
     Sync_Apps:
       cmd.run:
-        - name: >
-            . {{ CONDA_HOME }}/bin/activate tethys &&
-            tethys db sync
+        - name: tethys db sync
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
     Set_Custom_Settings:
       cmd.run:
         - name: >
-            . {{ CONDA_HOME }}/bin/activate tethys &&
             tethys app_settings set dam_inventory max_dams {{ DAM_INVENTORY_MAX_DAMS }} &&
             tethys app_settings set earth_engine service_account_email {{ EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL }} &&
             tethys app_settings set earth_engine private_key_file {{ EARTH_ENGINE_PRIVATE_KEY_FILE }}
@@ -156,7 +155,6 @@ The :file:`init_apps.sls` file will contain the steps required to initialize the
     Link_Tethys_Services_to_Apps:
       cmd.run:
         - name: >
-            . {{ CONDA_HOME }}/bin/activate tethys &&
             tethys link persistent:{{ POSTGIS_SERVICE_NAME }} dam_inventory:ps_database:primary_db &&
             tethys link persistent:{{ POSTGIS_SERVICE_NAME }} postgis_app:ps_database:flooded_addresses &&
             tethys link spatial:{{ THREDDS_SERVICE_NAME }} thredds_tutorial:ds_spatial:thredds_service
@@ -165,9 +163,7 @@ The :file:`init_apps.sls` file will contain the steps required to initialize the
 
     Sync_App_Persistent_Stores:
       cmd.run:
-        - name: >
-            . {{ CONDA_HOME }}/bin/activate tethys &&
-            tethys syncstores all
+        - name: tethys syncstores all
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/init_apps_setup_complete" ];"
 
@@ -192,9 +188,8 @@ The :file:`portal_theme.sls` file will contain the steps required to customize t
 
 Add the following contents to :file:`portal_theme.sls`:
 
-.. code-block::
+.. code-block:: sls
 
-    {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
     {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
     {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
 
@@ -207,17 +202,16 @@ Add the following contents to :file:`portal_theme.sls`:
     Apply_Custom_Theme:
       cmd.run:
         - name: >
-            . {{ CONDA_HOME }}/bin/activate tethys &&
             tethys site
-            --title "My Custom Portal"
-            --tab-title "My Custom Portal"
-            --library-title "Tools"
+            --site-title "My Custom Portal"
+            --brand-text "My Custom Portal"
+            --apps-library-title "Tools"
             --primary-color "#01200F"
             --secondary-color "#358600"
             --background-color "#ffffff"
-            --logo "/custom_theme/images/leaf-logo.png"
+            --brand-image "/custom_theme/images/leaf-logo.png"
             --favicon "/custom_theme/images/favicon.ico"
-            --copyright "Copyright © 2021 My Organization"
+            --copyright "Copyright © 2023 My Organization"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/custom_theme_setup_complete" ];"
 
@@ -237,7 +231,7 @@ Add the following contents to :file:`portal_theme.sls`:
 
 Finally, the :file:`top.sls` that is included in Tethys Platform image needs to be overridden. This file instructs Salt which Salt State files should be executed and in what order. The default :file:`top.sls` has the following contents:
 
-.. code-block::
+.. code-block:: sls
 
     base:
       '*':
@@ -249,7 +243,7 @@ The :file:`pre_tethys.sls`, :file:`tethyscore.sls`, and :file:`post_app.sls` Sal
 
 We've created a new :file:`top.sls` that we'll use to overwrite the :file:`top.sls` provided by the Tethys Platform image. Add the following contents to it:
 
-.. code-block::
+.. code-block:: sls
 
     base:
       '*':
@@ -265,7 +259,7 @@ We've created a new :file:`top.sls` that we'll use to overwrite the :file:`top.s
 
 With the Salt State files created, the :file:`Dockerfile` will need to be modified to add them to the image. Add the following lines to the :file:`Dockerfile` after the **INSTALL** section and before the **PORTS** section:
 
-.. code-block::
+.. code-block:: dockerfile
 
     ##################
     # ADD SALT FILES #
@@ -281,7 +275,7 @@ With the Salt State files created, the :file:`Dockerfile` will need to be modifi
 
 Add the Salt State files and commit changes to the :file:`Dockerfile`:
 
-.. code-block::
+.. code-block:: bash
 
     git add .
     git commit -m "Added Salt State scripts for runtime initialization."
