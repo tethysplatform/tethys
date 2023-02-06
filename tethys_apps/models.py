@@ -414,9 +414,6 @@ class CustomSimpleSetting(CustomSetting):
         (TYPE_FLOAT, "Float"),
         (TYPE_BOOLEAN, "Boolean"),
         (TYPE_UUID, "UUID"),
-        (TYPE_JSON, "Json"),
-        (TYPE_SECRET, "Secret"),
-
     )
     value = models.CharField(max_length=1024, blank=True, default="")
     default = models.CharField(max_length=1024, blank=True, default="")
