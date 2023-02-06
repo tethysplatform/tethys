@@ -165,9 +165,13 @@ For this image, define environment variables for the various settings for the ap
         EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL="" \
         THREDDS_TUTORIAL_TDS_USERNAME="admin" \
         THREDDS_TUTORIAL_TDS_PASSWORD="CHANGEME!" \
-        THREDDS_TUTORIAL_TDS_PROTOCOL="http" \
-        THREDDS_TUTORIAL_TDS_HOST="localhost" \
-        THREDDS_TUTORIAL_TDS_PORT="8080"
+        THREDDS_TUTORIAL_TDS_CATALOG="/thredds/catalog/catalog.xml" \
+        THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL="http" \
+        THREDDS_TUTORIAL_TDS_PRIVATE_HOST="localhost" \
+        THREDDS_TUTORIAL_TDS_PRIVATE_PORT="8080" \
+        THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL="http" \
+        THREDDS_TUTORIAL_TDS_PUBLIC_HOST="localhost" \
+        THREDDS_TUTORIAL_TDS_PUBLIC_PORT="8080"
 
 .. note::
 

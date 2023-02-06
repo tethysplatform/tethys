@@ -4,7 +4,7 @@
 Tethys Platform Docker Image Reference
 **************************************
 
-**Last Updated:** November 2021
+**Last Updated:** February 2023
 
 Versions and Tags
 =================
@@ -18,7 +18,7 @@ The official Tethys Docker images are located in the `tethysplatform/tethys-core
 +---------------+------------------------------------------------------------------------------------------------------+
 | dev           | latest development build (what's in the main branch)                                                 |
 +---------------+------------------------------------------------------------------------------------------------------+
-| version       | Specify the version of Tethys image, for example: v3.0.5                                             |
+| version       | Specify the version of Tethys image, for example: 4.0.0                                              |
 +---------------+------------------------------------------------------------------------------------------------------+
 
 Pull a Pre-Built Image
@@ -28,21 +28,21 @@ Use the following commands to download the Tethys image to your machine:
 
 **Latest Release**
 
-.. code-block::
+.. code-block:: bash
 
     docker pull tethysplatform/tethys-core:latest
 
 **Latest Development Build**
 
-.. code-block::
+.. code-block:: bash
 
     docker pull tethysplatform/tethys-core:dev
 
 **Specific Version**
 
-.. code-block::
+.. code-block:: bash
 
-    docker pull tethysplatform/tethys-core:3.4.0
+    docker pull tethysplatform/tethys-core:4.0.0
 
 
 Build From Source
@@ -50,13 +50,13 @@ Build From Source
 
 Make sure that there isn't already a Docker container or Docker images with the desired name:
 
-.. code-block::
+.. code-block:: bash
 
     docker build -t my-tethys-core:latest .
 
 Alternatively, specify the Python version to build Tethys with using the ``PYTHON_VERSION`` build arg:
 
-.. code-block::
+.. code-block:: bash
 
     docker build --build-arg PYTHON_VERSION=3.6 -t my-tethys-core:latest .
 
@@ -71,7 +71,7 @@ When running the docker you can use the ``-e`` flag to set environment variables
 
 Example of Run Command:
 
-.. code-block::
+.. code-block:: bash
 
     docker run -d -p 80:80 --name tethys-core \
         -e TETHYS_DB_SUPERUSER='tethys_super' \

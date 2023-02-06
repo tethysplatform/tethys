@@ -57,9 +57,13 @@ Open the new :file:`tethys_services.sls` file and add the following lines to imp
     {% set TETHYS_DB_SUPERUSER_PASS = salt['environ.get']('TETHYS_DB_SUPERUSER_PASS') %}
     {% set THREDDS_TUTORIAL_TDS_USERNAME = salt['environ.get']('THREDDS_TUTORIAL_TDS_USERNAME') %}
     {% set THREDDS_TUTORIAL_TDS_PASSWORD = salt['environ.get']('THREDDS_TUTORIAL_TDS_PASSWORD') %}
-    {% set THREDDS_TUTORIAL_TDS_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PROTOCOL') %}
-    {% set THREDDS_TUTORIAL_TDS_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_HOST') %}
-    {% set THREDDS_TUTORIAL_TDS_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PORT') %}
+    {% set THREDDS_TUTORIAL_TDS_CATALOG = salt['environ.get']('THREDDS_TUTORIAL_TDS_CATALOG') %}
+    {% set THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL') %}
+    {% set THREDDS_TUTORIAL_TDS_PRIVATE_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_PRIVATE_HOST') %}
+    {% set THREDDS_TUTORIAL_TDS_PRIVATE_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PRIVATE_PORT') %}
+    {% set THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL = salt['environ.get']('THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL') %}
+    {% set THREDDS_TUTORIAL_TDS_PUBLIC_HOST = salt['environ.get']('THREDDS_TUTORIAL_TDS_PUBLIC_HOST') %}
+    {% set THREDDS_TUTORIAL_TDS_PUBLIC_PORT = salt['environ.get']('THREDDS_TUTORIAL_TDS_PUBLIC_PORT') %}
 
 **Custom Variables**
 
@@ -70,7 +74,8 @@ You can also define custom variables in the Salt State files using `Jinja templa
 
     {% set THREDDS_SERVICE_NAME = 'tethys_thredds' %}
     {% set POSTGIS_SERVICE_NAME = 'tethys_postgis' %}
-    {% set THREDDS_SERVICE_URL = THREDDS_TUTORIAL_TDS_USERNAME + ':' + THREDDS_TUTORIAL_TDS_PASSWORD + '@' + THREDDS_TUTORIAL_TDS_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_HOST + ':' + THREDDS_TUTORIAL_TDS_PORT %}
+    {% set THREDDS_SERVICE_PRIVATE_URL = THREDDS_TUTORIAL_TDS_USERNAME + ':' + THREDDS_TUTORIAL_TDS_PASSWORD + '@' + THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_PRIVATE_HOST + ':' + THREDDS_TUTORIAL_TDS_PRIVATE_PORT + THREDDS_TUTORIAL_TDS_CATALOG %}
+    {% set THREDDS_SERVICE_PUBLIC_URL = THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL +'://' + THREDDS_TUTORIAL_TDS_PUBLIC_HOST + ':' + THREDDS_TUTORIAL_TDS_PUBLIC_PORT + THREDDS_TUTORIAL_TDS_CATALOG %}
     {% set POSTGIS_SERVICE_URL = TETHYS_DB_SUPERUSER + ':' + TETHYS_DB_SUPERUSER_PASS + '@' + TETHYS_DB_HOST + ':' + TETHYS_DB_PORT %}
 
 **Run Arbitrary Commands in Salt State Files**
@@ -102,7 +107,7 @@ Add the following lines to create the THREDDS Tethys Service:
 
     Create_THREDDS_Spatial_Dataset_Service:
       cmd.run:
-        - name: "tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_URL }}"
+        - name: "tethys services create spatial -t THREDDS -n {{ THREDDS_SERVICE_NAME }} -c {{ THREDDS_SERVICE_PRIVATE_URL }} -p {{ THREDDS_SERVICE_PUBLIC_URL }}"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/tethys_services_complete" ];"
 
@@ -198,15 +203,15 @@ Add the following contents to :file:`portal_theme.sls`:
       cmd.run:
         - name: >
             tethys site
-            --title "My Custom Portal"
-            --tab-title "My Custom Portal"
-            --library-title "Tools"
+            --site-title "My Custom Portal"
+            --brand-text "My Custom Portal"
+            --apps-library-title "Tools"
             --primary-color "#01200F"
             --secondary-color "#358600"
             --background-color "#ffffff"
-            --logo "/custom_theme/images/leaf-logo.png"
+            --brand-image "/custom_theme/images/leaf-logo.png"
             --favicon "/custom_theme/images/favicon.ico"
-            --copyright "Copyright © 2021 My Organization"
+            --copyright "Copyright © 2023 My Organization"
         - shell: /bin/bash
         - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/custom_theme_setup_complete" ];"
 

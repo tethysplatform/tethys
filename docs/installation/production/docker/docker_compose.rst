@@ -265,7 +265,7 @@ Add the following definition for the ``web`` service in the :file:`docker-compos
         - ./env/web.env
       volumes:
         - ./data/tethys:/var/lib/tethys_persist
-        - ./keys/gee:/var/lib/tethys/keys
+        - ./keys:/var/lib/tethys/keys
         - ./logs/tethys:/var/log/tethys
 
 **Explanation**
@@ -363,7 +363,7 @@ c. Add the following contents to each ``.env`` file:
         # Don't change these parameters
         ASGI_PROCESSES=1
         CHANNEL_LAYERS_BACKEND=channels_redis.core.RedisChannelLayer
-        CHANNEL_LAYERS_CONFIG="\"{'hosts':[{'host':\ 'redis',\ 'port':\ 6379}]}\""  # Hostname is the name of the service
+        CHANNEL_LAYERS_CONFIG="\"{'hosts':[{'host': 'redis', 'port': 6379}]}\""  # Hostname is the name of the service
 
         # Database parameters
         TETHYS_DB_HOST=db  # Hostname is the name of the service
@@ -383,15 +383,18 @@ c. Add the following contents to each ``.env`` file:
 
         # App specific settings
         DAM_INVENTORY_MAX_DAMS=50
-        EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/some-key.json
+        EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/gee/some-key.json
         EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL=you@email.com
 
         # THREDDS parameters
         THREDDS_TUTORIAL_TDS_USERNAME=admin
         THREDDS_TUTORIAL_TDS_PASSWORD=please_dont_use_default_passwords
-        THREDDS_TUTORIAL_TDS_PROTOCOL=http
-        THREDDS_TUTORIAL_TDS_HOST=thredds  # Hostname is the name of the service
-        THREDDS_TUTORIAL_TDS_PORT=8080
+        THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL=http
+        THREDDS_TUTORIAL_TDS_PRIVATE_HOST=thredds  # Endpoint backend (Python) will use, hostname is the name of the service
+        THREDDS_TUTORIAL_TDS_PRIVATE_PORT=8080
+        THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL=http
+        THREDDS_TUTORIAL_TDS_PUBLIC_HOST=localhost  # Endpoint the frontend (JavaScript) will use
+        THREDDS_TUTORIAL_TDS_PUBLIC_PORT=8080
 
     .. tip::
 
