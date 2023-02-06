@@ -4,7 +4,7 @@
 Run with Docker Compose
 ***********************
 
-**Last Updated:** November 2021
+**Last Updated:** February 2023
 
 With the image built, its now time to run the container. Tethys Portal requires at least a database and a Redis server to run. The custom image that we have built will also require a THREDDS server. Both the database and THREDDS server can be created using a Docker images as well, but that means starting multiple Docker images with one that depends on the others. The easiest way to manage a multi-container deployment like this is with `Docker Compose <https://docs.docker.com/compose/>`_.
 
@@ -15,9 +15,9 @@ Docker Compose is best described by their documentation:
 
     Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration. [#f1]_
 
-A simple Docker Compose YAML (file:`docker-compose.yml`) for a Django web application looks like this:
+A simple Docker Compose YAML (:file:`docker-compose.yml`) for a Django web application looks like this:
 
-.. code-block::
+.. code-block:: yaml
 
     version: "3.9"
 
@@ -42,7 +42,7 @@ A simple Docker Compose YAML (file:`docker-compose.yml`) for a Django web applic
 
 Starting all the services in a Docker Compose YAML is done using the following command:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose up
 
@@ -50,7 +50,7 @@ Starting all the services in a Docker Compose YAML is done using the following c
 
     In older version of Docker Compose, the command is:
 
-    .. code-block::
+    .. code-block:: bash
 
         docker-compose up
 
@@ -72,7 +72,7 @@ Docker allows directories from the host machine to be mounted into the container
 
 a. Create the following directories in :file:`tethys_portal_docker` directory:
 
-    .. code-block::
+    .. code-block:: bash
 
         mkdir -p data/db
         mkdir -p data/tethys
@@ -112,7 +112,7 @@ e. Place the ``JSON`` file containing the service account key in the :file:`keys
 
 Create a new file called :file:`docker-compose.yml` in the :file:`tethys_portal_docker` directory:
 
-.. code-block::
+.. code-block:: bash
 
     touch docker-compose.yml
 
@@ -228,7 +228,7 @@ Add the following definition for the ``redis`` service in the :file:`docker-comp
       image: redis:latest
       restart: always
       networks:
-        - "internal"
+        - "external"
       ports:
         - "6379:6379"
 
@@ -265,7 +265,7 @@ Add the following definition for the ``web`` service in the :file:`docker-compos
         - ./env/web.env
       volumes:
         - ./data/tethys:/var/lib/tethys_persist
-        - ./keys/gee:/var/lib/tethys/keys
+        - ./keys:/var/lib/tethys/keys
         - ./logs/tethys:/var/log/tethys
 
 **Explanation**
@@ -291,13 +291,13 @@ With that said, certain environment variables need to be defined for the custom 
 
 a. Create a new :file:`env` directory in the :file:`tethys_portal_docker` directory for storing the ``.env`` files:
 
-    .. code-block::
+    .. code-block:: bash
 
         mkdir env
 
 b. Create three new empty files in the :file:`env` directory with the same names as those referenced in the `env_file`_ sections of the :file:`docker-compose.yml`:
 
-    .. code-block::
+    .. code-block:: bash
 
         touch env/db.env env/thredds.env env/web.env
 
@@ -305,7 +305,7 @@ c. Add the following contents to each ``.env`` file:
 
     **db.env**
 
-    .. code-block::
+    .. code-block:: env
 
         # Password of the db admin account
         POSTGRES_PASSWORD=please_dont_use_default_passwords
@@ -323,7 +323,7 @@ c. Add the following contents to each ``.env`` file:
 
     **thredds.env**
 
-    .. code-block::
+    .. code-block:: env
 
         # Password of the TDM admin user
         TDM_PW=please_dont_use_default_passwords
@@ -355,7 +355,7 @@ c. Add the following contents to each ``.env`` file:
 
     **web.env**
 
-    .. code-block::
+    .. code-block:: env
 
         # Domain name of server should be first in the list if multiple entries added
         ALLOWED_HOSTS="\"[localhost]\""
@@ -363,7 +363,7 @@ c. Add the following contents to each ``.env`` file:
         # Don't change these parameters
         ASGI_PROCESSES=1
         CHANNEL_LAYERS_BACKEND=channels_redis.core.RedisChannelLayer
-        CHANNEL_LAYERS_CONFIG="\"{'hosts':[{'host':\ 'redis',\ 'port':\ 6379}]}\""  # Hostname is the name of the service
+        CHANNEL_LAYERS_CONFIG="\"{'hosts':[{'host': 'redis', 'port': 6379}]}\""  # Hostname is the name of the service
 
         # Database parameters
         TETHYS_DB_HOST=db  # Hostname is the name of the service
@@ -383,15 +383,18 @@ c. Add the following contents to each ``.env`` file:
 
         # App specific settings
         DAM_INVENTORY_MAX_DAMS=50
-        EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/some-key.json
+        EARTH_ENGINE_PRIVATE_KEY_FILE=/var/lib/tethys/keys/gee/some-key.json
         EARTH_ENGINE_SERVICE_ACCOUNT_EMAIL=you@email.com
 
         # THREDDS parameters
         THREDDS_TUTORIAL_TDS_USERNAME=admin
         THREDDS_TUTORIAL_TDS_PASSWORD=please_dont_use_default_passwords
-        THREDDS_TUTORIAL_TDS_PROTOCOL=http
-        THREDDS_TUTORIAL_TDS_HOST=thredds  # Hostname is the name of the service
-        THREDDS_TUTORIAL_TDS_PORT=8080
+        THREDDS_TUTORIAL_TDS_PRIVATE_PROTOCOL=http
+        THREDDS_TUTORIAL_TDS_PRIVATE_HOST=thredds  # Endpoint backend (Python) will use, hostname is the name of the service
+        THREDDS_TUTORIAL_TDS_PRIVATE_PORT=8080
+        THREDDS_TUTORIAL_TDS_PUBLIC_PROTOCOL=http
+        THREDDS_TUTORIAL_TDS_PUBLIC_HOST=localhost  # Endpoint the frontend (JavaScript) will use
+        THREDDS_TUTORIAL_TDS_PUBLIC_PORT=8080
 
     .. tip::
 
@@ -410,7 +413,7 @@ c. Add the following contents to each ``.env`` file:
 
 Update the contents of the README with instructions for using the repository and Docker compose recipe by adding the following lines:
 
-.. code-block::
+.. code-block:: markdown
 
     # Checkout
 
@@ -459,14 +462,14 @@ The contents of the :file:`data`, :file:`logs`, and :file:`keys` directories sho
 
 a. Create a :file:`.gitignore` file:
 
-    .. code-block::
+    .. code-block:: bash
 
         touch .gitignore
 
 
 b. Add the following contents to the :file:`.gitignore` file to omit the contents of these directories from being tracked:
 
-    .. code-block::
+    .. code-block:: gitignore
 
         data/
         keys/
@@ -474,7 +477,7 @@ b. Add the following contents to the :file:`.gitignore` file to omit the content
 
 c. Stage changes and commit the changes as follows:
 
-    .. code-block::
+    .. code-block:: bash
 
         git add .
         git commit -m "Added Docker Compose recipe"
@@ -489,7 +492,7 @@ Use the following steps to run the :file:`docker-compose.yml` and verify that it
 
 To start the containers run the following command in the directory with the :file:`docker-compose.yml` file (:file:`tethys_portal_docker`):
 
-.. code-block::
+.. code-block:: bash
 
     docker compose up -d
 
@@ -502,7 +505,7 @@ To start the containers run the following command in the directory with the :fil
 
 Check the status of the containers by running this command:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose ps
 
@@ -511,13 +514,13 @@ Check the status of the containers by running this command:
 
 It will take several minutes for the Tethys container to start up the first time as it needs to complete the initialization steps in the Salt State files. Monitor the logs for the Tethys container so that you know when it completes as follows:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose logs -f web
 
 When the Salt State files have finished running you will get a report like the one below, but until then, there won't be much output. Be patient.
 
-.. code-block::
+.. code-block:: bash
 
     tethys_portal_docker-web-1  | Summary for local
     tethys_portal_docker-web-1  | -------------
@@ -529,7 +532,7 @@ When the Salt State files have finished running you will get a report like the o
 
 Above this summary will be a summary for each of the Salt State steps executed. For example, here is the output from the ``Create_PostGIS_Database_Service`` step:
 
-.. code-block::
+.. code-block:: bash
 
     tethys_portal_docker-web-1  | ----------
     tethys_portal_docker-web-1  |           ID: Create_PostGIS_Database_Service
@@ -597,7 +600,7 @@ Login to a Container
 
 Sometimes you may need to log in to one of the running containers to debug or modify a config that isn't exposed through the data directories. Use the ``docker compose exec`` command as follow to do so:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose exec web -- /bin/bash
 
@@ -607,7 +610,7 @@ When you are done, run the ``exit`` command.
 
     You can also use the ``exec`` command to run one-off commands inside a container. Just replace the ``/bin/bash`` with the desired command:
 
-    .. code-block::
+    .. code-block:: bash
 
         docker compose exec web -- ls
 
@@ -616,29 +619,29 @@ Restart Containers
 
 The containers can be stopped, started, or restarted with the following commands:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose stop
 
-.. code-block::
+.. code-block:: bash
 
     docker compose start
 
-.. code-block::
+.. code-block:: bash
 
     docker compose restart
 
 An individual container can also be controlled using by providing its service name as an argument to these commands:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose stop web
 
-.. code-block::
+.. code-block:: bash
 
     docker compose start web
 
-.. code-block::
+.. code-block:: bash
 
     docker compose restart web
 
@@ -647,7 +650,7 @@ Build
 
 You can use ``docker compose`` to build the custom Tethys image. It will use the value of ``image`` as the tag:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose build web
 
@@ -656,7 +659,7 @@ Remove Containers
 
 The ``down`` command stops the containers if they are running and removes them:
 
-.. code-block::
+.. code-block:: bash
 
     docker compose down
 
