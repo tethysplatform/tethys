@@ -513,9 +513,7 @@ def configure_services_from_file(services, app_name):
                         continue
 
                     try:
-                        # if custom_setting.type_custom_setting == 'SECRET':
-                        #     value_secret =  getpass.getpass(prompt=f'Please provide the value for the {custom_setting.name} secret custom setting:')
-                        #     custom_setting.value = value_secret
+
                         if custom_setting.type_custom_setting == 'JSON':
                             try:
                                 with open(current_services[setting_name]) as json_file:
@@ -525,19 +523,14 @@ def configure_services_from_file(services, app_name):
                                 write_warning(
                                     f'The current file path was not found, assuming you provided a valid JSON'
                                 )
-                        if custom_setting.type_custom_setting == 'SIMPLE':
-                            custom_setting.value = current_services[setting_name]
+                        custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
-                        if custom_setting.type_custom_setting != 'SECRET':
-                            write_success(
-                                f'CustomSetting: "{setting_name}" was assigned the value: '
-                                f'"{current_services[setting_name]}"'
-                            )
-                        else:
-                            write_success(
-                                f'CustomSetting: "{setting_name}" was assigned successfully'
-                            )
+                        write_success(
+                            f'CustomSetting: "{setting_name}" was assigned the value: '
+                            f'"{current_services[setting_name]}"'
+                        )
+
                     except ValidationError:
                         write_error(
                             "Incorrect value type given for custom setting '{}'. Please adjust "
