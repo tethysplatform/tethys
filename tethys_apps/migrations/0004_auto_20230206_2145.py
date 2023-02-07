@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 
 def customtempsetting_to_customsimplesetting(apps, schema_editor):
-   
+    breakpoint()
     """ From non inehirtance to post inheritance """
     CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
@@ -16,6 +16,8 @@ def customtempsetting_to_customsimplesetting(apps, schema_editor):
 
 def customsimplesetting_to_customtempsetting(apps, schema_editor):
     """ Rollback """
+    breakpoint()
+
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
     CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
     for cs in CustomSimpleSetting.objects.all():
@@ -24,14 +26,18 @@ def customsimplesetting_to_customtempsetting(apps, schema_editor):
 
 def customsetting_to_customtempsetting(apps, schema_editor):
     """ From non inehirtance to post inheritance """
+    breakpoint()
+
     CustomSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsetting')
     for cs in CustomSetting.objects.all():
-        cs_simple = CustomSimpleSetting.objects.create(value=cs.value, default=cs.default, type=cs.type )
-        cs.delete()
+        cs_simple = CustomSimpleSetting.objects.create(customsetting_ptr_id =cs.customsetting_ptr_id ,value=cs.value, default=cs.default, type=cs.type )
+        # cs.delete()
 
 def customtempsetting_to_customsetting(apps, schema_editor):
     """ Rollback """
+    breakpoint()
+
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
     for cs in CustomTempSetting.objects.all():
@@ -46,12 +52,37 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='CustomSettingTemp',
+            name="CustomSettingTemp",
             fields=[
-                ('value', models.CharField(blank=True, default='', max_length=1024)),
-                ('default', models.CharField(blank=True, default='', max_length=1024)),
-                ('type', models.CharField(choices=[('STRING', 'String'), ('INTEGER', 'Integer'), ('FLOAT', 'Float'), ('BOOLEAN', 'Boolean'), ('UUID', 'UUID'), ('JSON', 'Json'), ('SECRET', 'Secret')], default='STRING', max_length=200)),
+                (
+                    "tethysappsetting_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="tethys_apps.tethysappsetting",
+                    ),
+                ),
+                ("value", models.CharField(blank=True, default="", max_length=1024)),
+                ("default", models.CharField(blank=True, default="", max_length=1024)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("STRING", "String"),
+                            ("INTEGER", "Integer"),
+                            ("FLOAT", "Float"),
+                            ("BOOLEAN", "Boolean"),
+                            ("UUID", "UUID"),
+                        ],
+                        default="STRING",
+                        max_length=200,
+                    ),
+                ),
             ],
+            bases=("tethys_apps.tethysappsetting",),
         ),
         migrations.RunPython(customsetting_to_customtempsetting, customtempsetting_to_customsetting),
 
