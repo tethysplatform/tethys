@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
                 ('customsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsetting')),
                 ('value', models.CharField(blank=True, default='', max_length=1024)),
                 ('default', models.CharField(blank=True, default='', max_length=1024)),
-                ('type', models.CharField(choices=[('STRING', 'String'), ('INTEGER', 'Integer'), ('FLOAT', 'Float'), ('BOOLEAN', 'Boolean'), ('UUID', 'UUID'), ('JSON', 'Json'), ('SECRET', 'Secret')], default='STRING', max_length=200)),
+                ('type', models.CharField(choices=[('STRING', 'String'), ('INTEGER', 'Integer'), ('FLOAT', 'Float'), ('BOOLEAN', 'Boolean'), ('UUID', 'UUID')], default='STRING', max_length=200)),
             ],
             bases=('tethys_apps.customsetting',),
         ),
