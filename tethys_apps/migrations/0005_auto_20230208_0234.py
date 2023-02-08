@@ -11,6 +11,7 @@ def forward(apps, schema_editor):
 
     for cs in CustomSetting.objects.using(db_alias).all():
         cs_simple = CustomSimpleSetting.objects.create(tethys_app = cs.tethys_app, customsetting_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
+        cs.type_custom_setting = "SIMPLE"
         cs_simple.save()
 
 def backward(apps, schema_editor):
@@ -25,6 +26,7 @@ def backward(apps, schema_editor):
         cs.value_temp = selected_cs.value
         cs.default_temp = selected_cs.default
         cs.type_temp = selected_cs.type
+        cs.type_custom_setting = ""
         cs.save()
 
 class Migration(migrations.Migration):
