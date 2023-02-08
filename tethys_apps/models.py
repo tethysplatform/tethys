@@ -544,8 +544,6 @@ def set_default_value(sender, instance, *args, **kwargs):
         None
     """
     breakpoint()
-    if not sender.objects.get(name=instance.name).value or sender.objects.get(name=instance.name).value == "":
-        print("hola")
     if not instance.value or instance.value == "":
         instance.value = instance.default
 
