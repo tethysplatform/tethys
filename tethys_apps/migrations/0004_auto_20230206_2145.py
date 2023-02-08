@@ -40,6 +40,9 @@ def customtempsetting_to_customsetting(apps, schema_editor):
 
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
+
+
+
     for cs in CustomTempSetting.objects.all():
         cs_simple = CustomSetting.objects.create(tethysappsetting_ptr=cs.tethysappsetting_ptr,value=cs.value, default=cs.default, type=cs.type )
         cs.delete()
@@ -50,14 +53,24 @@ def forward(apps, schema_editor):
     """ From non inehirtance to post inheritance """
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
-    for cs in CustomSetting.objects.all():
-        cs_simple = CustomSimpleSetting.objects.create(customsetting_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
+    db_alias = schema_editor.connection.alias
+
+    # for cs in CustomSetting.objects.all():
+    for cs in CustomSetting.objects.using(db_alias).all():
+
+        cs_simple = CustomSimpleSetting.objects.create(tethys_app = cs.tethys_app, customsetting_ptr=cs)
+        cs_simple.save()
+        # value=cs.value_temp, default=cs.default_temp, type=cs.type_temp
 
 def backward(apps, schema_editor):
     breakpoint()
     """ From non inehirtance to post inheritance """
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
+    # db_alias = schema_editor.connection.alias
+
+
+    # for cs in TethysApp.objects.using(db_alias).all():
     for cs in CustomSetting.objects.all():
         selected_cs = CustomSimpleSetting.objects.get(pk=cs.pk)
         cs.value_temp = selected_cs.value
