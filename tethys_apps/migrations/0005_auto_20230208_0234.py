@@ -10,7 +10,7 @@ def forward(apps, schema_editor):
     db_alias = schema_editor.connection.alias
 
     for cs in CustomSetting.objects.using(db_alias).all():
-        cs_simple = CustomSimpleSetting.objects.create(customsetting_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
+        cs_simple = CustomSimpleSetting.objects.create(tethys_app = cs.tethys_app, name= cs.name, description = cs.description, required =cs.required  ,customsetting_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
         cs.type_custom_setting = "SIMPLE"
         cs_simple.save()
         cs.save()

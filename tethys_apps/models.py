@@ -581,22 +581,26 @@ def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
     if instance.type_custom_setting == "":
         instance.type_custom_setting = "SECRET"
 
-@receiver(models.signals.pre_init, sender=CustomSimpleSetting)
-def set_default_custom_simple_setting_pre(sender, *args, **kwargs):
-    """
-    Set the default value for `value` on the `instance` of Setting.
-    This signal receiver will process it as soon as the object is created for use
+# @receiver(models.signals.pre_init, sender=CustomSimpleSetting)
+# def set_default_custom_simple_setting_pre(sender, *args, **kwargs):
+#     """
+#     Set the default value for `value` on the `instance` of Setting.
+#     This signal receiver will process it as soon as the object is created for use
 
-    Attributes:
-        sender(CustomSetting): The `CustomSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+#     Attributes:
+#         sender(CustomSetting): The `CustomSetting` class that sent the signal.
+#         instance(CustomSetting): The `CustomSetting` instance that is being initialised.
 
-    Returns:
-        None
-    """
-    breakpoint()
-    if sender.type_custom_setting == "":
-        pass
+#     Returns:
+#         None
+#     """
+#     breakpoint()
+#     if sender.type_custom_setting == "":
+#         pass
+# @receiver(models.signals.post_save, sender=CustomSimpleSetting)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         pass
 
 @receiver(models.signals.post_init, sender=CustomJSONSetting)
 def set_default_custom_json_setting_type(sender, instance, *args, **kwargs):
