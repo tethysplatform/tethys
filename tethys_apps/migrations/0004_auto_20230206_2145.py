@@ -2,53 +2,6 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-
-
-
-def customtempsetting_to_customsimplesetting(apps, schema_editor):
-    breakpoint()
-    """ From non inehirtance to post inheritance """
-    CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
-    CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
-    for cs in CustomTempSetting.objects.all():
-        cs_simple = CustomSimpleSetting.objects.create(tethysappsetting_ptr=cs.tethysappsetting_ptr, value=cs.value, default=cs.default, type=cs.type )
-        # cs.delete()
-
-def customsimplesetting_to_customtempsetting(apps, schema_editor):
-    """ Rollback """
-    breakpoint()
-
-    CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
-    CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
-    for cs in CustomSimpleSetting.objects.all():
-        cs_simple = CustomTempSetting.objects.create(tethysappsetting_ptr=cs.tethysappsetting_ptr,value=cs.value, default=cs.default, type=cs.type )
-        cs.delete()
-
-def customsetting_to_customtempsetting(apps, schema_editor):
-    """ From non inehirtance to post inheritance """
-    breakpoint()
-
-    CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
-    CustomSetting = apps.get_model('tethys_apps', 'customsetting')
-    for cs in CustomSetting.objects.all():
-        cs_simple = CustomTempSetting.objects.create(tethysappsetting_ptr=cs.tethysappsetting_ptr, value=cs.value, default=cs.default, type=cs.type )
-        # cs.delete()
-
-def customtempsetting_to_customsetting(apps, schema_editor):
-    """ Rollback """
-    breakpoint()
-
-    CustomSetting = apps.get_model('tethys_apps', 'customsetting')
-    CustomTempSetting = apps.get_model('tethys_apps', 'CustomSettingTemp')
-
-
-
-    for cs in CustomTempSetting.objects.all():
-        cs_simple = CustomSetting.objects.create(tethysappsetting_ptr=cs.tethysappsetting_ptr,value=cs.value, default=cs.default, type=cs.type )
-        cs.delete()
-
-
-
         
 class Migration(migrations.Migration):
 
