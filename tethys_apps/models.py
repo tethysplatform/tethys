@@ -402,10 +402,8 @@ class CustomSimpleSetting(CustomSetting):
     TYPE_FLOAT = "FLOAT"
     TYPE_BOOLEAN = "BOOLEAN"
     TYPE_UUID = "UUID"
-    TYPE_JSON = "JSON"
-    TYPE_SECRET = "SECRET"
 
-    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID,TYPE_JSON, TYPE_SECRET)
+    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID)
     VALID_BOOL_STRINGS = ("true", "false", "yes", "no", "t", "f", "y", "n", "1", "0")
     TRUTHY_BOOL_STRINGS = ("true", "yes", "t", "y", "1")
     TYPE_CHOICES = (
