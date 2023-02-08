@@ -48,34 +48,7 @@ def customtempsetting_to_customsetting(apps, schema_editor):
         cs.delete()
 
 
-def forward(apps, schema_editor):
-    breakpoint()
-    """ From non inehirtance to post inheritance """
-    CustomSetting = apps.get_model('tethys_apps', 'customsetting')
-    CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
-    db_alias = schema_editor.connection.alias
 
-    # for cs in CustomSetting.objects.all():
-    for cs in CustomSetting.objects.using(db_alias).all():
-
-        cs_simple = CustomSimpleSetting.objects.create(tethys_app = cs.tethys_app, customsetting_ptr=cs)
-        cs_simple.save()
-        # value=cs.value_temp, default=cs.default_temp, type=cs.type_temp
-
-def backward(apps, schema_editor):
-    breakpoint()
-    """ From non inehirtance to post inheritance """
-    CustomSetting = apps.get_model('tethys_apps', 'customsetting')
-    CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
-    # db_alias = schema_editor.connection.alias
-
-
-    # for cs in TethysApp.objects.using(db_alias).all():
-    for cs in CustomSetting.objects.all():
-        selected_cs = CustomSimpleSetting.objects.get(pk=cs.pk)
-        cs.value_temp = selected_cs.value
-        cs.default_temp = selected_cs.default
-        cs.type_temp = selected_cs.type
         
 class Migration(migrations.Migration):
 
@@ -84,40 +57,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # migrations.CreateModel(
-        #     name="CustomSettingTemp",
-        #     fields=[
-        #         (
-        #             "tethysappsetting_ptr",
-        #             models.OneToOneField(
-        #                 auto_created=True,
-        #                 on_delete=django.db.models.deletion.CASCADE,
-        #                 parent_link=True,
-        #                 # primary_key=True,
-        #                 serialize=False,
-        #                 to="tethys_apps.tethysappsetting",
-        #             ),
-        #         ),
-        #         ("value", models.CharField(blank=True, default="", max_length=1024)),
-        #         ("default", models.CharField(blank=True, default="", max_length=1024)),
-        #         (
-        #             "type",
-        #             models.CharField(
-        #                 choices=[
-        #                     ("STRING", "String"),
-        #                     ("INTEGER", "Integer"),
-        #                     ("FLOAT", "Float"),
-        #                     ("BOOLEAN", "Boolean"),
-        #                     ("UUID", "UUID"),
-        #                 ],
-        #                 default="STRING",
-        #                 max_length=200,
-        #             ),
-        #         ),
-        #     ],
-        #     bases=("tethys_apps.tethysappsetting",),
-        # ),
-        # migrations.RunPython(customsetting_to_customtempsetting, customtempsetting_to_customsetting),
 
         migrations.AddField(
             model_name='customsetting',
@@ -139,18 +78,6 @@ class Migration(migrations.Migration):
             old_name='default',
             new_name='default_temp'
         ),
-        # migrations.RemoveField(
-        #     model_name='customsetting',
-        #     name='default',
-        # ),
-        # migrations.RemoveField(
-        #     model_name='customsetting',
-        #     name='type',
-        # ),
-        # migrations.RemoveField(
-        #     model_name='customsetting',
-        #     name='value',
-        # ),
 
         migrations.CreateModel(
             name='CustomSimpleSetting',
@@ -179,27 +106,5 @@ class Migration(migrations.Migration):
             ],
             bases=('tethys_apps.customsetting',),
         ),
-
-        ## Delete Intermeadiate table
-        # migrations.DeleteModel('CustomSettingTemp'),
-
-        migrations.RunPython(forward, backward),
-
-
-
-        migrations.RemoveField(
-            model_name='customsetting',
-            name='default_temp',
-        ),
-        migrations.RemoveField(
-            model_name='customsetting',
-            name='type_temp',
-        ),
-        migrations.RemoveField(
-            model_name='customsetting',
-            name='value_temp',
-        ),
-
-
 
     ]
