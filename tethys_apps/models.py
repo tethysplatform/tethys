@@ -84,7 +84,6 @@ class TethysApp(models.Model, TethysBaseMixin):
         """
         Associate setting with app in database
         """
-        # breakpoint()
         if setting_list is not None:
             for setting in setting_list:
                 # Don't add the same setting twice
@@ -102,7 +101,6 @@ class TethysApp(models.Model, TethysBaseMixin):
             setting_list: List of current settings (as defined in app.py).
             existing_settings: List of existing settings in the DB.
         """
-        # breakpoint()
         if setting_list is not None:
             self.add_settings(setting_list)
             setting_names = [setting.name for setting in setting_list]
@@ -291,8 +289,6 @@ class CustomSecretSetting(CustomSetting):
         """
         Get the value, automatically casting it to the correct type.
         """
-        # breakpoint()
-
         if self.value == "" or self.value is None:
             if self.required:
                 raise TethysAppSettingNotAssigned(
@@ -305,9 +301,7 @@ class CustomSecretSetting(CustomSetting):
 
         TETHYS_HOME = get_tethys_home_dir()
         signer = Signer()
-        secret_unsigned = ''
-        # breakpoint()
-        
+        secret_unsigned = ''        
         try:
             if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
                 secret_unsigned = signer.unsign_object(f'{self.value}')
@@ -454,7 +448,6 @@ class CustomSimpleSetting(CustomSetting):
                 raise ValidationError("Value must be a uuid.")
 
     def get_value(self):
-        # breakpoint()
         """
         Get the value, automatically casting it to the correct type.
         """
@@ -545,7 +538,6 @@ def set_default_value(sender, instance, *args, **kwargs):
     Returns:
         None
     """
-    # breakpoint()
     if not instance.value or instance.value == "":
         instance.value = instance.default
 

@@ -158,7 +158,6 @@ def add_app_settings_parser(subparsers):
 def app_settings_list_command(args):
     load_apps()
     app_settings = get_app_settings(args.app)
-    # breakpoint()
     if app_settings is None:
         return
     unlinked_settings = app_settings["unlinked_settings"]
@@ -389,7 +388,6 @@ def app_settings_gen_salt_strings_command(args):
             
    
         else:
-            # breakpoint()
             list_apps = TethysApp.objects.all()
     except Exception as e:
         write_error(str(e))

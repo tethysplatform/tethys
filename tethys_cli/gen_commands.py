@@ -363,7 +363,6 @@ def gen_secrets_yaml(args):
         "A Tethys Secrets file is being generated. "
         "Please review the file and fill in the appropriate settings."
     )
-    # breakpoint()
 
     context = {
         "version": tethys_secrets_settings["version"],

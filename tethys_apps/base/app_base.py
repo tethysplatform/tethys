@@ -1069,11 +1069,9 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         db_app = TethysApp.objects.get(package=cls.package)
-        # breakpoint()
 
         custom_settings = db_app.custom_settings
         try:
-            # breakpoint()
             custom_setting = custom_settings.get(name=name)
             return custom_setting.get_value()
         except ObjectDoesNotExist:

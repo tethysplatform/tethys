@@ -495,7 +495,6 @@ def configure_services_from_file(services, app_name):
     db_app = TethysApp.objects.get(package=app_name)
 
     for service_type in services:
-        breakpoint()
         if services[service_type] is not None:
             current_services = services[service_type]
             for setting_name in current_services:
@@ -552,7 +551,6 @@ def configure_services_from_file(services, app_name):
                     unlinked_settings = app_settings["unlinked_settings"]
 
                     setting_found = False
-                    breakpoint()
                     for setting in unlinked_settings:
 
                         if setting.name != setting_name:
@@ -617,7 +615,6 @@ def run_portal_install(app_name):
 
 
 def run_services(app_name, args):
-    # breakpoint()
     file_path = (
         Path("./services.yml")
         if args.services_file is None
@@ -814,7 +811,6 @@ def install_command(args):
             run_interactive_services(app_name)
 
         write_success("Services Configuration Completed.")
-        # breakpoint()
         app_settings = get_app_settings(app_name)
 
         if app_settings is not None:

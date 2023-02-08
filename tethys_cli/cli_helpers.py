@@ -71,7 +71,6 @@ def generate_salt_string():
 
 def gen_salt_string_for_setting(app_name,setting):
 
-    # breakpoint()
     secret_yaml_file = TETHYS_HOME / "secrets.yml"
     secret_settings = {}
     with secret_yaml_file.open("r") as secret_yaml:

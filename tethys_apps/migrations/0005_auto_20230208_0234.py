@@ -3,7 +3,6 @@
 from django.db import migrations
 
 def forward(apps, schema_editor):
-    # breakpoint()
     """ From non inehirtance to post inheritance """
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
@@ -17,7 +16,6 @@ def forward(apps, schema_editor):
 
 
 def backward(apps, schema_editor):
-    # breakpoint()
     """ From non inehirtance to post inheritance """
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
