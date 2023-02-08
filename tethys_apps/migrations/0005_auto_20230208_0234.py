@@ -3,19 +3,21 @@
 from django.db import migrations
 
 def forward(apps, schema_editor):
-    # breakpoint()
+    breakpoint()
     """ From non inehirtance to post inheritance """
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
     db_alias = schema_editor.connection.alias
 
     for cs in CustomSetting.objects.using(db_alias).all():
-        cs_simple = CustomSimpleSetting.objects.create(tethys_app = cs.tethys_app, customsetting_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
+        cs_simple = CustomSimpleSetting.objects.create(customsetting_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
         cs.type_custom_setting = "SIMPLE"
         cs_simple.save()
+        cs.save()
+
 
 def backward(apps, schema_editor):
-    # breakpoint()
+    breakpoint()
     """ From non inehirtance to post inheritance """
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
