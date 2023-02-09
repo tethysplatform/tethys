@@ -1135,9 +1135,22 @@ class TethysAppBase(TethysBase):
                 custom_setting.save()
             else:
                 raise ValidationError(f"Value must be of type {custom_setting.type}.")
-        else:        
-            custom_setting.value = value
-            custom_setting.save()
+
+        if custom_setting.type_custom_setting == "SECRET":
+            if value == "":
+                raise ValidationError("Secret Value cannot be empty.")
+            else:
+                custom_setting.value = value
+                custom_setting.save()
+
+
+        if custom_setting.type_custom_setting == "JSON":
+
+            if type(value) is not dict:
+                raise ValidationError("Value must be a valid JSON string.")
+            else:
+                custom_setting.value = value
+                custom_setting.save()
 
     @classmethod
     def get_dataset_service(

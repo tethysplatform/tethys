@@ -849,14 +849,27 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch("tethys_apps.models.TethysApp")
     def test_set_custom_setting_type_not_match(self, mock_app):
         setting_name = "fake_setting"
-        mock_app.objects.get().custom_settings.get.return_value = mock.MagicMock(
-            type="UUID",type_custom_setting="SIMPLE"
-        )
+
+        mock_app.objects.get().custom_settings.get.side_effect = [
+            mock.MagicMock(type="UUID",type_custom_setting="SIMPLE"),
+            mock.MagicMock(type_custom_setting="JSON"),
+            mock.MagicMock(type_custom_setting="SECRET")
+        ]
 
         with self.assertRaises(ValidationError) as ret:
             self.app.set_custom_setting(name=setting_name, value=1)
 
         self.assertEqual("Value must be of type UUID.", ret.exception.message)
+
+        with self.assertRaises(ValidationError) as ret:
+            self.app.set_custom_setting(name=setting_name, value=1)
+
+        self.assertEqual("Value must be a valid JSON string.", ret.exception.message)
+
+        with self.assertRaises(ValidationError) as ret:
+            self.app.set_custom_setting(name=setting_name, value="")
+
+        self.assertEqual("Secret Value cannot be empty.", ret.exception.message)
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_dataset_service(self, mock_ta):
