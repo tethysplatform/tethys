@@ -1096,7 +1096,7 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
-
+        # breakpoint()
         db_app = TethysApp.objects.get(package=cls.package)
         custom_settings = db_app.custom_settings
         try:
@@ -1135,10 +1135,10 @@ class TethysAppBase(TethysBase):
                 custom_setting.save()
             else:
                 raise ValidationError(f"Value must be of type {custom_setting.type}.")
-        if custom_setting.type_custom_setting == "SECRET":
-            pass
-        if custom_setting.type_custom_setting == "JSON":
-            pass
+        else:        
+            custom_setting.value = value
+            custom_setting.save()
+
     @classmethod
     def get_dataset_service(
         cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False

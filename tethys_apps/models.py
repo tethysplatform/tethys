@@ -494,7 +494,7 @@ class CustomJSONSetting(CustomSetting):
             if not self.default and self.required:
                 raise ValidationError("Required.")
                 
-        if type(self.value) is not dict:
+        if type(self.value) is dict:
             
             try:
                 json.dumps(self.value)

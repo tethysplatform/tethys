@@ -1,6 +1,9 @@
 from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import (
-    CustomSetting,
+    # CustomSetting,
+    CustomSimpleSetting,
+    CustomJSONSetting,
+    CustomSecretSetting,
     PersistentStoreDatabaseSetting,
     PersistentStoreConnectionSetting,
     DatasetServiceSetting,
@@ -33,30 +36,138 @@ class TestApp(TethysAppBase):
         Example custom_settings method.
         """
         custom_settings = (
-            CustomSetting(
+            CustomSimpleSetting(
                 name="default_name",
-                type=CustomSetting.TYPE_STRING,
+                type=CustomSimpleSetting.TYPE_STRING,
                 description="Default model name.",
                 required=True,
             ),
-            CustomSetting(
+            CustomSimpleSetting(
                 name="max_count",
-                type=CustomSetting.TYPE_INTEGER,
+                type=CustomSimpleSetting.TYPE_INTEGER,
                 description="Maximum allowed count in a method.",
                 required=False,
             ),
-            CustomSetting(
+            CustomSimpleSetting(
                 name="change_factor",
-                type=CustomSetting.TYPE_FLOAT,
+                type=CustomSimpleSetting.TYPE_FLOAT,
                 description="Change factor that is applied to some process.",
                 required=False,
             ),
-            CustomSetting(
+            CustomSimpleSetting(
                 name="enable_feature",
-                type=CustomSetting.TYPE_BOOLEAN,
+                type=CustomSimpleSetting.TYPE_BOOLEAN,
                 description="Enable this feature when True.",
                 required=False,
             ),
+            CustomSimpleSetting(
+                name="default_name",
+                type=CustomSimpleSetting.TYPE_STRING,
+                description="Default model name.",
+                required=True,
+            ),
+            CustomSimpleSetting(
+                name="max_count",
+                type=CustomSimpleSetting.TYPE_INTEGER,
+                description="Maximum allowed count in a method.",
+                required=False,
+            ),
+            CustomSimpleSetting(
+                name="change_factor",
+                type=CustomSimpleSetting.TYPE_FLOAT,
+                description="Change factor that is applied to some process.",
+                required=False,
+            ),
+            CustomSimpleSetting(
+                name="enable_feature",
+                type=CustomSimpleSetting.TYPE_BOOLEAN,
+                description="Enable this feature when True.",
+                required=False,
+            ),
+
+            CustomJSONSetting(
+                name='JSON_setting_not_default_value',
+                description='This is JSON setting without a default value',
+                required=True,
+            ),
+            CustomJSONSetting(
+                name='JSON_setting_not_default_value',
+                description='This is JSON setting without a default value',
+                required=False,
+            ),
+            CustomJSONSetting(
+                name='JSON_setting_default_value',
+                description='This is JSON setting with a default value',
+                required=True,
+                default={"Test":"JSON test String"}
+            ),
+            CustomJSONSetting(
+                name='JSON_setting_default_value',
+                description='This is JSON setting with a default value',
+                required=False,
+                default={"Test":"JSON test String"}
+            ),
+
+            CustomSecretSetting(
+                name='Secret_Test_required',
+                description='This is SECRET setting with required True',
+                required=True            
+            ),
+            CustomSecretSetting(
+                name='Secret_Test2_without_required',
+                description='This is SECRET setting with required False',
+                required=False
+            )
+
+
+            # CustomSetting(
+            #     name="default_name",
+            #     type=CustomSetting.TYPE_STRING,
+            #     description="Default model name.",
+            #     required=True,
+            # ),
+            # CustomSetting(
+            #     name="max_count",
+            #     type=CustomSetting.TYPE_INTEGER,
+            #     description="Maximum allowed count in a method.",
+            #     required=False,
+            # ),
+            # CustomSetting(
+            #     name="change_factor",
+            #     type=CustomSetting.TYPE_FLOAT,
+            #     description="Change factor that is applied to some process.",
+            #     required=False,
+            # ),
+            # CustomSetting(
+            #     name="enable_feature",
+            #     type=CustomSetting.TYPE_BOOLEAN,
+            #     description="Enable this feature when True.",
+            #     required=False,
+            # ),
+            # CustomSetting(
+            #     name="default_name",
+            #     type=CustomSetting.TYPE_STRING,
+            #     description="Default model name.",
+            #     required=True,
+            # ),
+            # CustomSetting(
+            #     name="max_count",
+            #     type=CustomSetting.TYPE_INTEGER,
+            #     description="Maximum allowed count in a method.",
+            #     required=False,
+            # ),
+            # CustomSetting(
+            #     name="change_factor",
+            #     type=CustomSetting.TYPE_FLOAT,
+            #     description="Change factor that is applied to some process.",
+            #     required=False,
+            # ),
+            # CustomSetting(
+            #     name="enable_feature",
+            #     type=CustomSetting.TYPE_BOOLEAN,
+            #     description="Enable this feature when True.",
+            #     required=False,
+            # ),
         )
 
         return custom_settings
