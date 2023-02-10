@@ -138,7 +138,7 @@ class TethysAppTests(TethysTestCase):
 
     def test_settings_prop(self):
         ret = self.test_app.settings
-        self.assertEqual(15, len(ret))
+        self.assertEqual(21, len(ret))
 
         for r in ret:
             self.assertIsInstance(r, TethysAppSetting)
@@ -256,6 +256,48 @@ class TethysAppTests(TethysTestCase):
             name="default_name"
         )
         custom_setting.value = "foo"
+        custom_setting.save()
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="JSON_setting_not_default_value_required"
+        )
+
+        json_test_val = {
+            "widget": 
+                {
+                "debug": "on",
+                "window": {
+                    "title": "Sample Konfabulator Widget",
+                    "name": "main_window",
+                    "width": 500,
+                    "height": 500
+                },
+                "image": { 
+                    "src": "Images/Sun.png",
+                    "name": "sun1",
+                    "hOffset": 250,
+                    "vOffset": 250,
+                    "alignment": "center"
+                },
+                "text": {
+                    "data": "Click Here",
+                    "size": 36,
+                    "style": "bold",
+                    "name": "text1",
+                    "hOffset": 250,
+                    "vOffset": 100,
+                    "alignment": "center",
+                    "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;"
+                }
+        }}  
+        custom_setting.value = json_test_val
+        custom_setting.save()
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="Secret_Test_required"
+        )
+        custom_setting.value = "asfas34634634??23523d235SAFDEV34HYJ-SDG-42"
+        custom_setting.clean()
         custom_setting.save()
 
         ds_setting = self.test_app.settings_set.select_subclasses().get(

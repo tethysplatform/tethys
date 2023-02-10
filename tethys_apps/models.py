@@ -254,7 +254,6 @@ class CustomSecretSetting(CustomSetting):
 
         if self.value == "" and self.required:
             raise ValidationError("Required.")
-   
         if self.value != "" :
             try:
                 TETHYS_HOME = get_tethys_home_dir()
@@ -276,7 +275,8 @@ class CustomSecretSetting(CustomSetting):
                                         self.value = signer.sign_object(self.value)
                                     else:
                                         self.value = signer.sign_object(self.value)
-
+                                else:
+                                    self.value = signer.sign_object(self.value)
                         else:
                             log.info(
                                 "There is not a an apps portion in the secrets.yml, please create one by running the following command"
@@ -285,6 +285,11 @@ class CustomSecretSetting(CustomSetting):
 
             except Exception:
                 raise ValidationError("Validation Error for Secret Custom Setting")
+        
+        if type(self.value) is not str:
+            raise ValidationError("Validation Error: Secret Custom Setting should be a String")
+        
+
     def get_value(self):
         """
         Get the value, automatically casting it to the correct type.
@@ -301,7 +306,9 @@ class CustomSecretSetting(CustomSetting):
 
         TETHYS_HOME = get_tethys_home_dir()
         signer = Signer()
-        secret_unsigned = ''        
+        secret_unsigned = ''
+        # breakpoint()
+
         try:
             if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
                 secret_unsigned = signer.unsign_object(f'{self.value}')
@@ -309,18 +316,23 @@ class CustomSecretSetting(CustomSetting):
                 with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
                     secrets_app_settings = yaml.safe_load(secret_yaml).get("secrets", {}) or {}
                     if bool(secrets_app_settings):
-                        app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
-                        if self.name in app_specific_settings:
-                            app_custom_setting_salt_string = app_specific_settings[self.name]
-                            if app_custom_setting_salt_string != '':
-                                signer = Signer(salt=app_custom_setting_salt_string)
-                            secret_unsigned= signer.unsign_object(f'{self.value}')
+                        if 'custom_settings_salt_strings' in secrets_app_settings[self.tethys_app.package]:
+                            app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                            if self.name in app_specific_settings:
+                                app_custom_setting_salt_string = app_specific_settings[self.name]
+                                if app_custom_setting_salt_string != '':
+                                    signer = Signer(salt=app_custom_setting_salt_string)
+                                secret_unsigned= signer.unsign_object(f'{self.value}')
+                            else:
+                                secret_unsigned = signer.unsign_object(f'{self.value}')
                         else:
+                            log.info(
+                                "There is not a custom_settings_salt_strings portion in the secrets.yml for the required app."
+                            )
                             secret_unsigned = signer.unsign_object(f'{self.value}')
-
                     else:
                         log.info(
-                            "There is not a an apps portion in the secrets.yml, please create one by running the following command"
+                            "There is not an apps portion in the secrets.yml."
                         )
                         secret_unsigned = signer.unsign_object(f'{self.value}')
                 
@@ -495,12 +507,13 @@ class CustomJSONSetting(CustomSetting):
                 raise ValidationError("Required.")
                 
         if type(self.value) is dict:
-            
             try:
                 json.dumps(self.value)
             except Exception:
-                raise ValidationError("Value must be a valid JSON string.")
-                
+                raise ValidationError("Value must be a valid JSON dict")
+        else: 
+            raise ValidationError("Value must be a valid JSON dict")
+
     def get_value(self):
         """
         Get the value, automatically casting it to the correct type.
