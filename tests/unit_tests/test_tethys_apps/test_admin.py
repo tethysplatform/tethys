@@ -7,7 +7,9 @@ from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from tethys_apps.admin import (
     TethysAppSettingInline,
-    CustomSettingInline,
+    CustomSimpleSettingInline,
+    CustomSecretSettingInline,
+    CustomJSONSettingInline,
     DatasetServiceSettingInline,
     SpatialDatasetServiceSettingInline,
     WebProcessingServiceSettingInline,
@@ -28,7 +30,9 @@ from tethys_quotas.models import TethysAppQuota
 from tethys_apps.models import (
     TethysApp,
     TethysExtension,
-    CustomSetting,
+    CustomSimpleSetting,
+    CustomJSONSetting,
+    CustomSecretSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
@@ -88,12 +92,35 @@ class TestTethysAppAdmin(unittest.TestCase):
             ret.has_add_permission(request=mock.MagicMock(), obj=mock.MagicMock())
         )
 
-    def test_CustomSettingInline(self):
+    def test_CustomSimpleSettingInline(self):
         expected_readonly_fields = ("name", "description", "type", "required")
         expected_fields = ("name", "description", "type", "value", "required")
-        expected_model = CustomSetting
+        expected_model = CustomSimpleSetting
 
-        ret = CustomSettingInline(mock.MagicMock(), mock.MagicMock())
+        ret = CustomSimpleSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
+
+    def test_CustomSecretSettingInline(self):
+        expected_readonly_fields = ("name", "description", "required")
+        expected_fields = ("name", "description", "value", "required")
+        expected_model = CustomSecretSetting
+
+        ret = CustomSecretSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
+
+    def test_CustomJSONSettingInline(self):
+
+        expected_readonly_fields = ("name", "description", "required")
+        expected_fields = ("name", "description", "value", "required")
+        expected_model = CustomJSONSetting
+
+        ret = CustomJSONSettingInline(mock.MagicMock(), mock.MagicMock())
 
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
@@ -243,7 +270,9 @@ class TestTethysAppAdmin(unittest.TestCase):
             "manage_app_storage",
         )
         expected_inlines = [
-            CustomSettingInline,
+            CustomSimpleSettingInline,
+            CustomJSONSettingInline,
+            CustomSecretSettingInline,
             PersistentStoreConnectionSettingInline,
             PersistentStoreDatabaseSettingInline,
             DatasetServiceSettingInline,
