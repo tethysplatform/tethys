@@ -1,4 +1,5 @@
 import unittest
+import json
 from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist
 import tethys_cli.app_settings_commands as cli_app_settings_command
@@ -82,6 +83,9 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch("tethys_apps.models.SpatialDatasetServiceSetting")
     @mock.patch("tethys_apps.models.DatasetServiceSetting")
     @mock.patch("tethys_apps.models.WebProcessingServiceSetting")
+    @mock.patch("tethys_apps.models.CustomSimpleSetting")
+    @mock.patch("tethys_apps.models.CustomSecretSetting")
+    @mock.patch("tethys_apps.models.CustomJSONSetting")
     @mock.patch("tethys_apps.models.CustomSetting")
     @mock.patch("tethys_cli.app_settings_commands.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.type")
@@ -90,6 +94,9 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         mock_type,
         mock_pretty_output,
         MockCs,
+        MockCsimple,
+        MockCsecret,
+        MockCjson,
         MockWpss,
         MockDss,
         MockSdss,
@@ -143,16 +150,42 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         del wpss.dataset_service
         MockWpss.objects.filter.return_value = [wpss]
 
-        # mock the Custom Setting filter return value
+        # mock the Custom Setting filter.select_subclasses return value
         cs = MockCs()
-        cs.name = "n006"
-        cs.pk = "p006"
-        cs.value = "5"
+
+        cs_simple = MockCsimple()
+        cs_simple.name = "n006"
+        cs_simple.pk = "p006"
+        cs_simple.value = "5"
+        del cs_simple.persistent_store_service
+        del cs_simple.spatial_dataset_service
+        del cs_simple.dataset_service
+        del cs_simple.web_processing_service
+
+        cs_secret = MockCsecret()
+        cs_secret.name = "n007"
+        cs_secret.pk = "p007"
+        cs_secret.value = "xxxxJJJJ2ASF352AAAS%$%@$@"
+        del cs_secret.persistent_store_service
+        del cs_secret.spatial_dataset_service
+        del cs_secret.dataset_service
+        del cs_secret.web_processing_service
+
+        cs_json = MockCjson()
+        cs_json.name = "n008"
+        cs_json.pk = "p008"
+        cs_json.value = {"key_tst":"water_val"}
+        del cs_json.persistent_store_service
+        del cs_json.spatial_dataset_service
+        del cs_json.dataset_service
+        del cs_json.web_processing_service
+
         del cs.persistent_store_service
         del cs.spatial_dataset_service
         del cs.dataset_service
         del cs.web_processing_service
-        MockCs.objects.filter.return_value = [cs]
+
+        MockCs.objects.filter.return_value.select_subclasses.return_value = [cs_simple,cs_secret,cs_json]
 
         MockTethysApp.objects.get(package="foo").return_value = mock_arg.app
 
@@ -476,6 +509,88 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_json_with_variable(
+        self, mock_exit, mock_write_error, mock_write_success
+    ):
+        """Test against the installed test app."""
+        # JSON Custom Setting
+        # breakpoint()
+        test_json = {
+            "maxRunDistance": "float;1;20;1",
+            "cpf": "cpf",
+            "cnpj": "cnpj",
+            "pretendSalary": "money",
+            "age": "int;20;80",
+            "gender": "gender",
+            "firstName": "firstName",
+            "lastName": "lastName",
+            "phone": "maskInt;+55 (83) 9####-####",
+            "address": "address",
+            "hairColor": "color"
+        }
+
+        mock_args_json = mock.MagicMock(
+            app="test_app", setting="JSON_setting_not_default_value", value=json.dumps(test_json)
+        )
+
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_set_command,
+            mock_args_json,
+        )
+        mock_write_error.assert_not_called()
+        mock_write_success.assert_called()
+        mock_exit.called_with(0)
+    
+    @mock.patch("tethys_cli.app_settings_commands.open", new_callable=mock.mock_open, read_data='{"key_test":"value_test"}')
+    @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_json_with_file(
+        self, mock_exit, mock_write_error, mock_write_success, mock_path_exist,mock_open
+    ):
+        """Test against the installed test app."""
+        # JSON Custom Setting
+        # breakpoint()
+        mock_path_exist.return_value = True
+        fake_path = "/user/xxxx/foo/bear/ursa"
+        mock_args_json = mock.MagicMock(
+            app="test_app", setting="JSON_setting_not_default_value", value=json.dumps(fake_path)
+        )
+
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_set_command,
+            mock_args_json,
+        )
+        mock_write_error.assert_not_called()
+        mock_write_success.assert_called()
+        mock_exit.called_with(0)
+
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_secret(
+        self, mock_exit, mock_write_error, mock_write_success
+    ):
+        """Test against the installed test app."""
+        # String Custom Setting
+        mock_args_str = mock.MagicMock(
+            app="test_app", setting="Secret_Test2_without_required", value="asfasf3e222xxxxx--32523-dssdgxxx222"
+        )
+
+        self.assertRaises(
+            SystemExit, cli_app_settings_command.app_settings_set_command, mock_args_str
+        )
+        mock_write_error.assert_not_called()
+        mock_write_success.assert_called()
+        mock_exit.called_with(0)
+
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
@@ -538,6 +653,71 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error.assert_called()
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
+
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_bad_value_secret(
+        self, mock_exit, mock_write_error, mock_write_success
+    ):
+        """Test against the installed test app."""
+        # Secret Custom Setting
+        mock_args_int = mock.MagicMock(
+            app="test_app", setting="Secret_Test2_without_required", value= {"key":"value"}  # Not a string
+        )
+
+        self.assertRaises(
+            SystemExit, cli_app_settings_command.app_settings_set_command, mock_args_int
+        )
+        mock_write_error.assert_called()
+        mock_write_success.assert_not_called()
+        mock_exit.assert_called_with(1)
+        
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_bad_value_json_from_variable(
+        self, mock_exit, mock_write_error, mock_write_success
+    ):
+        """Test against the installed test app."""
+        # JSON Custom Setting
+        mock_args_int = mock.MagicMock(
+            app="test_app", setting="JSON_setting_not_default_value", value= 2.5  # Not a a valid json string
+        )
+
+        self.assertRaises(
+            SystemExit, cli_app_settings_command.app_settings_set_command, mock_args_int
+        )
+        mock_write_error.assert_called()
+        mock_write_success.assert_not_called()
+        mock_exit.assert_called_with(1)
+
+    @mock.patch("tethys_cli.app_settings_commands.open", new_callable=mock.mock_open, read_data='2')
+    @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_bad_value_json_with_file(
+        self, mock_exit, mock_write_error, mock_write_success, mock_path_exist,mock_open
+    ):
+        """Test against the installed test app."""
+        # JSON Custom Setting
+        mock_path_exist.return_value = True
+        fake_path = "/user/xxxx/foo/bear/ursa"
+        mock_args_json = mock.MagicMock(
+            app="test_app", setting="JSON_setting_not_default_value", value=json.dumps(fake_path)
+        )
+
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_set_command,
+            mock_args_json,
+        )
+        mock_write_error.assert_called()
+        mock_write_success.assert_not_called()
+        mock_exit.called_with(1)
+
+
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")

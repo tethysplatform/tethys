@@ -235,23 +235,29 @@ def app_settings_set_command(args):
         value_json = '{}'
         if setting.type_custom_setting == "JSON":
             if os.path.exists(actual_value):
-
                 with open(actual_value) as json_file:
                     write_warning(
                         f'File found, extracting Json data'
                     )
                     value_json = json.load(json_file)
-        
+                    
                 setting.value = value_json
             else:
-                setting.value = actual_value
+                setting.value = json.loads(actual_value)
+        else:
             
-        setting.value = actual_value
+            setting.value = actual_value
+        
         setting.clean()
         setting.save()
     except ValidationError as e:
         write_error(
             f'Value was not set: {",".join(e.messages)} "{args.value}" was given.'
+        )
+        exit(1)
+    except TypeError as e:
+        write_error(
+            f'Value was not set: {e} "'
         )
         exit(1)
 

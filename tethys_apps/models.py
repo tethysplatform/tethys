@@ -251,7 +251,16 @@ class CustomSecretSetting(CustomSetting):
         """
         Validate prior to saving changes.
         """        
-
+        if type(self.value) is not str:
+            raise ValidationError("Validation Error: Secret Custom Setting should be a String")
+        else: 
+            try:
+                json.loads(self.value)
+                raise ValidationError("Validation Error: Secret Custom Setting should not be a JSON String")
+            except ValueError:
+                log.info(
+                    "Valid Secret String."
+                )
         if self.value == "" and self.required:
             raise ValidationError("Required.")
         if self.value != "" :
@@ -286,9 +295,7 @@ class CustomSecretSetting(CustomSetting):
             except Exception:
                 raise ValidationError("Validation Error for Secret Custom Setting")
         
-        if type(self.value) is not str:
-            raise ValidationError("Validation Error: Secret Custom Setting should be a String")
-        
+
 
     def get_value(self):
         """
