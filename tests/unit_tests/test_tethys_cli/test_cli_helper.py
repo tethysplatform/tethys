@@ -70,3 +70,10 @@ class TestCliHelper(unittest.TestCase):
     def test_load_apps(self, mock_django_setup):
         cli_helper.load_apps()
         mock_django_setup.assert_called()
+
+    @mock.patch("tethys_cli.cli_helpers.bcrypt.gensalt")
+    def test_generate_salt_string(self, mock_bcrypt_gensalt):
+        fake_salt = "my_random_encrypted_string"
+        mock_bcrypt_gensalt.return_value = fake_salt
+        my_fake_salt_from_tested_func = cli_helper.generate_salt_string()
+        self.assertEqual(my_fake_salt_from_tested_func, fake_salt)
