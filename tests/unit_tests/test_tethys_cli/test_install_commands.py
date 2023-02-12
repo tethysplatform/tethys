@@ -428,7 +428,7 @@ class TestInstallServicesCommands(TestCase):
 
         services_file_contents = {
             "version": 1,
-            "custom_setting": {
+            "custom_settings": {
                 invalid_custom_setting_name: invalid_custom_setting_value,
                 valid_custom_setting_name: valid_custom_setting_value,
                 "custom_setting_dne": 1,
@@ -448,7 +448,10 @@ class TestInstallServicesCommands(TestCase):
         mock_valid_custom_setting = mock.MagicMock(value=None)
 
         # Third custom setting listed does not exist
-        mock_CustomSetting.objects.get.side_effect = [
+        # CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
+        #                     name=setting_name
+        #                 )
+        mock_CustomSetting.objects.filter.return_value.select_subclasses.return_value.get.side_effect = [
             mock_invalid_custom_setting,  #: Save raises Validation error
             mock_valid_custom_setting,  #: Should pass without errors
             ObjectDoesNotExist,  #: Setting not found
@@ -481,7 +484,7 @@ class TestInstallServicesCommands(TestCase):
         }
 
         install_commands.configure_services_from_file(services_file_contents, app_name)
-
+        
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn(
             f"Incorrect value type given for custom setting '{invalid_custom_setting_name}'",
