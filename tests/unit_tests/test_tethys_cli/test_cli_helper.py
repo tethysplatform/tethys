@@ -1,15 +1,20 @@
 import unittest
+import os
 from unittest import mock
 import tethys_cli.cli_helpers as cli_helper
 from tethys_apps.models import TethysApp, CustomSecretSetting
-
+from tethys_apps.utilities import get_tethys_home_dir
+from django.core.signing import Signer
 
 class TestCliHelper(unittest.TestCase):
     def setUp(self):
         self.test_app = TethysApp.objects.get(package="test_app")
 
+
+
     def tearDown(self):
         pass
+
 
     def test_add_geoserver_rest_to_endpoint(self):
         endpoint = "http://localhost:8181/geoserver/rest/"
@@ -80,20 +85,18 @@ class TestCliHelper(unittest.TestCase):
         self.assertEqual(my_fake_salt_from_tested_func, fake_salt)
 
     @mock.patch("tethys_cli.cli_helpers.write_success")
-    @mock.patch("tethys_cli.cli_helpers.write_error")
-    @mock.patch("tethys_cli.cli_helpers.open", new_callable=mock.mock_open, read_data='{"secrets": "{}"}')
-    @mock.patch("tethys_apps.models.os.path.exists")
     @mock.patch("tethys_cli.cli_helpers.yaml.dump")
     @mock.patch("tethys_cli.cli_helpers.yaml.safe_load")
     @mock.patch("tethys_cli.cli_helpers.generate_salt_string")
+    @mock.patch("tethys_cli.cli_helpers.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
 
-    def test_gen_salt_string_for_setting_with_no_previous_salt_strings(self,mock_write_success,mock_write_error,mock_open_file,mock_os_path_exists,mock_yaml_dumps,mock_yaml_safe_load,mock_salt_string):
+    def test_gen_salt_string_for_setting_with_no_previous_salt_strings(self,mock_open_file,mock_salt_string,mock_yaml_safe_load,mock_yaml_dumps,mock_write_success):
 
-        mock_salt_string.return_value = "my_fake_string"
+        mock_salt_string.return_value.decode.return_value = "my_fake_string"
 
         app_target_name = 'test_app'
         
-        mock_yaml_safe_load.return_value = {
+        before_content =  {
             "secrets":{
                 app_target_name: {
                     "custom_settings_salt_strings":{}
@@ -101,8 +104,8 @@ class TestCliHelper(unittest.TestCase):
                 "version": "1.0"
             }
         }
-        
-        mock_yaml_dumps.return_value = {
+
+        after_content = {
             "secrets":{
                 app_target_name: {
                     "custom_settings_salt_strings":{
@@ -112,25 +115,117 @@ class TestCliHelper(unittest.TestCase):
                 "version": "1.0"
             }
         }
-
         custom_secret_setting = self.test_app.settings_set.select_subclasses().get(
             name="Secret_Test2_without_required"
         )
         custom_secret_setting.value = "SECRETXX1Y"
         custom_secret_setting.clean()
         custom_secret_setting.save()
-        mock_os_path_exists.return_value = False
-        # breakpoint()
-        ### write only with the 
+
+        mock_yaml_safe_load.return_value = before_content
+
+
         cli_helper.gen_salt_string_for_setting("test_app", custom_secret_setting)
-        mock_open_file.assert_called_once_with(mock_yaml_dumps, 'w')
-        mock_write_error.assert_not_called()
+
+        mock_yaml_dumps.assert_called_once_with(after_content,mock_open_file.return_value)
         mock_write_success.assert_called()
+        self.assertEqual(custom_secret_setting.get_value(), "SECRETXX1Y")
+
+    @mock.patch("tethys_cli.cli_helpers.write_success")
+    @mock.patch("tethys_cli.cli_helpers.yaml.dump")
+    @mock.patch("tethys_cli.cli_helpers.yaml.safe_load")
+    @mock.patch("tethys_cli.cli_helpers.generate_salt_string")
+    @mock.patch("tethys_cli.cli_helpers.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_gen_salt_string_for_setting_with_previous_salt_strings(self,mock_open_file,mock_salt_string,mock_yaml_safe_load,mock_yaml_dumps,mock_write_success):
+
+        mock_salt_string.return_value.decode.return_value = "my_last_fake_string"
+
+        app_target_name = 'test_app'
         
+        before_content =  {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "Secret_Test2_without_required" : "my_first_fake_string"
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "Secret_Test2_without_required" : "my_last_fake_string"
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+        custom_secret_setting = self.test_app.settings_set.select_subclasses().get(
+            name="Secret_Test2_without_required"
+        )
+        signer = Signer(salt="my_first_fake_string")
+        
+        new_val = signer.sign_object("SECRETXX1Y")
+
+        # custom_secret_setting.value = "SECRETXX1Y"
+        
+        custom_secret_setting.value = new_val
+        
+        
+        custom_secret_setting.save()
+
+        mock_yaml_safe_load.return_value = before_content
 
 
+        cli_helper.gen_salt_string_for_setting("test_app", custom_secret_setting)
 
-### generate 5 test:
-#with secrets complete
-##with no custom_settings
-###with no app
+        mock_yaml_dumps.assert_called_once_with(after_content,mock_open_file.return_value)
+        mock_write_success.assert_called()
+        self.assertEqual(custom_secret_setting.get_value(), "SECRETXX1Y")
+
+    @mock.patch("tethys_cli.cli_helpers.write_warning")
+    @mock.patch("tethys_cli.cli_helpers.write_success")
+    @mock.patch("tethys_cli.cli_helpers.yaml.dump")
+    @mock.patch("tethys_cli.cli_helpers.yaml.safe_load")
+    @mock.patch("tethys_cli.cli_helpers.generate_salt_string")
+    @mock.patch("tethys_cli.cli_helpers.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_gen_salt_string_for_setting_with_empty_secrets(self,mock_open_file,mock_salt_string,mock_yaml_safe_load,mock_yaml_dumps,mock_write_success,mock_write_warning):
+
+        mock_salt_string.return_value.decode.return_value = "my_fake_string"
+
+        app_target_name = 'test_app'
+        
+        before_content =  {
+            "secrets":{
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "Secret_Test2_without_required" : "my_fake_string"
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+        custom_secret_setting = self.test_app.settings_set.select_subclasses().get(
+            name="Secret_Test2_without_required"
+        )
+        custom_secret_setting.value = "SECRETXX1Y"
+        custom_secret_setting.clean()
+        custom_secret_setting.save()
+
+        mock_yaml_safe_load.return_value = before_content
+
+        cli_helper.gen_salt_string_for_setting("test_app", custom_secret_setting)
+
+        mock_yaml_dumps.assert_called_once_with(after_content,mock_open_file.return_value)
+        mock_write_success.assert_called()
+        self.assertEqual(mock_write_warning.call_count, 2)
+        self.assertEqual(custom_secret_setting.get_value(), "SECRETXX1Y")

@@ -92,7 +92,6 @@ def gen_salt_string_for_setting(app_name,setting):
             signer = Signer(salt=last_salt_string)
 
         secret_unsigned= signer.unsign_object(f'{setting.value}')
-        breakpoint()
         salt_string = generate_salt_string().decode()
         secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
         with secret_yaml_file.open("w") as secret_yaml:
