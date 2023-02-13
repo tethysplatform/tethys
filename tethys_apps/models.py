@@ -261,6 +261,7 @@ class CustomSecretSetting(CustomSetting):
                 log.info(
                     "Valid Secret String."
                 )
+        
         if self.value == "" and self.required:
             raise ValidationError("Required.")
         if self.value != "" :
@@ -281,11 +282,14 @@ class CustomSecretSetting(CustomSetting):
                                         if app_custom_setting_salt_string != '':
                                             signer = Signer(salt=app_custom_setting_salt_string)
                                         
-                                        self.value = signer.sign_object(self.value)
-                                    else:
-                                        self.value = signer.sign_object(self.value)
-                                else:
-                                    self.value = signer.sign_object(self.value)
+                            #             self.value = signer.sign_object(self.value)
+                            #         else:
+                            #             self.value = signer.sign_object(self.value)
+                            #     else:
+                            #         self.value = signer.sign_object(self.value)
+                            # else:
+                            self.value = signer.sign_object(self.value)
+
                         else:
                             log.info(
                                 "There is not a an apps portion in the secrets.yml, please create one by running the following command"
