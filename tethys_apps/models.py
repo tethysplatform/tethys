@@ -242,15 +242,15 @@ class CustomSetting(TethysAppSetting):
     # default = models.CharField(max_length=1024, blank=True, default="")
     objects = InheritanceManager()
     type_custom_setting = models.CharField(max_length=1024, blank=True, default="")
-    def get_value(self):
-        pass
+
 
 class CustomSecretSetting(CustomSetting):
     value = models.CharField(max_length=1024, blank=True, default="")
     def clean(self):
         """
         Validate prior to saving changes.
-        """        
+        """
+              
         if type(self.value) is not str:
             raise ValidationError("Validation Error: Secret Custom Setting should be a String")
         else: 
@@ -258,49 +258,45 @@ class CustomSecretSetting(CustomSetting):
                 json.loads(self.value)
                 raise ValidationError("Validation Error: Secret Custom Setting should not be a JSON String")
             except ValueError:
-                log.info(
-                    "Valid Secret String."
-                )
+                pass
         
         if self.value == "" and self.required:
             raise ValidationError("Required.")
         if self.value != "" :
-            try:
-                TETHYS_HOME = get_tethys_home_dir()
-                signer = Signer()
-                if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-                    self.value = signer.sign_object(self.value)
-                else:   
-                    with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
-                        secret_app_settings = yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
-                        if bool(secret_app_settings):
-                            if self.tethys_app.package in secret_app_settings:
-                                if 'custom_settings_salt_strings' in secret_app_settings[self.tethys_app.package]:
-                                    app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
-                                    if self.name in app_specific_settings:
-                                        app_custom_setting_salt_string = app_specific_settings[self.name]
-                                        if app_custom_setting_salt_string != '':
-                                            signer = Signer(salt=app_custom_setting_salt_string)
-                                        
-                            #             self.value = signer.sign_object(self.value)
-                            #         else:
-                            #             self.value = signer.sign_object(self.value)
-                            #     else:
-                            #         self.value = signer.sign_object(self.value)
-                            # else:
-                            self.value = signer.sign_object(self.value)
+            # try:
+            TETHYS_HOME = get_tethys_home_dir()
+            signer = Signer()
+            if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+                self.value = signer.sign_object(self.value)
+            else:   
+                with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
+                    secret_app_settings = yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+                    if bool(secret_app_settings):
+                        if self.tethys_app.package in secret_app_settings:
+                            if 'custom_settings_salt_strings' in secret_app_settings[self.tethys_app.package]:
+                                app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                                if self.name in app_specific_settings:
+                                    app_custom_setting_salt_string = app_specific_settings[self.name]
+                                    if app_custom_setting_salt_string != '':
+                                        signer = Signer(salt=app_custom_setting_salt_string)
+                                    
+                        #             self.value = signer.sign_object(self.value)
+                        #         else:
+                        #             self.value = signer.sign_object(self.value)
+                        #     else:
+                        #         self.value = signer.sign_object(self.value)
+                        # else:
+                        self.value = signer.sign_object(self.value)
 
-                        else:
-                            log.info(
-                                "There is not a an apps portion in the secrets.yml, please create one by running the following command"
-                            )
-                            self.value = signer.sign_object(self.value)
+                    else:
+                        log.info(
+                            "There is not a an apps portion in the secrets.yml, please create one."
+                        )
+                        self.value = signer.sign_object(self.value)
 
-            except Exception:
-                raise ValidationError("Validation Error for Secret Custom Setting")
+            # except Exception:
+            #     raise ValidationError("Validation Error for Secret Custom Setting")
         
-
-
     def get_value(self):
         """
         Get the value, automatically casting it to the correct type.
@@ -333,29 +329,24 @@ class CustomSecretSetting(CustomSetting):
                                 app_custom_setting_salt_string = app_specific_settings[self.name]
                                 if app_custom_setting_salt_string != '':
                                     signer = Signer(salt=app_custom_setting_salt_string)
-                                secret_unsigned= signer.unsign_object(f'{self.value}')
-                            else:
-                                secret_unsigned = signer.unsign_object(f'{self.value}')
-                        else:
-                            log.info(
-                                "There is not a custom_settings_salt_strings portion in the secrets.yml for the required app."
-                            )
-                            secret_unsigned = signer.unsign_object(f'{self.value}')
-                    else:
-                        log.info(
-                            "There is not an apps portion in the secrets.yml."
-                        )
-                        secret_unsigned = signer.unsign_object(f'{self.value}')
+                    #             secret_unsigned= signer.unsign_object(f'{self.value}')
+                    #         else:
+                    #             secret_unsigned = signer.unsign_object(f'{self.value}')
+                    #     else:
+                    #         log.info(
+                    #             "There is not a custom_settings_salt_strings portion in the secrets.yml for the required app."
+                    #         )
+                    #         secret_unsigned = signer.unsign_object(f'{self.value}')
+                    # else:
+                    #     log.info(
+                    #         "There is not an apps portion in the secrets.yml."
+                    #     )
+                    secret_unsigned = signer.unsign_object(f'{self.value}')
                 
         except signing.BadSignature:
 
             raise TethysAppSettingNotAssigned(
                 f'The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again.'
-            )
-
-        except Exception:
-            log.exception(
-                "There was an error while attempting to read the settings from the secrets.yml file."
             )
 
         return secret_unsigned
@@ -520,7 +511,7 @@ class CustomJSONSetting(CustomSetting):
         if type(self.value) is dict:
             try:
                 json.dumps(self.value)
-            except Exception:
+            except TypeError:
                 raise ValidationError("Value must be a valid JSON dict")
         else: 
             raise ValidationError("Value must be a valid JSON dict")
