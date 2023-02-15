@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success, pretty_output, FG_RED, FG_GREEN
 from tethys_cli.services_commands import services_list_command
-from tethys_cli.cli_helpers import load_apps,generate_salt_string
+from tethys_cli.cli_helpers import load_apps,generate_salt_string,gen_salt_string_for_setting
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
@@ -319,8 +319,16 @@ def run_interactive_services(app_name):
                     TETHYS_HOME = Path(get_tethys_home_dir())
                     secrets_yaml_file = TETHYS_HOME / "secrets.yml"
                     portal_secrets = {}
-                    msge ="Aborted salt string generation, using existing salt string for custom setting or Secret Key in the portal_config.yml"
 
+                    if proceed in ["y","Y"] and not secrets_yaml_file.exists():
+                        write_warning(
+                            f'No secrets.yml found. Generating one...'
+                        )
+                        call(["tethys", "gen", "secrets"])
+                        write_msg(
+                            "secrets file generated."
+                        )
+                    msge = "No salt string generated, using default for encryption"   
                     if secrets_yaml_file.exists():
                         with secrets_yaml_file.open("r") as secrets_yaml:
                             portal_secrets = yaml.safe_load(secrets_yaml) or {}
@@ -395,11 +403,18 @@ def run_interactive_services(app_name):
                             setting.clean()
                             setting.save()
                             valid = True
-                            write_success(
-                                "{} successfully set with value: {}.".format(
-                                    setting.name, value
+                            if setting.type_custom_setting != "SECRET":
+                                write_success(
+                                    "{} successfully set with value: {}.".format(
+                                        setting.name, value
+                                    )
                                 )
-                            )
+                            else:
+                                write_success(
+                                    "{} successfully set".format(
+                                        setting.name
+                                    )
+                                )
                         except ValidationError:
                             write_error(
                                 "Incorrect value type given for custom setting '{}'. Please try again".format(

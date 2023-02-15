@@ -1106,6 +1106,248 @@ class TestInstallCommands(TestCase):
             mock_cs.name + " successfully set with value: 5.", po_call_args[7][0][0]
         )
 
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","y"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.getpass.getpass")
+    @mock.patch("tethys_cli.install_commands.Path.exists")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.install_commands.generate_salt_string")
+    @mock.patch("tethys_cli.install_commands.yaml.safe_load")
+    @mock.patch("tethys_cli.install_commands.yaml.dump")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_interactive_custom_setting_set_secret_no_previous_secret_file(self, mock_path_open,mock_pretty_output,mock_yml_dump,mock_yml_safe_load,mock_generate_salt_string,mock_subprocess_call,mock_path_exist,mock_get_pass,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "SECRET"
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        mock_get_pass.return_value = "my_secret_string"
+        mock_path_exist.side_effect = [False, True]
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
+        app_target_name = 'foo'
+        
+        before_content =  {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "mock_cs" : ""
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "mock_cs" : "my_salt_string"
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+
+        mock_yml_safe_load.return_value = before_content 
+
+        
+        install_commands.run_interactive_services("foo")
+
+        mock_yml_dump.assert_called_once_with(after_content,mock_path_open.return_value)
+        
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("No secrets.yml found", po_call_args[4][0][0])
+        self.assertIn("secrets file generated", po_call_args[5][0][0])
+        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[6][0][0])
+
+        self.assertIn("Enter the desired value", po_call_args[7][0][0])
+        self.assertIn("Incorrect value type", po_call_args[8][0][0])
+        self.assertIn("Enter the desired value", po_call_args[9][0][0])
+        self.assertEqual(
+            mock_cs.name + " successfully set", po_call_args[10][0][0]
+        )
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","y"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.getpass.getpass")
+    @mock.patch("tethys_cli.install_commands.Path.exists")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.install_commands.generate_salt_string")
+    @mock.patch("tethys_cli.install_commands.yaml.safe_load")
+    @mock.patch("tethys_cli.install_commands.yaml.dump")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_interactive_custom_setting_set_secret_with_previous_empty_secret_file(self, mock_path_open,mock_pretty_output,mock_yml_dump,mock_yml_safe_load,mock_generate_salt_string,mock_subprocess_call,mock_path_exist,mock_get_pass,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "SECRET"
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        mock_get_pass.return_value = "my_secret_string"
+        mock_path_exist.return_value = True
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
+        app_target_name = 'foo'
+        
+        before_content_secret_empty =  {
+            "secrets":{
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "mock_cs" : "my_salt_string"
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+
+        mock_yml_safe_load.return_value = before_content_secret_empty
+
+        
+        install_commands.run_interactive_services("foo")
+
+        mock_yml_dump.assert_called_once_with(after_content,mock_path_open.return_value)
+        
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("No custom_settings_salt_strings", po_call_args[4][0][0])
+        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[5][0][0])
+
+        self.assertIn("Enter the desired value", po_call_args[6][0][0])
+        self.assertIn("Incorrect value type", po_call_args[7][0][0])
+        self.assertIn("Enter the desired value", po_call_args[8][0][0])
+        self.assertEqual(
+            mock_cs.name + " successfully set", po_call_args[9][0][0]
+        )
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.getpass.getpass")
+    @mock.patch("tethys_cli.install_commands.Path.exists")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.install_commands.generate_salt_string")
+    @mock.patch("tethys_cli.install_commands.yaml.safe_load")
+    @mock.patch("tethys_cli.install_commands.yaml.dump")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_interactive_custom_setting_set_secret_without_salt_previous_empty_secret_file(self, mock_path_open,mock_pretty_output,mock_yml_dump,mock_yml_safe_load,mock_generate_salt_string,mock_subprocess_call,mock_path_exist,mock_get_pass,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "SECRET"
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        mock_get_pass.return_value = "my_secret_string"
+        mock_path_exist.return_value = True
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
+        app_target_name = "foo"
+        before_content_secret_empty =  {
+            "secrets":{
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{}
+                },
+                "version": "1.0"
+            }
+        }
+
+        mock_yml_safe_load.return_value = before_content_secret_empty
+
+        
+        install_commands.run_interactive_services("foo")
+
+        mock_yml_dump.assert_called_once_with(after_content,mock_path_open.return_value)
+        # breakpoint()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("No custom_settings_salt_strings in the app definition", po_call_args[4][0][0])
+        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[5][0][0])
+
+        self.assertIn("Enter the desired value", po_call_args[6][0][0])
+        self.assertIn("Incorrect value type", po_call_args[7][0][0])
+        self.assertIn("Enter the desired value", po_call_args[8][0][0])
+        self.assertEqual(
+            mock_cs.name + " successfully set", po_call_args[9][0][0]
+        )
+
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.getpass.getpass")
+    @mock.patch("tethys_cli.install_commands.Path.exists")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.install_commands.generate_salt_string")
+    @mock.patch("tethys_cli.install_commands.yaml.safe_load")
+    @mock.patch("tethys_cli.install_commands.yaml.dump")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_interactive_custom_setting_set_secret_with_salt_previous_empty_secret_file(self, mock_path_open,mock_pretty_output,mock_yml_dump,mock_yml_safe_load,mock_generate_salt_string,mock_subprocess_call,mock_path_exist,mock_get_pass,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "SECRET"
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        mock_get_pass.return_value = "my_secret_string"
+        mock_path_exist.return_value = True
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
+        app_target_name = 'foo'
+        
+        before_content =  {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "mock_cs" : ""
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+        after_content =  {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{}
+                },
+                "version": "1.0"
+            }
+        }
+
+        mock_yml_safe_load.return_value = before_content
+
+        
+        install_commands.run_interactive_services("foo")
+
+        mock_yml_dump.assert_called_once_with(after_content,mock_path_open.return_value)
+       
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[4][0][0])
+        self.assertIn("Enter the desired value", po_call_args[5][0][0])
+        self.assertIn("Incorrect value type", po_call_args[6][0][0])
+        self.assertIn("Enter the desired value", po_call_args[7][0][0])
+        self.assertEqual(
+            mock_cs.name + " successfully set", po_call_args[8][0][0]
+        )
+
+
     @mock.patch("builtins.input", side_effect=[""])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
