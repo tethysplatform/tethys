@@ -406,12 +406,16 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.install_commands.find_and_link")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.json.load")
+    @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
     @mock.patch("tethys_apps.models.CustomSetting")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_configure_services_from_file(
         self,
         mock_TethysApp,
         mock_CustomSetting,
+        mock_json_load,
+        mock_open,
         mock_pretty_output,
         mock_find_and_link,
         mock_gas,
@@ -421,6 +425,11 @@ class TestInstallServicesCommands(TestCase):
         invalid_custom_setting_value = "hello world"
         valid_custom_setting_name = "valid_setting"
         valid_custom_setting_value = False
+
+
+        json_custom_setting_name = "json_setting"
+        json_custom_setting_value = {"false_key":"false_value"}
+
         persistent_setting_name = "persistent_setting_name"
         persistent_service_name = "persistent_service_name"
         no_val_persistent_setting_name = "no_val"
@@ -432,6 +441,7 @@ class TestInstallServicesCommands(TestCase):
                 invalid_custom_setting_name: invalid_custom_setting_value,
                 valid_custom_setting_name: valid_custom_setting_value,
                 "custom_setting_dne": 1,
+                json_custom_setting_name:json_custom_setting_value
             },
             "persistent": {
                 persistent_setting_name: persistent_service_name,
@@ -447,6 +457,8 @@ class TestInstallServicesCommands(TestCase):
         # Saving will pass on the valid custom setting (not mocked to raise ValidationError)
         mock_valid_custom_setting = mock.MagicMock(value=None)
 
+        mock_json_custom_setting = mock.MagicMock(value=None, type_custom_setting="JSON")
+
         # Third custom setting listed does not exist
         # CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
         #                     name=setting_name
@@ -454,9 +466,10 @@ class TestInstallServicesCommands(TestCase):
         mock_CustomSetting.objects.filter.return_value.select_subclasses.return_value.get.side_effect = [
             mock_invalid_custom_setting,  #: Save raises Validation error
             mock_valid_custom_setting,  #: Should pass without errors
+            mock_json_custom_setting,
             ObjectDoesNotExist,  #: Setting not found
         ]
-
+        mock_json_load.return_value = '{"fake_json": "{}"}'
         # This persistent setting exists and is listed in the file
         mock_persistent_database_setting = mock.MagicMock()
         mock_persistent_database_setting.name = persistent_setting_name
