@@ -1348,6 +1348,78 @@ class TestInstallCommands(TestCase):
         )
 
 
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","y","/fake/path/to/file","y","/fake/path/to/file"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.json.loads")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
+    def test_interactive_custom_setting_set_json_with_path(self, mock_path_open,mock_pretty_output,mock_json_loads,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "JSON"
+        # mock_cs.save.side_effect = [mock.DEFAULT]
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        mock_json_loads.return_value = mock_path_open.return_value
+        install_commands.run_interactive_services("foo")
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("Enter the desired value", po_call_args[4][0][0])
+        self.assertIn("Incorrect value type", po_call_args[5][0][0])
+        self.assertIn("Enter the desired value", po_call_args[6][0][0])
+        self.assertIn( mock_cs.name + " successfully set", po_call_args[7][0][0])
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","y","/fake/path/to/file"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.install_commands.json.loads")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
+    def test_interactive_custom_setting_set_json_with_not_found_path(self, mock_path_open,mock_pretty_output,mock_json_loads,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "JSON"
+        # mock_cs.save.side_effect = [mock.DEFAULT]
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        mock_json_loads.side_effect = [FileNotFoundError]
+        install_commands.run_interactive_services("foo")
+        
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("Enter the desired value", po_call_args[4][0][0])
+        self.assertIn("The current file path was not found", po_call_args[5][0][0])
+        self.assertEqual(
+            "Skipping setup of "+ mock_cs.name, po_call_args[6][0][0]
+        )
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n","{'fake':'json'}","n","{'fake':'json'}"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
+    def test_interactive_custom_setting_set_json_without_path(self, mock_path_open,mock_pretty_output,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "JSON"
+        # mock_cs.save.side_effect = [mock.DEFAULT]
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        install_commands.run_interactive_services("foo")
+        
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("Enter the desired value", po_call_args[4][0][0])
+        self.assertIn("Please provide a Json string", po_call_args[5][0][0])
+        self.assertIn("Incorrect value type", po_call_args[6][0][0])
+        self.assertIn("Enter the desired value", po_call_args[7][0][0])
+        self.assertIn("Please provide a Json string", po_call_args[8][0][0])
+        self.assertEqual(
+           mock_cs.name + " successfully set with value: {'fake':'json'}.", po_call_args[9][0][0]
+        )
+
+
     @mock.patch("builtins.input", side_effect=[""])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
