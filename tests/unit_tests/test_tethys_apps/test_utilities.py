@@ -5,6 +5,7 @@ from guardian.shortcuts import assign_perm
 
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
+from tethys_apps.models import CustomSetting
 
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
@@ -851,3 +852,94 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         mock_import.return_value = m
         result = utilities.get_all_submodules(m)
         self.assertEqual([m] * 3, result)
+
+
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch("tethys_apps.utilities.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    @mock.patch("tethys_apps.utilities.Path.exists")
+    def test_delete_secrets(self,mock_path_exists,mock_open_file,mock_yaml_safe_load,mock_yaml_dumps):
+
+        app_target_name = 'test_app'
+        mock_path_exists.return_value = True
+        before_content =  {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{
+                        "Secret_Test2_without_required" : "my_first_fake_string"
+                    }
+                },
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {
+                    "custom_settings_salt_strings":{}
+                },
+                "version": "1.0"
+            }
+        }
+
+        mock_yaml_safe_load.return_value = before_content
+        utilities.delete_secrets(app_target_name)
+
+
+        mock_yaml_dumps.assert_called_once_with(after_content,mock_open_file.return_value)
+
+
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch("tethys_apps.utilities.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    @mock.patch("tethys_apps.utilities.Path.exists")
+    def test_delete_secrets_without_app_in_secrets_yml(self,mock_path_exists,mock_open_file,mock_yaml_safe_load,mock_yaml_dumps):
+
+        app_target_name = 'test_app'
+        mock_path_exists.return_value = True
+        before_content =  {
+            "secrets":{
+                
+                "version": "1.0"
+            }
+        }
+
+        after_content = {
+            "secrets":{
+                app_target_name: {},
+                "version": "1.0"
+            }
+        }
+
+        mock_yaml_safe_load.return_value = before_content
+        utilities.delete_secrets(app_target_name)
+
+
+        mock_yaml_dumps.assert_called_once_with(after_content,mock_open_file.return_value)
+
+
+    def test_get_custom_secret_settings(self):
+
+        app_target_name = 'test_app'
+        
+        secret_settings = utilities.get_custom_secret_settings(app_target_name)
+
+        self.assertEqual(len(secret_settings), 2)
+
+    @mock.patch("tethys_apps.models.CustomSetting")
+    def test_get_custom_secret_settings_without_any_secret_setting(self,mock_custom_setting):
+
+        app_target_name = 'test_app'
+        
+        mock_custom_setting.objects.filter.return_value.select_subclasses.return_value.filter.side_effect = CustomSetting.DoesNotExist
+       
+        with self.assertRaises(Exception):
+            # breakpoint()
+            return_val = utilities.get_custom_secret_settings(app_target_name)
+            self.assertEqual(return_val, None)
+
+    def test_get_custom_secret_settings_without_app(self):
+
+        app_target_name = 'test_app2'       
+        return_val = utilities.get_custom_secret_settings(app_target_name)
+        self.assertEqual(return_val, None)

@@ -894,3 +894,135 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error.assert_called()
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
+    
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_gen_salt_strings_command_error_no_apps_and_setting(self,mock_exit, mock_write_success,mock_write_error):
+        mock_arg = mock.MagicMock(app="foo")
+        mock_arg.setting = "ramdom_setting"
+        mock_arg.app = False
+
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_gen_salt_strings_command,
+            mock_arg,
+        )
+        mock_write_error.assert_called_with('Please use the -a or --app flag to specify an application, and then use the -s / --setting flag to specify a setting. Command aborted.')
+        mock_write_success.assert_not_called()
+        mock_exit.assert_called_with(1)
+
+
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_gen_salt_strings_command_error_only_app(self,mock_exit, mock_write_error,mock_write_success):
+        mock_arg = mock.MagicMock(app="foo")
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_gen_salt_strings_command,
+            mock_arg,
+        )
+        mock_write_error.assert_called_with('The app or extension you specified ("foo") does not exist. Command aborted.')
+        mock_write_success.assert_not_called()
+        mock_exit.assert_called_with(1)
+
+    @mock.patch("tethys_cli.app_settings_commands.Path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.call")
+    @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_gen_salt_strings_command_only_app(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+
+        mock_path_exists.return_value = False
+        mock_arg = mock.MagicMock()
+        mock_arg.app = "test_app"
+        mock_arg.setting = False
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_gen_salt_string_for_setting.return_value = mock.MagicMock()
+        
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_gen_salt_strings_command,
+            mock_arg,
+        )
+        mock_write_error.assert_not_called()
+        mock_write_success.assert_called_with('test_app application: ')
+        mock_exit.assert_called_with(0)
+
+
+    @mock.patch("tethys_cli.app_settings_commands.Path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.call")
+    @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_gen_salt_strings_command_only_app_and_setting(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+
+        mock_path_exists.return_value = False
+        mock_arg = mock.MagicMock()
+        mock_arg.app = "test_app"
+        mock_arg.setting = 'Secret_Test2_without_required'
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_gen_salt_string_for_setting.return_value = mock.MagicMock()
+        
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_gen_salt_strings_command,
+            mock_arg,
+        )
+        mock_write_error.assert_not_called()
+        mock_write_success.assert_called_with('test_app application: ')
+        mock_exit.assert_called_with(0)
+
+    @mock.patch("tethys_cli.app_settings_commands.Path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.call")
+    @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_gen_salt_strings_command_error_with_setting_and_app(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+
+        mock_path_exists.return_value = False
+        mock_arg = mock.MagicMock()
+        mock_arg.app = "test_app"
+        mock_arg.setting = "fake_setting"
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_gen_salt_string_for_setting.return_value = mock.MagicMock()
+    
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_gen_salt_strings_command,
+            mock_arg,
+        )
+        mock_write_error.assert_called_with(f'No custom settings with the name {mock_arg.setting} for the {mock_arg.app} exits.')
+        self.assertEqual(mock_write_success.call_count, 1)
+        mock_exit.assert_called_with(1)
+
+    @mock.patch("tethys_cli.app_settings_commands.Path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.call")
+    @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_gen_salt_strings_command_all_apps(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+        mock_arg = mock.MagicMock()
+        mock_arg.app = False
+        mock_arg.setting = False
+        mock_path_exists.return_value = False
+
+        mock_subprocess_call.return_value = mock.MagicMock()
+        mock_gen_salt_string_for_setting.return_value = mock.MagicMock()
+        
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_gen_salt_strings_command,
+            mock_arg
+        )
+        mock_write_error.assert_not_called()
+        self.assertEqual(mock_write_success.call_count, 1)
+        mock_exit.assert_called_with(0)
+
+    
+

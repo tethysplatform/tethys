@@ -366,7 +366,7 @@ def app_settings_gen_salt_strings_command(args):
         CustomSetting,
         TethysExtension
     )
-   
+    
     list_apps = []
     list_settings = []
     if not args.app and args.setting:
@@ -374,31 +374,24 @@ def app_settings_gen_salt_strings_command(args):
             'Please use the -a or --app flag to specify an application, and then use the -s / --setting flag to specify a setting. Command aborted.'
         )
         exit(1) 
-    try:
-        if args.app:
+    
+    if args.app:
+        try:
+            list_apps.append(TethysApp.objects.get(package=args.app))
+        except ObjectDoesNotExist:
             try:
-                list_apps.append(TethysApp.objects.get(package=args.app))
+                # Fail silently if the object is an Extension
+                TethysExtension.objects.get(package=args.app)
             except ObjectDoesNotExist:
-                try:
-                    # Fail silently if the object is an Extension
-                    app = TethysApp.objects.get(package=args.app)
-                    TethysExtension.objects.get(package=app)
-                except ObjectDoesNotExist:
-                    # Write an error if the object is not a TethysApp or Extension
-                    write_error(
-                        'The app or extension you specified ("{0}") does not exist. Command aborted.'.format(
-                            args.app
-                        )
+                # Write an error if the object is not a TethysApp or Extension
+                write_error(
+                    'The app or extension you specified ("{0}") does not exist. Command aborted.'.format(
+                        args.app
                     )
-                    exit(1)
-            
-   
-        else:
-            list_apps = TethysApp.objects.all()
-    except Exception as e:
-        write_error(str(e))
-        write_error("Something went wrong. Please try again.")
-        exit(1)
+                )
+                exit(1)
+    else:
+        list_apps = TethysApp.objects.all()
 
     for app in list_apps:
 
@@ -407,6 +400,7 @@ def app_settings_gen_salt_strings_command(args):
             f'{app_name} application: '
         )
         if args.setting:
+            
             list_settings.append(get_custom_setting(app.package,args.setting))
             if not list_settings[0]:
                 write_error(
