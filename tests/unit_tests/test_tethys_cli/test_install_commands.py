@@ -414,8 +414,8 @@ class TestInstallServicesCommands(TestCase):
         self,
         mock_TethysApp,
         mock_CustomSetting,
-        mock_json_load,
         mock_open,
+        mock_json_load,
         mock_pretty_output,
         mock_find_and_link,
         mock_gas,
@@ -428,8 +428,14 @@ class TestInstallServicesCommands(TestCase):
 
 
         json_custom_setting_name = "json_setting"
-        json_custom_setting_value = {"false_key":"false_value"}
+        json_custom_setting_value = "fake/path/to/file"
 
+        json_custom_setting_wrong_path_name = "wrong_path_json_setting"
+        json_custom_setting_wrong_path_value = {"fake_json": "fake_value"}
+
+        secret_custom_setting_name = "secret_setting"
+        secret_custom_setting_value = "SECRET:XXXX235235RSDGSDGAF_23523"
+        
         persistent_setting_name = "persistent_setting_name"
         persistent_service_name = "persistent_service_name"
         no_val_persistent_setting_name = "no_val"
@@ -441,7 +447,9 @@ class TestInstallServicesCommands(TestCase):
                 invalid_custom_setting_name: invalid_custom_setting_value,
                 valid_custom_setting_name: valid_custom_setting_value,
                 "custom_setting_dne": 1,
-                json_custom_setting_name:json_custom_setting_value
+                json_custom_setting_name:json_custom_setting_value,
+                json_custom_setting_wrong_path_name: json_custom_setting_wrong_path_value,
+                secret_custom_setting_name:secret_custom_setting_value
             },
             "persistent": {
                 persistent_setting_name: persistent_service_name,
@@ -451,13 +459,20 @@ class TestInstallServicesCommands(TestCase):
         }
 
         # Saving raises a validation error
-        mock_invalid_custom_setting = mock.MagicMock(value=None)
+        mock_invalid_custom_setting = mock.MagicMock(value=None,type_custom_setting="SIMPLE")
         mock_invalid_custom_setting.save.side_effect = ValidationError("error")
 
         # Saving will pass on the valid custom setting (not mocked to raise ValidationError)
-        mock_valid_custom_setting = mock.MagicMock(value=None)
+        mock_valid_custom_setting = mock.MagicMock(value=None,type_custom_setting="SIMPLE")
 
+        # Json setting with correct path
         mock_json_custom_setting = mock.MagicMock(value=None, type_custom_setting="JSON")
+
+        # Json setting with incorrect path, but valid json
+        mock_json_custom_setting_wrong_path = mock.MagicMock(value=None, type_custom_setting="JSON")
+
+        # valid custom Secret setting 
+        mock_secret_custom_setting = mock.MagicMock(value=None, type_custom_setting="SECRET")
 
         # Third custom setting listed does not exist
         # CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
@@ -466,10 +481,15 @@ class TestInstallServicesCommands(TestCase):
         mock_CustomSetting.objects.filter.return_value.select_subclasses.return_value.get.side_effect = [
             mock_invalid_custom_setting,  #: Save raises Validation error
             mock_valid_custom_setting,  #: Should pass without errors
-            mock_json_custom_setting,
             ObjectDoesNotExist,  #: Setting not found
+            mock_json_custom_setting,
+            mock_json_custom_setting_wrong_path,
+            mock_secret_custom_setting
         ]
+
+        mock_open.side_effect = (mock_open.return_value, FileNotFoundError,)
         mock_json_load.return_value = '{"fake_json": "{}"}'
+
         # This persistent setting exists and is listed in the file
         mock_persistent_database_setting = mock.MagicMock()
         mock_persistent_database_setting.name = persistent_setting_name
@@ -495,10 +515,11 @@ class TestInstallServicesCommands(TestCase):
                 mock_setting_already_linked,  #: This setting is already linked, and so it won't be configured again
             ],
         }
-
         install_commands.configure_services_from_file(services_file_contents, app_name)
         
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        breakpoint()
+
         self.assertIn(
             f"Incorrect value type given for custom setting '{invalid_custom_setting_name}'",
             po_call_args[0][0][0],
@@ -512,12 +533,31 @@ class TestInstallServicesCommands(TestCase):
             'Custom setting named "custom_setting_dne" could not be found in app "foo". Skipping...',
             po_call_args[2][0][0],
         )
+        
         self.assertEqual(
-            f'No service given for setting "{no_val_persistent_setting_name}". Skipping...',
+            'CustomSetting: "json_setting" was assigned the value: "fake/path/to/file"',
             po_call_args[3][0][0],
         )
+
+        self.assertEqual(
+            'The current file path was not found, assuming you provided a valid JSON',
+            po_call_args[4][0][0],
+        )
+        self.assertEqual(
+            'CustomSetting: "wrong_path_json_setting" was assigned the value: "{\'fake_json\': \'fake_value\'}"',
+            po_call_args[5][0][0],
+        )
+        self.assertEqual(
+            'CustomSetting: "secret_setting" was assigned the value: "SECRET:XXXX235235RSDGSDGAF_23523"',
+            po_call_args[6][0][0],
+        )
+        
+        self.assertEqual(
+            f'No service given for setting "{no_val_persistent_setting_name}". Skipping...',
+            po_call_args[7][0][0],
+        )
         self.assertIn(
-            "already configured or does not exist in app", po_call_args[4][0][0]
+            "already configured or does not exist in app", po_call_args[8][0][0]
         )
 
         mock_find_and_link.assert_called_with(

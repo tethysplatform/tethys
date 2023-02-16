@@ -516,6 +516,7 @@ def configure_services_from_file(services, app_name):
                 
                 if service_type == "custom_settings":                    
                     try:
+                        
                         custom_setting = CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
                             name=setting_name
                         )
@@ -537,7 +538,8 @@ def configure_services_from_file(services, app_name):
                                 write_warning(
                                     f'The current file path was not found, assuming you provided a valid JSON'
                                 )
-                        custom_setting.value = current_services[setting_name]
+                        else:
+                            custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
                         write_success(
