@@ -270,10 +270,9 @@ def get_custom_secret_settings(app_package):
         app = TethysApp.objects.get(package=app_package)
     except TethysApp.DoesNotExist:
         return None
-    try:
-        settings = CustomSetting.objects.filter(tethys_app=app).select_subclasses().filter(type_custom_setting="SECRET")
-    except CustomSetting.DoesNotExist:
-        return None
+    
+    settings = CustomSetting.objects.filter(tethys_app=app).select_subclasses().filter(type_custom_setting="SECRET")
+
 
     return settings
 

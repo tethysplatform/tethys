@@ -7,7 +7,8 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from tethys_apps.models import CustomSetting
 
-
+from django.core.exceptions import ObjectDoesNotExist
+from tethys_apps.exceptions import TethysAppSettingDoesNotExist
 class TethysAppsUtilitiesTests(unittest.TestCase):
     def setUp(self):
         pass
@@ -926,17 +927,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
 
         self.assertEqual(len(secret_settings), 2)
 
-    @mock.patch("tethys_apps.models.CustomSetting")
-    def test_get_custom_secret_settings_without_any_secret_setting(self,mock_custom_setting):
-
-        app_target_name = 'test_app'
-        
-        mock_custom_setting.objects.filter.return_value.select_subclasses.return_value.filter.side_effect = CustomSetting.DoesNotExist
-       
-        with self.assertRaises(Exception):
-            # breakpoint()
-            return_val = utilities.get_custom_secret_settings(app_target_name)
-            self.assertEqual(return_val, None)
 
     def test_get_custom_secret_settings_without_app(self):
 

@@ -518,8 +518,7 @@ class TestInstallServicesCommands(TestCase):
         install_commands.configure_services_from_file(services_file_contents, app_name)
         
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        breakpoint()
-
+        
         self.assertIn(
             f"Incorrect value type given for custom setting '{invalid_custom_setting_name}'",
             po_call_args[0][0][0],
