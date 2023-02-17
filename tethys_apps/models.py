@@ -245,6 +245,33 @@ class CustomSetting(TethysAppSetting):
 
 
 class CustomSecretSetting(CustomSetting):
+    """
+    Used to define a Custom Secret Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import CustomSecretSetting
+
+        default_name_setting = CustomSecretSetting(
+            name='Github_Token',
+            description='Github repository secret token',
+            required=True,
+        )
+
+        max_count_setting = CustomSecretSetting(
+            name='Anaconda_Token',
+            description='Anaconda Organization secret token',
+            required=False
+        )
+    """  # noqa: E501
+
     value = models.CharField(max_length=1024, blank=True, default="")
     def clean(self):
         """
@@ -263,7 +290,7 @@ class CustomSecretSetting(CustomSetting):
         if self.value == "" and self.required:
             raise ValidationError("Required.")
         if self.value != "" :
-            # try:
+            
             TETHYS_HOME = get_tethys_home_dir()
             signer = Signer()
             if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
@@ -280,12 +307,6 @@ class CustomSecretSetting(CustomSetting):
                                     if app_custom_setting_salt_string != '':
                                         signer = Signer(salt=app_custom_setting_salt_string)
                                     
-                        #             self.value = signer.sign_object(self.value)
-                        #         else:
-                        #             self.value = signer.sign_object(self.value)
-                        #     else:
-                        #         self.value = signer.sign_object(self.value)
-                        # else:
                         self.value = signer.sign_object(self.value)
 
                     else:
@@ -293,13 +314,10 @@ class CustomSecretSetting(CustomSetting):
                             "There is not a an apps portion in the secrets.yml, please create one."
                         )
                         self.value = signer.sign_object(self.value)
-
-            # except Exception:
-            #     raise ValidationError("Validation Error for Secret Custom Setting")
         
     def get_value(self):
         """
-        Get the value, automatically casting it to the correct type.
+        Get the value
         """
         if self.value == "" or self.value is None:
             if self.required:
@@ -328,18 +346,7 @@ class CustomSecretSetting(CustomSetting):
                                 app_custom_setting_salt_string = app_specific_settings[self.name]
                                 if app_custom_setting_salt_string != '':
                                     signer = Signer(salt=app_custom_setting_salt_string)
-                    #             secret_unsigned= signer.unsign_object(f'{self.value}')
-                    #         else:
-                    #             secret_unsigned = signer.unsign_object(f'{self.value}')
-                    #     else:
-                    #         log.info(
-                    #             "There is not a custom_settings_salt_strings portion in the secrets.yml for the required app."
-                    #         )
-                    #         secret_unsigned = signer.unsign_object(f'{self.value}')
-                    # else:
-                    #     log.info(
-                    #         "There is not an apps portion in the secrets.yml."
-                    #     )
+  
                     secret_unsigned = signer.unsign_object(f'{self.value}')
                 
         except signing.BadSignature:
@@ -353,7 +360,7 @@ class CustomSecretSetting(CustomSetting):
 
 class CustomSimpleSetting(CustomSetting):
     """
-    Used to define a Custom Setting.
+    Used to define a Custom Simple Setting.
 
     Attributes:
         name(str): Unique name used to identify the setting.
@@ -366,9 +373,9 @@ class CustomSimpleSetting(CustomSetting):
 
     ::
 
-        from tethys_sdk.app_settings import CustomSetting
+        from tethys_sdk.app_settings import CustomSimpleSetting
 
-        default_name_setting = CustomSetting(
+        default_name_setting = CustomSimpleSetting(
             name='default_name',
             type=CustomSetting.TYPE_STRING
             description='Default model name.',
@@ -376,28 +383,28 @@ class CustomSimpleSetting(CustomSetting):
             default="Name_123"
         )
 
-        max_count_setting = CustomSetting(
+        max_count_setting = CustomSimpleSetting(
             name='max_count',
             type=CustomSetting.TYPE_INTEGER,
             description='Maximum allowed count in a method.',
             required=False
         )
 
-        change_factor_setting = CustomSetting(
+        change_factor_setting = CustomSimpleSetting(
             name='change_factor',
             type=CustomSetting.TYPE_FLOAT,
             description='Change factor that is applied to some process.',
             required=True
         )
 
-        enable_feature_setting = CustomSetting(
+        enable_feature_setting = CustomSimpleSetting(
             name='enable_feature',
             type=CustomSetting.TYPE_BOOLEAN,
             description='Enable this feature when True.',
             required=True
         )
 
-        feature_id_setting = CustomSetting(
+        feature_id_setting = CustomSimpleSetting(
             name='feature_id',
             type=CustomSetting.TYPE_UUID,
             description='Feature ID.',
@@ -494,6 +501,42 @@ class CustomSimpleSetting(CustomSetting):
             return uuid.UUID(self.value)
 
 class CustomJSONSetting(CustomSetting):
+    """
+    Used to define a Custom Json Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+        default(str): Value as a string that may be provided as a default.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import CustomSimpleSetting
+
+        json_setting_1 = CustomJSONSetting(
+            name='JSON_setting_default_value_required',
+            description='This is JSON setting with a default value',
+            required=True,
+            default={"Test":"JSON test String"}
+        )
+
+        json_setting_2 = CustomJSONSetting(
+            name='JSON_setting_default_value',
+            description='This is JSON setting with a default value',
+            required=False,
+            default={"Test":"JSON test String"}
+        )
+
+        json_setting_3 = CustomJSONSetting(
+            name='JSON_setting_not_default_value',
+            description='This is JSON setting without a default value',
+            required=False,
+        )
+
+    """  # noqa: E501    
     value = models.JSONField(blank=True, default=dict)
     default = models.JSONField(blank=True, default=dict)
     def clean(self):
@@ -517,7 +560,7 @@ class CustomJSONSetting(CustomSetting):
 
     def get_value(self):
         """
-        Get the value, automatically casting it to the correct type.
+        Get the value
         """
         
 
@@ -542,12 +585,12 @@ class CustomJSONSetting(CustomSetting):
 @receiver(models.signals.post_init, sender=CustomJSONSetting)
 def set_default_value(sender, instance, *args, **kwargs):
     """
-    Set the default value for `value` on the `instance` of Setting.
+    Set the default value for `value` on the `instance` of a Custom Simple and Json Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+        sender(CustomSetting): The `CustomSimpleSetting`/`CustomJSONSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSetting`/`CustomJSONSetting` instance that is being initialised.
 
     Returns:
         None
@@ -559,12 +602,12 @@ def set_default_value(sender, instance, *args, **kwargs):
 @receiver(models.signals.post_init, sender=CustomSimpleSetting)
 def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
     """
-    Set the default value for `value` on the `instance` of Setting.
+    Set the default value for `value` on the `instance` of Custom Simple Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+        sender(CustomSetting): The `CustomSimpleSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSimpleSetting` instance that is being initialised.
 
     Returns:
         None
@@ -575,12 +618,12 @@ def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
 @receiver(models.signals.post_init, sender=CustomSecretSetting)
 def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
     """
-    Set the default value for `value` on the `instance` of Setting.
+    Set the default value for `value` on the `instance` of Custom Secret Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+        sender(CustomSetting): The `CustomSecretSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSecretSetting` instance that is being initialised.
 
     Returns:
         None
@@ -592,12 +635,12 @@ def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
 @receiver(models.signals.post_init, sender=CustomJSONSetting)
 def set_default_custom_json_setting_type(sender, instance, *args, **kwargs):
     """
-    Set the default value for `value` on the `instance` of Setting.
+    Set the default value for `value` on the `instance` of Custom JSON Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+        sender(CustomSetting): The `CustomJSONSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomJSONSetting` instance that is being initialised.
 
     Returns:
         None

@@ -263,7 +263,15 @@ def get_custom_setting(app_package, setting_name):
     return setting
 
 def get_custom_secret_settings(app_package):
+    """
+    Get the  Custom Secret Settings for a specified TethysApp.
 
+    Args:
+        app_package (str): The name/package of the TethysApp.
+
+    Returns:
+        InheritanceQuerySet: A Inheritance Query Set containing Custom Secret Settings, None if the TethysApp, or an empty Inheritance Query Set if the app does not have any CustomSecretSetting.
+    """
     from tethys_apps.models import TethysApp, CustomSetting
 
     try:
