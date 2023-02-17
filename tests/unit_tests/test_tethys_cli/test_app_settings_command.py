@@ -550,9 +550,10 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_json_with_file(
-        self, mock_exit, mock_write_error, mock_write_success, mock_path_exist,mock_open
+        self, mock_exit,mock_pretty_output, mock_write_error, mock_write_success, mock_path_exist,mock_open
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -568,8 +569,10 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
             cli_app_settings_command.app_settings_set_command,
             mock_args_json,
         )
-        mock_write_error.assert_not_called()
         mock_write_success.assert_called()
+        mock_write_error.assert_not_called()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("File found, extracting Json data", po_call_args[0][0][0])
         mock_exit.called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
@@ -677,7 +680,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_json_from_variable(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit,mock_write_error, mock_write_success
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -690,22 +693,24 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_called()
         mock_write_success.assert_not_called()
+    
         mock_exit.assert_called_with(1)
 
     @mock.patch("tethys_cli.app_settings_commands.open", new_callable=mock.mock_open, read_data='2')
     @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_json_with_file(
-        self, mock_exit, mock_write_error, mock_write_success, mock_path_exist,mock_open
+        self, mock_exit,mock_pretty_output, mock_write_error, mock_write_success, mock_path_exist,mock_open
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
         mock_path_exist.return_value = True
-        fake_path = "/user/xxxx/foo/bear/ursa"
+        fake_path = "/path/to/file/that/is/fake"
         mock_args_json = mock.MagicMock(
-            app="test_app", setting="JSON_setting_not_default_value", value=json.dumps(fake_path)
+            app="test_app", setting="JSON_setting_not_default_value", value= fake_path
         )
 
         self.assertRaises(
@@ -715,8 +720,9 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_called()
         mock_write_success.assert_not_called()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("File found, extracting Json data", po_call_args[0][0][0])
         mock_exit.called_with(1)
-
 
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
@@ -912,7 +918,6 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
-
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
@@ -932,10 +937,11 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
-    def test_app_settings_gen_salt_strings_command_only_app(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+    def test_app_settings_gen_salt_strings_command_only_app(self,mock_exit, mock_pretty_output, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
 
-        mock_path_exists.return_value = False
+        mock_path_exists.side_effect = [False,True]
         mock_arg = mock.MagicMock()
         mock_arg.app = "test_app"
         mock_arg.setting = False
@@ -949,16 +955,19 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called_with('test_app application: ')
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("No secrets.yml found. Generating one...", po_call_args[0][0][0])
+        self.assertIn("secrets file generated.", po_call_args[1][0][0])
         mock_exit.assert_called_with(0)
-
 
     @mock.patch("tethys_cli.app_settings_commands.Path.exists")
     @mock.patch("tethys_cli.app_settings_commands.call")
     @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
-    def test_app_settings_gen_salt_strings_command_only_app_and_setting(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+    def test_app_settings_gen_salt_strings_command_only_app_and_setting(self,mock_exit,mock_pretty_output, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
 
         mock_path_exists.return_value = False
         mock_arg = mock.MagicMock()
@@ -974,6 +983,9 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called_with('test_app application: ')
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("No secrets.yml found. Generating one...", po_call_args[0][0][0])
+        self.assertIn("secrets file generated.", po_call_args[1][0][0])
         mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.Path.exists")
@@ -981,8 +993,9 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
-    def test_app_settings_gen_salt_strings_command_error_with_setting_and_app(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+    def test_app_settings_gen_salt_strings_command_error_with_setting_and_app(self,mock_exit, mock_pretty_output, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
 
         mock_path_exists.return_value = False
         mock_arg = mock.MagicMock()
@@ -1005,13 +1018,13 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
-    def test_app_settings_gen_salt_strings_command_all_apps(self,mock_exit, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
+    def test_app_settings_gen_salt_strings_command_all_apps(self,mock_exit, mock_pretty_output, mock_write_success,mock_write_error,mock_gen_salt_string_for_setting, mock_subprocess_call,mock_path_exists):
         mock_arg = mock.MagicMock()
         mock_arg.app = False
         mock_arg.setting = False
-        mock_path_exists.return_value = False
-
+        mock_path_exists.side_effect = [False,True]
         mock_subprocess_call.return_value = mock.MagicMock()
         mock_gen_salt_string_for_setting.return_value = mock.MagicMock()
         
@@ -1022,6 +1035,10 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         self.assertEqual(mock_write_success.call_count, 1)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("No secrets.yml found. Generating one...", po_call_args[0][0][0])
+        self.assertIn("secrets file generated.", po_call_args[1][0][0])
         mock_exit.assert_called_with(0)
 
     

@@ -1325,7 +1325,6 @@ class TestInstallCommands(TestCase):
         install_commands.run_interactive_services("foo")
 
         mock_yml_dump.assert_called_once_with(after_content,mock_path_open.return_value)
-        # breakpoint()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
         self.assertIn("Type", po_call_args[3][0][0])
