@@ -239,9 +239,15 @@ def app_settings_set_command(args):
                     
                 setting.value = value_json
             else:
-                setting.value = json.loads(actual_value)
+                try:
+                    setting.value = json.loads(actual_value)
+                except json.decoder.JSONDecodeError:
+                    write_error(
+                        f'Please enclose the json in single quotes'
+                    )
+                    exit(1)
+
         else:
-            
             setting.value = actual_value
         
         setting.clean()

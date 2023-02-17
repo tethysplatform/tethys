@@ -4,7 +4,7 @@ from unittest import mock
 import tethys_cli.cli_helpers as cli_helper
 from tethys_apps.models import TethysApp, CustomSecretSetting
 from tethys_apps.utilities import get_tethys_home_dir
-from django.core.signing import Signer
+from django.core.signing import Signer, BadSignature
 
 class TestCliHelper(unittest.TestCase):
     def setUp(self):
@@ -229,3 +229,34 @@ class TestCliHelper(unittest.TestCase):
         mock_write_success.assert_called()
         self.assertEqual(mock_write_warning.call_count, 2)
         self.assertEqual(custom_secret_setting.get_value(), "SECRETXX1Y")
+
+    @mock.patch("tethys_cli.cli_helpers.write_error")
+    @mock.patch("tethys_cli.cli_helpers.write_warning")
+    @mock.patch("django.core.signing.Signer.unsign_object")
+    @mock.patch("tethys_cli.cli_helpers.yaml.safe_load")
+    @mock.patch("tethys_cli.cli_helpers.generate_salt_string")
+    @mock.patch("tethys_cli.cli_helpers.Path.open", new_callable=lambda: mock.mock_open( read_data='{"secrets": "{}"}') )
+    def test_gen_salt_string_for_setting_with_secrets_deleted_or_changed(self,mock_open_file,mock_salt_string,mock_yaml_safe_load,mock_signing,mock_write_warning,mock_write_error):
+
+        mock_salt_string.return_value.decode.return_value = "my_fake_string"
+
+        
+        before_content =  {
+            "secrets":{
+                "version": "1.0"
+            }
+        }
+
+        custom_secret_setting = self.test_app.settings_set.select_subclasses().get(
+            name="Secret_Test2_without_required"
+        )
+        custom_secret_setting.value = "SECRETXX1Y"
+        custom_secret_setting.clean()
+        custom_secret_setting.save()
+
+        mock_yaml_safe_load.return_value = before_content
+        mock_signing.side_effect = BadSignature
+        cli_helper.gen_salt_string_for_setting("test_app", custom_secret_setting)
+
+        self.assertEqual(mock_write_warning.call_count, 3)
+        mock_write_error.assert_called()

@@ -5,7 +5,7 @@ import bcrypt
 import yaml
 
 import django
-from django.core.signing import Signer
+from django.core.signing import Signer, BadSignature
 from pathlib import Path
 
 from tethys_apps.base.testing.environment import set_testing_environment
@@ -90,8 +90,16 @@ def gen_salt_string_for_setting(app_name,setting):
         if setting.name in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]:
             last_salt_string = secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name]
             signer = Signer(salt=last_salt_string)
-
-        secret_unsigned= signer.unsign_object(f'{setting.value}')
+        try:
+            secret_unsigned= signer.unsign_object(f'{setting.value}')
+        except BadSignature:
+            write_error(
+                f'The salt string for the setting {setting.name} in the app {app_name} can not be generated in the secrets.yml because, the salt string for the setting in the secrets.yml was changed/deleted'
+            )
+            write_warning(
+                'Please enter the secret custom settings in the application settings again'
+            )
+            return 
         salt_string = generate_salt_string().decode()
         secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
         with secret_yaml_file.open("w") as secret_yaml:

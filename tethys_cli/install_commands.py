@@ -390,7 +390,8 @@ def run_interactive_services(app_name):
                             write_msg(
                                 f'Please provide a Json string (e.g: {data_JSON_example})'
                             )
-                            value = get_interactive_input()
+                            value = json.loads(get_interactive_input())
+                            
                     else:
                         if setting.type_custom_setting != "SECRET":
                             value = get_interactive_input()
@@ -399,6 +400,7 @@ def run_interactive_services(app_name):
                     if value != "":
                         
                         try:
+                            
                             setting.value = value
                             setting.clean()
                             setting.save()
@@ -533,6 +535,8 @@ def configure_services_from_file(services, app_name):
                             try:
                                 with open(current_services[setting_name]) as json_file:
                                         custom_setting.value = json.load(json_file)
+                            except TypeError:
+                                custom_setting.value = current_services[setting_name]        
                             except FileNotFoundError:
                                 custom_setting.value = current_services[setting_name]
                                 write_warning(
