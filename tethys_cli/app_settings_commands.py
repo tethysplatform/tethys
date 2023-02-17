@@ -230,7 +230,6 @@ def app_settings_set_command(args):
     try:
         value_json = '{}'
         if setting.type_custom_setting == "JSON":
-            # breakpoint()
             if os.path.exists(actual_value):
                 with open(actual_value) as json_file:
                     write_warning(
@@ -407,7 +406,7 @@ def app_settings_gen_salt_strings_command(args):
                 exit(1) 
         else:
             list_settings = CustomSetting.objects.filter(tethys_app=app).filter(type_custom_setting="SECRET").select_subclasses()
-        # breakpoint()
+        
         for setting in list_settings:
  
             secret_yaml_file = TETHYS_HOME / "secrets.yml"

@@ -92,7 +92,6 @@ class CustomSettingTests(TethysTestCase):
         custom_setting = self.test_app.settings_set.select_subclasses().get(
             name="default_name"
         )
-        # breakpoint()
         custom_setting.value = "test"
         custom_setting.type = "BOOLEAN"
         custom_setting.save()
@@ -406,7 +405,6 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.value = {"secret_key":"secret_value"}
         mock_json_dumps.side_effect = [TypeError]
         with self.assertRaises(ValidationError):
-            # breakpoint()
             custom_setting.clean()
 
     def test_get_value_json_with_default(self):

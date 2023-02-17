@@ -594,7 +594,6 @@ def delete_secrets(app_name):
     TETHYS_HOME = Path(get_tethys_home_dir())
     secrets_yaml_file = TETHYS_HOME / "secrets.yml"
     portal_secrets = {}
-    # breakpoint()
     if secrets_yaml_file.exists():
         with secrets_yaml_file.open("r") as secrets_yaml:
             portal_secrets = yaml.safe_load(secrets_yaml) or {}

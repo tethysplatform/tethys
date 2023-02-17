@@ -518,7 +518,6 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
-        # breakpoint()
         test_json = {
             "maxRunDistance": "float;1;20;1",
             "cpf": "cpf",
@@ -557,7 +556,6 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
-        # breakpoint()
         mock_path_exist.return_value = True
         fake_path = "/user/xxxx/foo/bear/ursa"
         mock_args_json = mock.MagicMock(

@@ -314,7 +314,6 @@ class CustomSecretSetting(CustomSetting):
         TETHYS_HOME = get_tethys_home_dir()
         signer = Signer()
         secret_unsigned = ''
-        # breakpoint()
 
         try:
             if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):

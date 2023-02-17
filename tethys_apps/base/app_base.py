@@ -1096,7 +1096,7 @@ class TethysAppBase(TethysBase):
 
         """
         from tethys_apps.models import TethysApp
-        # breakpoint()
+
         db_app = TethysApp.objects.get(package=cls.package)
         custom_settings = db_app.custom_settings
         try:

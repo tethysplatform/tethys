@@ -790,7 +790,6 @@ class TestTethysAppBase(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test_set_custom_setting(self, mock_app):
-        # breakpoint()
         setting_name = "fake_setting"
         mock_save = mock.MagicMock()
         mock_app.objects.get().custom_settings.get.side_effect = [
