@@ -328,7 +328,6 @@ def run_interactive_services(app_name):
                         write_msg(
                             "secrets file generated."
                         )
-                    msge = "No salt string generated, using default for encryption"   
                     if secrets_yaml_file.exists():
                         with secrets_yaml_file.open("r") as secrets_yaml:
                             portal_secrets = yaml.safe_load(secrets_yaml) or {}
@@ -345,6 +344,7 @@ def run_interactive_services(app_name):
                                 salt_string = generate_salt_string().decode()
                                 portal_secrets["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
                                 msge = "Successfully created salt string for {0} Secret Custom Setting!".format(setting.name)
+                                write_msg(msge)
                             else:
                                 if setting.name in portal_secrets["secrets"][app_name]["custom_settings_salt_strings"]:
                                     
@@ -354,7 +354,7 @@ def run_interactive_services(app_name):
                                 write_msg(
                                     f'custom_settings_salt_strings created for setting: {setting.name} in app {app_name}'
                                 )
-                    p.write(msge)
+         
                     
         if hasattr(setting, "value"):
             while not valid:

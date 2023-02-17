@@ -1215,13 +1215,13 @@ class TestInstallCommands(TestCase):
         self.assertIn("Type", po_call_args[3][0][0])
         self.assertIn("No secrets.yml found", po_call_args[4][0][0])
         self.assertIn("secrets file generated", po_call_args[5][0][0])
-        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[6][0][0])
-
-        self.assertIn("Enter the desired value", po_call_args[7][0][0])
-        self.assertIn("Incorrect value type", po_call_args[8][0][0])
-        self.assertIn("Enter the desired value", po_call_args[9][0][0])
+        self.assertIn("Successfully created salt string for", po_call_args[6][0][0])
+        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[7][0][0])
+        self.assertIn("Enter the desired value", po_call_args[8][0][0])
+        self.assertIn("Incorrect value type", po_call_args[9][0][0])
+        self.assertIn("Enter the desired value", po_call_args[10][0][0])
         self.assertEqual(
-            mock_cs.name + " successfully set", po_call_args[10][0][0]
+            mock_cs.name + " successfully set", po_call_args[11][0][0]
         )
 
     @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","y"])
@@ -1274,13 +1274,15 @@ class TestInstallCommands(TestCase):
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
         self.assertIn("Type", po_call_args[3][0][0])
         self.assertIn("No custom_settings_salt_strings", po_call_args[4][0][0])
-        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[5][0][0])
+        self.assertIn("Successfully created salt string for", po_call_args[5][0][0])
+        
+        self.assertIn("custom_settings_salt_strings created for setting", po_call_args[6][0][0])
 
-        self.assertIn("Enter the desired value", po_call_args[6][0][0])
-        self.assertIn("Incorrect value type", po_call_args[7][0][0])
-        self.assertIn("Enter the desired value", po_call_args[8][0][0])
+        self.assertIn("Enter the desired value", po_call_args[7][0][0])
+        self.assertIn("Incorrect value type", po_call_args[8][0][0])
+        self.assertIn("Enter the desired value", po_call_args[9][0][0])
         self.assertEqual(
-            mock_cs.name + " successfully set", po_call_args[9][0][0]
+            mock_cs.name + " successfully set", po_call_args[10][0][0]
         )
 
     @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n"])
