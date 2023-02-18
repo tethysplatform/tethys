@@ -230,6 +230,7 @@ def app_settings_set_command(args):
     try:
         value_json = '{}'
         if setting.type_custom_setting == "JSON":
+            # breakpoint()
             if os.path.exists(actual_value):
                 with open(actual_value) as json_file:
                     write_warning(

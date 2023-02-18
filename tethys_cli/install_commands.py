@@ -390,8 +390,13 @@ def run_interactive_services(app_name):
                             write_msg(
                                 f'Please provide a Json string (e.g: {data_JSON_example})'
                             )
-                            value = json.loads(get_interactive_input())
-                            
+                            try:
+                                
+                                value = json.loads(get_interactive_input())
+                            except json.decoder.JSONDecodeError:
+                                write_msg(
+                                    f'Invalid Json provided'
+                                )  
                     else:
                         if setting.type_custom_setting != "SECRET":
                             value = get_interactive_input()

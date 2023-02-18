@@ -514,7 +514,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_json_with_variable(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit,mock_write_error, mock_write_success
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -544,7 +544,32 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
         mock_exit.called_with(0)
-    
+
+        
+    @mock.patch("tethys_cli.app_settings_commands.write_success")
+    @mock.patch("tethys_cli.app_settings_commands.write_error")
+    @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    def test_app_settings_set_json_with_variable_error(
+        self, mock_exit,mock_write_error, mock_write_success
+    ):
+        """Test against the installed test app."""
+        # JSON Custom Setting
+        test_json = "{'cpf': 'cpf'}"
+
+        mock_args_json = mock.MagicMock(
+            app="test_app", setting="JSON_setting_not_default_value", value=test_json
+        )
+        
+        self.assertRaises(
+            SystemExit,
+            cli_app_settings_command.app_settings_set_command,
+            mock_args_json,
+        )
+
+        mock_write_error.assert_called_with('Please enclose the json in single quotes')
+        mock_write_success.assert_not_called()
+        mock_exit.called_with(1)
+
     @mock.patch("tethys_cli.app_settings_commands.open", new_callable=mock.mock_open, read_data='{"key_test":"value_test"}')
     @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
     @mock.patch("tethys_cli.app_settings_commands.write_success")

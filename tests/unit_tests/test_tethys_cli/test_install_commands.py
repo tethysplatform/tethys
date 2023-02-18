@@ -429,10 +429,14 @@ class TestInstallServicesCommands(TestCase):
 
         json_custom_setting_name = "json_setting"
         json_custom_setting_value = "fake/path/to/file"
+        
 
         json_custom_setting_wrong_path_name = "wrong_path_json_setting"
         json_custom_setting_wrong_path_value = {"fake_json": "fake_value"}
+        json_custom_setting_type_error_name = "type_error_json_setting"
+        json_custom_setting_type_error_value = {"json": "value"}
 
+        
         secret_custom_setting_name = "secret_setting"
         secret_custom_setting_value = "SECRET:XXXX235235RSDGSDGAF_23523"
         
@@ -449,6 +453,7 @@ class TestInstallServicesCommands(TestCase):
                 "custom_setting_dne": 1,
                 json_custom_setting_name:json_custom_setting_value,
                 json_custom_setting_wrong_path_name: json_custom_setting_wrong_path_value,
+                json_custom_setting_type_error_name:json_custom_setting_type_error_value,
                 secret_custom_setting_name:secret_custom_setting_value
             },
             "persistent": {
@@ -471,6 +476,9 @@ class TestInstallServicesCommands(TestCase):
         # Json setting with incorrect path, but valid json
         mock_json_custom_setting_wrong_path = mock.MagicMock(value=None, type_custom_setting="JSON")
 
+        # Json setting with type error
+        mock_json_custom_setting_type_error = mock.MagicMock(value=None, type_custom_setting="JSON")
+
         # valid custom Secret setting 
         mock_secret_custom_setting = mock.MagicMock(value=None, type_custom_setting="SECRET")
 
@@ -484,10 +492,11 @@ class TestInstallServicesCommands(TestCase):
             ObjectDoesNotExist,  #: Setting not found
             mock_json_custom_setting,
             mock_json_custom_setting_wrong_path,
+            mock_json_custom_setting_type_error,
             mock_secret_custom_setting
         ]
 
-        mock_open.side_effect = (mock_open.return_value, FileNotFoundError,)
+        mock_open.side_effect = (mock_open.return_value, FileNotFoundError,TypeError)
         mock_json_load.return_value = '{"fake_json": "{}"}'
 
         # This persistent setting exists and is listed in the file
@@ -547,16 +556,20 @@ class TestInstallServicesCommands(TestCase):
             po_call_args[5][0][0],
         )
         self.assertEqual(
-            'CustomSetting: "secret_setting" was assigned the value: "SECRET:XXXX235235RSDGSDGAF_23523"',
+            'CustomSetting: "type_error_json_setting" was assigned the value: "{\'json\': \'value\'}"',
             po_call_args[6][0][0],
+        )
+        self.assertEqual(
+            'CustomSetting: "secret_setting" was assigned the value: "SECRET:XXXX235235RSDGSDGAF_23523"',
+            po_call_args[7][0][0],
         )
         
         self.assertEqual(
             f'No service given for setting "{no_val_persistent_setting_name}". Skipping...',
-            po_call_args[7][0][0],
+            po_call_args[8][0][0],
         )
         self.assertIn(
-            "already configured or does not exist in app", po_call_args[8][0][0]
+            "already configured or does not exist in app", po_call_args[9][0][0]
         )
 
         mock_find_and_link.assert_called_with(
@@ -1447,7 +1460,7 @@ class TestInstallCommands(TestCase):
             "Skipping setup of "+ mock_cs.name, po_call_args[6][0][0]
         )
 
-    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n","{'fake':'json'}","n","{'fake':'json'}"])
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n",'{"fake":"json"}',"n",'{"fake":"json"}'])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
@@ -1455,10 +1468,11 @@ class TestInstallCommands(TestCase):
         mock_cs = mock.MagicMock()
         mock_cs.name = "mock_cs"
         mock_cs.type_custom_setting = "JSON"
-        # mock_cs.save.side_effect = [mock.DEFAULT]
+        
         mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
         mock_gas.return_value = {"unlinked_settings": [mock_cs]}
         install_commands.run_interactive_services("foo")
+    
         
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
@@ -1469,8 +1483,29 @@ class TestInstallCommands(TestCase):
         self.assertIn("Enter the desired value", po_call_args[7][0][0])
         self.assertIn("Please provide a Json string", po_call_args[8][0][0])
         self.assertEqual(
-           mock_cs.name + " successfully set with value: {'fake':'json'}.", po_call_args[9][0][0]
+           mock_cs.name + " successfully set with value: {'fake': 'json'}.", po_call_args[9][0][0]
         )
+
+
+    @mock.patch("tethys_cli.install_commands.input", side_effect = ["cat","n","{'fake':'json'}"])
+    @mock.patch("tethys_cli.install_commands.get_app_settings")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
+    def test_interactive_custom_setting_set_json_without_path_error(self, mock_path_open,mock_pretty_output,mock_gas, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = "mock_cs"
+        mock_cs.type_custom_setting = "JSON"
+        
+        mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
+        mock_gas.return_value = {"unlinked_settings": [mock_cs]}
+        install_commands.run_interactive_services("foo")        
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
+        self.assertIn("Type", po_call_args[3][0][0])
+        self.assertIn("Enter the desired value", po_call_args[4][0][0])
+        self.assertIn("Please provide a Json string", po_call_args[5][0][0])
+        self.assertIn("Invalid Json provided", po_call_args[6][0][0])
+        self.assertIn("Skipping setup of mock_cs", po_call_args[7][0][0])
 
 
     @mock.patch("builtins.input", side_effect=[""])
