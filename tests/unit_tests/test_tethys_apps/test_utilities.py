@@ -5,7 +5,7 @@ from guardian.shortcuts import assign_perm
 
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
-from tethys_apps.models import CustomSetting
+from tethys_apps.models import CustomSettingBase
 
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.exceptions import TethysAppSettingDoesNotExist

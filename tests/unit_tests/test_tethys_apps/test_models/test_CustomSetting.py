@@ -1,7 +1,7 @@
 import uuid
 import json
 from tethys_sdk.testing import TethysTestCase
-from tethys_apps.models import TethysApp, CustomSetting
+from tethys_apps.models import TethysApp, CustomSettingBase
 from django.core.exceptions import ValidationError
 from unittest import mock
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
@@ -22,7 +22,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.default = 1
         custom_setting.save()
         # Check ValidationError
-        ret = CustomSetting.objects.get(name="default_name")
+        ret = CustomSettingBase.objects.get(name="default_name")
         ret.value = "1"
         ret.clean()
         self.assertEqual("1", ret.value)
@@ -35,7 +35,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0]
 
         self.assertRaises(ValidationError, ret.clean)
 
@@ -48,7 +48,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="JSON_setting_not_default_value_required").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="JSON_setting_not_default_value_required").select_subclasses()[0]
 
         self.assertRaises(ValidationError, ret.clean)
 
@@ -60,7 +60,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="Secret_Test_required").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="Secret_Test_required").select_subclasses()[0]
 
         self.assertRaises(ValidationError, ret.clean)
     
@@ -73,7 +73,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0]
         self.assertRaises(ValidationError, ret.clean)
 
     def test_clean_float_validation_error(self):
@@ -85,7 +85,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0]
         self.assertRaises(ValidationError, ret.clean)
 
     def test_clean_bool_validation_error(self):
@@ -97,7 +97,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0]
         self.assertRaises(ValidationError, ret.clean)
 
     def test_clean_uuid_validation_error(self):
@@ -109,7 +109,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0]
         self.assertRaises(ValidationError, ret.clean)
 
     def test_clean_json_validation_error(self):
@@ -120,7 +120,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="JSON_setting_not_default_value").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="JSON_setting_not_default_value").select_subclasses()[0]
         self.assertRaises(ValidationError, ret.clean)
 
     def test_clean_secret_validation_error(self):
@@ -136,7 +136,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
 
         # Check ValidationError
-        ret = CustomSetting.objects.filter(name="Secret_Test2_without_required").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="Secret_Test2_without_required").select_subclasses()[0]
         self.assertRaises(ValidationError, ret.clean)
     
     @mock.patch("tethys_apps.models.yaml.safe_load")
@@ -199,7 +199,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.default = 1
         custom_setting.save()
 
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0]
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0]
         ret.value = ""
         self.assertEqual("1", ret.get_value())
 
@@ -211,7 +211,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.required = False
         custom_setting.save()
 
-        self.assertIsNone(CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value())
+        self.assertIsNone(CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value())
 
     def test_get_value_secret_required_error(self):
         custom_setting = self.test_app.settings_set.select_subclasses().get(
@@ -233,7 +233,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.type = "STRING"
         custom_setting.save()
 
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value()
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value()
 
         self.assertEqual("test_string", ret)
 
@@ -245,7 +245,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.type = "FLOAT"
         custom_setting.save()
 
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value()
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value()
         self.assertEqual(3.14, ret)
 
     def test_get_value_integer(self):
@@ -256,7 +256,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.type = "INTEGER"
         custom_setting.save()
 
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value()
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value()
         self.assertEqual(3, ret)
 
     def test_get_value_boolean_true(self):
@@ -269,7 +269,7 @@ class CustomSettingTests(TethysTestCase):
             custom_setting.type = "BOOLEAN"
             custom_setting.save()
 
-            ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value()
+            ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value()
             self.assertTrue(ret)
 
     def test_get_value_boolean_false(self):
@@ -282,7 +282,7 @@ class CustomSettingTests(TethysTestCase):
             custom_setting.type = "BOOLEAN"
             custom_setting.save()
 
-            ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value()
+            ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value()
             self.assertFalse(ret)
 
     def test_get_value_uuid(self):
@@ -294,12 +294,12 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.type = "UUID"
         custom_setting.save()
 
-        ret = CustomSetting.objects.filter(name="default_name").select_subclasses()[0].get_value()
+        ret = CustomSettingBase.objects.filter(name="default_name").select_subclasses()[0].get_value()
         self.assertEqual(mock_uuid, ret)
 
 
     def test_get_value_json_custom_setting(self):
-        ret = CustomSetting.objects.filter(name="JSON_setting_default_value").select_subclasses()[0].get_value()
+        ret = CustomSettingBase.objects.filter(name="JSON_setting_default_value").select_subclasses()[0].get_value()
         ret_string = json.dumps(ret)
         self.assertEqual('{"Test": "JSON test String"}', ret_string)
 
@@ -312,7 +312,7 @@ class CustomSettingTests(TethysTestCase):
         custom_setting.save()
     
         
-        ret = CustomSetting.objects.filter(name="Secret_Test2_without_required").select_subclasses()[0].get_value()
+        ret = CustomSettingBase.objects.filter(name="Secret_Test2_without_required").select_subclasses()[0].get_value()
         self.assertEqual('Mysecrertxxxx23526236sddgsdgsgsuiLSD', ret)
 
     @mock.patch("tethys_apps.models.yaml.safe_load")

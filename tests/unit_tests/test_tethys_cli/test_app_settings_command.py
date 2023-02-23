@@ -24,7 +24,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch("tethys_apps.models.SpatialDatasetServiceSetting")
     @mock.patch("tethys_apps.models.DatasetServiceSetting")
     @mock.patch("tethys_apps.models.WebProcessingServiceSetting")
-    @mock.patch("tethys_apps.models.CustomSetting")
+    @mock.patch("tethys_apps.models.CustomSettingBase")
     @mock.patch("tethys_cli.app_settings_commands.pretty_output")
     def test_app_settings_list_command_unlinked(
         self,
@@ -86,7 +86,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch("tethys_apps.models.CustomSimpleSetting")
     @mock.patch("tethys_apps.models.CustomSecretSetting")
     @mock.patch("tethys_apps.models.CustomJSONSetting")
-    @mock.patch("tethys_apps.models.CustomSetting")
+    @mock.patch("tethys_apps.models.CustomSettingBase")
     @mock.patch("tethys_cli.app_settings_commands.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.type")
     def test_app_settings_list_command_linked(
@@ -394,7 +394,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             SpatialDatasetServiceSetting,
             DatasetServiceSetting,
             WebProcessingServiceSetting,
-            CustomSetting,
+            CustomSettingBase,
         )
 
         self.assertEqual(
@@ -420,7 +420,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             cli_app_settings_command.get_setting_type(WebProcessingServiceSetting()),
         )
         self.assertEqual(
-            "custom_setting", cli_app_settings_command.get_setting_type(CustomSetting())
+            "custom_setting", cli_app_settings_command.get_setting_type(CustomSettingBase())
         )
 
 
