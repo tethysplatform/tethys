@@ -68,6 +68,7 @@ dependencies:
   - django-simple-captcha
   - django-session-security
   - django-termsandconditions
+  - django-json-widget
   - social-auth-app-django
 
   # tests dependencies
