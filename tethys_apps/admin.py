@@ -33,7 +33,7 @@ from tethys_apps.models import (
     TethysExtension,
     CustomSetting,
     SecretCustomSetting,
-    CustomJSONSetting,
+    JSONCustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
@@ -81,10 +81,10 @@ class SecretCustomSettingInline(TethysAppSettingInline):
 
 
 
-class CustomJSONSettingInline(TethysAppSettingInline):
+class JSONCustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
     fields = ("name", "description", "value","required")
-    model = CustomJSONSetting
+    model = JSONCustomSetting
     options_default = {
         "modes": ["code", "text"],
         "search": False,
@@ -170,7 +170,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     )
     inlines = [
         CustomSettingInline,
-        CustomJSONSettingInline,
+        JSONCustomSettingInline,
         SecretCustomSettingInline,
         PersistentStoreConnectionSettingInline,
         PersistentStoreDatabaseSettingInline,

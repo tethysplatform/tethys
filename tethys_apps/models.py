@@ -500,7 +500,7 @@ class CustomSetting(CustomSettingBase):
         if self.type == self.TYPE_UUID:
             return uuid.UUID(self.value)
 
-class CustomJSONSetting(CustomSettingBase):
+class JSONCustomSetting(CustomSettingBase):
     """
     Used to define a Custom Json Setting.
 
@@ -514,23 +514,23 @@ class CustomJSONSetting(CustomSettingBase):
 
     ::
 
-        from tethys_sdk.app_settings import CustomSimpleSetting
+        from tethys_sdk.app_settings import JSONCustomSetting
 
-        json_setting_1 = CustomJSONSetting(
+        json_setting_1 = JSONCustomSetting(
             name='JSON_setting_default_value_required',
             description='This is JSON setting with a default value',
             required=True,
             default={"Test":"JSON test String"}
         )
 
-        json_setting_2 = CustomJSONSetting(
+        json_setting_2 = JSONCustomSetting(
             name='JSON_setting_default_value',
             description='This is JSON setting with a default value',
             required=False,
             default={"Test":"JSON test String"}
         )
 
-        json_setting_3 = CustomJSONSetting(
+        json_setting_3 = JSONCustomSetting(
             name='JSON_setting_not_default_value',
             description='This is JSON setting without a default value',
             required=False,
@@ -582,15 +582,15 @@ class CustomJSONSetting(CustomSettingBase):
 
 
 @receiver(models.signals.post_init, sender=CustomSetting)
-@receiver(models.signals.post_init, sender=CustomJSONSetting)
+@receiver(models.signals.post_init, sender=JSONCustomSetting)
 def set_default_value(sender, instance, *args, **kwargs):
     """
     Set the default value for `value` on the `instance` of a Custom Simple and Json Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSetting`/`CustomJSONSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSetting`/`CustomJSONSetting` instance that is being initialised.
+        sender(CustomSetting/JSONCustomSetting): The `CustomSetting`/`JSONCustomSetting` class that sent the signal.
+        instance(CustomSetting/JSONCustomSetting): The `CustomSetting`/`JSONCustomSetting` instance that is being initialised.
 
     Returns:
         None
@@ -632,15 +632,15 @@ def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
         instance.type_custom_setting = "SECRET"
 
 
-@receiver(models.signals.post_init, sender=CustomJSONSetting)
+@receiver(models.signals.post_init, sender=JSONCustomSetting)
 def set_default_custom_json_setting_type(sender, instance, *args, **kwargs):
     """
     Set the default value for `value` on the `instance` of Custom JSON Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomJSONSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomJSONSetting` instance that is being initialised.
+        sender(JSONCustomSetting): The `JSONCustomSetting` class that sent the signal.
+        instance(JSONCustomSetting): The `JSONCustomSetting` instance that is being initialised.
 
     Returns:
         None

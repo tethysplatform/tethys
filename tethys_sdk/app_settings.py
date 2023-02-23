@@ -12,7 +12,7 @@
 from tethys_apps.models import (
     CustomSettingBase,
     SecretCustomSetting,
-    CustomJSONSetting,
+    JSONCustomSetting,
     CustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,

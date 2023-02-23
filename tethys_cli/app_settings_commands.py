@@ -297,7 +297,7 @@ def get_setting_type(setting):
         CustomSettingBase,
         CustomSetting,
         SecretCustomSetting,
-        CustomJSONSetting,
+        JSONCustomSetting,
     )
 
     setting_type_dict = {
@@ -309,7 +309,7 @@ def get_setting_type(setting):
         CustomSettingBase: "custom_setting_base",
         CustomSetting: "custom_setting",
         SecretCustomSetting: "secret_custom_setting",
-        CustomJSONSetting: "json_custom_setting",
+        JSONCustomSetting: "json_custom_setting",
     }
 
     return setting_type_dict[type(setting)]
