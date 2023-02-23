@@ -12,22 +12,22 @@ class Migration(migrations.Migration):
     operations = [
 
         migrations.AddField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             name='type_custom_setting',
             field=models.CharField(blank=True, default='', max_length=1024),
         ),
         migrations.RenameField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             old_name='value',
             new_name='value_temp'
         ),
         migrations.RenameField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             old_name='type',
             new_name='type_temp'
         ),
         migrations.RenameField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             old_name='default',
             new_name='default_temp'
         ),
@@ -35,29 +35,29 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CustomSimpleSetting',
             fields=[
-                ('customsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsetting')),
+                ('customsettingbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsettingbase')),
                 ('value', models.CharField(blank=True, default='', max_length=1024)),
                 ('default', models.CharField(blank=True, default='', max_length=1024)),
                 ('type', models.CharField(choices=[('STRING', 'String'), ('INTEGER', 'Integer'), ('FLOAT', 'Float'), ('BOOLEAN', 'Boolean'), ('UUID', 'UUID')], default='STRING', max_length=200)),
             ],
-            bases=('tethys_apps.customsetting',),
+            bases=('tethys_apps.customsettingbase',),
         ),
         migrations.CreateModel(
             name='CustomJSONSetting',
             fields=[
-                ('customsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsetting')),
+                ('customsettingbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsettingbase')),
                 ('value', models.JSONField(blank=True, default=dict)),
                 ('default', models.JSONField(blank=True, default=dict)),
             ],
-            bases=('tethys_apps.customsetting',),
+            bases=('tethys_apps.customsettingbase',),
         ),
         migrations.CreateModel(
             name='CustomSecretSetting',
             fields=[
-                ('customsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsetting')),
+                ('customsettingbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsettingbase')),
                 ('value', models.CharField(blank=True, default='', max_length=1024)),
             ],
-            bases=('tethys_apps.customsetting',),
+            bases=('tethys_apps.customsettingbase',),
         ),
 
     ]

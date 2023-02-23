@@ -12,15 +12,15 @@ class Migration(migrations.Migration):
     operations = [
 
         migrations.RemoveField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             name='default_temp',
         ),
         migrations.RemoveField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             name='type_temp',
         ),
         migrations.RemoveField(
-            model_name='customsetting',
+            model_name='customsettingbase',
             name='value_temp',
         )
 
