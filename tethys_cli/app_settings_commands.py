@@ -296,7 +296,7 @@ def get_setting_type(setting):
         WebProcessingServiceSetting,
         CustomSettingBase,
         CustomSetting,
-        CustomSecretSetting,
+        SecretCustomSetting,
         CustomJSONSetting,
     )
 
@@ -308,7 +308,7 @@ def get_setting_type(setting):
         WebProcessingServiceSetting: "wps",
         CustomSettingBase: "custom_setting_base",
         CustomSetting: "custom_setting",
-        CustomSecretSetting: "secret_custom_setting",
+        SecretCustomSetting: "secret_custom_setting",
         CustomJSONSetting: "json_custom_setting",
     }
 

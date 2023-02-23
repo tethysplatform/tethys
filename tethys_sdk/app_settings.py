@@ -11,7 +11,7 @@
 # DO NOT ERASE
 from tethys_apps.models import (
     CustomSettingBase,
-    CustomSecretSetting,
+    SecretCustomSetting,
     CustomJSONSetting,
     CustomSetting,
     DatasetServiceSetting,

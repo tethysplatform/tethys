@@ -32,7 +32,7 @@ from tethys_apps.models import (
     TethysApp,
     TethysExtension,
     CustomSetting,
-    CustomSecretSetting,
+    SecretCustomSetting,
     CustomJSONSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
@@ -67,17 +67,17 @@ class CustomSettingInline(TethysAppSettingInline):
     #     qs = super(CustomSettingInline, self).get_queryset(request)
     #     return qs.exclude(type="JSON").exclude(type="SECRET")
 
-class CustomSecretSettingForm(forms.ModelForm):
+class SecretCustomSettingForm(forms.ModelForm):
     value = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input-text with-border', 'placeholder': 'secret custom setting'}))
     class Meta:
-        model = CustomSecretSetting
+        model = SecretCustomSetting
         fields = ["name", "description", "value","required"]
 
-class CustomSecretSettingInline(TethysAppSettingInline):
+class SecretCustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
     fields = ("name", "description", "value","required")
-    model = CustomSecretSetting
-    form = CustomSecretSettingForm
+    model = SecretCustomSetting
+    form = SecretCustomSettingForm
 
 
 
@@ -171,7 +171,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     inlines = [
         CustomSettingInline,
         CustomJSONSettingInline,
-        CustomSecretSettingInline,
+        SecretCustomSettingInline,
         PersistentStoreConnectionSettingInline,
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,

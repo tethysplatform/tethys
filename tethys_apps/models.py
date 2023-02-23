@@ -244,7 +244,7 @@ class CustomSettingBase(TethysAppSetting):
     type_custom_setting = models.CharField(max_length=1024, blank=True, default="")
 
 
-class CustomSecretSetting(CustomSettingBase):
+class SecretCustomSetting(CustomSettingBase):
     """
     Used to define a Custom Secret Setting.
 
@@ -257,15 +257,15 @@ class CustomSecretSetting(CustomSettingBase):
 
     ::
 
-        from tethys_sdk.app_settings import CustomSecretSetting
+        from tethys_sdk.app_settings import SecretCustomSetting
 
-        default_name_setting = CustomSecretSetting(
+        default_name_setting = SecretCustomSetting(
             name='Github_Token',
             description='Github repository secret token',
             required=True,
         )
 
-        max_count_setting = CustomSecretSetting(
+        max_count_setting = SecretCustomSetting(
             name='Anaconda_Token',
             description='Anaconda Organization secret token',
             required=False
@@ -615,15 +615,15 @@ def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
     if instance.type_custom_setting == "":
         instance.type_custom_setting = "SIMPLE"
 
-@receiver(models.signals.post_init, sender=CustomSecretSetting)
+@receiver(models.signals.post_init, sender=SecretCustomSetting)
 def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
     """
     Set the default value for `value` on the `instance` of Custom Secret Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSecretSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSecretSetting` instance that is being initialised.
+        sender(SecretCustomSetting): The `SecretCustomSetting` class that sent the signal.
+        instance(SecretCustomSetting): The `SecretCustomSetting` instance that is being initialised.
 
     Returns:
         None
