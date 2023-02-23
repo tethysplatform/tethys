@@ -2,7 +2,7 @@ import unittest
 import os
 from unittest import mock
 import tethys_cli.cli_helpers as cli_helper
-from tethys_apps.models import TethysApp, CustomSecretSetting
+from tethys_apps.models import TethysApp, SecretCustomSetting
 from tethys_apps.utilities import get_tethys_home_dir
 from django.core.signing import Signer, BadSignature
 

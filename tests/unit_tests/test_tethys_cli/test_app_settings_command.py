@@ -84,7 +84,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch("tethys_apps.models.DatasetServiceSetting")
     @mock.patch("tethys_apps.models.WebProcessingServiceSetting")
     @mock.patch("tethys_apps.models.CustomSetting")
-    @mock.patch("tethys_apps.models.CustomSecretSetting")
+    @mock.patch("tethys_apps.models.SecretCustomSetting")
     @mock.patch("tethys_apps.models.CustomJSONSetting")
     @mock.patch("tethys_apps.models.CustomSettingBase")
     @mock.patch("tethys_cli.app_settings_commands.pretty_output")

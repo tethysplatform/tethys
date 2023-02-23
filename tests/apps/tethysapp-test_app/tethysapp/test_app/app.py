@@ -3,7 +3,7 @@ from tethys_sdk.app_settings import (
     # CustomSetting,
     CustomSetting,
     CustomJSONSetting,
-    CustomSecretSetting,
+    SecretCustomSetting,
     PersistentStoreDatabaseSetting,
     PersistentStoreConnectionSetting,
     DatasetServiceSetting,
@@ -83,12 +83,12 @@ class TestApp(TethysAppBase):
                 default={"Test":"JSON test String"}
             ),
 
-            CustomSecretSetting(
+            SecretCustomSetting(
                 name='Secret_Test_required',
                 description='This is SECRET setting with required True',
                 required=True            
             ),
-            CustomSecretSetting(
+            SecretCustomSetting(
                 name='Secret_Test2_without_required',
                 description='This is SECRET setting with required False',
                 required=False
