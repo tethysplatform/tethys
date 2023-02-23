@@ -294,7 +294,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSetting,
+        CustomSettingBase,
         CustomSimpleSetting,
         CustomSecretSetting,
         CustomJSONSetting,
@@ -306,7 +306,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "ds_spatial",
         DatasetServiceSetting: "ds_dataset",
         WebProcessingServiceSetting: "wps",
-        CustomSetting: "custom_setting",
+        CustomSettingBase: "custom_setting",
         CustomSimpleSetting: "custom_simple_setting",
         CustomSecretSetting: "custom_secret_setting",
         CustomJSONSetting: "custom_json_setting",
@@ -366,7 +366,7 @@ def app_settings_gen_salt_strings_command(args):
 
     from tethys_apps.models import (
         TethysApp,
-        CustomSetting,
+        CustomSettingBase,
         TethysExtension
     )
     
@@ -412,7 +412,7 @@ def app_settings_gen_salt_strings_command(args):
                 
                 exit(1) 
         else:
-            list_settings = CustomSetting.objects.filter(tethys_app=app).filter(type_custom_setting="SECRET").select_subclasses()
+            list_settings = CustomSettingBase.objects.filter(tethys_app=app).filter(type_custom_setting="SECRET").select_subclasses()
         
         for setting in list_settings:
  

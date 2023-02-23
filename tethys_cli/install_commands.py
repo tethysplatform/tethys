@@ -255,7 +255,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSetting,
+        CustomSettingBase,
         CustomSimpleSetting,
         CustomSecretSetting,
         CustomJSONSetting,
@@ -267,7 +267,7 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "spatial",
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
-        CustomSetting: "custom_setting",
+        CustomSettingBase: "custom_setting",
         CustomSimpleSetting: "custom_simple_setting",
         CustomSecretSetting: "custom_secret_setting",
         CustomJSONSetting: "custom_json_setting",
@@ -509,7 +509,7 @@ def find_and_link(service_type, setting_name, service_id, app_name, setting):
 
 
 def configure_services_from_file(services, app_name):
-    from tethys_apps.models import TethysApp, CustomSetting
+    from tethys_apps.models import TethysApp, CustomSettingBase
 
     if "version" in services:
         del services["version"]
@@ -524,7 +524,7 @@ def configure_services_from_file(services, app_name):
                 if service_type == "custom_settings":                    
                     try:
                         
-                        custom_setting = CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
+                        custom_setting = CustomSettingBase.objects.filter(tethys_app=db_app.id).select_subclasses().get(
                             name=setting_name
                         )
                     except ObjectDoesNotExist:

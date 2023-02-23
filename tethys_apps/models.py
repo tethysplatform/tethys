@@ -118,8 +118,8 @@ class TethysApp(models.Model, TethysBaseMixin):
 
     @property
     def custom_settings(self):
-        return self.settings_set.exclude(customsetting__isnull=True).select_subclasses(
-            "customsetting"
+        return self.settings_set.exclude(customsettingbase__isnull=True).select_subclasses(
+            "customsettingbase"
         ).select_subclasses()
 
     @property
@@ -237,14 +237,14 @@ class TethysAppSetting(models.Model):
 
 
 
-class CustomSetting(TethysAppSetting):
+class CustomSettingBase(TethysAppSetting):
     # value = models.CharField(max_length=1024, blank=True, default="")
     # default = models.CharField(max_length=1024, blank=True, default="")
     objects = InheritanceManager()
     type_custom_setting = models.CharField(max_length=1024, blank=True, default="")
 
 
-class CustomSecretSetting(CustomSetting):
+class CustomSecretSetting(CustomSettingBase):
     """
     Used to define a Custom Secret Setting.
 
@@ -358,7 +358,7 @@ class CustomSecretSetting(CustomSetting):
         return secret_unsigned
 
 
-class CustomSimpleSetting(CustomSetting):
+class CustomSimpleSetting(CustomSettingBase):
     """
     Used to define a Custom Simple Setting.
 
@@ -500,7 +500,7 @@ class CustomSimpleSetting(CustomSetting):
         if self.type == self.TYPE_UUID:
             return uuid.UUID(self.value)
 
-class CustomJSONSetting(CustomSetting):
+class CustomJSONSetting(CustomSettingBase):
     """
     Used to define a Custom Json Setting.
 

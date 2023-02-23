@@ -173,7 +173,7 @@ def get_app_settings(app):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSetting
+        CustomSettingBase
     )
 
     try:
@@ -190,7 +190,7 @@ def get_app_settings(app):
             app_settings.append(setting)
         for setting in WebProcessingServiceSetting.objects.filter(tethys_app=app):
             app_settings.append(setting)
-        for setting in CustomSetting.objects.filter(tethys_app=app).select_subclasses():
+        for setting in CustomSettingBase.objects.filter(tethys_app=app).select_subclasses():
             app_settings.append(setting)
         unlinked_settings = []
         linked_settings = []
@@ -248,7 +248,7 @@ def get_custom_setting(app_package, setting_name):
     Returns:
         CustomSetting: The Custom Setting or None if the TethysApp or CustomSetting cannot be found.
     """
-    from tethys_apps.models import TethysApp, CustomSetting
+    from tethys_apps.models import TethysApp, CustomSettingBase
 
     try:
         app = TethysApp.objects.get(package=app_package)
@@ -256,8 +256,8 @@ def get_custom_setting(app_package, setting_name):
         return None
     try:
 
-        setting = CustomSetting.objects.filter(tethys_app=app).select_subclasses().get(name=setting_name)
-    except CustomSetting.DoesNotExist:
+        setting = CustomSettingBase.objects.filter(tethys_app=app).select_subclasses().get(name=setting_name)
+    except CustomSettingBase.DoesNotExist:
         return None
 
     return setting
@@ -272,14 +272,14 @@ def get_custom_secret_settings(app_package):
     Returns:
         InheritanceQuerySet: A Inheritance Query Set containing Custom Secret Settings, None if the TethysApp, or an empty Inheritance Query Set if the app does not have any CustomSecretSetting.
     """
-    from tethys_apps.models import TethysApp, CustomSetting
+    from tethys_apps.models import TethysApp, CustomSettingBase
 
     try:
         app = TethysApp.objects.get(package=app_package)
     except TethysApp.DoesNotExist:
         return None
     
-    settings = CustomSetting.objects.filter(tethys_app=app).select_subclasses().filter(type_custom_setting="SECRET")
+    settings = CustomSettingBase.objects.filter(tethys_app=app).select_subclasses().filter(type_custom_setting="SECRET")
 
 
     return settings

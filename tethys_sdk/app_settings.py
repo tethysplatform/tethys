@@ -10,7 +10,7 @@
 # flake8: noqa
 # DO NOT ERASE
 from tethys_apps.models import (
-    CustomSetting,
+    CustomSettingBase,
     CustomSecretSetting,
     CustomJSONSetting,
     CustomSimpleSetting,
