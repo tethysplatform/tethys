@@ -408,7 +408,7 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.install_commands.json.load")
     @mock.patch("tethys_cli.install_commands.open", new_callable=lambda: mock.mock_open( read_data='{"fake_json": "{}"}') )
-    @mock.patch("tethys_apps.models.CustomSetting")
+    @mock.patch("tethys_apps.models.CustomSettingBase")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_configure_services_from_file(
         self,
