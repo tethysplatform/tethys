@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         ),
 
         migrations.CreateModel(
-            name='CustomSimpleSetting',
+            name='CustomSetting',
             fields=[
                 ('customsettingbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsettingbase')),
                 ('value', models.CharField(blank=True, default='', max_length=1024)),

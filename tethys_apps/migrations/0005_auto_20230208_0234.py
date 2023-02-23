@@ -4,12 +4,12 @@ from django.db import migrations
 
 def forward(apps, schema_editor):
     """ From non inehirtance to post inheritance """
-    CustomSetting = apps.get_model('tethys_apps', 'customsettingbase')
-    CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
+    CustomBaseSetting = apps.get_model('tethys_apps', 'customsettingbase')
+    CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     db_alias = schema_editor.connection.alias
 
     for cs in CustomSetting.objects.using(db_alias).all():
-        cs_simple = CustomSimpleSetting.objects.create(tethys_app = cs.tethys_app, name= cs.name, description = cs.description, required =cs.required  ,customsettingbase_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
+        cs_simple = CustomBaseSetting.objects.create(tethys_app = cs.tethys_app, name= cs.name, description = cs.description, required =cs.required  ,customsettingbase_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
         cs.type_custom_setting = "SIMPLE"
         cs_simple.save()
         cs.save()
@@ -17,12 +17,12 @@ def forward(apps, schema_editor):
 
 def backward(apps, schema_editor):
     """ From non inehirtance to post inheritance """
-    CustomSetting = apps.get_model('tethys_apps', 'customsettingbase')
-    CustomSimpleSetting = apps.get_model('tethys_apps', 'customsimplesetting')
+    CustomBaseSetting = apps.get_model('tethys_apps', 'customsettingbase')
+    CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     db_alias = schema_editor.connection.alias
 
-    for cs in CustomSetting.objects.using(db_alias).all():
-        selected_cs = CustomSimpleSetting.objects.using(db_alias).get(customsettingbase_ptr=cs)
+    for cs in CustomBaseSetting.objects.using(db_alias).all():
+        selected_cs = CustomSetting.objects.using(db_alias).get(customsettingbase_ptr=cs)
         cs.value_temp = selected_cs.value
         cs.default_temp = selected_cs.default
         cs.type_temp = selected_cs.type
