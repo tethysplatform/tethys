@@ -13,7 +13,7 @@ from tethys_apps.models import (
     CustomSettingBase,
     CustomSecretSetting,
     CustomJSONSetting,
-    CustomSimpleSetting,
+    CustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,

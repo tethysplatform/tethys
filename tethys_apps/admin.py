@@ -31,7 +31,7 @@ from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_apps.models import (
     TethysApp,
     TethysExtension,
-    CustomSimpleSetting,
+    CustomSetting,
     CustomSecretSetting,
     CustomJSONSetting,
     DatasetServiceSetting,
@@ -59,10 +59,10 @@ class TethysAppSettingInline(admin.TabularInline):
         return False
 
 
-class CustomSimpleSettingInline(TethysAppSettingInline):
+class CustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value","required")
-    model = CustomSimpleSetting
+    model = CustomSetting
     # def get_queryset(self, request):
     #     qs = super(CustomSettingInline, self).get_queryset(request)
     #     return qs.exclude(type="JSON").exclude(type="SECRET")
@@ -169,7 +169,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         "manage_app_storage",
     )
     inlines = [
-        CustomSimpleSettingInline,
+        CustomSettingInline,
         CustomJSONSettingInline,
         CustomSecretSettingInline,
         PersistentStoreConnectionSettingInline,

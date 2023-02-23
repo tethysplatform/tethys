@@ -358,7 +358,7 @@ class CustomSecretSetting(CustomSettingBase):
         return secret_unsigned
 
 
-class CustomSimpleSetting(CustomSettingBase):
+class CustomSetting(CustomSettingBase):
     """
     Used to define a Custom Simple Setting.
 
@@ -373,9 +373,9 @@ class CustomSimpleSetting(CustomSettingBase):
 
     ::
 
-        from tethys_sdk.app_settings import CustomSimpleSetting
+        from tethys_sdk.app_settings import CustomSetting
 
-        default_name_setting = CustomSimpleSetting(
+        default_name_setting = CustomSetting(
             name='default_name',
             type=CustomSetting.TYPE_STRING
             description='Default model name.',
@@ -383,28 +383,28 @@ class CustomSimpleSetting(CustomSettingBase):
             default="Name_123"
         )
 
-        max_count_setting = CustomSimpleSetting(
+        max_count_setting = CustomSetting(
             name='max_count',
             type=CustomSetting.TYPE_INTEGER,
             description='Maximum allowed count in a method.',
             required=False
         )
 
-        change_factor_setting = CustomSimpleSetting(
+        change_factor_setting = CustomSetting(
             name='change_factor',
             type=CustomSetting.TYPE_FLOAT,
             description='Change factor that is applied to some process.',
             required=True
         )
 
-        enable_feature_setting = CustomSimpleSetting(
+        enable_feature_setting = CustomSetting(
             name='enable_feature',
             type=CustomSetting.TYPE_BOOLEAN,
             description='Enable this feature when True.',
             required=True
         )
 
-        feature_id_setting = CustomSimpleSetting(
+        feature_id_setting = CustomSetting(
             name='feature_id',
             type=CustomSetting.TYPE_UUID,
             description='Feature ID.',
@@ -581,7 +581,7 @@ class CustomJSONSetting(CustomSettingBase):
         return self.value
 
 
-@receiver(models.signals.post_init, sender=CustomSimpleSetting)
+@receiver(models.signals.post_init, sender=CustomSetting)
 @receiver(models.signals.post_init, sender=CustomJSONSetting)
 def set_default_value(sender, instance, *args, **kwargs):
     """
@@ -589,7 +589,7 @@ def set_default_value(sender, instance, *args, **kwargs):
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSimpleSetting`/`CustomJSONSetting` class that sent the signal.
+        sender(CustomSetting): The `CustomSetting`/`CustomJSONSetting` class that sent the signal.
         instance(CustomSetting): The `CustomSetting`/`CustomJSONSetting` instance that is being initialised.
 
     Returns:
@@ -599,15 +599,15 @@ def set_default_value(sender, instance, *args, **kwargs):
         instance.value = instance.default
 
 # @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
-@receiver(models.signals.post_init, sender=CustomSimpleSetting)
+@receiver(models.signals.post_init, sender=CustomSetting)
 def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
     """
     Set the default value for `value` on the `instance` of Custom Simple Setting.
     This signal receiver will process it as soon as the object is created for use
 
     Attributes:
-        sender(CustomSetting): The `CustomSimpleSetting` class that sent the signal.
-        instance(CustomSetting): The `CustomSimpleSetting` instance that is being initialised.
+        sender(CustomSetting): The `CustomSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
 
     Returns:
         None

@@ -256,7 +256,7 @@ def get_setting_type(setting):
         DatasetServiceSetting,
         WebProcessingServiceSetting,
         CustomSettingBase,
-        CustomSimpleSetting,
+        CustomSetting,
         CustomSecretSetting,
         CustomJSONSetting,
     )
@@ -267,10 +267,10 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "spatial",
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
-        CustomSettingBase: "custom_setting",
-        CustomSimpleSetting: "custom_simple_setting",
-        CustomSecretSetting: "custom_secret_setting",
-        CustomJSONSetting: "custom_json_setting",
+        CustomSettingBase: "custom_setting_base",
+        CustomSetting: "custom_setting",
+        CustomSecretSetting: "secret_custom_setting",
+        CustomJSONSetting: "json_custom_setting",
     }
 
     return setting_type_dict[type(setting)]
