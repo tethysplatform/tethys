@@ -271,7 +271,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         )
         expected_inlines = [
             CustomSettingInline,
-            JSONCustomSetting,
+            JSONCustomSettingInline,
             SecretCustomSettingInline,
             PersistentStoreConnectionSettingInline,
             PersistentStoreDatabaseSettingInline,

@@ -420,7 +420,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             cli_app_settings_command.get_setting_type(WebProcessingServiceSetting()),
         )
         self.assertEqual(
-            "custom_setting", cli_app_settings_command.get_setting_type(CustomSettingBase())
+            "custom_setting_base", cli_app_settings_command.get_setting_type(CustomSettingBase())
         )
 
 
