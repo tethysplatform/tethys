@@ -2,7 +2,7 @@ from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import (
     # CustomSetting,
     CustomSetting,
-    CustomJSONSetting,
+    JSONCustomSetting,
     SecretCustomSetting,
     PersistentStoreDatabaseSetting,
     PersistentStoreConnectionSetting,
@@ -60,23 +60,23 @@ class TestApp(TethysAppBase):
                 description="Enable this feature when True.",
                 required=False,
             ),
-            CustomJSONSetting(
+            JSONCustomSetting(
                 name='JSON_setting_not_default_value_required',
                 description='This is JSON setting without a default value',
                 required=True,
             ),
-            CustomJSONSetting(
+            JSONCustomSetting(
                 name='JSON_setting_not_default_value',
                 description='This is JSON setting without a default value',
                 required=False,
             ),
-            CustomJSONSetting(
+            JSONCustomSetting(
                 name='JSON_setting_default_value_required',
                 description='This is JSON setting with a default value',
                 required=True,
                 default={"Test":"JSON test String"}
             ),
-            CustomJSONSetting(
+            JSONCustomSetting(
                 name='JSON_setting_default_value',
                 description='This is JSON setting with a default value',
                 required=False,

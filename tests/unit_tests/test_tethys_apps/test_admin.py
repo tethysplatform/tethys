@@ -9,7 +9,7 @@ from tethys_apps.admin import (
     TethysAppSettingInline,
     CustomSettingInline,
     SecretCustomSettingInline,
-    CustomJSONSettingInline,
+    JSONCustomSettingInline,
     DatasetServiceSettingInline,
     SpatialDatasetServiceSettingInline,
     WebProcessingServiceSettingInline,
@@ -31,7 +31,7 @@ from tethys_apps.models import (
     TethysApp,
     TethysExtension,
     CustomSetting,
-    CustomJSONSetting,
+    JSONCustomSetting,
     SecretCustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
@@ -114,13 +114,13 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
-    def test_CustomJSONSettingInline(self):
+    def test_JSONCustomSettingInline(self):
 
         expected_readonly_fields = ("name", "description", "required")
         expected_fields = ("name", "description", "value", "required")
-        expected_model = CustomJSONSetting
+        expected_model = JSONCustomSetting
 
-        ret = CustomJSONSettingInline(mock.MagicMock(), mock.MagicMock())
+        ret = JSONCustomSettingInline(mock.MagicMock(), mock.MagicMock())
 
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
@@ -271,7 +271,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         )
         expected_inlines = [
             CustomSettingInline,
-            CustomJSONSettingInline,
+            JSONCustomSetting,
             SecretCustomSettingInline,
             PersistentStoreConnectionSettingInline,
             PersistentStoreDatabaseSettingInline,
