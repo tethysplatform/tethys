@@ -7,7 +7,7 @@ from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from tethys_apps.admin import (
     TethysAppSettingInline,
-    CustomSimpleSettingInline,
+    CustomSettingInline,
     CustomSecretSettingInline,
     CustomJSONSettingInline,
     DatasetServiceSettingInline,
@@ -30,7 +30,7 @@ from tethys_quotas.models import TethysAppQuota
 from tethys_apps.models import (
     TethysApp,
     TethysExtension,
-    CustomSimpleSetting,
+    CustomSetting,
     CustomJSONSetting,
     CustomSecretSetting,
     DatasetServiceSetting,
@@ -92,12 +92,12 @@ class TestTethysAppAdmin(unittest.TestCase):
             ret.has_add_permission(request=mock.MagicMock(), obj=mock.MagicMock())
         )
 
-    def test_CustomSimpleSettingInline(self):
+    def test_CustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "type", "required")
         expected_fields = ("name", "description", "type", "value", "required")
-        expected_model = CustomSimpleSetting
+        expected_model = CustomSetting
 
-        ret = CustomSimpleSettingInline(mock.MagicMock(), mock.MagicMock())
+        ret = CustomSettingInline(mock.MagicMock(), mock.MagicMock())
 
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
@@ -270,7 +270,7 @@ class TestTethysAppAdmin(unittest.TestCase):
             "manage_app_storage",
         )
         expected_inlines = [
-            CustomSimpleSettingInline,
+            CustomSettingInline,
             CustomJSONSettingInline,
             CustomSecretSettingInline,
             PersistentStoreConnectionSettingInline,

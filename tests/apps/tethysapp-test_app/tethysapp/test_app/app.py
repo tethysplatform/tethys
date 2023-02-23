@@ -1,7 +1,7 @@
 from tethys_sdk.base import TethysAppBase
 from tethys_sdk.app_settings import (
     # CustomSetting,
-    CustomSimpleSetting,
+    CustomSetting,
     CustomJSONSetting,
     CustomSecretSetting,
     PersistentStoreDatabaseSetting,
@@ -36,27 +36,27 @@ class TestApp(TethysAppBase):
         Example custom_settings method.
         """
         custom_settings = (
-            CustomSimpleSetting(
+            CustomSetting(
                 name="default_name",
-                type=CustomSimpleSetting.TYPE_STRING,
+                type=CustomSetting.TYPE_STRING,
                 description="Default model name.",
                 required=True,
             ),
-            CustomSimpleSetting(
+            CustomSetting(
                 name="max_count",
-                type=CustomSimpleSetting.TYPE_INTEGER,
+                type=CustomSetting.TYPE_INTEGER,
                 description="Maximum allowed count in a method.",
                 required=False,
             ),
-            CustomSimpleSetting(
+            CustomSetting(
                 name="change_factor",
-                type=CustomSimpleSetting.TYPE_FLOAT,
+                type=CustomSetting.TYPE_FLOAT,
                 description="Change factor that is applied to some process.",
                 required=False,
             ),
-            CustomSimpleSetting(
+            CustomSetting(
                 name="enable_feature",
-                type=CustomSimpleSetting.TYPE_BOOLEAN,
+                type=CustomSetting.TYPE_BOOLEAN,
                 description="Enable this feature when True.",
                 required=False,
             ),
