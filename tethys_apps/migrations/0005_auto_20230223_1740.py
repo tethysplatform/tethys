@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def forward(apps, schema_editor):
-    """ From non inehirtance to post inheritance """
+    """ From non inheritance to CustomBaseSetting inheritance """
     CustomBaseSetting = apps.get_model('tethys_apps', 'CustomSettingBase')
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     OldCustomSetting = apps.get_model('tethys_apps', 'oldcustomsetting')
@@ -13,21 +13,13 @@ def forward(apps, schema_editor):
     # breakpoint()
 
     for cs in OldCustomSetting.objects.using(db_alias).all():
-        cs_parent = CustomBaseSetting(tethysappsetting_ptr= cs.tethysappsetting, type_custom_setting='SIMPLE')
-        cs_child = CustomSetting.objects.create(tethys_app = cs.tethys_app, name= cs.name, description = cs.description, required =cs.required , customsettingbase_ptr=cs, value=cs.value, default=cs.default, type=cs.type)
-        cs_parent.save()
+        cs_child = CustomSetting.objects.create(tethys_app = cs.tethys_app, name= cs.name, description = cs.description, required =cs.required , type_custom_setting='SIMPLE', value=cs.value, default=cs.default, type=cs.type)
         cs_child.save()
         cs.delete()
 
-        # cs_simple = CustomBaseSetting.objects.create(tethys_app = cs.tethys_app, name= cs.name, description = cs.description, required =cs.required  ,customsettingbase_ptr=cs, value=cs.value_temp, default=cs.default_temp, type=cs.type_temp)
-        # cs.type_custom_setting = "SIMPLE"
-        # cs_simple.save()
-        # cs.save()
-
 
 def backward(apps, schema_editor):
-    """ From non inehirtance to post inheritance """
-    # CustomBaseSetting = apps.get_model('tethys_apps', 'customsettingbase')
+    """ From CustomBaseSetting inheritance to non inheritance """
     CustomBaseSetting = apps.get_model('tethys_apps', 'CustomSettingBase')
     CustomSetting = apps.get_model('tethys_apps', 'customsetting')
     OldCustomSetting = apps.get_model('tethys_apps', 'oldcustomsetting')

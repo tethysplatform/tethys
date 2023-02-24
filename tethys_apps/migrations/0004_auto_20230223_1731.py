@@ -22,10 +22,6 @@ class Migration(migrations.Migration):
             ],
             bases=('tethys_apps.tethysappsetting',),
         ),
-        # migrations.RemoveField(
-        #     model_name='customsetting',
-        #     name='tethysappsetting_ptr',
-        # ),
         migrations.CreateModel(
             name='JSONCustomSetting',
             fields=[
@@ -56,10 +52,4 @@ class Migration(migrations.Migration):
             bases=('tethys_apps.customsettingbase',),
         ),
 
-        # migrations.AddField(
-        #     model_name='customsetting',
-        #     name='customsettingbase_ptr',
-        #     field=models.OneToOneField(auto_created=True, default='', on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.customsettingbase'),
-        #     preserve_default=False,
-        # ),
     ]
