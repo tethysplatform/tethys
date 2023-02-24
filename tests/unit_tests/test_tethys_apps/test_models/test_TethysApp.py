@@ -263,21 +263,20 @@ class TethysAppTests(TethysTestCase):
         )
 
         json_test_val = {
-            "widget": 
-                {
+            "widget": {
                 "debug": "on",
                 "window": {
                     "title": "Sample Konfabulator Widget",
                     "name": "main_window",
                     "width": 500,
-                    "height": 500
+                    "height": 500,
                 },
-                "image": { 
+                "image": {
                     "src": "Images/Sun.png",
                     "name": "sun1",
                     "hOffset": 250,
                     "vOffset": 250,
-                    "alignment": "center"
+                    "alignment": "center",
                 },
                 "text": {
                     "data": "Click Here",
@@ -287,9 +286,10 @@ class TethysAppTests(TethysTestCase):
                     "hOffset": 250,
                     "vOffset": 100,
                     "alignment": "center",
-                    "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;"
-                }
-        }}  
+                    "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;",
+                },
+            }
+        }
         custom_setting.value = json_test_val
         custom_setting.save()
 

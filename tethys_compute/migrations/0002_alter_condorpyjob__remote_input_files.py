@@ -30,7 +30,6 @@ def save_remote_files_as_list(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tethys_compute", "0001_initial_40"),
     ]

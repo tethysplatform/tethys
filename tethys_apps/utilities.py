@@ -60,6 +60,7 @@ def get_tethys_home_dir():
 
     return tethys_home
 
+
 def get_directories_in_tethys(directory_names, with_app_name=False):
     """
     # Locate given directories in tethys apps and extensions.
@@ -173,7 +174,7 @@ def get_app_settings(app):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSettingBase
+        CustomSettingBase,
     )
 
     try:
@@ -190,7 +191,9 @@ def get_app_settings(app):
             app_settings.append(setting)
         for setting in WebProcessingServiceSetting.objects.filter(tethys_app=app):
             app_settings.append(setting)
-        for setting in CustomSettingBase.objects.filter(tethys_app=app).select_subclasses():
+        for setting in CustomSettingBase.objects.filter(
+            tethys_app=app
+        ).select_subclasses():
             app_settings.append(setting)
         unlinked_settings = []
         linked_settings = []
@@ -209,12 +212,14 @@ def get_app_settings(app):
                     hasattr(setting, "web_processing_service")
                     and setting.web_processing_service
                 )
-                or (hasattr(setting, "value") and (setting.value != "" and bool(setting.value)))
+                or (
+                    hasattr(setting, "value")
+                    and (setting.value != "" and bool(setting.value))
+                )
             ):
                 linked_settings.append(setting)
             else:
                 unlinked_settings.append(setting)
-
 
         return {
             "linked_settings": linked_settings,
@@ -255,12 +260,16 @@ def get_custom_setting(app_package, setting_name):
     except TethysApp.DoesNotExist:
         return None
     try:
-
-        setting = CustomSettingBase.objects.filter(tethys_app=app).select_subclasses().get(name=setting_name)
+        setting = (
+            CustomSettingBase.objects.filter(tethys_app=app)
+            .select_subclasses()
+            .get(name=setting_name)
+        )
     except CustomSettingBase.DoesNotExist:
         return None
 
     return setting
+
 
 def get_custom_secret_settings(app_package):
     """
@@ -278,9 +287,12 @@ def get_custom_secret_settings(app_package):
         app = TethysApp.objects.get(package=app_package)
     except TethysApp.DoesNotExist:
         return None
-    
-    settings = CustomSettingBase.objects.filter(tethys_app=app).select_subclasses().filter(type_custom_setting="SECRET")
 
+    settings = (
+        CustomSettingBase.objects.filter(tethys_app=app)
+        .select_subclasses()
+        .filter(type_custom_setting="SECRET")
+    )
 
     return settings
 
@@ -606,12 +618,16 @@ def delete_secrets(app_name):
         with secrets_yaml_file.open("r") as secrets_yaml:
             portal_secrets = yaml.safe_load(secrets_yaml) or {}
             if "secrets" in portal_secrets:
-                if not app_name in portal_secrets["secrets"]:
-                ## always reset on a new install
+                if app_name not in portal_secrets["secrets"]:
+                    # always reset on a new install
                     portal_secrets["secrets"][app_name] = {}
-                if 'custom_settings_salt_strings' in portal_secrets["secrets"][app_name]:
-    
-                    portal_secrets["secrets"][app_name]["custom_settings_salt_strings"] = {}
-                
+                if (
+                    "custom_settings_salt_strings"
+                    in portal_secrets["secrets"][app_name]
+                ):
+                    portal_secrets["secrets"][app_name][
+                        "custom_settings_salt_strings"
+                    ] = {}
+
                 with secrets_yaml_file.open("w") as secrets_yaml:
                     yaml.dump(portal_secrets, secrets_yaml)

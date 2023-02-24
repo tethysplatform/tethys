@@ -103,21 +103,18 @@ class TestJobManager(unittest.TestCase):
         )
 
     def test_JobManager_list_job_with_user(self):
-
         mgr = JobManager(self.app_model)
         ret = mgr.list_jobs(user=self.user_model)
 
         self.assertEqual(ret[0], self.tethysjob)
 
     def test_JobManager_list_job_with_groups(self):
-
         mgr = JobManager(self.app_model)
         ret = mgr.list_jobs(groups=[self.group_model])
 
         self.assertEqual(ret[0], self.tethysjob)
 
     def test_JobManager_list_job_value_error(self):
-
         mgr = JobManager(self.app_model)
         self.assertRaises(
             ValueError, mgr.list_jobs, user=self.user_model, groups=[self.group_model]

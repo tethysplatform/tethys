@@ -10,7 +10,13 @@ from pathlib import Path
 
 from tethys_apps.base.testing.environment import set_testing_environment
 from tethys_apps.utilities import get_tethys_src_dir, get_tethys_home_dir
-from tethys_cli.cli_colors import pretty_output, FG_RED, write_error, write_success, write_warning,write_msg
+from tethys_cli.cli_colors import (
+    pretty_output,
+    FG_RED,
+    write_error,
+    write_success,
+    write_warning,
+)
 
 
 TETHYS_HOME = Path(get_tethys_home_dir())
@@ -65,47 +71,56 @@ def load_apps():
     django.setup()
     sys.stdout = stdout
 
+
 def generate_salt_string():
     salt = bcrypt.gensalt()
     return salt
 
-def gen_salt_string_for_setting(app_name,setting):
+
+def gen_salt_string_for_setting(app_name, setting):
     secret_yaml_file = TETHYS_HOME / "secrets.yml"
     secret_settings = {}
     with secret_yaml_file.open("r") as secret_yaml:
         secret_settings = yaml.safe_load(secret_yaml) or {}
-        if not app_name in secret_settings["secrets"]:
+        if app_name not in secret_settings["secrets"]:
             write_warning(
-                f'No definition for the app {app_name} in the secrets.yml. Generating one...'
+                f"No definition for the app {app_name} in the secrets.yml. Generating one..."
             )
             secret_settings["secrets"][app_name] = {}
-        if not 'custom_settings_salt_strings' in secret_settings["secrets"][app_name]:
+        if "custom_settings_salt_strings" not in secret_settings["secrets"][app_name]:
             write_warning(
-                f'No custom_settings_salt_strings in the app {app_name} in the secrets.yml. Generating one...'
+                f"No custom_settings_salt_strings in the app {app_name} in the secrets.yml. Generating one..."
             )
             secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
 
         last_salt_string = ""
         signer = Signer()
-        if setting.name in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]:
-            last_salt_string = secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name]
+        if (
+            setting.name
+            in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]
+        ):
+            last_salt_string = secret_settings["secrets"][app_name][
+                "custom_settings_salt_strings"
+            ][setting.name]
             signer = Signer(salt=last_salt_string)
         try:
-            secret_unsigned= signer.unsign_object(f'{setting.value}')
+            secret_unsigned = signer.unsign_object(f"{setting.value}")
         except BadSignature:
             write_error(
-                f'The salt string for the setting {setting.name} in the app {app_name} can not be generated in the secrets.yml because, the salt string for the setting in the secrets.yml was changed/deleted'
+                f"The salt string for the setting {setting.name} in the app {app_name} can not be generated in the secrets.yml because, the salt string for the setting in the secrets.yml was changed/deleted"
             )
             write_warning(
-                'Please enter the secret custom settings in the application settings again'
+                "Please enter the secret custom settings in the application settings again"
             )
-            return 
+            return
         salt_string = generate_salt_string().decode()
-        secret_settings["secrets"][app_name]["custom_settings_salt_strings"][setting.name] = salt_string
+        secret_settings["secrets"][app_name]["custom_settings_salt_strings"][
+            setting.name
+        ] = salt_string
         with secret_yaml_file.open("w") as secret_yaml:
             yaml.dump(secret_settings, secret_yaml)
             write_success(
-                f'Salt string generated for setting: {setting.name} in app {app_name}'
+                f"Salt string generated for setting: {setting.name} in app {app_name}"
             )
         setting.value = secret_unsigned
         setting.clean()

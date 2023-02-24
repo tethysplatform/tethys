@@ -793,38 +793,37 @@ class TestTethysAppBase(unittest.TestCase):
         setting_name = "fake_setting"
         mock_save = mock.MagicMock()
         mock_app.objects.get().custom_settings.get.side_effect = [
-            mock.MagicMock(type_custom_setting="SIMPLE",type="STRING", save=mock_save),
-            mock.MagicMock(type_custom_setting="SIMPLE",type="INTEGER", save=mock_save),
+            mock.MagicMock(type_custom_setting="SIMPLE", type="STRING", save=mock_save),
+            mock.MagicMock(
+                type_custom_setting="SIMPLE", type="INTEGER", save=mock_save
+            ),
             mock.MagicMock(type_custom_setting="SIMPLE", type="FLOAT", save=mock_save),
-            mock.MagicMock(type_custom_setting="SIMPLE", type="BOOLEAN", save=mock_save),
+            mock.MagicMock(
+                type_custom_setting="SIMPLE", type="BOOLEAN", save=mock_save
+            ),
             mock.MagicMock(type_custom_setting="SIMPLE", type="UUID", save=mock_save),
-            mock.MagicMock(type_custom_setting="SECRET",required=True, save=mock_save),
+            mock.MagicMock(type_custom_setting="SECRET", required=True, save=mock_save),
             mock.MagicMock(type_custom_setting="SECRET", save=mock_save),
-            mock.MagicMock(type_custom_setting="JSON",required=True, save=mock_save),
+            mock.MagicMock(type_custom_setting="JSON", required=True, save=mock_save),
             mock.MagicMock(type_custom_setting="JSON", save=mock_save),
         ]
 
-        test_json_1= {
-            "name": "John",
-            "age": 30,
-            "city": "New York"
-        }
-        test_json_2= {
-            "key1": 2.5,
-            "key2": 30,
-            "key3": "2"
-        }
+        test_json_1 = {"name": "John", "age": 30, "city": "New York"}
+        test_json_2 = {"key1": 2.5, "key2": 30, "key3": "2"}
 
         TethysAppChild.set_custom_setting(name=setting_name, value="test")
         TethysAppChild.set_custom_setting(name=setting_name, value=1)
         TethysAppChild.set_custom_setting(name=setting_name, value=1.0)
         TethysAppChild.set_custom_setting(name=setting_name, value=True)
         TethysAppChild.set_custom_setting(name=setting_name, value=uuid.uuid4())
-        TethysAppChild.set_custom_setting(name=setting_name, value="7QcS5r5D16krm8SnkS3OeBiQjjkCT0C8")
-        TethysAppChild.set_custom_setting(name=setting_name, value="82F8735AF65A399CA39859E8DBC49")
+        TethysAppChild.set_custom_setting(
+            name=setting_name, value="7QcS5r5D16krm8SnkS3OeBiQjjkCT0C8"
+        )
+        TethysAppChild.set_custom_setting(
+            name=setting_name, value="82F8735AF65A399CA39859E8DBC49"
+        )
         TethysAppChild.set_custom_setting(name=setting_name, value=test_json_1)
         TethysAppChild.set_custom_setting(name=setting_name, value=test_json_2)
-
 
         self.assertEqual(9, mock_save.call_count)
 
@@ -850,9 +849,9 @@ class TestTethysAppBase(unittest.TestCase):
         setting_name = "fake_setting"
 
         mock_app.objects.get().custom_settings.get.side_effect = [
-            mock.MagicMock(type="UUID",type_custom_setting="SIMPLE"),
+            mock.MagicMock(type="UUID", type_custom_setting="SIMPLE"),
             mock.MagicMock(type_custom_setting="JSON"),
-            mock.MagicMock(type_custom_setting="SECRET")
+            mock.MagicMock(type_custom_setting="SECRET"),
         ]
 
         with self.assertRaises(ValidationError) as ret:

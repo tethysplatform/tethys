@@ -60,7 +60,6 @@ class ProxyAppTests(TethysTestCase):
         self.assertEqual(self.app_name, ret)
 
     def test_create(self):
-
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,

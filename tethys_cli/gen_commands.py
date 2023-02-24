@@ -23,7 +23,12 @@ from jinja2 import Template
 from django.conf import settings
 
 import tethys_portal
-from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir,get_installed_tethys_items,get_custom_secret_settings
+from tethys_apps.utilities import (
+    get_tethys_home_dir,
+    get_tethys_src_dir,
+    get_installed_tethys_items,
+    get_custom_secret_settings,
+)
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
 from tethys_cli.cli_helpers import load_apps
@@ -88,7 +93,6 @@ TETHYS_HOME = get_tethys_home_dir()
 
 
 def add_gen_parser(subparsers):
-
     # Setup generate command
     gen_parser = subparsers.add_parser(
         "gen",
@@ -324,7 +328,6 @@ def gen_portal_yaml(args):
     try:
         tethys_portal_settings.update(args.tethys_portal_settings)
     except AttributeError:
-
         write_info(
             "A Tethys Portal configuration file is being generated. "
             "Please review the file and fill in the appropriate settings."
@@ -341,23 +344,30 @@ def gen_portal_yaml(args):
     }
     return context
 
+
 def gen_secrets_yaml(args):
     load_apps()
     tethys_secrets_settings = {}
     tethys_secrets_settings.setdefault("version", 1.0)
     tethys_secrets_settings.setdefault("secrets", {})
     installed_apps = get_installed_tethys_items(apps=True)
-    
+
     for one_app in installed_apps.keys():
         if one_app not in tethys_secrets_settings["secrets"]:
             tethys_secrets_settings["secrets"][one_app] = {}
-            if "custom_settings_salt_strings" not in tethys_secrets_settings["secrets"][one_app]:
-                tethys_secrets_settings["secrets"][one_app]["custom_settings_salt_strings"] = {}
+            if (
+                "custom_settings_salt_strings"
+                not in tethys_secrets_settings["secrets"][one_app]
+            ):
+                tethys_secrets_settings["secrets"][one_app][
+                    "custom_settings_salt_strings"
+                ] = {}
 
         secret_settings = get_custom_secret_settings(one_app)
         for secret_setting in secret_settings:
-            tethys_secrets_settings["secrets"][one_app]["custom_settings_salt_strings"][secret_setting.name] = ""
-
+            tethys_secrets_settings["secrets"][one_app]["custom_settings_salt_strings"][
+                secret_setting.name
+            ] = ""
 
     write_info(
         "A Tethys Secrets file is being generated. "

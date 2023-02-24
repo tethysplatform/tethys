@@ -61,39 +61,37 @@ class TestApp(TethysAppBase):
                 required=False,
             ),
             JSONCustomSetting(
-                name='JSON_setting_not_default_value_required',
-                description='This is JSON setting without a default value',
+                name="JSON_setting_not_default_value_required",
+                description="This is JSON setting without a default value",
                 required=True,
             ),
             JSONCustomSetting(
-                name='JSON_setting_not_default_value',
-                description='This is JSON setting without a default value',
+                name="JSON_setting_not_default_value",
+                description="This is JSON setting without a default value",
                 required=False,
             ),
             JSONCustomSetting(
-                name='JSON_setting_default_value_required',
-                description='This is JSON setting with a default value',
+                name="JSON_setting_default_value_required",
+                description="This is JSON setting with a default value",
                 required=True,
-                default={"Test":"JSON test String"}
+                default={"Test": "JSON test String"},
             ),
             JSONCustomSetting(
-                name='JSON_setting_default_value',
-                description='This is JSON setting with a default value',
+                name="JSON_setting_default_value",
+                description="This is JSON setting with a default value",
                 required=False,
-                default={"Test":"JSON test String"}
-            ),
-
-            SecretCustomSetting(
-                name='Secret_Test_required',
-                description='This is SECRET setting with required True',
-                required=True            
+                default={"Test": "JSON test String"},
             ),
             SecretCustomSetting(
-                name='Secret_Test2_without_required',
-                description='This is SECRET setting with required False',
-                required=False
-            )
-
+                name="Secret_Test_required",
+                description="This is SECRET setting with required True",
+                required=True,
+            ),
+            SecretCustomSetting(
+                name="Secret_Test2_without_required",
+                description="This is SECRET setting with required False",
+                required=False,
+            ),
         )
 
         return custom_settings

@@ -16,7 +16,6 @@ from django.dispatch import receiver
 import logging
 import uuid
 import json
-import django.dispatch
 from django.db import models
 from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceManager
@@ -31,10 +30,8 @@ from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
-from django.contrib.auth.hashers import check_password
-
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
-from tethys_apps.utilities import get_tethys_home_dir, get_active_app
+from tethys_apps.utilities import get_tethys_home_dir
 
 log = logging.getLogger("tethys")
 
@@ -118,9 +115,11 @@ class TethysApp(models.Model, TethysBaseMixin):
 
     @property
     def custom_settings(self):
-        return self.settings_set.exclude(customsettingbase__isnull=True).select_subclasses(
-            "customsettingbase"
-        ).select_subclasses()
+        return (
+            self.settings_set.exclude(customsettingbase__isnull=True)
+            .select_subclasses("customsettingbase")
+            .select_subclasses()
+        )
 
     @property
     def dataset_service_settings(self):
@@ -236,7 +235,6 @@ class TethysAppSetting(models.Model):
         raise NotImplementedError()
 
 
-
 class CustomSettingBase(TethysAppSetting):
     # value = models.CharField(max_length=1024, blank=True, default="")
     # default = models.CharField(max_length=1024, blank=True, default="")
@@ -273,40 +271,55 @@ class SecretCustomSetting(CustomSettingBase):
     """  # noqa: E501
 
     value = models.CharField(max_length=1024, blank=True, default="")
+
     def clean(self):
         """
         Validate prior to saving changes.
         """
-              
+
         if type(self.value) is not str:
-            raise ValidationError("Validation Error: Secret Custom Setting should be a String")
-        else: 
+            raise ValidationError(
+                "Validation Error: Secret Custom Setting should be a String"
+            )
+        else:
             try:
                 json.loads(self.value)
-                raise ValidationError("Validation Error: Secret Custom Setting should not be a JSON String")
+                raise ValidationError(
+                    "Validation Error: Secret Custom Setting should not be a JSON String"
+                )
             except ValueError:
                 pass
-        
+
         if self.value == "" and self.required:
             raise ValidationError("Required.")
-        if self.value != "" :
-            
+        if self.value != "":
             TETHYS_HOME = get_tethys_home_dir()
             signer = Signer()
             if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
                 self.value = signer.sign_object(self.value)
-            else:   
+            else:
                 with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
-                    secret_app_settings = yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+                    secret_app_settings = (
+                        yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+                    )
                     if bool(secret_app_settings):
                         if self.tethys_app.package in secret_app_settings:
-                            if 'custom_settings_salt_strings' in secret_app_settings[self.tethys_app.package]:
-                                app_specific_settings = secret_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                            if (
+                                "custom_settings_salt_strings"
+                                in secret_app_settings[self.tethys_app.package]
+                            ):
+                                app_specific_settings = secret_app_settings[
+                                    self.tethys_app.package
+                                ]["custom_settings_salt_strings"]
                                 if self.name in app_specific_settings:
-                                    app_custom_setting_salt_string = app_specific_settings[self.name]
-                                    if app_custom_setting_salt_string != '':
-                                        signer = Signer(salt=app_custom_setting_salt_string)
-                                    
+                                    app_custom_setting_salt_string = (
+                                        app_specific_settings[self.name]
+                                    )
+                                    if app_custom_setting_salt_string != "":
+                                        signer = Signer(
+                                            salt=app_custom_setting_salt_string
+                                        )
+
                         self.value = signer.sign_object(self.value)
 
                     else:
@@ -314,7 +327,7 @@ class SecretCustomSetting(CustomSettingBase):
                             "There is not a an apps portion in the secrets.yml, please create one."
                         )
                         self.value = signer.sign_object(self.value)
-        
+
     def get_value(self):
         """
         Get the value
@@ -331,28 +344,36 @@ class SecretCustomSetting(CustomSettingBase):
 
         TETHYS_HOME = get_tethys_home_dir()
         signer = Signer()
-        secret_unsigned = ''
+        secret_unsigned = ""
 
         try:
             if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-                secret_unsigned = signer.unsign_object(f'{self.value}')
-            else:  
+                secret_unsigned = signer.unsign_object(f"{self.value}")
+            else:
                 with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
-                    secrets_app_settings = yaml.safe_load(secret_yaml).get("secrets", {}) or {}
+                    secrets_app_settings = (
+                        yaml.safe_load(secret_yaml).get("secrets", {}) or {}
+                    )
                     if bool(secrets_app_settings):
-                        if 'custom_settings_salt_strings' in secrets_app_settings[self.tethys_app.package]:
-                            app_specific_settings = secrets_app_settings[self.tethys_app.package]['custom_settings_salt_strings']
+                        if (
+                            "custom_settings_salt_strings"
+                            in secrets_app_settings[self.tethys_app.package]
+                        ):
+                            app_specific_settings = secrets_app_settings[
+                                self.tethys_app.package
+                            ]["custom_settings_salt_strings"]
                             if self.name in app_specific_settings:
-                                app_custom_setting_salt_string = app_specific_settings[self.name]
-                                if app_custom_setting_salt_string != '':
+                                app_custom_setting_salt_string = app_specific_settings[
+                                    self.name
+                                ]
+                                if app_custom_setting_salt_string != "":
                                     signer = Signer(salt=app_custom_setting_salt_string)
-  
-                    secret_unsigned = signer.unsign_object(f'{self.value}')
-                
-        except signing.BadSignature:
 
+                    secret_unsigned = signer.unsign_object(f"{self.value}")
+
+        except signing.BadSignature:
             raise TethysAppSettingNotAssigned(
-                f'The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again.'
+                f"The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again."
             )
 
         return secret_unsigned
@@ -437,7 +458,7 @@ class CustomSetting(CustomSettingBase):
     def clean(self):
         """
         Validate prior to saving changes.
-        """        
+        """
         if self.default != "":
             if self.value == "":
                 self.value = self.default
@@ -500,6 +521,7 @@ class CustomSetting(CustomSettingBase):
         if self.type == self.TYPE_UUID:
             return uuid.UUID(self.value)
 
+
 class JSONCustomSetting(CustomSettingBase):
     """
     Used to define a Custom Json Setting.
@@ -536,33 +558,34 @@ class JSONCustomSetting(CustomSettingBase):
             required=False,
         )
 
-    """  # noqa: E501    
+    """  # noqa: E501
+
     value = models.JSONField(blank=True, default=dict)
     default = models.JSONField(blank=True, default=dict)
+
     def clean(self):
         """
         Validate prior to saving changes.
-        """        
+        """
         if self.default:
             if not self.value:
                 self.value = self.default
         else:
             if not self.default and self.required:
                 raise ValidationError("Required.")
-                
+
         if type(self.value) is dict:
             try:
                 json.dumps(self.value)
             except TypeError:
                 raise ValidationError("Value must be a valid JSON dict")
-        else: 
+        else:
             raise ValidationError("Value must be a valid JSON dict")
 
     def get_value(self):
         """
         Get the value
         """
-        
 
         if self.default:
             if not self.value:
@@ -577,7 +600,7 @@ class JSONCustomSetting(CustomSettingBase):
 
             # None is a valid value to return in the case the value has not been set for this setting type
             return None
-        
+
         return self.value
 
 
@@ -598,6 +621,7 @@ def set_default_value(sender, instance, *args, **kwargs):
     if not instance.value or instance.value == "":
         instance.value = instance.default
 
+
 # @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
 @receiver(models.signals.post_init, sender=CustomSetting)
 def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
@@ -614,6 +638,7 @@ def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
     """
     if instance.type_custom_setting == "":
         instance.type_custom_setting = "SIMPLE"
+
 
 @receiver(models.signals.post_init, sender=SecretCustomSetting)
 def set_default_custom_secret_setting_type(sender, instance, *args, **kwargs):
@@ -647,6 +672,7 @@ def set_default_custom_json_setting_type(sender, instance, *args, **kwargs):
     """
     if instance.type_custom_setting == "":
         instance.type_custom_setting = "JSON"
+
 
 class DatasetServiceSetting(TethysAppSetting):
     """
@@ -700,7 +726,6 @@ class DatasetServiceSetting(TethysAppSetting):
             raise ValidationError("Required.")
 
     def get_value(self, as_public_endpoint=False, as_endpoint=False, as_engine=False):
-
         if not self.dataset_service:
             raise TethysAppSettingNotAssigned(
                 f"Cannot create engine or endpoint for DatasetServiceSetting "
@@ -775,7 +800,6 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
         as_engine=False,
         as_wcs=False,
     ):
-
         if not self.spatial_dataset_service:
             raise TethysAppSettingNotAssigned(
                 f"Cannot create engine or endpoint for SpatialDatasetServiceSetting "
@@ -1336,8 +1360,3 @@ class ProxyApp(models.Model):
 
     def __str__(self):
         return self.name
-
-
-
-
-    

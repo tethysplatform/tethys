@@ -115,7 +115,6 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_model, ret.model)
 
     def test_JSONCustomSettingInline(self):
-
         expected_readonly_fields = ("name", "description", "required")
         expected_fields = ("name", "description", "value", "required")
         expected_model = JSONCustomSetting

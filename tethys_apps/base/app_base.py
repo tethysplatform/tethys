@@ -900,7 +900,6 @@ class TethysAppBase(TethysBase):
             if (len(db_group_name_parts) > 1) and (
                 db_group_name_parts[0] in db_app_names
             ):
-
                 # Delete groups that is no longer required by this app
                 if db_group.name not in app_groups:
                     db_group.delete()
@@ -1143,9 +1142,7 @@ class TethysAppBase(TethysBase):
                 custom_setting.value = value
                 custom_setting.save()
 
-
         if custom_setting.type_custom_setting == "JSON":
-
             if type(value) is not dict:
                 raise ValidationError("Value must be a valid JSON string.")
             else:
@@ -1759,7 +1756,6 @@ class TethysAppBase(TethysBase):
                 f"Do you want to remove it from the database?"
             )
             while proceed is None:
-
                 response = input("[y/n]")
                 if response.lower() == "y":
                     proceed = True
