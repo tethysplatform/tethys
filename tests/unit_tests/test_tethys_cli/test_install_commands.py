@@ -494,10 +494,6 @@ class TestInstallServicesCommands(TestCase):
             value=None, type_custom_setting="SECRET"
         )
 
-        # Third custom setting listed does not exist
-        # CustomSetting.objects.filter(tethys_app=db_app.id).select_subclasses().get(
-        #                     name=setting_name
-        #                 )
         mock_CustomSetting.objects.filter.return_value.select_subclasses.return_value.get.side_effect = [
             mock_invalid_custom_setting,  #: Save raises Validation error
             mock_valid_custom_setting,  #: Should pass without errors

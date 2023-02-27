@@ -53,15 +53,10 @@ class TethysAppSettingInline(admin.TabularInline):
     def has_add_permission(self, request, obj=None):
         return False
 
-
 class CustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
     fields = ("name", "description", "type", "value", "required")
     model = CustomSetting
-    # def get_queryset(self, request):
-    #     qs = super(CustomSettingInline, self).get_queryset(request)
-    #     return qs.exclude(type="JSON").exclude(type="SECRET")
-
 
 class SecretCustomSettingForm(forms.ModelForm):
     value = forms.CharField(
@@ -76,7 +71,6 @@ class SecretCustomSettingForm(forms.ModelForm):
     class Meta:
         model = SecretCustomSetting
         fields = ["name", "description", "value", "required"]
-
 
 class SecretCustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")

@@ -27,7 +27,7 @@ from tethys_apps.utilities import (
     get_tethys_home_dir,
     get_tethys_src_dir,
     get_installed_tethys_items,
-    get_custom_secret_settings,
+    get_secret_custom_settings,
 )
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
@@ -363,7 +363,7 @@ def gen_secrets_yaml(args):
                     "custom_settings_salt_strings"
                 ] = {}
 
-        secret_settings = get_custom_secret_settings(one_app)
+        secret_settings = get_secret_custom_settings(one_app)
         for secret_setting in secret_settings:
             tethys_secrets_settings["secrets"][one_app]["custom_settings_salt_strings"][
                 secret_setting.name

@@ -910,14 +910,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             after_content, mock_open_file.return_value
         )
 
-    def test_get_custom_secret_settings(self):
+    def test_get_secret_custom_settings(self):
         app_target_name = "test_app"
 
-        secret_settings = utilities.get_custom_secret_settings(app_target_name)
+        secret_settings = utilities.get_secret_custom_settings(app_target_name)
 
         self.assertEqual(len(secret_settings), 2)
 
-    def test_get_custom_secret_settings_without_app(self):
+    def test_get_secret_custom_settings_without_app(self):
         app_target_name = "test_app2"
-        return_val = utilities.get_custom_secret_settings(app_target_name)
+        return_val = utilities.get_secret_custom_settings(app_target_name)
         self.assertEqual(return_val, None)

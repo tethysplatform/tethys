@@ -13,6 +13,9 @@ channels:
 dependencies:
   - python
 
+  # encryption dependencies
+  - bcrypt
+
   # spatial dependencies
   - PyShp
 

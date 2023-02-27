@@ -31,7 +31,7 @@ from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
-from tethys_apps.utilities import get_tethys_home_dir
+from tethys_apps.utilities import get_tethys_home_dir,secrets_signed_unsigned_value
 
 log = logging.getLogger("tethys")
 
@@ -281,52 +281,46 @@ class SecretCustomSetting(CustomSettingBase):
             raise ValidationError(
                 "Validation Error: Secret Custom Setting should be a String"
             )
-        else:
-            try:
-                json.loads(self.value)
-                raise ValidationError(
-                    "Validation Error: Secret Custom Setting should not be a JSON String"
-                )
-            except ValueError:
-                pass
 
         if self.value == "" and self.required:
             raise ValidationError("Required.")
+            
         if self.value != "":
-            TETHYS_HOME = get_tethys_home_dir()
-            signer = Signer()
-            if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-                self.value = signer.sign_object(self.value)
-            else:
-                with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
-                    secret_app_settings = (
-                        yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
-                    )
-                    if bool(secret_app_settings):
-                        if self.tethys_app.package in secret_app_settings:
-                            if (
-                                "custom_settings_salt_strings"
-                                in secret_app_settings[self.tethys_app.package]
-                            ):
-                                app_specific_settings = secret_app_settings[
-                                    self.tethys_app.package
-                                ]["custom_settings_salt_strings"]
-                                if self.name in app_specific_settings:
-                                    app_custom_setting_salt_string = (
-                                        app_specific_settings[self.name]
-                                    )
-                                    if app_custom_setting_salt_string != "":
-                                        signer = Signer(
-                                            salt=app_custom_setting_salt_string
-                                        )
+            self.value = secrets_signed_unsigned_value(self.name,self.value,self.tethys_app.package,is_signing=True)
+            # TETHYS_HOME = get_tethys_home_dir()
+            # signer = Signer()
+            # if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+            #     self.value = signer.sign_object(self.value)
+            # else:
+            #     with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
+            #         secret_app_settings = (
+            #             yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+            #         )
+            #         if bool(secret_app_settings):
+            #             if self.tethys_app.package in secret_app_settings:
+            #                 if (
+            #                     "custom_settings_salt_strings"
+            #                     in secret_app_settings[self.tethys_app.package]
+            #                 ):
+            #                     app_specific_settings = secret_app_settings[
+            #                         self.tethys_app.package
+            #                     ]["custom_settings_salt_strings"]
+            #                     if self.name in app_specific_settings:
+            #                         app_custom_setting_salt_string = (
+            #                             app_specific_settings[self.name]
+            #                         )
+            #                         if app_custom_setting_salt_string != "":
+            #                             signer = Signer(
+            #                                 salt=app_custom_setting_salt_string
+            #                             )
 
-                        self.value = signer.sign_object(self.value)
+            #             self.value = signer.sign_object(self.value)
 
-                    else:
-                        log.info(
-                            "There is not a an apps portion in the secrets.yml, please create one."
-                        )
-                        self.value = signer.sign_object(self.value)
+            #         else:
+            #             log.info(
+            #                 "There is not a secrets section in the secrets.yml, please create one."
+            #             )
+            #             self.value = signer.sign_object(self.value)
 
     def get_value(self):
         """
@@ -342,39 +336,40 @@ class SecretCustomSetting(CustomSettingBase):
             # None is a valid value to return in the case the value has not been set for this setting type
             return None
 
-        TETHYS_HOME = get_tethys_home_dir()
-        signer = Signer()
-        secret_unsigned = ""
+        secret_unsigned = secrets_signed_unsigned_value(self.name,self.value,self.tethys_app.package,is_signing=False)
+        # TETHYS_HOME = get_tethys_home_dir()
+        # signer = Signer()
+        # secret_unsigned = ""
 
-        try:
-            if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-                secret_unsigned = signer.unsign_object(f"{self.value}")
-            else:
-                with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
-                    secrets_app_settings = (
-                        yaml.safe_load(secret_yaml).get("secrets", {}) or {}
-                    )
-                    if bool(secrets_app_settings):
-                        if (
-                            "custom_settings_salt_strings"
-                            in secrets_app_settings[self.tethys_app.package]
-                        ):
-                            app_specific_settings = secrets_app_settings[
-                                self.tethys_app.package
-                            ]["custom_settings_salt_strings"]
-                            if self.name in app_specific_settings:
-                                app_custom_setting_salt_string = app_specific_settings[
-                                    self.name
-                                ]
-                                if app_custom_setting_salt_string != "":
-                                    signer = Signer(salt=app_custom_setting_salt_string)
+        # try:
+        #     if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+        #         secret_unsigned = signer.unsign_object(f"{self.value}")
+        #     else:
+        #         with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
+        #             secrets_app_settings = (
+        #                 yaml.safe_load(secret_yaml).get("secrets", {}) or {}
+        #             )
+        #             if bool(secrets_app_settings):
+        #                 if (
+        #                     "custom_settings_salt_strings"
+        #                     in secrets_app_settings[self.tethys_app.package]
+        #                 ):
+        #                     app_specific_settings = secrets_app_settings[
+        #                         self.tethys_app.package
+        #                     ]["custom_settings_salt_strings"]
+        #                     if self.name in app_specific_settings:
+        #                         app_custom_setting_salt_string = app_specific_settings[
+        #                             self.name
+        #                         ]
+        #                         if app_custom_setting_salt_string != "":
+        #                             signer = Signer(salt=app_custom_setting_salt_string)
 
-                    secret_unsigned = signer.unsign_object(f"{self.value}")
+        #             secret_unsigned = signer.unsign_object(f"{self.value}")
 
-        except signing.BadSignature:
-            raise TethysAppSettingNotAssigned(
-                f"The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again."
-            )
+        # except signing.BadSignature:
+        #     raise TethysAppSettingNotAssigned(
+        #         f"The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again."
+        #     )
 
         return secret_unsigned
 
@@ -622,7 +617,6 @@ def set_default_value(sender, instance, *args, **kwargs):
         instance.value = instance.default
 
 
-# @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
 @receiver(models.signals.post_init, sender=CustomSetting)
 def set_default_custom_simple_setting_type(sender, instance, *args, **kwargs):
     """

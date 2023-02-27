@@ -244,10 +244,9 @@ def app_settings_set_command(args):
     try:
         value_json = "{}"
         if setting.type_custom_setting == "JSON":
-            # breakpoint()
             if os.path.exists(actual_value):
                 with open(actual_value) as json_file:
-                    write_warning("File found, extracting Json data")
+                    write_warning("File found, extracting JSON data")
                     value_json = json.load(json_file)
 
                 setting.value = value_json
@@ -255,7 +254,7 @@ def app_settings_set_command(args):
                 try:
                     setting.value = json.loads(actual_value)
                 except json.decoder.JSONDecodeError:
-                    write_error("Please enclose the json in single quotes")
+                    write_error("Please enclose the JSON in single quotes")
                     exit(1)
 
         else:
@@ -315,7 +314,6 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting: "ds_spatial",
         DatasetServiceSetting: "ds_dataset",
         WebProcessingServiceSetting: "wps",
-        CustomSettingBase: "custom_setting_base",
         CustomSetting: "custom_setting",
         SecretCustomSetting: "secret_custom_setting",
         JSONCustomSetting: "json_custom_setting",
