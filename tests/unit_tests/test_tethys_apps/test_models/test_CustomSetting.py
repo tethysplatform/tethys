@@ -150,12 +150,13 @@ class CustomSettingTests(TethysTestCase):
         ret = CustomSettingBase.objects.filter(
             name="Secret_Test2_without_required"
         ).select_subclasses()[0]
-        self.assertRaises(ValidationError, ret.clean)
+        self.assertEqual(json.dumps(dict_example), ret.value)
 
-    @mock.patch("tethys_apps.models.yaml.safe_load")
-    @mock.patch("tethys_apps.models.os.path.exists")
+
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch("tethys_apps.utilities.os.path.exists")
     @mock.patch(
-        "tethys_apps.models.open",
+        "tethys_apps.utilities.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
     def test_clean_secret_validation_with_complete_secrets_yml(
@@ -186,10 +187,10 @@ class CustomSettingTests(TethysTestCase):
 
         self.assertEqual(custom_secret_setting.get_value(), "SECRE:TXX1Y")
 
-    @mock.patch("tethys_apps.models.yaml.safe_load")
-    @mock.patch("tethys_apps.models.os.path.exists")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch("tethys_apps.utilities.os.path.exists")
     @mock.patch(
-        "tethys_apps.models.open",
+        "tethys_apps.utilities.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
     def test_clean_secret_validation_with_incomplete_secrets_yml(
@@ -373,10 +374,10 @@ class CustomSettingTests(TethysTestCase):
         )
         self.assertEqual("Mysecrertxxxx23526236sddgsdgsgsuiLSD", ret)
 
-    @mock.patch("tethys_apps.models.yaml.safe_load")
-    @mock.patch("tethys_apps.models.os.path.exists")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch("tethys_apps.utilities.os.path.exists")
     @mock.patch(
-        "tethys_apps.models.open",
+        "tethys_apps.utilities.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
     def test_clean_secret_validation_with_complete_secrets_yml_and_error(

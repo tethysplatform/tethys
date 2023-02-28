@@ -397,7 +397,9 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             SpatialDatasetServiceSetting,
             DatasetServiceSetting,
             WebProcessingServiceSetting,
-            CustomSettingBase,
+            SecretCustomSetting,
+            CustomSetting,
+            JSONCustomSetting
         )
 
         self.assertEqual(
@@ -423,10 +425,17 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             cli_app_settings_command.get_setting_type(WebProcessingServiceSetting()),
         )
         self.assertEqual(
-            "custom_setting_base",
-            cli_app_settings_command.get_setting_type(CustomSettingBase()),
+            "custom_setting",
+            cli_app_settings_command.get_setting_type(CustomSetting()),
         )
-
+        self.assertEqual(
+            "secret_custom_setting",
+            cli_app_settings_command.get_setting_type(SecretCustomSetting()),
+        )
+        self.assertEqual(
+            "json_custom_setting",
+            cli_app_settings_command.get_setting_type(JSONCustomSetting()),
+        )
 
 class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     def set_up(self):
@@ -570,7 +579,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
             mock_args_json,
         )
 
-        mock_write_error.assert_called_with("Please enclose the json in single quotes")
+        mock_write_error.assert_called_with("Please enclose the JSON in single quotes")
         mock_write_success.assert_not_called()
         mock_exit.called_with(1)
 
@@ -611,7 +620,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_write_error.assert_not_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertIn("File found, extracting Json data", po_call_args[0][0][0])
+        self.assertIn("File found, extracting JSON data", po_call_args[0][0][0])
         mock_exit.called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
@@ -776,7 +785,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error.assert_called()
         mock_write_success.assert_not_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertIn("File found, extracting Json data", po_call_args[0][0][0])
+        self.assertIn("File found, extracting JSON data", po_call_args[0][0][0])
         mock_exit.called_with(1)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")

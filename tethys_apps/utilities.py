@@ -636,7 +636,7 @@ def delete_secrets(app_name):
                     yaml.dump(portal_secrets, secrets_yaml)
 
 
-def secrets_signed_unsigned_value(name,value,tethys_app_package_name,is_signing=True):
+def secrets_signed_unsigned_value(name,value,tethys_app_package_name,is_signing):
     return_string = ''
     TETHYS_HOME = get_tethys_home_dir()
     signer = Signer()
@@ -670,6 +670,7 @@ def secrets_signed_unsigned_value(name,value,tethys_app_package_name,is_signing=
         raise TethysAppSettingNotAssigned(
             f"The salt string for the setting {name} has been changed or lost, please enter the secret custom settings in the application settings again."
         )
+        
     return return_string
 
 def sign_and_unsign_secret_string(signer,value,is_signing):
