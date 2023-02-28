@@ -1135,7 +1135,6 @@ class TethysAppBase(TethysBase):
                 raise ValidationError(f"Value must be of type {custom_setting.type}.")
 
         if custom_setting.type_custom_setting == "SECRET":
-
             if type(value) is not str:
                 raise ValidationError(
                     "Validation Error: Secret Custom Setting should be a String"
