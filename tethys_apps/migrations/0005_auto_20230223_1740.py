@@ -5,12 +5,10 @@ from django.db import migrations
 
 def forward(apps, schema_editor):
     """From non inheritance to CustomBaseSetting inheritance"""
-    CustomBaseSetting = apps.get_model("tethys_apps", "CustomSettingBase")
     CustomSetting = apps.get_model("tethys_apps", "customsetting")
     OldCustomSetting = apps.get_model("tethys_apps", "oldcustomsetting")
 
     db_alias = schema_editor.connection.alias
-    # breakpoint()
 
     for cs in OldCustomSetting.objects.using(db_alias).all():
         cs_child = CustomSetting.objects.create(
