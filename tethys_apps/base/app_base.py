@@ -1135,21 +1135,12 @@ class TethysAppBase(TethysBase):
                 raise ValidationError(f"Value must be of type {custom_setting.type}.")
 
         if custom_setting.type_custom_setting == "SECRET":
-            # if value == "":
-            #     raise ValidationError("Secret Value cannot be empty.")
-            # else:
+
             if type(value) is not str:
                 raise ValidationError(
                     "Validation Error: Secret Custom Setting should be a String"
                 )
-            # else:
-            #     try:
-            #         json.loads(value)
-            #         raise ValidationError(
-            #             "Validation Error: Secret Custom Setting should not be a JSON String"
-            #         )
-            #     except ValueError:
-            #         pass
+
             custom_setting.value = value
             custom_setting.save()
 
