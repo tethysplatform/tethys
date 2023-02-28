@@ -9,7 +9,6 @@
 import logging
 import traceback
 import uuid
-import json
 from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist

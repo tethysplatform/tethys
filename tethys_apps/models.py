@@ -7,11 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import yaml
 import sqlalchemy
-import os
-from django.core import signing
-from django.core.signing import Signer
 from django.dispatch import receiver
 import logging
 import uuid
@@ -31,7 +27,7 @@ from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.scheduler import Scheduler
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
-from tethys_apps.utilities import get_tethys_home_dir,secrets_signed_unsigned_value
+from tethys_apps.utilities import secrets_signed_unsigned_value
 
 log = logging.getLogger("tethys")
 
@@ -284,9 +280,11 @@ class SecretCustomSetting(CustomSettingBase):
 
         if self.value == "" and self.required:
             raise ValidationError("Required.")
-            
+
         if self.value != "":
-            self.value = secrets_signed_unsigned_value(self.name,self.value,self.tethys_app.package,is_signing=True)
+            self.value = secrets_signed_unsigned_value(
+                self.name, self.value, self.tethys_app.package, is_signing=True
+            )
 
     def get_value(self):
         """
@@ -302,7 +300,9 @@ class SecretCustomSetting(CustomSettingBase):
             # None is a valid value to return in the case the value has not been set for this setting type
             return None
 
-        secret_unsigned = secrets_signed_unsigned_value(self.name,self.value,self.tethys_app.package,is_signing=False)
+        secret_unsigned = secrets_signed_unsigned_value(
+            self.name, self.value, self.tethys_app.package, is_signing=False
+        )
 
         return secret_unsigned
 

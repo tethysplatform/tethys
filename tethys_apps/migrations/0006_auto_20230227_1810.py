@@ -4,9 +4,8 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tethys_apps', '0005_auto_20230223_1740'),
+        ("tethys_apps", "0005_auto_20230223_1740"),
     ]
 
     operations = [

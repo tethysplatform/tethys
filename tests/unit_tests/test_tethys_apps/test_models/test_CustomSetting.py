@@ -152,7 +152,6 @@ class CustomSettingTests(TethysTestCase):
         ).select_subclasses()[0]
         self.assertEqual(json.dumps(dict_example), ret.value)
 
-
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
     @mock.patch("tethys_apps.utilities.os.path.exists")
     @mock.patch(

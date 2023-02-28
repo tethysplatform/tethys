@@ -302,7 +302,6 @@ def get_setting_type(setting):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSettingBase,
         CustomSetting,
         SecretCustomSetting,
         JSONCustomSetting,

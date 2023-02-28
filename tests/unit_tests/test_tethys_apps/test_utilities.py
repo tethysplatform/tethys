@@ -5,6 +5,7 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from django.core.signing import Signer
 
+
 class TethysAppsUtilitiesTests(unittest.TestCase):
     def setUp(self):
         pass
@@ -773,7 +774,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         self.user = self.create_test_user(
             username="joe", password="secret", email="joe@some_site.com"
         )
-        
 
     def tear_down(self):
         self.user.delete()
@@ -929,10 +929,8 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         "tethys_apps.utilities.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
-    def test_secrets_signed_unsigned_value_with_secrets(self,
-        mock_open_file,
-        mock_yaml_safe_load,
-        mock_file_exists
+    def test_secrets_signed_unsigned_value_with_secrets(
+        self, mock_open_file, mock_yaml_safe_load, mock_file_exists
     ):
         app_target_name = "test_app"
 
@@ -947,40 +945,48 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             }
         }
         mock_yaml_safe_load.return_value = before_content
-        
-        mock_file_exists.side_effect = [True,True,False,False]
-        
-        signer = Signer(
-            salt="my_first_fake_string"
-        )
+
+        mock_file_exists.side_effect = [True, True, False, False]
+
+        signer = Signer(salt="my_first_fake_string")
         mock_val = "SECRETXX1Y"
 
         secret_signed_mock = signer.sign_object("SECRETXX1Y")
 
         custom_secret_setting = mock.MagicMock(
-            name="Secret_Test2_without_required", value=secret_signed_mock, type_custom_setting="SECRET"
+            name="Secret_Test2_without_required",
+            value=secret_signed_mock,
+            type_custom_setting="SECRET",
         )
         custom_secret_setting.name.return_value = "Secret_Test2_without_required"
 
         # with secrets.yml
 
         # signing
-        signed_secret = utilities.secrets_signed_unsigned_value(custom_secret_setting.name(),mock_val,app_target_name,True)
+        signed_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), mock_val, app_target_name, True
+        )
         self.assertEqual(signed_secret, secret_signed_mock)
 
         # unsigning
-        unsigned_secret = utilities.secrets_signed_unsigned_value(custom_secret_setting.name(),secret_signed_mock,app_target_name,False)
+        unsigned_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), secret_signed_mock, app_target_name, False
+        )
         self.assertEqual(unsigned_secret, mock_val)
 
         # with no secrets.yml
-        
+
         signer = Signer()
         secret_signed_mock = signer.sign_object("SECRETXX1Y")
-        
+
         # signing
-        signed_secret = utilities.secrets_signed_unsigned_value(custom_secret_setting.name(),mock_val,app_target_name,True)
+        signed_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), mock_val, app_target_name, True
+        )
         self.assertEqual(signed_secret, secret_signed_mock)
 
         # unsinging
-        unsigned_secret = utilities.secrets_signed_unsigned_value(custom_secret_setting.name(),secret_signed_mock,app_target_name,False)
+        unsigned_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), secret_signed_mock, app_target_name, False
+        )
         self.assertEqual(unsigned_secret, mock_val)

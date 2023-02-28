@@ -399,7 +399,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             WebProcessingServiceSetting,
             SecretCustomSetting,
             CustomSetting,
-            JSONCustomSetting
+            JSONCustomSetting,
         )
 
         self.assertEqual(
@@ -436,6 +436,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
             "json_custom_setting",
             cli_app_settings_command.get_setting_type(JSONCustomSetting()),
         )
+
 
 class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     def set_up(self):

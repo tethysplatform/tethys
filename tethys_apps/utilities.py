@@ -636,13 +636,13 @@ def delete_secrets(app_name):
                     yaml.dump(portal_secrets, secrets_yaml)
 
 
-def secrets_signed_unsigned_value(name,value,tethys_app_package_name,is_signing):
-    return_string = ''
+def secrets_signed_unsigned_value(name, value, tethys_app_package_name, is_signing):
+    return_string = ""
     TETHYS_HOME = get_tethys_home_dir()
     signer = Signer()
     try:
         if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-            return_string = sign_and_unsign_secret_string(signer,value,is_signing)
+            return_string = sign_and_unsign_secret_string(signer, value, is_signing)
         else:
             with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
                 secret_app_settings = (
@@ -658,22 +658,21 @@ def secrets_signed_unsigned_value(name,value,tethys_app_package_name,is_signing)
                                 tethys_app_package_name
                             ]["custom_settings_salt_strings"]
                             if name in app_specific_settings:
-                                app_custom_setting_salt_string = (
-                                    app_specific_settings[name]
-                                )
+                                app_custom_setting_salt_string = app_specific_settings[
+                                    name
+                                ]
                                 if app_custom_setting_salt_string != "":
-                                    signer = Signer(
-                                        salt=app_custom_setting_salt_string
-                                    )
-                return_string = sign_and_unsign_secret_string(signer,value,is_signing)
+                                    signer = Signer(salt=app_custom_setting_salt_string)
+                return_string = sign_and_unsign_secret_string(signer, value, is_signing)
     except signing.BadSignature:
         raise TethysAppSettingNotAssigned(
             f"The salt string for the setting {name} has been changed or lost, please enter the secret custom settings in the application settings again."
         )
-        
+
     return return_string
 
-def sign_and_unsign_secret_string(signer,value,is_signing):
+
+def sign_and_unsign_secret_string(signer, value, is_signing):
     if is_signing:
         secret_signed = signer.sign_object(value)
         return secret_signed

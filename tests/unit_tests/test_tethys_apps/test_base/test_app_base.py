@@ -867,7 +867,10 @@ class TestTethysAppBase(unittest.TestCase):
         with self.assertRaises(ValidationError) as ret:
             self.app.set_custom_setting(name=setting_name, value=2)
 
-        self.assertEqual("Validation Error: Secret Custom Setting should be a String", ret.exception.message)
+        self.assertEqual(
+            "Validation Error: Secret Custom Setting should be a String",
+            ret.exception.message,
+        )
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_dataset_service(self, mock_ta):
