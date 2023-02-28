@@ -287,40 +287,6 @@ class SecretCustomSetting(CustomSettingBase):
             
         if self.value != "":
             self.value = secrets_signed_unsigned_value(self.name,self.value,self.tethys_app.package,is_signing=True)
-            # TETHYS_HOME = get_tethys_home_dir()
-            # signer = Signer()
-            # if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-            #     self.value = signer.sign_object(self.value)
-            # else:
-            #     with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
-            #         secret_app_settings = (
-            #             yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
-            #         )
-            #         if bool(secret_app_settings):
-            #             if self.tethys_app.package in secret_app_settings:
-            #                 if (
-            #                     "custom_settings_salt_strings"
-            #                     in secret_app_settings[self.tethys_app.package]
-            #                 ):
-            #                     app_specific_settings = secret_app_settings[
-            #                         self.tethys_app.package
-            #                     ]["custom_settings_salt_strings"]
-            #                     if self.name in app_specific_settings:
-            #                         app_custom_setting_salt_string = (
-            #                             app_specific_settings[self.name]
-            #                         )
-            #                         if app_custom_setting_salt_string != "":
-            #                             signer = Signer(
-            #                                 salt=app_custom_setting_salt_string
-            #                             )
-
-            #             self.value = signer.sign_object(self.value)
-
-            #         else:
-            #             log.info(
-            #                 "There is not a secrets section in the secrets.yml, please create one."
-            #             )
-            #             self.value = signer.sign_object(self.value)
 
     def get_value(self):
         """
@@ -337,39 +303,6 @@ class SecretCustomSetting(CustomSettingBase):
             return None
 
         secret_unsigned = secrets_signed_unsigned_value(self.name,self.value,self.tethys_app.package,is_signing=False)
-        # TETHYS_HOME = get_tethys_home_dir()
-        # signer = Signer()
-        # secret_unsigned = ""
-
-        # try:
-        #     if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
-        #         secret_unsigned = signer.unsign_object(f"{self.value}")
-        #     else:
-        #         with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secret_yaml:
-        #             secrets_app_settings = (
-        #                 yaml.safe_load(secret_yaml).get("secrets", {}) or {}
-        #             )
-        #             if bool(secrets_app_settings):
-        #                 if (
-        #                     "custom_settings_salt_strings"
-        #                     in secrets_app_settings[self.tethys_app.package]
-        #                 ):
-        #                     app_specific_settings = secrets_app_settings[
-        #                         self.tethys_app.package
-        #                     ]["custom_settings_salt_strings"]
-        #                     if self.name in app_specific_settings:
-        #                         app_custom_setting_salt_string = app_specific_settings[
-        #                             self.name
-        #                         ]
-        #                         if app_custom_setting_salt_string != "":
-        #                             signer = Signer(salt=app_custom_setting_salt_string)
-
-        #             secret_unsigned = signer.unsign_object(f"{self.value}")
-
-        # except signing.BadSignature:
-        #     raise TethysAppSettingNotAssigned(
-        #         f"The salt string for the setting {self.name} has been changed or lost, please enter the secret custom settings in the application settings again."
-        #     )
 
         return secret_unsigned
 

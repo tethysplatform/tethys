@@ -80,7 +80,6 @@ def generate_salt_string():
 def gen_salt_string_for_setting(app_name, setting):
     secret_yaml_file = TETHYS_HOME / "secrets.yml"
     secret_settings = {}
-    # secret_unsigned = setting.get_value()
     secret_unsigned = secrets_signed_unsigned_value(setting.name,setting.value,setting.tethys_app.package,is_signing=False)
     with secret_yaml_file.open("r") as secret_yaml:
         secret_settings = yaml.safe_load(secret_yaml) or {}
@@ -94,27 +93,7 @@ def gen_salt_string_for_setting(app_name, setting):
                 f"No custom_settings_salt_strings in the app {app_name} in the secrets.yml. Generating one..."
             )
             secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
-
-        # last_salt_string = ""
-        # signer = Signer()
-        # if (
-        #     setting.name
-        #     in secret_settings["secrets"][app_name]["custom_settings_salt_strings"]
-        # ):
-        #     last_salt_string = secret_settings["secrets"][app_name][
-        #         "custom_settings_salt_strings"
-        #     ][setting.name]
-        #     signer = Signer(salt=last_salt_string)
-        # try:
-        #     secret_unsigned = signer.unsign_object(f"{setting.value}")
-        # except BadSignature:
-        #     write_error(
-        #         f"The salt string for the setting {setting.name} in the app {app_name} can not be generated in the secrets.yml because, the salt string for the setting in the secrets.yml was changed/deleted"
-        #     )
-        #     write_warning(
-        #         "Please enter the secret custom settings in the application settings again"
-        #     )
-        #     return
+    
         salt_string = generate_salt_string().decode()
         secret_settings["secrets"][app_name]["custom_settings_salt_strings"][
             setting.name

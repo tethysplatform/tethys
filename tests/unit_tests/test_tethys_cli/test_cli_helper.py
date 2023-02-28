@@ -182,7 +182,6 @@ class TestCliHelper(unittest.TestCase):
         new_val = signer.sign_object("SECRETXX1Y")
 
         custom_secret_setting.value = new_val
-        # breakpoint()
         custom_secret_setting.save()
 
         mock_secrets_signed_unsigned_value.return_value = "SECRETXX1Y"
@@ -195,7 +194,6 @@ class TestCliHelper(unittest.TestCase):
             after_content, mock_open_file.return_value
         )
         mock_write_success.assert_called()
-        # breakpoint()
         custom_secret_setting.get_value()
         self.assertEqual(custom_secret_setting.get_value(), "SECRETXX1Y")
 
@@ -253,7 +251,6 @@ class TestCliHelper(unittest.TestCase):
 
     @mock.patch("tethys_cli.cli_helpers.write_error")
     @mock.patch("tethys_cli.cli_helpers.write_warning")
-    # @mock.patch("django.core.signing.Signer.unsign_object")
     @mock.patch("tethys_cli.cli_helpers.yaml.safe_load")
     @mock.patch("tethys_cli.cli_helpers.secrets_signed_unsigned_value")
     @mock.patch("tethys_cli.cli_helpers.generate_salt_string")
@@ -267,7 +264,6 @@ class TestCliHelper(unittest.TestCase):
         mock_salt_string,
         mock_secrets_signed_unsigned_value,
         mock_yaml_safe_load,
-        # mock_signing,
         mock_write_warning,
         mock_write_error,
     ):
@@ -285,8 +281,6 @@ class TestCliHelper(unittest.TestCase):
 
         mock_secrets_signed_unsigned_value.side_effect = BadSignature
         mock_yaml_safe_load.return_value = before_content
-        # mock_signing.side_effect = BadSignature
-        # breakpoint()
         with self.assertRaises(BadSignature):
             cli_helper.gen_salt_string_for_setting("test_app", custom_secret_setting)
 
