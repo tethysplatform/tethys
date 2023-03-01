@@ -10,13 +10,14 @@
 from pathlib import Path
 import shutil
 import argparse
+from functools import partial
 
 from django.conf import settings
 from django.db.utils import IntegrityError
 
 from tethys_cli.cli_helpers import get_manage_path, run_process, load_apps
 from tethys_cli.cli_colors import write_info, write_error
-from tethys_apps.utilities import get_tethys_home_dir
+from tethys_apps.utilities import relative_to_tethys_home
 
 
 def add_db_parser(subparsers):
@@ -219,8 +220,18 @@ def purge_db_server(**kwargs):
         **kwargs: processed key word arguments from commandline
     """
     kwargs["exit_on_error"] = False
-    stop_db_server(**kwargs)
+    delete_function = None
     if kwargs["db_dir"]:
+        stop_db_server(**kwargs)
+        delete_function = partial(shutil.rmtree, kwargs["db_dir"])
+    elif kwargs["db_engine"].endswith("sqlite3"):
+        delete_function = Path(kwargs["db_name"]).unlink
+
+    if delete_function is None:
+        write_error(
+            "The purge command can only be performed with PostgreSQL or SQLite databases."
+        )
+    else:
         write_error(
             "This action will permanently delete the database. DATA WILL BE LOST!"
         )
@@ -230,7 +241,7 @@ def purge_db_server(**kwargs):
             else input("Are you sure you want to continue? [y/N]: ")
         )
         if response.lower() in ["y", "yes"]:
-            shutil.rmtree(kwargs["db_dir"])
+            delete_function()
 
 
 def create_db_user(
@@ -455,7 +466,8 @@ def configure_tethys_db(**kwargs):
     if kwargs.get("db_dir") is not None:
         _prompt_if_error(init_db_server, **kwargs)
         _prompt_if_error(start_db_server, **kwargs)
-    _prompt_if_error(create_tethys_db, **kwargs)
+    if kwargs.get("db_engine").endswith("postgresql"):
+        _prompt_if_error(create_tethys_db, **kwargs)
     migrate_tethys_db(**kwargs)
     create_portal_superuser(**kwargs)
 
@@ -470,6 +482,7 @@ def process_args(args):
 
     """
     db_settings = settings.DATABASES[args.db_alias]
+
     db_dir = db_settings.get("DIR")
     if db_dir is None:
         if args.command in ["init", "start", "stop"]:
@@ -477,8 +490,14 @@ def process_args(args):
                 f"The tethys db {args.command} command can only be used with local databases."
             )
     else:
-        if not Path(db_dir).is_absolute():
-            db_dir = Path(get_tethys_home_dir()) / db_dir
+        db_dir = relative_to_tethys_home(db_dir)
+
+    db_engine = db_settings.get("ENGINE")
+    if not db_engine.endswith("postgresql"):
+        if args.command == "create":
+            raise RuntimeError(
+                f"The tethys db create command can only be used with PostgreSQL databases."
+            )
 
     options = vars(args)
     options.update(
@@ -487,6 +506,7 @@ def process_args(args):
         hostname=db_settings.get("HOST"),
         port=db_settings.get("PORT"),
         db_name=db_settings.get("NAME"),
+        db_engine=db_engine,
     )
 
     return options
