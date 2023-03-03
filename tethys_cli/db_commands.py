@@ -496,7 +496,7 @@ def process_args(args):
     if "postgresql" not in db_engine:
         if args.command == "create":
             raise RuntimeError(
-                f"The tethys db create command can only be used with PostgreSQL databases."
+                "The tethys db create command can only be used with PostgreSQL databases."
             )
 
     options = vars(args)
