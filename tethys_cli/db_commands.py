@@ -224,7 +224,7 @@ def purge_db_server(**kwargs):
     if kwargs["db_dir"]:
         stop_db_server(**kwargs)
         delete_function = partial(shutil.rmtree, kwargs["db_dir"])
-    elif kwargs["db_engine"].endswith("sqlite3"):
+    elif "sqlite" in kwargs["db_engine"]:
         delete_function = Path(kwargs["db_name"]).unlink
 
     if delete_function is None:
@@ -466,7 +466,7 @@ def configure_tethys_db(**kwargs):
     if kwargs.get("db_dir") is not None:
         _prompt_if_error(init_db_server, **kwargs)
         _prompt_if_error(start_db_server, **kwargs)
-    if kwargs.get("db_engine").endswith("postgresql"):
+    if "postgresql" in kwargs.get("db_engine"):
         _prompt_if_error(create_tethys_db, **kwargs)
     migrate_tethys_db(**kwargs)
     create_portal_superuser(**kwargs)
@@ -493,7 +493,7 @@ def process_args(args):
         db_dir = relative_to_tethys_home(db_dir)
 
     db_engine = db_settings.get("ENGINE")
-    if not db_engine.endswith("postgresql"):
+    if "postgresql" not in db_engine:
         if args.command == "create":
             raise RuntimeError(
                 f"The tethys db create command can only be used with PostgreSQL databases."

@@ -106,9 +106,9 @@ DEFAULT_DB = DATABASES["default"]
 
 DEFAULT_DB.setdefault("ENGINE", "django.db.backends.postgresql")
 
-if DEFAULT_DB["ENGINE"].endswith("sqlite3"):
+if "sqlite" in DEFAULT_DB["ENGINE"]:
     DEFAULT_DB.setdefault(
-        "NAME", relative_to_tethys_home("tethys_platform.sqlite3", as_str=True)
+        "NAME", relative_to_tethys_home("tethys_platform.sqlite", as_str=True)
     )
 else:
     DEFAULT_DB.setdefault("NAME", "tethys_platform")
