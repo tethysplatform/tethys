@@ -465,7 +465,18 @@ def gen_requirements_txt(args):
     packages = [
         p
         for p in packages
-        if "conda" not in p and "tethys-platform" not in p and "psycopg2=" not in p
+        if all(
+            [
+                s not in p
+                for s in [
+                    "conda",
+                    "tethys-platform",
+                    "psycopg2=",
+                    "tethysapp.",
+                    "tethysext.",
+                ]
+            ]
+        )
     ]
     context = {"packages": packages, "date": datetime.now().strftime("%Y-%m-%d")}
     return context
