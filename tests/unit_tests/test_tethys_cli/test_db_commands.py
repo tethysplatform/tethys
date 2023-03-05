@@ -24,6 +24,7 @@ class TestCommandTests(unittest.TestCase):
         self.addCleanup(run_process_patcher.stop)
 
         self.options = {
+            "db_engine": "postgresql",
             "db_dir": "foo",
             "db_alias": "test",
             "hostname": "localhost",
@@ -89,11 +90,12 @@ class TestCommandTests(unittest.TestCase):
         mock_write_info.assert_called_with(msg)
         mock_write_error.assert_called_with(err_msg)
 
-    @mock.patch("tethys_cli.db_commands.Path")
+    @mock.patch("tethys_cli.db_commands.relative_to_tethys_home")
     @mock.patch("tethys_cli.db_commands.vars")
     @override_settings(
         DATABASES={
             "test": {
+                "ENGINE": "postgresql",
                 "NAME": "db_name",
                 "HOST": "localhost",
                 "PORT": "0000",
@@ -107,6 +109,7 @@ class TestCommandTests(unittest.TestCase):
         path.is_absolute.return_value = False
         mock_args = mock.MagicMock(command="init", db_alias="test")
         mock_vars.return_value = dict(
+            db_engine="postgresql",
             username="foo",
             password="bar",
             superuser_name="Foo",
@@ -120,7 +123,7 @@ class TestCommandTests(unittest.TestCase):
 
         options = process_args(mock_args)
         expected = self.options.copy()
-        expected.update(db_dir=path / "foo")
+        expected.update(db_dir=path)
         self.assertDictEqual(options, expected)
 
     @mock.patch("tethys_cli.db_commands.Path")
@@ -139,6 +142,36 @@ class TestCommandTests(unittest.TestCase):
         path.is_absolute.return_value = False
         mock_args = mock.MagicMock()
         mock_args.command = "init"
+        mock_args.db_alias = "test"
+        mock_vars.return_value = dict(
+            username="foo",
+            password="bar",
+            superuser_name="Foo",
+            superuser_password="Bar",
+            portal_superuser_name="PFoo",
+            portal_superuser_email="PEmail",
+            portal_superuser_password="PBar",
+        )
+        self.mock_run_process.return_value = 0
+        self.assertRaises(RuntimeError, process_args, mock_args)
+
+    @mock.patch("tethys_cli.db_commands.Path")
+    @mock.patch("tethys_cli.db_commands.vars")
+    @override_settings(
+        DATABASES={
+            "test": {
+                "NAME": "db_name",
+                "PORT": "0000",
+                "ENGINE": "invalid",
+            }
+        }
+    )
+    def test_db_command_process_args_with_engine_error(self, mock_vars, mock_path):
+        path = mock.MagicMock()
+        mock_path.return_value = path
+        path.is_absolute.return_value = False
+        mock_args = mock.MagicMock()
+        mock_args.command = "create"
         mock_args.db_alias = "test"
         mock_vars.return_value = dict(
             username="foo",
@@ -415,6 +448,28 @@ class TestCommandTests(unittest.TestCase):
         mock_stop.assert_called_with(**kwargs)
         mock_write_error.assert_called_once()
         mock_rmtree.assert_called_with(kwargs["db_dir"])
+
+    @mock.patch("tethys_cli.db_commands.Path")
+    @mock.patch("tethys_cli.db_commands.write_error")
+    def test_purge_db_server_sqlite(self, mock_write_error, mock_path):
+        mock_args = mock.MagicMock()
+        mock_args.command = "purge"
+        self.options["db_dir"] = None
+        self.options["db_engine"] = "sqlite3"
+
+        db_command(mock_args)
+        mock_write_error.assert_called_once()
+        mock_path().unlink.assert_called_once()
+
+    @mock.patch("tethys_cli.db_commands.write_error")
+    def test_purge_db_server_invalid(self, mock_write_error):
+        mock_args = mock.MagicMock()
+        mock_args.command = "purge"
+        self.options["db_dir"] = None
+        self.options["db_engine"] = ""
+
+        db_command(mock_args)
+        mock_write_error.assert_called_once()
 
     @mock.patch("tethys_cli.db_commands.input")
     @mock.patch("tethys_cli.db_commands.shutil.rmtree")

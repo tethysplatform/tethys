@@ -39,6 +39,5 @@ class TestConsumer(TethysTestCase):
             await communicator.disconnect()
 
         # Run the async test
-        coroutine = asyncio.coroutine(run_test)
-        event_loop.run_until_complete(coroutine())
+        event_loop.run_until_complete(run_test())
         event_loop.close()

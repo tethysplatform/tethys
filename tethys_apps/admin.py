@@ -13,7 +13,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.db.utils import ProgrammingError
+from django.db.utils import ProgrammingError, OperationalError
 from django.utils.html import format_html
 from django.shortcuts import reverse
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
@@ -427,7 +427,7 @@ def register_custom_group():
 
         admin.site.unregister(Group)
         admin.site.register(Group, CustomGroup)
-    except (ProgrammingError, TypeError):
+    except (ProgrammingError, TypeError, OperationalError):
         tethys_log.warning("Unable to register CustomGroup.")
 
 

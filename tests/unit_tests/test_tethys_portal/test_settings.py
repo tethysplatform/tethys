@@ -138,7 +138,7 @@ class TestSettings(TestCase):
         reload(settings)
         self.assertTrue(settings.STATICFILES_USE_NPM)
         node_modules_in_any_paths = any(
-            ["node_modules" in path for path in settings.STATICFILES_DIRS]
+            ["node_modules" in str(path) for path in settings.STATICFILES_DIRS]
         )
         self.assertTrue(node_modules_in_any_paths)
 
@@ -152,7 +152,7 @@ class TestSettings(TestCase):
         reload(settings)
         self.assertFalse(settings.STATICFILES_USE_NPM)
         node_modules_in_any_paths = any(
-            ["node_modules" in path for path in settings.STATICFILES_DIRS]
+            ["node_modules" in str(path) for path in settings.STATICFILES_DIRS]
         )
         self.assertFalse(node_modules_in_any_paths)
 
@@ -177,3 +177,47 @@ class TestSettings(TestCase):
     def test_cors_config(self, _):
         reload(settings)
         self.assertListEqual(settings.CORS_ALLOWED_ORIGINS, ["http://example.com"])
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {
+                "DATABASES": {"default": {"ENGINE": "django.db.backends.sqlite3"}}
+            }
+        },
+    )
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
+    def test_db_config_sqlite(self, mock_home, _):
+        name = mock.MagicMock()
+        name.exists.return_value = False
+        mock_home.return_value = name
+        reload(settings)
+        self.assertDictEqual(
+            settings.DATABASES["default"],
+            {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": name,
+            },
+        )
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {
+                # "DATABASES": {"default": {"ENGINE": "django.db.backends.postgresql"}}
+            }
+        },
+    )
+    def test_db_config_default(self, _):
+        reload(settings)
+        self.assertDictEqual(
+            settings.DATABASES["default"],
+            {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": "tethys_platform",
+                "USER": "tethys_default",
+                "PASSWORD": "pass",
+                "HOST": "localhost",
+                "PORT": 5436,
+            },
+        )
