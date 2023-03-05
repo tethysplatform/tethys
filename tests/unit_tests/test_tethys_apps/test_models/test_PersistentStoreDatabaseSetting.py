@@ -20,16 +20,12 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     def set_up(self):
         self.test_app = TethysApp.objects.get(package="test_app")
 
-        # Get default database connection if there is one
-        if "default" in settings.DATABASES:
-            self.conn = settings.DATABASES["default"]
-        else:
-            self.conn = {
-                "USER": "tethys_super",
-                "PASSWORD": "pass",
-                "HOST": "localhost",
-                "PORT": "5435",
-            }
+        self.conn = {
+            "USER": "tethys_super",
+            "PASSWORD": "pass",
+            "HOST": "localhost",
+            "PORT": "5435",
+        }
 
         self.expected_url = "postgresql://{}:{}@{}:{}".format(
             self.conn["USER"],

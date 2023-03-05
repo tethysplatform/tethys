@@ -11,6 +11,7 @@ import importlib
 import logging
 import os
 import pkgutil
+from pathlib import Path
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
@@ -57,6 +58,14 @@ def get_tethys_home_dir():
         )
 
     return tethys_home
+
+
+def relative_to_tethys_home(path, as_str=False):
+    if not Path(path).is_absolute():
+        path = Path(get_tethys_home_dir()) / path
+    if as_str:
+        path = str(path)
+    return path
 
 
 def get_directories_in_tethys(directory_names, with_app_name=False):
