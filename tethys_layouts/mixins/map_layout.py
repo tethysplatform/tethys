@@ -439,7 +439,7 @@ class MapLayoutMixin:
 
         if ":" in legend_id:
             legend_id = legend_id.replace(":", "_")
-        
+
         if "," in legend_id:
             legend_id = legend_id.replace(",", "_")
 
