@@ -440,6 +440,9 @@ class MapLayoutMixin:
         if ":" in legend_id:
             legend_id = legend_id.replace(":", "_")
 
+        if "," in legend_id:
+            legend_id = legend_id.replace(",", "_")
+
         if layer.data.get("color_ramp_division_kwargs") is not None:
             div_kwargs = layer.data.get("color_ramp_division_kwargs")
             min_value = div_kwargs["min_value"]
