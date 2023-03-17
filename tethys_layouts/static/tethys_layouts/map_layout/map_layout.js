@@ -1,6 +1,6 @@
 /*****************************************************************************
  * FILE:    map_layout.js
- * DATE:    October, 19, 2018
+ * DATE:    October 19, 2018
  * AUTHOR:  Nathan Swain
  * COPYRIGHT: (c) Aquaveo 2018
  * LICENSE:
@@ -1229,10 +1229,12 @@ var MAP_LAYOUT = (function() {
     };
 
     show_legend = function(layer_id) {
-        $("#legend-for-" + layer_id).removeClass('hidden');
+        let safe_layer_id = layer_id.replace(':', '_').replace(',', '_');
+        $("#legend-for-" + safe_layer_id).removeClass('hidden');
     };
 
     hide_legend = function(layer_id) {
+        let safe_layer_id = layer_id.replace(':', '_').replace(',', '_');
         $("#legend-for-" + layer_id).addClass('hidden');
     };
 
