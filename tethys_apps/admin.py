@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import json
 import logging
 from django import forms
 from django.contrib import admin
@@ -194,24 +195,63 @@ class GOPAppAccessForm(forms.ModelForm):
     class Media:
         js = ("tethys_apps/js/group_admin.js",)
 
+    # Override default permissions field to exclude the "Can Access App" permissions,
+    # which are handled via the "proxy_apps" and "apps" fields
+    permissions = forms.ModelMultipleChoiceField(
+        queryset=Permission.objects.exclude(name__iendswith="Can Access App"),
+        required=False,
+        widget=FilteredSelectMultiple(verbose_name="permissions", is_stacked=False),
+    )
+
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        widget=FilteredSelectMultiple(verbose_name="Users", is_stacked=False),
+    )
+
+    proxy_apps = forms.ModelMultipleChoiceField(
+        queryset=ProxyApp.objects.all(),
+        required=False,
+        widget=FilteredSelectMultiple(verbose_name="Proxy Apps", is_stacked=False),
+    )
+
     apps = forms.ModelMultipleChoiceField(
         queryset=TethysApp.objects.all(),
         required=False,
-        widget=FilteredSelectMultiple(verbose_name="Apps", is_stacked=False),
+        widget=FilteredSelectMultiple(
+            verbose_name="Apps",
+            is_stacked=False,
+        ),
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            app_pks = []
-            for gop in (
-                GroupObjectPermission.objects.values("object_pk")
-                .distinct()
-                .filter(group_id=self.instance.pk)
-            ):
-                app_pks.append(int(gop["object_pk"]))
-            self.fields["apps"].initial = TethysApp.objects.filter(pk__in=app_pks)
 
+        # set the apps widget attrs to ensure that the JavaScript can map between the app name and the app package
+        # needs to be set here so the queryset is not loaded on import
+        apps = self.fields["apps"]
+        name_to_package = json.dumps({a.name: a.package for a in apps.queryset})
+        apps.widget.attrs = {"data-app-packages": name_to_package}
+
+        if self.instance.pk:
+            # initialize the app and proxy apps fields
+            for field, model in (
+                (apps, TethysApp),
+                (self.fields["proxy_apps"], ProxyApp),
+            ):
+                app_pks = [
+                    int(g.object_pk)
+                    for g in GroupObjectPermission.objects.filter(
+                        group_id=self.instance.pk,
+                        content_type_id=model.get_content_type().id,
+                    ).distinct()
+                ]
+                field.initial = model.objects.filter(pk__in=app_pks)
+
+            # initialize users field
+            self.initial["users"] = self.instance.user_set.values_list("pk", flat=True)
+
+            # initialize dynamic app fields
             for field in self.fields:
                 if "_permissions" in field:
                     perms_pks = (
@@ -282,18 +322,21 @@ class GOPAppAccessForm(forms.ModelForm):
         if not group.pk:
             group.save()
 
+        # users
+        self.instance.user_set.clear()
+        self.instance.user_set.add(*self.cleaned_data["users"])
+
         # apps
-        assign_apps_query = self.cleaned_data["apps"]
-        if self.fields["apps"].initial:
-            remove_apps_query = self.fields["apps"].initial.difference(
-                assign_apps_query
-            )
+        for field in ("apps", "proxy_apps"):
+            assign_query = self.cleaned_data[field]
+            if self.fields[field].initial:
+                remove_query = self.fields[field].initial.difference(assign_query)
 
-            for app in remove_apps_query:
-                remove_perm(f"{app.package}:access_app", group, app)
+                for app in remove_query:
+                    remove_perm(f"{app.package}:access_app", group, app)
 
-        for app in assign_apps_query:
-            assign_perm(f"{app.package}:access_app", group, app)
+            for app in assign_query:
+                assign_perm(f"{app.package}:access_app", group, app)
 
         for field in self.fields:
             # permissions
@@ -440,10 +483,14 @@ def register_user_keys_admin():
         tethys_log.warning("Unable to register UserKeys.")
 
 
+class ProxyAppAdmin(GuardedModelAdmin):
+    obj_perms_manage_template = "tethys_apps/guardian/extend_obj_perms_manage.html"
+
+
 register_custom_group()
 admin.site.unregister(User)
 admin.site.register(User, CustomUser)
 register_user_keys_admin()
-admin.site.register(ProxyApp)
+admin.site.register(ProxyApp, ProxyAppAdmin)
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)

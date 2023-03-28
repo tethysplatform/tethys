@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import sys
 from django.apps import AppConfig
 
 from tethys_apps.harvester import SingletonHarvester
@@ -20,6 +21,7 @@ class TethysAppsConfig(AppConfig):
         """
         Startup method for Tethys Apps django app.
         """
-        # Perform App Harvesting
-        harvester = SingletonHarvester()
-        harvester.harvest()
+        if sys.argv[1] != "migrate":
+            # Perform App Harvesting (if database is not being migrated)
+            harvester = SingletonHarvester()
+            harvester.harvest()

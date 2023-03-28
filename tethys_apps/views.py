@@ -49,7 +49,9 @@ def library(request):
 
     for proxy_app in proxy_apps:
         if request.user.is_staff or (
-            proxy_app.enabled and proxy_app.show_in_apps_library
+            proxy_app.enabled
+            and proxy_app.show_in_apps_library
+            and user_can_access_app(request.user, proxy_app)
         ):
             configured_apps.append(proxy_app)
 
