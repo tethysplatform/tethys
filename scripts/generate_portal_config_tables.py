@@ -38,7 +38,7 @@ d = {
             "PASSWORD": "the Django default database `PASSWORD <https://docs.djangoproject.com/en/3.2/ref/settings/#password>`_ setting. Not used with SQLite.",
             "HOST": "the Django default database `HOST <https://docs.djangoproject.com/en/3.2/ref/settings/#host>`_ setting. Not used with SQLite.",
             "PORT": "the Django default database `PORT <https://docs.djangoproject.com/en/3.2/ref/settings/#port>`_ setting. Not used with SQLite.",
-            "DIR": 'name of psql directory for conda installation of PostgreSQL that ships with Tethys (if using the ``django.db.backends.postgresql`` ``ENGINE``). This directory will be created relative to the ``TETHYS_HOME`` directory when ``tethys db create`` is executed, unless an absolute path is provided. Defaults to ``psql``. If you are using the ``sqlite3`` ``ENGINE`` or an external database server then exclude this key or set it to `None`.',
+            "DIR": "name of psql directory for conda installation of PostgreSQL that ships with Tethys (if using the ``django.db.backends.postgresql`` ``ENGINE``). This directory will be created relative to the ``TETHYS_HOME`` directory when ``tethys db create`` is executed, unless an absolute path is provided. Defaults to ``psql``. If you are using the ``sqlite3`` ``ENGINE`` or an external database server then exclude this key or set it to `None`.",
         },
     },
     "LOGGING": {

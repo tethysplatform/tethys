@@ -42,13 +42,13 @@ def add_db_parser(subparsers):
         "  * createsuperuser - Creates a Tethys Portal superuser account.\n"
         "  * configure - A shortcut for running: init, start, create, migrate, and "
         "createsuperuser (for PostgreSQL and SQLite databases). \n"
-             "\tNote: if the DIR parameter is not defined in your DATABASES.default "
+        "\tNote: if the DIR parameter is not defined in your DATABASES.default "
         "configuration in portal_config.yml then the init and start commands are skipped.\n"
-             "\tIf the database ``ENGINE`` is configured to use ``SQLite`` then only the migrate and createsuperuser "
-             "commands are run.\n"
+        "\tIf the database ``ENGINE`` is configured to use ``SQLite`` then only the migrate and createsuperuser "
+        "commands are run.\n"
         "  * sync - Syncs the Tethys Portal database with installed apps and extensions.\n"
         "  * purge - Stops database server and removes the database file (SQLite) or the database cluster directory "
-             "(locally running PostgreSQL).\n",
+        "(locally running PostgreSQL).\n",
         choices=list(DB_COMMANDS.keys()),
     )
     db_parser.add_argument(
