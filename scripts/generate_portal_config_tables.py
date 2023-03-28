@@ -1,16 +1,17 @@
 # flake8: noqa
+DJANGO_VERSION = 3.2
 
 d = {
     "": {
-        "SECRET_KEY": "the Django `SECRET_KEY <https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key>`_ setting. Automatically generated if not set, however setting it manually is recommended.",
-        "DEBUG": "the Django `DEBUG <https://docs.djangoproject.com/en/2.2/ref/settings/#debug>`_ setting. Defaults to True.",
-        "ALLOWED_HOSTS": "the Django `ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_ setting. Defaults to ``[]``.",
-        "ADMINS": "the Django `ADMINS <https://docs.djangoproject.com/en/2.2/ref/settings/#admins>`_ setting.",
-        "INSTALLED_APPS": "the Django `INSTALLED_APPS <https://docs.djangoproject.com/en/2.2/ref/settings/#installed-apps>`_ setting. For convenience, any Django apps listed here will be appended to default list of Django apps required by Tethys. To override ``INSTALLED_APPS`` completely, use the ``INSTALLED_APPS_OVERRIDE`` setting.",
+        "SECRET_KEY": f"the Django `SECRET_KEY <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#secret-key>`_ setting. Automatically generated if not set, however setting it manually is recommended.",
+        "DEBUG": f"the Django `DEBUG <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#debug>`_ setting. Defaults to True.",
+        "ALLOWED_HOSTS": f"the Django `ALLOWED_HOSTS <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#allowed-hosts>`_ setting. Defaults to ``[]``.",
+        "ADMINS": f"the Django `ADMINS <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#admins>`_ setting.",
+        "INSTALLED_APPS": f"the Django `INSTALLED_APPS <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#installed-apps>`_ setting. For convenience, any Django apps listed here will be appended to default list of Django apps required by Tethys. To override ``INSTALLED_APPS`` completely, use the ``INSTALLED_APPS_OVERRIDE`` setting.",
         "INSTALLED_APPS_OVERRIDE": "override for ``INSTALLED_APPS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.",
-        "MIDDLEWARE": "the Django `MIDDLEWARE <https://docs.djangoproject.com/en/2.2/ref/settings/#middleware>`_ setting. For convenience, any middleware listed here will be appended to default list of middleware required by Tethys. To override ``MIDDLEWARE`` completely, use the ``MIDDLEWARE_OVERRIDE`` setting.",
+        "MIDDLEWARE": f"the Django `MIDDLEWARE <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#middleware>`_ setting. For convenience, any middleware listed here will be appended to default list of middleware required by Tethys. To override ``MIDDLEWARE`` completely, use the ``MIDDLEWARE_OVERRIDE`` setting.",
         "MIDDLEWARE_OVERRIDE": "override for ``MIDDLEWARE`` setting. CAUTION: improper use of this setting can break the Tethys Portal.",
-        "AUTHENTICATION_BACKENDS": "the Django `AUTHENTICATION_BACKENDS <https://docs.djangoproject.com/en/2.2/ref/settings/#authentication-backends>`_ setting. For convenience, any authentication backends listed here will be appended to default list of authentication backends required by Tethys. To override ``AUTHENTICATION_BACKENDS`` completely, use the ``AUTHENTICATION_BACKENDS_OVERRIDE`` setting.",
+        "AUTHENTICATION_BACKENDS": f"the Django `AUTHENTICATION_BACKENDS <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#authentication-backends>`_ setting. For convenience, any authentication backends listed here will be appended to default list of authentication backends required by Tethys. To override ``AUTHENTICATION_BACKENDS`` completely, use the ``AUTHENTICATION_BACKENDS_OVERRIDE`` setting.",
         "AUTHENTICATION_BACKENDS_OVERRIDE": "override for ``AUTHENTICATION_BACKENDS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.",
         "RESOURCE_QUOTA_HANDLERS": "a list of Tethys ``ResourceQuotaHandler`` classes to load (see: :ref:`sdk_quotas_api`). For convenience, any quota handlers listed here will be appended to the default list of quota handlerss. To override ``RESOURCE_QUOTA_HANDLERS`` completely, use the ``RESOURCE_QUOTA_HANDLERS_OVERRIDE`` setting.",
         "RESOURCE_QUOTA_HANDLERS_OVERRIDE": "override for ``RESOURCE_QUOTA_HANDLERS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.",
@@ -21,7 +22,7 @@ d = {
         "ENABLE_OPEN_PORTAL": "no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``controller`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.",
         "ENABLE_RESTRICTED_APP_ACCESS": "app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.",
         "TETHYS_WORKSPACES_ROOT": "location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.",
-        "STATIC_ROOT": "the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.",
+        "STATIC_ROOT": f"the Django `STATIC_ROOT <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.",
         "STATICFILES_USE_NPM": "serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.",
     },
     "SESSION_CONFIG": {
@@ -29,13 +30,15 @@ d = {
         "SESSION_SECURITY_EXPIRE_AFTER": "the Django Session Security `EXPIRE_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 900 seconds.",
     },
     "DATABASES": {
-        "__description__": "See the Django `DATABASES <https://docs.djangoproject.com/en/2.2/ref/settings/#databases>`_ setting.",
+        "__description__": f"See the Django `DATABASES <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#databases>`_ setting.",
         "default": {
-            "USER": "the Django default database `USER <https://docs.djangoproject.com/en/2.2/ref/settings/#user>`_ setting.",
-            "PASSWORD": "the Django default database `PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#password>`_ setting.",
-            "HOST": "the Django default database `HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#host>`_ setting.",
-            "PORT": "the Django default database `PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#port>`_ setting.",
-            "DIR": 'name of psql directory for conda installation of PostgreSQL that ships with Tethys. This directory will be created in the ``TETHYS_HOME`` directory when ``tethys db create`` is executed. Defaults to "psql". If you are using an external database server then exclude this key or set it to `None`.',
+            "ENGINE": "the Django default database `ENGINE <https://docs.djangoproject.com/en/3.2/ref/settings/#engine>`_ setting. Default is ``django.db.backends.sqlite3``.",
+            "NAME": "the Django default databases `NAME <https://docs.djangoproject.com/en/3.2/ref/settings/#name>`_ setting. If using the ``sqlite3`` ``ENGINE`` (default) then the default value for name will be ``tethys_platform.sqlite`` and will be located in the ``TETHYS_HOME`` directory. If another ``ENGINE`` is used then the default value is ``tethys_platform``.",
+            "USER": "the Django default database `USER <https://docs.djangoproject.com/en/3.2/ref/settings/#user>`_ setting. Not used with SQLite.",
+            "PASSWORD": "the Django default database `PASSWORD <https://docs.djangoproject.com/en/3.2/ref/settings/#password>`_ setting. Not used with SQLite.",
+            "HOST": "the Django default database `HOST <https://docs.djangoproject.com/en/3.2/ref/settings/#host>`_ setting. Not used with SQLite.",
+            "PORT": "the Django default database `PORT <https://docs.djangoproject.com/en/3.2/ref/settings/#port>`_ setting. Not used with SQLite.",
+            "DIR": 'name of psql directory for conda installation of PostgreSQL that ships with Tethys (if using the ``django.db.backends.postgresql`` ``ENGINE``). This directory will be created relative to the ``TETHYS_HOME`` directory when ``tethys db create`` is executed, unless an absolute path is provided. Defaults to ``psql``. If you are using the ``sqlite3`` ``ENGINE`` or an external database server then exclude this key or set it to `None`.',
         },
     },
     "LOGGING": {
@@ -143,12 +146,12 @@ d = {
         "YANDEX_METRICA_COUNTER_ID": "",
     },
     "EMAIL_CONFIG": {
-        "EMAIL_HOST": "the Django `EMAIL_HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host>`_ setting.",
-        "EMAIL_PORT": "the Django `EMAIL_PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#email-port>`_ setting.",
-        "EMAIL_HOST_USER": "the Django `EMAIL_HOST_USER <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-user>`_ setting.",
-        "EMAIL_HOST_PASSWORD": "the Django `EMAIL_HOST_PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-password>`_ setting.",
-        "EMAIL_USE_TLS": "the Django `EMAIL_USE_TLS <https://docs.djangoproject.com/en/2.2/ref/settings/#email-use-tls>`_ setting.",
-        "DEFAULT_FROM_EMAIL": "the Django `DEFAULT_FROM_EMAIL <https://docs.djangoproject.com/en/2.2/ref/settings/#default-from-email>`_ setting.",
+        "EMAIL_HOST": f"the Django `EMAIL_HOST <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#email-host>`_ setting.",
+        "EMAIL_PORT": f"the Django `EMAIL_PORT <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#email-port>`_ setting.",
+        "EMAIL_HOST_USER": f"the Django `EMAIL_HOST_USER <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#email-host-user>`_ setting.",
+        "EMAIL_HOST_PASSWORD": f"the Django `EMAIL_HOST_PASSWORD <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#email-host-password>`_ setting.",
+        "EMAIL_USE_TLS": f"the Django `EMAIL_USE_TLS <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#email-use-tls>`_ setting.",
+        "DEFAULT_FROM_EMAIL": f"the Django `DEFAULT_FROM_EMAIL <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#default-from-email>`_ setting.",
         "EMAIL_FROM": "the email alias setting (e.g.: 'John Smith').",
     },
     "LOCKOUT_CONFIG": {
@@ -164,7 +167,7 @@ d = {
     },
     "Other Settings": {
         "CHANNEL_LAYERS": "the Django Channels `CHANNEL_LAYERS <https://channels.readthedocs.io/en/latest/topics/channel_layers.html#channel-layers>`_ setting.",
-        "AUTH_PASSWORD_VALIDATORS": "the Django `AUTH_PASSWORD_VALIDATORS <https://docs.djangoproject.com/en/2.2/topics/auth/passwords/#module-django.contrib.auth.password_validation>`_ setting.",
+        "AUTH_PASSWORD_VALIDATORS": f"the Django `AUTH_PASSWORD_VALIDATORS <https://docs.djangoproject.com/en/{DJANGO_VERSION}/topics/auth/passwords/#module-django.contrib.auth.password_validation>`_ setting.",
         "GUARDIAN_RAISE_403": "the Django Guardian `GUARDIAN_RAISE_403 <https://django-guardian.readthedocs.io/en/stable/configuration.html#guardian-raise-403>`_ setting.",
         "GUARDIAN_RENDER_403": "the Django Guardian `GUARDIAN_RENDER_403 <https://django-guardian.readthedocs.io/en/stable/configuration.html#guardian-render-403>`_ setting.",
         "GUARDIAN_TEMPLATE_403": "the Django Guardian `GUARDIAN_TEMPLATE_403 <https://django-guardian.readthedocs.io/en/stable/configuration.html#guardian-template-403>`_ setting.",
