@@ -33,18 +33,22 @@ def add_db_parser(subparsers):
         "command",
         help="Performs operations on the Tethys Database.\n"
         "  * init - Creates a new, locally running PostgreSQL database server.\n"
-        "  * start - Starts the local database server.\n"
-        "  * stop - Stops the local database server.\n"
-        "  * status - Gets the current status of the local database server.\n"
-        "  * create - Creates the Tethys Portal database on the database server configured "
+        "  * start - Starts a local PostgreSQL database server.\n"
+        "  * stop - Stops a local PostgreSQL database server.\n"
+        "  * status - Gets the current status of a local PostgreSQL database server.\n"
+        "  * create - Creates the Tethys Portal database on a PostgreSQL database server configured "
         "in the `portal-config.yml` (this could be local or remote).\n"
         "  * migrate - Runs migrations on the Tethys Portal database.\n"
         "  * createsuperuser - Creates a Tethys Portal superuser account.\n"
         "  * configure - A shortcut for running: init, start, create, migrate, and "
-        "createsuperuser. Note: if the DIR parameter is not defined in your DATABASES.default "
+        "createsuperuser (for PostgreSQL and SQLite databases). \n"
+        "\tNote: if the DIR parameter is not defined in your DATABASES.default "
         "configuration in portal_config.yml then the init and start commands are skipped.\n"
+        "\tIf the database ``ENGINE`` is configured to use ``SQLite`` then only the migrate and createsuperuser "
+        "commands are run.\n"
         "  * sync - Syncs the Tethys Portal database with installed apps and extensions.\n"
-        "  * purge - Stops database server and removes the database cluster directory.\n",
+        "  * purge - Stops database server and removes the database file (SQLite) or the database cluster directory "
+        "(locally running PostgreSQL).\n",
         choices=list(DB_COMMANDS.keys()),
     )
     db_parser.add_argument(

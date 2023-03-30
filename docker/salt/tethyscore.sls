@@ -6,6 +6,7 @@
 {% set CLIENT_MAX_BODY_SIZE = salt['environ.get']('CLIENT_MAX_BODY_SIZE') %}
 {% set ASGI_PROCESSES = salt['environ.get']('ASGI_PROCESSES') %}
 {% set TETHYS_BIN_DIR = [CONDA_HOME, "/envs/", CONDA_ENV_NAME, "/bin"]|join %}
+{% set TETHYS_DB_ENGINE = salt['environ.get']('TETHYS_DB_ENGINE') %}
 {% set TETHYS_DB_NAME = salt['environ.get']('TETHYS_DB_NAME') %}
 {% set TETHYS_DB_HOST = salt['environ.get']('TETHYS_DB_HOST') %}
 {% set TETHYS_DB_PASSWORD = salt['environ.get']('TETHYS_DB_PASSWORD') %}
@@ -76,6 +77,7 @@ Generate_Tethys_Settings_TethysCore:
         tethys settings
         --set DEBUG {{ DEBUG }}
         --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
+        --set DATABASES.default.ENGINE {{ TETHYS_DB_ENGINE }}
         --set DATABASES.default.NAME {{ TETHYS_DB_NAME }}
         --set DATABASES.default.USER {{ TETHYS_DB_USERNAME }}
         --set DATABASES.default.PASSWORD {{ TETHYS_DB_PASSWORD }}

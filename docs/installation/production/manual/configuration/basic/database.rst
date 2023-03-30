@@ -15,7 +15,7 @@ Set the database settings in the :file:`portal_config.yml` using the ``tethys se
 
     .. code-block:: bash
 
-        tethys settings --set DATABASES.default.NAME tethys_platform --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.HOST <TETHYS_DB_HOST> --set DATABASES.default.PORT <TETHYS_DB_PORT>
+        tethys settings --set DATABASES.default.ENGINE django.db.backends.postgresql --set DATABASES.default.NAME tethys_platform --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.HOST <TETHYS_DB_HOST> --set DATABASES.default.PORT <TETHYS_DB_PORT>
 
     .. note::
 
@@ -85,3 +85,8 @@ Simply pass all arguments to the command:
 .. code-block:: bash
 
     PGPASSWORD=<POSTGRES_PASSWORD> tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <PORTAL_SUPERUSER_USERNAME> --portal-superuser-email '<PORTAL_SUPERUSER_EMAIL>' --portal-superuser-pass <PORTAL_SUPERUSER_PASSWORD>
+
+.. note::
+    PostgreSQL is the most supported database backend for a production instance of Tethys Platform. However, it is possible to configure any database backend that is supported by Django (see `Django's Databases Documentation <https://docs.djangoproject.com/en/3.2/ref/databases/>`_). When using an alternative database backend, the Tethys database and database users must be created manually since the `tethys db create` command only supports PostgreSQL databases. The normal commands can still be used for configuring the database settings, and for migrating the tables and creating a superuser.
+
+
