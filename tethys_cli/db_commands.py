@@ -33,9 +33,9 @@ def add_db_parser(subparsers):
         "command",
         help="Performs operations on the Tethys Database.\n"
         "  * init - Creates a new, locally running PostgreSQL database server.\n"
-        "  * start - Starts the local (PostgreSQL) database server.\n"
-        "  * stop - Stops the local (PostgreSQL) database server.\n"
-        "  * status - Gets the current status of the local (PostgreSQL) database server.\n"
+        "  * start - Starts a local PostgreSQL database server.\n"
+        "  * stop - Stops a local PostgreSQL database server.\n"
+        "  * status - Gets the current status of a local PostgreSQL database server.\n"
         "  * create - Creates the Tethys Portal database on a PostgreSQL database server configured "
         "in the `portal-config.yml` (this could be local or remote).\n"
         "  * migrate - Runs migrations on the Tethys Portal database.\n"
