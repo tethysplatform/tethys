@@ -143,7 +143,7 @@ Add the following contents to the :file:`docker-compose.yml`:
 .. _`postgis/postgis | Docker Hub`: https://hub.docker.com/r/postgis/postgis
 .. _`postgres | Docker Hub`: https://hub.docker.com/_/postgres
 
-Tethys Platform requires a PostgreSQL database and the apps will require one with the PostGIS extension installed. As such, the ``db`` service will be created using the official PostGIS image on Docker Hub: `postgis/postgis | Docker Hub`_. This image extends the official PostgreSQL image on Docker Hub (`postgres | Docker Hub`_), adding the PostGIS extension.
+Tethys Platform works best with a PostgreSQL database and the apps will require one with the PostGIS extension installed. As such, the ``db`` service will be created using the official PostGIS image on Docker Hub: `postgis/postgis | Docker Hub`_. This image extends the official PostgreSQL image on Docker Hub (`postgres | Docker Hub`_), adding the PostGIS extension.
 
 Add the following definition for the ``db`` service in the :file:`docker-compose.yml`:
 
@@ -368,6 +368,8 @@ c. Add the following contents to each ``.env`` file:
         # Database parameters
         TETHYS_DB_HOST=db  # Hostname is the name of the service
         TETHYS_DB_PORT=5432
+        TETHYS_DB_ENGINE=django.db.backends.postgresql
+        TETHYS_DB_NAME=tethys_platform
         TETHYS_DB_USERNAME=tethys_default
         TETHYS_DB_PASSWORD=please_dont_use_default_passwords
         TETHYS_DB_SUPERUSER=tethys_super

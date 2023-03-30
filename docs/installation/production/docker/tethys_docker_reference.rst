@@ -149,6 +149,9 @@ These environment variables are used to configure the database and database user
 | TETHYS_DB_PORT            | Port of the database server where the primary Tethys Portal database resides.            |
 |                           | Defaults to "5432".                                                                      |
 +---------------------------+------------------------------------------------------------------------------------------+
+| TETHYS_DB_ENGINE          | Type of database backend to use for the primary Tethys Portal database.                  |
+|                           | Defaults to "django.db.backends.postgresql".                                             |
++---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_DB_NAME            | Name of the primary Tethys Portal database. Defaults to "tethys_platform".               |
 +---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_DB_USERNAME        | Username of the owner of the primary Tethys Portal database.                             |
