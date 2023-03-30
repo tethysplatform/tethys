@@ -180,14 +180,10 @@ class TestSettings(TestCase):
 
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
-        return_value={
-            "settings": {
-                "DATABASES": {"default": {"ENGINE": "django.db.backends.sqlite3"}}
-            }
-        },
+        return_value={"settings": {}},
     )
     @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
-    def test_db_config_sqlite(self, mock_home, _):
+    def test_db_config_default(self, mock_home, _):
         name = mock.MagicMock()
         name.exists.return_value = False
         mock_home.return_value = name
@@ -204,11 +200,11 @@ class TestSettings(TestCase):
         "tethys_portal.settings.yaml.safe_load",
         return_value={
             "settings": {
-                # "DATABASES": {"default": {"ENGINE": "django.db.backends.postgresql"}}
+                "DATABASES": {"default": {"ENGINE": "django.db.backends.postgresql"}}
             }
         },
     )
-    def test_db_config_default(self, _):
+    def test_db_config_postgres(self, _):
         reload(settings)
         self.assertDictEqual(
             settings.DATABASES["default"],
@@ -221,3 +217,25 @@ class TestSettings(TestCase):
                 "PORT": 5436,
             },
         )
+
+    # TODO remove compatibility code tests with Tethys5.0 (or 4.2?)
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {"DATABASES": {"default": {"DIR": "test"}}}},
+    )
+    @mock.patch("tethys_cli.cli_colors.write_warning")
+    def test_deprecated_postgres_db_config(self, mock_warning, _):
+        reload(settings)
+        mock_warning.assert_called_once()
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {}},
+    )
+    @mock.patch("tethys_cli.cli_colors.write_warning")
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
+    def test_deprecated_no_config_existing_db(self, mock_home, mock_warning, _):
+        mock_home().exists.return_value = True
+        reload(settings)
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_home.call_args_list[2].args[0], "psql")

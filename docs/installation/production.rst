@@ -14,6 +14,7 @@ Production vs. Development
 Here are the primary differences between the :ref:`development installation <development_installation>` you have been using to develop your apps  and a production installation:
 
 * **Production Grade Servers**: The development server (``tethys manage start``) is not efficient nor capable of handling the traffic a production website receives, so a combination of the `NGINX <https://nginx.org/en/>`_ and `Daphne <https://github.com/django/daphne>`_ servers are used for production installations.
+* **Database Engine**: The default database engine used in development is SQLite. SQLite may not be a good fit for use in your production site (see `Appropriate Uses For SQLite <https://www.sqlite.org/whentouse.html>`_). Consider using an alternative database backend such as PostgreSQL.
 * **Changes Are Not Automatically Loaded**: When changes are made to a production installation, such as installing new apps or changing settings, the Daphne server must be restarted manually to load them. It does not restart automatically like the development server.
 * **Debug Disabled**: `Debug <https://docs.djangoproject.com/en/3.2/ref/settings/#debug>`_ mode is turned off to prevent sensitive information from being leaked through the detailed error messages produced by debug mode.
 * **Secure Credentials**: The internet is a hostile place, so secure passwords and unique usernames are used for all admin and database accounts, instead of the default usernames and passwords used for development.

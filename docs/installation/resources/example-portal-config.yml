@@ -44,6 +44,11 @@ settings:
 
   DATABASES:
     default:
+      ENGINE: django.db.backends.sqlite3
+      NAME: tethys_platform.sqlite
+
+    postgresql_db_config:
+      ENGINE: django.db.backends.postgresql
       NAME: tethys_platform
       USER: tethys_default
       PASSWORD: pass

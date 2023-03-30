@@ -22,13 +22,14 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     def test_process_exception_anonymous_user(
         self, mock_redirect, mock_hasattr, mock_isinstance
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_exception = mock.MagicMock()
         mock_hasattr.return_value = True
         mock_isinstance.return_value = True
         mock_request.user.is_anonymous = True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
         obj.process_exception(mock_request, mock_exception)
 
         mock_redirect.assert_called_once_with("accounts:login")
@@ -37,6 +38,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch("tethys_portal.middleware.hasattr")
     @mock.patch("tethys_portal.middleware.redirect")
     def test_process_exception_user(self, mock_redirect, mock_hasattr, mock_isinstance):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_exception = mock.MagicMock()
         mock_hasattr.return_value = True
@@ -44,7 +46,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_request.user.is_anonymous = False
         mock_request.user.username = "foo"
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
         obj.process_exception(mock_request, mock_exception)
 
         mock_redirect.assert_called_once_with("user:settings")
@@ -62,6 +64,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_success,
         mock_pretty_output,
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -71,7 +74,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 
@@ -104,6 +107,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_success,
         mock_pretty_output,
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -113,7 +117,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 
@@ -146,6 +150,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_success,
         mock_pretty_output,
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -155,7 +160,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 
@@ -188,6 +193,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_success,
         mock_pretty_output,
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -197,7 +203,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 
@@ -230,6 +236,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_success,
         mock_pretty_output,
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = False
         mock_request.user.username = "foo"
@@ -240,7 +247,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 
@@ -267,6 +274,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     def test_process_exception_isinstance_exception_with_anonymous_user(
         self, mock_redirect, mock_hasattr, mock_isinstance, mock_success
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = False
         mock_request.user.username = "foo"
@@ -277,7 +285,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 
@@ -298,6 +306,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     def test_process_exception_isinstance_exception_user(
         self, mock_redirect, mock_hasattr, mock_isinstance, mock_success
     ):
+        mock_get_response = mock.MagicMock()
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -307,7 +316,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_hasattr.return_value = True
         mock_isinstance.side_effect = False, False, True
 
-        obj = TethysSocialAuthExceptionMiddleware()
+        obj = TethysSocialAuthExceptionMiddleware(mock_get_response)
 
         obj.process_exception(mock_request, mock_exception)
 

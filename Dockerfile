@@ -13,6 +13,7 @@ ENV TETHYS_PERSIST="/var/lib/tethys_persist"
 ENV TETHYS_APPS_ROOT="/var/www/tethys/apps"
 ENV TETHYS_PORT=8000
 ENV POSTGRES_PASSWORD="pass"
+ENV TETHYS_DB_ENGINE='django.db.backends.postgresql'
 ENV TETHYS_DB_NAME='tethys_platform'
 ENV TETHYS_DB_USERNAME="tethys_default"
 ENV TETHYS_DB_PASSWORD="pass"

@@ -30,6 +30,7 @@ from pathlib import Path
 
 from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import relative_to_tethys_home
+from tethys_cli.cli_colors import write_warning
 from tethys_cli.gen_commands import generate_secret_key
 
 from bokeh.settings import settings as bokeh_settings, bokehjsdir
@@ -104,7 +105,49 @@ DATABASES = portal_config_settings.pop("DATABASES", {})
 DATABASES.setdefault("default", {})
 DEFAULT_DB = DATABASES["default"]
 
-DEFAULT_DB.setdefault("ENGINE", "django.db.backends.postgresql")
+# ###########
+# backwards compatibility logic
+# TODO remove compatibility code with Tethys 5.0 (or 4.2?)
+warning_message = (
+    "{intro}\n"
+    "The default database engine is changing from postgresql to sqlite3.\n"
+    "To continue using postgresql in the future you will need to configure the "
+    '{properties} of the "default" database.\n'
+    "This can be done with the following command:\n\n"
+    "tethys settings {command_options}\n\n"
+)
+if bool(DEFAULT_DB):
+    # check if default DB is configured with postgres keys, but doesn't specify the "ENGINE"
+    if "ENGINE" not in DEFAULT_DB:
+        if {"DIR", "USER", "PASSWORD", "HOST", "PORT"}.intersection(
+            set(DEFAULT_DB.keys())
+        ):
+            DEFAULT_DB["ENGINE"] = "django.db.backends.postgresql"
+            write_warning(
+                warning_message.format(
+                    intro="WARNING!!!",
+                    properties='"ENGINE" property',
+                    command_options="--set DATABASES.default.ENGINE django.db.backends.postgresql",
+                )
+            )
+else:
+    # check if default local database exists
+    db_dir = relative_to_tethys_home("psql")
+    if db_dir.exists():
+        DEFAULT_DB["DIR"] = "psql"
+        write_warning(
+            warning_message.format(
+                intro="WARNING!!!\nIt appears that you have a local PostgreSQL database that was configured by Tethys.",
+                properties='"ENGINE" and "DIR" properties',
+                command_options="--set DATABASES.default.ENGINE django.db.backends.postgresql "
+                "--set DATABASES.default.DIR psql",
+            )
+        )
+
+# end compatibility code
+# ###########
+
+DEFAULT_DB.setdefault("ENGINE", "django.db.backends.sqlite3")
 
 if "sqlite" in DEFAULT_DB["ENGINE"]:
     DEFAULT_DB.setdefault(
