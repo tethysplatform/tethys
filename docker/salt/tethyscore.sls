@@ -77,17 +77,17 @@ Generate_Tethys_Settings_TethysCore:
         tethys settings
         --set DEBUG {{ DEBUG }}
         --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
-        --set DATABASES.default.ENGINE {{ TETHYS_DB_ENGINE }}
-        --set DATABASES.default.NAME {{ TETHYS_DB_NAME }}
-        --set DATABASES.default.USER {{ TETHYS_DB_USERNAME }}
-        --set DATABASES.default.PASSWORD {{ TETHYS_DB_PASSWORD }}
-        --set DATABASES.default.HOST {{ TETHYS_DB_HOST }}
-        --set DATABASES.default.PORT {{ TETHYS_DB_PORT }}
+        --set DATABASES.default.ENGINE "{{ TETHYS_DB_ENGINE }}"
+        --set DATABASES.default.NAME "{{ TETHYS_DB_NAME }}"
+        --set DATABASES.default.USER "{{ TETHYS_DB_USERNAME }}"
+        --set DATABASES.default.PASSWORD "{{ TETHYS_DB_PASSWORD }}"
+        --set DATABASES.default.HOST "{{ TETHYS_DB_HOST }}"
+        --set DATABASES.default.PORT "{{ TETHYS_DB_PORT }}"
         --set INSTALLED_APPS {{ ADD_DJANGO_APPS }}
         --set SESSION_CONFIG.SECURITY_WARN_AFTER {{ SESSION_WARN }}
         --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
-        --set TETHYS_PORTAL_CONFIG.STATIC_ROOT {{ STATIC_ROOT }}
-        --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT {{ WORKSPACE_ROOT }}
+        --set TETHYS_PORTAL_CONFIG.STATIC_ROOT "{{ STATIC_ROOT }}"
+        --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT "{{ WORKSPACE_ROOT }}"
         --set TETHYS_PORTAL_CONFIG.BYPASS_TETHYS_HOME_PAGE {{ BYPASS_TETHYS_HOME_PAGE }}
         --set RESOURCE_QUOTA_HANDLERS {{ QUOTA_HANDLERS }}
         --set ANALYTICS_CONFIG {{ DJANGO_ANALYTICAL }}
@@ -95,8 +95,8 @@ Generate_Tethys_Settings_TethysCore:
         --set OAUTH_CONFIG {{ OAUTH_OPTIONS }}
         --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYERS_BACKEND }}
         --set CHANNEL_LAYERS.default.CONFIG {{ CHANNEL_LAYERS_CONFIG }}
-        --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
-        --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
+        --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY "{{ RECAPTCHA_PRIVATE_KEY }}"
+        --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY "{{ RECAPTCHA_PUBLIC_KEY }}"
         {{ OTHER_SETTINGS }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
@@ -142,10 +142,10 @@ Create_Database_User_and_SuperUser_TethysCore:
   cmd.run:
     - name: >
         PGPASSWORD="{{ POSTGRES_PASSWORD }}" tethys db create
-        -n {{ TETHYS_DB_USERNAME }}
-        -p {{ TETHYS_DB_PASSWORD }}
-        -N {{ TETHYS_DB_SUPERUSER }}
-        -P {{ TETHYS_DB_SUPERUSER_PASS }}
+        -n "{{ TETHYS_DB_USERNAME }}"
+        -p "{{ TETHYS_DB_PASSWORD }}"
+        -N "{{ TETHYS_DB_SUPERUSER }}"
+        -P "{{ TETHYS_DB_SUPERUSER_PASS }}"
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
@@ -161,9 +161,9 @@ Create_Database_Portal_SuperUser_TethysCore:
     - name: >
         tethys db createsuperuser
         {%- if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
-        --pn {{ PORTAL_SUPERUSER_NAME }} --pp {{ PORTAL_SUPERUSER_PASSWORD }}
+        --pn "{{ PORTAL_SUPERUSER_NAME }}" --pp "{{ PORTAL_SUPERUSER_PASSWORD }}"
         {% endif %}
-        {%- if PORTAL_SUPERUSER_EMAIL %}--pe {{ PORTAL_SUPERUSER_EMAIL }}{% endif %}
+        {%- if PORTAL_SUPERUSER_EMAIL %}--pe "{{ PORTAL_SUPERUSER_EMAIL }}"{% endif %}
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
