@@ -51,7 +51,19 @@ Permissions and users can be managed from the administrator dashboard using ``Us
 Assign App Permission Groups
 ----------------------------
 
-There are two ways to assign an app permission group to a user. The first way is to go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. Select the group and locate the ``Users`` dialog of the ``Change Group`` page. All users will appear in the ``Available Users`` list box. Adding a user to the permissions group is done by moving the desired user(s) to the ``Chosen Users`` list box. The second way is to go to the administrator dashboard and select the ``Users`` link under the ``Authentication and Authorization`` heading. Select the desired user and locate the ``Groups`` dialog under the ``Permissions`` heading of the ``Change User`` page. All app permission groups will appear in the ``Available Groups`` list box. Assigning the permission group is done by moving the permission group to the ``Chosen Groups`` list box. Although the permissions may also appear in the ``User Permissions`` list box below, they cannot be properly assigned in the ``Change User`` dialog.
+There are two ways to assign an app permission group to a user. The first way is to use the ``Users`` dialog on the ``Change Group`` page:
+
+  1.  Go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. 
+  2. Select the group and locate the ``Users`` dialog of the ``Change Group`` page.
+  3. All users will appear in the ``Available Users`` list box. Adding a user to the permissions group is done by moving the desired user(s) to the ``Chosen Users`` list box. 
+
+The second way is to use the ``Groups`` dialog on the ``Change User`` page:
+
+  1. Go to the administrator dashboard and select the ``Users`` link under the ``Authentication and Authorization`` heading.
+  2. Select the desired user and locate the ``Groups`` dialog under the ``Permissions`` heading of the ``Change User`` page.
+  3. All app permission groups will appear in the ``Available Groups`` list box. Assigning the permission group is done by moving the permission group to the ``Chosen Groups`` list box.
+
+.. note:: Although the permissions may also appear in the ``User Permissions`` list box, they cannot be properly assigned in the ``Change User`` dialog.
 
 Assign App Access Permissions
 -----------------------------
@@ -73,7 +85,13 @@ There are two ways to assign app permissions to users and groups. The first meth
 Change Group Method (Recommended)
 +++++++++++++++++++++++++++++++++
 
-To assign app permissions to a user using the ``Change Group`` method, go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. Select the link with the group name from the list. On the ``Change Group`` page you can assign a group permissions to access a specific proxy app from the ``Proxy Apps`` multiselect field or installed app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box (see Figure 4). When an installed app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any (see Figure 5). Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated to the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. The ``Change Group`` form then needs to be saved for changes to take effect.
+To assign app permissions to a user using the ``Change Group`` method:
+  1. Go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading.
+  2. Select the link with the group name from the list.
+  3. On the ``Change Group`` page you can assign a group permission to access a specific proxy app from the ``Proxy Apps`` multiselect field or installed app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box (see Figure 4).
+  4. When an installed app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any (see Figure 5). 
+  5. Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated with the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. 
+  6. The ``Change Group`` form then needs to be saved for changes to take effect.
 
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm4.png
    :width: 900px
@@ -92,7 +110,14 @@ To assign app permissions to a user using the ``Change Group`` method, go to the
 Object Permissions Method
 +++++++++++++++++++++++++
 
-To assign a singular app permission to a user using the ``Change Tethys App`` page, go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 6). On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button (see Figure 7). The same method can be used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page. Previously added App permissions will be listed in the table on this page and can be edited by clicking the ``Edit`` link (see Figure 8). A similar process can be done for proxy apps.
+To assign a singular app permission to a user using the ``Change Tethys App`` page:
+  1. Go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading.
+  2. Select the link with the app name from the list.
+  3. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 6).
+  4. On the ``Object Permissions`` page you can assign app-specific permissions to a user by entering the username in the ``User Identification`` field and pressing the ``Manage user`` button (see Figure 7).
+  5. The same method can be used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page. Previously added App permissions will be listed in the table on this page and can be edited by clicking the ``Edit`` link (see Figure 8).
+
+A similar process can be done for proxy apps.
 
 .. figure:: ../images/tethys_portal/tethys_portal_assign_perm1.png
    :width: 900px
