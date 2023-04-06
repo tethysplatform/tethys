@@ -14,6 +14,8 @@ import uuid
 import django.dispatch
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
@@ -160,6 +162,12 @@ class TethysApp(models.Model, TethysBaseMixin):
             except TethysAppSettingNotAssigned:
                 return False
         return True
+
+    @classmethod
+    def get_content_type(cls):
+        return ContentType.objects.get(
+            app_label=cls._meta.app_label, model=cls._meta.model_name
+        )
 
 
 class TethysExtension(models.Model, TethysBaseMixin):
@@ -1060,6 +1068,11 @@ class ProxyApp(models.Model):
         verbose_name = "Proxy App"
         verbose_name_plural = "Proxy Apps"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # preserve original name, so associated permissions can be updated if name is changed
+        self.__package = self.name
+
     @property
     def proxied(self):
         return True
@@ -1072,5 +1085,68 @@ class ProxyApp(models.Model):
     def icon(self):
         return self.logo_url
 
+    @classmethod
+    def get_content_type(cls):
+        return ContentType.objects.get(
+            app_label=cls._meta.app_label, model=cls._meta.model_name
+        )
+
     def __str__(self):
         return self.name
+
+    @property
+    def package(self):
+        return self.__package
+
+    @property
+    def permission_name(self):
+        return f"{self.package} | Can access app"
+
+    @property
+    def permission_codename(self):
+        return f"{self.package}:access_app"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new and self.name:
+            self.register_app_permission()
+        if self.package != self.name:
+            self.update_app_permission()
+
+    def update_app_permission(self):
+        try:
+            old_codename = self.permission_codename
+            self.__package = self.name
+            # If permission exists, update it
+            p = Permission.objects.get(codename=old_codename)
+            p.name = self.permission_name
+            p.codename = self.permission_codename
+            p.save()
+        except Permission.DoesNotExist:
+            self.register_app_permission()
+
+    def register_app_permission(self):
+        """
+        Register and sync the app permissions.
+        """
+        content_type = self.get_content_type()
+
+        # add default access_app permission
+        p = Permission(
+            name=self.permission_name,
+            codename=self.permission_codename,
+            content_type=content_type,
+        )
+        p.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super().delete(using=using, keep_parents=keep_parents)
+
+        # remove default access_app permission
+        try:
+            # If permission exists, delete it
+            p = Permission.objects.get(codename=self.permission_codename)
+            p.delete()
+        except Permission.DoesNotExist:
+            pass
