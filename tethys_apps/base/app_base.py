@@ -853,9 +853,7 @@ class TethysAppBase(TethysBase):
                     }
 
         # Get the TethysApp content type
-        tethys_content_type = ContentType.objects.get(
-            app_label="tethys_apps", model="tethysapp"
-        )
+        tethys_content_type = TethysApp.get_content_type()
 
         # Remove any permissions that no longer exist
         db_app_permissions = (

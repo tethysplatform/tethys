@@ -1,6 +1,8 @@
+from unittest import mock
 from django.core.exceptions import ValidationError
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import ProxyApp
+from django.contrib.auth.models import Permission
 
 
 class ProxyAppTests(TethysTestCase):
@@ -263,3 +265,64 @@ class ProxyAppTests(TethysTestCase):
             c_exception_raised = True
 
         self.assertFalse(c_exception_raised)
+
+    @mock.patch("tethys_apps.models.ProxyApp.update_app_permission")
+    def test_permission_name_change(self, mock_uap):
+        proxy_app = ProxyApp.objects.create(
+            name=self.app_name,
+            endpoint=self.endpoint,
+            logo_url=self.logo,
+            back_url=self.back_url,
+            description=self.description,
+            tags=self.tags,
+            open_in_new_tab=self.open_in_new_tab,
+        )
+        proxy_app.save()
+        proxy_app.name = "new name"
+        proxy_app.save()
+
+        mock_uap.assert_called_once()
+
+    @mock.patch("tethys_apps.models.Permission")
+    def test_update_app_permission(self, mock_perm):
+        proxy_app = ProxyApp.objects.create(
+            name=self.app_name,
+            endpoint=self.endpoint,
+            logo_url=self.logo,
+            back_url=self.back_url,
+            description=self.description,
+            tags=self.tags,
+            open_in_new_tab=self.open_in_new_tab,
+        )
+        proxy_app.save()
+        proxy_app.update_app_permission()
+        mock_perm.objects.get().save.assert_called()
+
+    @mock.patch("tethys_apps.models.ProxyApp.register_app_permission")
+    def test_update_app_permission_exception(self, mock_reg):
+        proxy_app = ProxyApp.objects.create(
+            name=self.app_name,
+            endpoint=self.endpoint,
+            logo_url=self.logo,
+            back_url=self.back_url,
+            description=self.description,
+            tags=self.tags,
+            open_in_new_tab=self.open_in_new_tab,
+        )
+        proxy_app.save()
+        proxy_app.update_app_permission()
+        self.assertEqual(2, len(mock_reg.call_args_list))
+
+    def test_delete_exception(self):
+        proxy_app = ProxyApp.objects.create(
+            name=self.app_name,
+            endpoint=self.endpoint,
+            logo_url=self.logo,
+            back_url=self.back_url,
+            description=self.description,
+            tags=self.tags,
+            open_in_new_tab=self.open_in_new_tab,
+        )
+        proxy_app.save()
+        Permission.objects.get(codename=proxy_app.permission_codename).delete()
+        proxy_app.delete()
