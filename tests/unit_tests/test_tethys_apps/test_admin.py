@@ -47,24 +47,27 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.root_app_path = os.path.join(self.src_dir, "apps", "tethysapp-test_app")
         self.app_model = TethysApp(name="test_app", package="test_app")
         self.app_model.save()
+        self.proxy_app_model = ProxyApp(
+            name="test_proxy", endpoint="http://test.endpoint"
+        )
+        self.proxy_app_model.save()
 
-        from django.contrib.auth.models import ContentType, Group, Permission
+        from django.contrib.auth.models import Group, Permission
 
-        app_content_type_id = ContentType.objects.get(
-            app_label="tethys_apps", model="tethysapp"
-        ).pk
+        app_content_type_id = TethysApp.get_content_type().id
+
         self.perm_model = Permission(
             name="Test Perm | Test",
             content_type_id=app_content_type_id,
             codename="test_perm:test",
         )
         self.perm_model.save()
-
         self.group_model = Group(name="test_group")
         self.group_model.save()
 
     def tearDown(self):
         self.app_model.delete()
+        self.proxy_app_model.delete()
         self.perm_model.delete()
         self.group_model.delete()
 
@@ -381,8 +384,9 @@ class TestTethysAppAdmin(unittest.TestCase):
     def test_gop_form_init(self, mock_all_apps, mock_gop, mock_perms, mock_groups):
         mock_all_apps.return_value = [self.app_model]
         mock_obj = mock.MagicMock(pk=True)
-        mock_gop.values().distinct().filter.return_value = [
-            {"object_pk": self.app_model.pk}
+        mock_gop.filter().distinct.side_effect = [
+            [mock.MagicMock(object_pk=self.app_model.pk)],
+            [mock.MagicMock(object_pk=self.proxy_app_model.pk)],
         ]
         mock_gop.values_list().filter().distinct.side_effect = [
             [9999],
@@ -436,8 +440,15 @@ class TestTethysAppAdmin(unittest.TestCase):
         ret = gop_app_access_form_dynamic(instance=mock_obj)
 
         ret.data = mock_data
-        ret.cleaned_data = {"apps": [self.app_model]}
-        ret.fields = {"apps": ret.fields["apps"]}
+        ret.cleaned_data = {
+            "apps": [self.app_model],
+            "proxy_apps": [self.proxy_app_model],
+            "users": [],
+        }
+        ret.fields = {
+            "apps": ret.fields["apps"],
+            "proxy_apps": ret.fields["proxy_apps"],
+        }
 
         ret.save()
 
@@ -461,16 +472,26 @@ class TestTethysAppAdmin(unittest.TestCase):
         ret = gop_app_access_form_dynamic(instance=mock_obj)
 
         ret.data = mock_data
-        ret.cleaned_data = {"apps": [self.app_model]}
-        ret.fields = {"apps": ret.fields["apps"]}
+        ret.cleaned_data = {
+            "apps": [self.app_model],
+            "proxy_apps": [self.proxy_app_model],
+            "users": [],
+        }
+        ret.fields = {
+            "apps": ret.fields["apps"],
+            "proxy_apps": ret.fields["proxy_apps"],
+        }
 
         ret.save()
 
-        mock_remove_perm.assert_called_with(
-            "test_app:access_app", mock_obj, self.app_model
+        mock_remove_perm.called_with("test_app:access_app", mock_obj, self.app_model)
+        self.assertEqual(
+            mock_assign_perm.call_args_list[0].args,
+            ("test_app:access_app", mock_obj, self.app_model),
         )
-        mock_assign_perm.assert_called_with(
-            "test_app:access_app", mock_obj, self.app_model
+        self.assertEqual(
+            mock_assign_perm.call_args_list[1].args,
+            ("test_proxy:access_app", mock_obj, self.proxy_app_model),
         )
 
     @mock.patch("tethys_apps.admin.assign_perm")
@@ -493,10 +514,13 @@ class TestTethysAppAdmin(unittest.TestCase):
         ret.data = mock_data
         ret.cleaned_data = {
             "apps": [self.app_model],
+            "proxy_apps": [self.proxy_app_model],
             "test_app_permissions": [self.perm_model],
+            "users": [],
         }
         ret.fields = {
             "apps": ret.fields["apps"],
+            "proxy_apps": ret.fields["proxy_apps"],
             "test_app_permissions": ret.fields["apps"],
         }
 
@@ -538,12 +562,18 @@ class TestTethysAppAdmin(unittest.TestCase):
         ret.data = mock_data
         ret.cleaned_data = {
             "apps": [self.app_model],
+            "proxy_apps": [self.proxy_app_model],
             "test_app_groups": mock.MagicMock(),
+            "users": [],
         }
         ret.cleaned_data["test_app_groups"].values_list().distinct.return_value = [
             self.group_model.pk
         ]
-        ret.fields = {"apps": ret.fields["apps"], "test_app_groups": ret.fields["apps"]}
+        ret.fields = {
+            "apps": ret.fields["apps"],
+            "test_app_groups": ret.fields["apps"],
+            "proxy_apps": ret.fields["proxy_apps"],
+        }
 
         ret.save()
 
