@@ -57,7 +57,7 @@ class TestUtilites(unittest.TestCase):
     @mock.patch("tethys_services.utilities.reverse")
     @mock.patch("tethys_services.utilities.redirect")
     def test_ensure_oauth2_token_expired(
-        self, mock_redirect, mock_reverse, mock_ls, mock_logger
+        self, mock_redirect, mock_reverse, mock_ls
     ):
         mock_user = mock.MagicMock()
         mock_social = mock.MagicMock()

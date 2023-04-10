@@ -249,7 +249,6 @@ class TestCliHelper(unittest.TestCase):
         self.assertEqual(mock_write_warning.call_count, 2)
         self.assertEqual(custom_secret_setting.get_value(), "SECRETXX1Y")
 
-    @mock.patch("tethys_cli.cli_helpers.write_error")
     @mock.patch("tethys_cli.cli_helpers.write_warning")
     @mock.patch("tethys_cli.cli_helpers.yaml.safe_load")
     @mock.patch("tethys_cli.cli_helpers.secrets_signed_unsigned_value")
@@ -265,7 +264,6 @@ class TestCliHelper(unittest.TestCase):
         mock_secrets_signed_unsigned_value,
         mock_yaml_safe_load,
         mock_write_warning,
-        mock_write_error,
     ):
         mock_salt_string.return_value.decode.return_value = "my_fake_string"
 
