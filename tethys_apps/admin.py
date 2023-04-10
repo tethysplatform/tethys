@@ -73,7 +73,7 @@ class SecretCustomSettingForm(forms.ModelForm):
 
     class Meta:
         model = SecretCustomSetting
-        fields = ["name", "description", "value", "required"]
+        fields = ["value"]
 
 
 class SecretCustomSettingInline(TethysAppSettingInline):

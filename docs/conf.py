@@ -25,6 +25,7 @@ from django.conf import settings
 # NOTE: No obvious way to automatically anticipate all the sub modules without
 # installing the package, which is what we are trying to avoid.
 MOCK_MODULES = [
+    "bcrypt",
     "bokeh",
     "bokeh.core.templates",
     "bokeh.document",
