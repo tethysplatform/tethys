@@ -615,6 +615,70 @@ class TestMapLayoutMixin(unittest.TestCase):
             },
         )
 
+    def test_build_legend_geoserver_with_layer_id_with_colon(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={
+                "layer_name": "foo_bar",
+                "layer_variable": "baz",
+                "layer_id": "baz:foo",
+            },
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {"LAYERS": "foo_bar"},
+                "serverType": "geoserver",
+            },
+        )
+
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "initial_option": None,
+                "layer_id": "baz:foo",
+                "legend_id": "legend-for-baz_foo",
+                "select_options": None,
+                "title": "Foo Bar",
+                "type": "geoserver-wms-legend",
+                "url": "http://example.com:8181/geoserver/wms?REQUEST=GetLegendGraphic"
+                "&VERSION=1.0.0&FORMAT=image/png&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100"
+                "&LAYER=foo_bar",
+            },
+        )
+
+    def test_build_legend_geoserver_with_layer_id_with_comma(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={
+                "layer_name": "foo_bar",
+                "layer_variable": "baz",
+                "layer_id": "baz,foo",
+            },
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {"LAYERS": "foo_bar"},
+                "serverType": "geoserver",
+            },
+        )
+
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "initial_option": None,
+                "layer_id": "baz,foo",
+                "legend_id": "legend-for-baz_foo",
+                "select_options": None,
+                "title": "Foo Bar",
+                "type": "geoserver-wms-legend",
+                "url": "http://example.com:8181/geoserver/wms?REQUEST=GetLegendGraphic"
+                "&VERSION=1.0.0&FORMAT=image/png&LEGEND_OPTIONS=bgColor:0xEFEFEF;labelMargin:10;dpi:100"
+                "&LAYER=foo_bar",
+            },
+        )
+
     def test_build_legend_geoserver_with_multiple_styles(self):
         layer = MVLayer(
             source="TileWMS",

@@ -700,15 +700,9 @@ class TestTethysAppBase(unittest.TestCase):
         db_group.delete.assert_called_with()
 
         # Check if Permission is called inside DoesNotExist
-        # Get the TethysApp content type
-        from django.contrib.contenttypes.models import ContentType
-
-        tethys_content_type = ContentType.objects.get(
-            app_label="tethys_apps", model="tethysapp"
-        )
         mock_dp.assert_any_call(
             codename=":create_test",
-            content_type=tethys_content_type,
+            content_type=mock_ta.get_content_type(),
             name=" | test_create",
         )
 

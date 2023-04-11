@@ -20,15 +20,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# Build paths inside the project like this: BASE_DIR / '...'
 import os
 import sys
 import yaml
 import logging
 import datetime as dt
+from pathlib import Path
 
 from django.contrib.messages import constants as message_constants
-from tethys_apps.utilities import get_tethys_home_dir
+from tethys_apps.utilities import relative_to_tethys_home
+from tethys_cli.cli_colors import write_warning
 from tethys_cli.gen_commands import generate_secret_key
 
 from bokeh.settings import settings as bokeh_settings, bokehjsdir
@@ -36,12 +38,11 @@ from bokeh.settings import settings as bokeh_settings, bokehjsdir
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
 
-BASE_DIR = os.path.dirname(__file__)
-TETHYS_HOME = get_tethys_home_dir()
+BASE_DIR = Path(__file__).parent
 
 portal_config_settings = {}
 try:
-    with open(os.path.join(TETHYS_HOME, "portal_config.yml")) as portal_yaml:
+    with relative_to_tethys_home("portal_config.yml").open() as portal_yaml:
         portal_config_settings = yaml.safe_load(portal_yaml).get("settings", {}) or {}
 except FileNotFoundError:
     log.info(
@@ -52,7 +53,6 @@ except Exception:
     log.exception(
         "There was an error while attempting to read the settings from the portal_config.yml file."
     )
-
 bokeh_settings.resources = portal_config_settings.pop("BOKEH_RESOURCES", "inline")
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -102,14 +102,64 @@ for setting, value in SESSION_CONFIG.items():
     setattr(this_module, setting, value)
 
 DATABASES = portal_config_settings.pop("DATABASES", {})
-DATABASES.setdefault("default", {"DIR": "psql"})
+DATABASES.setdefault("default", {})
 DEFAULT_DB = DATABASES["default"]
-DEFAULT_DB.setdefault("ENGINE", "django.db.backends.postgresql")
-DEFAULT_DB.setdefault("NAME", "tethys_platform")
-DEFAULT_DB.setdefault("USER", "tethys_default")
-DEFAULT_DB.setdefault("PASSWORD", "pass")
-DEFAULT_DB.setdefault("HOST", "localhost")
-DEFAULT_DB.setdefault("PORT", 5436)
+
+# ###########
+# backwards compatibility logic
+# TODO remove compatibility code with Tethys 5.0 (or 4.2?)
+warning_message = (
+    "{intro}\n"
+    "The default database engine is changing from postgresql to sqlite3.\n"
+    "To continue using postgresql in the future you will need to configure the "
+    '{properties} of the "default" database.\n'
+    "This can be done with the following command:\n\n"
+    "tethys settings {command_options}\n\n"
+)
+if bool(DEFAULT_DB):
+    # check if default DB is configured with postgres keys, but doesn't specify the "ENGINE"
+    if "ENGINE" not in DEFAULT_DB:
+        if {"DIR", "USER", "PASSWORD", "HOST", "PORT"}.intersection(
+            set(DEFAULT_DB.keys())
+        ):
+            DEFAULT_DB["ENGINE"] = "django.db.backends.postgresql"
+            write_warning(
+                warning_message.format(
+                    intro="WARNING!!!",
+                    properties='"ENGINE" property',
+                    command_options="--set DATABASES.default.ENGINE django.db.backends.postgresql",
+                )
+            )
+else:
+    # check if default local database exists
+    db_dir = relative_to_tethys_home("psql")
+    if db_dir.exists():
+        DEFAULT_DB["DIR"] = "psql"
+        write_warning(
+            warning_message.format(
+                intro="WARNING!!!\nIt appears that you have a local PostgreSQL database that was configured by Tethys.",
+                properties='"ENGINE" and "DIR" properties',
+                command_options="--set DATABASES.default.ENGINE django.db.backends.postgresql "
+                "--set DATABASES.default.DIR psql",
+            )
+        )
+
+# end compatibility code
+# ###########
+
+DEFAULT_DB.setdefault("ENGINE", "django.db.backends.sqlite3")
+
+if "sqlite" in DEFAULT_DB["ENGINE"]:
+    DEFAULT_DB.setdefault(
+        "NAME", relative_to_tethys_home("tethys_platform.sqlite", as_str=True)
+    )
+else:
+    DEFAULT_DB.setdefault("NAME", "tethys_platform")
+    DEFAULT_DB.setdefault("USER", "tethys_default")
+    DEFAULT_DB.setdefault("PASSWORD", "pass")
+    DEFAULT_DB.setdefault("HOST", "localhost")
+    DEFAULT_DB.setdefault("PORT", 5436)
+
 
 # See https://docs.djangoproject.com/en/3.2/ref/settings/#logging-config for more logging configuration options.
 LOGGING = portal_config_settings.pop("LOGGING", {})
@@ -270,7 +320,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, "templates"),
+            BASE_DIR / "templates",
         ],
         "OPTIONS": {
             "context_processors": [
@@ -302,13 +352,13 @@ TEMPLATES = [
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    BASE_DIR / "static",
     bokehjsdir(),
 ]
 
 STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop("STATICFILES_USE_NPM", False)
 if STATICFILES_USE_NPM:
-    STATICFILES_DIRS.append(os.path.join(BASE_DIR, "static", "node_modules"))
+    STATICFILES_DIRS.append(BASE_DIR / "static" / "node_modules")
 
 STATICFILES_FINDERS = portal_config_settings.pop(
     "STATICFILES_FINDERS_OVERRIDE",
@@ -324,11 +374,11 @@ STATICFILES_FINDERS = (
 )
 
 STATIC_ROOT = TETHYS_PORTAL_CONFIG.pop(
-    "STATIC_ROOT", os.path.join(TETHYS_HOME, "static")
+    "STATIC_ROOT", relative_to_tethys_home("static", as_str=True)
 )
 
 TETHYS_WORKSPACES_ROOT = TETHYS_PORTAL_CONFIG.pop(
-    "TETHYS_WORKSPACES_ROOT", os.path.join(TETHYS_HOME, "workspaces")
+    "TETHYS_WORKSPACES_ROOT", relative_to_tethys_home("workspaces", as_str=True)
 )
 
 # add any additional TETHYS_PORTAL_CONFIG settings

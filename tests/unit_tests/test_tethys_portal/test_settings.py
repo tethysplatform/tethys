@@ -138,7 +138,7 @@ class TestSettings(TestCase):
         reload(settings)
         self.assertTrue(settings.STATICFILES_USE_NPM)
         node_modules_in_any_paths = any(
-            ["node_modules" in path for path in settings.STATICFILES_DIRS]
+            ["node_modules" in str(path) for path in settings.STATICFILES_DIRS]
         )
         self.assertTrue(node_modules_in_any_paths)
 
@@ -152,7 +152,7 @@ class TestSettings(TestCase):
         reload(settings)
         self.assertFalse(settings.STATICFILES_USE_NPM)
         node_modules_in_any_paths = any(
-            ["node_modules" in path for path in settings.STATICFILES_DIRS]
+            ["node_modules" in str(path) for path in settings.STATICFILES_DIRS]
         )
         self.assertFalse(node_modules_in_any_paths)
 
@@ -177,3 +177,65 @@ class TestSettings(TestCase):
     def test_cors_config(self, _):
         reload(settings)
         self.assertListEqual(settings.CORS_ALLOWED_ORIGINS, ["http://example.com"])
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {}},
+    )
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
+    def test_db_config_default(self, mock_home, _):
+        name = mock.MagicMock()
+        name.exists.return_value = False
+        mock_home.return_value = name
+        reload(settings)
+        self.assertDictEqual(
+            settings.DATABASES["default"],
+            {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": name,
+            },
+        )
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {
+                "DATABASES": {"default": {"ENGINE": "django.db.backends.postgresql"}}
+            }
+        },
+    )
+    def test_db_config_postgres(self, _):
+        reload(settings)
+        self.assertDictEqual(
+            settings.DATABASES["default"],
+            {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": "tethys_platform",
+                "USER": "tethys_default",
+                "PASSWORD": "pass",
+                "HOST": "localhost",
+                "PORT": 5436,
+            },
+        )
+
+    # TODO remove compatibility code tests with Tethys5.0 (or 4.2?)
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {"DATABASES": {"default": {"DIR": "test"}}}},
+    )
+    @mock.patch("tethys_cli.cli_colors.write_warning")
+    def test_deprecated_postgres_db_config(self, mock_warning, _):
+        reload(settings)
+        mock_warning.assert_called_once()
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={"settings": {}},
+    )
+    @mock.patch("tethys_cli.cli_colors.write_warning")
+    @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
+    def test_deprecated_no_config_existing_db(self, mock_home, mock_warning, _):
+        mock_home().exists.return_value = True
+        reload(settings)
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_home.call_args_list[2].args[0], "psql")
