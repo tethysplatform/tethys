@@ -25,6 +25,7 @@ from django.conf import settings
 # NOTE: No obvious way to automatically anticipate all the sub modules without
 # installing the package, which is what we are trying to avoid.
 MOCK_MODULES = [
+    "bcrypt",
     "bokeh",
     "bokeh.core.templates",
     "bokeh.document",
@@ -42,7 +43,6 @@ MOCK_MODULES = [
     "conda.cli",
     "conda.cli.python_api",
     "condorpy",
-    "django_gravatar",
     "dask",
     "dask.delayed",
     "dask.distributed",
@@ -50,6 +50,9 @@ MOCK_MODULES = [
     "distributed.protocol",
     "distributed.protocol.serialize",
     "distro",
+    "django_gravatar",
+    "django_json_widget",
+    "django_json_widget.widgets",
     "docker",
     "docker.types",
     "docker.errors",

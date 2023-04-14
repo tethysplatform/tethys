@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from tethys_apps.admin import (
     TethysAppSettingInline,
     CustomSettingInline,
+    SecretCustomSettingInline,
+    JSONCustomSettingInline,
     DatasetServiceSettingInline,
     SpatialDatasetServiceSettingInline,
     WebProcessingServiceSettingInline,
@@ -29,6 +31,8 @@ from tethys_apps.models import (
     TethysApp,
     TethysExtension,
     CustomSetting,
+    JSONCustomSetting,
+    SecretCustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
@@ -97,6 +101,28 @@ class TestTethysAppAdmin(unittest.TestCase):
         expected_model = CustomSetting
 
         ret = CustomSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
+
+    def test_SecretCustomSettingInline(self):
+        expected_readonly_fields = ("name", "description", "required")
+        expected_fields = ("name", "description", "value", "required")
+        expected_model = SecretCustomSetting
+
+        ret = SecretCustomSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
+
+    def test_JSONCustomSettingInline(self):
+        expected_readonly_fields = ("name", "description", "required")
+        expected_fields = ("name", "description", "value", "required")
+        expected_model = JSONCustomSetting
+
+        ret = JSONCustomSettingInline(mock.MagicMock(), mock.MagicMock())
 
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
@@ -247,6 +273,8 @@ class TestTethysAppAdmin(unittest.TestCase):
         )
         expected_inlines = [
             CustomSettingInline,
+            JSONCustomSettingInline,
+            SecretCustomSettingInline,
             PersistentStoreConnectionSettingInline,
             PersistentStoreDatabaseSettingInline,
             DatasetServiceSettingInline,

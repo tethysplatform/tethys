@@ -1,10 +1,9 @@
 import unittest
 from unittest import mock
-
 from guardian.shortcuts import assign_perm
-
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
+from django.core.signing import Signer
 
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
@@ -851,3 +850,143 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         mock_import.return_value = m
         result = utilities.get_all_submodules(m)
         self.assertEqual([m] * 3, result)
+
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.Path.exists")
+    def test_delete_secrets(
+        self, mock_path_exists, mock_open_file, mock_yaml_safe_load, mock_yaml_dumps
+    ):
+        app_target_name = "test_app"
+        mock_path_exists.return_value = True
+        before_content = {
+            "secrets": {
+                app_target_name: {
+                    "custom_settings_salt_strings": {
+                        "Secret_Test2_without_required": "my_first_fake_string"
+                    }
+                },
+                "version": "1.0",
+            }
+        }
+
+        after_content = {
+            "secrets": {
+                app_target_name: {"custom_settings_salt_strings": {}},
+                "version": "1.0",
+            }
+        }
+
+        mock_yaml_safe_load.return_value = before_content
+        utilities.delete_secrets(app_target_name)
+
+        mock_yaml_dumps.assert_called_once_with(
+            after_content, mock_open_file.return_value
+        )
+
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.Path.exists")
+    def test_delete_secrets_without_app_in_secrets_yml(
+        self, mock_path_exists, mock_open_file, mock_yaml_safe_load, mock_yaml_dumps
+    ):
+        app_target_name = "test_app"
+        mock_path_exists.return_value = True
+        before_content = {"secrets": {"version": "1.0"}}
+
+        after_content = {"secrets": {app_target_name: {}, "version": "1.0"}}
+
+        mock_yaml_safe_load.return_value = before_content
+        utilities.delete_secrets(app_target_name)
+
+        mock_yaml_dumps.assert_called_once_with(
+            after_content, mock_open_file.return_value
+        )
+
+    def test_get_secret_custom_settings(self):
+        app_target_name = "test_app"
+
+        secret_settings = utilities.get_secret_custom_settings(app_target_name)
+
+        self.assertEqual(len(secret_settings), 2)
+
+    def test_get_secret_custom_settings_without_app(self):
+        app_target_name = "test_app2"
+        return_val = utilities.get_secret_custom_settings(app_target_name)
+        self.assertEqual(return_val, None)
+
+    @mock.patch("tethys_apps.utilities.os.path.exists")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch(
+        "tethys_apps.utilities.open",
+        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+    )
+    def test_secrets_signed_unsigned_value_with_secrets(
+        self, mock_open_file, mock_yaml_safe_load, mock_file_exists
+    ):
+        app_target_name = "test_app"
+
+        before_content = {
+            "secrets": {
+                app_target_name: {
+                    "custom_settings_salt_strings": {
+                        "Secret_Test2_without_required": "my_first_fake_string"
+                    }
+                },
+                "version": "1.0",
+            }
+        }
+        mock_yaml_safe_load.return_value = before_content
+
+        mock_file_exists.side_effect = [True, True, False, False]
+
+        signer = Signer(salt="my_first_fake_string")
+        mock_val = "SECRETXX1Y"
+
+        secret_signed_mock = signer.sign_object("SECRETXX1Y")
+
+        custom_secret_setting = mock.MagicMock(
+            name="Secret_Test2_without_required",
+            value=secret_signed_mock,
+            type_custom_setting="SECRET",
+        )
+        custom_secret_setting.name.return_value = "Secret_Test2_without_required"
+
+        # with secrets.yml
+
+        # signing
+        signed_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), mock_val, app_target_name, True
+        )
+        self.assertEqual(signed_secret, secret_signed_mock)
+
+        # unsigning
+        unsigned_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), secret_signed_mock, app_target_name, False
+        )
+        self.assertEqual(unsigned_secret, mock_val)
+
+        # with no secrets.yml
+
+        signer = Signer()
+        secret_signed_mock = signer.sign_object("SECRETXX1Y")
+
+        # signing
+        signed_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), mock_val, app_target_name, True
+        )
+        self.assertEqual(signed_secret, secret_signed_mock)
+
+        # unsinging
+        unsigned_secret = utilities.secrets_signed_unsigned_value(
+            custom_secret_setting.name(), secret_signed_mock, app_target_name, False
+        )
+        self.assertEqual(unsigned_secret, mock_val)

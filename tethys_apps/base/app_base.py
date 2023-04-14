@@ -9,7 +9,6 @@
 import logging
 import traceback
 import uuid
-
 from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -1066,6 +1065,7 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         db_app = TethysApp.objects.get(package=cls.package)
+
         custom_settings = db_app.custom_settings
         try:
             custom_setting = custom_settings.get(name=name)
@@ -1099,38 +1099,54 @@ class TethysAppBase(TethysBase):
             custom_setting = custom_settings.get(name=name)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist("CustomTethysAppSetting", name, cls.name)
+        if custom_setting.type_custom_setting == "SIMPLE":
+            type_matches = False
+            if custom_setting.type == "STRING":
+                type_matches = isinstance(value, str)
+            elif custom_setting.type == "INTEGER":
+                type_matches = isinstance(value, int)
+            elif custom_setting.type == "FLOAT":
+                type_matches = isinstance(value, float)
+            elif custom_setting.type == "BOOLEAN":
+                type_matches = str(value).lower() in [
+                    "true",
+                    "false",
+                    "yes",
+                    "no",
+                    "t",
+                    "f",
+                    "y",
+                    "n",
+                    "1",
+                    "0",
+                ]
+            elif custom_setting.type == "UUID":
+                try:
+                    type_matches = bool(uuid.UUID(str(value)))
+                except ValueError:
+                    pass
 
-        type_matches = False
-        if custom_setting.type == "STRING":
-            type_matches = isinstance(value, str)
-        elif custom_setting.type == "INTEGER":
-            type_matches = isinstance(value, int)
-        elif custom_setting.type == "FLOAT":
-            type_matches = isinstance(value, float)
-        elif custom_setting.type == "BOOLEAN":
-            type_matches = str(value).lower() in [
-                "true",
-                "false",
-                "yes",
-                "no",
-                "t",
-                "f",
-                "y",
-                "n",
-                "1",
-                "0",
-            ]
-        elif custom_setting.type == "UUID":
-            try:
-                type_matches = bool(uuid.UUID(str(value)))
-            except ValueError:
-                pass
+            if type_matches:
+                custom_setting.value = value
+                custom_setting.save()
+            else:
+                raise ValidationError(f"Value must be of type {custom_setting.type}.")
 
-        if type_matches:
+        if custom_setting.type_custom_setting == "SECRET":
+            if type(value) is not str:
+                raise ValidationError(
+                    "Validation Error: Secret Custom Setting should be a String"
+                )
+
             custom_setting.value = value
             custom_setting.save()
-        else:
-            raise ValidationError(f"Value must be of type {custom_setting.type}.")
+
+        if custom_setting.type_custom_setting == "JSON":
+            if type(value) is not dict:
+                raise ValidationError("Value must be a valid JSON string.")
+            else:
+                custom_setting.value = value
+                custom_setting.save()
 
     @classmethod
     def get_dataset_service(
