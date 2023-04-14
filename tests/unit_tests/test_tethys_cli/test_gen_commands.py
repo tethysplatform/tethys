@@ -20,6 +20,7 @@ from tethys_cli.gen_commands import (
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_PORTAL_OPTION,
+    GEN_SECRETS_OPTION,
     GEN_META_YAML_OPTION,
     GEN_PACKAGE_JSON_OPTION,
     GEN_REQUIREMENTS_OPTION,
@@ -928,3 +929,30 @@ class CLIGenCommandsTest(unittest.TestCase):
         for file_name in VALID_GEN_OBJECTS:
             template_path = template_dir / file_name
             self.assertTrue(template_path.exists())
+
+    @mock.patch("tethys_cli.gen_commands.os.path.isdir")
+    @mock.patch("tethys_cli.gen_commands.write_info")
+    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.os.makedirs")
+    def test_generate_command_secrets_yaml_tethys_home_not_exists(
+        self, mock_makedirs, mock_os_path_isfile, mock_file, mock_write_info, mock_isdir
+    ):
+        mock_args = mock.MagicMock(
+            type=GEN_SECRETS_OPTION, directory=None, spec=["overwrite"]
+        )
+        mock_os_path_isfile.return_value = False
+        mock_isdir.side_effect = [
+            False,
+            True,
+        ]  # TETHYS_HOME dir exists, computed dir exists
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+
+        # Verify it makes the Tethys Home directory
+        mock_makedirs.assert_called()
+        rts_call_args = mock_write_info.call_args_list[0]
+        self.assertIn("A Tethys Secrets file", rts_call_args.args[0])

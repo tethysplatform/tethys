@@ -15,7 +15,7 @@ import warnings
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission, Group
-from tethys_apps.utilities import get_installed_tethys_items
+from tethys_apps.utilities import get_installed_tethys_items, delete_secrets
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 
 
@@ -150,6 +150,7 @@ class Command(BaseCommand):
                 )
             except Exception:
                 continue
+        delete_secrets(item_name)
 
         self.stdout.write(
             f'{verbose_name} "{item_with_prefix}" successfully uninstalled.'

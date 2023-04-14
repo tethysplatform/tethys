@@ -1,12 +1,27 @@
 import os
 import sys
 import subprocess
+import bcrypt
+import yaml
 
 import django
+from pathlib import Path
 
 from tethys_apps.base.testing.environment import set_testing_environment
-from tethys_apps.utilities import get_tethys_src_dir
-from tethys_cli.cli_colors import pretty_output, FG_RED
+from tethys_apps.utilities import (
+    get_tethys_src_dir,
+    get_tethys_home_dir,
+    secrets_signed_unsigned_value,
+)
+from tethys_cli.cli_colors import (
+    pretty_output,
+    FG_RED,
+    write_success,
+    write_warning,
+)
+
+
+TETHYS_HOME = Path(get_tethys_home_dir())
 
 
 def add_geoserver_rest_to_endpoint(endpoint):
@@ -57,3 +72,41 @@ def load_apps():
     sys.stdout = open(os.devnull, "w")
     django.setup()
     sys.stdout = stdout
+
+
+def generate_salt_string():
+    salt = bcrypt.gensalt()
+    return salt
+
+
+def gen_salt_string_for_setting(app_name, setting):
+    secret_yaml_file = TETHYS_HOME / "secrets.yml"
+    secret_settings = {}
+    secret_unsigned = secrets_signed_unsigned_value(
+        setting.name, setting.value, setting.tethys_app.package, is_signing=False
+    )
+    with secret_yaml_file.open("r") as secret_yaml:
+        secret_settings = yaml.safe_load(secret_yaml) or {}
+        if app_name not in secret_settings["secrets"]:
+            write_warning(
+                f"No definition for the app {app_name} in the secrets.yml. Generating one..."
+            )
+            secret_settings["secrets"][app_name] = {}
+        if "custom_settings_salt_strings" not in secret_settings["secrets"][app_name]:
+            write_warning(
+                f"No custom_settings_salt_strings in the app {app_name} in the secrets.yml. Generating one..."
+            )
+            secret_settings["secrets"][app_name]["custom_settings_salt_strings"] = {}
+
+        salt_string = generate_salt_string().decode()
+        secret_settings["secrets"][app_name]["custom_settings_salt_strings"][
+            setting.name
+        ] = salt_string
+        with secret_yaml_file.open("w") as secret_yaml:
+            yaml.dump(secret_settings, secret_yaml)
+            write_success(
+                f"Salt string generated for setting: {setting.name} in app {app_name}"
+            )
+        setting.value = secret_unsigned
+        setting.clean()
+        setting.save()

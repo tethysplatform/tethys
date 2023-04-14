@@ -11,7 +11,11 @@ import importlib
 import logging
 import os
 import pkgutil
+import yaml
 from pathlib import Path
+from django.core.signing import Signer
+from django.core import signing
+from tethys_apps.exceptions import TethysAppSettingNotAssigned
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
@@ -181,7 +185,7 @@ def get_app_settings(app):
         SpatialDatasetServiceSetting,
         DatasetServiceSetting,
         WebProcessingServiceSetting,
-        CustomSetting,
+        CustomSettingBase,
     )
 
     try:
@@ -198,12 +202,12 @@ def get_app_settings(app):
             app_settings.append(setting)
         for setting in WebProcessingServiceSetting.objects.filter(tethys_app=app):
             app_settings.append(setting)
-        for setting in CustomSetting.objects.filter(tethys_app=app):
+        for setting in CustomSettingBase.objects.filter(
+            tethys_app=app
+        ).select_subclasses():
             app_settings.append(setting)
-
         unlinked_settings = []
         linked_settings = []
-
         for setting in app_settings:
             if (
                 (
@@ -219,7 +223,10 @@ def get_app_settings(app):
                     hasattr(setting, "web_processing_service")
                     and setting.web_processing_service
                 )
-                or (hasattr(setting, "value") and setting.value != "")
+                or (
+                    hasattr(setting, "value")
+                    and (setting.value != "" and bool(setting.value))
+                )
             ):
                 linked_settings.append(setting)
             else:
@@ -257,19 +264,48 @@ def get_custom_setting(app_package, setting_name):
     Returns:
         CustomSetting: The Custom Setting or None if the TethysApp or CustomSetting cannot be found.
     """
-    from tethys_apps.models import TethysApp, CustomSetting
+    from tethys_apps.models import TethysApp, CustomSettingBase
+
+    try:
+        app = TethysApp.objects.get(package=app_package)
+    except TethysApp.DoesNotExist:
+        return None
+    try:
+        setting = (
+            CustomSettingBase.objects.filter(tethys_app=app)
+            .select_subclasses()
+            .get(name=setting_name)
+        )
+    except CustomSettingBase.DoesNotExist:
+        return None
+
+    return setting
+
+
+def get_secret_custom_settings(app_package):
+    """
+    Get the SecretCustomSettings for a specified TethysApp.
+
+    Args:
+        app_package (str): The name/package of the TethysApp.
+
+    Returns:
+        InheritanceQuerySet: A Inheritance Query Set containing SecretCustomSetting, None if the TethysApp, or an empty Inheritance Query Set if the app does not have any SecretCustomSetting.
+    """
+    from tethys_apps.models import TethysApp, CustomSettingBase
 
     try:
         app = TethysApp.objects.get(package=app_package)
     except TethysApp.DoesNotExist:
         return None
 
-    try:
-        setting = CustomSetting.objects.get(tethys_app=app, name=setting_name)
-    except CustomSetting.DoesNotExist:
-        return None
+    settings = (
+        CustomSettingBase.objects.filter(tethys_app=app)
+        .select_subclasses()
+        .filter(type_custom_setting="SECRET")
+    )
 
-    return setting
+    return settings
 
 
 def create_ps_database_setting(
@@ -583,3 +619,71 @@ def get_all_submodules(m):
     except AttributeError:
         pass
     return modules
+
+
+def delete_secrets(app_name):
+    TETHYS_HOME = Path(get_tethys_home_dir())
+    secrets_yaml_file = TETHYS_HOME / "secrets.yml"
+    portal_secrets = {}
+    if secrets_yaml_file.exists():
+        with secrets_yaml_file.open("r") as secrets_yaml:
+            portal_secrets = yaml.safe_load(secrets_yaml) or {}
+            if "secrets" in portal_secrets:
+                if app_name not in portal_secrets["secrets"]:
+                    # always reset on a new install
+                    portal_secrets["secrets"][app_name] = {}
+                if (
+                    "custom_settings_salt_strings"
+                    in portal_secrets["secrets"][app_name]
+                ):
+                    portal_secrets["secrets"][app_name][
+                        "custom_settings_salt_strings"
+                    ] = {}
+
+                with secrets_yaml_file.open("w") as secrets_yaml:
+                    yaml.dump(portal_secrets, secrets_yaml)
+
+
+def secrets_signed_unsigned_value(name, value, tethys_app_package_name, is_signing):
+    return_string = ""
+    TETHYS_HOME = get_tethys_home_dir()
+    signer = Signer()
+    try:
+        if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+            return_string = sign_and_unsign_secret_string(signer, value, is_signing)
+        else:
+            with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
+                secret_app_settings = (
+                    yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
+                )
+                if bool(secret_app_settings):
+                    if tethys_app_package_name in secret_app_settings:
+                        if (
+                            "custom_settings_salt_strings"
+                            in secret_app_settings[tethys_app_package_name]
+                        ):
+                            app_specific_settings = secret_app_settings[
+                                tethys_app_package_name
+                            ]["custom_settings_salt_strings"]
+                            if name in app_specific_settings:
+                                app_custom_setting_salt_string = app_specific_settings[
+                                    name
+                                ]
+                                if app_custom_setting_salt_string != "":
+                                    signer = Signer(salt=app_custom_setting_salt_string)
+                return_string = sign_and_unsign_secret_string(signer, value, is_signing)
+    except signing.BadSignature:
+        raise TethysAppSettingNotAssigned(
+            f"The salt string for the setting {name} has been changed or lost, please enter the secret custom settings in the application settings again."
+        )
+
+    return return_string
+
+
+def sign_and_unsign_secret_string(signer, value, is_signing):
+    if is_signing:
+        secret_signed = signer.sign_object(value)
+        return secret_signed
+    else:
+        secret_unsigned = signer.unsign_object(f"{value}")
+        return secret_unsigned

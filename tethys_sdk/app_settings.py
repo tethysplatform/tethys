@@ -10,6 +10,8 @@
 # flake8: noqa
 # DO NOT ERASE
 from tethys_apps.models import (
+    SecretCustomSetting,
+    JSONCustomSetting,
     CustomSetting,
     DatasetServiceSetting,
     SpatialDatasetServiceSetting,
