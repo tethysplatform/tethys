@@ -2,6 +2,7 @@
 {% set ALLOWED_HOSTS = salt['environ.get']('ALLOWED_HOSTS') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
+{% set NGINX_PORT = salt['environ.get']('NGINX_PORT') %}
 {% set NGINX_USER = salt['environ.get']('NGINX_USER') %}
 {% set CLIENT_MAX_BODY_SIZE = salt['environ.get']('CLIENT_MAX_BODY_SIZE') %}
 {% set ASGI_PROCESSES = salt['environ.get']('ASGI_PROCESSES') %}
@@ -105,6 +106,7 @@ Generate_NGINX_Settings_TethysCore:
     - name: >
         tethys gen nginx
         --tethys-port {{ TETHYS_PORT }}
+        --web-server-port {{ NGINX_PORT }}
         --client-max-body-size {{ CLIENT_MAX_BODY_SIZE }}
         --overwrite
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
