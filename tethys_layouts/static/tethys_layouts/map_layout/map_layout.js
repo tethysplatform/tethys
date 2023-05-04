@@ -65,7 +65,8 @@ var MAP_LAYOUT = (function() {
  	var generate_action_button, bind_action_buttons, load_action;
 
  	// Plotting
- 	var init_plot, generate_plot_button, bind_plot_buttons, load_plot, fit_plot, update_plot, show_plot, hide_plot;
+ 	var init_plot, generate_plot_button, bind_plot_buttons, load_plot, fit_plot, update_plot, show_plot, hide_plot,
+	    post_update_plot;
 
  	// Layers tab
  	var init_layers_tab, init_new_layers_tab, init_visibility_controls, init_opacity_controls, init_rename_controls,
@@ -372,6 +373,9 @@ var MAP_LAYOUT = (function() {
 
             // Update slide sheet title
             $('#plot-slide-sheet .slide-sheet-title').html(title);
+	    
+	    // Call post plot update callback
+	    if (post_update_plot) { post_update_plot(p); }
         });
     };
 
@@ -1906,6 +1910,9 @@ var MAP_LAYOUT = (function() {
 	    },
 	    plot_loader: function(f) {
 	        load_plot = f;
+	    },
+	    post_update_plot_callback: function(f) {
+	        post_update_plot = f;
 	    },
         get_layer_name_from_feature: get_layer_name_from_feature,
         get_layer_id_from_layer: get_layer_id_from_layer,
