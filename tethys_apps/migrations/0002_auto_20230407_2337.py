@@ -23,8 +23,6 @@ def forward(apps, schema_editor):
             type=cs.type,
         )
         cs_child.save()
-        # cs.delete()
-
 
 def backward(apps, schema_editor):
     """From CustomBaseSetting inheritance to non inheritance"""
@@ -45,11 +43,6 @@ def backward(apps, schema_editor):
             type=cs.type,
         )
         cs_old.save()
-        # cs.delete()
-
-    # for cs_parent in CustomBaseSetting.objects.using(db_alias).all():
-    #     cs_parent.delete()
-
 
 class Migration(migrations.Migration):
     dependencies = [
