@@ -26,6 +26,18 @@ class TestDockerCommands(unittest.TestCase):
     def tearDown(self):
         cli_docker_commands.ContainerMetadata._docker_client = None
 
+    def make_args(
+        self, command, num_containers=0, defaults=False, with_image_opts=False
+    ):
+        args = mock.Mock(
+            command=command,
+            containers=["c" for _ in range(num_containers)],
+            defaults=defaults,
+            image_name="some/image" if with_image_opts else None,
+            image_tag="1.2.3" if with_image_opts else None,
+        )
+        return args
+
     def test_curses_import_error(self):
         with mock.patch.dict("sys.modules", {"curses": None}):
             importlib.reload(cli_docker_commands)
@@ -93,6 +105,22 @@ class TestDockerCommands(unittest.TestCase):
             installed=False
         )
         self.assertEqual(4, len(all_containers))
+
+    def test_container_metadata_get_containers_with_image_name_arg(self):
+        all_containers = cli_docker_commands.ContainerMetadata.get_containers(
+            containers=['thredds'],
+            image_name='some/image'
+        )
+        self.assertEqual(1, len(all_containers))
+        self.assertEqual('some/image', all_containers[0].image_name)
+
+    def test_container_metadata_get_containers_with_image_tag_arg(self):
+        all_containers = cli_docker_commands.ContainerMetadata.get_containers(
+            containers=['thredds'],
+            image_name='1.2.3'
+        )
+        self.assertEqual(1, len(all_containers))
+        self.assertEqual('1.2.3', all_containers[0].image_name)
 
     @mock.patch(
         "tethys_cli.docker_commands.ContainerMetadata.container",
@@ -809,7 +837,9 @@ class TestDockerCommands(unittest.TestCase):
     def test_docker_init(self, mock_get_containers, mock_pull, mock_install):
         mock_get_containers.return_value = mock.Mock()
         cli_docker_commands.docker_init()
-        mock_get_containers.assert_called_with(None, installed=False)
+        mock_get_containers.assert_called_with(
+            None, installed=False, image_name=None, image_tag=None
+        )
 
         mock_pull.assert_called_with(mock_get_containers.return_value)
         mock_install.assert_called_with(
@@ -817,7 +847,9 @@ class TestDockerCommands(unittest.TestCase):
         )
 
         cli_docker_commands.docker_init(force=True)
-        mock_get_containers.assert_called_with(None, installed=None)
+        mock_get_containers.assert_called_with(
+            None, installed=None, image_name=None, image_tag=None
+        )
 
         mock_pull.assert_called_with(mock_get_containers.return_value)
         mock_install.assert_called_with(
@@ -909,7 +941,13 @@ class TestDockerCommands(unittest.TestCase):
         containers = mock.Mock()
         cli_docker_commands.docker_update(containers)
         mock_remove.assert_called_with(containers=containers)
-        mock_init.assert_called_with(containers=containers, defaults=False, force=True)
+        mock_init.assert_called_with(
+            containers=containers,
+            defaults=False,
+            force=True,
+            image_name=None,
+            image_tag=None,
+        )
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.get_docker_container_statuses")
@@ -950,39 +988,90 @@ class TestDockerCommands(unittest.TestCase):
         mock_ip,
         mock_restart,
     ):
-        args = mock.Mock(command="init", containers=mock.Mock(), defaults=mock.Mock())
+        args = self.make_args("init", with_image_opts=True)
         cli_docker_commands.docker_command(args)
-        mock_init.assert_called_with(containers=args.containers, defaults=args.defaults)
-
-        args.command = "start"
+        mock_init.assert_called_with(
+            containers=args.containers,
+            defaults=args.defaults,
+            image_name=args.image_name,
+            image_tag=args.image_tag,
+        )
+        args = self.make_args("start")
         cli_docker_commands.docker_command(args)
         mock_start.assert_called_with(containers=args.containers)
 
-        args.command = "stop"
+        args = self.make_args("stop")
         cli_docker_commands.docker_command(args)
         mock_stop.assert_called_with(containers=args.containers)
 
-        args.command = "status"
+        args = self.make_args("status")
         cli_docker_commands.docker_command(args)
         mock_status.assert_called_with(containers=args.containers)
 
-        args.command = "update"
+        args = self.make_args("update", with_image_opts=True)
         cli_docker_commands.docker_command(args)
         mock_update.assert_called_with(
-            containers=args.containers, defaults=args.defaults
+            containers=args.containers,
+            defaults=args.defaults,
+            image_name=args.image_name,
+            image_tag=args.image_tag,
         )
 
-        args.command = "remove"
+        args = self.make_args("remove")
         cli_docker_commands.docker_command(args)
         mock_remove.assert_called_with(containers=args.containers)
 
-        args.command = "ip"
+        args = self.make_args("ip")
         cli_docker_commands.docker_command(args)
         mock_ip.assert_called_with(containers=args.containers)
 
-        args.command = "restart"
+        args = self.make_args("restart")
         cli_docker_commands.docker_command(args)
         mock_restart.assert_called_with(containers=args.containers)
+
+    @mock.patch("tethys_cli.docker_commands.exit")
+    @mock.patch("tethys_cli.docker_commands.write_error")
+    def test_validate_args_valid_cases(self, mock_write_error, mock_exit):
+        args = self.make_args("init", num_containers=1, with_image_opts=True)
+        cli_docker_commands.validate_args(args)
+        mock_write_error.assert_not_called()
+        mock_exit.assert_not_called()
+
+        args = self.make_args("update", num_containers=1, with_image_opts=True)
+        cli_docker_commands.validate_args(args)
+        mock_write_error.assert_not_called()
+        mock_exit.assert_not_called()
+
+        args = self.make_args("init", num_containers=1, with_image_opts=True)
+        cli_docker_commands.validate_args(args)
+        mock_write_error.assert_not_called()
+        mock_exit.assert_not_called()
+
+    @mock.patch("tethys_cli.docker_commands.exit")
+    @mock.patch("tethys_cli.docker_commands.write_error")
+    def test_validate_args_image_options_multiple_containers(
+        self, mock_write_error, mock_exit
+    ):
+        args = self.make_args("init", num_containers=2, with_image_opts=True)
+        cli_docker_commands.validate_args(args)
+        mock_write_error.assert_called()
+        mock_exit.assert_called()
+
+        args = self.make_args("update", num_containers=2, with_image_opts=True)
+        cli_docker_commands.validate_args(args)
+        mock_write_error.assert_called()
+        mock_exit.assert_called()
+
+    @mock.patch("tethys_cli.docker_commands.exit")
+    @mock.patch("tethys_cli.docker_commands.write_warning")
+    def test_validate_args_image_options_w_unsupported_command(
+        self, mock_write_warning, mock_exit
+    ):
+        for command in ["start", "stop", "restart", "remove", "ip", "status"]:
+            args = self.make_args(command, num_containers=1, with_image_opts=True)
+            cli_docker_commands.validate_args(args)
+            mock_write_warning.assert_called()
+            mock_exit.assert_not_called()
 
     def test_uih_get_input_with_default(self):
         self.mock_input.side_effect = ["test", ""]
