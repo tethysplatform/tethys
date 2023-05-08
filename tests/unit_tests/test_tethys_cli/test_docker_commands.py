@@ -108,19 +108,17 @@ class TestDockerCommands(unittest.TestCase):
 
     def test_container_metadata_get_containers_with_image_name_arg(self):
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(
-            containers=['thredds'],
-            image_name='some/image'
+            containers=["thredds"], image_name="some/image"
         )
         self.assertEqual(1, len(all_containers))
-        self.assertEqual('some/image', all_containers[0].image_name)
+        self.assertEqual("some/image", all_containers[0].image_name)
 
     def test_container_metadata_get_containers_with_image_tag_arg(self):
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(
-            containers=['thredds'],
-            image_name='1.2.3'
+            containers=["thredds"], image_name="1.2.3"
         )
         self.assertEqual(1, len(all_containers))
-        self.assertEqual('1.2.3', all_containers[0].image_name)
+        self.assertEqual("1.2.3", all_containers[0].image_name)
 
     @mock.patch(
         "tethys_cli.docker_commands.ContainerMetadata.container",
