@@ -588,7 +588,7 @@ class TestDockerCommands(unittest.TestCase):
         mock_port_bindings_prop.return_value = mock_port_bindings
         expected_options = dict(
             name="tethys_thredds",
-            image="unidata/thredds-docker:4.6.20",
+            image="unidata/thredds-docker:5.4",
             environment=dict(
                 TDM_PW="CHANGEME!",
                 TDS_HOST="http://localhost",

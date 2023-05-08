@@ -566,7 +566,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
     name = "tethys_thredds"
     display_name = "THREDDS"
     image_name = "unidata/thredds-docker"
-    tag = "4.6.20"
+    tag = "5.4"
     host_port = 8383
     container_port = 8080
 
