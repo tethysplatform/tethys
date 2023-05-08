@@ -4,7 +4,7 @@
 THREDDS Primer
 **************
 
-**Last Updated:** June 2022
+**Last Updated:** May 2023
 
 In this tutorial you will be introduced to THREDDS using the Docker container that is included with Tethys Platform. This primer is adapted from the `THREDDS Data Server Documentation <https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html>`_. Topics covered include:
 
@@ -120,7 +120,7 @@ The TDS Configuration File (:file:`threddsConfig.xml`) is used to control the be
 4. Navigate to the following locations to see how this metadata is incorporated into the TDS:
 
 * http://localhost:8383/thredds/catalog.html
-* http://localhost:8383/thredds/serverInfo.html
+* http://localhost:8383/thredds/info/serverInfo.html
 
 .. tip::
 
