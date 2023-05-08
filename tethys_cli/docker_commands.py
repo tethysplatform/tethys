@@ -20,7 +20,7 @@ import getpass
 import docker
 from docker.types import Mount
 from docker.errors import NotFound as DockerNotFound
-from tethys_cli.cli_colors import write_pretty_output, write_error
+from tethys_cli.cli_colors import write_pretty_output, write_error, write_warning
 from tethys_apps.utilities import get_tethys_home_dir
 
 
@@ -81,6 +81,20 @@ def add_docker_parser(subparsers):
         dest="boot2docker",
         help="Stop boot2docker on container stop. Only applicable to stop command.",
     )
+    docker_parser.add_argument(
+        "-t",
+        "--image_tag",
+        dest="image_tag",
+        help="Create the container using the provided Docker image tag. "
+        "Only applicable to the init and update commands for a single container.",
+    )
+    docker_parser.add_argument(
+        "-i",
+        "--image_name",
+        dest="image_name",
+        help="Create the container using the provided Docker image name. "
+        "Only applicable to the init and update command for a single container.",
+    )
     docker_parser.set_defaults(func=docker_command)
 
 
@@ -97,9 +111,14 @@ class ContainerMetadata(ABC):
     _docker_client = None
     all_containers = None
 
-    def __init__(self, docker_client=None):
+    def __init__(self, docker_client=None, image_name=None, image_tag=None):
         self._docker_client = docker_client
         self._container = None
+        self.image_name = image_name if image_name is not None else self.image_name
+        self.tag = image_tag if image_tag is not None else self.tag
+
+    def __repr__(self):
+        return f'<{self.__class__.name} name="{self.name}" image="{self.image}">'
 
     @classmethod
     def get_docker_client(cls):
@@ -124,9 +143,16 @@ class ContainerMetadata(ABC):
         return self._docker_client
 
     @classmethod
-    def get_containers(cls, containers=None, installed=None):
-        if cls.all_containers is None:
-            cls.all_containers = [C() for C in cls.__subclasses__()]
+    def get_containers(
+        cls, containers=None, installed=None, image_name=None, image_tag=None
+    ):
+        if cls.all_containers is None or (
+            image_name is not None or image_tag is not None
+        ):
+            cls.all_containers = [
+                C(image_name=image_name, image_tag=image_tag)
+                for C in cls.__subclasses__()
+            ]
 
         if containers is None:
             containers = cls.all_containers
@@ -190,7 +216,6 @@ class ContainerMetadata(ABC):
         )
 
     def pull(self):
-        # pull_stream = docker_client.images.pull(image) # pull returns an image object not a stream
         pull_stream = self.docker_client.api.pull(self.image, stream=True)
         log_pull_stream(pull_stream)
 
@@ -693,16 +718,37 @@ def install_docker_containers(containers_to_install, defaults=False):
     write_pretty_output("Finished installing Docker containers.")
 
 
-def docker_init(containers=None, defaults=False, force=False):
+def validate_args(args):
+    # Image and tag options are only valid for init and update commands
+    if (args.image_name or args.image_tag) and args.command not in ("init", "update"):
+        write_warning(
+            'WARNING: The image name and tag options are only used by the "init" and "update" commands.'
+        )
+
+    # Image and tag options are only valid when operating on a single container
+    if (args.image_name or args.image_tag) and len(args.containers) > 1:
+        write_error(
+            "ERROR: The image name and tag options are only valid for operations on a single container."
+            'Use the "-c" or "--containers" option to specify a single container to operate on.'
+        )
+        write_error(
+            '       Use the "-c" or "--containers" option to specify a single container to operate on.'
+        )
+        exit(1)
+
+
+def docker_init(
+    containers=None, defaults=False, force=False, image_name=None, image_tag=None
+):
     """
     Pull Docker images for Tethys Platform and create containers with interactive input.
     """
     # Get containers to install
-    installed = (
-        None if force else False
-    )  # only get containers that are not installed unless forcing to get all
+    installed = None if force else False
+
+    # only get containers that are not installed unless forcing to get all
     containers_to_install = ContainerMetadata.get_containers(
-        containers, installed=installed
+        containers, installed=installed, image_name=image_name, image_tag=image_tag
     )
 
     # Pull the Docker images
@@ -793,7 +839,7 @@ def docker_status(containers=None):
         write_pretty_output(msg.format(container.display_name))
 
 
-def docker_update(containers=None, defaults=False):
+def docker_update(containers=None, defaults=False, image_name=None, image_tag=None):
     """
     Remove Docker containers and pull the latest images updates.
     """
@@ -801,7 +847,13 @@ def docker_update(containers=None, defaults=False):
     docker_remove(containers=containers)
 
     # Re-initialize docker containers
-    docker_init(containers=containers, defaults=defaults, force=True)
+    docker_init(
+        containers=containers,
+        defaults=defaults,
+        force=True,
+        image_name=image_name,
+        image_tag=image_tag,
+    )
 
 
 def docker_ip(containers=None):
@@ -826,8 +878,15 @@ def docker_command(args):
     """
     Docker management commands.
     """
+    validate_args(args)
+
     if args.command == "init":
-        docker_init(containers=args.containers, defaults=args.defaults)
+        docker_init(
+            containers=args.containers,
+            defaults=args.defaults,
+            image_name=args.image_name,
+            image_tag=args.image_tag,
+        )
 
     elif args.command == "start":
         docker_start(containers=args.containers)
@@ -839,7 +898,12 @@ def docker_command(args):
         docker_status(containers=args.containers)
 
     elif args.command == "update":
-        docker_update(containers=args.containers, defaults=args.defaults)
+        docker_update(
+            containers=args.containers,
+            defaults=args.defaults,
+            image_name=args.image_name,
+            image_tag=args.image_tag,
+        )
 
     elif args.command == "remove":
         docker_remove(containers=args.containers)
