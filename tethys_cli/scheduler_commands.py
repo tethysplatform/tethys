@@ -267,9 +267,10 @@ def schedulers_list_command(args):
         if num_schedulers > 0:
             with pretty_output(BOLD) as p:
                 p.write(
-                    "{0: <30}{1: <25}{2: <10}{3: <10}{4: <50}{5: <10}".format(
+                    "{0: <30}{1: <25}{2: <6}{3: <10}{4: <10}{5: <50}{6: <10}".format(
                         "Name",
                         "Host",
+                        "Port",
                         "Username",
                         "Password",
                         "Private Key Path",
@@ -278,9 +279,10 @@ def schedulers_list_command(args):
                 )
             for scheduler in schedulers:
                 p.write(
-                    "{0: <30}{1: <25}{2: <10}{3: <10}{4: <50}{5: <10}".format(
+                    "{0: <30}{1: <25}{2: <6}{3: <10}{4: <10}{5: <50}{6: <10}".format(
                         scheduler.name,
                         scheduler.host,
+                        scheduler.port,
                         scheduler.username,
                         "******" if scheduler.password else "None",
                         scheduler.private_key_path,
