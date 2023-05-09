@@ -23,12 +23,10 @@ def forward(apps, schema_editor):
             type=cs.type,
         )
         cs_child.save()
-        cs.delete()
 
 
 def backward(apps, schema_editor):
     """From CustomBaseSetting inheritance to non inheritance"""
-    CustomBaseSetting = apps.get_model("tethys_apps", "CustomSettingBase")
     CustomSetting = apps.get_model("tethys_apps", "customsetting")
     OldCustomSetting = apps.get_model("tethys_apps", "oldcustomsetting")
 
@@ -45,10 +43,6 @@ def backward(apps, schema_editor):
             type=cs.type,
         )
         cs_old.save()
-        cs.delete()
-
-    for cs_parent in CustomBaseSetting.objects.using(db_alias).all():
-        cs_parent.delete()
 
 
 class Migration(migrations.Migration):
