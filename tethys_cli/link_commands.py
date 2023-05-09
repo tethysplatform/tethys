@@ -12,15 +12,15 @@ def add_link_parser(subparsers):
     link_parser.add_argument(
         "service",
         help="Service to link to a target app. Of the form "
-        '"<spatial|persistent>:<service_id|service_name>" '
+        '"<service_type(condor|dask|dataset|persistent|spatial|wps)>:<service_id|service_name>" '
         '(i.e. "persistent_connection:super_conn")',
     )
     link_parser.add_argument(
         "setting",
         help="Setting of an app with which to link the specified service."
-        'Of the form "<app_package>:'
-        "<setting_type (ps_database|ps_connection|ds_spatial)>:"
-        '<setting_id|setting_name>" (i.e. "epanet:database:epanet_2")',
+        'Of the form "<app_namespace>:'
+        "<setting_type(ps_database|ps_connection|ds_spatial|ds_dataset|ss_scheduler|wps)>:"
+        '<setting_id|setting_name>" (i.e. "epanet:ps_database:epanet_2")',
     )
     link_parser.set_defaults(func=link_command)
 

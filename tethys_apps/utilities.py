@@ -448,14 +448,15 @@ def link_service_to_app_setting(
 
     django.setup()
     from tethys_cli.cli_colors import pretty_output, FG_GREEN, FG_RED
-    from tethys_sdk.app_settings import (
+    from tethys_apps.models import (
+        TethysApp,
         SpatialDatasetServiceSetting,
         PersistentStoreConnectionSetting,
         PersistentStoreDatabaseSetting,
         DatasetServiceSetting,
-        WebProcessingServiceSetting,
+        SchedulerSetting,
+        WebProcessingServiceSetting
     )
-    from tethys_apps.models import TethysApp
 
     setting_type_to_link_model_dict = {
         "ps_database": {
@@ -473,6 +474,10 @@ def link_service_to_app_setting(
         "ds_dataset": {
             "setting_model": DatasetServiceSetting,
             "service_field": "dataset_service",
+        },
+        "ss_scheduler": {
+            "setting_model": SchedulerSetting,
+            "service_field": "scheduler_service",
         },
         "wps": {
             "setting_model": WebProcessingServiceSetting,
@@ -546,11 +551,17 @@ def get_service_model_from_type(service_type):
         PersistentStoreService,
         WebProcessingService,
     )
+    from tethys_compute.models import (
+        CondorScheduler,
+        DaskScheduler,
+    )
 
     service_type_to_model_dict = {
-        "spatial": SpatialDatasetService,
+        "condor": CondorScheduler,
+        "dask": DaskScheduler,
         "dataset": DatasetService,
         "persistent": PersistentStoreService,
+        "spatial": SpatialDatasetService,
         "wps": WebProcessingService,
     }
 
