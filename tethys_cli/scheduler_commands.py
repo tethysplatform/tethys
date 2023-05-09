@@ -30,7 +30,15 @@ def add_scheduler_parser(subparsers):
         "--endpoint",
         required=True,
         type=str,
-        help='The endpoint of the service in the form <protocol>//<host>"',
+        help="The endpoint (host) of the service in the form <protocol>//<host>",
+    )
+    condor_schedulers_create.add_argument(
+        "-o",
+        "--port",
+        required=False,
+        default=22,
+        type=int,
+        help="The port of the service endpoint",
     )
     condor_schedulers_create.add_argument(
         "-u",
@@ -178,6 +186,7 @@ def condor_scheduler_create_command(args):
 
     name = args.name
     host = args.endpoint
+    port = args.port
     username = args.username
     password = args.password
     private_key_path = args.private_key_path
@@ -196,6 +205,7 @@ def condor_scheduler_create_command(args):
     scheduler = CondorScheduler(
         name=name,
         host=host,
+        port=port,
         username=username,
         password=password,
         private_key_path=private_key_path,
@@ -206,6 +216,7 @@ def condor_scheduler_create_command(args):
 
     with pretty_output(FG_GREEN) as p:
         p.write("Condor Scheduler created successfully!")
+
     exit(0)
 
 
