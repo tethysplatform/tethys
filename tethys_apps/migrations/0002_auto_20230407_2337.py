@@ -27,7 +27,6 @@ def forward(apps, schema_editor):
 
 def backward(apps, schema_editor):
     """From CustomBaseSetting inheritance to non inheritance"""
-    # CustomBaseSetting = apps.get_model("tethys_apps", "CustomSettingBase")
     CustomSetting = apps.get_model("tethys_apps", "customsetting")
     OldCustomSetting = apps.get_model("tethys_apps", "oldcustomsetting")
 
