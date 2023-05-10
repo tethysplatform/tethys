@@ -401,7 +401,7 @@ In this step you will add the logic to validate that the file contained in the Z
 
     conda install -c conda-forge pyshp
 
-2. Add ``pyshp`` as a new dependency in the ``install.yaml``:
+2. Add ``pyshp`` as a new dependency in the ``install.yml``:
 
 .. code-block:: yaml
     :emphasize-lines: 16
