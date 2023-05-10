@@ -436,11 +436,11 @@ def link_service_to_app_setting(
     """
     Links a Tethys Service to a TethysAppSetting.
     :param service_type: The type of service being linked to an app.
-        Must be either 'spatial' or 'persistent' or 'dataset' or 'wps'.
+        Must be either 'condor', 'dask', 'dataset', 'persistent', 'spatial', or 'wps'.
     :param service_uid: The name or id of the service being linked to an app.
     :param app_package: The package name of the app whose setting is being linked to a service.
     :param setting_type: The type of setting being linked to a service. Must be one of the following: 'ps_database',
-    'ps_connection', or 'ds_spatial'.
+    'ds_dataset', 'ds_spatial', 'ps_connection', 'ps_database', 'ss_scheduler', or 'wps'.
     :param setting_uid: The name or id of the setting being linked to a service.
     :return: True if successful, False otherwise.
     """
@@ -455,7 +455,7 @@ def link_service_to_app_setting(
         PersistentStoreDatabaseSetting,
         DatasetServiceSetting,
         SchedulerSetting,
-        WebProcessingServiceSetting
+        WebProcessingServiceSetting,
     )
 
     setting_type_to_link_model_dict = {
