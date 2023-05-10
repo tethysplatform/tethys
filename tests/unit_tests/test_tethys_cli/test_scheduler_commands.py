@@ -45,6 +45,7 @@ class SchedulerCommandsTest(unittest.TestCase):
         mock_scheduler.assert_called_with(
             name=mock_args.name,
             host=mock_args.endpoint,
+            port=mock_args.port,
             username=mock_args.username,
             password=mock_args.password,
             private_key_path=mock_args.private_key_path,
@@ -94,34 +95,57 @@ class SchedulerCommandsTest(unittest.TestCase):
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_scheduler1 = mock.MagicMock(name="test1")
-        mock_scheduler1.name = "test_name1"
-        mock_scheduler1.host = "test_host1"
-        mock_scheduler1.username = "test_user1"
-        mock_scheduler1.private_key_path = "test_path1"
-        mock_scheduler1.private_key_pass = "test_private_key_path1"
-        mock_scheduler2 = mock.MagicMock()
-        mock_scheduler2.name = "test_name2"
-        mock_scheduler2.host = "test_host2"
-        mock_scheduler2.username = "test_user2"
-        mock_scheduler2.private_key_path = "test_path2"
-        mock_scheduler2.private_key_pass = "test_private_key_path2"
-        mock_scheduler.objects.all.return_value = [mock_scheduler1, mock_scheduler2]
+        mock_scheduler1 = mock.MagicMock(
+            host="https://foo.example.com",
+            port=23,
+            username="foo",
+            password="",
+            private_key_path="/some/path",
+            private_key_pass="somepass",
+        )
+        mock_scheduler1.name = "foo"
 
+        mock_scheduler2 = mock.MagicMock(
+            host="http://bar.example.com",
+            port=25,
+            username="bar",
+            password="somepass",
+            private_key_path="",
+            private_key_pass="",
+        )
+        mock_scheduler2.name = "bar"
+
+        mock_scheduler.objects.all.return_value = [mock_scheduler1, mock_scheduler2]
         mock_args = mock.MagicMock(type="condor")
 
         # Call the function
         schedulers_list_command(mock_args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-
+        self.maxDiff = None
         self.assertEqual(3, len(po_call_args))
         self.assertIn("Name", po_call_args[0][0][0])
         self.assertIn("Host", po_call_args[0][0][0])
+        self.assertIn("Port", po_call_args[0][0][0])
         self.assertIn("Username", po_call_args[0][0][0])
         self.assertIn("Password", po_call_args[0][0][0])
         self.assertIn("Private Key Path", po_call_args[0][0][0])
         self.assertIn("Private Key Pass", po_call_args[0][0][0])
+        self.assertEqual(
+            "Name                          Host                     Port  Username  Password  "
+            "Private Key Path                                  Private Key Pass",
+            po_call_args[0][0][0],
+        )
+        self.assertEqual(
+            "foo                           https://foo.example.com  23    foo       None      "
+            "/some/path                                        ******    ",
+            po_call_args[1][0][0],
+        )
+        self.assertEqual(
+            "bar                           http://bar.example.com   25    bar       ******    "
+            "                                                  None      ",
+            po_call_args[2][0][0],
+        )
 
     @mock.patch("tethys_cli.scheduler_commands.pretty_output")
     @mock.patch("tethys_compute.models.condor.condor_scheduler.CondorScheduler")
