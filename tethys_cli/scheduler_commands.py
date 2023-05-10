@@ -30,7 +30,15 @@ def add_scheduler_parser(subparsers):
         "--endpoint",
         required=True,
         type=str,
-        help='The endpoint of the service in the form <protocol>//<host>"',
+        help="The endpoint (host) of the service in the form <protocol>//<host>",
+    )
+    condor_schedulers_create.add_argument(
+        "-o",
+        "--port",
+        required=False,
+        default=22,
+        type=int,
+        help="The port of the service endpoint",
     )
     condor_schedulers_create.add_argument(
         "-u",
@@ -178,6 +186,7 @@ def condor_scheduler_create_command(args):
 
     name = args.name
     host = args.endpoint
+    port = args.port
     username = args.username
     password = args.password
     private_key_path = args.private_key_path
@@ -196,6 +205,7 @@ def condor_scheduler_create_command(args):
     scheduler = CondorScheduler(
         name=name,
         host=host,
+        port=port,
         username=username,
         password=password,
         private_key_path=private_key_path,
@@ -206,6 +216,7 @@ def condor_scheduler_create_command(args):
 
     with pretty_output(FG_GREEN) as p:
         p.write("Condor Scheduler created successfully!")
+
     exit(0)
 
 
@@ -256,9 +267,10 @@ def schedulers_list_command(args):
         if num_schedulers > 0:
             with pretty_output(BOLD) as p:
                 p.write(
-                    "{0: <30}{1: <25}{2: <10}{3: <10}{4: <50}{5: <10}".format(
+                    "{0: <30}{1: <25}{2: <6}{3: <10}{4: <10}{5: <50}{6: <10}".format(
                         "Name",
                         "Host",
+                        "Port",
                         "Username",
                         "Password",
                         "Private Key Path",
@@ -267,9 +279,10 @@ def schedulers_list_command(args):
                 )
             for scheduler in schedulers:
                 p.write(
-                    "{0: <30}{1: <25}{2: <10}{3: <10}{4: <50}{5: <10}".format(
+                    "{0: <30}{1: <25}{2: <6}{3: <10}{4: <10}{5: <50}{6: <10}".format(
                         scheduler.name,
                         scheduler.host,
+                        scheduler.port,
                         scheduler.username,
                         "******" if scheduler.password else "None",
                         scheduler.private_key_path,
