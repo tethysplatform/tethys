@@ -378,7 +378,7 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_upf.assert_called_once_with(user=mock_request_user)
 
         mock_render.assert_called_once_with(
-            mock_request, "tethys_portal/user/change_password.html", expected_context
+            mock_request, "tethys_portal/accounts/change_password.html", expected_context
         )
 
     @mock.patch("tethys_portal.views.user.render")

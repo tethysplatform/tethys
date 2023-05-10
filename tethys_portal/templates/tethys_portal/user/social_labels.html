@@ -106,7 +106,7 @@
       {% elif action == 'connect' %}
       <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-custom-oauth">Connect {{ backend }}</span></a>
       {% else %}
-      <span class="label label-custom-oauth">{{ backend.provider }}</span>
+      <span class="label label-custom-oauth">{{ backend.provider|default:backend }}</span>
       {% endif %}
     {% endif %}
   {% endfor %}
