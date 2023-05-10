@@ -89,3 +89,4 @@ dependencies:
 
   # Conda to allow Python API access to Conda Install
   - conda
+  - conda-libmamba-solver

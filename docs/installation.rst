@@ -4,7 +4,7 @@
 Getting Started
 ***************
 
-**Last Updated:** June 2022
+**Last Updated:** May 2023
 
 This section describes how to get Tethys Platform up and running as a fresh installation for app development. If you are upgrading an existing installation then refer to the :ref:`update_tethys` docs. If you are deploying a production instance of Tethys Portal refer to the :ref:`production_installation` docs. If you want to contribute to the Tethys Platform source code itself then refer to the :ref:`developer_installation` docs.
 
@@ -27,27 +27,15 @@ a. To install the ``tethys-platform`` into a new conda environment then run the 
 
 .. tip::
 
-    If conda is taking too long to solve the Tethys environment, try using the `experimental libmamba solver <https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community>`_:
+    **Installation Speedup**
 
-    .. code-block:: bash
-    
-        conda update -n base conda
-    
-    .. code-block:: bash
+    If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
 
-        conda install -n base conda-libmamba-solver
+    **Install Development Build**
 
-    .. code-block:: bash
-
-        conda create --experimental-solver libmamba -n tethys -c tethysplatform -c conda-forge tethys-platform
-
-
-.. note::
-
-    To install the latest development build of ``tethys-platform`` add the ``tethys/label/dev`` channel to the list of conda channels::
+    To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels::
 
         conda create -n tethys -c tethysplatform/label/dev -c tethysplatform -c conda-forge tethys-platform
-
 
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.
 
@@ -122,6 +110,7 @@ Related Docs
 
     installation/system_requirements
     tethys_portal/configuration
+    installation/conda
     installation/application
     installation/showcase_apps
     installation/update
