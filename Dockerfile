@@ -119,6 +119,10 @@ RUN rm -rf /var/lib/apt/lists/*\
 # Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
 
+# Setup conda symlink for the micromamba command
+RUN mkdir -p ${CONDA_HOME}/bin
+RUN ln -s /bin/micromamba ${CONDA_HOME}/bin/conda
+
 # Setup Conda Environment
 COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
