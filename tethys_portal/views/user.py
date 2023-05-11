@@ -148,7 +148,7 @@ def change_password(request):
     # Create template context object
     context = {"form": form}
 
-    return render(request, "tethys_portal/user/change_password.html", context)
+    return render(request, "tethys_portal/accounts/change_password.html", context)
 
 
 @login_required()
