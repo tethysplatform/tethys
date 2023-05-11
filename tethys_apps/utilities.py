@@ -436,11 +436,11 @@ def link_service_to_app_setting(
     """
     Links a Tethys Service to a TethysAppSetting.
     :param service_type: The type of service being linked to an app.
-        Must be either 'spatial' or 'persistent' or 'dataset' or 'wps'.
+        Must be either 'condor', 'dask', 'dataset', 'persistent', 'spatial', or 'wps'.
     :param service_uid: The name or id of the service being linked to an app.
     :param app_package: The package name of the app whose setting is being linked to a service.
     :param setting_type: The type of setting being linked to a service. Must be one of the following: 'ps_database',
-    'ps_connection', or 'ds_spatial'.
+    'ds_dataset', 'ds_spatial', 'ps_connection', 'ps_database', 'ss_scheduler', or 'wps'.
     :param setting_uid: The name or id of the setting being linked to a service.
     :return: True if successful, False otherwise.
     """
@@ -448,14 +448,15 @@ def link_service_to_app_setting(
 
     django.setup()
     from tethys_cli.cli_colors import pretty_output, FG_GREEN, FG_RED
-    from tethys_sdk.app_settings import (
+    from tethys_apps.models import (
+        TethysApp,
         SpatialDatasetServiceSetting,
         PersistentStoreConnectionSetting,
         PersistentStoreDatabaseSetting,
         DatasetServiceSetting,
+        SchedulerSetting,
         WebProcessingServiceSetting,
     )
-    from tethys_apps.models import TethysApp
 
     setting_type_to_link_model_dict = {
         "ps_database": {
@@ -473,6 +474,10 @@ def link_service_to_app_setting(
         "ds_dataset": {
             "setting_model": DatasetServiceSetting,
             "service_field": "dataset_service",
+        },
+        "ss_scheduler": {
+            "setting_model": SchedulerSetting,
+            "service_field": "scheduler_service",
         },
         "wps": {
             "setting_model": WebProcessingServiceSetting,
@@ -546,11 +551,17 @@ def get_service_model_from_type(service_type):
         PersistentStoreService,
         WebProcessingService,
     )
+    from tethys_compute.models import (
+        CondorScheduler,
+        DaskScheduler,
+    )
 
     service_type_to_model_dict = {
-        "spatial": SpatialDatasetService,
+        "condor": CondorScheduler,
+        "dask": DaskScheduler,
         "dataset": DatasetService,
         "persistent": PersistentStoreService,
+        "spatial": SpatialDatasetService,
         "wps": WebProcessingService,
     }
 

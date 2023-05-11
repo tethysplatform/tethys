@@ -451,6 +451,41 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
             po_call_args[0][0][0],
         )
 
+    @mock.patch("tethys_services.models.SpatialDatasetService")
+    @mock.patch("tethys_services.models.DatasetService")
+    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.WebProcessingService")
+    @mock.patch("tethys_compute.models.CondorScheduler")
+    @mock.patch("tethys_compute.models.DaskScheduler")
+    @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting")
+    @mock.patch("tethys_apps.models.PersistentStoreConnectionSetting")
+    @mock.patch("tethys_apps.models.SpatialDatasetServiceSetting")
+    @mock.patch("tethys_apps.models.DatasetServiceSetting")
+    @mock.patch("tethys_apps.models.SchedulerSetting")
+    @mock.patch("tethys_apps.models.WebProcessingServiceSetting")
+    @mock.patch("tethys_apps.models.TethysApp")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_link_service_to_app_valid_keywords(self, mock_pretty_output, *args):
+        service_setting_keywords = [
+            ("condor", "ss_scheduler"),
+            ("dask", "ss_scheduler"),
+            ("dataset", "ds_dataset"),
+            ("persistent", "ps_database"),
+            ("persistent", "ps_connection"),
+            ("spatial", "ds_spatial"),
+            ("wps", "wps"),
+        ]
+
+        for service_type, setting_type in service_setting_keywords:
+            result = utilities.link_service_to_app_setting(
+                service_type=service_type,
+                service_uid="123",
+                app_package="foo_app",
+                setting_type=setting_type,
+                setting_uid="456",
+            )
+            self.assertTrue(result)
+
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_services.models.SpatialDatasetService")
     def test_link_service_to_app_setting_spatial_dss_does_not_exist(
@@ -541,7 +576,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    @mock.patch("tethys_sdk.app_settings.SpatialDatasetServiceSetting")
+    @mock.patch("tethys_apps.models.SpatialDatasetServiceSetting")
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_link_service_to_app_setting_spatial_link_value_error_save(
@@ -575,7 +610,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch(
-        "tethys_sdk.app_settings.SpatialDatasetServiceSetting",
+        "tethys_apps.models.SpatialDatasetServiceSetting",
         __name__="SpatialDatasetServiceSetting",
     )
     @mock.patch("tethys_services.models.SpatialDatasetService")
