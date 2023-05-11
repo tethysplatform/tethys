@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load static gravatar site_settings %}
+
+{% block title %}{{ block.super }} - Profile{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_portal/css/social_labels.min.css' %}"  rel="stylesheet" />
+  <style id="profile-styles">
+    #profile-header {
+      background-color: {{ site_globals.secondary_color|default:'#7ec1f7' }};
+    }
+    
+    body {
+      background: {{ site_globals.background_color|default:'#efefef' }};
+    }
+
+    .profile-header .profile-name {
+      color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+    }
+  </style>
+{% endblock %}
+
+{% block custom_styles %}
+  {{ site_globals.user_base_css|load_custom_css|safe }}
+{% endblock %}
+
+{% block primary_content %}
+  <div id="profile-content" class="container">
+    {% block profile_header %}
+    <div id="profile-header-container" class="row my-3">
+      <div class="col">
+        <nav id="profile-header" class="navbar navbar-light rounded">
+          <div class="container-fluid">
+            <span class="navbar-brand">
+              {% with image_size=30 %}
+              <img src="{% if user.email %}{% gravatar_url user.email image_size %}{% else %}{% gravatar_url "tethys@example.com" image_size %}{% endif %}" alt="" width="{{ image_size }}" height="{{ image_size }}" class="d-inline-block align-text-top">
+              {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+              {% endwith %}
+            </span>
+            {% block back_button %}
+            <a href="{% url 'user:settings' %}" class="btn btn-secondary">Back</a>
+            {% endblock %}
+          </div>
+        </nav>
+      </div>
+    </div> <!-- #profile-header-container.container -->
+    {% endblock %}
+    {% block secondary_content %}{% endblock %}
+  </div>  <!-- #profile-content.container -->
+{% endblock %}
