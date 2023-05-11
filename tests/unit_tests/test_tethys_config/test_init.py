@@ -222,14 +222,6 @@ class TestInit(unittest.TestCase):
             content="/tethys_portal/images/" "placeholder.gif",
             date_modified=now,
         )
-        mock_settings().setting_set.create.assert_any_call(
-            name="Call to Action", content="Ready to get started?", date_modified=now
-        )
-        mock_settings().setting_set.create.assert_any_call(
-            name="Call to Action Button",
-            content="Start Using Tethys!",
-            date_modified=now,
-        )
 
         mock_settings().save.assert_called()
 

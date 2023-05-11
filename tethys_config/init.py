@@ -237,16 +237,6 @@ def setting_defaults(category):
             date_modified=now,
         )
 
-        category.setting_set.create(
-            name="Call to Action", content="Ready to get started?", date_modified=now
-        )
-
-        category.setting_set.create(
-            name="Call to Action Button",
-            content="Start Using Tethys!",
-            date_modified=now,
-        )
-
     elif category.name == "Custom Styles":
         for setting_name in [
             "Portal Base CSS",

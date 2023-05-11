@@ -1,24 +1,19 @@
-{% extends "base.html" %}
+{% extends "tethys_portal/user/base.html" %}
+
+{% load static django_bootstrap5 %}
 
 {% load static site_settings %}
 
-{% block title %}{{ block.super }} - Log In{% endblock %}
+{% block title %}{{ block.super }} - Confirmation{% endblock %}
+
+{% bootstrap_messages %}
 
 {% block styles %}
   {{ block.super }}
   <link href="{% static '/tethys_portal/css/account_form.min.css' %}"  rel="stylesheet" />
-  <style>
-    body {
-      background: {{ site_globals.background_color|default:'#ffffff' }};
-    }
-  </style>
 {% endblock %}
 
-{% block custom_styles %}
-  {{ site_globals.accounts_base_css|load_custom_css|safe }}
-{% endblock %}
-
-{% block content %}
+{% block secondary_content %}
   {% block account_content_top %}
   {% endblock %}
   <div class="container-xl mt-3">
