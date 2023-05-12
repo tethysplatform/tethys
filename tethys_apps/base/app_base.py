@@ -489,7 +489,7 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from tethys_sdk.app_settings import CustomSetting
+            from tethys_sdk.app_settings import CustomSetting, SecretCustomSetting, JSONCustomSetting
 
             class MyFirstApp(TethysAppBase):
 
@@ -521,7 +521,24 @@ class TethysAppBase(TethysBase):
                             type=CustomSetting.TYPE_BOOLEAN,
                             description='Enable this feature when True.',
                             required=True
-                        )
+                        ),
+                        CustomSetting(
+                            name='feature_id',
+                            type=CustomSetting.TYPE_UUID,
+                            description='Feature ID.',
+                            required=True
+                        ),
+                        SecretCustomSetting(
+                            name='api_key',
+                            description='API key for data service.',
+                            required=True
+                        ),
+                        JSONCustomSetting(
+                            name='app_configuration',
+                            description='Primary app configuration.',
+                            required=True,
+                            default={"display_plots": True, "default_dataset": "streamflow"}
+                        ),
                     )
 
                     return custom_settings

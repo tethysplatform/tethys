@@ -4,7 +4,7 @@
 Administrator Pages
 *******************
 
-**Last Updated:** December 2022
+**Last Updated:** May 2023
 
 Tethys Portal includes administration pages that can be used to manage the website (see Figure 1). The administration dashboard is only available to administrator users (staff users). You should have created a default administrator user when you installed Tethys Platform. If you are logged in as an administrator, you will be able to access the administrator dashboard by selecting the "Site Admin" option from the user drop down menu in the top right-hand corner of the page (when you are not in an app).
 
@@ -215,24 +215,48 @@ The Common Settings include those settings that are common to all apps or extens
 Custom Settings
 +++++++++++++++
 
-Custom Settings appear under the ``CUSTOM SETTINGS`` heading and are defined by the app developer (see Figure 12). Custom Settings have simple values such as strings, integers, floats, or booleans, but all are entered as text. For boolean type Custom Settings, type a valid boolean value such as ``True`` or ``False``.
+Custom Settings appear under the ``CUSTOM SETTINGS`` heading and are defined by the app developer (see Figure 12). Most Custom Settings have simple values such as strings, integers, floats, or booleans, but all are entered as text. For boolean type Custom Settings, type a valid boolean value such as ``True`` or ``False``.
 
 .. figure:: ../images/site_admin/custom_settings.png
     :width: 675px
 
 **Figure 12.** Custom Settings section of an app.
 
+.. _tethys_portal_secret_settings:
+
+Secret Custom Settings
+++++++++++++++++++++++
+
+Secret Custom Settings can be used to store sensitive information that is need by your app such as passwords and API keys. The values of Secret Custom Settings are encrypted before being stored in the database and not displayed on the settings page for additional security. Secret Custom Setting values are returned as strings when you access them in your app.
+
+.. figure:: ../images/site_admin/secret_custom_settings.png
+    :width: 675px
+
+**Figure 13.** Secret Custom Settings section of an app.
+
+.. _tethys_portal_json_settings:
+
+JSON Custom Settings
+++++++++++++++++++++
+
+JSON Custom Settings store JSON strings and provide an embedded JSON editor on the settings page for easy editing. In addition, you may initialize a JSON Custom Setting with a JSON file when installing an app.
+
+.. figure:: ../images/site_admin/json_custom_settings.png
+    :width: 675px
+
+**Figure 14.** JSON Custom Settings section of an app.
+
 .. _tethys_portal_service_settings:
 
 Service Settings
 ++++++++++++++++
 
-There are several different types of Service Settings including: ``Persistent Store Connection Settings``, ``Persistent Store Database Settings``, ``Dataset Service Settings``, ``Spatial Dataset Service Settings``, and ``Web Processing Service Settings`` (see Figure 13). These settings specify the types of services that the apps require. Use the drop down next to each Service Setting to assign a pre-registered ``Tethys Service`` to that app or use the *plus* button to create a new one.
+There are several different types of Service Settings including: ``Persistent Store Connection Settings``, ``Persistent Store Database Settings``, ``Dataset Service Settings``, ``Spatial Dataset Service Settings``, and ``Web Processing Service Settings`` (see Figure 15). These settings specify the types of services that the apps require. Use the drop down next to each Service Setting to assign a pre-registered ``Tethys Service`` to that app or use the *plus* button to create a new one.
 
 .. figure:: ../images/site_admin/service_settings.png
     :width: 675px
 
-**Figure 13.** Service Settings sections of an app.
+**Figure 15.** Service Settings sections of an app.
 
 .. tip::
 
@@ -243,7 +267,7 @@ There are several different types of Service Settings including: ``Persistent St
 Proxy Apps
 ----------
 
-Proxy apps are links to external web applications or websites. They are represented in the App Library page with an app tile just like native Tethys Apps. To manage the Proxy Apps in a Tethys Portal, click on the ``Proxy Apps`` link under the ``TETHYS APPS`` heading. Click on the ``ADD PROXY APP`` button to create a new Proxy App. Proxy Apps have many of the same configuration options as normal Tethys Apps including ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library`` and ``Order``, but there are a few options that are specific to Proxy apps (see Figure 14). A brief description of each option is provided below:
+Proxy apps are links to external web applications or websites. They are represented in the App Library page with an app tile just like native Tethys Apps. To manage the Proxy Apps in a Tethys Portal, click on the ``Proxy Apps`` link under the ``TETHYS APPS`` heading. Click on the ``ADD PROXY APP`` button to create a new Proxy App. Proxy Apps have many of the same configuration options as normal Tethys Apps including ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library`` and ``Order``, but there are a few options that are specific to Proxy apps (see Figure 16). A brief description of each option is provided below:
 
 * **Name**: The name of the app that will appear on the app tile on the Apps Library page (e.g.: "My Proxy App").
 * **Endpoint**: The URL that will be opened when the user clicks on the app tile of the proxy app (e.g.: ``https://my.proxy.app/foo/``).
@@ -259,7 +283,7 @@ Proxy apps are links to external web applications or websites. They are represen
 .. figure:: ../images/site_admin/new_proxy_app.png
     :width: 675px
 
-**Figure 14.** The Add Proxy App dialog.
+**Figure 16.** The Add Proxy App dialog.
 
 Tethys Compute
 ==============
@@ -278,12 +302,12 @@ The links under the ``TETHYS COMPUTE`` heading can be used to manage ``Jobs`` an
 Tethys Portal
 =============
 
-The links under the ``TETHYS PORTAL`` heading can be used to customize the look of the Tethys Portal. For example, you can change the name, logo, and color theme of the portal (see Figure 15).
+The links under the ``TETHYS PORTAL`` heading can be used to customize the look of the Tethys Portal. For example, you can change the name, logo, and color theme of the portal (see Figure 17).
 
 .. figure:: ../images/tethys_portal/tethys_portal_home_page_settings.png
     :width: 500px
 
-**Figure 15.** Home page settings for Tethys Portal.
+**Figure 17.** Home page settings for Tethys Portal.
 
 .. tip::
 
@@ -301,7 +325,7 @@ The link under the ``TETHYS QUOTAS`` heading can be used to manage resource quot
 Resource Quotas
 ---------------
 
-``Resource Quotas`` shows a list of all loaded quotas. By default, all quotas are disabled when they are first loaded. Use this page to enable and customize the quotas for your portal (see Figure 16).
+``Resource Quotas`` shows a list of all loaded quotas. By default, all quotas are disabled when they are first loaded. Use this page to enable and customize the quotas for your portal (see Figure 18).
 
 All quotas have the following fields that can be customized:
 
@@ -313,14 +337,14 @@ All quotas have the following fields that can be customized:
 .. figure:: ../images/tethys_portal/tethys_portal_rq_settings.png
     :width: 675px
 
-**Figure 16.** Resource Quota settings page.
+**Figure 18.** Resource Quota settings page.
 
 .. _tethys_quotas_user_admin:
 
 User Workspace Quotas
 ---------------------
 
-To manage quotas specific to individual users, navigate to the user's settings page. Any applicable Resource Quotas will be listed in the User Quotas section. To set a custom quota for the user, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 17).
+To manage quotas specific to individual users, navigate to the user's settings page. Any applicable Resource Quotas will be listed in the User Quotas section. To set a custom quota for the user, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 19).
 
 .. tip::
 
@@ -329,19 +353,19 @@ To manage quotas specific to individual users, navigate to the user's settings p
 .. figure:: ../images/tethys_portal/tethys_portal_uq_settings.png
     :width: 675px
 
-**Figure 17.** User settings page showing User Quotas.
+**Figure 19.** User settings page showing User Quotas.
 
 .. _tethys_quotas_app_admin:
 
 App Workspace Quotas
 --------------------
 
-To manage quotas specific to individual apps, navigate to the specified app's settings page. Any applicable Resource Quotas will be listed in the Tethys App Quotas section. To set a custom quota for the app, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 18).
+To manage quotas specific to individual apps, navigate to the specified app's settings page. Any applicable Resource Quotas will be listed in the Tethys App Quotas section. To set a custom quota for the app, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 20).
 
 .. figure:: ../images/tethys_portal/tethys_portal_aq_settings.png
     :width: 675px
 
-**Figure 18.** App settings page showing Tethys App Quotas.
+**Figure 20.** App settings page showing Tethys App Quotas.
 
 .. _tethys_quotas_app_manage_storage:
 
