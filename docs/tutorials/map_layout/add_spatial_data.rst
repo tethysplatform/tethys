@@ -23,7 +23,7 @@ If you wish to use the previous solution as a starting point:
 
 You'll also need to do the following:
 
-1. Download the solution version of the sample NextGen data used in this tutorial from Google Drive `here <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
+1. Download the solution version of the sample NextGen data used in this tutorial: `sample_nextgen_data_solution.zip <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
 2. Save to :file:`tethysapp-map_layout_tutorial/tethysapp/map_layout_tutorial/workspaces/app_workspace`
 3. Unzip the contents to the same location
 4. Delete the zip file
@@ -113,8 +113,8 @@ Let's take a closer look at the changes we made to :file:`controllers.py`:
     import json
     from pathlib import Path
 
-The ``json`` package will be used to read in the :file:`.geosjon` files that we reviewed and reprojectd in the last section.
-The ``path`` package will allow us to code the file paths to those :file:`.geosjon` files
+The ``json`` package will be used to read in the :file:`.geojson` files that we reviewed and reprojectd in the last section.
+The ``path`` package will allow us to code the file paths to those :file:`.geojson` files
 
 2. The `compose_layers` function was added
 
@@ -196,7 +196,7 @@ For both the ``nexus`` data and the ``catchments`` data, you'll note the followi
 * **layer_control**: What control should be used to toggle the layers on and off. You can choose ``checkbox`` for multi-layering or ``radio`` for isolated layer viewing.
 * **layers**: The list of layers as created by the ``build_geojson_layer`` function that should be included in this layer group. They will be displayed together in the left Layers panel of the application.
 
-Return to your application at `<http://localhost:8000/apps/map-layout-tutorial/>` to view the results.
+Return to your application at `<http://localhost:8000/apps/map-layout-tutorial/>_` to view the results.
 
 You'll note that everything shows up just as it was configured - you now have a Layers panel and your data is rendering on the map! You can play around with the options in the Layers panel, such as checking on and off the layers or group or exploring the three dot menu options of adjusting the opacity or zooming to the layers.
 
@@ -375,9 +375,9 @@ This method simply returns a dictionary with key values being the geometry type 
 
 .. tip::
 
-    Learn more about the OpenLayers Style format `here <https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html>`_.
+    Learn more about the OpenLayers Style format `OpenLayers API: ol/style/Style <https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html>`_.
 
-You can play around with all of the different colors and widths to get things exactly as you like them. If you choose to keep the defaults I have provided, your application should end up loading exactly as it looks in the screenshot at the top of this section.
+You can play around with all of the different colors and widths to get things exactly as you like them. If you choose to keep the defaults provided, your application should end up loading exactly as it looks in the screenshot at the top of this section.
 
 4. Solution
 ===========
@@ -392,7 +392,7 @@ This concludes the Add Spatial Data portion of the Map Layout Tutorial. You can 
 
 You'll also need to do the following:
 
-1. Download the solution version of the sample NextGen data used in this tutorial from Google Drive `here <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
+1. Download the solution version of the sample NextGen data used in this tutorial: `sample_nextgen_data_solution.zip <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
 2. Save to :file:`tethysapp-map_layout_tutorial/tethysapp/map_layout_tutorial/workspaces/app_workspace`
 3. Unzip the contents to the same location
 4. Delete the zip file

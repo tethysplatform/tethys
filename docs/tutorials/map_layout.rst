@@ -1,8 +1,8 @@
 .. _tutorial_map_layout:
 
-*******************
+**********
 Map Layout
-*******************
+**********
 
 **Last Updated:** June 2022
 

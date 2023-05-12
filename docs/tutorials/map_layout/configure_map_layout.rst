@@ -4,7 +4,7 @@ Configure Map Layout
 
 **Last Updated:** May 2023
 
-In this tutorial you will configure your Tethys app with the Map Layout. This feature of Tethys was designed to further streamline the creation of web applications that use common web mapping tools, such as a web map and its commonly expected functionality, such as feature display and interaction via clicking and plotting.
+In this tutorial you will configure your Tethys app with the Map Layout. This feature of Tethys was designed to further streamline the creation of web applications that use common web mapping tools, such as a web map and its commonly expected functionality, such as feature display and interaction via clicking and plotting. To learn more about the MapLayout see :ref:`map_layout`.
 
 .. figure:: ./resources/configure_map_layout_solution.png
     :width: 800px
@@ -25,7 +25,7 @@ If you wish to use the previous solution as a starting point, do the following:
 1. Swap default home controller with Map Layout
 ===============================================
 
-When you scaffold a new app, by default the :file:`controller.py` script contains a ``home`` function that controlls the backend logic for the home screen of your app. It is of course possible to add a Map View and other map tools using Tethys Gizmos, but since we know we want a single-page web mapping application with very common web mapping features, we can instead configure the Tethys Map Layout.
+When you scaffold a new app, by default the :file:`controllers.py` script contains a ``home`` function that controls the backend logic for the home screen of your app. It is of course possible to add a Map View and other map tools using Tethys Gizmos, but since we know we want a single-page web mapping application with very common web mapping features, we can instead configure the Tethys Map Layout.
 
 This can be done by replacing the entire :file:`controller.py` with the following code:
 
