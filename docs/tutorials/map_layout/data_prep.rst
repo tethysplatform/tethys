@@ -20,7 +20,7 @@ If you wish to use the previous solution as a starting point:
 1. Download the sample NextGen data
 ===================================
 
-1. Download our sample NextGen data: `sample_next_gen_data.zip <https://drive.google.com/file/d/10Q960TiHNer-6cwjPYN_t4KsOX2917Hl/view?usp=share_link>`_
+1. Download our sample NextGen data: `sample_nextgen_data.zip <https://drive.google.com/file/d/10Q960TiHNer-6cwjPYN_t4KsOX2917Hl/view?usp=share_link>`_
 2. Save to :file:`~/tethysdev/tethysapp-map_layout_tutorial/tethysapp/map_layout_tutorial/workspaces/app_workspace`
 3. Unzip the contents to the same location
 4. Delete the zip file

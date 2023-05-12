@@ -19,7 +19,7 @@ If you wish to use the previous solution as a starting point:
 
 You'll also need to do the following:
 
-1. Download the solution version of the sample NextGen data used in this tutorial from Google Drive `here <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
+1. Download the solution version of the sample NextGen data used in this tutorial: `sample_nextgen_data_solution.zip <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
 2. Save to :file:`tethysapp-map_layout_tutorial/tethysapp/map_layout_tutorial/workspaces/app_workspace`
 3. Unzip the contents to the same location
 4. Delete the zip file
