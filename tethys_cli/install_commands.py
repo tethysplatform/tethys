@@ -310,7 +310,10 @@ def run_interactive_services(app_name):
         )
 
         # extra code to generate a salt string
-        if setting.type_custom_setting == "SECRET":
+        if (
+            getattr(setting, "type_custom_setting", None) is not None
+            and setting.type_custom_setting == "SECRET"
+        ):
             proceed = input(
                 "Do you want to generate a salt string for this secret or use the default behavior: [y/n]"
             )
