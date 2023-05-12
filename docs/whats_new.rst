@@ -40,7 +40,7 @@ Support for Other Databases
 
 * Removed PostgreSQL specific model code for the primary Tethys Platform database to allow using other database engines (MySQL, Microsoft SQL, SQLite, etc.).
 * Made SQLite the default database engine for the Tethys Platform database.
-* Note: Persistent stores still require PostgreSQL, but work is being done to all support for more datbase engines.
+* Note: Persistent stores still require PostgreSQL, but work is being done to support for more datbase engines.
 
 
 Miscellaneous Changes
