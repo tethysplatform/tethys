@@ -244,6 +244,9 @@ These settings are used to configure the NGINX process that is running inside th
 +===========================+==========================================================================================+
 | CLIENT_MAX_BODY_SIZE      | client_max_body_size parameter for nginx config. Defaults to 75M.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
+| NGINX_PORT                | Port that NGINX binds to. Defaults to "80".                                              |
+|                           | Note: This is the port you should expose on your container.                              |
++---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_PORT               | Internal port Tethys is hosted on. Defaults to "8000".                                   |
 |                           | Note: This port is only used inside the container by NGINX.                              |
 +---------------------------+------------------------------------------------------------------------------------------+

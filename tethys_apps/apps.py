@@ -21,7 +21,7 @@ class TethysAppsConfig(AppConfig):
         """
         Startup method for Tethys Apps django app.
         """
-        if sys.argv[1] != "migrate":
+        if len(sys.argv) > 1 and sys.argv[1] != "migrate":
             # Perform App Harvesting (if database is not being migrated)
             harvester = SingletonHarvester()
             harvester.harvest()

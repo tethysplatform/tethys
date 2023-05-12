@@ -12,6 +12,7 @@ ENV TETHYS_LOG="/var/log/tethys"
 ENV TETHYS_PERSIST="/var/lib/tethys_persist"
 ENV TETHYS_APPS_ROOT="/var/www/tethys/apps"
 ENV TETHYS_PORT=8000
+ENV NGINX_PORT=80
 ENV POSTGRES_PASSWORD="pass"
 ENV TETHYS_DB_ENGINE='django.db.backends.postgresql'
 ENV TETHYS_DB_NAME='tethys_platform'
@@ -117,6 +118,10 @@ RUN rm -rf /var/lib/apt/lists/*\
 
 # Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
+
+# Setup conda symlink for the micromamba command
+RUN mkdir -p ${CONDA_HOME}/bin
+RUN ln -s /bin/micromamba ${CONDA_HOME}/bin/conda
 
 # Setup Conda Environment
 COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml ${TETHYS_HOME}/tethys/
