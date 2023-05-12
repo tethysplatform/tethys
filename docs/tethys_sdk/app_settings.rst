@@ -2,7 +2,7 @@
 App Settings API
 ****************
 
-**Last Updated:** January 2022
+**Last Updated:** May 2023
 
 The App Settings API allows developers to create settings for their apps that can be configured in the admin interface of the Tethys Portal in which the app is installed. Examples of what App Settings could be used for include enabling or disabling functionality, assigning constant values or assumptions that are used throughout the app, or customizing the look and feel of the app. App Settings are only be accessible by Tethys Portal administrators in production, so they should be thought of as global settings for the app that are not customizable on a user by user basis.
 
@@ -14,14 +14,19 @@ As of Tethys Platform 2.0.0, Tethys Services such as databases and map servers a
 Custom Settings
 ===============
 
-Custom Settings are used to create scalar-valued settings for an app. Four basic types of values are supported including ``string``, ``boolean``, ``integer``, and ``float``. Create Custom Settings by implementing the ``custom_setting()`` method in your :term:`app class`. This method should return a list of CustomSettings_ objects:
+``CustomSettings`` are used to create scalar-valued settings for an app. Five basic types of values are supported including ``string``, ``boolean``, ``integer``, ``float``, and ``UUID``. There are two additional types of ``CustomSettings``: ``SecretCustomSettings`` and ``JSONCustomSettings``. The values of ``SecretCustomSettings`` are encrypted before being saved to the database to more securly store sensitive values like passwords and API keys. The ``JSONCustomSettings`` store JSON strings, but are retrieved as JSON dictionaries for storing more complex configuration for apps. Create ``CustomSettings`` by implementing the ``custom_setting()`` method in your :term:`app class`. This method should return a list of CustomSettings_ objects:
 
 .. automethod:: tethys_apps.base.TethysAppBase.custom_settings
    :noindex:
 
-To retrieve the value of a Custom Setting, import your :term:`app class` and call the ``get_custom_setting()`` class method:
+To retrieve the value of a ``CustomSetting``, import your :term:`app class` and call the ``get_custom_setting()`` class method:
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_custom_setting
+   :noindex:
+
+To set the value of a ``CustomSetting`` dynamically, import your :term:`app class` and call the ``set_custom_setting()`` class method:
+
+.. automethod:: tethys_apps.base.TethysAppBase.set_custom_setting
    :noindex:
 
 .. _app_settings_ps_settings:
