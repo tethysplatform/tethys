@@ -4,7 +4,7 @@
 Map Layout
 **********
 
-**Last Updated:** January 2023
+**Last Updated:** May 2023
 
 The ``MapLayout`` provides a drop-in full-screen map view for Tethys Apps. Displaying a map with a few layers can be accomplished in tens of lines of code and implementing more advanced functionality can be accomplished in hundreds. It includes a layer tree with visibility controls and actions such as "Zoom to Layer". The view can also includes many optional features such as displaying legends for layers, feature selection, map annotation / drawing tools, location lookup via geocoding, and a click-and-plot feature.
 
@@ -21,7 +21,11 @@ Setting up a new ``MapLayout`` involves the following steps:
 
 1. Create a new class in :file:`controllers.py` that inherits from ``MapLayout``.
 2. Decorate the new class with the :ref:`controller-decorator` to set up routing. 
-3. Configure the new ``MapLayout`` by setting properties on the new class. Review the :ref:`MapLayout properties <map_layout_properties>` for a full list. For example, set the ``map_title`` property to set the title of the view that appears in the navigation bar. 
+3. Configure the new ``MapLayout`` by setting properties on the new class. Review the :ref:`MapLayout properties <map_layout_properties>` for a full list. For example, set the ``map_title`` property to set the title of the view that appears in the navigation bar.
+
+.. tip::
+
+    Checkout the :ref:`Map Layout Tutorial <tutorial_map_layout>` for step-by-step instructions for using the ``MapLayout``.
 
 The following example demonstrates how to create a new ``MapLayout`` view:
 
