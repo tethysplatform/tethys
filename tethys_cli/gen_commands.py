@@ -180,10 +180,16 @@ def add_gen_parser(subparsers):
         "Used for security with the 'ssl' option in the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
+        "--additional-top-level-directive",
+        dest="additional_top_level_directives",
+        action="append",
+        help="Additional top-level configuration directives to add to the Apache configuration file. Defaults to ''.",
+    )
+    gen_parser.add_argument(
         "--additional-directive",
         dest="additional_directives",
         action="append",
-        help="Additional configuration directives to add to the Apache configuration file. Defaults to ''.",
+        help="Additional server configuration directives to add to the Apache configuration file. Defaults to ''.",
     )
     gen_parser.add_argument(
         "--run-as-user",
@@ -260,6 +266,7 @@ def proxy_server_context(args):
         "client_max_body_size": args.client_max_body_size,
         "port": args.tethys_port,
         "server_port": args.server_port,
+        "additional_top_level_directives": args.additional_top_level_directives,
         "additional_directives": args.additional_directives,
     }
     return context

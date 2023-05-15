@@ -1,3 +1,7 @@
+{%- for directive in additional_top_level_directives %}
+{{ directive }}
+{%- endfor %}
+
 ServerName {{ hostname }}
 
 Listen {% if ip_address %}{{ ip_address }}:{%- endif %}{{ server_port }}{% if ssl %} https{% endif %}
@@ -16,7 +20,8 @@ Listen {% if ip_address %}{{ ip_address }}:{%- endif %}{{ server_port }}{% if ss
     <Directory {{ static_root }}>
         Require all granted
     </Directory>
-    {% for directive in additional_directives %}
+
+    {%- for directive in additional_directives %}
     {{ directive }}
     {%- endfor %}
 

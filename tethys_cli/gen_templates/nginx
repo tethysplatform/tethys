@@ -1,5 +1,9 @@
 # tethys_nginx.conf
 
+{%- for directive in additional_top_level_directives %}
+{{ directive }}
+{%- endfor %}
+
 # the upstream component nginx needs to connect to
 upstream channels-backend {
     server 127.0.0.1:{{ port }};
@@ -21,7 +25,7 @@ server {
     # max upload size
     client_max_body_size {{ client_max_body_size }};   # adjust to taste
 
-    {% for directive in additional_directives %}
+    {%- for directive in additional_directives %}
     {{ directive }}
     {%- endfor %}
 
@@ -54,3 +58,4 @@ server {
         proxy_set_header X-Forwarded-Host $server_name;
     }
 }
+
