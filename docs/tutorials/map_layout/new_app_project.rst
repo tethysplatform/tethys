@@ -109,7 +109,9 @@ Download this :download:`NOAA Digital Logo <./resources/noaa_digital_logo-2022.p
     tethys manage start
 
 .. tip::
-
+    
+    if using the ``django.db.backends.postgresql`` ``ENGINE``, you can use the following commands:
+    
     To stop the development server press :kbd:`CTRL-C`.
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:
