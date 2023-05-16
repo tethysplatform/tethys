@@ -109,6 +109,8 @@ Download this :download:`NOAA Digital Logo <./resources/noaa_digital_logo-2022.p
     tethys manage start
 
 .. tip::
+    
+    if using the ``django.db.backends.postgresql`` ``ENGINE``, the following will be useful.
 
     To stop the development server press :kbd:`CTRL-C`.
 
@@ -124,7 +126,7 @@ Download this :download:`NOAA Digital Logo <./resources/noaa_digital_logo-2022.p
 
         tethys db stop
 
-2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
+1. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
 
 * **username**: admin
 * **password**: pass

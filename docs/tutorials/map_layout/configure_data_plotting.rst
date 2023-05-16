@@ -154,7 +154,7 @@ Replace :file:`controller.py` with the following:
             Returns:
                 str, list<dict>, dict: plot title, data series, and layout options, respectively.
             """
-            output_directory = Path(app_workspace.path) / MODEL_OUTPUT_FOLDER_NAME / 'output'
+            output_directory = Path(app_workspace.path) / MODEL_OUTPUT_FOLDER_NAME / 'outputs'
 
             # Get the feature id
             id = feature_props.get('id')
