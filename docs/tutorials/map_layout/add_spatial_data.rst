@@ -280,7 +280,6 @@ Replace your :file:`controllers.py` with the following:
                 layer_variable='nexus',
                 visible=True,
                 selectable=True,
-                plottable=True,
             )
 
             # Catchments
@@ -295,7 +294,6 @@ Replace your :file:`controllers.py` with the following:
                 layer_variable='catchments',
                 visible=True,
                 selectable=True,
-                plottable=True,
             )
 
             # Create layer groups
