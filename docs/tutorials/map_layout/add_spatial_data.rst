@@ -57,7 +57,7 @@ Replace :file:`controller.py` with the following:
             Add layers to the MapLayout and create associated layer group objects.
             """
             # Load GeoJSON from files
-            config_directory = Path(app_workspace.path) / MODEL_OUTPUT_FOLDER_NAME / 'config'
+            config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
 
             # Nexus Points
             nexus_path = config_directory / 'nexus_4326.geojson'
