@@ -39,8 +39,8 @@ function compute_center(features) {
         sum_y = 0,
         num_coordinates = 0;
 
-    for (var i = 0; i < features.length; i++) {
-        let feature = features[i], geometry;
+    for (var f = 0; f < features.length; f++) {
+        let feature = features[f], geometry;
 
         // If feature is a ol.Feature, we need to get the geometry
         if (feature instanceof ol.Feature) {
