@@ -137,7 +137,7 @@ class TethysAppTests(TethysTestCase):
         self.assertNotIn(obsolete_setting, settings)
 
     def test_sync_settings_remove_only_setting(self):
-        app = TethysApp(name='setting_test')
+        app = TethysApp(name="setting_test")
         app.save()
 
         obsolete_setting = TethysAppSetting(
