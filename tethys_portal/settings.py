@@ -27,6 +27,7 @@ import yaml
 import logging
 import datetime as dt
 from pathlib import Path
+from importlib import import_module
 
 from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import relative_to_tethys_home
@@ -83,6 +84,8 @@ ENABLE_RESTRICTED_APP_ACCESS = TETHYS_PORTAL_CONFIG.pop(
 )
 
 REGISTER_CONTROLLER = TETHYS_PORTAL_CONFIG.pop("REGISTER_CONTROLLER", None)
+
+ADDITIONAL_URLPATTERNS = TETHYS_PORTAL_CONFIG.pop("ADDITIONAL_URLPATTERNS", [])
 
 SESSION_CONFIG = portal_config_settings.pop("SESSION_CONFIG", {})
 # Force user logout once the browser has been closed.
@@ -316,12 +319,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+ADDITIONAL_TEMPLATE_DIRS = [
+    import_module(d).__path__[0] for d in TETHYS_PORTAL_CONFIG.get('ADDITIONAL_TEMPLATE_DIRS', [])
+]
+
 # Templates
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "templates",
+            *ADDITIONAL_TEMPLATE_DIRS,
         ],
         "OPTIONS": {
             "context_processors": [
@@ -498,14 +506,14 @@ ASGI_APPLICATION = "tethys_portal.asgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Add any additional specified settings to module
-for setting, value in portal_config_settings.items():
-    setattr(this_module, setting, value)
-
 COOKIE_CONFIG = portal_config_settings.pop("COOKIE_CONFIG", {})
 for setting, value in COOKIE_CONFIG.items():
     setattr(this_module, setting, value)
 
 CORS_CONFIG = portal_config_settings.pop("CORS_CONFIG", {})
 for setting, value in CORS_CONFIG.items():
+    setattr(this_module, setting, value)
+
+# Add any additional specified settings to module
+for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)

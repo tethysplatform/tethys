@@ -7,6 +7,9 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import logging
+from importlib import import_module
+
 import mfa.TrustedDevice
 from django.conf import settings
 from django.urls import reverse_lazy, include, re_path
@@ -37,6 +40,8 @@ from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
+
+logger = logging.getLogger('tethys.' + __name__)
 
 admin.site.login = staff_member_required(
     admin.site.login, redirect_field_name="", login_url="/accounts/login/"
@@ -77,13 +82,20 @@ admin_urls = (admin_url_list, admin.site.urls[1], admin.site.urls[2])
 register_controller = tethys_portal_accounts.register
 register_controller_setting = settings.REGISTER_CONTROLLER
 if register_controller_setting:
-    function_extractor = TethysFunctionExtractor(register_controller_setting, None)
-    register_controller = function_extractor.function
     try:
-        register_controller = register_controller.as_controller()
-    except AttributeError:
-        # not a class-based view
-        pass
+        function_extractor = TethysFunctionExtractor(register_controller_setting, None, throw=True)
+        register_controller = function_extractor.function
+    except Exception as e:
+        logger.error(
+            f'The REGISTER_CONTROLLER "{register_controller_setting}" could not be used due to the following error:'
+        )
+        logger.exception(e)
+    else:
+        try:
+            register_controller = register_controller.as_controller()
+        except AttributeError:
+            # not a class-based view
+            pass
 
 account_urls = [
     re_path(r"^login/$", tethys_portal_accounts.login_view, name="login"),
@@ -184,6 +196,20 @@ oauth2_urls = [
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
 
+additional_url_patterns = []
+additional_url_pattern_paths = settings.ADDITIONAL_URLPATTERNS
+
+for url_pattern_path in additional_url_pattern_paths:
+    try:
+        mod, attr = url_pattern_path.rsplit('.', 1)
+        mod = import_module(mod)
+        url_patterns = getattr(mod, attr)
+        assert isinstance(url_patterns, (list, tuple))
+        additional_url_patterns.append(url_patterns)
+    except Exception as e:
+        logger.exception(f'Additional urlpatterns "{url_pattern_path}" could not be imported and will be ignored.')
+        logger.exception(e)
+
 urlpatterns = [
     re_path(r"^$", tethys_portal_home.home, name="home"),
     re_path(r"^admin/", admin_urls),
@@ -220,6 +246,7 @@ urlpatterns = [
     re_path(r"devices/add$", mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
     re_path(r"api/", include((api_urls, "api"), namespace="api")),
     # re_path(r'^error/', include(development_error_urls)),
+    *[url for patterns in additional_url_patterns for url in patterns],
 ]
 
 handler400 = tethys_portal_error.handler_400
