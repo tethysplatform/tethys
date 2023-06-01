@@ -5,8 +5,11 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from tethys_compute.models import TethysJob, CondorWorkflow, DaskJob, DaskScheduler
 from tethys_gizmos.gizmo_options.jobs_table import JobsTable
-from bokeh.embed import server_document
 from tethys_sdk.gizmos import SelectInput
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+server_document = optional_import("server_document", from_module="bokeh.embed")
 
 log = logging.getLogger("tethys.tethys_gizmos.views.jobs_table")
 

@@ -7,21 +7,20 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-try:
-    import curses
-except Exception:  # pragma: no cover
-    pass  # curses not available on Windows
-import platform
 import os
 import json
 from abc import ABC, abstractmethod
 
 import getpass
-import docker
-from docker.types import Mount
-from docker.errors import NotFound as DockerNotFound
 from tethys_cli.cli_colors import write_pretty_output, write_error, write_warning
 from tethys_apps.utilities import get_tethys_home_dir
+from tethys_portal.optional_dependencies import optional_import, has_module
+
+# optional imports
+curses = optional_import("curses")  # curses not available on Windows
+docker = optional_import("docker")
+Mount = optional_import("Mount", from_module="docker.types")
+DockerNotFound = optional_import("NotFound", from_module="docker.errors")
 
 
 __all__ = [
@@ -1008,7 +1007,7 @@ def log_pull_stream(stream):
     """
     Handle the printing of pull statuses
     """
-    if platform.system() == "Windows":  # i.e. can't uses curses
+    if not has_module(curses):
         for block in stream:
             lines = [line for line in block.split(b"\r\n") if line]
             for line in lines:

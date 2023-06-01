@@ -472,6 +472,10 @@ def configure_tethys_db(**kwargs):
         _prompt_if_error(start_db_server, **kwargs)
     if "postgresql" in kwargs.get("db_engine"):
         _prompt_if_error(create_tethys_db, **kwargs)
+    if "sqlite" in kwargs.get("db_engine"):
+        # Make sure the parent directory for the database exists
+        db_path = Path(kwargs["db_name"])
+        db_path.parent.mkdir(exist_ok=True, parents=True)
     migrate_tethys_db(**kwargs)
     create_portal_superuser(**kwargs)
 

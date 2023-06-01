@@ -8,15 +8,21 @@
 """
 import logging
 import datetime
+import json
 
 from django.utils import timezone
 from django.db import models
-from dask.delayed import Delayed
-from dask.distributed import Client, Future, fire_and_forget
+
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.dask.dask_field import DaskSerializedField
-import json
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+Delayed = optional_import("Delayed", from_module="dask.delayed")
+Client = optional_import("Client", from_module="dask.distributed")
+Future = optional_import("Future", from_module="dask.distributed")
+fire_and_forget = optional_import("fire_and_forget", from_module="dask.distributed")
 
 log = logging.getLogger("tethys." + __name__)
 client_fire_forget = None

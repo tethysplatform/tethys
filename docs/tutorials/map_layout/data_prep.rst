@@ -73,7 +73,7 @@ This file will define the conda environment required to run the reproject script
 
 4. Paste the following into the file:
 
-.. code-block:: yml
+.. code-block:: yaml
 
   name: reproject
   channels:

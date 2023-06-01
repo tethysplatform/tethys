@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static gravatar site_settings %}
+{% load static site_settings %}
 
 {% block title %}{{ block.super }} - Profile{% endblock %}
 
@@ -34,10 +34,8 @@
         <nav id="profile-header" class="navbar navbar-light rounded">
           <div class="container-fluid">
             <span class="navbar-brand">
-              {% with image_size=30 %}
-              <img src="{% if user.email %}{% gravatar_url user.email image_size %}{% else %}{% gravatar_url "tethys@example.com" image_size %}{% endif %}" alt="" width="{{ image_size }}" height="{{ image_size }}" class="d-inline-block align-text-top">
+              {% if has_gravatar %}{% include 'gravatar.html' with gravatar_url=True image_size=30 %}{% endif %}
               {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
-              {% endwith %}
             </span>
             {% block back_button %}
             <a href="{% url 'user:settings' %}" class="btn btn-secondary">Back</a>

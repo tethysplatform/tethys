@@ -4,6 +4,18 @@ Dask Job Type
 
 **Last Updated:** January 2022
 
+.. important::
+
+    This feature requires the `dask` and `tethys_dask_scheduler` libraries to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge dask tethys_dask_scheduler
+
+        # pip
+        pip install dask tethys_dask_scheduler
+
 A Dask Job Type wraps Dask functionality in a Tethys Jobs interface. The Tethys Dask Job type supports two different Dask APIs for creating Dask Tasks: ``dask.delayed`` and ``dask.distributed``.
 
 Dask Delayed

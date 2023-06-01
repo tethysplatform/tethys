@@ -1,12 +1,15 @@
 # coding=utf-8
-from bokeh.embed import components
-from bokeh.resources import Resources
-from bokeh.settings import settings as bk_settings
-
 from django.conf import settings
 from django.utils.functional import classproperty
 
 from .base import TethysGizmoOptions
+
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+components = optional_import("components", from_module="bokeh.embed")
+Resources = optional_import("Resources", from_module="bokeh.resources")
+bk_settings = optional_import("settings", from_module="bokeh.settings")
 
 __all__ = ["BokehView"]
 

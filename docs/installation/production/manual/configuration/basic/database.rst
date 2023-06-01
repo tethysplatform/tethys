@@ -4,11 +4,22 @@
 Production Database
 *******************
 
-**Last Updated:** September 2022
+**Last Updated:** September 2023
 
 In this part of the production deployment guide, you will learn how to initialize and configure the Tethys Portal database for production.
 
-1. Set Database Settings
+1. Install Python dependencies
+==============================
+
+Using a PostgreSQL database for production requires the ``psycopg2`` Python package. Also,  While we do not recommend having your database on the same server as Tethys Portal, the commands to automate setting up and configuring the database require that the PostgreSQL database and the `psycopg2` library be installed on the web server. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `postgresql` and `psycopg2` using conda as follows:
+
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge postgresql psycopg2
+
+2. Set Database Settings
 ========================
 
 Set the database settings in the :file:`portal_config.yml` using the ``tethys settings`` command:
@@ -25,7 +36,7 @@ Set the database settings in the :file:`portal_config.yml` using the ``tethys se
 
         **DO NOT USE DEFAULT USERNAMES OR PASSWORDS FOR PRODUCTION DATABASE ACCOUNTS**
 
-2. Create Tethys Database and Database Users
+3. Create Tethys Database and Database Users
 ============================================
 
 Use the ``tethys db create`` command to create the database users and tables required by Tethys Portal:
@@ -42,7 +53,7 @@ Use the ``tethys db create`` command to create the database users and tables req
 
         **DO NOT USE DEFAULT USERNAMES OR PASSWORDS FOR PRODUCTION DATABASE ACCOUNTS**
 
-3. Create Tethys Database Tables
+4. Create Tethys Database Tables
 ================================
 
 Run the following command to create the Tethys database tables:
@@ -51,7 +62,7 @@ Run the following command to create the Tethys database tables:
 
       tethys db migrate
 
-4. Create Portal Admin User
+5. Create Portal Admin User
 ===========================
 
 You will need to create at least one Portal Admin account to allow you to login to your Tethys Portal. Create the account as follows:

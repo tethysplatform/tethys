@@ -1,6 +1,9 @@
 from django.shortcuts import render, reverse
-from bokeh.embed import server_document
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+server_document = optional_import("server_document", from_module="bokeh.embed")
 
 
 def dask_dashboard(request, dask_scheduler_id, page="status"):

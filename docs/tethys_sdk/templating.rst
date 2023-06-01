@@ -91,6 +91,17 @@ Examples:
 
     See the `Django Tag Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
 
+Tethys Tags
++++++++++++
+
+In addition to Django's library of template tags, Tethys also defines a few additional template tags that can be used in your templates.
+
+.. automodule:: tethys_apps.templatetags.humanize
+   :members: human_duration
+
+.. automodule:: tethys_apps.templatetags.app_theme
+   :members: lighten
+
 Template Inheritance
 --------------------
 

@@ -4,6 +4,18 @@ Condor Job Type
 
 **Last Updated:** January 2022
 
+.. important::
+
+    This feature requires the `condorpy` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `condorpy` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge condorpy
+
+        # pip
+        pip install condorpy
+
 
 The :doc:`condor_job_type` (and :doc:`condor_workflow_type`) are used to create jobs to be run by a pool of cluster resources managed by HTCondor. HTCondor makes it possible for jobs to be offloaded from the main web server to a scalable computing cluster, which in turn enables very large scale jobs to be processed.
 

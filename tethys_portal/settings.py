@@ -27,13 +27,20 @@ import yaml
 import logging
 import datetime as dt
 from pathlib import Path
+from importlib import import_module
 
 from django.contrib.messages import constants as message_constants
+
 from tethys_apps.utilities import relative_to_tethys_home
+from tethys_portal.optional_dependencies import has_module
 from tethys_cli.cli_colors import write_warning
 from tethys_cli.gen_commands import generate_secret_key
+from tethys_portal.optional_dependencies import optional_import
 
-from bokeh.settings import settings as bokeh_settings, bokehjsdir
+# optional imports
+bokeh_settings, bokehjsdir = optional_import(
+    ("settings", "bokehjsdir"), from_module="bokeh.settings"
+)
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
@@ -53,7 +60,8 @@ except Exception:
     log.exception(
         "There was an error while attempting to read the settings from the portal_config.yml file."
     )
-bokeh_settings.resources = portal_config_settings.pop("BOKEH_RESOURCES", "inline")
+if has_module(bokeh_settings):
+    bokeh_settings.resources = portal_config_settings.pop("BOKEH_RESOURCES", "inline")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
@@ -83,6 +91,8 @@ ENABLE_RESTRICTED_APP_ACCESS = TETHYS_PORTAL_CONFIG.pop(
 )
 
 REGISTER_CONTROLLER = TETHYS_PORTAL_CONFIG.pop("REGISTER_CONTROLLER", None)
+
+ADDITIONAL_URLPATTERNS = TETHYS_PORTAL_CONFIG.pop("ADDITIONAL_URLPATTERNS", [])
 
 SESSION_CONFIG = portal_config_settings.pop("SESSION_CONFIG", {})
 # Force user logout once the browser has been closed.
@@ -203,40 +213,49 @@ LOGGERS.setdefault(
     },
 )
 
+default_installed_apps = [
+    "channels",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_bootstrap5",
+    "tethys_apps",
+    "tethys_compute",
+    "tethys_config",
+    "tethys_gizmos",
+    "tethys_layouts",
+    "tethys_sdk",
+    "tethys_services",
+    "tethys_quotas",
+    "guardian",
+]
+
+for module in [
+    "analytical",
+    "axes",
+    "captcha",
+    "corsheaders",
+    "django_gravatar",
+    "django_json_widget",
+    "mfa",
+    "oauth2_provider",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "session_security",
+    "snowpenguin.django.recaptcha2",
+    "social_django",
+    "termsandconditions",
+]:
+    if has_module(module):
+        default_installed_apps.append(module)
+
+
 INSTALLED_APPS = portal_config_settings.pop(
     "INSTALLED_APPS_OVERRIDE",
-    [
-        "channels",
-        "corsheaders",
-        "django.contrib.admin",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sessions",
-        "django.contrib.messages",
-        "django.contrib.staticfiles",
-        "django_gravatar",
-        "django_bootstrap5",
-        "django_json_widget",
-        "termsandconditions",
-        "tethys_apps",
-        "tethys_compute",
-        "tethys_config",
-        "tethys_gizmos",
-        "tethys_layouts",
-        "tethys_sdk",
-        "tethys_services",
-        "tethys_quotas",
-        "social_django",
-        "guardian",
-        "session_security",
-        "captcha",
-        "snowpenguin.django.recaptcha2",
-        "rest_framework",
-        "rest_framework.authtoken",
-        "analytical",
-        "mfa",
-        "axes",
-    ],
+    default_installed_apps,
 )
 
 INSTALLED_APPS = tuple(
@@ -247,28 +266,44 @@ MIDDLEWARE = portal_config_settings.pop(
     "MIDDLEWARE_OVERRIDE",
     [
         "django.contrib.sessions.middleware.SessionMiddleware",
-        "corsheaders.middleware.CorsMiddleware",
         "django.middleware.common.CommonMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "tethys_portal.middleware.TethysMfaRequiredMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
-        "tethys_portal.middleware.TethysSocialAuthExceptionMiddleware",
         "tethys_portal.middleware.TethysAppAccessMiddleware",
-        "session_security.middleware.SessionSecurityMiddleware",  # TODO: Templates need to be upgraded
-        "axes.middleware.AxesMiddleware",
     ],
 )
+if has_module("corsheaders"):
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index(
+            "django.middleware.common.CommonMiddleware"
+        ),  # insert right before
+        "corsheaders.middleware.CorsMiddleware",
+    )
+if has_module("social_django"):
+    MIDDLEWARE.append("tethys_portal.middleware.TethysSocialAuthExceptionMiddleware")
+if has_module("session_security"):
+    MIDDLEWARE.append(
+        "session_security.middleware.SessionSecurityMiddleware"
+    )  # TODO: Templates need to be upgraded
+if has_module("axes"):
+    MIDDLEWARE.append("axes.middleware.AxesMiddleware")
+
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop("MIDDLEWARE", []))
+
+default_authentication_backends = [
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
+]
+
+if has_module("axes"):
+    default_authentication_backends.insert(0, "axes.backends.AxesBackend")
 
 AUTHENTICATION_BACKENDS = portal_config_settings.pop(
     "AUTHENTICATION_BACKENDS_OVERRIDE",
-    [
-        "axes.backends.AxesBackend",
-        "django.contrib.auth.backends.ModelBackend",
-        "guardian.backends.ObjectPermissionBackend",
-    ],
+    default_authentication_backends,
 )
 AUTHENTICATION_BACKENDS = tuple(
     portal_config_settings.pop("AUTHENTICATION_BACKENDS", []) + AUTHENTICATION_BACKENDS
@@ -316,29 +351,46 @@ USE_L10N = True
 
 USE_TZ = True
 
+default_context_processors = [
+    "django.contrib.auth.context_processors.auth",
+    "django.template.context_processors.debug",
+    "django.template.context_processors.i18n",
+    "django.template.context_processors.media",
+    "django.template.context_processors.static",
+    "django.template.context_processors.tz",
+    "django.template.context_processors.request",
+    "django.contrib.messages.context_processors.messages",
+    # "social_django.context_processors.backends",
+    # "social_django.context_processors.login_redirect",
+    "tethys_config.context_processors.tethys_global_settings_context",
+    "tethys_apps.context_processors.tethys_apps_context",
+    "tethys_gizmos.context_processors.tethys_gizmos_context",
+    "tethys_portal.context_processors.tethys_portal_context",
+]
+if has_module("social_django"):
+    default_context_processors.extend(
+        [
+            "social_django.context_processors.backends",
+            "social_django.context_processors.login_redirect",
+        ]
+    )
+
 # Templates
+
+ADDITIONAL_TEMPLATE_DIRS = [
+    import_module(d).__path__[0]
+    for d in TETHYS_PORTAL_CONFIG.get("ADDITIONAL_TEMPLATE_DIRS", [])
+]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
+            *ADDITIONAL_TEMPLATE_DIRS,
             BASE_DIR / "templates",
         ],
         "OPTIONS": {
-            "context_processors": [
-                "django.contrib.auth.context_processors.auth",
-                "django.template.context_processors.debug",
-                "django.template.context_processors.i18n",
-                "django.template.context_processors.media",
-                "django.template.context_processors.static",
-                "django.template.context_processors.tz",
-                "django.template.context_processors.request",
-                "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
-                "tethys_config.context_processors.tethys_global_settings_context",
-                "tethys_apps.context_processors.tethys_apps_context",
-                "tethys_gizmos.context_processors.tethys_gizmos_context",
-            ],
+            "context_processors": default_context_processors,
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
                 "django.template.loaders.app_directories.Loader",
@@ -356,8 +408,9 @@ STATIC_URL = portal_config_settings.pop("STATIC_URL", "/static/")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    bokehjsdir(),
 ]
+if has_module(bokehjsdir):
+    STATICFILES_DIRS.append(bokehjsdir())
 
 STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop("STATICFILES_USE_NPM", False)
 if STATICFILES_USE_NPM:
@@ -409,7 +462,7 @@ GRAVATAR_SECURE_URL = "https://secure.gravatar.com/"
 GRAVATAR_DEFAULT_SIZE = "80"
 GRAVATAR_DEFAULT_IMAGE = "retro"
 GRAVATAR_DEFAULT_RATING = "g"
-GRAVATAR_DFFAULT_SECURE = True
+GRAVATAR_DEFAULT_SECURE = True
 
 # OAuth Settings
 # http://psa.matiasaguirre.net/docs/configuration/index.html
@@ -486,9 +539,6 @@ ANONYMOUS_USER_ID = -1
 CAPTCHA_CONFIG = portal_config_settings.pop("CAPTCHA_CONFIG", {})
 for setting, value in CAPTCHA_CONFIG.items():
     setattr(this_module, setting, value)
-# If you require reCaptcha to be loaded from somewhere other than https://google.com
-# (e.g. to bypass firewall restrictions), you can specify what proxy to use.
-# RECAPTCHA_PROXY_HOST: https://recaptcha.net
 
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'

@@ -1,11 +1,11 @@
 import os
 import sys
 import subprocess
-import bcrypt
-import yaml
-
-import django
 from pathlib import Path
+
+import bcrypt
+import django
+import yaml
 
 from tethys_apps.base.testing.environment import set_testing_environment
 from tethys_apps.utilities import (

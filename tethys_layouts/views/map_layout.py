@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2021
 ********************************************************************************
 """
+from tethys_portal.optional_dependencies import optional_import
 from abc import ABCMeta
 import collections
 from io import BytesIO
@@ -20,7 +21,6 @@ from zipfile import ZipFile
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.functional import classproperty
-import shapefile  # PyShp
 
 from tethys_layouts.exceptions import TethysLayoutPropertyException
 from tethys_layouts.mixins.map_layout import MapLayoutMixin
@@ -34,6 +34,9 @@ from tethys_sdk.gizmos import (
     SlideSheet,
     SelectInput,
 )
+
+# optional imports
+shapefile = optional_import("shapefile")  # PyShp
 
 log = logging.getLogger(f"tethys.{__name__}")
 
@@ -796,6 +799,20 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         """
         AJAX handler that converts GeoJSON data into a shapefile for download.
             Credit to: https://github.com/TipsForGIS/geoJSONToShpFile/blob/master/geoJ.py
+
+        .. important::
+
+            This method requires the `pyshp` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-json-widget` using conda or pip as follows:
+
+        .. code-block:: bash
+
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge pyshp
+
+            # pip
+            pip install pyshp
+        
+        **Don't Forget**: If you end up using this method in your app, add `pyshp` as a requirement to your `install.yml`.
 
         Args:
             request(HttpRequest): The request.

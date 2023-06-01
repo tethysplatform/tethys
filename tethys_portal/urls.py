@@ -7,9 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import mfa.TrustedDevice
+import logging
+from importlib import import_module
+
 from django.conf import settings
 from django.urls import reverse_lazy, include, re_path
+from django.shortcuts import redirect
 from django.views.decorators.cache import never_cache
 from django.contrib import admin
 from django.contrib.auth.views import (
@@ -17,9 +20,6 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
     PasswordResetCompleteView,
 )
-from django.shortcuts import redirect
-
-from social_django import views as psa_views, urls as psa_urls
 
 from tethys_apps.urls import extension_urls
 
@@ -33,12 +33,22 @@ from tethys_portal.views import (
     psa as tethys_portal_psa,
     email as tethys_portal_email,
 )
+from tethys_portal.optional_dependencies import has_module
 from tethys_apps import views as tethys_apps_views
 from tethys_compute.views import dask_dashboard as tethys_dask_views
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
+
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+TrustedDevice = optional_import("mfa.TrustedDevice")
+psa_views = optional_import("views", from_module="social_django")
+psa_urls = optional_import("social_django.urls")
+
+logger = logging.getLogger(f"tethys.{__name__}")
 
 
 prefix_url = f"{settings.PREFIX_URL}"
@@ -162,25 +172,6 @@ developer_urls = [
     ),
 ]
 
-oauth2_urls = [
-    # authentication / association
-    re_path(r"^login/(?P<backend>[^/]+)/$", tethys_portal_psa.auth, name="begin"),
-    re_path(
-        r"^complete/(?P<backend>[^/]+)/$", tethys_portal_psa.complete, name="complete"
-    ),
-    # disconnection
-    re_path(
-        r"^disconnect/(?P<backend>[^/]+)/$", psa_views.disconnect, name="disconnect"
-    ),
-    re_path(
-        r"^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$",
-        psa_views.disconnect,
-        name="disconnect_individual",
-    ),
-    # get tenant name for multi-tenant support
-    re_path(r"^tenant/(?P<backend>[^/]+)/$", tethys_portal_psa.tenant, name="tenant"),
-]
-
 # development_error_urls = [
 #     re_path(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
 #     re_path(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
@@ -192,8 +183,6 @@ urlpatterns = [
     re_path(r"^$", tethys_portal_home.home, name="home"),
     re_path(r"^admin/", admin_urls),
     re_path(r"^accounts/", include((account_urls, "accounts"), namespace="accounts")),
-    re_path(r"^captcha/", include("captcha.urls")),
-    re_path(r"^oauth2/", include((oauth2_urls, psa_urls.app_name), namespace="social")),
     re_path(r"^user/", include((user_urls, "user"), namespace="user")),
     re_path(r"^apps/", include("tethys_apps.urls")),
     re_path(r"^extensions/", include(extension_urls)),
@@ -218,13 +207,73 @@ urlpatterns = [
         tethys_apps_views.update_dask_job_status,
         name="update_dask_job_status",
     ),
-    re_path(r"^terms/", include("termsandconditions.urls")),
-    re_path(r"session_security/", include("session_security.urls")),
-    re_path(r"^mfa/", include("mfa.urls")),
-    re_path(r"devices/add$", mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
-    re_path(r"api/", include((api_urls, "api"), namespace="api")),
-    # re_path(r'^error/', include(development_error_urls)),
+    re_path(r"^api/", include((api_urls, "api"), namespace="api")),
 ]
+
+if has_module(psa_views):
+    oauth2_urls = [
+        # authentication / association
+        re_path(r"^login/(?P<backend>[^/]+)/$", tethys_portal_psa.auth, name="begin"),
+        re_path(
+            r"^complete/(?P<backend>[^/]+)/$",
+            tethys_portal_psa.complete,
+            name="complete",
+        ),
+        # disconnection
+        re_path(
+            r"^disconnect/(?P<backend>[^/]+)/$", psa_views.disconnect, name="disconnect"
+        ),
+        re_path(
+            r"^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$",
+            psa_views.disconnect,
+            name="disconnect_individual",
+        ),
+        # get tenant name for multi-tenant support
+        re_path(
+            r"^tenant/(?P<backend>[^/]+)/$", tethys_portal_psa.tenant, name="tenant"
+        ),
+    ]
+    urlpatterns.append(
+        re_path(
+            r"^oauth2/", include((oauth2_urls, psa_urls.app_name), namespace="social")
+        )
+    )
+if has_module("oauth2_provider"):
+    urlpatterns.append(
+        re_path(
+            "oauth2-provider/",
+            include("oauth2_provider.urls", namespace="oauth2_provider"),
+        )
+    )
+if has_module("snowpenguin.django.recaptcha2"):
+    urlpatterns.append(re_path(r"^captcha/", include("captcha.urls")))
+if has_module("termsandconditions"):
+    urlpatterns.append(re_path(r"^terms/", include("termsandconditions.urls")))
+if has_module("session_security"):
+    urlpatterns.append(re_path(r"session_security/", include("session_security.urls")))
+if has_module("mfa"):
+    urlpatterns.append(re_path(r"^mfa/", include("mfa.urls")))
+    urlpatterns.append(
+        re_path(r"devices/add$", TrustedDevice.add, name="mfa_add_new_trusted_device")
+    )
+
+additional_url_patterns = []
+additional_url_pattern_paths = settings.ADDITIONAL_URLPATTERNS
+
+for url_pattern_path in additional_url_pattern_paths:
+    try:
+        mod, attr = url_pattern_path.rsplit(".", 1)
+        mod = import_module(mod)
+        url_patterns = getattr(mod, attr)
+        assert isinstance(url_patterns, (list, tuple))
+        additional_url_patterns.extend(url_patterns)
+    except Exception as e:
+        logger.exception(
+            f'Additional urlpatterns "{url_pattern_path}" could not be imported and will be ignored.'
+        )
+        logger.exception(e)
+
+urlpatterns = additional_url_patterns + urlpatterns
 
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403

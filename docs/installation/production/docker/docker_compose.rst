@@ -305,7 +305,7 @@ c. Add the following contents to each ``.env`` file:
 
     **db.env**
 
-    .. code-block:: env
+    .. code-block:: docker
 
         # Password of the db admin account
         POSTGRES_PASSWORD=please_dont_use_default_passwords
@@ -323,7 +323,7 @@ c. Add the following contents to each ``.env`` file:
 
     **thredds.env**
 
-    .. code-block:: env
+    .. code-block:: docker
 
         # Password of the TDM admin user
         TDM_PW=please_dont_use_default_passwords
@@ -355,7 +355,7 @@ c. Add the following contents to each ``.env`` file:
 
     **web.env**
 
-    .. code-block:: env
+    .. code-block:: docker
 
         # Domain name of server should be first in the list if multiple entries added
         ALLOWED_HOSTS="\"[localhost]\""
@@ -471,7 +471,7 @@ a. Create a :file:`.gitignore` file:
 
 b. Add the following contents to the :file:`.gitignore` file to omit the contents of these directories from being tracked:
 
-    .. code-block:: gitignore
+    .. code-block:: text
 
         data/
         keys/

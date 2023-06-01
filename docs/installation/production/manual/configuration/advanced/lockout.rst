@@ -6,6 +6,18 @@ Lockout (Optional)
 
 **Last Updated:** May 2020
 
+.. important::
+
+    This feature requires the `django-axes` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-axes` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-axes
+
+        # pip
+        pip install django-axes
+
 Tethys Portal includes lockout capabilities to prevent brute-force login attempts. This capability is provided by the `Django Axes <https://django-axes.readthedocs.io/en/latest/>`_ add-on for Django. This document describes the different configuration options that are available for lockout capabilities in Tethys Portal.
 
 .. image:: ./images/locked_out.png

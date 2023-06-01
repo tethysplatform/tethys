@@ -4,6 +4,18 @@ Spatial Persistent Stores API
 
 **Last Updated:** May 2017
 
+.. important::
+
+    This feature requires the `psycopg2`, `sqlalchmey`, and `geoalchemy2` libraries to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge psycopg2 "sqlalchemy<2" geoalchemy2
+
+        # pip
+        pip install psycopg2 "sqlalchemy<2" geoalchemy2
+
 Persistent store databases can support spatial data types. The spatial capabilities are provided by the `PostGIS <http://postgis.net/>`_ extension for the `PostgreSQL <http://www.postgresql.org/>`_ database. PostGIS extends the column types of PostgreSQL databases by adding ``geometry``, ``geography``, and ``raster`` types. PostGIS also provides hundreds of database functions that can be used to perform spatial operations on data stored in spatial columns. For more information on PostGIS, see `<http://www.postgis.net>`_.
 
 The following article details the the spatial capabilities of persistent stores in Tethys Platform. This article builds on the concepts and ideas introduced in the :doc:`./persistent_store` documentation. Please review it before continuing.

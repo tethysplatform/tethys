@@ -2,7 +2,24 @@
 Bokeh View
 **********
 
-**Last Updated:** November 11, 2016
+**Last Updated:** August 2023
+
+.. important::
+
+   This gizmo requires the `bokeh` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `bokeh` using conda or pip as follows:
+
+   .. code-block:: bash
+
+      # conda: conda-forge channel strongly recommended
+      conda install -c conda-forge "bokeh<3"
+
+      # pip
+      pip install "bokeh<3"
+
+   **Don't Forget**: If you end up using this gizmo in your app, add `bokeh` as a requirement to your `install.yml`.
+
+Python
+------
 
 .. autoclass:: tethys_sdk.gizmos.BokehView
 
@@ -21,7 +38,8 @@ to do so with Bokeh.
     in the ``import_gizmos`` block.
 
     For example:
-    ::
+
+    .. code-block:: html+django
 
         {% block import_gizmos %}
             {% import_gizmo_dependency bokeh_view %}
@@ -30,12 +48,15 @@ to do so with Bokeh.
 Four elements are required:
 
 1) A controller for the AJAX call with a BokehView gizmo.
-::
+
+
+.. code-block:: python
 
     from tethys_sdk.gizmos import BokehView
+    from tethys_sdk.routing import controller
     from bokeh.plotting import figure
         
-    @login_required()
+    @controller(name="bokeh_ajax", url="app-name/bokeh")
     def bokeh_ajax(request):
         """
         Controller for the bokeh ajax request.
@@ -49,23 +70,16 @@ Four elements are required:
         return render(request, 'app_name/bokeh_ajax.html', context)
 
 2) A template for with the tethys gizmo (e.g. bokeh_ajax.html)
-::
+
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo bokeh_view_input %}
 
-3) A url map to the controller in app.py
-::
+3) The AJAX call in the javascript
 
-    ...
-        UrlMap(name='bokeh_ajax',
-               url='app_name/bokeh',
-               controller='app_name.controllers.bokeh_ajax'),
-    ...
-
-4) The AJAX call in the javascript
-::
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

@@ -7,6 +7,18 @@ Spatial Dataset Services API
 
 **Last Updated:** December 2019
 
+.. important::
+
+    This feature requires the `tethys_dataset_services` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `tethys_dataset_services` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge tethys_dataset_services
+
+        # pip
+        pip install tethys_dataset_services
+
 Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile, GeoTiff, NetCDF). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, OGC Services).
 
 One example of a spatial dataset service is `GeoServer <http://geoserver.org/>`_, which is capable of storing and serving vector and raster datasets in several popular formats including Shapefiles, GeoTiff, ArcGrid and others. GeoServer serves the data in a variety of formats via the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org/>`_ standards including `Web Feature Service (WFS) <http://www.opengeospatial.org/standards/wfs>`_, `Web Map Service (WMS) <http://www.opengeospatial.org/standards/wms>`_, and `Web Coverage Service (WCS) <http://www.opengeospatial.org/standards/wcs>`_.
@@ -123,13 +135,17 @@ After spatial dataset services have been properly configured, you can use the se
 1. Get an Engine for the Spatial Dataset Service
 ------------------------------------------------
 
-Call the ``get_spatial_dataset_service()`` method of the app class to get the engine for the Spatial Dataset Service::
+Call the ``get_spatial_dataset_service()`` method of the app class to get the engine for the Spatial Dataset Service:
+
+.. code-block:: python
 
     from my_first_app.app import MyFirstApp as app
 
     geoserver_engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
-You can also create a ``SpatialDatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials)::
+You can also create a ``SpatialDatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials):
+
+.. code-block:: python
 
   from tethys_dataset_services.engines import GeoServerSpatialDatasetEngine
 

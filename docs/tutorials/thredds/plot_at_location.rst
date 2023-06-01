@@ -2,7 +2,7 @@
 Plot Time Series at Location
 ****************************
 
-**Last Updated:** June 2022
+**Last Updated:** August 2023
 
 In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location and display it on a plot. Topics covered in this tutorial include:
 
@@ -121,7 +121,29 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
 
 5. Verify that the drawing tool has been added to the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. A single tool for drawing markers/points should appear near the top left-hand corner of the map, just below the zoom controls.
 
-2. Create New Plot Controller
+2. Install Plotly
+=================
+
+In this step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
+
+1. The Plotly View gizmo requires the `plotly` Python package. Install `plotly` as follows running the following command in the terminal:
+
+.. code-block::
+
+    # with conda
+    conda install plotly
+
+    # with pip
+    pip install plotly
+
+2. The app now depends on `plotly`, so add it to the `install.yml` file:
+
+.. code-block:: yaml
+
+    dependencies:
+      - plotly
+
+3. Create New Plot Controller
 =============================
 
 In this step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
@@ -386,7 +408,7 @@ In this step you will create a new controller that will query the dataset at the
       </div>
     {% endif %}
 
-3. Load Plot Using JQuery Load
+4. Load Plot Using JQuery Load
 ==============================
 
 The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL and load the returned HTML into the target element. In this step, you'll use ``jQuery.load()`` to call the ``get-time-series-plot`` endpoint and load the markup for the plot that is returned into a modal for display to the user. This pattern allows you to render the plot dynamically with minimal JavaScript, because the plot is parameterized using Python on the server.
@@ -644,7 +666,7 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         update_legend();
     };
 
-4. Test and Verify
+5. Test and Verify
 ==================
 
 Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Verify the following:
@@ -655,7 +677,7 @@ Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and 
 4. Verify that the plot dialog appears automatically after dropping the marker with the loading image showing.
 5. Verify that the plot appears after the data has been queried.
 
-5. Solution
+6. Solution
 ===========
 
 This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/thredds-service-solution-3.0>`_ or clone it as follows:

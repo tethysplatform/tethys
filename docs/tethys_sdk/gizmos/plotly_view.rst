@@ -4,7 +4,25 @@
 Plotly View
 ***********
 
-**Last Updated:** November 11, 2016
+**Last Updated:** August 2023
+
+
+.. important::
+
+    This gizmo requires the `plotly` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `plotly` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge plotly
+
+        # pip
+        pip install plotly
+    
+    **Don't Forget**: If you end up using this gizmo in your app, add `plotly` as a requirement to your `install.yml`.
+
+Python
+------
 
 .. autoclass:: tethys_sdk.gizmos.PlotlyView
 
@@ -31,13 +49,16 @@ to do so with PlotlyView.
 Four elements are required:
 
 1) A controller for the AJAX call with a PlotlyView gizmo.
-::
+
+.. code-block:: python
 
     from datetime import datetime
     import plotly.graph_objs as go
     from tethys_sdk.gizmos import PlotlyView
+    from tethys_sdk.routing import controller
+
         
-    @login_required()
+    @controller(name='plotly_ajax', url='app-name/plotly')
     def plotly_ajax(request):
         """
         Controller for the plotly ajax request.
@@ -53,23 +74,16 @@ Four elements are required:
         return render(request, 'app_name/plotly_ajax.html', context)
 
 2) A template for with the tethys gizmo (e.g. plotly_ajax.html)
-::
+
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo plotly_view_input %}
 
-3) A url map to the controller in app.py
-::
+3) The AJAX call in the javascript
 
-    ...
-        UrlMap(name='plotly_ajax',
-               url='app_name/plotly',
-               controller='app_name.controllers.plotly_ajax'),
-    ...
-
-4) The AJAX call in the javascript
-::
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

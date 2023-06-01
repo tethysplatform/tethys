@@ -1,4 +1,3 @@
-import importlib
 import unittest
 from unittest import mock
 import tethys_cli.docker_commands as cli_docker_commands
@@ -37,10 +36,6 @@ class TestDockerCommands(unittest.TestCase):
             image_tag="1.2.3" if with_image_opts else None,
         )
         return args
-
-    def test_curses_import_error(self):
-        with mock.patch.dict("sys.modules", {"curses": None}):
-            importlib.reload(cli_docker_commands)
 
     def test_get_docker_client(self):
         dc = cli_docker_commands.ContainerMetadata.get_docker_client()
@@ -1256,14 +1251,14 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
-    @mock.patch("tethys_cli.docker_commands.platform.system")
+    @mock.patch("tethys_cli.docker_commands.has_module")
     def test_log_pull_stream_linux_with_id_bad_status(
-        self, mock_platform_system, mock_curses, mock_pretty_output
+        self, mock_has_module, mock_curses, mock_pretty_output
     ):
         mock_stream = [
             b'{      "id":"358464",      "status":"foo",      "progress":"bar"   }'
         ]
-        mock_platform_system.return_value = "Linux"
+        mock_has_module.return_value = True
         mock_curses.initscr().getmaxyx.return_value = 1, 80
 
         cli_docker_commands.log_pull_stream(mock_stream)
@@ -1293,14 +1288,14 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
-    @mock.patch("tethys_cli.docker_commands.platform.system")
+    @mock.patch("tethys_cli.docker_commands.has_module")
     def test_log_pull_stream_linux_with_id_progress_status(
-        self, mock_platform_system, mock_curses, mock_pretty_output
+        self, mock_has_module, mock_curses, mock_pretty_output
     ):
         mock_stream = [
             b'{      "id":"358464",      "status":"Downloading",      "progress":"bar"   }'
         ]
-        mock_platform_system.return_value = "Linux"
+        mock_has_module.return_value = True
         mock_curses.initscr().getmaxyx.return_value = 1, 80
 
         cli_docker_commands.log_pull_stream(mock_stream)
@@ -1324,15 +1319,15 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
-    @mock.patch("tethys_cli.docker_commands.platform.system")
+    @mock.patch("tethys_cli.docker_commands.has_module")
     def test_log_pull_stream_linux_with_id_status(
-        self, mock_platform_system, mock_curses, mock_pretty_output
+        self, mock_has_module, mock_curses, mock_pretty_output
     ):
         mock_stream = [
             b'{      "id":"358464",      "status":"Downloading",      "progress":"bar"   }\r\n'
             b'{      "id":"358464",      "status":"Pulling fs layer",      "progress":"baz"   }'
         ]
-        mock_platform_system.return_value = "Linux"
+        mock_has_module.return_value = True
         mock_curses.initscr().getmaxyx.return_value = 1, 80
 
         cli_docker_commands.log_pull_stream(mock_stream)
@@ -1356,12 +1351,12 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
-    @mock.patch("tethys_cli.docker_commands.platform.system")
+    @mock.patch("tethys_cli.docker_commands.has_module")
     def test_log_pull_stream_linux_with_no_id(
-        self, mock_platform_system, mock_curses, mock_pretty_output
+        self, mock_has_module, mock_curses, mock_pretty_output
     ):
         mock_stream = [b'{      "status":"foo",      "progress":"bar"   }']
-        mock_platform_system.return_value = "Linux"
+        mock_has_module.return_value = True
         mock_curses.initscr().getmaxyx.return_value = 1, 80
 
         cli_docker_commands.log_pull_stream(mock_stream)
@@ -1380,16 +1375,16 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
-    @mock.patch("tethys_cli.docker_commands.platform.system")
+    @mock.patch("tethys_cli.docker_commands.has_module")
     def test_log_pull_stream_linux_with_curses_error(
-        self, mock_platform_system, mock_curses, mock_pretty_output
+        self, mock_has_module, mock_curses, mock_pretty_output
     ):
         import curses
 
         mock_stream = [
             b'{      "id":"358464",      "status":"Downloading",      "progress":"bar"   }\r\n'
         ]
-        mock_platform_system.return_value = "Linux"
+        mock_has_module.return_value = True
         mock_curses.initscr().getmaxyx.return_value = 1, 80
         mock_curses.error = (
             curses.error
@@ -1416,12 +1411,12 @@ class TestDockerCommands(unittest.TestCase):
         self.assertEqual("", po_call_args[0][0][0])
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
-    @mock.patch("tethys_cli.docker_commands.platform.system")
-    def test_log_pull_stream_windows(self, mock_platform_system, mock_pretty_output):
+    @mock.patch("tethys_cli.docker_commands.has_module")
+    def test_log_pull_stream_windows(self, mock_has_module, mock_pretty_output):
         mock_stream = [
             b'{      "id":"358464",      "status":"Downloading",      "progress":"bar"   }'
         ]
-        mock_platform_system.return_value = "Windows"
+        mock_has_module.return_value = False
 
         cli_docker_commands.log_pull_stream(mock_stream)
 

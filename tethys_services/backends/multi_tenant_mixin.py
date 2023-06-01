@@ -1,5 +1,9 @@
 from django.core.exceptions import ImproperlyConfigured
-from social_core.utils import setting_name
+
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+setting_name = optional_import("setting_name", from_module="social_core.utils")
 
 
 class MultiTenantMixin:

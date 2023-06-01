@@ -72,6 +72,18 @@ install.yml
 
 This file is generated with your application scaffold. Dependencies that are listed in the ``install.yml`` will be installed with conda and will honor the specified channel priority. If there are any dependencies listed in the ``setup.py`` that are not specified in the ``install.yml`` then these packages will be installed with pip as part of the setup process. This file should be committed with your application code in order to aid installation on a Tethys Portal.
 
+.. important::
+
+    The ``conda`` sections of the ``install.yml`` file require the `conda` library and optionally the `conda-libmamba-solver` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge conda conda-libmamba-solver
+
+        # pip
+        pip install conda
+
 .. literalinclude:: resources/example-install.yml
    :language: yaml
 

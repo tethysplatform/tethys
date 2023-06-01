@@ -4,6 +4,18 @@ Dataset Services API
 
 **Last Updated**: May 2017
 
+.. important::
+
+    This feature requires the `tethys_dataset_services` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `tethys_dataset_services` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge tethys_dataset_services
+
+        # pip
+        pip install tethys_dataset_services
+
 :term:`Dataset services` are web services external to Tethys Platform that can be used to store and publish file-based :term:`datasets` (e.g.: text files, Excel files, zip archives, other model files). Tethys app developers can use the Dataset Services API to access :term:`datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce. Supported options include `CKAN <http://ckan.org>`_ and `HydroShare <http://hydroshare.org>`_.
 
 Key Concepts
@@ -119,13 +131,17 @@ After dataset services have been properly configured, you can use the services t
 1. Get a Dataset Service Engine
 -------------------------------
 
-Call the ``get_dataset_service()`` method of the app class to get a ``DatasetEngine``::
+Call the ``get_dataset_service()`` method of the app class to get a ``DatasetEngine``:
+
+.. code-block:: python
 
     from my_first_app.app import MyFirstApp as app
 
     ckan_engine = app.get_dataset_service('primary_ckan', as_engine=True)
 
-You can also create a ``DatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials)::
+You can also create a ``DatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials):
+
+.. code-block:: python
 
   from tethys_dataset_services.engines import CkanDatasetEngine
 
@@ -139,7 +155,9 @@ You can also create a ``DatasetEngine`` object directly. This can be useful if y
 2. Use the Dataset Service Engine
 ---------------------------------
 
-After you have a ``DatasetEngine``, simply call the desired method on it. All ``DatasetEngine`` methods return a dictionary with an item named ``'success'`` that contains a boolean. If the operation was successful, the value of ``'success'`` will be ``True``, otherwise it will be ``False``. If the value of ``'success'`` is ``True``, the dictionary will also contain an item named ``'result'`` that will contain the results. If it is ``False``, the dictionary will contain an item named ``'error'`` that will contain information about the error that occurred. This can be used for debugging purposes as illustrated in the following example::
+After you have a ``DatasetEngine``, simply call the desired method on it. All ``DatasetEngine`` methods return a dictionary with an item named ``'success'`` that contains a boolean. If the operation was successful, the value of ``'success'`` will be ``True``, otherwise it will be ``False``. If the value of ``'success'`` is ``True``, the dictionary will also contain an item named ``'result'`` that will contain the results. If it is ``False``, the dictionary will contain an item named ``'error'`` that will contain information about the error that occurred. This can be used for debugging purposes as illustrated in the following example:
+
+.. code-block:: python
 
     from my_first_app.app import MyFirstApp as app
 
@@ -162,7 +180,7 @@ Use the dataset service engines references above for descriptions of the methods
 
     The HydroShare dataset engine uses OAuth 2.0 to authenticate and authorize interactions with the HydroShare via the REST API. This requires passing the ``request`` object as one of the arguments in ``get_dataset_engine()`` method call. Also, to ensure the user is connected to HydroShare, app developers must use the ``ensure_oauth2()`` decorator on any controllers that use the HydroShare dataset engine. For example:
 
-    ::
+    .. code-block:: python
 
         from tethys_sdk.services import get_dataset_engine, ensure_oauth2
         from .app import MyFirstApp as app
