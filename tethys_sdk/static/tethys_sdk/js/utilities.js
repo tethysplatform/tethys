@@ -79,7 +79,6 @@ function compute_center(features) {
                 let line_string = line_strings[i];
 
                 for (var j = 0; j < line_string.length; j++) {
-                    console.log(i, j)
                     let coordinate = line_string[j];
                     sum_x += coordinate[0];
                     sum_y += coordinate[1];
