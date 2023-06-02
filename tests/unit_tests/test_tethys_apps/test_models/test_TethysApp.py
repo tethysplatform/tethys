@@ -136,6 +136,23 @@ class TethysAppTests(TethysTestCase):
         self.assertIn(dynamic_setting, settings)
         self.assertNotIn(obsolete_setting, settings)
 
+    def test_sync_settings_remove_only_setting(self):
+        app = TethysApp(name="setting_test")
+        app.save()
+
+        obsolete_setting = TethysAppSetting(
+            name="test_sync_obsolete_setting", tethys_app=app, required=False
+        )
+        obsolete_setting.save()  # needs to be saved to it can be deleted.
+
+        self.test_app.sync_settings(
+            None,
+            [obsolete_setting],
+        )
+
+        self.assertEqual(0, len(app.settings))
+        self.assertNotIn(obsolete_setting, app.settings)
+
     def test_settings_prop(self):
         ret = self.test_app.settings
         self.assertEqual(21, len(ret))
