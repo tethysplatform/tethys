@@ -542,16 +542,19 @@ def configure_services_from_file(services, app_name):
 
                     try:
                         if custom_setting.type_custom_setting == "JSON":
-                            try:
-                                with open(current_services[setting_name]) as json_file:
-                                    custom_setting.value = json.load(json_file)
-                            except TypeError:
-                                custom_setting.value = current_services[setting_name]
-                            except FileNotFoundError:
-                                custom_setting.value = current_services[setting_name]
-                                write_warning(
-                                    "The current file path was not found, assuming you provided a valid JSON"
-                                )
+                            custom_setting.value = assign_json_value(
+                                current_services[setting_name]
+                            )
+                            # try:
+                            #     with open(current_services[setting_name]) as json_file:
+                            #         custom_setting.value = json.load(json_file)
+                            # except TypeError:
+                            #     custom_setting.value = current_services[setting_name]
+                            # except FileNotFoundError:
+                            #     custom_setting.value = current_services[setting_name]
+                            #     write_warning(
+                            #         "The current file path was not found, assuming you provided a valid JSON"
+                            #     )
                         else:
                             custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
@@ -875,3 +878,19 @@ def validate_schema(check_str, check_list):
 def successful_exit(app_name, action="installed"):
     write_success(f"Successfully {action} {app_name}.")
     exit(0)
+
+
+def assign_json_value(value):
+    # Check if the value is a file path
+    try:
+        if os.path.isfile(value):
+            with open(value) as file:
+                json_data = json.load(file)
+                return json_data
+        else:
+            # Check if the value is a valid JSON string
+            json_data = json.loads(value)
+            return json_data
+    except ValueError:
+        write_error(f"The current value/file path: {value} is not a valid JSON string.")
+        return None

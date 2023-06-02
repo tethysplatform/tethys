@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from unittest import mock
 from conda.cli.python_api import Commands
-from tethys_cli import install_commands
+from tethys_cli import install_commands, assign_json_value
 
 
 FNULL = open(os.devnull, "w")
@@ -392,6 +392,36 @@ class TestServiceInstallHelpers(TestCase):
             self.assertIn(
                 "Could not determine service type for setting:", str(cm.exception)
             )
+
+    @mock.patch("tethys_cli.install_commands.builtins.open")
+    def test_valid_file_path(self, mock_open):
+        mock_file = mock.MagicMock()
+        mock_file.read.return_value = '{"key": "value"}'
+        mock_open.return_value.__enter__.return_value = mock_file
+
+        json_value = install_commands.assign_json_value("data.json")
+        self.assertIsNotNone(json_value)
+        self.assertIsInstance(json_value, dict)
+        # Add more specific assertions if needed
+
+    @mock.patch("tethys_cli.install_commands.os.path.isfile")
+    def test_invalid_file_path(self, mock_isfile):
+        mock_isfile.return_value = False
+
+        json_value = install_commands.assign_json_value("nonexistent.json")
+        self.assertIsNone(json_value)
+        # Add more specific assertions if needed
+
+    def test_valid_json_string(self):
+        json_value = install_commands.assign_json_value('{"key": "value"}')
+        self.assertIsNotNone(json_value)
+        self.assertIsInstance(json_value, dict)
+        # Add more specific assertions if needed
+
+    def test_invalid_json_string(self):
+        json_value = install_commands.assign_json_value("invalid_json")
+        self.assertIsNone(json_value)
+        # Add more specific assertions if needed
 
 
 class TestInstallServicesCommands(TestCase):
