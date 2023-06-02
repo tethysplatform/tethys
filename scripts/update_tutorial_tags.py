@@ -5,7 +5,7 @@ from github.GithubException import BadCredentialsException
 # Requirements: pip install PyGithub
 
 # Tethys Version to Tag For
-tethys_version = "4.0"
+tethys_version = "4.1"
 
 # Tutorial repos ({<repo_name>: {<branch>: <tag_prefix>}}
 tutorial_repos = {

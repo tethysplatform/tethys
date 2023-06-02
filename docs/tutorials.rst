@@ -26,6 +26,7 @@ Learn how to add spatial data visualizations and use spatial web services in Tet
 .. toctree::
    :maxdepth: 1
 
+   tutorials/map_layout
    tutorials/geoserver
    tutorials/thredds
    tutorials/google_earth_engine
