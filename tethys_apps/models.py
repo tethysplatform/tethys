@@ -96,16 +96,16 @@ class TethysApp(models.Model, TethysBaseMixin):
             setting_list: List of current settings (as defined in app.py).
             existing_settings: List of existing settings in the DB.
         """
-        if setting_list is not None:
-            self.add_settings(setting_list)
-            setting_names = [setting.name for setting in setting_list]
-            for setting in existing_settings:
-                # Do not remove dynamically craeted settings
-                if getattr(setting, "dynamic", False) and setting.dynamic:
-                    continue
+        setting_list = setting_list or []
+        self.add_settings(setting_list)
+        setting_names = [setting.name for setting in setting_list]
+        for setting in existing_settings:
+            # Do not remove dynamically craeted settings
+            if getattr(setting, "dynamic", False) and setting.dynamic:
+                continue
 
-                if setting.name not in setting_names:
-                    setting.delete()
+            if setting.name not in setting_names:
+                setting.delete()
 
     @property
     def settings(self):
