@@ -883,6 +883,7 @@ def successful_exit(app_name, action="installed"):
 def assign_json_value(value):
     # Check if the value is a file path
     try:
+        # breakpoint()
         if os.path.isfile(value):
             with open(value) as file:
                 json_data = json.load(file)
