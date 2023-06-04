@@ -393,43 +393,6 @@ class TestServiceInstallHelpers(TestCase):
                 "Could not determine service type for setting:", str(cm.exception)
             )
 
-    # @mock.patch("tethys_cli.install_commands.open")
-    # def test_valid_file_path(self, mock_open):
-    #     mock_file = mock.MagicMock()
-    #     mock_file.read.return_value = '{"key": "value"}'
-    #     mock_open.return_value.__enter__.return_value = mock_file
-
-    #     json_value = install_commands.assign_json_value("data.json")
-    #     self.assertIsNotNone(json_value)
-    #     self.assertIsInstance(json_value, dict)
-    #     # Add more specific assertions if needed
-
-    # @mock.patch("tethys_cli.install_commands.os.path.isfile")
-    # @mock.patch("tethys_cli.cli_colors.pretty_output")
-    # def test_invalid_file_path(self, mock_pretty_output,mock_isfile):
-    #     mock_isfile.return_value = False
-    #     json_value = install_commands.assign_json_value("nonexistent.json")
-    #     po_call_args = mock_pretty_output().__enter__().write.call_args_list
-    #     self.assertIsNone(json_value)
-    #     breakpoint
-    #     self.assertEqual(
-    #         f'CustomSetting: "{valid_custom_setting_name}" was assigned the value: '
-    #         f'"{valid_custom_setting_value}"',
-    #         po_call_args[1][0][0],
-    #     )
-    #     # Add more specific assertions if needed
-
-    # def test_valid_json_string(self):
-    #     json_value = install_commands.assign_json_value('{"key": "value"}')
-    #     self.assertIsNotNone(json_value)
-    #     self.assertIsInstance(json_value, dict)
-    #     # Add more specific assertions if needed
-
-    # def test_invalid_json_string(self):
-    #     json_value = install_commands.assign_json_value("invalid_json")
-    #     self.assertIsNone(json_value)
-    #     # Add more specific assertions if needed
-
 
 class TestInstallServicesCommands(TestCase):
     def setUp(self):
@@ -443,6 +406,7 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.install_commands.find_and_link")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_cli.install_commands.json.loads")
     @mock.patch("tethys_cli.install_commands.json.load")
     @mock.patch(
         "tethys_cli.install_commands.open",
@@ -458,6 +422,7 @@ class TestInstallServicesCommands(TestCase):
         mock_isfile,
         mock_open,
         mock_json_load,
+        mock_json_loads,
         mock_pretty_output,
         mock_find_and_link,
         mock_gas,
@@ -473,8 +438,8 @@ class TestInstallServicesCommands(TestCase):
 
         json_custom_setting_wrong_path_name = "wrong_path_json_setting"
         json_custom_setting_wrong_path_value = '{"name": "John", "age": 30, "city": "New York", "interests": ["music", "sports", "reading"], "education": {"degree": "Bachelor", "major": "Computer Science", "university": "ABC University"}, "work_experience": [{"position": "Software Engineer", "company": "XYZ Inc.", "duration": "3 years"}, {"position": "Senior Developer", "company": "ABC Corp.", "duration": "2 years"}], "projects": [{"name": "Project A", "description": "Lorem ipsum dolor sit amet", "status": "completed"}, {"name": "Project B", "description": "Consectetur adipiscing elit", "status": "in progress"}], "family_members": [{"name": "Jane", "relationship": "Spouse", "age": 28}, {"name": "Sarah", "relationship": "Sister", "age": 32}, {"name": "Michael", "relationship": "Brother", "age": 26}], "address": {"street": "123 Main Street", "city": "New York", "state": "NY", "postal_code": "10001"}, "phone_numbers": {"home": "555-1234", "work": "555-5678", "cell": "555-9876"}}'
-        # json_custom_setting_type_error_name = "type_error_json_setting"
-        # json_custom_setting_type_error_value = '{"json": "value"}'
+        json_custom_setting_value_error_name = "value_error_json_setting"
+        json_custom_setting_value_error_value = '{"name": "John", "age": 30,}'
 
         secret_custom_setting_name = "secret_setting"
         secret_custom_setting_value = "SECRET:XXXX235235RSDGSDGAF_23523"
@@ -492,7 +457,7 @@ class TestInstallServicesCommands(TestCase):
                 "custom_setting_dne": 1,
                 json_custom_setting_name: json_custom_setting_value,
                 json_custom_setting_wrong_path_name: json_custom_setting_wrong_path_value,
-                # json_custom_setting_type_error_name: json_custom_setting_type_error_value,
+                json_custom_setting_value_error_name: json_custom_setting_value_error_value,
                 secret_custom_setting_name: secret_custom_setting_value,
             },
             "persistent": {
@@ -524,9 +489,9 @@ class TestInstallServicesCommands(TestCase):
         )
 
         # Json setting with type error
-        # mock_json_custom_setting_type_error = mock.MagicMock(
-        #     value=None, type_custom_setting="JSON"
-        # )
+        mock_json_custom_setting_value_error = mock.MagicMock(
+            value=None, type_custom_setting="JSON"
+        )
 
         # valid custom Secret setting
         mock_secret_custom_setting = mock.MagicMock(
@@ -539,16 +504,20 @@ class TestInstallServicesCommands(TestCase):
             ObjectDoesNotExist,  #: Setting not found
             mock_json_custom_setting,
             mock_json_custom_setting_wrong_path,
-            # mock_json_custom_setting_type_error,
+            mock_json_custom_setting_value_error,
             mock_secret_custom_setting,
         ]
 
         # mock_open.side_effect = (mock_open.return_value, FileNotFoundError, TypeError)
         mock_open.side_effect = mock_open.return_value
 
-        mock_isfile.side_effect = (True, False)
+        mock_isfile.side_effect = (True, False, False)
 
-        mock_json_load.return_value = '{"fake_json": "{}"}'
+        mock_json_loads.side_effect = [
+            json_custom_setting_wrong_path_value,
+            ValueError,
+        ]
+        mock_json_load.side_effect = ['{"fake_json": "{}"}']
 
         # This persistent setting exists and is listed in the file
         mock_persistent_database_setting = mock.MagicMock()
@@ -576,7 +545,6 @@ class TestInstallServicesCommands(TestCase):
             ],
         }
         install_commands.configure_services_from_file(services_file_contents, app_name)
-        breakpoint()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
         self.assertIn(
@@ -602,25 +570,25 @@ class TestInstallServicesCommands(TestCase):
             'CustomSetting: "wrong_path_json_setting" was assigned the value: "{"name": "John", "age": 30, "city": "New York", "interests": ["music", "sports", "reading"], "education": {"degree": "Bachelor", "major": "Computer Science", "university": "ABC University"}, "work_experience": [{"position": "Software Engineer", "company": "XYZ Inc.", "duration": "3 years"}, {"position": "Senior Developer", "company": "ABC Corp.", "duration": "2 years"}], "projects": [{"name": "Project A", "description": "Lorem ipsum dolor sit amet", "status": "completed"}, {"name": "Project B", "description": "Consectetur adipiscing elit", "status": "in progress"}], "family_members": [{"name": "Jane", "relationship": "Spouse", "age": 28}, {"name": "Sarah", "relationship": "Sister", "age": 32}, {"name": "Michael", "relationship": "Brother", "age": 26}], "address": {"street": "123 Main Street", "city": "New York", "state": "NY", "postal_code": "10001"}, "phone_numbers": {"home": "555-1234", "work": "555-5678", "cell": "555-9876"}}"',
             po_call_args[4][0][0],
         )
-        # self.assertEqual(
-        #     "CustomSetting: \"wrong_path_json_setting\" was assigned the value: \"{'fake_json': 'fake_value'}\"",
-        #     po_call_args[5][0][0],
-        # )
-        # self.assertEqual(
-        #     "CustomSetting: \"type_error_json_setting\" was assigned the value: \"{'json': 'value'}\"",
-        #     po_call_args[6][0][0],
-        # )
+        self.assertEqual(
+            'The current value/file path: {"name": "John", "age": 30,} is not a valid JSON string.',
+            po_call_args[5][0][0],
+        )
+        self.assertEqual(
+            'CustomSetting: "value_error_json_setting" was assigned the value: "{"name": "John", "age": 30,}"',
+            po_call_args[6][0][0],
+        )
         self.assertEqual(
             'CustomSetting: "secret_setting" was assigned the value: "SECRET:XXXX235235RSDGSDGAF_23523"',
-            po_call_args[5][0][0],
+            po_call_args[7][0][0],
         )
 
         self.assertEqual(
             f'No service given for setting "{no_val_persistent_setting_name}". Skipping...',
-            po_call_args[6][0][0],
+            po_call_args[8][0][0],
         )
         self.assertIn(
-            "already configured or does not exist in app", po_call_args[7][0][0]
+            "already configured or does not exist in app", po_call_args[9][0][0]
         )
 
         mock_find_and_link.assert_called_with(
