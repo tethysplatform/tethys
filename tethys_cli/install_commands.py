@@ -2,9 +2,7 @@ import yaml
 import json
 import os
 import getpass
-
 from pathlib import Path
-
 from subprocess import call, Popen, PIPE, STDOUT
 from argparse import Namespace
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -23,6 +21,7 @@ from tethys_apps.utilities import (
 )
 
 from .gen_commands import download_vendor_static_files
+from collections.abc import Mapping
 
 has_conda = False
 try:
@@ -545,16 +544,12 @@ def configure_services_from_file(services, app_name):
                             custom_setting.value = assign_json_value(
                                 current_services[setting_name]
                             )
-                            # try:
-                            #     with open(current_services[setting_name]) as json_file:
-                            #         custom_setting.value = json.load(json_file)
-                            # except TypeError:
-                            #     custom_setting.value = current_services[setting_name]
-                            # except FileNotFoundError:
-                            #     custom_setting.value = current_services[setting_name]
-                            #     write_warning(
-                            #         "The current file path was not found, assuming you provided a valid JSON"
-                            #     )
+                            if custom_setting.value is None:
+                                write_warning(
+                                    f'Custom setting named "{setting_name}" is not valid in app "{app_name}". '
+                                    f"Skipping..."
+                                )
+                                continue
                         else:
                             custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
@@ -882,16 +877,24 @@ def successful_exit(app_name, action="installed"):
 
 def assign_json_value(value):
     # Check if the value is a file path
-    try:
-        # breakpoint()
-        if os.path.isfile(value):
-            with open(value) as file:
-                json_data = json.load(file)
+    if isinstance(value, str):
+        try:
+            if os.path.isfile(value):
+                with open(value) as file:
+                    json_data = json.load(file)
+                    return json_data
+            else:
+                # Check if the value is a valid JSON string
+                json_data = json.loads(value)
                 return json_data
-        else:
-            # Check if the value is a valid JSON string
-            json_data = json.loads(value)
-            return json_data
-    except ValueError:
-        write_error(f"The current value/file path: {value} is not a valid JSON string.")
+        except ValueError:
+            write_error(
+                f"The current file path/JSON string: {value} is not a file path or does not contain a valid JSONstring."
+            )
+            return None
+    if isinstance(value, Mapping):
+        # when the dict is read from the portal_config.yaml, if it is not a proper dict, the portal will fail, so it is not possible to test it
+        return value
+    else:
+        write_error(f"The current value: {value} is not a dict or a valid file path")
         return None
