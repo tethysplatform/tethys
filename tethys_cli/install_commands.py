@@ -11,15 +11,13 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
-from tethys_cli.cli_helpers import (
-    load_apps,
-    generate_salt_string,
-)
+from tethys_cli.cli_helpers import load_apps, generate_salt_string
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
     get_service_model_from_type,
     get_tethys_home_dir,
+    update_app_settings,
 )
 
 from .gen_commands import download_vendor_static_files
@@ -849,7 +847,9 @@ def install_command(args):
                 write_msg("Skipping syncstores.")
             else:
                 run_sync_stores(app_name, linked_settings)
-
+            # Update state
+            update_app_settings(app_name, unlinked_settings, remove=True)
+            update_app_settings(app_name, linked_settings)
             print_unconfigured_settings(app_name, unlinked_settings)
 
         # Check to see if any extra scripts need to be run
@@ -862,6 +862,70 @@ def install_command(args):
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
     successful_exit(app_name)
+
+
+# def update_state(app_name, linked_settings):
+#     file_path = Path(get_tethys_home_dir()) / "portal_config.yml"
+#     ymlportal = open_file(file_path)
+#     for linked_setting in linked_settings:
+#         breakpoint()
+#         change_single_setting(
+#             ymlportal,
+#             app_name,
+#             get_service_type_per_setting(linked_setting),
+#             linked_setting.name,
+#             linked_setting.value,
+#         )
+#     with file_path.open("w") as portal_config:
+#         yaml.dump(ymlportal, portal_config)
+#     return ymlportal
+
+
+# def get_service_type_per_setting(linked_setting):
+#     setting_type = "custom_setting"
+#     # setting_value = {}
+#     if (
+#         hasattr(linked_setting, "spatial_dataset_service")
+#         and linked_setting.spatial_dataset_service
+#     ):
+#         setting_type = "spatial"
+#     if (
+#         hasattr(linked_setting, "persistent_store_service")
+#         and linked_setting.persistent_store_service
+#     ):
+#         setting_type = "persistent"
+#     if hasattr(linked_setting, "dataset_service") and linked_setting.dataset_service:
+#         setting_type = "dataset"
+#     if (
+#         hasattr(linked_setting, "web_processing_service")
+#         and linked_setting.web_processing_service
+#     ):
+#         setting_type = "wps"
+#     if hasattr(linked_setting, "value") and (
+#         linked_setting.value != "" and bool(linked_setting.value)
+#     ):
+#         setting_type = "custom_settings"
+#     return setting_type
+
+
+# def change_single_setting(
+#     ymlportal, app_name, service_type, setting_name, setting_new_value
+# ):
+#     # create all the dicts that are not there
+#     ymlportal["apps"] = ymlportal.get("apps", {})
+#     ymlportal["apps"][app_name] = ymlportal["apps"].get(app_name, {})
+#     ymlportal["apps"][app_name]["services"] = ymlportal["apps"][app_name].get(
+#         "services", {}
+#     )
+#     ymlportal["apps"][app_name]["services"][service_type] = ymlportal["apps"][app_name][
+#         "services"
+#     ].get(service_type, {})
+#     if setting_new_value:
+#         ymlportal["apps"][app_name]["services"][service_type][
+#             setting_name
+#         ] = setting_new_value
+#         return True
+#     return False
 
 
 def validate_schema(check_str, check_list):

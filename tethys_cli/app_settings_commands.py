@@ -6,6 +6,7 @@ from tethys_apps.utilities import (
     get_app_settings,
     get_custom_setting,
     get_tethys_home_dir,
+    update_app_settings,
 )
 from tethys_cli.cli_colors import (
     pretty_output,
@@ -262,6 +263,8 @@ def app_settings_set_command(args):
 
         setting.clean()
         setting.save()
+        ##update state here
+        update_app_settings(args.app, [setting])
     except ValidationError as e:
         write_error(
             f'Value was not set: {",".join(e.messages)} "{args.value}" was given.'
@@ -287,7 +290,7 @@ def app_settings_reset_command(args):
 
     setting.value = setting.default
     setting.save()
-
+    update_app_settings(args.app, [setting])
     write_success(
         f'Success! Custom Setting "{args.setting}" for app "{args.app}" '
         f'was reset to the default value of "{setting.value}".'

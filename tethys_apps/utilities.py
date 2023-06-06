@@ -358,6 +358,7 @@ def create_ps_database_setting(
             dynamic=dynamic,
         )
         ps_database_setting.save()
+        update_app_settings(app_package, ps_database_setting)
         with pretty_output(FG_GREEN) as p:
             p.write(
                 'PersistentStoreDatabaseSetting named "{}" for app "{}" created successfully!'.format(
@@ -408,6 +409,7 @@ def remove_ps_database_setting(app_package, name, force=False):
             proceed = input('Please enter either "y" or "n": ')
 
         if proceed in ["y", "Y"]:
+            update_app_settings(app_package, [setting], remove=True)
             setting.delete()
             with pretty_output(FG_GREEN) as p:
                 p.write(
@@ -420,6 +422,7 @@ def remove_ps_database_setting(app_package, name, force=False):
             with pretty_output(FG_RED) as p:
                 p.write("Aborted. PersistentStoreDatabaseSetting not removed.")
     else:
+        update_app_settings(app_package, [setting], remove=True)
         setting.delete()
         with pretty_output(FG_GREEN) as p:
             p.write(
@@ -530,6 +533,8 @@ def link_service_to_app_setting(
 
         setattr(setting, linked_service_field, service)
         setting.save()
+        update_app_settings(app_package, [setting])
+
         with pretty_output(FG_GREEN) as p:
             p.write(
                 f'{service.__class__.__name__}:"{service.name}" was successfully linked '
@@ -698,3 +703,80 @@ def sign_and_unsign_secret_string(signer, value, is_signing):
     else:
         secret_unsigned = signer.unsign_object(f"{value}")
         return secret_unsigned
+
+
+def get_setting_type_for_state(setting):
+    """
+    Returns the type of service that the setting is.
+    """
+    from tethys_apps.models import (
+        PersistentStoreDatabaseSetting,
+        SpatialDatasetServiceSetting,
+        DatasetServiceSetting,
+        WebProcessingServiceSetting,
+        CustomSetting,
+        SecretCustomSetting,
+        JSONCustomSetting,
+    )
+
+    setting_type_dict = {
+        PersistentStoreDatabaseSetting: "persistent",
+        SpatialDatasetServiceSetting: "spatial",
+        DatasetServiceSetting: "dataset",
+        WebProcessingServiceSetting: "wps",
+        CustomSetting: "custom_setting",
+        SecretCustomSetting: "custom_setting",
+        JSONCustomSetting: "custom_setting",
+    }
+
+    return setting_type_dict[type(setting)]
+
+
+def update_app_settings(app_name, settings, remove=False):
+    """
+    Updates and writes linked settings in the apps portion of the portal_config.yaml file
+    """
+    file_path = Path(get_tethys_home_dir()) / "portal_config.yml"
+    try:
+        with file_path.open() as f:
+            portal_settings = yaml.safe_load(f)
+            for setting in settings:
+                portal_settings = change_single_setting(
+                    portal_settings,
+                    app_name,
+                    get_setting_type_for_state(setting),
+                    setting.name,
+                    setting.value,
+                    remove=remove,
+                )
+    except Exception as e:
+        return False
+    with file_path.open("w") as portal_config:
+        yaml.dump(portal_settings, portal_config)
+    return True
+
+
+def change_single_setting(
+    portal_settings, app_name, service_type, setting_name, setting_new_value, remove
+):
+    """
+    Changes a linked setting in the apps portion of the portal_config.yaml file
+    """
+    # create all the dicts that are not there
+    portal_settings["apps"] = portal_settings.get("apps", {})
+    portal_settings["apps"][app_name] = portal_settings["apps"].get(app_name, {})
+    portal_settings["apps"][app_name]["services"] = portal_settings["apps"][
+        app_name
+    ].get("services", {})
+    portal_settings["apps"][app_name]["services"][service_type] = portal_settings[
+        "apps"
+    ][app_name]["services"].get(service_type, {})
+
+    if remove:
+        del portal_settings["apps"][app_name]["services"][service_type][setting_name]
+        return portal_settings
+    if setting_new_value:
+        portal_settings["apps"][app_name]["services"][service_type][
+            setting_name
+        ] = setting_new_value
+    return portal_settings
