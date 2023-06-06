@@ -733,6 +733,7 @@ def get_setting_type_for_state(setting):
 
 
 def update_app_settings(app_name, settings, remove=False):
+    breakpoint()
     """
     Updates and writes linked settings in the apps portion of the portal_config.yaml file
     """

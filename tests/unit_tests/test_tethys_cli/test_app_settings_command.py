@@ -445,11 +445,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     def tear_down(self):
         pass
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_str(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # String Custom Setting
@@ -464,11 +465,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_int(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Integer Custom Setting
@@ -481,11 +483,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_float(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Float Custom Setting
@@ -502,11 +505,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bool(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
@@ -523,11 +527,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_json_with_variable(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -560,11 +565,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_json_with_variable_error(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -584,6 +590,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch(
         "tethys_cli.app_settings_commands.open",
         new_callable=mock.mock_open,
@@ -601,7 +608,8 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error,
         mock_write_success,
         mock_path_exist,
-        mock_open,
+        _,
+        __,
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -624,11 +632,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         self.assertIn("File found, extracting JSON data", po_call_args[0][0][0])
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_secret(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # String Custom Setting
@@ -645,11 +654,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_int(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Integer Custom Setting
@@ -664,11 +674,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_float(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Float Custom Setting
@@ -685,11 +696,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_bool(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
@@ -708,11 +720,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_secret(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Secret Custom Setting
@@ -729,11 +742,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_bad_value_json_from_variable(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -751,6 +765,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
 
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch(
         "tethys_cli.app_settings_commands.open",
         new_callable=mock.mock_open,
@@ -768,7 +783,8 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error,
         mock_write_success,
         mock_path_exist,
-        mock_open,
+        _,
+        __,
     ):
         """Test against the installed test app."""
         # JSON Custom Setting
@@ -789,11 +805,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         self.assertIn("File found, extracting JSON data", po_call_args[0][0][0])
         mock_exit.called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_non_existant_setting(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
@@ -812,11 +829,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_set_non_existant_app(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
@@ -833,11 +851,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_reset_str(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # String Custom Setting
@@ -855,11 +874,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_reset_int(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Integer Custom Setting
@@ -877,11 +897,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_reset_float(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Float Custom Setting
@@ -899,11 +920,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_reset_bool(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
@@ -921,11 +943,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_called()
         mock_exit.called_with(0)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_reset_non_existant_setting(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
@@ -943,11 +966,12 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         mock_exit.assert_called_with(1)
 
+    @mock.patch("tethys_cli.app_settings_commands.update_app_settings")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
     def test_app_settings_reset_non_existant_app(
-        self, mock_exit, mock_write_error, mock_write_success
+        self, mock_exit, mock_write_error, mock_write_success, _
     ):
         """Test against the installed test app."""
         # Boolean Custom Setting
