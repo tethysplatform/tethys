@@ -854,7 +854,6 @@ def install_command(args):
             else:
                 run_sync_stores(app_name, linked_settings)
             # Update state
-            breakpoint()
             if args.write_in_portal_config:
                 update_app_settings(app_name, unlinked_settings, remove=True)
                 update_app_settings(app_name, linked_settings)
