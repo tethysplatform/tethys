@@ -1289,25 +1289,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             final_portal_yaml,
         )
 
-    # @mock.patch(
-    #     "tethys_apps.utilities.Path.open",
-    #     new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
-    # )
-    # @mock.patch("tethys_apps.utilities.yaml.safe_load")
-    # def test_error_update_app_settings_with_apps_section(
-    #     self,
-    #     mock_yaml_safe_load,
-    #     _,
-    # ):
-    #     app_name = "fake_app_name"
-    #     mock_yaml_safe_load.return_value = Exception
-    #     settings = {}
-    #     # breakpoint()
-    #     self.assertEqual(
-    #         utilities.update_app_settings(app_name, settings, remove=True),
-    #         None,
-    #     )
-
     def test_get_setting_type_for_state(self):
         from tethys_apps.models import (
             PersistentStoreDatabaseSetting,
