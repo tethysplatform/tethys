@@ -1031,12 +1031,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
     )
     @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.get_attribute_for_service")
     @mock.patch("tethys_apps.utilities.get_setting_type_for_state")
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
     def test_update_app_settings_with_apps_section(
         self,
         mock_yaml_safe_load,
         mock_get_setting_type_for_state,
+        mock_get_attribute_for_service,
         _,
         __,
     ):
@@ -1094,6 +1096,12 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             "spatial",
             "dataset",
         ]
+        mock_get_attribute_for_service.side_effect = [
+            "unlinked_value_1",
+            "unlinked_value_2",
+            "linked_spatial_setting_value",
+            "dataset_setting_value",
+        ]
         # This persistent setting exists and is listed in the file
         mock_persistent_dataset_setting = mock.MagicMock()
         mock_persistent_dataset_setting.name = "dataset_setting_with_val"
@@ -1121,7 +1129,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
                 mock_persistent_dataset_setting,  #: This persistent setting exists and is listed with value
             ],
         }
-
         self.assertDictEqual(
             utilities.update_app_settings(
                 app_name, settings["unlinked_settings"], remove=True
@@ -1140,12 +1147,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
     )
     @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.get_attribute_for_service")
     @mock.patch("tethys_apps.utilities.get_setting_type_for_state")
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
     def test_override_update_app_settings_with_apps_section(
         self,
         mock_yaml_safe_load,
         mock_get_setting_type_for_state,
+        mock_get_attribute_for_service,
         _,
         __,
     ):
@@ -1180,6 +1189,15 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
                 }
             }
         }
+
+        mock_get_attribute_for_service.side_effect = [
+            {
+                "key1": "value1",
+                "key2": 2,
+                "key3": "value3",
+            },
+            "new_value_persist",
+        ]
         mock_get_setting_type_for_state.side_effect = ["custom_settings", "persistent"]
         # This persistent setting exists and is listed in the file, we are changing its value
         mock_persistent_dataset_setting = mock.MagicMock()
@@ -1214,12 +1232,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
     )
     @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.get_attribute_for_service")
     @mock.patch("tethys_apps.utilities.get_setting_type_for_state")
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
     def test_removing_update_app_settings_with_apps_section(
         self,
         mock_yaml_safe_load,
         mock_get_setting_type_for_state,
+        mock_get_attribute_for_service,
         _,
         __,
     ):
@@ -1238,6 +1258,11 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
                 }
             }
         ]
+        mock_get_attribute_for_service.side_effect = [
+            "custom_setting_name",
+            "persist_setting",
+        ]
+
         final_portal_yaml = {
             "apps": {app_name: {"services": {"persistent": {}, "custom_settings": {}}}}
         }
@@ -1358,3 +1383,38 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             "apps": {"app2": {"setting3": "value3", "setting4": "value4"}}
         }
         mock_dump.assert_called_with(expected_settings, mock_file)
+
+    # def test_get_attribute_for_persistent_service(self):
+    #     setting = mock.Mock()
+    #     setting.persistent_store_service = "persistent_value"
+    #     result = utilities.get_attribute_for_service(setting, "persistent")
+    #     self.assertEqual(result, "persistent_value")
+
+    # def test_get_attribute_for_spatial_service(self):
+    #     setting = mock.Mock()
+    #     setting.spatial_dataset_service = mock.Mock(name="spatial_value")
+    #     result = utilities.get_attribute_for_service(setting, "spatial")
+    #     self.assertEqual(result, "spatial_value")
+
+    # def test_get_attribute_for_dataset_service(self):
+    #     setting = mock.Mock()
+    #     setting.dataset_service = mock.Mock(name="dataset_value")
+    #     result = utilities.get_attribute_for_service(setting, "dataset")
+    #     self.assertEqual(result, "dataset_value")
+
+    # def test_get_attribute_for_wps_service(self):
+    #     setting = mock.Mock()
+    #     setting.web_processing_service = mock.Mock(name="wps_value")
+    #     result = utilities.get_attribute_for_service(setting, "wps")
+    #     self.assertEqual(result, "wps_value")
+
+    # def test_get_attribute_for_custom_settings(self):
+    #     setting = mock.Mock()
+    #     setting.value = "custom_value"
+    #     result = utilities.get_attribute_for_service(setting, "custom_settings")
+    #     self.assertEqual(result, "custom_value")
+
+    # def test_get_attribute_for_unknown_service(self):
+    #     setting = mock.Mock()
+    #     result = utilities.get_attribute_for_service(setting, "unknown")
+    #     self.assertIsNone(result)

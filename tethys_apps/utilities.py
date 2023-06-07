@@ -744,7 +744,7 @@ def get_attribute_for_service(setting, setting_type):
         setting_val = getattr(setting, setting_type_dict[setting_type])
         if setting_type is not "custom_settings":
             setting_val = getattr(setting, setting_type_dict[setting_type]).name
-    except AttributeError:
+    except (AttributeError, KeyError):
         setting_val = None
     return setting_val
 
