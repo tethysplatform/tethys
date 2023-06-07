@@ -15,7 +15,11 @@ import warnings
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission, Group
-from tethys_apps.utilities import get_installed_tethys_items, delete_secrets
+from tethys_apps.utilities import (
+    get_installed_tethys_items,
+    delete_secrets,
+    clean_app_in_apps_section,
+)
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 
 
@@ -86,7 +90,7 @@ class Command(BaseCommand):
         no_inputs = ("n", "no")
 
         confirmation_message = (
-            f'Are you sure you want to uninstall "{item_with_prefix}"? (y/n): '
+            f'Are you sure you want to uninstalls "{item_with_prefix}"? (y/n): '
         )
 
         if not options["is_forced"]:
@@ -152,6 +156,7 @@ class Command(BaseCommand):
                 continue
         delete_secrets(item_name)
 
+        clean_app_in_apps_section(item_name)
         self.stdout.write(
             f'{verbose_name} "{item_with_prefix}" successfully uninstalled.'
         )

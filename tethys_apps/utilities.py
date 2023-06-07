@@ -792,3 +792,17 @@ def change_single_setting(
         ] = setting_new_value
         # write_success(f"{setting_name} setting for {app_name} was persisted in the apps section of the portal_config with value: {setting_new_value}")
     return portal_settings
+
+
+def clean_app_in_apps_section(app_name):
+    file_path = Path(get_tethys_home_dir()) / "portal_config.yml"
+    try:
+        with file_path.open() as f:
+            portal_settings = yaml.safe_load(f)
+            portal_settings["apps"] = portal_settings.get("apps", {})
+            if app_name in portal_settings["apps"]:
+                del portal_settings["apps"][app_name]
+    except Exception as e:
+        return None
+    with file_path.open("w") as portal_config:
+        yaml.dump(portal_settings, portal_config)

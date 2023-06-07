@@ -1322,3 +1322,39 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             "custom_settings",
             utilities.get_setting_type_for_state(JSONCustomSetting()),
         )
+
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    def test_clean_app_in_apps_section(self, mock_dump, mock_load, mock_open):
+        # Mock the portal_config.yml file
+        mock_file = mock_open()
+        mock_file.return_value.__enter__.return_value = mock_file
+
+        # Mock the portal_settings dictionary
+        portal_settings = {
+            "apps": {
+                "app1": {"setting1": "value1", "setting2": "value2"},
+                "app2": {"setting3": "value3", "setting4": "value4"},
+            }
+        }
+
+        # Patch the required functions
+        mock_load.return_value = portal_settings
+        result = utilities.clean_app_in_apps_section("app1")
+
+        # Assert that the mock functions were called with the correct arguments
+        self.assertTrue(mock_load.called)
+        self.assertTrue(mock_dump.called)
+
+        # Assert the result of the function
+        self.assertIsNone(result)
+
+        # Assert that the app1 entry is removed from the portal_settings
+        expected_settings = {
+            "apps": {"app2": {"setting3": "value3", "setting4": "value4"}}
+        }
+        mock_dump.assert_called_with(expected_settings, mock_file)
