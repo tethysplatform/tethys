@@ -101,6 +101,12 @@ def add_install_parser(subparsers):
         help="Install the app or extension without installing its dependencies.",
         action="store_true",
     )
+    application_install_parser.add_argument(
+        "-W",
+        "--write-in-portal-config",
+        help="Install the app and persist the value of linked settings into the apps_portal_config",
+        action="store_true",
+    )
 
     application_install_parser.set_defaults(func=install_command)
 
@@ -848,8 +854,9 @@ def install_command(args):
             else:
                 run_sync_stores(app_name, linked_settings)
             # Update state
-            update_app_settings(app_name, unlinked_settings, remove=True)
-            update_app_settings(app_name, linked_settings)
+            if args.write_in_portal_config:
+                update_app_settings(app_name, unlinked_settings, remove=True)
+                update_app_settings(app_name, linked_settings)
             print_unconfigured_settings(app_name, unlinked_settings)
 
         # Check to see if any extra scripts need to be run
@@ -862,6 +869,7 @@ def install_command(args):
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
     successful_exit(app_name)
+
 
 def validate_schema(check_str, check_list):
     return (
