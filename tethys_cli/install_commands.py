@@ -447,7 +447,7 @@ def run_interactive_services(app_name):
                     write_msg("\nInstall Command cancelled.")
                     exit(0)
         else:
-            # List existing services
+            # List existing servicesbolivar vs Paranaense 5 5
             args = Namespace()
 
             for conf in ["spatial", "persistent", "wps", "dataset"]:
@@ -854,6 +854,7 @@ def install_command(args):
             else:
                 run_sync_stores(app_name, linked_settings)
             # Update state
+            breakpoint()
             if args.write_in_portal_config:
                 update_app_settings(app_name, unlinked_settings, remove=True)
                 update_app_settings(app_name, linked_settings)

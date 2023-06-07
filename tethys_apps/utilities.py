@@ -732,6 +732,23 @@ def get_setting_type_for_state(setting):
     return setting_type_dict[type(setting)]
 
 
+def get_attribute_for_service(setting, setting_type):
+    setting_type_dict = {
+        "persistent": "persistent_store_service",
+        "spatial": "spatial_dataset_service",
+        "dataset": "dataset_service",
+        "wps": "web_processing_service",
+        "custom_settings": "value",
+    }
+    try:
+        setting_val = getattr(setting, setting_type_dict[setting_type])
+        if setting_type_dict[setting_type] is not "custom_settings":
+            setting_val = getattr(setting, setting_type_dict[setting_type]).name
+    except AttributeError:
+        setting_val = None
+    return setting_val
+
+
 def update_app_settings(app_name, settings, remove=False):
     """
     Updates and writes linked settings in the apps portion of the portal_config.yaml file
@@ -742,12 +759,16 @@ def update_app_settings(app_name, settings, remove=False):
             portal_settings = yaml.safe_load(f)
             for setting in settings:
                 # breakpoint()
+                setting_type = get_setting_type_for_state(setting)
+                setting_value = get_attribute_for_service(setting, setting_type)
+                if setting_value is None:
+                    continue
                 portal_settings = change_single_setting(
                     portal_settings,
                     app_name,
-                    get_setting_type_for_state(setting),
+                    setting_type,
                     setting.name,
-                    setting.value,
+                    setting_value,
                     remove=remove,
                 )
     except Exception as e:
