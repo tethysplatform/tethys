@@ -724,16 +724,15 @@ def get_setting_type_for_state(setting):
         SpatialDatasetServiceSetting: "spatial",
         DatasetServiceSetting: "dataset",
         WebProcessingServiceSetting: "wps",
-        CustomSetting: "custom_setting",
-        SecretCustomSetting: "custom_setting",
-        JSONCustomSetting: "custom_setting",
+        CustomSetting: "custom_settings",
+        SecretCustomSetting: "custom_settings",
+        JSONCustomSetting: "custom_settings",
     }
 
     return setting_type_dict[type(setting)]
 
 
 def update_app_settings(app_name, settings, remove=False):
-    breakpoint()
     """
     Updates and writes linked settings in the apps portion of the portal_config.yaml file
     """
@@ -742,6 +741,7 @@ def update_app_settings(app_name, settings, remove=False):
         with file_path.open() as f:
             portal_settings = yaml.safe_load(f)
             for setting in settings:
+                # breakpoint()
                 portal_settings = change_single_setting(
                     portal_settings,
                     app_name,
@@ -751,10 +751,13 @@ def update_app_settings(app_name, settings, remove=False):
                     remove=remove,
                 )
     except Exception as e:
-        return False
+        # write_error(f"There was an error updating the settings for {app_name} in the apps section of the portal_config")
+        return None
     with file_path.open("w") as portal_config:
         yaml.dump(portal_settings, portal_config)
-    return True
+        # write_error(f"Successfully updated the settings for {app_name} in the apps section of the portal_config")
+    # print(portal_settings)
+    return portal_settings
 
 
 def change_single_setting(
@@ -774,10 +777,18 @@ def change_single_setting(
     ][app_name]["services"].get(service_type, {})
 
     if remove:
-        del portal_settings["apps"][app_name]["services"][service_type][setting_name]
-        return portal_settings
+        if not portal_settings["apps"][app_name]["services"][service_type]:
+            del portal_settings["apps"][app_name]["services"][service_type]
+            return portal_settings
+        if setting_name in portal_settings["apps"][app_name]["services"][service_type]:
+            del portal_settings["apps"][app_name]["services"][service_type][
+                setting_name
+            ]
+            # write_success(f"{setting_name} setting for {app_name} was removed in the apps section of the portal_config with value")
+            return portal_settings
     if setting_new_value:
         portal_settings["apps"][app_name]["services"][service_type][
             setting_name
         ] = setting_new_value
+        # write_success(f"{setting_name} setting for {app_name} was persisted in the apps section of the portal_config with value: {setting_new_value}")
     return portal_settings

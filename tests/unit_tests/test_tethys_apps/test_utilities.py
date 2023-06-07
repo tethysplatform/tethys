@@ -1025,3 +1025,300 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             custom_secret_setting.name(), secret_signed_mock, app_target_name, False
         )
         self.assertEqual(unsigned_secret, mock_val)
+
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.get_setting_type_for_state")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    def test_update_app_settings_with_apps_section(
+        self,
+        mock_yaml_safe_load,
+        mock_get_setting_type_for_state,
+        _,
+        __,
+    ):
+        app_name = "fake_app_name"
+        mock_yaml_safe_load.side_effect = [
+            {
+                "apps": {
+                    app_name: {
+                        "services": {
+                            "persistent": {
+                                "this_setting_is_in_the_file_but_does_not_exist": "random_persistent_setting"
+                            },
+                            "custom_settings": {"no_val_persistent_setting": {}},
+                        }
+                    }
+                }
+            },
+            {
+                "apps": {
+                    app_name: {"services": {"persistent": {}, "custom_settings": {}}}
+                }
+            },
+        ]
+        final_portal_yamls = [
+            {
+                "apps": {
+                    app_name: {
+                        "services": {
+                            "persistent": {},
+                            "custom_settings": {},
+                        }
+                    }
+                }
+            },
+            {
+                "apps": {
+                    app_name: {
+                        "services": {
+                            "persistent": {},
+                            "custom_settings": {},
+                            "spatial": {
+                                "linked_spatial_setting": "linked_spatial_setting_value"
+                            },
+                            "dataset": {
+                                "dataset_setting_with_val": "dataset_setting_value"
+                            },
+                        }
+                    }
+                }
+            },
+        ]
+        mock_get_setting_type_for_state.side_effect = [
+            "custom_settings",
+            "persistent",
+            "spatial",
+            "dataset",
+        ]
+        # This persistent setting exists and is listed in the file
+        mock_persistent_dataset_setting = mock.MagicMock()
+        mock_persistent_dataset_setting.name = "dataset_setting_with_val"
+        mock_persistent_dataset_setting.value = "dataset_setting_value"
+
+        # This setting exists, but there is no value assigned in the file
+        mock_no_val_persistent_setting = mock.MagicMock()
+        mock_no_val_persistent_setting.name = "no_val_persistent_setting"
+
+        # This persistent setting is not listed in the file, but exists in the db
+        mock_setting_unlisted = mock.MagicMock()
+        mock_setting_unlisted.name = "this_setting_is_in_the_file_but_does_not_exist"
+
+        mock_setting_already_linked_spatial = mock.MagicMock()
+        mock_setting_already_linked_spatial.name = "linked_spatial_setting"
+        mock_setting_already_linked_spatial.value = "linked_spatial_setting_value"
+
+        settings = {
+            "unlinked_settings": [
+                mock_no_val_persistent_setting,  #: This setting exists and is listed in the file, but no value given
+                mock_setting_unlisted,  #: This persistent is listed in the file, it will be removed
+            ],
+            "linked_settings": [
+                mock_setting_already_linked_spatial,  #: This setting is already linked, and so it won't be configured again
+                mock_persistent_dataset_setting,  #: This persistent setting exists and is listed with value
+            ],
+        }
+
+        self.assertDictEqual(
+            utilities.update_app_settings(
+                app_name, settings["unlinked_settings"], remove=True
+            ),
+            final_portal_yamls[0],
+        )
+        self.assertDictEqual(
+            utilities.update_app_settings(
+                app_name, settings["linked_settings"], remove=False
+            ),
+            final_portal_yamls[1],
+        )
+
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.get_setting_type_for_state")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    def test_override_update_app_settings_with_apps_section(
+        self,
+        mock_yaml_safe_load,
+        mock_get_setting_type_for_state,
+        _,
+        __,
+    ):
+        app_name = "fake_app_name"
+        mock_yaml_safe_load.side_effect = [
+            {
+                "apps": {
+                    app_name: {
+                        "services": {
+                            "persistent": {"persist_setting": "old_value_persist"},
+                            "custom_settings": {
+                                "custom_setting_name": "custom_setting_value"
+                            },
+                        }
+                    }
+                }
+            }
+        ]
+        final_portal_yaml = {
+            "apps": {
+                app_name: {
+                    "services": {
+                        "persistent": {"persist_setting": "new_value_persist"},
+                        "custom_settings": {
+                            "custom_setting_name": {
+                                "key1": "value1",
+                                "key2": 2,
+                                "key3": "value3",
+                            }
+                        },
+                    }
+                }
+            }
+        }
+        mock_get_setting_type_for_state.side_effect = ["custom_settings", "persistent"]
+        # This persistent setting exists and is listed in the file, we are changing its value
+        mock_persistent_dataset_setting = mock.MagicMock()
+        mock_persistent_dataset_setting.name = "persist_setting"
+        mock_persistent_dataset_setting.value = "new_value_persist"
+
+        # This custom setting exists, but there is no value assigned in the file, we are changing its value
+        mock_persistent_cs_setting = mock.MagicMock()
+        mock_persistent_cs_setting.name = "custom_setting_name"
+        mock_persistent_cs_setting.value = {
+            "key1": "value1",
+            "key2": 2,
+            "key3": "value3",
+        }
+
+        settings = {
+            "linked_settings": [
+                mock_persistent_cs_setting,  #: This persistent setting exists and is listed with value
+                mock_persistent_dataset_setting,  #: This setting is already linked, we are just changing the value
+            ],
+        }
+        # breakpoint()
+        self.assertDictEqual(
+            utilities.update_app_settings(
+                app_name, settings["linked_settings"], remove=False
+            ),
+            final_portal_yaml,
+        )
+
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch("tethys_apps.utilities.get_setting_type_for_state")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    def test_removing_update_app_settings_with_apps_section(
+        self,
+        mock_yaml_safe_load,
+        mock_get_setting_type_for_state,
+        _,
+        __,
+    ):
+        app_name = "fake_app_name"
+        mock_yaml_safe_load.side_effect = [
+            {
+                "apps": {
+                    app_name: {
+                        "services": {
+                            "persistent": {"persist_setting": "old_value_persist"},
+                            "custom_settings": {
+                                "custom_setting_name": "custom_setting_value"
+                            },
+                        }
+                    }
+                }
+            }
+        ]
+        final_portal_yaml = {
+            "apps": {app_name: {"services": {"persistent": {}, "custom_settings": {}}}}
+        }
+        mock_get_setting_type_for_state.side_effect = ["custom_settings", "persistent"]
+        # This persistent setting exists and is listed in the file, we are changing its value
+        mock_persistent_dataset_setting = mock.MagicMock()
+        mock_persistent_dataset_setting.name = "persist_setting"
+
+        # This custom setting exists, but there is no value assigned in the file, we are changing its value
+        mock_persistent_cs_setting = mock.MagicMock()
+        mock_persistent_cs_setting.name = "custom_setting_name"
+
+        settings = {
+            "unlinked_settings": [
+                mock_persistent_cs_setting,  #: This persistent setting exists and is listed with value
+                mock_persistent_dataset_setting,  #: This setting is already linked, we are just changing the value
+            ],
+        }
+        # breakpoint()
+        self.assertDictEqual(
+            utilities.update_app_settings(
+                app_name, settings["unlinked_settings"], remove=True
+            ),
+            final_portal_yaml,
+        )
+
+    # @mock.patch(
+    #     "tethys_apps.utilities.Path.open",
+    #     new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
+    # )
+    # @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    # def test_error_update_app_settings_with_apps_section(
+    #     self,
+    #     mock_yaml_safe_load,
+    #     _,
+    # ):
+    #     app_name = "fake_app_name"
+    #     mock_yaml_safe_load.return_value = Exception
+    #     settings = {}
+    #     # breakpoint()
+    #     self.assertEqual(
+    #         utilities.update_app_settings(app_name, settings, remove=True),
+    #         None,
+    #     )
+
+    def test_get_setting_type_for_state(self):
+        from tethys_apps.models import (
+            PersistentStoreDatabaseSetting,
+            SpatialDatasetServiceSetting,
+            DatasetServiceSetting,
+            WebProcessingServiceSetting,
+            CustomSetting,
+            SecretCustomSetting,
+            JSONCustomSetting,
+        )
+
+        self.assertEqual(
+            "persistent",
+            utilities.get_setting_type_for_state(PersistentStoreDatabaseSetting()),
+        )
+        self.assertEqual(
+            "spatial",
+            utilities.get_setting_type_for_state(SpatialDatasetServiceSetting()),
+        )
+        self.assertEqual(
+            "dataset",
+            utilities.get_setting_type_for_state(DatasetServiceSetting()),
+        )
+        self.assertEqual(
+            "wps",
+            utilities.get_setting_type_for_state(WebProcessingServiceSetting()),
+        )
+        self.assertEqual(
+            "custom_settings",
+            utilities.get_setting_type_for_state(CustomSetting()),
+        )
+        self.assertEqual(
+            "custom_settings",
+            utilities.get_setting_type_for_state(SecretCustomSetting()),
+        )
+        self.assertEqual(
+            "custom_settings",
+            utilities.get_setting_type_for_state(JSONCustomSetting()),
+        )
