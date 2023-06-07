@@ -1384,35 +1384,35 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         }
         mock_dump.assert_called_with(expected_settings, mock_file)
 
-    # def test_get_attribute_for_persistent_service(self):
-    #     setting = mock.Mock()
-    #     setting.persistent_store_service = "persistent_value"
-    #     result = utilities.get_attribute_for_service(setting, "persistent")
-    #     self.assertEqual(result, "persistent_value")
+    def test_get_attribute_for_persistent_service(self):
+        setting = mock.Mock()
+        setting.persistent_store_service.name = "persistent_value"
+        result = utilities.get_attribute_for_service(setting, "persistent")
+        self.assertEqual(result, "persistent_value")
 
-    # def test_get_attribute_for_spatial_service(self):
-    #     setting = mock.Mock()
-    #     setting.spatial_dataset_service = mock.Mock(name="spatial_value")
-    #     result = utilities.get_attribute_for_service(setting, "spatial")
-    #     self.assertEqual(result, "spatial_value")
+    def test_get_attribute_for_spatial_service(self):
+        setting = mock.Mock()
+        setting.spatial_dataset_service.name = "spatial_value"
+        result = utilities.get_attribute_for_service(setting, "spatial")
+        self.assertEqual(result, "spatial_value")
 
-    # def test_get_attribute_for_dataset_service(self):
-    #     setting = mock.Mock()
-    #     setting.dataset_service = mock.Mock(name="dataset_value")
-    #     result = utilities.get_attribute_for_service(setting, "dataset")
-    #     self.assertEqual(result, "dataset_value")
+    def test_get_attribute_for_dataset_service(self):
+        setting = mock.Mock()
+        setting.dataset_service.name = "dataset_value"
+        result = utilities.get_attribute_for_service(setting, "dataset")
+        self.assertEqual(result, "dataset_value")
 
-    # def test_get_attribute_for_wps_service(self):
-    #     setting = mock.Mock()
-    #     setting.web_processing_service = mock.Mock(name="wps_value")
-    #     result = utilities.get_attribute_for_service(setting, "wps")
-    #     self.assertEqual(result, "wps_value")
+    def test_get_attribute_for_wps_service(self):
+        setting = mock.Mock()
+        setting.web_processing_service.name = "wps_value"
+        result = utilities.get_attribute_for_service(setting, "wps")
+        self.assertEqual(result, "wps_value")
 
-    # def test_get_attribute_for_custom_settings(self):
-    #     setting = mock.Mock()
-    #     setting.value = "custom_value"
-    #     result = utilities.get_attribute_for_service(setting, "custom_settings")
-    #     self.assertEqual(result, "custom_value")
+    def test_get_attribute_for_custom_settings(self):
+        setting = mock.Mock()
+        setting.value = "custom_value"
+        result = utilities.get_attribute_for_service(setting, "custom_settings")
+        self.assertEqual(result, "custom_value")
 
     # def test_get_attribute_for_unknown_service(self):
     #     setting = mock.Mock()
