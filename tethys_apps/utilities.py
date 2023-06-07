@@ -742,7 +742,7 @@ def get_attribute_for_service(setting, setting_type):
     }
     try:
         setting_val = getattr(setting, setting_type_dict[setting_type])
-        if setting_type is not "custom_settings":
+        if setting_type != "custom_settings":
             setting_val = getattr(setting, setting_type_dict[setting_type]).name
     except (AttributeError, KeyError):
         setting_val = None
@@ -761,8 +761,6 @@ def update_app_settings(app_name, settings, remove=False):
                 # breakpoint()
                 setting_type = get_setting_type_for_state(setting)
                 setting_value = get_attribute_for_service(setting, setting_type)
-                if setting_value is None:
-                    continue
                 portal_settings = change_single_setting(
                     portal_settings,
                     app_name,
@@ -823,7 +821,7 @@ def clean_app_in_apps_section(app_name):
             portal_settings["apps"] = portal_settings.get("apps", {})
             if app_name in portal_settings["apps"]:
                 del portal_settings["apps"][app_name]
-    except Exception as e:
+    except Exception:
         return None
     with file_path.open("w") as portal_config:
         yaml.dump(portal_settings, portal_config)

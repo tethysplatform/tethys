@@ -1384,6 +1384,18 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         }
         mock_dump.assert_called_with(expected_settings, mock_file)
 
+    @mock.patch("tethys_apps.utilities.yaml.dump")
+    @mock.patch(
+        "tethys_apps.utilities.Path.open",
+        new_callable=lambda: mock.mock_open(read_data='{"apps": "{}"}'),
+    )
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    def test_clean_app_in_apps_section_error(self, mock_load, _, __):
+        mock_load.return_value = Exception
+        result = utilities.clean_app_in_apps_section("app1")
+        # Assert the result of the function
+        self.assertIsNone(result)
+
     def test_get_attribute_for_persistent_service(self):
         setting = mock.Mock()
         setting.persistent_store_service.name = "persistent_value"
@@ -1414,7 +1426,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         result = utilities.get_attribute_for_service(setting, "custom_settings")
         self.assertEqual(result, "custom_value")
 
-    # def test_get_attribute_for_unknown_service(self):
-    #     setting = mock.Mock()
-    #     result = utilities.get_attribute_for_service(setting, "unknown")
-    #     self.assertIsNone(result)
+    def test_get_attribute_for_unknown_service(self):
+        setting = mock.Mock()
+        result = utilities.get_attribute_for_service(setting, "unknown")
+        self.assertIsNone(result)
