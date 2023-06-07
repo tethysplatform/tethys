@@ -1253,6 +1253,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
                             "custom_settings": {
                                 "custom_setting_name": "custom_setting_value"
                             },
+                            "wps": {},
                         }
                     }
                 }
@@ -1261,12 +1262,13 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         mock_get_attribute_for_service.side_effect = [
             "custom_setting_name",
             "persist_setting",
+            "wps_setting_name",
         ]
 
         final_portal_yaml = {
             "apps": {app_name: {"services": {"persistent": {}, "custom_settings": {}}}}
         }
-        mock_get_setting_type_for_state.side_effect = ["custom_settings", "persistent"]
+        mock_get_setting_type_for_state.side_effect = ["custom_settings", "persistent","wps"]
         # This persistent setting exists and is listed in the file, we are changing its value
         mock_persistent_dataset_setting = mock.MagicMock()
         mock_persistent_dataset_setting.name = "persist_setting"
@@ -1275,10 +1277,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         mock_persistent_cs_setting = mock.MagicMock()
         mock_persistent_cs_setting.name = "custom_setting_name"
 
+        # This service is empty
+        mock_persistent_wps_setting = mock.MagicMock()
+        mock_persistent_wps_setting.name = "wps_setting_name"
         settings = {
             "unlinked_settings": [
                 mock_persistent_cs_setting,  #: This persistent setting exists and is listed with value
                 mock_persistent_dataset_setting,  #: This setting is already linked, we are just changing the value
+                mock_persistent_wps_setting,
             ],
         }
         self.assertDictEqual(

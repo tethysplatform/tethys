@@ -769,7 +769,7 @@ def update_app_settings(app_name, settings, remove=False):
                     setting_value,
                     remove=remove,
                 )
-    except Exception as e:
+    except Exception:
         return None
     with file_path.open("w") as portal_config:
         yaml.dump(portal_settings, portal_config)
