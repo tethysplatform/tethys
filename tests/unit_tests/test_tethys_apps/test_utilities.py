@@ -1268,7 +1268,11 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         final_portal_yaml = {
             "apps": {app_name: {"services": {"persistent": {}, "custom_settings": {}}}}
         }
-        mock_get_setting_type_for_state.side_effect = ["custom_settings", "persistent","wps"]
+        mock_get_setting_type_for_state.side_effect = [
+            "custom_settings",
+            "persistent",
+            "wps",
+        ]
         # This persistent setting exists and is listed in the file, we are changing its value
         mock_persistent_dataset_setting = mock.MagicMock()
         mock_persistent_dataset_setting.name = "persist_setting"
