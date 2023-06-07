@@ -1281,7 +1281,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
                 mock_persistent_dataset_setting,  #: This setting is already linked, we are just changing the value
             ],
         }
-        # breakpoint()
         self.assertDictEqual(
             utilities.update_app_settings(
                 app_name, settings["unlinked_settings"], remove=True
@@ -1374,7 +1373,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
     def test_clean_app_in_apps_section_error(self, mock_load, _, __):
         mock_load.return_value = Exception
         result = utilities.clean_app_in_apps_section("app1")
-        # Assert the result of the function
         self.assertIsNone(result)
 
     def test_get_attribute_for_persistent_service(self):

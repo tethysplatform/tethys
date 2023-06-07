@@ -770,12 +770,9 @@ def update_app_settings(app_name, settings, remove=False):
                     remove=remove,
                 )
     except Exception as e:
-        # write_error(f"There was an error updating the settings for {app_name} in the apps section of the portal_config")
         return None
     with file_path.open("w") as portal_config:
         yaml.dump(portal_settings, portal_config)
-        # write_error(f"Successfully updated the settings for {app_name} in the apps section of the portal_config")
-    # print(portal_settings)
     return portal_settings
 
 
@@ -803,13 +800,11 @@ def change_single_setting(
             del portal_settings["apps"][app_name]["services"][service_type][
                 setting_name
             ]
-            # write_success(f"{setting_name} setting for {app_name} was removed in the apps section of the portal_config with value")
             return portal_settings
     if setting_new_value:
         portal_settings["apps"][app_name]["services"][service_type][
             setting_name
         ] = setting_new_value
-        # write_success(f"{setting_name} setting for {app_name} was persisted in the apps section of the portal_config with value: {setting_new_value}")
     return portal_settings
 
 
