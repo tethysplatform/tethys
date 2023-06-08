@@ -90,7 +90,7 @@ class Command(BaseCommand):
         no_inputs = ("n", "no")
 
         confirmation_message = (
-            f'Are you sure you want to uninstalls "{item_with_prefix}"? (y/n): '
+            f'Are you sure you want to uninstall "{item_with_prefix}"? (y/n): '
         )
 
         if not options["is_forced"]:

@@ -1219,7 +1219,6 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
                 mock_persistent_dataset_setting,  #: This setting is already linked, we are just changing the value
             ],
         }
-        # breakpoint()
         self.assertDictEqual(
             utilities.update_app_settings(
                 app_name, settings["linked_settings"], remove=False

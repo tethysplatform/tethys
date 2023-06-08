@@ -263,7 +263,6 @@ def app_settings_set_command(args):
 
         setting.clean()
         setting.save()
-        ##update state here
         update_app_settings(args.app, [setting])
     except ValidationError as e:
         write_error(

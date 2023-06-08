@@ -447,7 +447,7 @@ def run_interactive_services(app_name):
                     write_msg("\nInstall Command cancelled.")
                     exit(0)
         else:
-            # List existing servicesbolivar vs Paranaense 5 5
+            # List existing
             args = Namespace()
 
             for conf in ["spatial", "persistent", "wps", "dataset"]:

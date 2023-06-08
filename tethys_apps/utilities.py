@@ -758,7 +758,6 @@ def update_app_settings(app_name, settings, remove=False):
         with file_path.open() as f:
             portal_settings = yaml.safe_load(f)
             for setting in settings:
-                # breakpoint()
                 setting_type = get_setting_type_for_state(setting)
                 setting_value = get_attribute_for_service(setting, setting_type)
                 portal_settings = change_single_setting(
@@ -782,7 +781,6 @@ def change_single_setting(
     """
     Changes a linked setting in the apps portion of the portal_config.yaml file
     """
-    # create all the dicts that are not there
     portal_settings["apps"] = portal_settings.get("apps", {})
     portal_settings["apps"][app_name] = portal_settings["apps"].get(app_name, {})
     portal_settings["apps"][app_name]["services"] = portal_settings["apps"][
