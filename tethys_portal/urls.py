@@ -196,20 +196,6 @@ oauth2_urls = [
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
 
-additional_url_patterns = []
-additional_url_pattern_paths = settings.ADDITIONAL_URLPATTERNS
-
-for url_pattern_path in additional_url_pattern_paths:
-    try:
-        mod, attr = url_pattern_path.rsplit('.', 1)
-        mod = import_module(mod)
-        url_patterns = getattr(mod, attr)
-        assert isinstance(url_patterns, (list, tuple))
-        additional_url_patterns.append(url_patterns)
-    except Exception as e:
-        logger.exception(f'Additional urlpatterns "{url_pattern_path}" could not be imported and will be ignored.')
-        logger.exception(e)
-
 urlpatterns = [
     re_path(r"^$", tethys_portal_home.home, name="home"),
     re_path(r"^admin/", admin_urls),
@@ -246,8 +232,23 @@ urlpatterns = [
     re_path(r"devices/add$", mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
     re_path(r"api/", include((api_urls, "api"), namespace="api")),
     # re_path(r'^error/', include(development_error_urls)),
-    *[url for patterns in additional_url_patterns for url in patterns],
 ]
+
+additional_url_patterns = []
+additional_url_pattern_paths = settings.ADDITIONAL_URLPATTERNS
+
+for url_pattern_path in additional_url_pattern_paths:
+    try:
+        mod, attr = url_pattern_path.rsplit('.', 1)
+        mod = import_module(mod)
+        url_patterns = getattr(mod, attr)
+        assert isinstance(url_patterns, (list, tuple))
+        additional_url_patterns.append(url_patterns)
+    except Exception as e:
+        logger.exception(f'Additional urlpatterns "{url_pattern_path}" could not be imported and will be ignored.')
+        logger.exception(e)
+
+urlpatterns.extend([url for patterns in additional_url_patterns for url in patterns])
 
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403
