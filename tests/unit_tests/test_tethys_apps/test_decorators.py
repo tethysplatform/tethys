@@ -9,6 +9,11 @@ from django.http import HttpResponseRedirect
 from tethys_sdk.permissions import permission_required
 from tethys_sdk.permissions import login_required
 from .. import UserFactory
+from django.conf import settings
+
+prefix_to_path = ""
+if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
+    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
 
 
 class DecoratorsTest(unittest.TestCase):
@@ -73,7 +78,7 @@ class DecoratorsTest(unittest.TestCase):
 
         mock_messages.add_message.assert_called()
         self.assertIsInstance(ret, HttpResponseRedirect)
-        self.assertEqual("/apps/", ret.url)
+        self.assertEqual(f"{prefix_to_path}/apps/", ret.url)
 
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
@@ -127,7 +132,7 @@ class DecoratorsTest(unittest.TestCase):
             request, mock_messages.WARNING, msg
         )
         self.assertIsInstance(ret, HttpResponseRedirect)
-        self.assertEqual("/apps/", ret.url)
+        self.assertEqual(f"{prefix_to_path}/apps/", ret.url)
 
     def test_blank_permissions(self):
         self.assertRaises(ValueError, permission_required)

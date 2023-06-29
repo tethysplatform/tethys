@@ -3,6 +3,11 @@ import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
 from unittest import mock
 from tethys_sdk.testing import TethysTestCase
+from django.conf import settings
+
+prefix_to_path = ""
+if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
+    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
 
 
 def test_function(*args):
@@ -285,6 +290,8 @@ class TestTestAppHandoff(TethysTestCase):
         self.user.delete()
 
     def test_test_app_handoff(self):
-        response = self.c.get('/handoff/test-app/test_name/?csv_url=""')
+        response = self.c.get(
+            f'{prefix_to_path}/handoff/test-app/test_name/?csv_url=""'
+        )
 
         self.assertEqual(302, response.status_code)

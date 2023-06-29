@@ -3,6 +3,12 @@ from unittest import mock
 from tethys_portal.views.admin import clear_workspace
 from tethys_apps.models import TethysApp
 
+from django.conf import settings
+
+prefix_to_path = ""
+if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
+    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
+
 
 class TethysPortalTethysAppTests(unittest.TestCase):
     def setUp(self):
@@ -22,10 +28,11 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         app = TethysApp(name="app_name")
         mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
+        # reload_urlconf()
 
         expected_context = {
             "app_name": mock_app.objects.get().name,
-            "change_url": "/admin/tethys_apps/tethysapp/app_name/change/",
+            "change_url": f"{prefix_to_path}/admin/tethys_apps/tethysapp/app_name/change/",
         }
 
         clear_workspace(mock_request, "app_name")
@@ -45,13 +52,13 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         self, mock_redirect, mock_message, mock_app, mock_gaw, mock_get_app_class
     ):
         mock_request = mock.MagicMock(method="POST", POST="clear-workspace-submit")
-
         app = TethysApp(name="app_name")
         mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
         app.pre_delete_app_workspace = mock.MagicMock()
         app.post_delete_app_workspace = mock.MagicMock()
         mock_gaw.return_value = mock.MagicMock()
+        # reload_urlconf()
 
         clear_workspace(mock_request, "myapp")
 
@@ -59,5 +66,5 @@ class TethysPortalTethysAppTests(unittest.TestCase):
             mock_request, "Your workspace has been successfully cleared."
         )
         mock_redirect.assert_called_once_with(
-            "/admin/tethys_apps/tethysapp/myapp/change/"
+            f"{prefix_to_path}/admin/tethys_apps/tethysapp/myapp/change/"
         )
