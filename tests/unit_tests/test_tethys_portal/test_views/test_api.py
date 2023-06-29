@@ -1,8 +1,14 @@
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
+from django.test import override_settings
 
 from tethys_apps.base.testing.testing import TethysTestCase
+from django.conf import settings
+
+prefix_to_path = ""
+if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
+    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
 
 
 class TethysPortalApiTests(TethysTestCase):
@@ -63,6 +69,7 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("foo", json["username"])
         self.assertTrue(json["isAuthenticated"])
 
+    @override_settings(STATIC_URL="/static")
     def test_get_app_valid_id(self):
         """Test get_app API endpoint with valid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
@@ -88,10 +95,11 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("test_app", json["urlNamespace"])
         self.assertEqual("#2c3e50", json["color"])
         self.assertEqual("/static/test_app/images/icon.gif", json["icon"])
-        self.assertEqual("/apps/", json["exitUrl"])
-        self.assertEqual("/apps/test-app/", json["rootUrl"])
+        self.assertEqual(f"{prefix_to_path}/apps/", json["exitUrl"])
+        self.assertEqual(f"{prefix_to_path}/apps/test-app/", json["rootUrl"])
         self.assertRegex(
-            json["settingsUrl"], r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$"
+            json["settingsUrl"],
+            rf"^{prefix_to_path}/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
 
     def test_get_app_invalid_id(self):

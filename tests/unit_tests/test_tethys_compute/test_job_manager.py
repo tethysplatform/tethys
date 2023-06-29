@@ -6,6 +6,11 @@ from tethys_compute.job_manager import JobManager, JOB_TYPES
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_apps.models import TethysApp
+from django.conf import settings
+
+prefix_to_path = ""
+if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
+    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
 
 
 class TestJobManager(unittest.TestCase):
@@ -168,5 +173,5 @@ class TestJobManager(unittest.TestCase):
         mgr = JobManager(mock_args)
         mgr.get_job_status_callback_url(mock_request, mock_job_id)
         mock_request.build_absolute_uri.assert_called_once_with(
-            "/update-job-status/foo/"
+            f"{prefix_to_path}/update-job-status/foo/"
         )
