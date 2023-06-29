@@ -349,8 +349,10 @@ TEMPLATES = [
     }
 ]
 
+
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
+
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -509,3 +511,8 @@ for setting, value in COOKIE_CONFIG.items():
 CORS_CONFIG = portal_config_settings.pop("CORS_CONFIG", {})
 for setting, value in CORS_CONFIG.items():
     setattr(this_module, setting, value)
+
+PREFIX_TO_PATH = portal_config_settings.pop("PREFIX_TO_PATH", "")
+if PREFIX_TO_PATH is not None and len(PREFIX_TO_PATH) != 0:
+    STATIC_URL = f"/{PREFIX_TO_PATH}/static/"
+    LOGIN_URL = f"/{PREFIX_TO_PATH}/accounts/login/"
