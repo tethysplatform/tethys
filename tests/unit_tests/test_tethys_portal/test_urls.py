@@ -1,9 +1,12 @@
 from unittest import mock
 from django.test import override_settings
+
+
 from django.urls import reverse, resolve
 from tethys_sdk.testing import TethysTestCase
 
 from django.conf import settings
+
 
 prefix_to_path = ""
 if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
@@ -198,3 +201,15 @@ class TestUrls(TethysTestCase):
         self.assertEqual(tethys_portal.urls.register_controller_setting, "test")
         self.assertEqual(tethys_portal.urls.register_controller, mock_controller)
         mock_func_extractor.assert_called_once()
+
+    @override_settings(PREFIX_TO_PATH="test")
+    def test_urls_with_prefix(
+        self,
+    ):
+        import tethys_portal.urls
+        from importlib import reload
+        from tethys_portal import settings
+
+        reload(settings)
+        reload(tethys_portal.urls)
+        self.assertEqual("test", tethys_portal.urls.prefix_path)
