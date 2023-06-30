@@ -239,3 +239,17 @@ class TestSettings(TestCase):
         reload(settings)
         mock_warning.assert_called_once()
         self.assertEqual(mock_home.call_args_list[2].args[0], "psql")
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {
+                "PREFIX_TO_PATH": "test",
+            }
+        },
+    )
+    def test_prefix_to_path_settings(self, _):
+        reload(settings)
+        self.assertEqual(settings.PREFIX_TO_PATH, "test")
+        self.assertEqual(settings.STATIC_URL, "/test/static/")
+        self.assertEqual(settings.LOGIN_URL, "/test/accounts/login/")
