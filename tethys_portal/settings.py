@@ -351,7 +351,7 @@ TEMPLATES = [
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "/static/"
+STATIC_URL = portal_config_settings.pop("STATIC_URL", "/static/")
 
 
 STATICFILES_DIRS = [
@@ -451,7 +451,7 @@ FIDO_SERVER_ID = (
     "localhost"  # Server rp id for FIDO2, it's the full domain of your project
 )
 FIDO_SERVER_NAME = "Tethys Portal"
-FIDO_LOGIN_URL = "/auth/login"
+FIDO_LOGIN_URL = portal_config_settings.pop("FIDO_LOGIN_URL", "/auth/login")
 
 MFA_CONFIG = portal_config_settings.pop("MFA_CONFIG", {})
 
@@ -512,7 +512,10 @@ CORS_CONFIG = portal_config_settings.pop("CORS_CONFIG", {})
 for setting, value in CORS_CONFIG.items():
     setattr(this_module, setting, value)
 
-PREFIX_TO_PATH = portal_config_settings.pop("PREFIX_TO_PATH", "")
-if PREFIX_TO_PATH is not None and len(PREFIX_TO_PATH) != 0:
-    STATIC_URL = f"/{PREFIX_TO_PATH}/static/"
-    LOGIN_URL = f"/{PREFIX_TO_PATH}/accounts/login/"
+LOGIN_URL = portal_config_settings.pop("LOGIN_URL", "/accounts/login/")
+PREFIX_URL = portal_config_settings.pop("PREFIX_URL", "/")
+if PREFIX_URL is not None and PREFIX_URL != "/":
+    PREFIX_URL = f"{PREFIX_URL.strip('/')}"
+    STATIC_URL = f"/{PREFIX_URL}/{STATIC_URL.strip('/')}/"
+    LOGIN_URL = f"/{PREFIX_URL}/{LOGIN_URL.strip('/')}/"
+    FIDO_LOGIN_URL = f"/{PREFIX_URL}/{FIDO_LOGIN_URL.strip('/')}/"

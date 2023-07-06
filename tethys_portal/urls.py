@@ -40,24 +40,15 @@ from tethys_apps.base.function_extractor import TethysFunctionExtractor
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
 
-prefix_path = ""
-if hasattr(settings, "PREFIX_TO_PATH") and settings.PREFIX_TO_PATH:
-    prefix_path = f"{settings.PREFIX_TO_PATH}"
-
-
+prefix_url = f"{settings.PREFIX_URL}"
+login_url_setting = f"{settings.LOGIN_URL}"
 admin.site.login = staff_member_required(
     admin.site.login,
     redirect_field_name="",
-    login_url=f"/{prefix_path}/accounts/login/",
+    login_url=f"{login_url_setting}",
 )
-
 
 admin.autodiscover()
-admin.site.login = staff_member_required(
-    admin.site.login,
-    redirect_field_name="",
-    login_url=f"/{prefix_path}/accounts/login/",
-)
 
 # Extend admin urls
 admin_url_list = admin.site.urls[0]
@@ -239,10 +230,20 @@ handler403 = tethys_portal_error.handler_403
 handler404 = tethys_portal_error.handler_404
 handler500 = tethys_portal_error.handler_500
 
-
-if prefix_path is not None and len(prefix_path) != 0:
-    # breakpoint()
+if prefix_url is not None and prefix_url != "/":
     urlpatterns = [
-        re_path(r"^$", lambda request: redirect(f"{prefix_path}/", permanent=True)),
-        re_path(rf"^{prefix_path}/", include(urlpatterns)),
+        re_path(r"^$", lambda request: redirect(f"{prefix_url}/", permanent=True)),
+        re_path(rf"^{prefix_url}/", include(urlpatterns)),
     ]
+
+if (
+    login_url_setting is not None
+    and login_url_setting != f"/{prefix_url}/accounts/login/"
+):
+    urlpatterns.append(
+        re_path(
+            rf"^{login_url_setting.strip('/')}/",
+            tethys_portal_accounts.login_view,
+            name="login",
+        )
+    )
