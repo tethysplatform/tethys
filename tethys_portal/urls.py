@@ -244,6 +244,6 @@ if (
         re_path(
             rf"^{login_url_setting.strip('/')}/",
             tethys_portal_accounts.login_view,
-            name="login",
+            name="login_prefix",
         )
     )
