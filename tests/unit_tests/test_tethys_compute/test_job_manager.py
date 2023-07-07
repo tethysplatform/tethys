@@ -6,11 +6,7 @@ from tethys_compute.job_manager import JobManager, JOB_TYPES
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_apps.models import TethysApp
-from django.conf import settings
-
-prefix_to_path = ""
-if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
-    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
+from django.test import override_settings, TestCase
 
 
 class TestJobManager(unittest.TestCase):
@@ -173,5 +169,86 @@ class TestJobManager(unittest.TestCase):
         mgr = JobManager(mock_args)
         mgr.get_job_status_callback_url(mock_request, mock_job_id)
         mock_request.build_absolute_uri.assert_called_once_with(
-            f"{prefix_to_path}/update-job-status/foo/"
+            "/update-job-status/foo/"
         )
+
+
+# test this:
+# Expected: build_absolute_uri('/test/prefix/update-job-status/foo/')
+# Actual: build_absolute_uri('/update-job-status/foo/')
+
+# @override_settings(PREFIX_URL="test/prefix")
+# class TestJobManagerWithPrefix(TestCase):
+#     import sys
+#     from importlib import reload, import_module
+#     from django.conf import settings
+#     from django.urls import clear_url_caches
+
+#     @classmethod
+#     def setUpClass(cls):
+#         cls.app_model = TethysApp(
+#             name="test_app_job_manager", package="test_app_job_manager"
+#         )
+#         cls.app_model.save()
+
+#         cls.user_model = User.objects.create_user(
+#             username="test_user_job_manager", email="user@example.com", password="pass"
+#         )
+
+#         cls.group_model = Group.objects.create(name="test_group_job_manager")
+
+#         cls.group_model.user_set.add(cls.user_model)
+
+#         cls.scheduler = CondorScheduler(
+#             name="test_scheduler",
+#             host="localhost",
+#         )
+#         cls.scheduler.save()
+
+#         cls.tethysjob = TethysJob(
+#             name="test_tethysjob",
+#             description="test_description",
+#             user=cls.user_model,
+#             label="test_app_job_manager",
+#         )
+#         cls.tethysjob.save()
+
+#         cls.tethysjob.groups.add(cls.group_model)
+
+#     @classmethod
+#     def tearDownClass(cls):
+#         cls.tethysjob.delete()
+#         cls.scheduler.delete()
+#         cls.group_model.delete()
+#         cls.user_model.delete()
+#         cls.app_model.delete()
+
+#     @classmethod
+#     def reload_urlconf(self, urlconf=None):
+#         self.clear_url_caches()
+#         if urlconf is None:
+#             urlconf = self.settings.ROOT_URLCONF
+#         if urlconf in self.sys.modules:
+#             self.reload(self.sys.modules[urlconf])
+#         else:
+#             self.import_module(urlconf)
+
+#     def set_up(self):
+#         self.reload_urlconf()
+#         pass
+
+#     @override_settings(PREFIX_URL="/")
+#     def tearDown(self):
+#         self.reload_urlconf()
+#         pass
+
+#     def test_JobManager_get_job_status_callback_url(self):
+#         mock_args = mock.MagicMock()
+#         mock_request = mock.MagicMock()
+#         mock_job_id = "foo"
+
+#         mgr = JobManager(mock_args)
+#         mgr.get_job_status_callback_url(mock_request, mock_job_id)
+#         mock_request.build_absolute_uri.assert_called_once_with(
+#             "/test/prefix/update-job-status/foo/"
+#         )

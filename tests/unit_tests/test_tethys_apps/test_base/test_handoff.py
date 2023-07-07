@@ -3,11 +3,7 @@ import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
 from unittest import mock
 from tethys_sdk.testing import TethysTestCase
-from django.conf import settings
-
-prefix_to_path = ""
-if settings.PREFIX_TO_PATH is not None and len(settings.PREFIX_TO_PATH) != 0:
-    prefix_to_path = f"/{settings.PREFIX_TO_PATH}"
+from django.test import override_settings
 
 
 def test_function(*args):
@@ -279,6 +275,21 @@ class TestGetHandoffManagerFroApp(unittest.TestCase):
 
 
 class TestTestAppHandoff(TethysTestCase):
+    import sys
+    from importlib import reload, import_module
+    from django.conf import settings
+    from django.urls import clear_url_caches
+
+    @classmethod
+    def reload_urlconf(self, urlconf=None):
+        self.clear_url_caches()
+        if urlconf is None:
+            urlconf = self.settings.ROOT_URLCONF
+        if urlconf in self.sys.modules:
+            self.reload(self.sys.modules[urlconf])
+        else:
+            self.import_module(urlconf)
+
     def set_up(self):
         self.c = self.get_test_client()
         self.user = self.create_test_user(
@@ -286,12 +297,19 @@ class TestTestAppHandoff(TethysTestCase):
         )
         self.c.force_login(self.user)
 
+    @override_settings(PREFIX_URL="/")
     def tear_down(self):
         self.user.delete()
+        self.reload_urlconf()
 
     def test_test_app_handoff(self):
-        response = self.c.get(
-            f'{prefix_to_path}/handoff/test-app/test_name/?csv_url=""'
-        )
+        response = self.c.get(f'/handoff/test-app/test_name/?csv_url=""')
+
+        self.assertEqual(302, response.status_code)
+
+    @override_settings(PREFIX_URL="test/prefix")
+    def test_test_app_handoff_with_prefix(self):
+        self.reload_urlconf()
+        response = self.c.get(f'/test/prefix/handoff/test-app/test_name/?csv_url=""')
 
         self.assertEqual(302, response.status_code)
