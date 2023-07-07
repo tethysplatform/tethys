@@ -51,6 +51,7 @@ class TestUrls(TethysTestCase):
         self.assertEqual("gizmos", resolver.namespaces[0])
 
 
+# we need to test for the JS that is calling the jobs directly
 @override_settings(PREFIX_URL="test/prefix")
 class TestUrlsWithPrefix(TethysTestCase):
     import sys
