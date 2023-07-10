@@ -384,7 +384,6 @@ class DecoratorsWithPrefixTest(TestCase):
 
         self.assertEqual(f.method(request), "expected_result")
 
-    ## need work also might need to see how to redirec to the accounts/login view
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
     def test_permission_required_no_pass_not_authenticated(self, _, mock_messages):
@@ -399,4 +398,4 @@ class DecoratorsWithPrefixTest(TestCase):
 
         mock_messages.add_message.assert_called()
         self.assertIsInstance(ret, HttpResponseRedirect)
-        self.assertIn("/test/prefix/test/login/", ret.url)
+        self.assertIn("/test/prefix/accounts/login/", ret.url)
