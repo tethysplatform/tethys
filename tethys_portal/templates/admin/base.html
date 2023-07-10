@@ -48,6 +48,20 @@
       margin-left: 30px;
       color: white;
     }
+
+    .object-tools a.addlink {
+      background: {{ site_globals.primary_color|default:'#0a62a9' }} url("{% static 'admin/img/tooltag-add.png' %}") 95% center no-repeat;
+      font-weight: 500;
+      font-size: 12px;
+      padding: 3px 12px;
+  
+    }
+    
+    .object-tools a.addlink:hover {
+      background: {{ site_globals.primary_color|default:'#0a62a9' }} + #111111 url("{% static 'admin/img/tooltag-add.png' %}") 95% center no-repeat;
+    }
+
+
   </style>
 {% endblock %}
 
