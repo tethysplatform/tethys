@@ -14,6 +14,8 @@ from functools import wraps
 from copy import deepcopy
 from pathlib import Path
 
+from django.urls import reverse
+
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
@@ -436,6 +438,11 @@ class JobsTable(TethysGizmoOptions):
 
         if self.show_actions:
             self.num_cols += 1
+    
+        # Derive base_ajax_url dynamically for use in JavaScript
+        # e.g.: /developer/gizmos/ajax/9999/action/delete
+        self.base_ajax_url = reverse("gizmos:delete_job", kwargs={"job_id": 9999})
+        self.base_ajax_url = self.base_ajax_url.replace("9999/action/delete", "")
 
     def set_rows_and_columns(self, jobs, column_fields):
         self.rows = list()

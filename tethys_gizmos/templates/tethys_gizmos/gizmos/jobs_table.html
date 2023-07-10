@@ -16,6 +16,7 @@
        data-actions="{{ actions|jsonify }}"
        data-enable-data-table="{{ enable_data_table|jsonify }}"
        data-data-table-options="{{ data_table_options|jsonify }}"
+       data-base-ajax-url="{{ base_ajax_url }}"
 >
   <thead>
     {% for column_name in column_names %}
