@@ -138,57 +138,6 @@ class TethysPortalApiTestsWithPrefix(TethysTestCase):
         self.reload_urlconf()
         pass
 
-    def test_get_csrf_not_authenticated(self):
-        """Test get_csrf API endpoint not authenticated."""
-        response = self.client.get(reverse("api:get_csrf"))
-        self.assertEqual(response.status_code, 401)
-
-    def test_get_csrf_authenticated(self):
-        """Test get_csrf API endpoint authenticated."""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("api:get_csrf"))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response, HttpResponse)
-        self.assertIn("X-CSRFToken", response.headers)
-
-    def test_get_session_not_authenticated(self):
-        """Test get_session API endpoint not authenticated."""
-        response = self.client.get(reverse("api:get_session"))
-        self.assertEqual(response.status_code, 401)
-
-    def test_get_session_authenticated(self):
-        """Test get_session API endpoint authenticated."""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("api:get_session"))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response, JsonResponse)
-        # self.assertIn('Set-Cookie', response.headers)
-        json = response.json()
-        self.assertIn("isAuthenticated", json)
-        self.assertTrue(json["isAuthenticated"])
-
-    def test_get_whoami_not_authenticated(self):
-        """Test get_whoami API endpoint not authenticated."""
-        response = self.client.get(reverse("api:get_whoami"))
-        self.assertEqual(response.status_code, 401)
-
-    def test_get_whoami_authenticated(self):
-        """Test get_whoami API endpoint authenticated."""
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("api:get_whoami"))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response, JsonResponse)
-        json = response.json()
-        self.assertIn("username", json)
-        self.assertIn("firstName", json)
-        self.assertIn("lastName", json)
-        self.assertIn("email", json)
-        self.assertIn("isAuthenticated", json)
-        self.assertIn("isStaff", json)
-        self.assertEqual("foo", json["username"])
-        self.assertTrue(json["isAuthenticated"])
-
-    # @override_settings(STATIC_URL="/static")
     def test_get_app_valid_id(self):
         """Test get_app API endpoint with valid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
@@ -222,12 +171,3 @@ class TethysPortalApiTestsWithPrefix(TethysTestCase):
             json["settingsUrl"],
             r"^/test/prefix/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
-
-    def test_get_app_invalid_id(self):
-        """Test get_app API endpoint with invalid app id."""
-        response = self.client.get(reverse("api:get_app", kwargs={"app": "foo-bar"}))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response, JsonResponse)
-        json = response.json()
-        self.assertIn("error", json)
-        self.assertEqual('Could not find app "foo-bar".', json["error"])
