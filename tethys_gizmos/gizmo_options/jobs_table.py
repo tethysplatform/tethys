@@ -438,7 +438,7 @@ class JobsTable(TethysGizmoOptions):
 
         if self.show_actions:
             self.num_cols += 1
-    
+
         # Derive base_ajax_url dynamically for use in JavaScript
         # e.g.: /developer/gizmos/ajax/9999/action/delete
         self.base_ajax_url = reverse("gizmos:delete_job", kwargs={"job_id": 9999})
