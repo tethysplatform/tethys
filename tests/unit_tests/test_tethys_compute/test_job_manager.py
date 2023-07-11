@@ -170,5 +170,3 @@ class TestJobManager(unittest.TestCase):
         mock_request.build_absolute_uri.assert_called_once_with(
             "/update-job-status/foo/"
         )
-
-
