@@ -302,7 +302,9 @@ class TestTestAppHandoff(TethysTestCase):
         self.user.delete()
         self.reload_urlconf()
 
+    @override_settings(PREFIX_URL="/")
     def test_test_app_handoff(self):
+        self.reload_urlconf()
         response = self.c.get(f'/handoff/test-app/test_name/?csv_url=""')
 
         self.assertEqual(302, response.status_code)

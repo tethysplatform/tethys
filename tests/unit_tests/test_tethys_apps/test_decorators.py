@@ -33,6 +33,7 @@ class DecoratorsTest(unittest.TestCase):
         self.assertEqual("expected_result", ret)
 
     @override_settings(ENABLE_OPEN_PORTAL=False)
+    @override_settings(LOGIN_URL="/accounts/login/")
     def test_login_required_open_portal_False_Fail(self):
         request = self.request_factory.get("/apps/test-app")
         request.user = AnonymousUser()

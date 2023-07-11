@@ -1,18 +1,34 @@
+import sys
+from importlib import reload, import_module
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
-from django.urls import reverse
+from django.urls import reverse, clear_url_caches
 from django.test import override_settings
+from django.conf import settings
 
 from tethys_apps.base.testing.testing import TethysTestCase
 
 
 class TethysPortalApiTests(TethysTestCase):
+    def reload_urlconf(self, urlconf=None):
+        clear_url_caches()
+        if urlconf is None:
+            urlconf = settings.ROOT_URLCONF
+        if urlconf in sys.modules:
+            reload(sys.modules[urlconf])
+        else:
+            import_module(urlconf)
+
     def set_up(self):
         self.user = User.objects.create_user(username="foo")
         self.user.save()
+        pass
 
-    def tear_down(self):
+    @override_settings(PREFIX_URL="/")
+    def tearDown(self):
         self.user.delete()
+        self.reload_urlconf()
+        pass
 
     def test_get_csrf_not_authenticated(self):
         """Test get_csrf API endpoint not authenticated."""
@@ -64,8 +80,12 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("foo", json["username"])
         self.assertTrue(json["isAuthenticated"])
 
-    # @override_settings(STATIC_URL="/static")
+    @override_settings(STATIC_URL="/static")
+    @override_settings(PREFIX_URL="/")
+    @override_settings(LOGIN_URL="/accounts/login/")
     def test_get_app_valid_id(self):
+        self.reload_urlconf()
+
         """Test get_app API endpoint with valid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
         self.assertEqual(response.status_code, 200)
@@ -97,48 +117,12 @@ class TethysPortalApiTests(TethysTestCase):
             r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
 
-    def test_get_app_invalid_id(self):
-        """Test get_app API endpoint with invalid app id."""
-        response = self.client.get(reverse("api:get_app", kwargs={"app": "foo-bar"}))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response, JsonResponse)
-        json = response.json()
-        self.assertIn("error", json)
-        self.assertEqual('Could not find app "foo-bar".', json["error"])
-
-
-@override_settings(PREFIX_URL="test/prefix")
-@override_settings(LOGIN_URL="/test/prefix/test/login/")
-@override_settings(STATIC_URL="/test/prefix/test/static/")
-class TethysPortalApiTestsWithPrefix(TethysTestCase):
-    import sys
-    from importlib import reload, import_module
-    from django.conf import settings
-    from django.urls import clear_url_caches
-
-    @classmethod
-    def reload_urlconf(self, urlconf=None):
-        self.clear_url_caches()
-        if urlconf is None:
-            urlconf = self.settings.ROOT_URLCONF
-        if urlconf in self.sys.modules:
-            self.reload(self.sys.modules[urlconf])
-        else:
-            self.import_module(urlconf)
-
-    def set_up(self):
-        self.user = User.objects.create_user(username="foo")
-        self.user.save()
+    @override_settings(PREFIX_URL="test/prefix")
+    @override_settings(LOGIN_URL="/test/prefix/test/login/")
+    @override_settings(STATIC_URL="/test/prefix/test/static/")
+    def test_get_app_valid_id_with_prefix(self):
         self.reload_urlconf()
-        pass
 
-    @override_settings(PREFIX_URL="/")
-    def tearDown(self):
-        self.user.delete()
-        self.reload_urlconf()
-        pass
-
-    def test_get_app_valid_id(self):
         """Test get_app API endpoint with valid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
         self.assertEqual(response.status_code, 200)
@@ -171,3 +155,12 @@ class TethysPortalApiTestsWithPrefix(TethysTestCase):
             json["settingsUrl"],
             r"^/test/prefix/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
+
+    def test_get_app_invalid_id(self):
+        """Test get_app API endpoint with invalid app id."""
+        response = self.client.get(reverse("api:get_app", kwargs={"app": "foo-bar"}))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+        json = response.json()
+        self.assertIn("error", json)
+        self.assertEqual('Could not find app "foo-bar".', json["error"])

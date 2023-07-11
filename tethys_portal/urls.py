@@ -40,6 +40,7 @@ from tethys_apps.base.function_extractor import TethysFunctionExtractor
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
 
+
 prefix_url = f"{settings.PREFIX_URL}"
 login_url_setting = f"{settings.LOGIN_URL}"
 admin.site.login = staff_member_required(
@@ -196,7 +197,7 @@ urlpatterns = [
     re_path(r"^user/", include((user_urls, "user"), namespace="user")),
     re_path(r"^apps/", include("tethys_apps.urls")),
     re_path(r"^extensions/", include(extension_urls)),
-    re_path(r"^developer/", include(developer_urls)),
+    re_path(r"^developer/", include((developer_urls))),
     re_path(
         r"^handoff/(?P<app_name>[\w-]+)/$",
         tethys_apps_views.handoff_capabilities,
@@ -233,7 +234,10 @@ handler500 = tethys_portal_error.handler_500
 if prefix_url is not None and prefix_url != "/":
     urlpatterns = [
         re_path(r"^$", lambda request: redirect(f"{prefix_url}/", permanent=True)),
-        re_path(rf"^{prefix_url}/", include(urlpatterns)),
+        re_path(
+            rf"^{prefix_url}/",
+            include((urlpatterns)),
+        ),
     ]
 
 if (
