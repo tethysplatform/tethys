@@ -197,7 +197,7 @@ urlpatterns = [
     re_path(r"^user/", include((user_urls, "user"), namespace="user")),
     re_path(r"^apps/", include("tethys_apps.urls")),
     re_path(r"^extensions/", include(extension_urls)),
-    re_path(r"^developer/", include((developer_urls))),
+    re_path(r"^developer/", include(developer_urls)),
     re_path(
         r"^handoff/(?P<app_name>[\w-]+)/$",
         tethys_apps_views.handoff_capabilities,
