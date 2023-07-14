@@ -75,6 +75,15 @@
 
   .tethys-map-view-draw-icon {
     display: inline-block;
+    /*
+      Following line:
+
+        background: url('/static/tethys_gizmos/images/map-view-drawing-icons.gif') no-repeat;
+
+      were removed and put into the following template: tethys_gizmos/templates/tethys_gizmos/gizmos/map_view.html
+      This is because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+
+   */
     background-size: cover;
     height: 16px;
     width: 16px;

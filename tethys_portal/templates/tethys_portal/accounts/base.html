@@ -7,6 +7,23 @@
 {% block styles %}
   {{ block.super }}
   <link href="{% static '/tethys_portal/css/account_form.min.css' %}"  rel="stylesheet" />
+  <!-- the style for 
+    
+    - .bi-hydroshare
+    - .bi-hydroshare
+    - .btn-onelogin:focus
+    - .bi-onelogin
+    - .btn-onelogin:hover
+    - .bi-onelogin
+    - .btn-onelogin
+    - .bi-onelogin 
+    
+    were moved from: "tethys_portal/static/tethys_portal/less/account_form.less" 
+
+    to this template because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+  
+  -->
+
   <style>
     body {
       background: {{ site_globals.background_color|default:'#ffffff' }};
@@ -16,7 +33,7 @@
       background-size: 75%;
       background-position: 4px 5px;
     }
-    .bi-arcgis {
+    .bi-hydroshare {
       background:url("{% static 'tethys_portal/images/arcgis-icon-sm.png' %}")  no-repeat;
       background-size: 75%;
       background-position: 4px 5px;

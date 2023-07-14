@@ -1,5 +1,17 @@
 {% load static tethys_gizmos %}
+  <!-- the style for 
+
+    - .tethys-map-view-draw-control
+    - .tethys-map-view-draw-icon
+    
+    were moved from: "tethys_gizmos/static/tethys_gizmos/less/tethys_map_view.less" 
+    
+    to this template because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+  
+  -->
 <style>
+
+  
   {% if controls and 'ZoomSlider' in controls %}
   .ol-zoom-extent {
     top: 16.8em;
