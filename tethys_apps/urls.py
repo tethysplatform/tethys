@@ -12,8 +12,10 @@ from django.urls import include, re_path
 from channels.routing import URLRouter
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
+from django.conf import settings
 
 tethys_log = logging.getLogger("tethys." + __name__)
+prefix_url = f"{settings.PREFIX_URL}"
 
 urlpatterns = [
     re_path(r"^$", library, name="app_library"),
@@ -31,6 +33,8 @@ handler_url_patterns = harvester.get_handler_patterns()
 http_handler_patterns = []
 for namespace, urls in handler_url_patterns["http_handler_patterns"].items():
     root_pattern = r"^apps/{0}/".format(namespace.replace("_", "-"))
+    if prefix_url is not None and prefix_url != "/":
+        root_pattern = rf"^{prefix_url}/apps/{0}/".format(namespace.replace("_", "-"))
     http_handler_patterns.append(re_path(root_pattern, URLRouter(urls)))
 
 # Add app url patterns to urlpatterns, namespaced per app appropriately
@@ -61,6 +65,8 @@ def prepare_websocket_urls(app_websocket_url_patterns):
         for u in urls:
             url_str = str(u.pattern).replace("^", "")
             namespaced_url_str = f"^apps/{root_url}/{url_str}"
+            if prefix_url is not None and prefix_url != "/":
+                namespaced_url_str = f"^{prefix_url}/apps/{root_url}/{url_str}"
             namespaced_url = re_path(namespaced_url_str, u.callback, name=u.name)
             prepared_urls.append(namespaced_url)
 
