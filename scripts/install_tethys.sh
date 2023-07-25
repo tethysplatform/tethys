@@ -331,7 +331,7 @@ then
 
     # Install mamba
     echo "Installing mamba..."
-    conda install -y -n base -c conda-forge mamba
+    conda install -y -n base -c conda-forge mamba libarchive
 
     if [ -n "${CLONE_REPO}" ]
     then
