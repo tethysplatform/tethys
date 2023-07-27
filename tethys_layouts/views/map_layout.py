@@ -348,7 +348,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
             legend = self.build_legend(layer)
             if legend is not None:
-                legend_select_options = legend.get("select_options")
+                legend_select_options = legend.get("select_options")  # None if not set
                 if legend_select_options:
                     # Create color ramp selector
                     legend_select_input = SelectInput(
