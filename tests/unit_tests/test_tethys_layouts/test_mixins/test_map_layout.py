@@ -124,6 +124,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -192,6 +193,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": True,
                 "renamable": True,
                 "show_legend": False,
+                "legend_url": None,
             },
         )
 
@@ -361,6 +363,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                     color_prefix="c",
                     no_data_value="-999",
                 ),
+                "legend_url": None,
             },
         )
 
@@ -774,6 +777,34 @@ class TestMapLayoutMixin(unittest.TestCase):
             },
         )
 
+    def test_build_legend_image_url(self):
+        layer = MVLayer(
+            source="TileWMS",
+            legend_title="Foo Bar",
+            data={
+                "layer_name": "foo_bar",
+                "layer_variable": "baz",
+                "layer_id": "baz",
+                "legend_url": "http://example.com/legend.png",
+            },
+            options={
+                "url": "http://example.com:8181/geoserver/wms",
+                "params": {"LAYERS": "foo_bar", "STYLES": "foo_style"},
+                "serverType": "geoserver",
+            },
+        )
+        ret = MapLayoutMixin.build_legend(layer)
+        self.assertDictEqual(
+            ret,
+            {
+                "layer_id": "baz",
+                "legend_id": "legend-for-baz",
+                "title": "Foo Bar",
+                "type": "image-url-legend",
+                "url": "http://example.com/legend.png",
+            },
+        )
+
     def test_build_geojson_layer_default(self):
         class CustomMapLayoutThing(MapLayoutMixin):
             map_extent = [-65.69, 23.81, -129.17, 49.38]
@@ -809,6 +840,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
         self.assertEqual(ret.options["type"], "FeatureCollection")
@@ -862,6 +894,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -909,6 +942,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -964,6 +998,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -1019,6 +1054,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -1075,6 +1111,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -1130,6 +1167,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -1169,6 +1207,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": False,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -1219,6 +1258,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": True,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
             },
         )
 
@@ -1269,6 +1309,8 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "removable": True,
                 "renamable": False,
                 "show_legend": True,
+                "legend_url": None,
+                "legend_url": None,
             },
         )
 
