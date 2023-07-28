@@ -36,12 +36,13 @@ class TestAsgiApplication(TethysTestCase):
             self.import_module(urlconf)
 
     def set_up(self):
-        self.reload_urlconf()
+        self.reload_urlconf("tethys_apps.urls")
+        self.reload_urlconf("tethys_portal.asgi")
         pass
 
     @override_settings(PREFIX_URL="/")
     def tearDown(self):
-        self.reload_urlconf()
+        self.reload_urlconf("tethys_apps.urls")
         pass
 
     def test_websocket_path(self):
