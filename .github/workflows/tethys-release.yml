@@ -155,7 +155,7 @@ jobs:
           conda activate conda-build
           conda config --set anaconda_upload no
           mkdir -p ~/conda-bld
-          conda conda-build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+          conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload to Anaconda Cloud
       - name: Upload to Conda Release Channel
         if: ${{ steps.version.outputs.prerelease == '' }}
