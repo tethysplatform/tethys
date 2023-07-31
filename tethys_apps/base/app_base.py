@@ -821,7 +821,6 @@ class TethysAppBase(TethysBase):
         Register and sync the app permissions.
         """
         from guardian.shortcuts import assign_perm, remove_perm, get_perms
-        from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission, Group
         from tethys_apps.models import TethysApp
 

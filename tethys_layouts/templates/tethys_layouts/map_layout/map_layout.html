@@ -82,7 +82,9 @@
                 <div id="{{ legend.legend_id }}" class="hidden legend-wrapper legend-group-item" data-legend-attrs="{{ legend|jsonify }}">
                   <span class="legend-title">{{ legend.title|title }}{% if legend.units %} ({{ legend.units }}){% endif %}</span>
                   {% if legend_select_input %}{% gizmo legend_select_input %}{% endif %}
-                  {% if legend.type == 'custom-divisions' %}
+                  {% if legend.type == 'image-url-legend' %}
+                    <img class="legend-image" src="{{ legend.url }}">
+                  {% elif legend.type == 'custom-divisions' %}
                     <div id="color-ramp-component-{{ legend.legend_id }}" class="color-ramp-component">
                       {% include "tethys_layouts/map_layout/color_ramp_component.html" %}
                     </div>
