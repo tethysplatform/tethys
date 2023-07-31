@@ -260,6 +260,7 @@ class MapLayoutMixin:
         renamable=False,
         removable=False,
         show_legend=True,
+        legend_url=None,
     ):
         """
         Build an MVLayer object with supplied arguments.
@@ -286,6 +287,7 @@ class MapLayoutMixin:
             renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
+            legend_url(str): URL of a legend image to display for the layer when legends are enabled.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -303,6 +305,7 @@ class MapLayoutMixin:
             "renamable": renamable,
             "removable": removable,
             "show_legend": show_legend,
+            "legend_url": legend_url,
         }
 
         # Process excluded properties
@@ -443,7 +446,16 @@ class MapLayoutMixin:
         if "," in legend_id:
             legend_id = legend_id.replace(",", "_")
 
-        if layer.data.get("color_ramp_division_kwargs") is not None:
+        if layer.data.get("legend_url") is not None:
+            legend = {
+                "type": "image-url-legend",
+                "legend_id": legend_id,
+                "layer_id": layer_id,
+                "title": layer.legend_title,
+                "url": layer.data.get("legend_url"),
+            }
+
+        elif layer.data.get("color_ramp_division_kwargs") is not None:
             div_kwargs = layer.data.get("color_ramp_division_kwargs")
             min_value = div_kwargs["min_value"]
             max_value = div_kwargs["max_value"]
@@ -593,6 +605,7 @@ class MapLayoutMixin:
         renamable=False,
         removable=False,
         show_legend=True,
+        legend_url=None,
     ):
         """
         Build an MVLayer object with supplied arguments.
@@ -615,6 +628,7 @@ class MapLayoutMixin:
             renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
+            legend_url(str): URL of a legend image to display for the layer when legends are enabled.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -647,6 +661,7 @@ class MapLayoutMixin:
             renamable=renamable,
             removable=removable,
             show_legend=show_legend,
+            legend_url=legend_url,
         )
 
         return mv_layer
@@ -679,6 +694,7 @@ class MapLayoutMixin:
         renamable=False,
         removable=False,
         show_legend=True,
+        legend_url=None,
     ):
         """
         Build an WMS MVLayer object with supplied arguments.
@@ -709,6 +725,7 @@ class MapLayoutMixin:
             renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
+            legend_url(str): URL of a legend image to display for the layer when legends are enabled.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -772,6 +789,7 @@ class MapLayoutMixin:
             renamable=renamable,
             removable=removable,
             show_legend=show_legend,
+            legend_url=legend_url,
         )
 
         return mv_layer
@@ -791,6 +809,7 @@ class MapLayoutMixin:
         renamable=False,
         removable=False,
         show_legend=True,
+        legend_url=None,
     ):
         """
         Build an AcrGIS Map Server MVLayer object with supplied arguments.
@@ -807,6 +826,7 @@ class MapLayoutMixin:
             renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
+            legend_url(str): URL of a legend image to display for the layer when legends are enabled.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -818,7 +838,10 @@ class MapLayoutMixin:
             layer_source="TileArcGISRest",
             layer_title=layer_title,
             layer_variable=layer_variable,
-            options={"url": endpoint},
+            options={
+                "url": endpoint,
+                "params": {"LAYERS": "show:" + layer_name},
+            },
             extent=extent,
             visible=visible,
             public=public,
@@ -826,6 +849,7 @@ class MapLayoutMixin:
             renamable=renamable,
             removable=removable,
             show_legend=show_legend,
+            legend_url=legend_url,
         )
 
         return mv_layer

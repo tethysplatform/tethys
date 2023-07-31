@@ -255,17 +255,17 @@ The following example demonstrates how to add an ArcGIS REST layer to a ``MapLay
             Add layers to the MapLayout and create associated layer group objects.
             """
             # ArcGIS Layer
-            us_highways_layer = self.build_arc_gis_layer(
-                endpoint='https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer',
-                layer_name='ESRI_StateCityHighway',
-                layer_title='US Highways',
-                layer_variable='highways',
+            precip_layer = self.build_arc_gis_layer(
+                endpoint='https://mapservices.weather.noaa.gov/raster/rest/services/obs/rfc_qpe/MapServer',
+                layer_name='25',  # ArcGIS MapServer Layer ID
+                layer_title='RFC QPE Last 24 Hours (inches)',
+                layer_variable='precipitation',
                 visible=False,
-                extent=[-173, 17, -65, 72],
+                extent=[-65.69, 23.81, -129.17, 49.38],  # CONUS bbox
             )
 
             # Add layer to map
-            map_view.layers.append(us_highways_layer)
+            map_view.layers.append(precip_layer)
 
             # Add layer to layer group
             ...
