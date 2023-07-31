@@ -5,7 +5,6 @@ from tethys_apps.models import (
     PersistentStoreService,
 )
 from django.core.exceptions import ValidationError
-from django.conf import settings
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
     PersistentStorePermissionError,
