@@ -24,6 +24,7 @@ class TestStaticDependency(unittest.TestCase):
         mock_get_tag.assert_called_with("js")
 
     @override_settings(STATICFILES_USE_NPM=True)
+    @override_settings(STATIC_URL="/static")
     def test_get_tag_css(self):
         dependency = dependencies.StaticDependency(
             "name", "version", css_path="css_path"
@@ -34,12 +35,33 @@ class TestStaticDependency(unittest.TestCase):
         )
 
     @override_settings(STATICFILES_USE_NPM=True)
+    @override_settings(STATIC_URL="/test/static")
+    def test_get_tag_css_static_url_setting(self):
+        dependency = dependencies.StaticDependency(
+            "name", "version", css_path="css_path"
+        )
+        result = dependency._get_tag("css")
+        self.assertEqual(
+            result, '<link rel="stylesheet" href="/test/static/name/css_path"  />'
+        )
+
+    @override_settings(STATICFILES_USE_NPM=True)
+    @override_settings(STATIC_URL="/static")
     def test_get_tag_js(self):
         dependency = dependencies.StaticDependency(
             "name", "version", js_path="js_path", cdn_url="{npm_name}@{version}/{path}"
         )
         result = dependency._get_tag("js")
         self.assertEqual(result, '<script src="/static/name/js_path" ></script>')
+
+    @override_settings(STATICFILES_USE_NPM=True)
+    @override_settings(STATIC_URL="/test/static")
+    def test_get_tag_js_static_url_setting(self):
+        dependency = dependencies.StaticDependency(
+            "name", "version", js_path="js_path", cdn_url="{npm_name}@{version}/{path}"
+        )
+        result = dependency._get_tag("js")
+        self.assertEqual(result, '<script src="/test/static/name/js_path" ></script>')
 
     @override_settings(STATICFILES_USE_NPM=False)
     def test_get_tag_integrity(self):
