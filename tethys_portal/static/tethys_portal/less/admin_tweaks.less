@@ -68,19 +68,25 @@ a:hover {
       background-color: @primary-color + #111111;
     }
   }
-
-  a.addlink {
-    background: @primary-color url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
-    font-weight: 500;
-    font-size: 12px;
-    padding: 3px 12px;
-
-    &:hover {
-      background: @primary-color + #111111 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
-    }
-  }
 }
+/*
+  style for ... 
 
+    a.addlink {
+      background: @primary-color url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+      font-weight: 500;
+      font-size: 12px;
+      padding: 3px 12px;
+
+      &:hover {
+        background: @primary-color + #111111 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+      }
+    }
+
+  was removed and put into the following template: tethys_portal/templates/admin/base.html
+  This is because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+
+*/
 .module {
 
   caption {

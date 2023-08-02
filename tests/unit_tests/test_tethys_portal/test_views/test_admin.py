@@ -3,6 +3,8 @@ from unittest import mock
 from tethys_portal.views.admin import clear_workspace
 from tethys_apps.models import TethysApp
 
+from django.test import override_settings, TestCase
+
 
 class TethysPortalTethysAppTests(unittest.TestCase):
     def setUp(self):
@@ -22,6 +24,7 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         app = TethysApp(name="app_name")
         mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
+        # reload_urlconf()
 
         expected_context = {
             "app_name": mock_app.objects.get().name,
@@ -45,13 +48,13 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         self, mock_redirect, mock_message, mock_app, mock_gaw, mock_get_app_class
     ):
         mock_request = mock.MagicMock(method="POST", POST="clear-workspace-submit")
-
         app = TethysApp(name="app_name")
         mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
         app.pre_delete_app_workspace = mock.MagicMock()
         app.post_delete_app_workspace = mock.MagicMock()
         mock_gaw.return_value = mock.MagicMock()
+        # reload_urlconf()
 
         clear_workspace(mock_request, "myapp")
 

@@ -66,13 +66,26 @@
     border-color: rgba(0,0,0,0.2);
   }
 }
+/*
+  style for ... 
 
-.bi-hydroshare {
-  background-image:url(/static/tethys_portal/images/hs-icon-sm.png);
-  background-repeat: no-repeat;
-  background-size: 75%;
-  background-position: 4px 5px;
-}
+  .bi-hydroshare {
+    background-image:url(/static/tethys_portal/images/hs-icon-sm.png);
+    background-repeat: no-repeat;
+    background-size: 75%;
+    background-position: 4px 5px;
+  }
+  .bi-arcgis {
+    background-image: url(/static/tethys_portal/images/hs-icon-sm.png);
+    background-repeat: no-repeat;
+    background-size: 75%;
+    background-position: 4px 5px;
+  }
+
+  was removed and put into the following template: tethys_portal/templates/tethys_portal/accounts/base.html
+  This is because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+
+*/
 
 .btn-arcgis {
   color: white;
@@ -84,12 +97,6 @@
   }
 }
 
-.bi-arcgis {
-  background-image: url(/static/tethys_portal/images/arcgis-icon-sm.png);
-  background-repeat: no-repeat;
-  background-size: 75%;
-  background-position: 4px 5px;
-}
 
 .btn-okta {
   background-color: #ffffff;
@@ -125,32 +132,54 @@
   background-color: #ffffff;
   color: @default-header-text-color;
   border-color: rgba(0,0,0,0.2);
-
+  
   .bi-onelogin {
-    color: @onelogin-color;
-    background-image:url(/static/tethys_portal/images/onelogin_black_32.png);
-    background-repeat: no-repeat;
-    background-size: 75%;
-    background-position: 4px 5px;
+    color: @onelogin-color;    
+  /*
+    Following lines:
+
+      background-image:url(/static/tethys_portal/images/onelogin_black_32.png);
+      background-repeat: no-repeat;
+      background-size: 75%;
+      background-position: 4px 5px;
+
+    were removed and put into the following template: tethys_portal/templates/tethys_portal/accounts/base.html
+    This is because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+
+  */
   }
 }
 
 .btn-onelogin:hover {
   background-color: @onelogin-color;
   color: #ffffff;
+  /*
+    Following lines:
 
-  .bi-onelogin {
-    background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
-  }
+      .bi-onelogin {
+        background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
+      }
+
+    were removed and put into the following template: tethys_portal/templates/tethys_portal/accounts/base.html
+    This is because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+
+  */
 }
 
 .btn-onelogin:focus {
   background-color: @onelogin-color;
   color: #ffffff;
+  /*
+    Following lines:
 
-  .bi-onelogin {
-    background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
-  }
+      .bi-onelogin {
+        background-image:url(/static/tethys_portal/images/onelogin_white_32.png);
+      }
+
+    were removed and put into the following template: tethys_portal/templates/tethys_portal/accounts/base.html
+    This is because it needs to render the staticfiles dynamically in case the STATIC_URL setting is other than /static/ 
+
+  */
 }
 
 .btn-windows {

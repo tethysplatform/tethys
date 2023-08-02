@@ -1,6 +1,5 @@
 import unittest
 from unittest import mock
-
 from tethys_compute.views.dask_dashboard import dask_dashboard
 
 
@@ -29,7 +28,7 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/status/test_dask_id/",
+            f"/admin/dask-dashboard/status/test_dask_id/",
             rts_call_args[0][0][2]["status_link"],
         )
 
@@ -51,7 +50,7 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/workers/test_dask_id/",
+            f"/admin/dask-dashboard/workers/test_dask_id/",
             rts_call_args[0][0][2]["workers_link"],
         )
 
@@ -73,7 +72,7 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/tasks/test_dask_id/",
+            f"/admin/dask-dashboard/tasks/test_dask_id/",
             rts_call_args[0][0][2]["tasks_link"],
         )
 
@@ -95,7 +94,7 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/profile/test_dask_id/",
+            f"/admin/dask-dashboard/profile/test_dask_id/",
             rts_call_args[0][0][2]["profile_link"],
         )
 
@@ -117,7 +116,7 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/graph/test_dask_id/",
+            f"/admin/dask-dashboard/graph/test_dask_id/",
             rts_call_args[0][0][2]["graph_link"],
         )
 
@@ -139,7 +138,7 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/system/test_dask_id/",
+            f"/admin/dask-dashboard/system/test_dask_id/",
             rts_call_args[0][0][2]["systems_link"],
         )
 
@@ -161,6 +160,6 @@ class TestDaskDashBoard(unittest.TestCase):
             "tethys_compute/dask_scheduler_dashboard.html", rts_call_args[0][0][1]
         )
         self.assertEqual(
-            "/admin/dask-dashboard/groups/test_dask_id/",
+            f"/admin/dask-dashboard/groups/test_dask_id/",
             rts_call_args[0][0][2]["groups_link"],
         )

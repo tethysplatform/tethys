@@ -22,6 +22,12 @@ const status_html =
     '</div>' +
 '</div>';
 
+var base_ajax_url = "";
+$('.jobs-table').each(function(){
+  $table = $(this);
+  base_ajax_url = $table.data('base-ajax-url');
+});
+
 function bind_action(action, on_success=()=>{}){
   if($(action).hasClass('disabled')){
     return;
@@ -32,8 +38,7 @@ function bind_action(action, on_success=()=>{}){
   var confirmation_message = $(action).data('confirmation-message');
   var modal_url = $(action).data('modal-url');
   var callback = $(action).data('callback');
-  var url = '/developer/gizmos/ajax/' + job_id + '/action/' + callback;
-
+  var url = base_ajax_url + job_id + '/action/' + callback;
   var do_action = function () {
       if(show_overlay){
         $("#jobs_table_overlay").removeClass('d-none');
@@ -80,7 +85,7 @@ function load_log_content(job_id) {
     $("#jobs_table_logs_overlay").removeClass('d-none');
 
     $('#ModalJobLogTitle').html('Logs for Job ID: ' + job_id);
-    var show_log_url = '/developer/gizmos/ajax/' + job_id + '/action/show-log';
+    var show_log_url = base_ajax_url + job_id + '/action/show-log';
     $.ajax({
         url: show_log_url
     }).done(function(json){
@@ -116,7 +121,7 @@ function update_log_content(event, use_cache=true){
   var key1 = $('#sub_job_select').val();
   var key2 = $('#log_' + key1).val();
   var content;
-  var log_content_url = '/developer/gizmos/ajax/' + job_id + '/log-content/' + key1;
+  var log_content_url = base_ajax_url + job_id + '/log-content/' + key1;
   if (key2 === undefined){
     content = log_contents[key1];
   }else{
@@ -287,7 +292,7 @@ function update_row(table_elem){
     var column_fields = $(table).data('column-fields');
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
+    var update_url = base_ajax_url + job_id + '/update-row';
 
     var data = {
         column_fields: column_fields,
@@ -295,7 +300,6 @@ function update_row(table_elem){
         show_actions: show_actions,
         actions: actions,
     };
-
     $.ajax({
         method: 'POST',
         url: update_url,
@@ -375,7 +379,7 @@ function update_workflow_nodes_row(table_elem){
     var job_id = $(table_elem).data('job-id');
     var target_selector = "#" + $(table_elem).attr('id') + " td .workflow-nodes-graph";
     var error_selector = target_selector + ' .loading-error';
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-workflow-nodes-row';
+    var update_url = base_ajax_url + job_id + '/update-workflow-nodes-row';
 
     $.ajax({
         method: 'POST',
@@ -416,7 +420,7 @@ function bokeh_nodes_row(table_elem){
     var job_id = $(table_elem).data('job-id');
     // options for type is individual-graph, individual-progress and individual-task-stream for now
     var type = 'individual-progress';
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/' + type + '/insert-bokeh-row';
+    var update_url = base_ajax_url + job_id + '/' + type + '/insert-bokeh-row';
 
     $.ajax({
         method: 'POST',

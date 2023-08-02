@@ -1,17 +1,34 @@
+import sys
+from importlib import reload, import_module
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
-from django.urls import reverse
+from django.urls import reverse, clear_url_caches
+from django.test import override_settings
+from django.conf import settings
 
 from tethys_apps.base.testing.testing import TethysTestCase
 
 
 class TethysPortalApiTests(TethysTestCase):
+    def reload_urlconf(self, urlconf=None):
+        clear_url_caches()
+        if urlconf is None:
+            urlconf = settings.ROOT_URLCONF
+        if urlconf in sys.modules:
+            reload(sys.modules[urlconf])
+        else:
+            import_module(urlconf)
+
     def set_up(self):
         self.user = User.objects.create_user(username="foo")
         self.user.save()
+        pass
 
-    def tear_down(self):
+    @override_settings(PREFIX_URL="/")
+    def tearDown(self):
         self.user.delete()
+        self.reload_urlconf()
+        pass
 
     def test_get_csrf_not_authenticated(self):
         """Test get_csrf API endpoint not authenticated."""
@@ -63,7 +80,12 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("foo", json["username"])
         self.assertTrue(json["isAuthenticated"])
 
+    @override_settings(STATIC_URL="/static")
+    @override_settings(PREFIX_URL="/")
+    @override_settings(LOGIN_URL="/accounts/login/")
     def test_get_app_valid_id(self):
+        self.reload_urlconf()
+
         """Test get_app API endpoint with valid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
         self.assertEqual(response.status_code, 200)
@@ -88,10 +110,50 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("test_app", json["urlNamespace"])
         self.assertEqual("#2c3e50", json["color"])
         self.assertEqual("/static/test_app/images/icon.gif", json["icon"])
-        self.assertEqual("/apps/", json["exitUrl"])
-        self.assertEqual("/apps/test-app/", json["rootUrl"])
+        self.assertEqual(f"/apps/", json["exitUrl"])
+        self.assertEqual(f"/apps/test-app/", json["rootUrl"])
         self.assertRegex(
-            json["settingsUrl"], r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$"
+            json["settingsUrl"],
+            r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$",
+        )
+
+    @override_settings(PREFIX_URL="test/prefix")
+    @override_settings(LOGIN_URL="/test/prefix/test/login/")
+    @override_settings(STATIC_URL="/test/prefix/test/static/")
+    def test_get_app_valid_id_with_prefix(self):
+        self.reload_urlconf()
+
+        """Test get_app API endpoint with valid app id."""
+        response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+        json = response.json()
+        self.assertIn("title", json)
+        self.assertIn("description", json)
+        self.assertIn("tags", json)
+        self.assertIn("package", json)
+        self.assertIn("urlNamespace", json)
+        self.assertIn("color", json)
+        self.assertIn("icon", json)
+        self.assertIn("exitUrl", json)
+        self.assertIn("rootUrl", json)
+        self.assertIn("settingsUrl", json)
+        self.assertEqual("Test App", json["title"])
+        self.assertEqual(
+            "Place a brief description of your app here.", json["description"]
+        )
+        self.assertEqual("", json["tags"])
+        self.assertEqual("test_app", json["package"])
+        self.assertEqual("test_app", json["urlNamespace"])
+        self.assertEqual("#2c3e50", json["color"])
+        self.assertEqual(
+            "/test/prefix/test/static/test_app/images/icon.gif", json["icon"]
+        )
+        self.assertEqual("/test/prefix/apps/", json["exitUrl"])
+        self.assertEqual("/test/prefix/apps/test-app/", json["rootUrl"])
+        self.assertRegex(
+            json["settingsUrl"],
+            r"^/test/prefix/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
 
     def test_get_app_invalid_id(self):
