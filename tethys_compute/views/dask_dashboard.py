@@ -18,6 +18,7 @@ def dask_dashboard(request, dask_scheduler_id, page="status"):
 
     # Define url link for each page
     url_link = dashboard_host + page
+    back_link = reverse("admin:tethys_compute_daskscheduler_changelist")
     status_link = reverse(
         "admin:dask_dashboard",
         kwargs={"page": "status", "dask_scheduler_id": dask_scheduler_id},
@@ -51,6 +52,7 @@ def dask_dashboard(request, dask_scheduler_id, page="status"):
     script = server_document(url_link)
 
     context = {
+        "back_link": back_link,
         "scheduler_name": scheduler_name,
         "the_script": script,
         "status_link": status_link,
