@@ -261,6 +261,7 @@ class MapLayoutMixin:
         removable=False,
         show_legend=True,
         legend_url=None,
+        label_options=None,
     ):
         """
         Build an MVLayer object with supplied arguments.
@@ -288,6 +289,8 @@ class MapLayoutMixin:
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
             legend_url(str): URL of a legend image to display for the layer when legends are enabled.
+            label_options(dict): Dictionary for labeling.  Possibilities include label_property (the name of the
+                property to label), font (label font), alignment (alignment of the label), offset (x offset). Optional.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -335,6 +338,9 @@ class MapLayoutMixin:
 
         if style_map:
             layer_options.update({"style_map": style_map})
+
+        if label_options:
+            layer_options.update({'label_options': label_options})
 
         mv_layer = MVLayer(
             source=layer_source,
@@ -606,6 +612,7 @@ class MapLayoutMixin:
         removable=False,
         show_legend=True,
         legend_url=None,
+        label_options=None,
     ):
         """
         Build an MVLayer object with supplied arguments.
@@ -629,6 +636,8 @@ class MapLayoutMixin:
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
             legend_url(str): URL of a legend image to display for the layer when legends are enabled.
+            label_options(dict): Dictionary for labeling.  Possibilities include label_property (the name of the
+                property to label), font (label font), text_align (alignment of the label), offset_x (x offset). Optional.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -662,6 +671,7 @@ class MapLayoutMixin:
             removable=removable,
             show_legend=show_legend,
             legend_url=legend_url,
+            label_options=label_options,
         )
 
         return mv_layer
