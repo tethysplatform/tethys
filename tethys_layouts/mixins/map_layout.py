@@ -340,7 +340,7 @@ class MapLayoutMixin:
             layer_options.update({"style_map": style_map})
 
         if label_options:
-            layer_options.update({'label_options': label_options})
+            layer_options.update({"label_options": label_options})
 
         mv_layer = MVLayer(
             source=layer_source,
