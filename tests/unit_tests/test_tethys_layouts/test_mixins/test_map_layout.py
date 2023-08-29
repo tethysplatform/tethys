@@ -157,6 +157,7 @@ class TestMapLayoutMixin(unittest.TestCase):
             removable=True,
             renamable=True,
             show_legend=False,
+            label_options={"label_property": "qux"},
         )
 
         self.assertIsInstance(ret, MVLayer)
@@ -194,6 +195,7 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "renamable": True,
                 "show_legend": False,
                 "legend_url": None,
+                "label_options": {"label_property": "qux"},
             },
         )
 
