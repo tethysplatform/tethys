@@ -32,10 +32,14 @@ jobs:
     name: Lint with Flake8
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Install Flake8
         run: pip install flake8
       - name: Run Flake8
-        run: flake8 .
+        run: flake8 $GITHUB_WORKSPACE
 
   format:
     name: Check Black Formatting
