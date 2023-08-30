@@ -157,6 +157,7 @@ class TestMapLayoutMixin(unittest.TestCase):
             removable=True,
             renamable=True,
             show_legend=False,
+            label_options={"label_property": "qux"},
         )
 
         self.assertIsInstance(ret, MVLayer)
@@ -170,7 +171,12 @@ class TestMapLayoutMixin(unittest.TestCase):
         self.assertDictEqual(ret.options, source_options)
         self.assertDictEqual(
             ret.layer_options,
-            {"visible": False, "show_download": True, "style_map": self.style_map},
+            {
+                "visible": False,
+                "show_download": True,
+                "style_map": self.style_map,
+                "label_options": {"label_property": "qux"},
+            },
         )
         self.assertDictEqual(
             ret.data,
