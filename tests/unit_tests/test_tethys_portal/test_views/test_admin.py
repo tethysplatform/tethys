@@ -3,8 +3,6 @@ from unittest import mock
 from tethys_portal.views.admin import clear_workspace
 from tethys_apps.models import TethysApp
 
-from django.test import override_settings, TestCase
-
 
 class TethysPortalTethysAppTests(unittest.TestCase):
     def setUp(self):

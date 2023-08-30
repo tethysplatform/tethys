@@ -305,13 +305,13 @@ class TestTestAppHandoff(TethysTestCase):
     @override_settings(PREFIX_URL="/")
     def test_test_app_handoff(self):
         self.reload_urlconf()
-        response = self.c.get(f'/handoff/test-app/test_name/?csv_url=""')
+        response = self.c.get('/handoff/test-app/test_name/?csv_url=""')
 
         self.assertEqual(302, response.status_code)
 
     @override_settings(PREFIX_URL="test/prefix")
     def test_test_app_handoff_with_prefix(self):
         self.reload_urlconf()
-        response = self.c.get(f'/test/prefix/handoff/test-app/test_name/?csv_url=""')
+        response = self.c.get('/test/prefix/handoff/test-app/test_name/?csv_url=""')
 
         self.assertEqual(302, response.status_code)
