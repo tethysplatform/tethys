@@ -102,7 +102,7 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("gizmos:update_workflow_nodes_row", kwargs={"job_id": "123"})
         resolver = resolve(url)
         self.assertEqual(
-            f"/test/prefix/developer/gizmos/ajax/123/update-workflow-nodes-row", url
+            "/test/prefix/developer/gizmos/ajax/123/update-workflow-nodes-row", url
         )
         self.assertEqual("update_workflow_nodes_row", resolver.func.__name__)
         self.assertEqual(
@@ -114,7 +114,7 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("gizmos:bokeh_row", kwargs={"job_id": "123", "type": "test"})
         resolver = resolve(url)
         self.assertEqual(
-            f"/test/prefix/developer/gizmos/ajax/123/test/insert-bokeh-row", url
+            "/test/prefix/developer/gizmos/ajax/123/test/insert-bokeh-row", url
         )
         self.assertEqual("bokeh_row", resolver.func.__name__)
         self.assertEqual(

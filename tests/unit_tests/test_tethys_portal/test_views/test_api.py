@@ -110,8 +110,8 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("test_app", json["urlNamespace"])
         self.assertEqual("#2c3e50", json["color"])
         self.assertEqual("/static/test_app/images/icon.gif", json["icon"])
-        self.assertEqual(f"/apps/", json["exitUrl"])
-        self.assertEqual(f"/apps/test-app/", json["rootUrl"])
+        self.assertEqual("/apps/", json["exitUrl"])
+        self.assertEqual("/apps/test-app/", json["rootUrl"])
         self.assertRegex(
             json["settingsUrl"],
             r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$",
