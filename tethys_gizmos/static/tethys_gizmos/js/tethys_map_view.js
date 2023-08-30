@@ -788,6 +788,7 @@ var TETHYS_MAP_VIEW = (function() {
       for (var i = m_layers_options.length; i--; ) {
         var current_layer,
             layer, Source, current_layer_layer_options;
+        var label_info;
 
         current_layer = m_layers_options[i];
 
@@ -812,12 +813,66 @@ var TETHYS_MAP_VIEW = (function() {
             // Build the openlayers objects
             var built_style_map = build_ol_objects(style_map, {});
 
-            // Create the style map function
-            var style_map_function = function(feature) {
+            // Get the label info
+            label_info = current_layer.layer_options.label_options;
+
+            // Create the style map function, using the current context
+            var style_map_function = (function(label_info) {
+              var temp = function(feature) {
+                if (label_info) {
+                  // Get the feature label value
+                  var label = feature.get(label_info.label_property, '');
+
+                  // Set up label style options
+                  var font = '12px Calibri,sans-serif';
+                  if (label_info.font) {
+                    font = label_info.font;
+                  }
+                  var alignment = 'left';
+                  if (label_info.alignment) {
+                    alignment = label_info.text_align;
+                  }
+                  var offset = 10;
+                  if (label_info.offset) {
+                    offset = label_info.offset_x;
+                  }
+
+                  // Create label style
+                  const labelStyle = new ol.style.Style({
+                    text: new ol.style.Text({
+                      font: font,
+                      overflow: true,
+                      fill: new ol.style.Fill({
+                        color: '#000',
+                      }),
+                      stroke: new ol.style.Stroke({
+                        color: '#fff',
+                        width: 3,
+                      }),
+                      offsetX: offset,
+                      textAlign: alignment,
+                    }),
+                  });
+
+                  // Set the label text
+                  labelStyle.getText().setText(label);
+
+                  // Return the build style map for the geometry type along with the label style
+                  return [built_style_map[feature.getGeometry().getType()], labelStyle];
+                }
+
+                // Return the build style map (without any labeling)
                 return built_style_map[feature.getGeometry().getType()];
-            };
+              };
+              return temp;
+            })(label_info);
 
             current_layer.layer_options['style'] = style_map_function;
+
+            // Declutter if using labels
+            if (label_info) {
+              current_layer.layer_options.declutter = true;
+            }
           }
 
           // Get updated layer options
