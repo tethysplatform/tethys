@@ -19,7 +19,7 @@ class TestAsgiApplication(TethysTestCase):
 
 
 @override_settings(PREFIX_URL="test/prefix")
-class TestAsgiApplication(TethysTestCase):
+class TestAsgiApplicationWithURLPrefix(TethysTestCase):
     import sys
     from importlib import reload, import_module
     from django.conf import settings
