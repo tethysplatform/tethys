@@ -28,8 +28,17 @@ env:
   TETHYS_DB_SUPERUSER_PASS: please_dont_use_default_passwords
 
 jobs:
-  black-lint:
-    name: Lint with Black
+  lint:
+    name: Lint with Flake8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Flake8
+        run: pip install flake8
+      - name: Run Flake8
+        run: flake8 .
+
+  format:
+    name: Check Black Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -79,9 +88,6 @@ jobs:
 
   docker-build:
     name: Docker Build
-    needs:
-      - tests
-      - black-lint
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -159,9 +165,6 @@ jobs:
 
   conda-build:
     name: Conda Build
-    needs:
-      - tests
-      - black-lint
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
