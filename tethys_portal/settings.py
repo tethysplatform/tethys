@@ -462,7 +462,7 @@ for setting, value in MFA_CONFIG.items():
 AXES_ENABLED = not DEBUG
 AXES_FAILURE_LIMIT = 3
 AXES_COOLOFF_TIME = dt.timedelta(hours=0.5)
-AXES_LOCKOUT_PARAMETERS = ['username']
+AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_ENABLE_ADMIN = True
 AXES_LOCKOUT_TEMPLATE = "tethys_portal/accounts/lockout.html"
 AXES_VERBOSE = True
