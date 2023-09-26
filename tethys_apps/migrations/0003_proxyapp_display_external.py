@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tethys_apps', '0002_auto_20230407_2337'),
+        ("tethys_apps", "0002_auto_20230407_2337"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='proxyapp',
-            name='display_external',
+            model_name="proxyapp",
+            name="display_external",
             field=models.BooleanField(default=False),
         ),
     ]
