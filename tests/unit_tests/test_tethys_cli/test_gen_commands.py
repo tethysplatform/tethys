@@ -452,7 +452,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         _,
         mock_os_path_join,
     ):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(micro=False)
         mock_args.type = GEN_META_YAML_OPTION
         mock_args.directory = None
         mock_args.pin_level = "minor"
@@ -478,6 +478,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         render_context = mock_Template().render.call_args.args[0]
         expected_context = {
+            "package_name": "tethys-platform",
             "run_requirements": ["foo=1.2.*", "bar=4.5", "goo=7.8"],
             "tethys_version": mock.ANY,
         }
@@ -492,7 +493,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     def test_gen_meta_yaml_overriding_dependencies(
         self, _, mock_load, mock_dvfce, mock_write_info
     ):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(micro=False)
         mock_args.type = GEN_META_YAML_OPTION
         mock_args.directory = None
         mock_args.pin_level = "minor"
@@ -514,6 +515,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_dvfce.assert_called_with("foo", level="minor")
 
         expected_context = {
+            "package_name": "tethys-platform",
             "run_requirements": [
                 mock_dvfce(),
                 "foo=1.2.3",
