@@ -8,7 +8,7 @@ THREDDS Engine (Siphon) Reference
 
 .. important::
 
-    This feature requires the `siphon` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `siphon` using conda or pip as follows:
+    This feature requires the ``siphon`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``siphon`` using conda or pip as follows:
 
     .. code-block:: bash
 

@@ -6,7 +6,7 @@ Persistent Stores API
 
 .. important::
 
-    This feature requires the `psycopg2` and `sqlalchmey` libraries to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install these libraries using conda or pip as follows:
+    This feature requires the ``psycopg2`` and ``sqlalchmey`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install these libraries using conda or pip as follows:
 
     .. code-block:: bash
 

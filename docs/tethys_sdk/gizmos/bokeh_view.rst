@@ -6,7 +6,7 @@ Bokeh View
 
 .. important::
 
-   This gizmo requires the `bokeh` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `bokeh` using conda or pip as follows:
+   This gizmo requires the ``bokeh`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``bokeh`` using conda or pip as follows:
 
    .. code-block:: bash
 
@@ -16,7 +16,7 @@ Bokeh View
       # pip
       pip install "bokeh<3"
 
-   **Don't Forget**: If you end up using this gizmo in your app, add `bokeh` as a requirement to your `install.yml`.
+   **Don't Forget**: If you end up using this gizmo in your app, add ``bokeh`` as a requirement to your :file:`install.yml`.
 
 Python
 ------

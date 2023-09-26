@@ -28,7 +28,7 @@ Auth Token
 
 .. important::
 
-    This feature requires the `djangorestframework` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `djangorestframework` using conda or pip as follows:
+    This feature requires the ``djangorestframework`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``djangorestframework`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -168,7 +168,7 @@ Terms and Conditions
 
 .. important::
 
-    This feature requires the `django-termsandconditions` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-termsandconditions` using conda or pip as follows:
+    This feature requires the ``django-termsandconditions`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-termsandconditions`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -264,8 +264,8 @@ JSON Custom Settings
 ++++++++++++++++++++
 
 .. important::
-
-    This feature requires the `django-json-widget` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-json-widget` using conda or pip as follows:
+`
+    This feature requires the ``django-json-widget`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-json-widget`` using conda or pip as follows:
 
     .. code-block:: bash
 

@@ -6,7 +6,7 @@ Dataset Services API
 
 .. important::
 
-    This feature requires the `tethys_dataset_services` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `tethys_dataset_services` using conda or pip as follows:
+    This feature requires the ``tethys_dataset_services`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ```tethys_dataset_services`` using conda or pip as follows:
 
     .. code-block:: bash
 

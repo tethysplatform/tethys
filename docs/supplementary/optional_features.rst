@@ -1,0 +1,270 @@
+.. _optional_features:
+
+*****************
+Optional Features
+*****************
+
+With the release of ``microtethys`` and starting with Tethys v5.0 many features of Tethys Platform will become optional and require additional dependencies to be installed. This is done to limit the size of the environment and allow Tethys Portal administrators more flexibility in deciding what features are needed in their deployment. The following list of features are optional and will require the listed dependencies to be installed for that feature to be enabled:
+
+Security Features
+=================
+
+Session Security
+----------------
+
+Session security enables setting timeouts for user sessions.
+
+**dependencies**
+ - ``django-session-security``
+
+
+Track Failed Login Attempts
+---------------------------
+
+Tracking failed loging allows Tethys to lock user accounts after a certain number of failed attempts, and alerts users of the number of failed attempts when they login.
+
+**dependencies**
+    - ``django-axes``
+
+
+Add CORS Headers
+----------------
+
+Adds CORS headers to enable Tethys resources to be accessed on other domains.
+
+**dependencies**
+ - ``django-cors-headers``
+
+Login/Accounts
+==============
+
+Gravatar
+--------
+
+Gravatar provides a user avatar image in the user's profile.
+
+**dependencies**
+    - ``django-gravatar2``
+
+Captcha
+-------
+
+Captcha requires users to type the code from an image during login.
+
+**dependencies**
+    - ``django-simple-captcha``
+
+ReCaptcha
+---------
+
+ReCaptcha uses a Google provided service to verify that the user logging in is human.
+
+**dependencies**
+    - ``django-recaptcha2``
+
+Multi-Factor Authentication
+---------------------------
+
+Allows users to enable multi-factor authentication for the Tethys Portal account.
+
+**dependencies**
+    - ``django-mfa2``
+    - ``arrow``
+    - ``isodate``
+
+Single Sign On with Social Accounts
+-----------------------------------
+
+Allow users to login to Tethys using 3rd party accounts (e.g. GitHub, Google, Facebook, etc.).
+
+**dependencies**
+    - ``social-auth-app-django``
+
+SSO with HydroShare
++++++++++++++++++++
+
+Allows configuration of HydroShare as an SSO
+
+**dependencies**
+    - ``hs_restclient``
+
+SSO with OneLogin
++++++++++++++++++
+
+Allows configuration of OneLogin as an SSO
+
+**dependencies**
+    - ``python-jose``
+
+OAuth2 Provider
+---------------
+
+Enables a Tethys Portal to be a provider of OAuth2 authentication.
+
+**dependencies**
+    - ``django-oauth-toolkit``
+
+Portal Enhancements
+===================
+
+Terms and Conditions
+--------------------
+
+Enables portal administrators to define terms and conditions that users must accept to user the portal.
+
+**dependencies**
+    - ``django-termsandconditions``
+
+Web Analytics Tracking
+----------------------
+
+Gather web analytics statistics from portal usage.
+
+**dependencies**
+    - ``django-analytical``
+
+JSON Widget
+-----------
+
+Enable a JSON widget in the admin pages for app settings.
+
+**dependencies**
+    - ``django-json-widget``
+
+RESTful Framework
+-----------------
+
+Provides a framework for defining REST APIs.
+
+**dependencies**
+    - ``djangorestframework``
+
+Mapping
+=======
+
+May Layout Shapefile Support
+----------------------------
+
+Enable converting geojson to shapefile.
+
+
+**dependencies**
+    - ``PyShp``
+
+Command Line Interface
+======================
+
+Docker
+------
+
+Enable the ``docker`` command on the ``tethys`` CLI.
+
+**dependencies**
+    - ``docker-py``
+
+Conda Installer
+---------------
+
+Enables the `tethys install`` commands to install conda packages.
+
+**dependencies**
+    - ``conda``
+    - ``conda-libmamba-solver``
+
+Databases
+=========
+
+PostgreSQL
+----------
+
+Enable ``tethys db`` commands to setup local or remote PostgreSQL databases.
+
+**dependencies**
+    - ``postgresql``
+    - ``psycopg2``
+
+Persistent Stores
+-----------------
+
+Enable apps to define and use persistent stores.
+
+**dependencies**
+    - ``sqlalchemy<2``
+
+Spatial Persistent Stores
+-------------------------
+
+Enable apps to define spatial persistent stores.
+
+**dependencies**
+    - ``sqlalchemy<2``
+    - ``geoalchemy2``
+
+Gizmos
+======
+
+Bokeh Plots
+-----------
+
+Enable the Bokeh plotting gizmo.
+
+**dependencies**
+    - ``bokeh``
+
+Plotly Plots
+------------
+
+Enable the Plotly plotting gizmo.
+
+**dependencies**
+    - ``plotly``
+
+Tethys Compute
+==============
+
+Dask Job Type
+-------------
+
+Enables the Dask job type.
+
+**dependencies**
+    - ``dask``
+    - ``tethys_dask_scheduler``
+
+HTCondor Job Types
+------------------
+
+Enables the HTCondor job and workflow types
+
+**dependencies**
+    - ``condorpy``
+
+External Services
+=================
+
+Dataset Services
+----------------
+
+Enables the :term:`dataset services` API.
+
+**dependencies**
+    - ``tethys_dataset_services``
+
+THREDDS Spatial Dataset Service
+-------------------------------
+
+Enables using THREDDS as a spatial dataset service.
+
+**dependencies**
+    - ``siphon``
+
+
+Web Processing Services (WPS)
+-----------------------------
+
+Enables apps to define WPS endpoints.
+
+**dependencies**
+    - ``owslib``
+
+

@@ -6,7 +6,7 @@ REST API
 
 .. important::
 
-    This feature requires the `djangorestframework` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `djangorestframework` using conda or pip as follows:
+    This feature requires the ``djangorestframework`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``djangorestframework`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -16,7 +16,7 @@ REST API
         # pip
         pip install djangorestframework
 
-    **Don't Forget**: If you end up using this feature in your app, add `djangorestframework` as a requirement to your `install.yml`.
+    **Don't Forget**: If you end up using this feature in your app, add ``djangorestframework`` as a requirement to your :file:`install.yml`.
 
 REST API's in Tethys Platform use token authentication (see: http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
 

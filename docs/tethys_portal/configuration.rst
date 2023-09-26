@@ -75,7 +75,6 @@ TETHYS_PORTAL_CONFIG
 ================================================== ================================================================================
 Setting                                            Description
 ================================================== ================================================================================
-ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overriden.
 ENABLE_OPEN_SIGNUP                                 anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
 REGISTER_CONTROLLER                                override the default registration page with a custom controller. The value should be the dot-path to the controller function/class (e.g. ``tethysext.my_extension.controllers.custom_registration``)
 ENABLE_OPEN_PORTAL                                 no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``controller`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
@@ -83,6 +82,8 @@ ENABLE_RESTRICTED_APP_ACCESS                       app access can be restricted 
 TETHYS_WORKSPACES_ROOT                             location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
 STATIC_ROOT                                        the Django `STATIC_ROOT <https://docs.djangoproject.com/en/3.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 STATICFILES_USE_NPM                                serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.
+ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overriden.
+ADDITIONAL_URLPATTERNS                             a list of dot-paths to list or tuples that define additional URL patterns to register in the portal. Additional URL patterns will precede default URL patterns so URLs will first match against user specified URL patterns.
 ================================================== ================================================================================
 
 SESSION_CONFIG
@@ -90,7 +91,7 @@ SESSION_CONFIG
 
 .. important::
 
-    These settings require the `django-session-security` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-session-security` using conda or pip as follows:
+    These settings require the ``django-session-security`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-session-security`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -170,7 +171,7 @@ CAPTCHA_CONFIG
 
 .. important::
 
-    These Captcha feature requires either the `django-simple-captcha` library or the `django-recaptcha2` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install one of these libraries using conda or pip as follows:
+    These Captcha feature requires either the ``django-simple-captcha`` library or the ``django-recaptcha2`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install one of these libraries using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -198,7 +199,7 @@ OAUTH_CONFIG
 
 .. important::
 
-    These settings require the `social-auth-app-django` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `social-auth-app-django` using conda or pip as follows:
+    These settings require the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -208,7 +209,7 @@ OAUTH_CONFIG
         # pip
         pip install social-auth-app-django
     
-    If using the OneLogin OIDC provider, you will also need to install the `python-jose` library:
+    If using the OneLogin OIDC provider, you will also need to install the ``python-jose`` library:
 
     .. code-block:: bash
 
@@ -217,6 +218,16 @@ OAUTH_CONFIG
 
         # pip
         pip install python-jose
+
+    If using the HydroShare provider, you will also need the ``hs_restclient`` library:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge hs_restclient
+
+        # pip
+        pip install hs_restclient
 
 ================================================== ================================================================================
 Setting                                            Description
@@ -270,7 +281,7 @@ MFA_CONFIG
 
 .. important::
 
-    These settings require the `django-mfa2`, `arrow`, and `isodate` libraries to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install these libraries using conda or pip as follows:
+    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install these libraries using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -301,7 +312,7 @@ The Django Analytical configuration settings for enabling analytics services on 
 
 .. important::
 
-    These settings require the `django-analytical` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-analytical` using conda or pip as follows:
+    These settings require the ``django-analytical`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-analytical`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -361,7 +372,7 @@ The Django Axes configuration settings for enabling lockout capabilities on Teth
 
 .. important::
 
-    These settings require the `django-axes` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-axes` using conda or pip as follows:
+    These settings require the ``django-axes`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-axes`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -391,7 +402,7 @@ These CORS settings are used to configure Cross-Origin Resource Sharing (CORS) f
 
 .. important::
 
-    These settings require the `django-cors-headers` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-cors-headers` using conda or pip as follows:
+    These settings require the ``django-cors-headers`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-cors-headers`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -418,7 +429,7 @@ The Gravatar settings are used to configure the Gravatar service user profile pi
 
 .. important::
 
-    These settings require the `django-gravatar2` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-gravatar2` using conda or pip as follows:
+    These settings require the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-gravatar2`` using conda or pip as follows:
 
     .. code-block:: bash
 

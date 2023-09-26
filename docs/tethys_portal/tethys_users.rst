@@ -4,7 +4,7 @@
 Tethys Users
 ************
 
-**Last Updated:** April 2019
+**Last Updated:** September 2023
 
 User Settings
 =============
@@ -17,12 +17,12 @@ The User Settings page can be accessed through the drop-down menu located at the
 
 .. note::
 
-    This icon next to the users name come from `Gravatar <https://gravatar.com/>`_. This feature requires the `django-gravatar2` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-gravatar2` using conda or pip as follows:
+    This icon next to the users name come from `Gravatar <https://gravatar.com/>`_. This feature requires the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-gravatar2`` using conda or pip as follows:
 
     .. code-block:: bash
 
         # conda: conda-forge channel strongly recommended
-        conda install -c django-gravatar2
+        conda install -c conda-forge django-gravatar2
 
         # pip
         pip install django-gravatar2
@@ -52,6 +52,23 @@ Within a user's settings page there is a ``Workspace`` section that provides a s
 .. tip::
 
     See :ref:`tethys_quotas_workspace_manage` for information on how to pre/post process the user workspace when it is cleared.
+
+Manage User OAuth2 Application Registrations
+============================================
+
+.. important::
+
+    This feature requires the ``django-oauth-toolkit`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-oauth-toolkit`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-oauth-toolkit
+
+        # pip
+        pip install django-oauth-toolkit
+
+This section provides a link to the OAuth2 application management page for the user. This allows a user to register an external application that will use Tethys Portal as the OAuth2 provider. This enables users of the external application to authenticate using Tethys.
 
 Customization
 =============

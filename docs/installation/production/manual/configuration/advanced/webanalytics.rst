@@ -6,7 +6,7 @@ Web Analytics (Optional)
 
 .. important::
 
-    This feature requires the `django-analytical` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-analytical` using conda or pip as follows:
+    This feature requires the ``django-analytical`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-analytical`` using conda or pip as follows:
 
     .. code-block:: bash
 
