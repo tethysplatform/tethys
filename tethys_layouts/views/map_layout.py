@@ -811,7 +811,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
             # pip
             pip install pyshp
-        
+
         **Don't Forget**: If you end up using this method in your app, add `pyshp` as a requirement to your `install.yml`.
 
         Args:

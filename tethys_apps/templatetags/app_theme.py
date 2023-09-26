@@ -24,7 +24,7 @@ def lighten(hex_color, percentage):
         )
 
     # Extract the hex strings for the RGB components
-    rgb_hex = [hex_color[x:x + 2] for x in [1, 3, 5]]
+    rgb_hex = [hex_color[x : x + 2] for x in [1, 3, 5]]
 
     # Convert RGB hex strings to integer numbers
     rgb_int = [int(x, 16) for x in rgb_hex]
