@@ -13,7 +13,7 @@ def add_list_parser(subparsers):
         action="store_true",
         help="List URLMaps for apps",
     )
-    list_parser.set_defaults(func=list_command)
+    list_parser.set_defaults(func=list_command, urls=False)
 
 
 def list_command(args):
@@ -26,9 +26,9 @@ def list_command(args):
 
     if args.urls:
         for app in SingletonHarvester().apps:
-            write_info(f"  {app.package}")
+            write_info(f"{app.package}")
             for url_map in app.registered_url_maps:
-                write_msg(f"{url_map.display('    ')}")
+                write_msg(f"{url_map.display('  ')}")
         return
 
     if installed_apps:

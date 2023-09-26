@@ -579,7 +579,7 @@ def user_can_access_app(user, app):
         return True
 
 
-def get_installed_tethys_items(apps=False, extensions=False, with_paths=False):
+def get_installed_tethys_items(apps=False, extensions=False):
     harvester = SingletonHarvester()
     installed_apps = harvester.app_modules
     install_extensions = harvester.extension_modules
@@ -595,7 +595,7 @@ def get_installed_tethys_items(apps=False, extensions=False, with_paths=False):
     for name, module in items.items():
         try:
             item = __import__(module, fromlist=[""])
-            value = item.__path__[0] if with_paths else item
+            value = item.__path__[0]
             paths[name] = value
         except (IndexError, ImportError):
             """DO NOTHING"""
