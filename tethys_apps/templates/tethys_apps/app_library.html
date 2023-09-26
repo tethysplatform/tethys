@@ -76,34 +76,19 @@
       height: 0.25em;
     }
 
-
-    .arrow-thing {
-      border: 20px solid transparent;
-      border-top-color: #0a62a9;
-      height: 100px;
-      width: 100px;
+    .redirect-icon {
+      position: absolute;
+      padding: 10px;
+      background: #0a62a9;
+      height: 50px;
+      width: 50px;
       border-radius: 50%;
-      position: absolute;
-      -webkit-transform: rotate(-400deg) scaleY(-1);
-      -ms-transform: rotate(-400deg) scaleY(-1);
-      transform: rotate(-400deg) scaleY(-1);
-      margin:30px auto;
-      bottom: 27px;
-      right: 12px;
+      transition: all 0.2s linear;
+      right: 0;
+      bottom: 0;
     }
-    .arrow-thing:before {
-      content: "";
-      position: absolute;
-      top: -20px;
-      left: 80%;
-      height: 0;
-      width: 0;
-      border-left: 30px solid #0a62a9;
-      border-top: 30px solid transparent;
-      border-bottom: 30px solid transparent;
-      -webkit-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      transform: rotate(45deg);
+    .redirect-icon:hover {
+      transform: translate3d(0, -10px, 0);
     }
   </style>
   {{ site_globals.apps_library_css|load_custom_css|safe }}
