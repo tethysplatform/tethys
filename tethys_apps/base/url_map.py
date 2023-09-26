@@ -66,6 +66,25 @@ class UrlMapBase:
             f"handler={self.handler}, handler_type={self.handler_type}>"
         )
 
+    @staticmethod
+    def _get_function_dot_path(func):
+        return func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
+
+    def display(self, prefix=""):
+        value = (
+            f"{prefix}UrlMap:\n"
+            f"{prefix}  name: {self.name}\n"
+            f"{prefix}  url: {self.url}\n"
+            f"{prefix}  protocol: {self.protocol}\n"
+            f"{prefix}  controller: {self._get_function_dot_path(self.controller)}\n"
+        )
+        if self.handler:
+            value += (
+                f"{prefix}  handler: {self._get_function_dot_path(self.handler)}\n"
+                f"{prefix}  handler_type: {self.handler_type}\n"
+            )
+        return value
+
 
 def url_map_maker(root_url):
     """
