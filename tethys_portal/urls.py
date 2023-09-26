@@ -51,12 +51,12 @@ psa_urls = optional_import("social_django.urls")
 logger = logging.getLogger(f"tethys.{__name__}")
 
 
-prefix_url = f"{settings.PREFIX_URL}"
-login_url_setting = f"{settings.LOGIN_URL}"
+prefix_url = settings.PREFIX_URL
+login_url_setting = settings.LOGIN_URL
 admin.site.login = staff_member_required(
     admin.site.login,
     redirect_field_name="",
-    login_url=f"{login_url_setting}",
+    login_url=login_url_setting,
 )
 
 admin.autodiscover()

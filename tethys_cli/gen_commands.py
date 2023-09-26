@@ -110,6 +110,11 @@ def add_gen_parser(subparsers):
         '"patch", or "none". Defaults to "none".',
     )
     gen_parser.add_argument(
+        "--micro",
+        action="store_true",
+        help="Use micro-tethys dependencies when generating the meta.yaml.",
+    )
+    gen_parser.add_argument(
         "--client-max-body-size",
         dest="client_max_body_size",
         help='Populate the client_max_body_size parameter for nginx config. Defaults to "75M".',
@@ -196,6 +201,7 @@ def add_gen_parser(subparsers):
         server_port=None,
         overwrite=False,
         pin_level="none",
+        micro=False,
         ssl=False,
         ssl_cert="",
         ssl_key="",
@@ -424,7 +430,9 @@ def derive_version_from_conda_environment(dep_str, level="none"):
 
 
 def gen_meta_yaml(args):
-    environment_file_path = os.path.join(TETHYS_SRC, "environment.yml")
+    filename = "min_env.yml" if args.micro else "environment.yml"
+    package_name = "micro-tethys-platform" if args.micro else "tethys-platform"
+    environment_file_path = os.path.join(TETHYS_SRC, filename)
     with open(environment_file_path, "r") as env_file:
         environment = yaml.safe_load(env_file)
 
@@ -441,7 +449,9 @@ def gen_meta_yaml(args):
             run_requirements.append(dependency)
 
     context = dict(
-        run_requirements=run_requirements, tethys_version=tethys_portal.__version__
+        run_requirements=run_requirements,
+        tethys_version=tethys_portal.__version__,
+        package_name=package_name,
     )
     return context
 

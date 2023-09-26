@@ -381,8 +381,23 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.db_commands.create_portal_superuser")
     @mock.patch("tethys_cli.db_commands.migrate_tethys_db")
+    @mock.patch("tethys_cli.db_commands.Path")
+    def test_db_command_configure_sqlite(
+        self, mock_Path, mock_migrate, mock_createsuperuser
+    ):
+        mock_args = mock.MagicMock()
+        mock_args.command = "configure"
+        self.mock_process_args.return_value["db_engine"] = "sqlite"
+        db_command(mock_args)
+        kwargs = self._get_kwargs()
+        mock_Path.assert_called_with(kwargs["db_name"])
+        mock_migrate.assert_called_with(**self.options)
+        mock_createsuperuser.assert_called_with(**self.options)
+
+    @mock.patch("tethys_cli.db_commands.create_portal_superuser")
+    @mock.patch("tethys_cli.db_commands.migrate_tethys_db")
     @mock.patch("tethys_cli.db_commands._prompt_if_error")
-    def test_db_command_configure(
+    def test_db_command_configure_postgres(
         self, mock_prompt_err, mock_migrate, mock_createsuperuser
     ):
         mock_args = mock.MagicMock()

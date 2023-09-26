@@ -35,3 +35,4 @@ dist/
 tethys_portal/_version.py
 # Required for docs build
 git-lfs-*/*
+/conda.recipe/meta.yaml
