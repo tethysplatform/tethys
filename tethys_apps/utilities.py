@@ -595,7 +595,8 @@ def get_installed_tethys_items(apps=False, extensions=False):
     for name, module in items.items():
         try:
             item = __import__(module, fromlist=[""])
-            paths[name] = item.__path__[0]
+            value = item.__path__[0]
+            paths[name] = value
         except (IndexError, ImportError):
             """DO NOTHING"""
 

@@ -21,7 +21,7 @@ class ListCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.list_command.print")
     @mock.patch("tethys_cli.list_command.get_installed_tethys_items")
     def test_list_command_installed_apps(self, mock_installed_items, mock_print):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(urls=None)
         mock_installed_items.side_effect = [{"foo": "/foo", "bar": "/bar"}, {}]
 
         list_command(mock_args)
@@ -45,7 +45,7 @@ class ListCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.list_command.print")
     @mock.patch("tethys_cli.list_command.get_installed_tethys_items")
     def test_list_command_installed_extensions(self, mock_installed_items, mock_print):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(urls=None)
         mock_installed_items.side_effect = [{}, {"baz": "/baz"}]
 
         list_command(mock_args)
@@ -62,7 +62,7 @@ class ListCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.list_command.print")
     @mock.patch("tethys_cli.list_command.get_installed_tethys_items")
     def test_list_command_installed_both(self, mock_installed_items, mock_print):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(urls=None)
         mock_installed_items.side_effect = [
             {"foo": "/foo", "bar": "/bar"},
             {"baz": "/baz"},
@@ -82,3 +82,13 @@ class ListCommandTests(unittest.TestCase):
         self.assertIn("  foo", check_list)
         self.assertIn("  bar", check_list)
         self.assertIn("  baz", check_list)
+
+    @mock.patch("tethys_cli.list_command.write_msg")
+    def test_list_command_urls(self, mock_msg):
+        mock_args = mock.MagicMock(urls=True)
+
+        list_command(mock_args)
+
+        # Check if print is called correctly
+        self.mock_write_info.assert_called_with("test_app")
+        self.assertEqual(mock_msg.call_count, 2)
