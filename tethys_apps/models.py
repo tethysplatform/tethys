@@ -1276,7 +1276,7 @@ class ProxyApp(models.Model):
     show_in_apps_library = models.BooleanField(default=True)
     open_in_new_tab = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
-    display_external = models.BooleanField(default=False)
+    display_external_icon = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Proxy App"

@@ -279,7 +279,7 @@ Proxy apps are links to external web applications or websites. They are represen
 * **Show in apps library**: Display the app on the Apps Library page. The app is still accessible by URL, but no app tile will be shown in the apps library.
 * **Open in new tab**: Open the proxy app link in a new tab or window when on. Open it the same tab or window when off.
 * **Order**: Force the order that apps are listed on the Apps Library page. Default order is alphabetical.
-* **External Display**: By default, this feature is turned off. It adds an icon to distinguish proxy apps from regular apps.
+* **Display External Icon**: By default, this feature is turned off. When enabled, it adds an icon to the app tile to distinguish the proxy app from regular apps, indicating that it is an external link.
 
 .. figure:: ../images/site_admin/new_proxy_app.png
     :width: 675px
