@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tethys_apps', '0003_proxyapp_display_external'),
+        ("tethys_apps", "0003_proxyapp_display_external"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='proxyapp',
-            old_name='display_external',
-            new_name='display_external_icon',
+            model_name="proxyapp",
+            old_name="display_external",
+            new_name="display_external_icon",
         ),
     ]
