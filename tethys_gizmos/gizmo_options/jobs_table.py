@@ -25,7 +25,7 @@ log = logging.getLogger("tethys.tethys_gizmos.gizmo_options.jobs_table")
 __all__ = ["JobsTable", "CustomJobAction"]
 
 
-JobsTableRow = namedtuple("JobsTableRow", ["columns", "actions"])
+JobsTableRow = namedtuple("JobsTableRow", ["columns", "job_status", "actions"])
 
 
 def add_static_method(cls):
@@ -183,6 +183,8 @@ class JobsTable(TethysGizmoOptions):
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
         show_detailed_status(bool): Show status of each node in CondorWorkflow jobs when True. Defaults to False.
+        sort(bool|callable): Whether to sort the list of jobs in the table. If True, jobs are sorted by creation time from oldest (top of the table) to newest. If a callable is passed then it is used as the key to sort the jobs. Default is True.
+        reverse_sort(bool): Whether to reverse the sorting order. If ``sort`` is False then this argument has no effect. Default is False. 
 
     Controller Example
 
@@ -292,6 +294,8 @@ class JobsTable(TethysGizmoOptions):
         actions=None,
         enable_data_table=False,
         data_table_options=None,
+        sort=True,
+        reverse_sort=False,
     ):
         """
         Constructor
@@ -302,6 +306,9 @@ class JobsTable(TethysGizmoOptions):
         super().__init__(attributes=attributes, classes=classes)
 
         self.jobs = jobs
+        if sort:
+            key = sort if callable(sort) else lambda j: j.creation_time
+            self.jobs.sort(key=key, reverse=reverse_sort)
         self.rows = None
         self.column_fields = None
         self.column_names = None
@@ -428,7 +435,7 @@ class JobsTable(TethysGizmoOptions):
             if isinstance(action, CustomJobAction):
                 self.actions[action.label] = action.properties
 
-        self.set_rows_and_columns(jobs, column_fields)
+        self.set_rows_and_columns(self.jobs, column_fields)
 
         # Compute column count
         self.num_cols = len(column_fields)
@@ -476,7 +483,7 @@ class JobsTable(TethysGizmoOptions):
                     field,
                 )
 
-        for job in sorted(jobs):
+        for job in jobs:
             row_values = self.get_row(
                 job,
                 self.column_fields,
@@ -493,12 +500,15 @@ class JobsTable(TethysGizmoOptions):
             job (TethysJob): An instance of a subclass of TethysJob
             job_attributes (list): a list of attribute names corresponding to the fields in the jobs table
             actions (dict): a dictionary of custom actions
-            delay_loading_status (bool): whether to delay loading the status
+            delay_loading_status (bool): whether to delay loading the status.
+                Note that ``cached_status`` will be used and only non-terminal statuses will be updated on load.
 
         Returns:
             A list of field values for one row.
 
         """
+        from tethys_compute.models import TethysJob
+
         job_actions = actions or {}
         row_values = list()
         extended_properties = job.extended_properties
@@ -518,14 +528,16 @@ class JobsTable(TethysGizmoOptions):
 
             row_values.append(value)
 
-        job_status = None if delay_loading_status else job.status
+        job_status = job.cached_status
+        if job_status not in TethysJob.TERMINAL_STATUSES:
+            job_status = None if delay_loading_status else job.status
 
         for action, properties in job_actions.items():
             properties["enabled"] = getattr(
                 job, CustomJobAction.get_enabled_callback_name(action), lambda js: True
             )(job_status)
 
-        return JobsTableRow(row_values, actions=job_actions)
+        return JobsTableRow(row_values, job_status=job_status, actions=job_actions)
 
     @staticmethod
     def get_gizmo_css():

@@ -53,7 +53,11 @@ class TethysJob(models.Model):
     PRE_RUNNING_STATUSES = DISPLAY_STATUSES[:2]
     RUNNING_STATUSES = DISPLAY_STATUSES[2:4]
     ACTIVE_STATUSES = DISPLAY_STATUSES[1:5]
+    NON_TERMINAL_STATUSES = DISPLAY_STATUSES[0:5]
     TERMINAL_STATUSES = DISPLAY_STATUSES[5:]
+
+    NON_TERMINAL_STATUS_CODES = VALID_STATUSES[0:5]
+    TERMINAL_STATUS_CODES = VALID_STATUSES[5:]
 
     OTHER_STATUS_KEY = "__other_status__"
 
@@ -103,20 +107,30 @@ class TethysJob(models.Model):
         return self._last_status_update
 
     @property
+    def cached_status(self):
+        """
+        The cached status of the job (i.e. the status from the last time it was updated).
+
+        Returns: A string of the display name for the cached job status.
+
+        """
+        field = self._meta.get_field("_status")
+        status = self._get_FIELD_display(field)
+        if self._status == "OTH":
+            status = self.extended_properties.get(self.OTHER_STATUS_KEY, status)
+        return status
+
+    @property
     def status(self):
         """
-        The current status of the job.
+        The current status of the job. ``update_status`` is called to ensure status is current.
 
         Returns: A string of the display name for the current job status.
 
         It may be set as an attribute in which case ``update_status`` is called.
         """
         self.update_status()
-        field = self._meta.get_field("_status")
-        status = self._get_FIELD_display(field)
-        if self._status == "OTH":
-            status = self.extended_properties.get(self.OTHER_STATUS_KEY, status)
-        return status
+        return self.cached_status
 
     @status.setter
     def status(self, value):
@@ -160,7 +174,7 @@ class TethysJob(models.Model):
 
         """
         old_status = self._status
-
+        update_needed = old_status in self.NON_TERMINAL_STATUS_CODES
         # Set status from status given
         if status:
             if status not in self.VALID_STATUSES:
@@ -175,13 +189,13 @@ class TethysJob(models.Model):
             self.save()
 
         # Update status if status not given and still pending/running
-        elif old_status in ["PEN", "SUB", "RUN", "VAR"] and self.is_time_to_update():
+        elif update_needed and self.is_time_to_update():
             self._update_status(*args, **kwargs)
             self._last_status_update = timezone.now()
 
         # Post-process status after update if old status was pending/running
-        if old_status in ["PEN", "SUB", "RUN", "VAR"]:
-            if self._status == "RUN" and (old_status == "PEN" or old_status == "SUB"):
+        if update_needed:
+            if self._status == "RUN" and (old_status in ("PEN", "SUB")):
                 self.start_time = timezone.now()
             if self._status in ["COM", "VCP", "RES"]:
                 self.process_results()
