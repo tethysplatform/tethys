@@ -7,7 +7,7 @@ Setup and manage a Tethys database.
 
 .. important::
 
-    The default database configuration uses SQLite. Many of these commands are not applicable to SQLite databases are only support PostgreSQL databases. To use a PostgreSQL database be sure to set your settings accordingly. At the very least:
+    The default database configuration uses SQLite. Many of these commands are not applicable to SQLite databases and only support PostgreSQL databases. To use a PostgreSQL database be sure to set your settings accordingly. At the very least:
 
     .. code-block:: bash
 
@@ -15,7 +15,7 @@ Setup and manage a Tethys database.
 
     For more details see :ref:`database_configuration`
 
-    Additionally, the PostgreSQL database and the ``psycopg2`` library be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``postgresql`` and ``psycopg2`` using conda as follows:
+    Additionally, the PostgreSQL database and the ``psycopg2`` library must be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``postgresql`` and ``psycopg2`` using conda as follows:
 
     .. code-block:: bash
 

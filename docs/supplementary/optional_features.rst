@@ -12,7 +12,7 @@ Security Features
 Session Security
 ----------------
 
-Session security enables setting timeouts for user sessions.
+Session security enables setting timeouts for user sessions and automatically logging them out.
 
 **dependencies**
  - ``django-session-security``
@@ -21,7 +21,7 @@ Session security enables setting timeouts for user sessions.
 Track Failed Login Attempts
 ---------------------------
 
-Tracking failed loging allows Tethys to lock user accounts after a certain number of failed attempts, and alerts users of the number of failed attempts when they login.
+Tracking failed logins allows Tethys to lock user accounts after a certain number of failed attempts, and alerts users of the number of failed attempts when they login.
 
 **dependencies**
     - ``django-axes``
@@ -110,7 +110,7 @@ Portal Enhancements
 Terms and Conditions
 --------------------
 
-Enables portal administrators to define terms and conditions that users must accept to user the portal.
+Enables portal administrators to define terms and conditions that users must accept to use the portal.
 
 **dependencies**
     - ``django-termsandconditions``
@@ -245,7 +245,7 @@ External Services
 Dataset Services
 ----------------
 
-Enables the :term:`dataset services` API.
+Enables the :term:`dataset services` APIs for CKAN and GeoServer.
 
 **dependencies**
     - ``tethys_dataset_services``

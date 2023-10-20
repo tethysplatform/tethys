@@ -28,7 +28,7 @@ Install Tethys Platform
 
     .. code-block:: bash
 
-        conda create -n tethys -c conda-forge -c tethysplatform tethys-platform
+        conda create -n tethys -c conda-forge tethys-platform
 
 2. Activate the ``tethys`` conda environment after it is created:
 
