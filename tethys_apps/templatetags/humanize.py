@@ -18,7 +18,7 @@ def human_duration(iso_duration_str):
     .. important::
 
        This feature requires the `arrow` and `isodate` libraries to be installed. Starting with Tethys 5.0 or if you are
-       using `microtethys`, you will need to install these libraries using conda or pip as follows:
+       using `micro-tethys-platform`, you will need to install these libraries using conda or pip as follows:
 
        .. code-block:: bash
 

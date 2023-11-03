@@ -802,7 +802,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         .. important::
 
-            This method requires the `pyshp` library to be installed. Starting with Tethys 5.0 or if you are using `microtethys`, you will need to install `django-json-widget` using conda or pip as follows:
+            This method requires the `pyshp` library to be installed. Starting with Tethys 5.0 or if you are using `micro-tethys-platform`, you will need to install `django-json-widget` using conda or pip as follows:
 
         .. code-block:: bash
 

@@ -8,7 +8,7 @@ Multi Factor Authentication (Optional)
 
 .. important::
 
-    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install these libraries using conda or pip as follows:
+    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
 
     .. code-block:: bash
 

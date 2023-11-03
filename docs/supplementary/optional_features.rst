@@ -4,7 +4,7 @@
 Optional Features
 *****************
 
-With the release of ``microtethys`` and starting with Tethys v5.0 many features of Tethys Platform will become optional and require additional dependencies to be installed. This is done to limit the size of the environment and allow Tethys Portal administrators more flexibility in deciding what features are needed in their deployment. The following list of features are optional and will require the listed dependencies to be installed for that feature to be enabled:
+With the release of ``micro-tethys-platform`` and starting with Tethys v5.0 many features of Tethys Platform will become optional and require additional dependencies to be installed. This is done to limit the size of the environment and allow Tethys Portal administrators more flexibility in deciding what features are needed in their deployment. The following list of features are optional and will require the listed dependencies to be installed for that feature to be enabled:
 
 Security Features
 =================
@@ -65,7 +65,7 @@ ReCaptcha uses a Google provided service to verify that the user logging in is h
 Multi-Factor Authentication
 ---------------------------
 
-Allows users to enable multi-factor authentication for the Tethys Portal account.
+Allows users to enable multi-factor authentication for their Tethys Portal account.
 
 **dependencies**
     - ``django-mfa2``
@@ -118,7 +118,7 @@ Enables portal administrators to define terms and conditions that users must acc
 Web Analytics Tracking
 ----------------------
 
-Gather web analytics statistics from portal usage.
+Gathers web analytics statistics from portal usage.
 
 **dependencies**
     - ``django-analytical``
@@ -126,7 +126,7 @@ Gather web analytics statistics from portal usage.
 JSON Widget
 -----------
 
-Enable a JSON widget in the admin pages for app settings.
+Enables a JSON widget in the admin pages for app settings.
 
 **dependencies**
     - ``django-json-widget``
@@ -145,7 +145,7 @@ Mapping
 May Layout Shapefile Support
 ----------------------------
 
-Enable converting geojson to shapefile.
+Enables converting geojson to shapefile.
 
 
 **dependencies**
@@ -157,7 +157,7 @@ Command Line Interface
 Docker
 ------
 
-Enable the ``docker`` command on the ``tethys`` CLI.
+Enables the ``docker`` command on the ``tethys`` CLI.
 
 **dependencies**
     - ``docker-py``
@@ -177,7 +177,7 @@ Databases
 PostgreSQL
 ----------
 
-Enable ``tethys db`` commands to setup local or remote PostgreSQL databases.
+Enables ``tethys db`` commands to setup local or remote PostgreSQL databases.
 
 **dependencies**
     - ``postgresql``
@@ -186,7 +186,7 @@ Enable ``tethys db`` commands to setup local or remote PostgreSQL databases.
 Persistent Stores
 -----------------
 
-Enable apps to define and use persistent stores.
+Enables apps to define and use persistent stores.
 
 **dependencies**
     - ``sqlalchemy<2``
@@ -194,7 +194,7 @@ Enable apps to define and use persistent stores.
 Spatial Persistent Stores
 -------------------------
 
-Enable apps to define spatial persistent stores.
+Enables apps to define spatial persistent stores.
 
 **dependencies**
     - ``sqlalchemy<2``
@@ -206,7 +206,7 @@ Gizmos
 Bokeh Plots
 -----------
 
-Enable the Bokeh plotting gizmo.
+Enables the Bokeh plotting gizmo.
 
 **dependencies**
     - ``bokeh``
@@ -214,7 +214,7 @@ Enable the Bokeh plotting gizmo.
 Plotly Plots
 ------------
 
-Enable the Plotly plotting gizmo.
+Enables the Plotly plotting gizmo.
 
 **dependencies**
     - ``plotly``

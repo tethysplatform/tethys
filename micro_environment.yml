@@ -1,10 +1,10 @@
 # environment.yml
 # Configuration file for creating a Conda Environment with dependencies needed for Tethys Platform.
 # Create the environment by running the following command (after installing Mambaforge):
-#   $ mamba env create -f min_env.yml
+#   $ mamba env create -f micro_environment.yml
 # OR
 # Create the environment with conda by running the following command (after installing Miniconda or similar):
-#   $ conda env create -f min_env.yml
+#   $ conda env create -f micro_environment.yml
 
 name: tethys
 

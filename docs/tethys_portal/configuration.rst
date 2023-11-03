@@ -91,7 +91,7 @@ SESSION_CONFIG
 
 .. important::
 
-    These settings require the ``django-session-security`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-session-security`` using conda or pip as follows:
+    These settings require the ``django-session-security`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-session-security`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -171,7 +171,7 @@ CAPTCHA_CONFIG
 
 .. important::
 
-    These Captcha feature requires either the ``django-simple-captcha`` library or the ``django-recaptcha2`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install one of these libraries using conda or pip as follows:
+    These Captcha feature requires either the ``django-simple-captcha`` library or the ``django-recaptcha2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install one of these libraries using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -199,7 +199,7 @@ OAUTH_CONFIG
 
 .. important::
 
-    These settings require the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
+    These settings require the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -281,7 +281,7 @@ MFA_CONFIG
 
 .. important::
 
-    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install these libraries using conda or pip as follows:
+    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -312,7 +312,7 @@ The Django Analytical configuration settings for enabling analytics services on 
 
 .. important::
 
-    These settings require the ``django-analytical`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-analytical`` using conda or pip as follows:
+    These settings require the ``django-analytical`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-analytical`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -372,7 +372,7 @@ The Django Axes configuration settings for enabling lockout capabilities on Teth
 
 .. important::
 
-    These settings require the ``django-axes`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-axes`` using conda or pip as follows:
+    These settings require the ``django-axes`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-axes`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -402,7 +402,7 @@ These CORS settings are used to configure Cross-Origin Resource Sharing (CORS) f
 
 .. important::
 
-    These settings require the ``django-cors-headers`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-cors-headers`` using conda or pip as follows:
+    These settings require the ``django-cors-headers`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-cors-headers`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -429,7 +429,7 @@ The Gravatar settings are used to configure the Gravatar service user profile pi
 
 .. important::
 
-    These settings require the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-gravatar2`` using conda or pip as follows:
+    These settings require the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-gravatar2`` using conda or pip as follows:
 
     .. code-block:: bash
 

@@ -19,7 +19,7 @@ Also, be sure that the system you are using meets the minimum :ref:`system_reqs`
 1. Install the ``tethys-platform`` Conda Package
 ------------------------------------------------
 
-a. To install the ``tethys-platform`` into a new conda environment then run the following commands:
+a. To install ``tethys-platform`` into a new conda environment then run the following commands:
 
 .. code-block:: bash
 
@@ -31,6 +31,14 @@ a. To install the ``tethys-platform`` into a new conda environment then run the 
 
     If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
 
+    **Install Micro-Tethys**
+
+    The ``micro-tethys-platform`` conda package is a minimal version of ``tethys-platform``. It has the exact same code base, but doesn't include any of the optional dependencies. As a result the environment is much smaller, but none of the optional features will be enabled. Any of the optional features can be enabled simply by installing the dependencies required by those features (see :ref:`optional_features`).
+
+        .. code-block:: bash
+
+            conda create -n tethys -c tethysplatform -c conda-forge micro-tethys-platform
+
     **Install Development Build**
 
     To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels:
@@ -40,6 +48,7 @@ a. To install the ``tethys-platform`` into a new conda environment then run the 
             conda create -n tethys -c tethysplatform/label/dev -c conda-forge tethys-platform
 
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.
+
 
 2. Activate the Tethys Conda Environment
 ----------------------------------------

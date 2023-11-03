@@ -8,7 +8,7 @@ Single Sign On (Optional)
 
 .. important::
 
-   This feature requires the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
+   This feature requires the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
 
    .. code-block:: bash
 
@@ -313,7 +313,7 @@ HydroShare
 
 .. important::
 
-    This feature requires the ``hs_restclient`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``hs_restclient`` using conda or pip as follows:
+    This feature requires the ``hs_restclient`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``hs_restclient`` using conda or pip as follows:
 
     .. code-block:: bash
 

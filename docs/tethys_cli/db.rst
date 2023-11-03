@@ -15,7 +15,7 @@ Setup and manage a Tethys database.
 
     For more details see :ref:`database_configuration`
 
-    Additionally, the PostgreSQL database and the ``psycopg2`` library must be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``postgresql`` and ``psycopg2`` using conda as follows:
+    Additionally, the PostgreSQL database and the ``psycopg2`` library must be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``postgresql`` and ``psycopg2`` using conda as follows:
 
     .. code-block:: bash
 

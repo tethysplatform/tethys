@@ -39,7 +39,7 @@ Install Tethys Platform
 Install Optional Dependencies
 =============================
 
-Beginning with Tethys v5.0 or if you are using ``microtethys`` many features of Tethys that require additional dependencies are optional. This allows you to select only the dependencies that you need for the features required in your deployment and maintains a minimal environment size. To the the list of optional features and their required dependencies see :ref:`optional_features`.
+Beginning with Tethys v5.0 or if you are using ``micro-tethys-platform`` many features of Tethys that require additional dependencies are optional. This allows you to select only the dependencies that you need for the features required in your deployment and maintains a minimal environment size. To the the list of optional features and their required dependencies see :ref:`optional_features`.
 
 1. Gather the list of optional dependencies that you want to include in your portal. Refer to the :ref:`optional_features` documentation and ensure that you have any dependencies that are required by features used by the apps that you will install into your portal.
 

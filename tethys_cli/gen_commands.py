@@ -430,7 +430,7 @@ def derive_version_from_conda_environment(dep_str, level="none"):
 
 
 def gen_meta_yaml(args):
-    filename = "min_env.yml" if args.micro else "environment.yml"
+    filename = "micro_environment.yml" if args.micro else "environment.yml"
     package_name = "micro-tethys-platform" if args.micro else "tethys-platform"
     environment_file_path = os.path.join(TETHYS_SRC, filename)
     with open(environment_file_path, "r") as env_file:

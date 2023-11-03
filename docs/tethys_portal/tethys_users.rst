@@ -17,7 +17,7 @@ The User Settings page can be accessed through the drop-down menu located at the
 
 .. note::
 
-    This icon next to the users name come from `Gravatar <https://gravatar.com/>`_. This feature requires the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-gravatar2`` using conda or pip as follows:
+    This icon next to the users name come from `Gravatar <https://gravatar.com/>`_. This feature requires the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-gravatar2`` using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -58,7 +58,7 @@ Manage User OAuth2 Application Registrations
 
 .. important::
 
-    This feature requires the ``django-oauth-toolkit`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``django-oauth-toolkit`` using conda or pip as follows:
+    This feature requires the ``django-oauth-toolkit`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-oauth-toolkit`` using conda or pip as follows:
 
     .. code-block:: bash
 

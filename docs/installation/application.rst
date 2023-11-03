@@ -74,7 +74,7 @@ This file is generated with your application scaffold. Dependencies that are lis
 
 .. important::
 
-    The ``conda`` sections of the ``install.yml`` file require the ``conda`` library and optionally the ``conda-libmamba-solver`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install these libraries using conda or pip as follows:
+    The ``conda`` sections of the ``install.yml`` file require the ``conda`` library and optionally the ``conda-libmamba-solver`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
 
     .. code-block:: bash
 

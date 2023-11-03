@@ -9,7 +9,7 @@ Plotly View
 
 .. important::
 
-    This gizmo requires the ``plotly`` library to be installed. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``plotly`` using conda or pip as follows:
+    This gizmo requires the ``plotly`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``plotly`` using conda or pip as follows:
 
     .. code-block:: bash
 

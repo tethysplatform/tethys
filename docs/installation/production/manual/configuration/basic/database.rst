@@ -11,7 +11,7 @@ In this part of the production deployment guide, you will learn how to initializ
 1. Install Python dependencies
 ==============================
 
-Using a PostgreSQL database for production requires the ``psycopg2`` Python package. Also,  While we do not recommend having your database on the same server as Tethys Portal, the commands to automate setting up and configuring the database require that the PostgreSQL database and the ``psycopg2`` library be installed on the web server. Starting with Tethys 5.0 or if you are using ``microtethys``, you will need to install ``postgresql`` and ``psycopg2`` using conda as follows:
+Using a PostgreSQL database for production requires the ``psycopg2`` Python package. Also,  While we do not recommend having your database on the same server as Tethys Portal, the commands to automate setting up and configuring the database require that the PostgreSQL database and the ``psycopg2`` library be installed on the web server. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``postgresql`` and ``psycopg2`` using conda as follows:
 
 
     .. code-block:: bash

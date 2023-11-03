@@ -105,9 +105,3 @@ dependencies:
   - factory_boy
   - flake8
   - flake8-bugbear
-
- # not needed:
-#  - future # required by django-json-widget  (not used directly)
-#  - service_identity # required by channels, daphne (not used directly)
-#  - django-filter  # I'm not sure where this was being used
-#  - pyjwt # required by social-auth-app-django  ( not used directly )
