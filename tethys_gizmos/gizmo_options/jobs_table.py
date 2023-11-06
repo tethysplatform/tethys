@@ -184,7 +184,7 @@ class JobsTable(TethysGizmoOptions):
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
         show_detailed_status(bool): Show status of each node in CondorWorkflow jobs when True. Defaults to False.
         sort(bool|callable): Whether to sort the list of jobs in the table. If True, jobs are sorted by creation time from oldest (top of the table) to newest. If a callable is passed then it is used as the key to sort the jobs. Default is True.
-        reverse_sort(bool): Whether to reverse the sorting order. If ``sort`` is False then this argument has no effect. Default is False. 
+        reverse_sort(bool): Whether to reverse the sorting order. If ``sort`` is False then this argument has no effect. Default is False.
 
     Controller Example
 

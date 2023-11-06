@@ -253,3 +253,8 @@ class TestSettings(TestCase):
         self.assertEqual(settings.PREFIX_URL, "test")
         self.assertEqual(settings.STATIC_URL, "/test/static/")
         self.assertEqual(settings.LOGIN_URL, "/test/accounts/login/")
+
+    @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=True)
+    def test_bokeh_django_staticfiles_finder(self, _):
+        reload(settings)
+        self.assertIn("bokeh_django.static.BokehExtensionFinder", settings.STATICFILES_FINDERS)

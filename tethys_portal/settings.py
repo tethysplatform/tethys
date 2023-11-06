@@ -32,15 +32,15 @@ from importlib import import_module
 from django.contrib.messages import constants as message_constants
 
 from tethys_apps.utilities import relative_to_tethys_home
-from tethys_portal.optional_dependencies import has_module
 from tethys_cli.cli_colors import write_warning
 from tethys_cli.gen_commands import generate_secret_key
-from tethys_portal.optional_dependencies import optional_import
+from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
 bokeh_settings, bokehjsdir = optional_import(
     ("settings", "bokehjsdir"), from_module="bokeh.settings"
 )
+bokeh_django = optional_import("bokeh_django")
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
@@ -60,8 +60,6 @@ except Exception:
     log.exception(
         "There was an error while attempting to read the settings from the portal_config.yml file."
     )
-if has_module(bokeh_settings):
-    bokeh_settings.resources = portal_config_settings.pop("BOKEH_RESOURCES", "inline")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
@@ -416,14 +414,22 @@ STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop("STATICFILES_USE_NPM", False)
 if STATICFILES_USE_NPM:
     STATICFILES_DIRS.append(BASE_DIR / "static" / "node_modules")
 
+if has_module(bokeh_settings):
+    bokeh_settings.resources = portal_config_settings.pop(
+        "BOKEH_RESOURCES", "server" if STATICFILES_USE_NPM else "cdn"
+    )
+
 STATICFILES_FINDERS = portal_config_settings.pop(
     "STATICFILES_FINDERS_OVERRIDE",
-    (
+    [
         "django.contrib.staticfiles.finders.FileSystemFinder",
         "django.contrib.staticfiles.finders.AppDirectoriesFinder",
         "tethys_apps.static_finders.TethysStaticFinder",
-    ),
+    ],
 )
+if has_module(bokeh_django):
+    STATICFILES_FINDERS.append("bokeh_django.static.BokehExtensionFinder")
+
 STATICFILES_FINDERS = (
     *STATICFILES_FINDERS,
     *portal_config_settings.pop("STATICFILES_FINDERS", []),
