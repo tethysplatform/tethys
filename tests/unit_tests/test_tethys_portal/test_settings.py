@@ -257,4 +257,6 @@ class TestSettings(TestCase):
     @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=True)
     def test_bokeh_django_staticfiles_finder(self, _):
         reload(settings)
-        self.assertIn("bokeh_django.static.BokehExtensionFinder", settings.STATICFILES_FINDERS)
+        self.assertIn(
+            "bokeh_django.static.BokehExtensionFinder", settings.STATICFILES_FINDERS
+        )
