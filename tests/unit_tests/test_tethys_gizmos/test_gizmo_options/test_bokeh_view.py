@@ -12,7 +12,7 @@ class TestBokehView(unittest.TestCase):
         pass
 
     def test_BokehView(self):
-        plot = figure(plot_height=300)
+        plot = figure(height=300)
         plot.circle([1, 2], [3, 4])
         attr = {"title": "test title", "description": "test attributes"}
         result = bokeh_view.BokehView(plot, attributes=attr)

@@ -356,7 +356,7 @@ def _parse_value(val):
 def reconstruct_post_dict(request):
     data = {key: _parse_value(val) for key, val in request.POST.items()}
     # parse out dictionaries from POST items
-    parts = [re.split("[\[\]]+", k)[:-1] for k in data.keys() if "[" in k]  # noqa: W605
+    parts = [re.split("[][]+", k)[:-1] for k in data.keys() if "[" in k]  # noqa: W605
     for p in parts:
         name = p[0]
         keys = p[1:]
