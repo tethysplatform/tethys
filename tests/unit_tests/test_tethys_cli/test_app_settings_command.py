@@ -8,9 +8,9 @@ from tethys_sdk.testing import TethysTestCase
 
 class TestCliAppSettingsCommand(unittest.TestCase):
     def setUp(self):
-        load_apps_patcher = mock.patch("tethys_cli.app_settings_commands.load_apps")
-        load_apps_patcher.start()
-        self.addCleanup(load_apps_patcher.stop)
+        setup_django_patcher = mock.patch("tethys_cli.app_settings_commands.setup_django")
+        setup_django_patcher.start()
+        self.addCleanup(setup_django_patcher.stop)
 
     def tearDown(self):
         pass

@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+from functools import wraps
 
 import bcrypt
 import django
@@ -67,11 +68,22 @@ def run_process(process):
         set_testing_environment(False)
 
 
-def load_apps():
-    stdout = sys.stdout
-    sys.stdout = open(os.devnull, "w")
-    django.setup()
-    sys.stdout = stdout
+def supress_stdout(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        stdout = sys.stdout
+        sys.stdout = open(os.devnull, "w")
+        result = func(*args, **kwargs)
+        sys.stdout = stdout
+        return result
+    return wrapped
+
+
+def setup_django(supress_output=False):
+    func = django.setup
+    if supress_output:
+        func = supress_stdout(func)
+    func()
 
 
 def generate_salt_string():

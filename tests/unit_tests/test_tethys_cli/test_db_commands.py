@@ -362,9 +362,9 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.db_commands.write_info")
     @mock.patch("tethys_cli.db_commands.write_error")
     @mock.patch("django.contrib.auth.models.User.objects.create_superuser")
-    @mock.patch("tethys_cli.db_commands.load_apps")
+    @mock.patch("tethys_cli.db_commands.setup_django")
     def test_db_command_createsuperuser(
-        self, mock_load_apps, mock_create_superuser, mock_write_error, _
+        self, mock_setup_django, mock_create_superuser, mock_write_error, _
     ):
         from django.db.utils import IntegrityError
 
@@ -372,7 +372,7 @@ class TestCommandTests(unittest.TestCase):
         mock_args.command = "createsuperuser"
         mock_create_superuser.side_effect = IntegrityError
         db_command(mock_args)
-        mock_load_apps.assert_called()
+        mock_setup_django.assert_called()
         mock_create_superuser.assert_called_with("PFoo", "PEmail", "PBar")
         portal_superuser = self.options["portal_superuser_name"]
         mock_write_error.assert_called_with(

@@ -15,7 +15,7 @@ from functools import partial
 from django.conf import settings
 from django.db.utils import IntegrityError
 
-from tethys_cli.cli_helpers import get_manage_path, run_process, load_apps
+from tethys_cli.cli_helpers import get_manage_path, run_process, setup_django
 from tethys_cli.cli_colors import write_info, write_error
 from tethys_apps.utilities import relative_to_tethys_home
 
@@ -399,7 +399,7 @@ def sync_tethys_apps_db(**kwargs):
         **kwargs: processed key word arguments from commandline
     """
     write_info("Syncing the Tethys database with installed apps and extensions...")
-    load_apps()
+    setup_django()
     from tethys_apps.harvester import SingletonHarvester
 
     harvester = SingletonHarvester()
@@ -421,7 +421,7 @@ def create_portal_superuser(
         **kwargs: processed key word arguments from commandline
     """
     write_info(f'Creating Tethys Portal superuser "{portal_superuser_name}"...')
-    load_apps()
+    setup_django()
     from django.contrib.auth.models import User  # noqa: E402
 
     try:

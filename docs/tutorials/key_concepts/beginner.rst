@@ -103,7 +103,7 @@ Tethys apps are developed using the :term:`Model View Controller` (MVC) software
 4. Views
 ========
 
-Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, HTML templates can use the Django Template Language, because Tethys Platform is build on Django. This allows you to insert Python code into your HTML documents making the web pages of your app dynamic and reusable.
+Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, HTML templates can use the Django Template Language, because Tethys Platform is build on Django. This allows you to coding logic into your HTML documents, using template tags, making the web pages of your app dynamic and reusable.
 
 a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with the following:
 
@@ -223,7 +223,7 @@ c. Save your changes to ``map.css`` and ``home.html`` and refresh the page to vi
 7. Create a New Page
 ====================
 
-Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller to ``controllers.py``, and (3) add a new ``UrlMap`` to the ``app.py``.
+Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller to ``controllers.py``, and (3) define the routing using the ``controller`` decorator.
 
 a. Create a new file ``/templates/dam_inventory/add_dam.html`` and add the following contents:
 
@@ -248,7 +248,7 @@ b. Create a new controller function called ``add_dam`` at the bottom of the ``co
 
     This is the most basic controller function you can write: a function that accepts an argument called ``request`` and a return value that is the result of the ``render`` function. The ``render`` function renders the Django template into valid HTML using the ``request`` and ``context`` provided.
 
-    Notice the use of the ``url`` argument in the ``controller`` decorator. The default URL that would have been generated without this argument would have been ``'add-dam'``.  The ``url`` argument is used to provide a custom URL for a controller. URLs are defined relative to the root URL of the app. The full URL for the ``add_dam`` controller as shown above is ``'/apps/dam-inventory/dams/add/'``.
+    Notice the use of the ``url`` argument in the ``controller`` decorator. The ``controller`` decorator creates a route that maps a URL to this controller function. The default URL that would have been generated without this argument would have been ``'add-dam'``.  The ``url`` argument is used to provide a custom URL for a controller. URLs are defined relative to the root URL of the app. The full URL for the ``add_dam`` controller as shown above is ``'/apps/dam-inventory/dams/add/'``. Also note that the name of the route created by the ``controller`` decorator is, by default, the same as the function name (``add_dam``). The name of the route will be important when we need to reference it in a template.
 
 c. At this point you should be able to access the new page by entering its URL (`<http://localhost:8000/apps/dam-inventory/dams/add/>`_) into the address bar of your browser. It is not a very exciting page, because it is blank.
 
@@ -363,7 +363,7 @@ b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html
         <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
         {% endblock %}
 
-    The ``url`` tag is used in templates to lookup URLs using the name of the UrlMap, namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the urls to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
+    The ``url`` tag is used in templates to lookup URLs using the name of the route (as defined in by the ``controller`` decorator), namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the URLs to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
 
 11. Solution
 ============

@@ -17,7 +17,7 @@ Tethys Portal includes administration pages that can be used to manage the websi
 
     If you did not create an administrator user during installation, run the following command in the terminal:
 
-    ::
+    .. code-block:: console
 
         tethys manage createsuperuser
 
@@ -264,7 +264,7 @@ JSON Custom Settings
 ++++++++++++++++++++
 
 .. important::
-`
+
     This feature requires the ``django-json-widget`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-json-widget`` using conda or pip as follows:
 
     .. code-block:: bash

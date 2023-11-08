@@ -16,7 +16,7 @@ Create and install a new Tethys app named bokeh_tutorial.
 
 ::
 
-    t
+    conda activate tethys
     tethys scaffold bokeh_tutorial
     cd tethysapp-bokeh_tutorial
     tethys install -d
@@ -28,11 +28,15 @@ Create and install a new Tethys app named bokeh_tutorial.
 
 To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``bokeh-django`` libraries.
 
-1. Install the ``bokeh`` and ``bokeh-django`` libraries by running the following with your Tethys environment activated:
+1. Install the ``bokeh`` and ``bokeh-django`` libraries by running one of the following commands with your Tethys environment activated:
 
 .. code-block:: bash
 
+    # conda: conda-forge channel strongly recommended for bokeh (the erdc/label/dev channel is currently needed for bokeh-django)
     conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django
+
+    # pip
+    pip install bokeh bokeh-django
 
 2. Add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
 
@@ -64,7 +68,7 @@ The logic for creating a Bokeh widget along with other related functionality is 
 
 Let's use Bokeh's sea temperature sample data to create a time series plot and link it to a slider that will provide the value to perform a rolling-window analysis on the time series. This example is based on a similar example in Bokeh's main documentation.
 
-1. Create a ``handler function`` by adding the following imports and logic to ``controller.py``.
+1. Create a ``handler function`` by adding the following imports and logic to ``handlers.py``.
 
 .. code-block:: Python
 
@@ -72,9 +76,13 @@ Let's use Bokeh's sea temperature sample data to create a time series plot and l
     from bokeh.models import ColumnDataSource
     from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 
-    ...
+    from tethys_sdk.routing import handler
 
-    def home_handler(document):
+
+    @handler(
+        template="bokeh_tutorial/home.html",
+    )
+    def home(document):
         df = sea_surface_temperature.copy()
         source = ColumnDataSource(data=df)
 
@@ -84,65 +92,31 @@ Let's use Bokeh's sea temperature sample data to create a time series plot and l
 
         document.add_root(plot)
 
-This simple handler contains the logic for a time series plot of the sea surface temperature sample data provided by ``Bokeh``.
+This simple handler contains the logic for a time series plot of the sea surface temperature sample data provided by ``Bokeh``. The ``handler`` decorator marks this function as a handler. It auto generates a default ``controller function`` that is linked to the handler. A default template can also be used, but we specified a custom template using the ``template`` argument to the ``handler`` decorator. The ``handler`` decorator also sets up the routing. By default the route name and the URL are derived from the ``handler function`` name (in this case ``home``). For more information about the ``handler`` decorator and additional arguments that can be passed see :ref:`handler-decorator`. Since this default controller is sufficient, we don't need to create a custom controller and can just delete the ``controller.py`` file.
 
-2. Clear the default home function in ``controller.py`` and add the following code to it.
+2. Delete the ``controller.py`` file.
 
-.. code-block:: Python
-
-    from bokeh.embed import server_document
-
-    @login_required()
-    def home(request):
-        script = server_document(request.build_absolute_uri())
-        context = {'script': script}
-        return render(request, 'bokeh_tutorial/home.html', context)
-
-The home controller can now load the time series plot from (a) using the Bokeh ``server_document`` function. However, we still need to link the ``handler`` and the ``controller`` in the ``app.py``, and add the script context variable to the template as with any other variable.
-
-3. Modify ``app.py`` by adding a dot-formatted path to the handler function created in (1) to the ``handler`` parameter and providing a ``handler_type`` with a value equal to 'bokeh' as shown in the code below.
-
-.. code-block:: Python
-
-    from tethys_sdk.base import TethysAppBase
-
-
-    class BokehTutorial(TethysAppBase):
-        """
-        Tethys app class for Bokeh Tutorial.
-        """
-
-        name = 'Bokeh Tutorial'
-        index = 'bokeh_tutorial:home'
-        icon = 'bokeh_tutorial/images/icon.gif'
-        package = 'bokeh_tutorial'
-        root_url = 'bokeh-tutorial'
-        color = '#2980b9'
-        description = ''
-        tags = ''
-        enable_feedback = False
-        feedback_emails = []
-
-4. Clear the default ``home.html`` template and add the following code to it.
+3. Clear the default ``home.html`` template and add the following code to it.
 
 .. code-block:: html+django
 
     {% extends "bokeh_tutorial/base.html" %}
-    {% load tethys_gizmos %}
 
     {% block app_content %}
       <h1>Bokeh Integration Example</h1>
       {{ script|safe }}
     {% endblock %}
 
-As you can see, the script context variable has been added to the app_content block. If you start tethys and go to the home page of this app you should see something like this:
+As you can see, a ``script`` context variable has been added to the app_content block. The default ``controller function`` defines this script which handles loading the content specified in the ``handler function``. We customized the template by adding in a heading which will render above the content from the ``handler function``.
+
+If you start tethys and go to the home page of this app you should see something like this:
 
 .. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_1.png
     :width: 650px
 
 This is a simple Bokeh plot. We will now add the rest of the logic to make it an interactive plot. We will add a ``Slider`` widget. Then, we will create a callback function to modify the time-series plot based on the slider. Finally, we will add both our plot and slider to the document tree using a ``Column`` layout.
 
-5. Modify the ``handler function`` from ``controller.py`` to look like this.
+5. Modify the ``handler function`` from ``handlers.py`` to look like this.
 
 .. code-block:: python
 
@@ -243,6 +217,8 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
             return [], []
 
         def view(self):
+            if not self.figure.renderers:
+                self.__init__(name=self.name)
             return self.figure
 
 
@@ -286,82 +262,45 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
         def title(self):
             return '## %s (radius=%.1f)' % (type(self.shape).__name__, self.shape.radius)
 
+        @param.depends('shape')
+        def controls(self):
+            return pn.Param(self.shape)
+
         def panel(self):
-            return pn.Column(self.title, self.view)
+            expand_layout = pn.Column()
+
+            return pn.Column(
+                pn.pane.HTML('<h1>Bokeh Integration Example using Param and Panel</h1>'),
+                pn.Row(
+                    pn.Column(
+                        pn.panel(self.param, expand_button=False, expand=True, expand_layout=expand_layout),
+                        "#### Subobject parameters:",
+                        expand_layout),
+                    pn.Column(self.title, self.view)
+                ),
+                sizing_mode='stretch_width',
+            )
 
 The added classes depend on ``Bokeh``.  The `Circle` and `NGon` classes depend on the `Shape` class, while the `ShapeViewer` allows the user to pick one of the two available shapes.
 
-4. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``controller.py``.
+4. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``handlers.py``.
 
 .. code-block:: python
 
-    import panel as pn
     from .param_model import ShapeViewer
 
     ...
 
-    def shapes_handler(document):
-        viewer = ShapeViewer()
-        panel = pn.Row(viewer.param, viewer.panel())
-        panel.server_doc(document)
+    @handler(
+        app_package='bokeh_tutorial',
+    )
+    def shapes(document):
+        viewer = ShapeViewer().panel()
+        viewer.server_doc(document)
 
-5. Add a ``controller function`` to pass the ``Panel`` object to a template and to link it with the ``handler`` created in the previous step.
+Note that in this case we are not using a custom template, but we add the ``app_package`` argument to the the ``handler`` decorator so that the default template that Tethys uses will inherit from the ``base.html`` template from our app.
 
-.. code-block:: python
-
-    def shapes_with_panel(request):
-        script = server_document(request.build_absolute_uri())
-        context = {'script': script}
-        return render(request, "bokeh_tutorial/shapes.html", context)
-
-6. Create a new ``UrlMap`` in ``app.py`` to link the new ``handler-controller pair`` to an endpoint.
-
-.. code-block:: python
-
-    def url_maps(self):
-        """
-        Add controllers
-        """
-        UrlMap = url_map_maker(self.root_url)
-
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='bokeh-tutorial',
-                controller='bokeh_tutorial.controllers.home',
-                handler='bokeh_tutorial.controllers.home_handler',
-                handler_type='bokeh'
-            ),
-            UrlMap(
-                name='shapes',
-                url='bokeh-tutorial/shapes',
-                controller='bokeh_tutorial.controllers.shapes_with_panel',
-                handler='bokeh_tutorial.controllers.shapes_handler',
-                handler_type='bokeh'
-            ),
-        )
-
-        return url_maps
-
-7. Add a new template to match the path rendered in the new ``controller`` from (c) (`bokeh_tutorial/shapes.html`).
-
-.. code-block:: html+django
-
-    {% extends "bokeh_tutorial/base.html" %}
-    {% load tethys_gizmos %}
-
-    {% block header_buttons %}
-      <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
-        <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
-      </div>
-    {% endblock %}
-
-    {% block app_content %}
-      <h1>Bokeh Integration Example using Param and Panel</h1>
-      {{ script|safe }}
-    {% endblock %}
-
-8. To add the new endpoint to the app navigation bar, go to the ``base.html`` template and replace the ``app_navigation`` block content with the code below.
+5. To add the new endpoint to the app navigation bar, go to the ``base.html`` template and replace the ``app_navigation`` block content with the code below.
 
 .. code-block:: html+django
 

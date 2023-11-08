@@ -46,7 +46,7 @@ to do so with PlotlyView.
             {% import_gizmo_dependency plotly_view %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a PlotlyView gizmo.
 

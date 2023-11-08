@@ -45,7 +45,7 @@ to do so with Bokeh.
             {% import_gizmo_dependency bokeh_view %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a BokehView gizmo.
 

@@ -29,7 +29,7 @@ from tethys_apps.utilities import (
 )
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import setup_django
 
 from .site_commands import SITE_SETTING_CATEGORIES
 
@@ -339,7 +339,7 @@ def gen_portal_yaml(args):
 
 
 def gen_secrets_yaml(args):
-    load_apps()
+    setup_django()
     tethys_secrets_settings = {}
     tethys_secrets_settings.setdefault("version", 1.0)
     tethys_secrets_settings.setdefault("secrets", {})

@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
-    load_apps,
+    setup_django,
     generate_salt_string,
 )
 from tethys_apps.utilities import (
@@ -821,7 +821,7 @@ def install_command(args):
 
     # Run Portal Level Config if present
     if not skip_config:
-        load_apps()
+        setup_django()
         if args.force_services:
             run_services(app_name, args)
         else:
