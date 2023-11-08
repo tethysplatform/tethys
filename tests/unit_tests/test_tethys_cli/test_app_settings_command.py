@@ -8,7 +8,9 @@ from tethys_sdk.testing import TethysTestCase
 
 class TestCliAppSettingsCommand(unittest.TestCase):
     def setUp(self):
-        setup_django_patcher = mock.patch("tethys_cli.app_settings_commands.setup_django")
+        setup_django_patcher = mock.patch(
+            "tethys_cli.app_settings_commands.setup_django"
+        )
         setup_django_patcher.start()
         self.addCleanup(setup_django_patcher.stop)
 

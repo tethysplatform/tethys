@@ -76,6 +76,7 @@ def supress_stdout(func):
         result = func(*args, **kwargs)
         sys.stdout = stdout
         return result
+
     return wrapped
 
 

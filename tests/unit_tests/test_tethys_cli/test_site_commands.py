@@ -86,7 +86,12 @@ class CLISiteCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.site_commands.Path")
     @mock.patch("tethys_cli.site_commands.setup_django")
     def test_gen_site_content_with_yaml_invalid_category(
-        self, mock_setup_django, mock_path, mock_update_settings, mock_load_yaml, mock_warn
+        self,
+        mock_setup_django,
+        mock_path,
+        mock_update_settings,
+        mock_load_yaml,
+        mock_warn,
     ):
         mock_file_path = mock.MagicMock()
         mock_path.return_value = mock_file_path
