@@ -2,10 +2,7 @@ import datetime as dt
 import hashlib
 import random
 import string
-from unittest import mock
 import uuid
-from social_core.exceptions import AuthTokenError
-from jose.jwt import JWTError
 from jose import jwt
 from jose.utils import base64url_encode
 from django import test

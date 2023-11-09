@@ -33,7 +33,7 @@ def list_command(args):
 
     if installed_apps:
         write_info("Apps:")
-        for item, p in installed_apps.items():
+        for item, _ in installed_apps.items():
             print(f"  {item}")
 
     if installed_extensions:
