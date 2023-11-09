@@ -12,13 +12,10 @@ from urllib.error import HTTPError, URLError
 from functools import wraps
 
 import requests.exceptions
-from social_django.utils import load_strategy
 
-from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.shortcuts import redirect
-from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_apps.base.app_base import TethysAppBase
 from .models import (
@@ -26,7 +23,18 @@ from .models import (
     SpatialDatasetService as SdsModel,
     WebProcessingService as WpsModel,
 )
-from tethys_dataset_services.engines import HydroShareDatasetEngine
+
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+HydroShareDatasetEngine = optional_import(
+    "HydroShareDatasetEngine", from_module="tethys_dataset_services.engines"
+)
+WebProcessingService = optional_import("WebProcessingService", from_module="owslib.wps")
+load_strategy = optional_import("load_strategy", from_module="social_django.utils")
+AuthAlreadyAssociated, AuthException = optional_import(
+    ("AuthAlreadyAssociated", "AuthException"), from_module="social_core.exceptions"
+)
 
 
 logger = logging.getLogger(__name__)

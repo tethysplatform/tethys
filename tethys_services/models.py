@@ -9,17 +9,27 @@
 """
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from owslib.wps import WebProcessingService as WPS
-from social_core.exceptions import AuthException
-from siphon.catalog import TDSCatalog
-from siphon.http_util import session_manager
-from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
-from tethys_dataset_services.engines import (
+from urllib.error import HTTPError, URLError
+
+from tethys_portal.optional_dependencies import optional_import, has_module
+
+# optional imports
+VALID_ENGINES, VALID_SPATIAL_ENGINES = optional_import(
+    ("VALID_ENGINES", "VALID_SPATIAL_ENGINES"),
+    from_module="tethys_dataset_services.valid_engines",
+)
+(
     CkanDatasetEngine,
     GeoServerSpatialDatasetEngine,
     HydroShareDatasetEngine,
+) = optional_import(
+    ("CkanDatasetEngine", "GeoServerSpatialDatasetEngine", "HydroShareDatasetEngine"),
+    from_module="tethys_dataset_services.engines",
 )
-from urllib.error import HTTPError, URLError
+WPS = optional_import("WebProcessingService", from_module="owslib.wps")
+TDSCatalog = optional_import("TDSCatalog", from_module="siphon.catalog")
+session_manager = optional_import("session_manager", from_module="siphon.http_util")
+AuthException = optional_import("AuthException", from_module="social_core.exceptions")
 
 
 def validate_url(value):
@@ -81,8 +91,13 @@ class DatasetService(models.Model):
     """
 
     # Define default values for engine choices
-    CKAN = VALID_ENGINES["ckan"]
-    HYDROSHARE = VALID_ENGINES["hydroshare"]
+    # TODO: These defaults allow the migration to run even if
+    #  the dependency that is providing VALID_ENGINES is not installed
+    CKAN = "tethys_dataset_services.engines.CkanDatasetEngine"
+    HYDROSHARE = "tethys_dataset_services.engines.HydroShareDatasetEngine"
+    if has_module(VALID_ENGINES):
+        CKAN = VALID_ENGINES["ckan"]
+        HYDROSHARE = VALID_ENGINES["hydroshare"]
 
     # Define default choices for engine selection
     ENGINE_CHOICES = ((CKAN, "CKAN"), (HYDROSHARE, "HydroShare"))
@@ -148,7 +163,9 @@ class SpatialDatasetService(models.Model):
     ORM for Spatial Dataset Service settings.
     """
 
-    GEOSERVER = VALID_SPATIAL_ENGINES["geoserver"]
+    GEOSERVER = "tethys_dataset_services.engines.GeoServerSpatialDatasetEngine"
+    if has_module(VALID_SPATIAL_ENGINES):
+        GEOSERVER = VALID_SPATIAL_ENGINES["geoserver"]
     THREDDS = "thredds-engine"
 
     ENGINE_CHOICES = ((GEOSERVER, "GeoServer"), (THREDDS, "THREDDS"))

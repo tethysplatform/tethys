@@ -18,12 +18,10 @@ from django.db.utils import ProgrammingError, OperationalError
 from django.utils.html import format_html
 from django.shortcuts import reverse
 from django.db import models
-from django_json_widget.widgets import JSONEditorWidget
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.models import GroupObjectPermission
-from mfa.models import User_Keys
 from tethys_quotas.utilities import get_quota, _convert_storage_units
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_apps.models import (
@@ -40,7 +38,17 @@ from tethys_apps.models import (
     PersistentStoreDatabaseSetting,
     ProxyApp,
 )
+from tethys_portal.optional_dependencies import (
+    optional_import,
+    has_module,
+    MissingOptionalDependency,
+)
 
+# optional imports
+User_Keys = optional_import("User_Keys", from_module="mfa.models")
+JSONEditorWidget = optional_import(
+    "JSONEditorWidget", from_module="django_json_widget.widgets"
+)
 
 tethys_log = logging.getLogger("tethys." + __name__)
 
@@ -95,13 +103,14 @@ class JSONCustomSettingInline(TethysAppSettingInline):
 
     width_default = "100%"
     height_default = "300px"
-    formfield_overrides = {
-        models.JSONField: {
-            "widget": JSONEditorWidget(
-                width=width_default, height=height_default, options=options_default
-            )
-        },
-    }
+    if has_module(JSONEditorWidget):
+        formfield_overrides = {
+            models.JSONField: {
+                "widget": JSONEditorWidget(
+                    width=width_default, height=height_default, options=options_default
+                )
+            },
+        }
 
 
 class DatasetServiceSettingInline(TethysAppSettingInline):
@@ -529,7 +538,7 @@ def register_user_keys_admin():
         User_Keys._meta.verbose_name = "Users MFA Key"
         User_Keys._meta.verbose_name_plural = "Users MFA Keys"
         admin.site.register(User_Keys, UserKeyAdmin)
-    except ProgrammingError:
+    except (ProgrammingError, MissingOptionalDependency):
         tethys_log.warning("Unable to register UserKeys.")
 
 
@@ -540,7 +549,8 @@ class ProxyAppAdmin(GuardedModelAdmin):
 register_custom_group()
 admin.site.unregister(User)
 admin.site.register(User, CustomUser)
-register_user_keys_admin()
+if has_module(User_Keys):
+    register_user_keys_admin()
 admin.site.register(ProxyApp, ProxyAppAdmin)
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)

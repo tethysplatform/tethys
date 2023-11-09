@@ -217,7 +217,7 @@ jobs:
           conda activate conda-build
           conda config --set anaconda_upload no
           mkdir -p ~/conda-bld
-          conda-build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+          conda-build -c conda-forge ./tethys/conda.recipe
       # Upload Conda No Pull Request No Tag
       - name: Upload Conda No Tag
         if: ${{ github.event_name != 'pull_request' }}
@@ -229,6 +229,45 @@ jobs:
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       # No Upload if Pull Request
       - name: No Upload
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "Uploading is skipped for pull requests."
+
+      # BUILD micro-tethys-platform
+
+      # Generate Conda Recipe Without Constrained Dependencies
+      - name: Generate Conda Recipe - micro
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          tethys gen metayaml --micro --overwrite;
+      # Show Tethys Meta
+      - name: Show Tethys Meta - micro
+        run: |
+          cd ..
+          cat ./tethys/conda.recipe/meta.yaml
+      # Build Conda
+      - name: Build Conda - micro
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda create -y -c conda-forge -n conda-build conda-build anaconda-client 
+          conda activate conda-build
+          conda config --set anaconda_upload no
+          mkdir -p ~/conda-bld
+          conda-build -c conda-forge ./tethys/conda.recipe
+      # Upload Conda No Pull Request No Tag
+      - name: Upload Conda No Tag - micro
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          ls ~/conda-bld/noarch
+          conda activate conda-build
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
+      # No Upload if Pull Request
+      - name: No Upload - micro
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "Uploading is skipped for pull requests."

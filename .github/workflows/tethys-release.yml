@@ -173,3 +173,45 @@ jobs:
           conda activate tethys;
           echo "Publishing to dev channel...";
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+
+      # BUILD micro-tethys-platform
+
+      # Generate Conda Recipe With Constrained Dependencies
+      - name: Generate Conda Recipe - micro
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          tethys gen metayaml -p minor --micro --overwrite;
+      # Show Tethys Meta
+      - name: Show Tethys Meta - micro
+        run: |
+          cd ..
+          cat ./tethys/conda.recipe/meta.yaml
+      # Build Conda
+      - name: Build Conda - micro
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda create -y -c conda-forge -n conda-build conda-build anaconda-client 
+          conda activate conda-build
+          conda config --set anaconda_upload no
+          mkdir -p ~/conda-bld
+          conda-build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+      # Upload to Anaconda Cloud
+      - name: Upload to Conda Release Channel - micro
+        if: ${{ steps.version.outputs.prerelease == '' }}
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          echo "Publishing to release channel...";
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
+      - name: Upload to Conda Dev Channel - micro
+        if: ${{ steps.version.outputs.prerelease != '' }}
+        run: |
+          cd ..
+          . ~/miniconda/etc/profile.d/conda.sh;
+          conda activate tethys;
+          echo "Publishing to dev channel...";
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;

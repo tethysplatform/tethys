@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.utils import timezone
 
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import setup_django
 from tethys_cli.cli_colors import write_msg, write_warning
 from tethys_apps.utilities import get_tethys_home_dir
 
@@ -294,7 +294,7 @@ def add_site_parser(subparsers):
 
 
 def gen_site_content(args):
-    load_apps()
+    setup_django()
 
     if args.restore_defaults:
         restore_site_setting_defaults()

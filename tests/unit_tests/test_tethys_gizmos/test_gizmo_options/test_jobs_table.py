@@ -12,6 +12,7 @@ class JobObject:
         self.run_time = run_time
         self.extended_properties = {"processing_results": True}
         self.status = "Pending"
+        self.cached_status = self.status
 
     def __lt__(self, other):
         return self.id < other.id

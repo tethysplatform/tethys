@@ -46,7 +46,7 @@ class TestInit(unittest.TestCase):
 
         custom_settings(apps=mock_apps, schema_editor=mock_schema_editor)
 
-        mock_init_settings.called_with(mock_apps, mock_schema_editor)
+        mock_init_settings.assert_called_with(mock_apps, mock_schema_editor)
         mock_settings.assert_has_calls(
             [mock.call(name="Custom Styles"), mock.call(name="Custom Templates")],
             any_order=True,

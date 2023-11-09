@@ -19,11 +19,11 @@ Also, be sure that the system you are using meets the minimum :ref:`system_reqs`
 1. Install the ``tethys-platform`` Conda Package
 ------------------------------------------------
 
-a. To install the ``tethys-platform`` into a new conda environment then run the following commands:
+a. To install ``tethys-platform`` into a new conda environment then run the following commands:
 
 .. code-block:: bash
 
-    conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
+    conda create -n tethys -c conda-forge tethys-platform
 
 .. tip::
 
@@ -31,13 +31,24 @@ a. To install the ``tethys-platform`` into a new conda environment then run the 
 
     If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
 
+    **Install Micro-Tethys**
+
+    The ``micro-tethys-platform`` conda package is a minimal version of ``tethys-platform``. It has the exact same code base, but doesn't include any of the optional dependencies. As a result the environment is much smaller, but none of the optional features will be enabled. Any of the optional features can be enabled simply by installing the dependencies required by those features (see :ref:`optional_features`).
+
+        .. code-block:: bash
+
+            conda create -n tethys -c tethysplatform -c conda-forge micro-tethys-platform
+
     **Install Development Build**
 
-    To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels::
+    To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels:
 
-        conda create -n tethys -c tethysplatform/label/dev -c tethysplatform -c conda-forge tethys-platform
+        .. code-block:: bash
+
+            conda create -n tethys -c tethysplatform/label/dev -c conda-forge tethys-platform
 
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.
+
 
 2. Activate the Tethys Conda Environment
 ----------------------------------------
@@ -51,7 +62,9 @@ Anytime you want to work with Tethys Platform, you'll need to activate the ``tet
 3. Create a :file:`portal_config.yml` File
 ------------------------------------------
 
-To add custom configurations such as the database and other local settings you will need to generate a :file:`portal_config.yml` file. To generate a new template :file:`portal_config.yml` run::
+To add custom configurations such as the database and other local settings you will need to generate a :file:`portal_config.yml` file. To generate a new template :file:`portal_config.yml` run:
+
+.. code-block:: bash
 
     tethys gen portal_config
 
@@ -61,20 +74,24 @@ You can customize your settings in the :file:`portal_config.yml` file after you 
 4. Configure the Tethys Database
 --------------------------------
 
-Tethys Platform requires a PostgreSQL database server. There are several options for setting up a DB server: local, docker, or dedicated. For development environments you can use Tethys to create a local server::
+There are several options for setting up a DB server: local, docker, or remote. Tethys Platform uses a local SQLite database by default. For development environments you can use Tethys to create a local server:
+
+.. code-block:: bash
 
     tethys db configure
 
 .. note::
 
-    The tethys db command (:ref:`tethys_db_cmd`) will create a local database server in the directory specified by the ``DIR`` setting in the ``DATABASES`` section of the :file:`portal_config.yml` file. If the value of ``DIR`` is a relative path then the database server will be created relative to directory specified by the ``TETHYS_HOME`` environment variable. By default ``TETHYS_HOME`` is at `~/.tethys`.
+    The tethys db command (:ref:`tethys_db_cmd`) will create a local database file in the location specified by the ``NAME`` setting in the ``DATABASES`` section of the :file:`portal_config.yml` file (by default ``tethys_platform.sqlite``). If the value of ``NAME`` is a relative path then the database file will be created relative to directory specified by the ``TETHYS_HOME`` environment variable. By default ``TETHYS_HOME`` is at `~/.tethys`.
 
-    As an alternative to creating a local database server you can also configure a Docker DB server (see :ref:`using_docker`). A local database server is only recommended for development environments. For production environments please refer to :ref:`production_installation`.
+For additional options for configuring a database see :ref:`database_configuration`
 
 5. Start the Development Server
 -------------------------------
 
-Once you have a database successfully configured you can run the Tethys development server::
+Once you have a database successfully configured you can run the Tethys development server:
+
+.. code-block:: bash
 
     tethys manage start
 
@@ -84,7 +101,7 @@ This will start up a locally running web server. You can access the Tethys Porta
 
     You can customize the port that the server is running on by adding the ``-p`` option.
 
-    ::
+    .. code-block:: bash
 
         tethys manage start -p 8001
 
@@ -110,6 +127,7 @@ Related Docs
 
     installation/system_requirements
     tethys_portal/configuration
+    installation/database_configuration
     installation/conda
     installation/application
     installation/showcase_apps

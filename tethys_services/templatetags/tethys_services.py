@@ -1,6 +1,9 @@
 from django import template
 
-from owslib.wps import ComplexData
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+ComplexData = optional_import("ComplexData", from_module="owslib.wps")
 
 register = template.Library()
 

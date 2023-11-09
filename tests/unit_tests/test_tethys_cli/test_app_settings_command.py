@@ -8,9 +8,11 @@ from tethys_sdk.testing import TethysTestCase
 
 class TestCliAppSettingsCommand(unittest.TestCase):
     def setUp(self):
-        load_apps_patcher = mock.patch("tethys_cli.app_settings_commands.load_apps")
-        load_apps_patcher.start()
-        self.addCleanup(load_apps_patcher.stop)
+        setup_django_patcher = mock.patch(
+            "tethys_cli.app_settings_commands.setup_django"
+        )
+        setup_django_patcher.start()
+        self.addCleanup(setup_django_patcher.stop)
 
     def tearDown(self):
         pass
@@ -462,7 +464,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -479,7 +481,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -500,7 +502,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -521,7 +523,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -558,7 +560,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -582,7 +584,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
 
         mock_write_error.assert_called_with("Please enclose the JSON in single quotes")
         mock_write_success.assert_not_called()
-        mock_exit.called_with(1)
+        mock_exit.assert_called_with(1)
 
     @mock.patch(
         "tethys_cli.app_settings_commands.open",
@@ -622,7 +624,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_error.assert_not_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn("File found, extracting JSON data", po_call_args[0][0][0])
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -643,7 +645,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -787,7 +789,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_write_success.assert_not_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn("File found, extracting JSON data", po_call_args[0][0][0])
-        mock_exit.called_with(1)
+        mock_exit.assert_called_with(1)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -853,7 +855,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -875,7 +877,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -897,7 +899,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
@@ -919,7 +921,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         )
         mock_write_error.assert_not_called()
         mock_write_success.assert_called()
-        mock_exit.called_with(0)
+        mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")

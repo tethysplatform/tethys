@@ -8,11 +8,14 @@
 """
 from abc import abstractmethod
 
-from condorpy import Node
 from django.db import models
 from model_utils.managers import InheritanceManager
 
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+Node = optional_import("Node", from_module="condorpy")
 
 
 class CondorWorkflowNode(models.Model):

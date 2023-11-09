@@ -6,6 +6,19 @@ Multi Factor Authentication (Optional)
 
 **Last Updated:** September 2020
 
+.. important::
+
+    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-mfa2 arrow isodate
+
+        # pip
+        pip install django-mfa2 arrow isodate
+
+
 Tethys allows you to enable/enforce the use of multi factor authentication through apps such as LastPass Authenticator or Google Authenticator. This capability is provided by `Django MFA2 <https://github.com/mkalioby/django-mfa2/>`_. This tutorial will show you how to enable that functionality.
 
 

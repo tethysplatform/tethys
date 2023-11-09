@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import datetime as dt
+from tethys_portal.optional_dependencies import optional_import, has_module
 
 
 def tethys_global_settings_context(request):
@@ -15,7 +16,11 @@ def tethys_global_settings_context(request):
     Add the current Tethys app metadata to the template context.
     """
     from .models import Setting
-    from termsandconditions.models import TermsAndConditions
+
+    # optional imports
+    TermsAndConditions = optional_import(
+        "TermsAndConditions", from_module="termsandconditions.models"
+    )
 
     # Get settings
     site_globals = Setting.as_dict()
@@ -43,7 +48,8 @@ def tethys_global_settings_context(request):
         site_globals["secondary_text_hover_color"] = "#aaaaaa"
 
     # Get terms and conditions
-    site_globals.update({"documents": TermsAndConditions.get_active_terms_list()})
+    if has_module(TermsAndConditions):
+        site_globals.update({"documents": TermsAndConditions.get_active_terms_list()})
 
     context = {
         "site_globals": site_globals,

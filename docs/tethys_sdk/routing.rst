@@ -1,4 +1,4 @@
-.. _url_maps_api:
+.. _routing_api:
 
 ***********
 Routing API
@@ -126,9 +126,11 @@ A ``Bokeh Document`` comes with a ``Bokeh Request``. This request contains most 
 
 .. important::
 
-    To use the ``handler`` decorator you will need the ``bokeh_django`` package which is not installed by default. It can be installed with::
+    To use the ``handler`` decorator you will need the ``bokeh`` and ``bokeh-django`` packages which may not be installed by default. They can be installed with:
 
-        conda install -c conda-forge -c erdc/label/dev bokeh-django openssl=1.1.1q
+    .. code-block:: bash
+
+        conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django
 
 .. tip::
     For more information regarding Bokeh Server and available models visit the `Bokeh Server Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://bokeh.pydata.org/en/latest/docs/reference/models.html#bokeh-models>`_.

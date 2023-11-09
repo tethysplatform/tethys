@@ -10,7 +10,10 @@ import logging
 from django.db import models
 from tethys_compute.models.scheduler import Scheduler
 from tethys_compute.models.dask.dask_job_exception import DaskJobException
-from dask.distributed import Client
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+Client = optional_import("client", from_module="dask.distributed")
 
 log = logging.getLogger("tethys." + __name__)
 

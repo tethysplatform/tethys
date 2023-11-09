@@ -512,7 +512,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret.save()
 
-        mock_remove_perm.called_with("test_app:access_app", mock_obj, self.app_model)
+        mock_remove_perm.assert_called_with(
+            "test_app:access_app", mock_obj, self.app_model
+        )
         self.assertEqual(
             mock_assign_perm.call_args_list[0].args,
             ("test_app:access_app", mock_obj, self.app_model),

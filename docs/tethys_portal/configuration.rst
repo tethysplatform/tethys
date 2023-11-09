@@ -8,7 +8,7 @@ Beginning in Tethys Platform 3.0 the Tethys Portal is configured via a :file:`po
 
 Once you have installed Tethys you can generate a new :file:`portal_config.yml` file using the ``gen`` command. (See :ref:`tethys_gen_cmd` for more information).
 
-::
+.. code-block::bash
 
   tethys gen portal_config
 
@@ -82,10 +82,24 @@ ENABLE_RESTRICTED_APP_ACCESS                       app access can be restricted 
 TETHYS_WORKSPACES_ROOT                             location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
 STATIC_ROOT                                        the Django `STATIC_ROOT <https://docs.djangoproject.com/en/3.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 STATICFILES_USE_NPM                                serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.
+ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overriden.
+ADDITIONAL_URLPATTERNS                             a list of dot-paths to list or tuples that define additional URL patterns to register in the portal. Additional URL patterns will precede default URL patterns so URLs will first match against user specified URL patterns.
 ================================================== ================================================================================
 
 SESSION_CONFIG
 ++++++++++++++
+
+.. important::
+
+    These settings require the ``django-session-security`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-session-security`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-session-security
+
+        # pip
+        pip install django-session-security
 
 ================================================== ================================================================================
 Setting                                            Description
@@ -93,6 +107,8 @@ Setting                                            Description
 SESSION_SECURITY_WARN_AFTER                        the Django Session Security `WARN_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 840 seconds.
 SESSION_SECURITY_EXPIRE_AFTER                      the Django Session Security `EXPIRE_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 900 seconds.
 ================================================== ================================================================================
+
+.. _database_settings:
 
 DATABASES
 +++++++++
@@ -116,7 +132,7 @@ See the Django `DATABASES <https://docs.djangoproject.com/en/3.2/ref/settings/#d
 +--+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |  | PORT     | the Django default database `PORT <https://docs.djangoproject.com/en/3.2/ref/settings/#port>`_ setting. Not used with SQLite.                                                                                                                                                                                                                                                                                                                    |
 +--+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|  | DIR      | name of psql directory for conda installation of PostgreSQL that ships with Tethys (if using the ``django.db.backends.postgresql`` ``ENGINE``). This directory will be created relative to the ``TETHYS_HOME`` directory when ``tethys db create`` is executed, unless an absolute path is provided. Defaults to ``psql``. If you are using the ``sqlite3`` ``ENGINE`` or an external database server then exclude this key or set it to `None`. |
+|  | DIR      | name of psql directory for a local PostgreSQL database (if using the ``django.db.backends.postgresql`` ``ENGINE``). This directory will be created relative to the ``TETHYS_HOME`` directory when ``tethys db create`` is executed, unless an absolute path is provided. If you are using the ``sqlite3`` ``ENGINE`` or an external database server then exclude this key or set it to `None`.                                                   |
 +--+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 LOGGING
@@ -153,9 +169,26 @@ LOGGING
 CAPTCHA_CONFIG
 ++++++++++++++
 
+.. important::
+
+    These Captcha feature requires either the ``django-simple-captcha`` library or the ``django-recaptcha2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install one of these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-simple-captcha
+        # Or
+        conda install -c conda-forge django-recaptcha2
+
+        # pip
+        pip install django-simple-captcha
+        # Or
+        pip install django-recaptcha2
+
 ================================================== ================================================================================
 Setting                                            Description
 ================================================== ================================================================================
+ENABLE_CAPTCHA                                     Boolean specifying if captcha should be enabled on the login screen. If using Google ReCaptcha then the following two settings are required. Default is ``False``
 RECAPTCHA_PRIVATE_KEY                              Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
 RECAPTCHA_PUBLIC_KEY                               Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
 RECAPTCHA_PROXY_HOST                               Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
@@ -163,6 +196,38 @@ RECAPTCHA_PROXY_HOST                               Proxy host for Google ReCaptc
 
 OAUTH_CONFIG
 ++++++++++++
+
+.. important::
+
+    These settings require the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge social-auth-app-django
+
+        # pip
+        pip install social-auth-app-django
+    
+    If using the OneLogin OIDC provider, you will also need to install the ``python-jose`` library:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge python-jose
+
+        # pip
+        pip install python-jose
+
+    If using the HydroShare provider, you will also need the ``hs_restclient`` library:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge hs_restclient
+
+        # pip
+        pip install hs_restclient
 
 ================================================== ================================================================================
 Setting                                            Description
@@ -214,6 +279,18 @@ SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN                Your OneLogin Subdomain. See 
 MFA_CONFIG
 ++++++++++
 
+.. important::
+
+    These settings require the ``django-mfa2``, ``arrow``, and ``isodate`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-mfa2 arrow isodate
+
+        # pip
+        pip install django-mfa2 arrow isodate
+
 ================================================== ================================================================================
 Setting                                            Description
 ================================================== ================================================================================
@@ -230,7 +307,20 @@ MFA_UNALLOWED_METHODS                              A list of MFA methods to be d
 ANALYTICS_CONFIG
 ++++++++++++++++
 
-the Django Analytical configuration settings for enabling analytics services on the Tethys Portal (see: `Enabling Services - Django Analytical <https://django-analytical.readthedocs.io/en/latest/install.html#enabling-the-services>`_. The following is a list of settings for some of the supported services that can be enabled.
+The Django Analytical configuration settings for enabling analytics services on the Tethys Portal (see: `Enabling Services - Django Analytical <https://django-analytical.readthedocs.io/en/latest/install.html#enabling-the-services>`_. The following is a list of settings for some of the supported services that can be enabled.
+
+
+.. important::
+
+    These settings require the ``django-analytical`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-analytical`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-analytical
+
+        # pip
+        pip install django-analytical
 
 ================================================== ================================================================================
 Setting                                            Description
@@ -278,19 +368,86 @@ EMAIL_FROM                                         the email alias setting (e.g.
 LOCKOUT_CONFIG
 ++++++++++++++
 
-the Django Axes configuration settings for enabling lockout capabilities on Tethys Portal (see: :ref:`advanced_config_lockout`). The following is a list of the Django Axes settings that are configured for the default lockout capabilities in Tethys Portal. For a full list of Django Axes settings, see: `Django Axes Configuration Documentation <https://django-axes.readthedocs.io/en/latest/4_configuration.html>`_.
+The Django Axes configuration settings for enabling lockout capabilities on Tethys Portal (see: :ref:`advanced_config_lockout`). The following is a list of the Django Axes settings that are configured for the default lockout capabilities in Tethys Portal. For a full list of Django Axes settings, see: `Django Axes Configuration Documentation <https://django-axes.readthedocs.io/en/latest/4_configuration.html>`_.
+
+.. important::
+
+    These settings require the ``django-axes`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-axes`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-axes
+
+        # pip
+        pip install django-axes
 
 ================================================== ================================================================================
 Setting                                            Description
 ================================================== ================================================================================
 AXES_FAILURE_LIMIT                                 Number of failed login attempts to allow before locking. Default ``3``.
 AXES_COOLOFF_TIME                                  Time to elapse before locked user is allowed to attempt logging in again. In the :file:`portal_config.yml` this setting accepts only integers or `ISO 8601 time duration formatted strings <https://en.wikipedia.org/wiki/ISO_8601#Durations>`_ (e.g.: ``"PT30M"``). Default is 30 minutes.
-AXES_ONLY_USER_FAILURES                            Only lock based on username and do not lock based on IP when True. Defaults to ``True``.
+AXES_LOCKOUT_PARAMETERS                            A list of parameters that Axes uses to lock out users. See `Django Axes - Customizing lockout parameters <https://django-axes.readthedocs.io/en/latest/5_customization.html#customizing-lockout-parameters>`_ for more details. Defaults to ``['username']``.
 AXES_ENABLE_ADMIN                                  Enable the Django Axes admin interface. Defaults to ``True``.
 AXES_VERBOSE                                       More logging for Axes when True. Defaults to ``True``.
 AXES_RESET_ON_SUCCESS                              Successful login (after the cooloff time has passed) will reset the number of failed logins when True. Defaults to ``True``.
 AXES_LOCKOUT_TEMPLATE                              Template to render when user is locked out. Defaults to ``'tethys_portal/accounts/lockout.html'``
 AXES_LOGGER                                        The logger for Django Axes to use. Defaults to ``'tethys.watch_login'``.
+================================================== ================================================================================
+
+CORS_CONFIG
++++++++++++
+
+These CORS settings are used to configure Cross-Origin Resource Sharing (CORS) for the Tethys Portal. See: `Django CORS Headers <https://pypi.org/project/django-cors-headers>`_ for more information for the complete list of availalbe settings.
+
+.. important::
+
+    These settings require the ``django-cors-headers`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-cors-headers`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-cors-headers
+
+        # pip
+        pip install django-cors-headers
+
+================================================== ================================================================================
+Setting                                            Description
+================================================== ================================================================================
+CORS_ALLOWED_ORIGINS                               A list of origins that are authorized to make cross-site HTTP requests. Defaults to ``[]``.
+CORS_ALLOWED_ORIGIN_REGEXES                        A list of strings representing regexes that match Origins that are authorized to make cross-site HTTP requests. Defaults to ``[]``.
+CORS_ALLOW_ALL_ORIGINS                             If ``True``, all origins will be allowed. Other settings restricting allowed origins will be ignored. Defaults to ``False``.
+CORS_ALLOW_METHODS                                 A list of HTTP verbs that are allowed for cross-site requests. Defaults to ``("DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT")``.
+CORS_ALLOW_HEADERS                                 The list of non-standard HTTP headers that you permit in requests from the browser. Sets the Access-Control-Allow-Headers header in responses to preflight requests. Defaults to ``("accept", "authorization", "content-type", "user-agent", "x-csrftoken", "x-requested-with")``.
+================================================== ================================================================================
+
+Gravatar Settings
++++++++++++++++++
+
+The Gravatar settings are used to configure the Gravatar service user profile pictures for the Tethys Portal. See: `Django Gravatar 2 <https://pypi.org/project/django-gravatar2>`_ for more information.
+
+.. important::
+
+    These settings require the ``django-gravatar2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-gravatar2`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-gravatar2
+
+        # pip
+        pip install django-gravatar2
+
+================================================== ================================================================================
+Setting                                            Description
+================================================== ================================================================================
+GRAVATAR_URL                                       the Gravatar service endpoint. Defaults to ``"http://www.gravatar.com/"``.
+GRAVATAR_SECURE_URL                                the secure Gravatar service endpoint. Defaults to ``"https://secure.gravatar.com/"``.
+GRAVATAR_DEFAULT_SIZE                              the default size in pixels of the Gravatar image. Defaults to ``"80"``.
+GRAVATAR_DEFAULT_IMAGE                             the default Gravatar image. Defaults to ``"retro"``.
+GRAVATAR_DEFAULT_RATING                            the default allowable image rating. Defaults to ``"g"``.
+GRAVATAR_DEFAULT_SECURE                            uses Gravatar secure endpoint when ``True``. Defaults to ``True``.
 ================================================== ================================================================================
 
 Other Settings

@@ -6,11 +6,6 @@ import tethys_apps.base.mixins
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("tethys_apps", "0001_initial_40"),
-        ("tethys_apps", "0002_auto_20221130_2305"),
-    ]
-
     initial = True
 
     dependencies = [

@@ -12,10 +12,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from mfa.helpers import has_mfa
 from tethys_portal.forms import LoginForm, RegisterForm
 from tethys_portal.utilities import log_user_in
 from tethys_config.models import get_custom_template
+
+from tethys_portal.optional_dependencies import optional_import, has_module
+
+# optional imports
+has_mfa = optional_import("has_mfa", from_module="mfa.helpers")
 
 
 @never_cache
@@ -45,9 +49,10 @@ def login_view(request):
                 # The password has been verified for the user
                 if user.is_active:
                     # Check for multi factor authentication
-                    mfa_response = has_mfa(request, user.username)
-                    if mfa_response:
-                        return mfa_response
+                    if has_module(has_mfa):
+                        mfa_response = has_mfa(request, user.username)
+                        if mfa_response:
+                            return mfa_response
 
                     return log_user_in(request, user)
                 else:

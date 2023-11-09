@@ -22,25 +22,6 @@ class TestServiceInstallHelpers(TestCase):
         )
         self.app.save()
 
-    @mock.patch("tethys_cli.cli_colors.write_warning")
-    def test_no_conda(self, mock_warn):
-        from importlib import reload
-        import builtins
-
-        real_import = builtins.__import__
-
-        def mock_import(name, *args):
-            if name == "conda.cli.python_api":
-                raise ModuleNotFoundError
-            else:
-                return real_import(name, *args)
-
-        builtins.__import__ = mock_import
-        reload(install_commands)
-        builtins.__import__ = real_import
-        self.assertEqual(install_commands.has_conda, False)
-        mock_warn.assert_called_once()
-
     @mock.patch("tethys_cli.install_commands.exit")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_open_file_error(self, mock_pretty_output, mock_exit):
@@ -1005,13 +986,13 @@ class TestInstallCommands(TestCase):
         mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.install_commands.write_warning")
-    @mock.patch.object(install_commands, "has_conda")
+    @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.install_commands.exit")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_install_no_conda(
-        self, mock_pretty_output, mock_exit, mock_call, _, mock_has_conda, mock_warn
+        self, mock_pretty_output, mock_exit, mock_call, _, mock_has_module, mock_warn
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -1025,7 +1006,7 @@ class TestInstallCommands(TestCase):
             without_dependencies=False,
         )
         mock_exit.side_effect = SystemExit
-        mock_has_conda.__bool__ = lambda self: False
+        mock_has_module.return_value = False
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -1048,13 +1029,13 @@ class TestInstallCommands(TestCase):
         mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.install_commands.write_warning")
-    @mock.patch.object(install_commands, "has_conda")
+    @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.install_commands.exit")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_install_no_conda_error(
-        self, mock_pretty_output, mock_exit, mock_call, _, mock_has_conda, mock_warn
+        self, mock_pretty_output, mock_exit, mock_call, _, mock_has_module, mock_warn
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -1068,7 +1049,7 @@ class TestInstallCommands(TestCase):
             without_dependencies=False,
         )
         mock_exit.side_effect = SystemExit
-        mock_has_conda.__bool__ = lambda self: False
+        mock_has_module.return_value = False
         mock_call.side_effect = [Exception, None, None, None]
         self.assertRaises(SystemExit, install_commands.install_command, args)
 

@@ -6,10 +6,14 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+from tethys_portal.optional_dependencies import optional_import
 import os
 
-from condorpy import Templates, Job
 from django.db import models
+
+# optional imports
+Templates = optional_import("Templates", from_module="condorpy")
+Job = optional_import("Job", from_module="condorpy")
 
 
 class CondorPyJob(models.Model):

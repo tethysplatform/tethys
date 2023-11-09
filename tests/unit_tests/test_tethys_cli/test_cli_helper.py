@@ -67,8 +67,13 @@ class TestCliHelper(unittest.TestCase):
         mock_te_call.assert_called_once()
 
     @mock.patch("tethys_cli.cli_helpers.django.setup")
-    def test_load_apps(self, mock_django_setup):
-        cli_helper.load_apps()
+    def test_setup_django(self, mock_django_setup):
+        cli_helper.setup_django()
+        mock_django_setup.assert_called()
+
+    @mock.patch("tethys_cli.cli_helpers.django.setup")
+    def test_setup_django_supress_output(self, mock_django_setup):
+        cli_helper.setup_django(supress_output=True)
         mock_django_setup.assert_called()
 
     @mock.patch("tethys_cli.cli_helpers.bcrypt.gensalt")

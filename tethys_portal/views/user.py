@@ -12,8 +12,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from rest_framework.authtoken.models import Token
-from mfa.helpers import has_mfa
 
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
@@ -25,6 +23,43 @@ from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_quotas.utilities import get_quota, _convert_storage_units
 from tethys_config.models import get_custom_template
 
+from tethys_portal.optional_dependencies import optional_import, has_module
+
+# optional imports
+has_mfa = optional_import("has_mfa", from_module="mfa.helpers")
+Token = optional_import("Token", from_module="rest_framework.authtoken.models")
+
+
+def get_user_context(request):
+    """
+    Create the context object used in both the profile and the settings views.
+    """
+    user = request.user
+    user_token_key = None
+    if has_module(Token):
+        user_token, _ = Token.objects.get_or_create(user=user)
+        user_token_key = user_token.key
+    codename = "user_workspace_quota"
+    rqh = WorkspaceQuotaHandler(user)
+    current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
+    quota = get_quota(user, codename)
+    quota = _check_quota_helper(quota)
+    user_has_mfa = mfa_is_required = False
+    if has_module(has_mfa):
+        user_has_mfa = has_mfa(username=user.username, request=request)
+        mfa_is_required = getattr(django_settings, "MFA_REQUIRED", False)
+    show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
+
+    context = {
+        "user_token": user_token_key,
+        "current_use": current_use,
+        "quota": quota,
+        "has_mfa": user_has_mfa,
+        "mfa_required": mfa_is_required,
+        "show_user_token_mfa": show_user_token_mfa,
+    }
+    return context
+
 
 @login_required()
 @never_cache
@@ -32,25 +67,7 @@ def profile(request):
     """
     Handle the profile view.
     """
-    user = request.user
-    user_token, token_created = Token.objects.get_or_create(user=user)
-    codename = "user_workspace_quota"
-    rqh = WorkspaceQuotaHandler(user)
-    current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
-    quota = get_quota(user, codename)
-    quota = _check_quota_helper(quota)
-    user_has_mfa = has_mfa(username=user.username, request=request)
-    mfa_is_required = getattr(django_settings, "MFA_REQUIRED", False)
-    show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
-
-    context = {
-        "user_token": user_token.key,
-        "current_use": current_use,
-        "quota": quota,
-        "has_mfa": user_has_mfa,
-        "mfa_required": mfa_is_required,
-        "show_user_token_mfa": show_user_token_mfa,
-    }
+    context = get_user_context(request)
     template = get_custom_template(
         "User Page Template", "tethys_portal/user/profile.html"
     )
@@ -89,26 +106,8 @@ def settings(request):
         # Create a form populated with data from the instance user
         form = UserSettingsForm(instance=user)
 
-    # Create template context object
-    user_token, token_created = Token.objects.get_or_create(user=user)
-    codename = "user_workspace_quota"
-    rqh = WorkspaceQuotaHandler(user)
-    current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
-    quota = get_quota(user, codename)
-    quota = _check_quota_helper(quota)
-    user_has_mfa = has_mfa(username=request.user.username, request=request)
-    mfa_is_required = getattr(django_settings, "MFA_REQUIRED", False)
-    show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
-
-    context = {
-        "form": form,
-        "user_token": user_token.key,
-        "current_use": current_use,
-        "quota": quota,
-        "has_mfa": user_has_mfa,
-        "mfa_required": mfa_is_required,
-        "show_user_token_mfa": show_user_token_mfa,
-    }
+    context = get_user_context(request)
+    context["form"] = form
     template = get_custom_template(
         "User Settings Page Template", "tethys_portal/user/settings.html"
     )

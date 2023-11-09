@@ -6,6 +6,18 @@ THREDDS Engine (Siphon) Reference
 
 **Last Updated**: December 2019
 
+.. important::
+
+    This feature requires the ``siphon`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``siphon`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge siphon
+
+        # pip
+        pip install siphon
+
 This guide introduces `Siphon <https://unidata.github.io/siphon/latest/index.html>`_, the which is used as the engine for the THREDDS spatial dataset service. Siphon is a 3rd-party library developed by Unidata for interacting with data on remote services, currently focused on THREDDS services. Siphon does not implement the ``SpatialDatasetEngine`` pattern.
 
 Example Usage

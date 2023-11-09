@@ -1,6 +1,6 @@
 {% extends "tethys_portal/accounts/base.html" %}
 
-{% load django_bootstrap5 recaptcha2 site_settings %}
+{% load django_bootstrap5 site_settings %}
 
 {% block title %}{{ block.super }} - Log In{% endblock %}
 
@@ -10,7 +10,9 @@
 {% endblock %}
 
 {% block account_content_top %}
-  {% recaptcha_init %}
+  {% if has_recaptcha %}
+    {% include "tethys_portal/accounts/recaptcha.html" %}
+  {% endif %}
 {% endblock %}
 
 

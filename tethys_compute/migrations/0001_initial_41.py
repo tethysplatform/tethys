@@ -7,11 +7,6 @@ import tethys_compute.models.dask.dask_field
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("tethys_compute", "0001_initial_40"),
-        ("tethys_compute", "0002_alter_condorpyjob__remote_input_files"),
-    ]
-
     initial = True
 
     dependencies = [
