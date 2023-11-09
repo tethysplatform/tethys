@@ -1,5 +1,5 @@
 from .cli_colors import FG_RED, FG_GREEN, FG_YELLOW, BOLD, pretty_output
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import setup_django
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -141,7 +141,7 @@ def add_scheduler_parser(subparsers):
 
 
 def schedulers_remove_command(args):
-    load_apps()
+    setup_django()
     from tethys_compute.models import Scheduler
 
     scheduler = None
@@ -181,7 +181,7 @@ def schedulers_remove_command(args):
 
 
 def condor_scheduler_create_command(args):
-    load_apps()
+    setup_django()
     from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 
     name = args.name
@@ -221,7 +221,7 @@ def condor_scheduler_create_command(args):
 
 
 def dask_scheduler_create_command(args):
-    load_apps()
+    setup_django()
     from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 
     name = args.name
@@ -256,7 +256,7 @@ def dask_scheduler_create_command(args):
 
 
 def schedulers_list_command(args):
-    load_apps()
+    setup_django()
     schedule_type = args.type.lower()
     if schedule_type == "condor":
         from tethys_compute.models.condor.condor_scheduler import CondorScheduler

@@ -1,0 +1,7 @@
+{% load gravatar static %}
+
+{% if gravatar_url %}
+<img src="{% if user.email %}{% gravatar_url user.email image_size %}{% else %}{% gravatar_url 'tethys@example.com' image_size %}{% endif %}" alt="" width="{{ image_size }}" height="{{ image_size }}" class="d-inline-block align-text-top">
+{% else %}
+{% if user.email %}{% gravatar user.email image_size %}{% else %}{% gravatar "tethys@example.com" image_size %}{% endif %}
+{% endif %}

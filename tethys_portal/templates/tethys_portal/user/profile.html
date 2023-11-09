@@ -1,6 +1,6 @@
 {% extends "tethys_portal/user/base.html" %}
 
-{% load static gravatar site_settings %}
+{% load static site_settings %}
 
 {% block title %}{{ block.super }} - Profile{% endblock %}
 
@@ -11,6 +11,7 @@
 {% block secondary_content %}
     {% block profile_sections %}
     <div id="profile-sections" class="container">
+      {% block name_override %}
       <div class="profile-section row mx-2 my-3">
         <hr>
         <div class="col-xl-4">
@@ -29,6 +30,8 @@
         {% endblock %}
         <hr>
       </div>
+      {% endblock %}
+      {% block email_override %}
       <div class="profile-section row mx-2">
         <div class="col-xl-4">
           <h3>Email</h3>
@@ -43,6 +46,8 @@
         {% endblock %}
         <hr>
       </div>
+      {% endblock %}
+      {% block credentials_override %}
       <div class="profile-section row mx-2">
         <div class="col-xl-4">
           <h3>Credentials</h3>
@@ -56,13 +61,17 @@
             <dt class="col-sm-4">Password:</dt>
             <dd class="col-sm-8">********</dd>
             {% endif %}
+            {% if has_mfa %}
             <dt class="col-sm-4">2-Step Verification: </dt>
             <dd class="col-sm-8">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</dd>
+            {% endif  %}
           </dl>
         </div>
         {% endblock %}
         <hr>
       </div>
+      {% endblock %}
+      {% block sso_override %}
       {% if backends.backends %}
       <div class="profile-section row mx-2">
         <div class="col-xl-4">
@@ -89,6 +98,8 @@
         <hr>
       </div>
       {% endif %}
+      {% endblock %}
+      {% block api_key_override %}
       <div class="profile-section row mx-2">
         <div class="col-xl-4">
           <h3>API Key</h3>
@@ -105,6 +116,8 @@
         </div>
         <hr>
       </div>
+      {% endblock %}
+      {% block account_override %}
       <div class="profile-section row mx-2">
         <div class="col-xl-4">
           <h3>Account</h3>
@@ -123,6 +136,8 @@
         {% endblock %}
         <hr>
       </div>
+      {% endblock %}
+      {% block workspace_override %}
       <div class="profile-section row mx-2">
         <div class="col-xl-4">
           <h3>Workspace</h3>
@@ -139,6 +154,24 @@
         {% endblock %}
         <hr>
       </div>
+      {% endblock %}
+      {% block oauth2_provider_override %}
+      {% if has_oauth2_provider %}
+      <div class="profile-section row mx-2">
+        <div class="col-xl-4">
+          <h3>OAuth2 Provider</h3>
+        </div>
+        <div class="profile-parameters col-xl-8">
+          <dl class="row">
+            <dd class="col-sm-8"><a class="btn btn-success" href="{% url 'oauth2_provider:list' %}">My Applications</a></dd>
+          </dl>
+        </div>
+        <hr>
+      </div>
+      {% endif %}
+      {% endblock %}
+      {% block custom_sections %}
+      {% endblock %}
     </div> <!-- #profile-sections.container -->
     {% endblock %}
   </div>  <!-- #profile-content.container -->

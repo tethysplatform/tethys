@@ -15,10 +15,8 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import call, run
 
-import yaml
-from yaml import safe_load
-from distro import linux_distribution
 from jinja2 import Template
+import yaml
 
 from django.conf import settings
 
@@ -31,17 +29,16 @@ from tethys_apps.utilities import (
 )
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import setup_django
 
 from .site_commands import SITE_SETTING_CATEGORIES
 
-has_conda = False
-try:
-    from conda.cli.python_api import run_command, Commands
+from tethys_portal.optional_dependencies import optional_import, has_module
 
-    has_conda = True
-except ModuleNotFoundError:
-    write_warning("Conda not found. Some functionality will not be available.")
+# optional imports
+run_command, Commands = optional_import(
+    ("run_command", "Commands"), from_module="conda.cli.python_api"
+)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
@@ -111,6 +108,11 @@ def add_gen_parser(subparsers):
         choices=["major", "minor", "patch", "none"],
         help='Level to pin dependencies when generating the meta.yaml. One of "major", "minor", '
         '"patch", or "none". Defaults to "none".',
+    )
+    gen_parser.add_argument(
+        "--micro",
+        action="store_true",
+        help="Use micro-tethys dependencies when generating the meta.yaml.",
     )
     gen_parser.add_argument(
         "--client-max-body-size",
@@ -199,6 +201,7 @@ def add_gen_parser(subparsers):
         server_port=None,
         overwrite=False,
         pin_level="none",
+        micro=False,
         ssl=False,
         ssl_cert="",
         ssl_key="",
@@ -291,15 +294,6 @@ def gen_asgi_service(args):
     conda_home = Path(conda_prefix).parents[1]
     conda_env_name = Path(conda_prefix).name
 
-    user_option_prefix = ""
-
-    try:
-        linux_distro = linux_distribution(full_distribution_name=0)[0]
-        if linux_distro in ["redhat", "centos"]:
-            user_option_prefix = "http-"
-    except Exception:
-        pass
-
     context = {
         "nginx_user": nginx_user,
         "port": args.tethys_port,
@@ -309,7 +303,6 @@ def gen_asgi_service(args):
         "conda_env_name": conda_env_name,
         "tethys_src": TETHYS_SRC,
         "tethys_home": TETHYS_HOME,
-        "user_option_prefix": user_option_prefix,
         "is_micromamba": args.micromamba,
     }
     return context
@@ -346,7 +339,7 @@ def gen_portal_yaml(args):
 
 
 def gen_secrets_yaml(args):
-    load_apps()
+    setup_django()
     tethys_secrets_settings = {}
     tethys_secrets_settings.setdefault("version", 1.0)
     tethys_secrets_settings.setdefault("secrets", {})
@@ -437,9 +430,11 @@ def derive_version_from_conda_environment(dep_str, level="none"):
 
 
 def gen_meta_yaml(args):
-    environment_file_path = os.path.join(TETHYS_SRC, "environment.yml")
+    filename = "micro_environment.yml" if args.micro else "environment.yml"
+    package_name = "micro-tethys-platform" if args.micro else "tethys-platform"
+    environment_file_path = os.path.join(TETHYS_SRC, filename)
     with open(environment_file_path, "r") as env_file:
-        environment = safe_load(env_file)
+        environment = yaml.safe_load(env_file)
 
     dependencies = environment.get("dependencies", [])
     run_requirements = []
@@ -454,7 +449,9 @@ def gen_meta_yaml(args):
             run_requirements.append(dependency)
 
     context = dict(
-        run_requirements=run_requirements, tethys_version=tethys_portal.__version__
+        run_requirements=run_requirements,
+        tethys_version=tethys_portal.__version__,
+        package_name=package_name,
     )
     return context
 
@@ -480,7 +477,7 @@ def download_vendor_static_files(args, cwd=None):
         install_instructions = (
             "To get npm you must install nodejs. Run the following command to install nodejs:"
             "\n\n\tconda install -c conda-forge nodejs\n"
-            if has_conda
+            if has_module(run_command)
             else "For help installing npm see: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm"
         )
         msg = (

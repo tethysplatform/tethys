@@ -557,7 +557,7 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
         
     .. note::
 
-        The ``name`` argument can be used to set a custom name for the URL of a controller as shown above. The default name is the same name as the controller function. This name is used to look up the URL of the controller using either the ``url`` tag in templates (see next step) or the ``reverse`` function in Python code.
+        The ``name`` argument can be used to set a custom name for the route that maps a URL to a controller as shown above. The default name is the same name as the controller function. This name is used to look up the URL of the controller using either the ``url`` tag in templates (see next step) or the ``reverse`` function in Python code.
 
 d. Open ``/templates/dam_inventory/base.html`` and add navigation links for the List View page:
 

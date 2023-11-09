@@ -197,8 +197,13 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_shutil_rmtree,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = "/foo/workspace"
-        mock_get_apps.return_value = {"foo_app": "/foo/testing/tests/foo_app"}
+        app_name = "foo_app"
+        app_path = f"/foo/testing/tests/{app_name}"
+        app_ws_path = f"{app_path}/workspaces"
+        tethys_workspaces_root = "/foo/workspace"
+        app_workspaces_root = f"{tethys_workspaces_root}/{app_name}"
+        mock_settings.TETHYS_WORKSPACES_ROOT = tethys_workspaces_root
+        mock_get_apps.return_value = {app_name: app_path}
         mock_os_path_isdir.side_effect = [True, True]
         mock_os_path_islink.return_value = False
         mock_os_path_exists.return_value = True
@@ -210,16 +215,12 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         cmd.handle(force=False)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_any_call("/foo/testing/tests/foo_app/workspaces")
-        mock_os_path_isdir.assert_called_with("/foo/workspace/foo_app")
-        mock_os_path_islink.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces"
-        )
-        mock_os_path_exists.assert_called_once_with("/foo/workspace/foo_app")
+        mock_os_path_isdir.assert_any_call(app_ws_path)
+        mock_os_path_isdir.assert_called_with(app_workspaces_root)
+        mock_os_path_islink.assert_called_once_with(app_ws_path)
+        mock_os_path_exists.assert_called_once_with(app_workspaces_root)
         mock_shutil_move.assert_not_called()
-        mock_shutil_rmtree.called_once_with(
-            "/foo/workspace/foo_app", ignore_errors=True
-        )
+        mock_shutil_rmtree.assert_called_once_with(app_ws_path, ignore_errors=True)
 
         msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
 
@@ -266,8 +267,13 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_os_remove,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = "/foo/workspace"
-        mock_get_apps.return_value = {"foo_app": "/foo/testing/tests/foo_app"}
+        app_name = "foo_app"
+        app_path = f"/foo/testing/tests/{app_name}"
+        app_ws_path = f"{app_path}/workspaces"
+        tethys_workspaces_root = "/foo/workspace"
+        app_workspaces_root = f"{tethys_workspaces_root}/{app_name}"
+        mock_settings.TETHYS_WORKSPACES_ROOT = tethys_workspaces_root
+        mock_get_apps.return_value = {app_name: app_path}
         mock_os_path_isdir.side_effect = [True, True]
         mock_os_path_islink.return_value = False
         mock_os_path_exists.return_value = True
@@ -280,19 +286,15 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         cmd.handle(force=True)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_any_call("/foo/testing/tests/foo_app/workspaces")
-        mock_os_path_isdir.assert_called_with("/foo/workspace/foo_app")
-        mock_os_path_islink.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces"
+        mock_os_path_isdir.assert_any_call(app_ws_path)
+        mock_os_path_isdir.assert_called_with(app_workspaces_root)
+        mock_os_path_islink.assert_called_once_with(app_ws_path)
+        mock_os_path_exists.assert_called_once_with(app_workspaces_root)
+        mock_shutil_move.assert_called_once_with(app_ws_path, app_workspaces_root)
+        mock_shutil_rmtree.assert_called_once_with(
+            app_workspaces_root, ignore_errors=True
         )
-        mock_os_path_exists.assert_called_once_with("/foo/workspace/foo_app")
-        mock_shutil_move.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces", "/foo/workspace/foo_app"
-        )
-        mock_shutil_rmtree.called_once_with(
-            "/foo/testing/tests/foo_app/workspaces", ignore_errors=True
-        )
-        mock_os_remove.assert_called_once_with("/foo/workspace/foo_app")
+        mock_os_remove.assert_called_once_with(app_workspaces_root)
 
         msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
 

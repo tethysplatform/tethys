@@ -156,7 +156,7 @@ def update_job_status(request, job_id):
     Callback endpoint for jobs to update status.
     """
     try:
-        job = TethysJob.objects.filter(id=job_id)[0]
+        job = TethysJob.objects.get_subclass(id=job_id)
         job.status
         json = {"success": True}
     except Exception:

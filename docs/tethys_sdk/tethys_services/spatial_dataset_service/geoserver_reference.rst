@@ -114,7 +114,7 @@ These links can be passed to a web mapping client like OpenLayers or Google Maps
 
     When you are learning how to use the spatial dataset engine methods, run the commands with the debug parameter set to true. This will automatically pretty print the result dictionary to the console so that you can inspect its contents:
 
-    ::
+    .. code-block:: python
 
       # Example method with debug option
       engine.list_layers(debug=True)

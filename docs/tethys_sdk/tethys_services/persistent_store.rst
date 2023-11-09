@@ -4,6 +4,18 @@ Persistent Stores API
 
 **Last Updated:** May 2017
 
+.. important::
+
+    This feature requires the ``psycopg2`` and ``sqlalchmey`` libraries to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge psycopg2 "sqlalchemy<2"
+
+        # pip
+        pip install psycopg2 "sqlalchemy<2"
+
 The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
 
 The process of creating a new persistent database can be summarized in the following steps:

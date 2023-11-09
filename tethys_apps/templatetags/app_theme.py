@@ -8,6 +8,16 @@ hex_regex_pattern = re.compile(hex_regex_str)
 
 @register.filter
 def lighten(hex_color, percentage):
+    """
+    Lighten a hex color by a certain percentage and return the lightened color.
+
+    Args:
+        hex_color: A hex color value in the format "#2d3436".
+        percentage: A number (0-100) representing a percentage to lighten the color by.
+
+    Returns: A hex color value in the format "#2d3436"
+
+    """
     if not re.search(hex_regex_pattern, hex_color):
         raise ValueError(
             f'Given "{hex_color}", but needs to be in hex color format (e.g.: "#2d3436").'

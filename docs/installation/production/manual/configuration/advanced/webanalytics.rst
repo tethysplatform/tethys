@@ -4,9 +4,17 @@ Web Analytics (Optional)
 
 **Last Updated:** May 2020
 
-.. image:: ./images/webanalytics.png
-   :width: 300px
-   :align: right
+.. important::
+
+    This feature requires the ``django-analytical`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-analytical`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-analytical
+
+        # pip
+        pip install django-analytical
 
 Tethys portals are configured to allow portal administrators to track how users interact with their portal and applications using web based analytical services. 24 services, including common services like Google Analytical and Optimizely, can be configured using the `Django-Analytical <https://github.com/jazzband/django-analytical>`_ package.
 

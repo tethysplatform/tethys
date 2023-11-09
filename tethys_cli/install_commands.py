@@ -5,12 +5,14 @@ import getpass
 from pathlib import Path
 from subprocess import call, Popen, PIPE, STDOUT
 from argparse import Namespace
+from collections.abc import Mapping
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
-    load_apps,
+    setup_django,
     generate_salt_string,
 )
 from tethys_apps.utilities import (
@@ -21,15 +23,12 @@ from tethys_apps.utilities import (
 )
 
 from .gen_commands import download_vendor_static_files
-from collections.abc import Mapping
+from tethys_portal.optional_dependencies import optional_import, has_module
 
-has_conda = False
-try:
-    from conda.cli.python_api import run_command as conda_run, Commands
-
-    has_conda = True
-except ModuleNotFoundError:
-    write_warning("Conda not found. Some functionality will not be available.")
+# optional imports
+conda_run, Commands = optional_import(
+    ("run_command", "Commands"), from_module="conda.cli.python_api"
+)
 
 FNULL = open(os.devnull, "w")
 
@@ -746,7 +745,7 @@ def install_command(args):
                 write_warning("Skipping package installation.")
             else:
                 if validate_schema("conda", requirements_config):  # noqa: E501
-                    if has_conda:
+                    if has_module(conda_run):
                         conda_config = requirements_config["conda"]
                         install_packages(
                             conda_config, update_installed=args.update_installed
@@ -822,7 +821,7 @@ def install_command(args):
 
     # Run Portal Level Config if present
     if not skip_config:
-        load_apps()
+        setup_django()
         if args.force_services:
             run_services(app_name, args)
         else:

@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import sqlalchemy
 from django.dispatch import receiver
 import logging
 import uuid
@@ -22,7 +21,6 @@ from tethys_apps.exceptions import (
     PersistentStorePermissionError,
     PersistentStoreInitializerError,
 )
-from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
@@ -30,6 +28,11 @@ from tethys_compute.models.scheduler import Scheduler
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 from tethys_apps.utilities import secrets_signed_unsigned_value
+from tethys_portal.optional_dependencies import optional_import, has_module
+
+# optional imports
+sqlalchemy = optional_import("sqlalchemy")
+sessionmaker = optional_import("sessionmaker", from_module="sqlalchemy.orm")
 
 log = logging.getLogger("tethys")
 
@@ -203,7 +206,8 @@ class TethysAppSetting(models.Model):
     DB Model for Tethys App Settings
     """
 
-    objects = InheritanceManager()
+    if has_module(InheritanceManager):
+        objects = InheritanceManager()
 
     tethys_app = models.ForeignKey(
         TethysApp, on_delete=models.CASCADE, related_name="settings_set"

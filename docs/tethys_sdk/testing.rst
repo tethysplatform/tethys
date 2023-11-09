@@ -49,6 +49,18 @@ https://docs.python.org/2.7/library/unittest.html#module-unittest
 Testing Controllers that Use OAuth2 Authentication
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. important::
+
+   This feature requires the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
+
+   .. code-block:: bash
+
+      # conda: conda-forge channel strongly recommended
+      conda install -c conda-forge social-auth-app-django
+
+      # pip
+      pip install social-auth-app-django
+
 Using the ``force_login`` method above works great for testing controllers where login is required. However, additional steps are required to test controllers that must be authenticated with a specific OAuth2 provider (i.e. specify the ``ensure_oauth_provider`` argument to the ``controller`` decorator). For example, if you have a controller like this:
 
 .. code-block:: python

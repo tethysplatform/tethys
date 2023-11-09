@@ -56,17 +56,17 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
     name: earth_engine
 
     requirements:
-    # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-    skip: false
-    conda:
-        channels:
-        - conda-forge
-        packages:
-        - earthengine-api
-        - oauth2client
-    pip:
+        # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+        skip: false
+        conda:
+            channels:
+            - conda-forge
+            packages:
+            - earthengine-api
+            - oauth2client
+        pip:
 
-    npm:
+        npm:
 
     post:
 

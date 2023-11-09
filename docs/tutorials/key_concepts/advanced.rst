@@ -33,7 +33,43 @@ If you wish to use the intermediate solution as a starting point:
 
 In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
 
-a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
+a. Add necessary dependencies:
+
+Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+
+.. code-block:: console
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge "sqlalchemy<2" psycopg2
+
+        # pip
+        pip install "sqlalchemy<2" psycopg2
+
+Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
+
+.. code-block:: yaml
+
+    # This file should be committed to your app code.
+    version: 1.0
+    # This should match the app - package name in your setup.py
+    name: dam_inventory
+
+    requirements:
+      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+      skip: false
+      conda:
+        channels:
+          - conda-forge
+        packages:
+          - sqlalchemy<2
+          - psycopg2
+
+      pip:
+
+    post:
+
+
+b. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
 
     .. code-block:: python
 
@@ -62,7 +98,7 @@ a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by ad
 
 Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. With SQLAlchemy, you can harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 
-b. Define a table called ``dams`` by creating a new class in ``model.py`` called ``Dam``:
+c. Define a table called ``dams`` by creating a new class in ``model.py`` called ``Dam``:
 
     .. code-block:: python
 
@@ -102,7 +138,7 @@ b. Define a table called ``dams`` by creating a new class in ``model.py`` called
 
         For more information on Persistent Stores, see: :doc:`../../tethys_sdk/tethys_services/persistent_store`.
 
-c. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` with versions that use the SQL database instead of the files:
+d. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` with versions that use the SQL database instead of the files:
 
     .. code-block:: python
 
@@ -156,7 +192,7 @@ c. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` wi
 
         Don't forget to close your ``session`` objects when you are done. Eventually you will run out of connections to the database if you don't, which will cause unsightly errors.
 
-d. Create a new function called ``init_primary_db`` at the bottom of ``model.py``. This function is used to initialize the database by creating the tables and adding any initial data.
+e. Create a new function called ``init_primary_db`` at the bottom of ``model.py``. This function is used to initialize the database by creating the tables and adding any initial data.
 
     .. code-block:: python
 
@@ -198,7 +234,7 @@ d. Create a new function called ``init_primary_db`` at the bottom of ``model.py`
                 session.commit()
                 session.close()
 
-e. Refactor ``home`` controller in ``controllers.py`` to use the updated model methods:
+f. Refactor ``home`` controller in ``controllers.py`` to use the updated model methods:
 
     .. code-block:: python
         :emphasize-lines: 1-2, 7, 13-14, 19-20, 23-27
@@ -236,7 +272,7 @@ e. Refactor ``home`` controller in ``controllers.py`` to use the updated model m
 
             ...
 
-f. Refactor the ``add_dam`` controller to use the updated model methods:
+g. Refactor the ``add_dam`` controller to use the updated model methods:
 
     .. code-block:: python
         :emphasize-lines: 1-2, 52
@@ -299,7 +335,7 @@ f. Refactor the ``add_dam`` controller to use the updated model methods:
 
             ...
 
-g. Refactor the ``list_dams`` controller to use updated model methods:
+h. Refactor the ``list_dams`` controller to use updated model methods:
 
     .. code-block:: python
         :emphasize-lines: 1-2, 6, 12-13
@@ -322,7 +358,7 @@ g. Refactor the ``list_dams`` controller to use updated model methods:
 
             ...
 
-h. Add a **Persistent Store Service** to Tethys Portal:
+i. Add a **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -341,7 +377,7 @@ h. Add a **Persistent Store Service** to Tethys Portal:
     The username and password for the persistent store service must be a superuser to use spatial persistent stores.
     Note that the default installation of Tethys Portal includes a superuser named "tethys_super", password: "pass".
 
-9. Assign the new **Persistent Store Service** to the Dam Inventory App:
+j. Assign the new **Persistent Store Service** to the Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -355,7 +391,7 @@ h. Add a **Persistent Store Service** to Tethys Portal:
     :width: 100%
     :align: center
 
-j. Execute the **syncstores** command to create the tables in the Persistent Store database:
+k. Execute the **syncstores** command to create the tables in the Persistent Store database:
 
     .. code-block:: bash
 

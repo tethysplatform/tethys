@@ -48,12 +48,15 @@ This method is intended for initializing a map generated from an AJAX request.
             {% import_gizmo_dependency cesium_map_view %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a Cesium map view gizmo.
-::
 
-    @login_required()
+.. code-block:: python
+
+    @controller(
+        url="dam-break/map/dam_break_map_ajax",
+    )
     def dam_break_map_ajax(request):
         """
         Controller for the dam_break_map ajax request.
@@ -66,29 +69,22 @@ Four elements are required:
 
             cesium_map_view = CesiumMapView(...)
 
-            context = { 'cesium_map_view': cesium_map_view }
+            context = { "cesium_map_view": cesium_map_view }
 
-            return render(request, 'dam_break_map_ajax/map_ajax.html', context)
+            return render(request, "dam_break_map_ajax/map_ajax.html", context)
 
-2) A url map to the controller in app.py
-::
+2) A template for with the tethys gizmo (e.g. map_ajax.html)
 
-    ...
-        UrlMap(name='dam_break_map_ajax',
-               url='dam-break/map/dam_break_map_ajax',
-               controller='dam_break.controllers.dam_break_map_ajax'),
-    ...
-
-3) A template for with the tethys gizmo (e.g. map_ajax.html)
-::
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo cesium_map_view %}
 
 
-4) The AJAX call in the javascript
-::
+3) The AJAX call in the javascript
+
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

@@ -1,4 +1,4 @@
-{% load static site_settings terms_tags analytical %}
+{% load static site_settings %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -11,7 +11,9 @@
 
   {# Allows custom attributes to be added to the head tag #}
   <head {% block headtag %}{% endblock %}>
-    {% analytical_head_top %}
+    {% if has_analytical %}
+    {% include "analytical_head_top.html" %}
+    {% endif %}
 
     {% comment "meta explanation" %}
       Add custom meta tags to the page. Call block.super to get the default tags
@@ -213,21 +215,27 @@
       {{ tethys.bootstrap.script_tag|safe }}
     {% endblock %}
 
+    {% if has_session_security %}
     {% block session_timeout_modal %}
       {% include 'session_security/all.html' %}
       <link href="{% static 'tethys_portal/css/session_security_override.min.css' %}"  rel="stylesheet" />
     {% endblock %}
+    {% endif %}
 
     {% block head %}{% endblock %}
     {% block extrahead %}{% endblock %}
     {% block blockbots %}{% endblock %}
 
-    {% analytical_head_bottom %}
+    {% if has_analytical %}
+    {% include "analytical_head_bottom.html" %}
+    {% endif %}
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
   <body class="d-flex flex-column h-100"{% block bodytag %}{% endblock %}>
-    {% analytical_body_top %}
+    {% if has_analytical %}
+    {% include "analytical_body_top.html" %}
+    {% endif %}
 
     {% comment "page explanation" %}
       The page block allows you to add content to the page.
@@ -298,7 +306,9 @@
     {% endblock %}
 
     {% block tos_override %}
-      {% show_terms_if_not_agreed %}
+      {% if has_terms %}
+      {% include "terms.html" %}
+      {% endif %}
     {% endblock %}
 
     {% comment "scripts explanation" %}
@@ -316,6 +326,8 @@
       <script type="text/javascript" src="{% static 'tethys_portal/js/header.js' %}"></script>
     {% endblock %}
 
-    {% analytical_body_bottom %}
+    {% if has_analytical %}
+    {% include "analytical_body_bottom.html" %}
+    {% endif %}
   </body>
 </html>

@@ -39,7 +39,7 @@ Controller Decorators
 * UrlMaps in app.py are no longer needed and the ``url_maps`` method is deprecated in favor of the new ``register_url_maps`` method.
 * IMPORTANT: The ``url_maps`` method is temporarily supported in Tethys Platform 4.0.0 to make migration of apps from Tethys 3 to 4 easier, but will be removed in 4.1.0.
 
-See: :ref:`url_maps_api`
+See: :ref:`routing_api`
 
 WebSocket URLs
 --------------

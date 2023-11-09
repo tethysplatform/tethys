@@ -19,12 +19,15 @@ from django.template import TemplateSyntaxError
 from django.templatetags.static import static
 from django.core.serializers.json import DjangoJSONEncoder
 
-import plotly  # noqa: F401
-from plotly.offline.offline import get_plotlyjs
 from tethys_apps.harvester import SingletonHarvester
 
 from ..gizmo_options.base import TethysGizmoOptions
 import tethys_sdk.gizmos
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+plotly = optional_import("plotly")
+get_plotlyjs = optional_import("get_plotlyjs", from_module="plotly.offline.offline")
 
 GIZMO_NAME_PROPERTY = "gizmo_name"
 GIZMO_NAME_MAP = {}
