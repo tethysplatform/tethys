@@ -1,7 +1,9 @@
 # coding=utf-8
-import plotly.offline as opy
-
 from .base import TethysGizmoOptions
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+opy = optional_import("plotly.offline")
 
 __all__ = ["PlotlyView"]
 

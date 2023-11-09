@@ -26,58 +26,51 @@ to do so with the DataTableView gizmo.
             {% import_gizmo_dependency datatable_view %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a DataTableView gizmo.
-::
+
+.. code-block:: python
 
     import json
 
-    @login_required()
+    @controller
     def datatable_ajax(request):
         """
         Controller for the datatable ajax request.
         """
 
         searching = False    
-        if request.GET.get('searching') is not None:
-            searching = json.loads(request.GET.get('searching'))
+        if request.GET.get("searching") is not None:
+            searching = json.loads(request.GET.get("searching"))
             if searching != True and searching != False:
                 searching = False
         
-        datatable_default = DataTableView(column_names=('Name', 'Age', 'Job'),
-                                          rows=[('Bill', 30, 'contractor'),
-                                                ('Fred', 18, 'programmer'),
-                                                ('Bob', 26, 'boss')],
+        datatable_default = DataTableView(column_names=("Name", "Age", "Job"),
+                                          rows=[("Bill", 30, "contractor"),
+                                                ("Fred", 18, "programmer"),
+                                                ("Bob", 26, "boss")],
                                           searching=searching,
                                           orderClasses=False,
                                           lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
                                           )
 
-        context = {'datatable_options': datatable_default}
+        context = {"datatable_options": datatable_default}
 
-        return render(request, 'app_name/datatable_ajax.html', context)
+        return render(request, "app_name/datatable_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. datatable_ajax.html)
-::
+
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo datatable_options %}
 
-3) A url map to the controller in app.py
-::
 
-    ...
-        UrlMap(name='datatable_ajax',
-               url='dam-break/datatable_ajax',
-               controller='dam_break.controllers.datatable_ajax'),
-    ...
+3) The AJAX call in the javascript
 
-
-
-4) The AJAX call in the javascript
-::
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

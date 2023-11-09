@@ -395,11 +395,15 @@ Now that the file is written to disk, use the built-in ``zipfile`` module to ver
 
 In this step you will add the logic to validate that the file contained in the ZIP archive is a shapefile. You will use the ``pyshp`` library to do this, which will introduce a new dependency for the app.
 
-1. Install ``pyshp`` library into your Tethys conda environment. Run the following command in the terminal with your Tethys environment activated:
+1. Install ``pyshp`` library into your Tethys conda environment using conda or pip. Run the following command in the terminal with your Tethys environment activated:
 
 .. code-block:: bash
 
+    # conda: conda-forge channel highly recommended
     conda install -c conda-forge pyshp
+
+    # pip
+    pip install pyshp
 
 2. Add ``pyshp`` as a new dependency in the ``install.yml``:
 

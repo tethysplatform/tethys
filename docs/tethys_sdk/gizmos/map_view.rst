@@ -247,12 +247,15 @@ This method is intended for initializing a map generated from an AJAX request.
             {% import_gizmo_dependency map_view %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a map view gizmo.
-::
 
-    @login_required()
+.. code-block:: python
+
+    @controller(
+        url="dam-break/map/dam_break_map_ajax",
+    )
     def dam_break_map_ajax(request):
         """
         Controller for the dam_break_map ajax request.
@@ -265,7 +268,7 @@ Four elements are required:
 
             # Define initial view for Map View
             view_options = MVView(
-                projection='EPSG:4326',
+                projection="EPSG:4326",
                 center=[(bbox[0]+bbox[2])/2.0, (bbox[1]+bbox[3])/2.0],
                 zoom=10,
                 maxZoom=18,
@@ -274,38 +277,31 @@ Four elements are required:
 
             # Configure the map
             map_options = MapView(
-                height='500px',
-                width='100%',
+                height="500px",
+                width="100%",
                 layers=map_layer_list,
-                controls=['FullScreen'],
+                controls=["FullScreen"],
                 view=view_options,
-                basemap=['OpenStreetMap'],
+                basemap=["OpenStreetMap"],
                 legend=True,
             )
         
-            context = { 'map_options': map_options }
+            context = { "map_options": map_options }
             
-            return render(request, 'dam_break_map_ajax/map_ajax.html', context)
+            return render(request, "dam_break_map_ajax/map_ajax.html", context)
 
-2) A url map to the controller in app.py
-::
+2) A template for with the tethys gizmo (e.g. map_ajax.html)
 
-    ...
-        UrlMap(name='dam_break_map_ajax',
-               url='dam-break/map/dam_break_map_ajax',
-               controller='dam_break.controllers.dam_break_map_ajax'),
-    ...
-
-3) A template for with the tethys gizmo (e.g. map_ajax.html)
-::
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo map_options %}
 
 
-4) The AJAX call in the javascript
-::
+3) The AJAX call in the javascript
+
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

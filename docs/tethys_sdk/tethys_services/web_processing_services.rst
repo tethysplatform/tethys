@@ -9,7 +9,7 @@ Web Processing Services (WPS) are web services that can be used perform geoproce
 Web Processing Service Settings
 ===============================
 
-Using web processing services in your app is accomplised by adding the ``web_processing_service_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``WebProcessingServiceSetting`` objects. For example:
+Using web processing services in your app is accomplished by adding the ``web_processing_service_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``WebProcessingServiceSetting`` objects. For example:
 
 ::
 
@@ -87,6 +87,18 @@ The ``WebProcessingServiceSetting`` can be thought of as a socket for a connecti
 Working with WPS Services in Apps
 =================================
 
+.. important::
+
+    This feature requires the ``owslib`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``owslib`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge owslib
+
+        # pip
+        pip install owslib
+
 The Web Processing Service API is powered by `OWSLib <http://geopython.github.io/OWSLib/#wps>`_, a Python client that can be used to interact with OGC web services. For detailed explanations the WPS client provided by OWSLib, refer to the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_. This article only provides a basic introduction to working with the OWSLib WPS client.
 
 Get a WPS Engine
@@ -130,34 +142,3 @@ After you have retrieved a valid ``owslib.wps.WebProcessingService`` engine obje
 
 
 It is also possible to perform requests using data that are hosted on WFS servers, such as the GeoServer that is provided as part of the Tethys Platform software suite. See the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_ for more details on how this is to be done.
-
-Web Processing Service Developer Tool
-=====================================
-
-Tethys Platform provides a developer tool that can be used to browse the sitewide WPS services and the processes that they provide. This tool is useful for formulating new process requests. To use the tool:
-
-1. Browse to the Developer Tools page of your Tethys Platform by selecting the "Developer" link from the menu at the top of the page.
-
-2. Select the tool titled "Web Processing Services".
-
-  .. figure:: ../../images/wps_tool/developer_tools_wps.png
-      :width: 600px
-      :align: center
-
-3. Select a WPS service from the list of services that are linked with your Tethys Instance. If no WPS services are linked to your Tethys instance, follow the steps in Sitewide Configuration, above, to setup a WPS service.
-
-  .. figure:: ../../images/wps_tool/wps_tool_services.png
-      :width: 600px
-      :align: center
-
-4. Select the process you wish to view.
-
-  .. figure:: ../../images/wps_tool/wps_tool_processes.png
-      :width: 600px
-      :align: center
-
-A description of the process and the inputs and outputs will be displayed.
-
-  .. figure:: ../../images/wps_tool/wps_tool_buffer.png
-      :width: 600px
-      :align: center

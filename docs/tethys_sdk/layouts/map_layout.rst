@@ -862,6 +862,11 @@ build_param_string
 
 .. automethod:: tethys_layouts.views.map_layout.MapLayout.build_param_string
 
+convert_geojson_to_shapefile
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automethod:: tethys_layouts.views.map_layout.MapLayout.convert_geojson_to_shapefile
+
 JavaScript API Documentation
 ============================
 

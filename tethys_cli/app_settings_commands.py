@@ -15,7 +15,7 @@ from tethys_cli.cli_colors import (
     write_warning,
     write_msg,
 )
-from tethys_cli.cli_helpers import load_apps, gen_salt_string_for_setting
+from tethys_cli.cli_helpers import setup_django, gen_salt_string_for_setting
 from subprocess import call
 
 TETHYS_HOME = Path(get_tethys_home_dir())
@@ -170,7 +170,7 @@ def add_app_settings_parser(subparsers):
 
 
 def app_settings_list_command(args):
-    load_apps()
+    setup_django()
     app_settings = get_app_settings(args.app)
     if app_settings is None:
         return
@@ -233,7 +233,7 @@ def app_settings_list_command(args):
 
 
 def app_settings_set_command(args):
-    load_apps()
+    setup_django()
     setting = get_custom_setting(args.app, args.setting)
     actual_value = args.value
 
@@ -278,7 +278,7 @@ def app_settings_set_command(args):
 
 
 def app_settings_reset_command(args):
-    load_apps()
+    setup_django()
     setting = get_custom_setting(args.app, args.setting)
 
     if not setting:
@@ -322,7 +322,7 @@ def get_setting_type(setting):
 
 
 def app_settings_create_ps_database_command(args):
-    load_apps()
+    setup_django()
     from tethys_apps.utilities import create_ps_database_setting
 
     app_package = args.app
@@ -352,7 +352,7 @@ def app_settings_create_ps_database_command(args):
 
 
 def app_settings_remove_command(args):
-    load_apps()
+    setup_django()
     from tethys_apps.utilities import remove_ps_database_setting
 
     app_package = args.app
@@ -367,7 +367,7 @@ def app_settings_remove_command(args):
 
 
 def app_settings_gen_salt_strings_command(args):
-    load_apps()
+    setup_django()
     # create a list for apps, settings, and salt strings
 
     from tethys_apps.models import TethysApp, CustomSettingBase, TethysExtension

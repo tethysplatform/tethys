@@ -36,6 +36,10 @@ settings:
     #  STATIC_ROOT: ''
     #  TETHYS_WORKSPACES_ROOT: ''
     #  STATICFILES_USE_NPM: True
+    #  ADDITIONAL_TEMPLATE_DIRS:
+    #  - tethysapp.myapp.templates
+    #  ADDITIONAL_URLPATTERNS:
+    #  - tethysext.myextension.urls
 
   SESSION_CONFIG:
     EXPIRE_AT_BROWSER_CLOSE: True

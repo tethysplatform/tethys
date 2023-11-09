@@ -411,3 +411,35 @@ class TestUrlsWithPrefix(TethysTestCase):
         self.assertEqual(tethys_portal.urls.register_controller_setting, "test")
         self.assertEqual(tethys_portal.urls.register_controller, mock_controller)
         mock_func_extractor.assert_called_once()
+
+    @override_settings(
+        ADDITIONAL_URLPATTERNS=["my.test.urlpatterns"],
+        PREFIX_URL=None,
+        LOGIN_URL=None,
+    )
+    @mock.patch(
+        "importlib.import_module", return_value=mock.MagicMock(urlpatterns=["re_path"])
+    )
+    def test_additional_urls(
+        self,
+        mock_import_module,
+    ):
+        import tethys_portal.urls
+        from importlib import reload
+
+        reload(tethys_portal.urls)
+        mock_import_module.assert_called_with("my.test")
+        self.assertEqual(tethys_portal.urls.additional_url_patterns, ["re_path"])
+        self.assertEqual(tethys_portal.urls.urlpatterns[0], "re_path")
+
+    @override_settings(ADDITIONAL_URLPATTERNS=["my.test.urlpatterns"])
+    @mock.patch("tethys_portal.urls.logging.getLogger")
+    def test_additional_urls_exception(
+        self,
+        mock_logger,
+    ):
+        import tethys_portal.urls
+        from importlib import reload
+
+        reload(tethys_portal.urls)
+        self.assertEqual(mock_logger().exception.call_count, 2)

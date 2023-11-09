@@ -3,7 +3,7 @@ from django.db.utils import IntegrityError
 from django.forms.models import model_to_dict
 
 from .cli_colors import BOLD, pretty_output, FG_RED, FG_GREEN
-from .cli_helpers import add_geoserver_rest_to_endpoint, load_apps
+from .cli_helpers import add_geoserver_rest_to_endpoint, setup_django
 
 SERVICES_CREATE = "create"
 SERVICES_CREATE_PERSISTENT = "persistent"
@@ -235,7 +235,7 @@ def services_create_persistent_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
-    load_apps()
+    setup_django()
     from tethys_services.models import PersistentStoreService
 
     name = None
@@ -283,7 +283,7 @@ def services_create_spatial_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
-    load_apps()
+    setup_django()
     from tethys_services.models import SpatialDatasetService
 
     name = None
@@ -419,7 +419,7 @@ def services_create_wps_command(args):
     """
     Interact with Tethys Services (WPS) to create them and/or link them to existing apps
     """
-    load_apps()
+    setup_django()
     from tethys_services.models import WebProcessingService as currentService
 
     name = None
@@ -464,7 +464,7 @@ def services_create_wps_command(args):
 
 
 def remove_service(serviceType, args):
-    load_apps()
+    setup_django()
     from tethys_services.models import (
         SpatialDatasetService,
         DatasetService,
@@ -554,7 +554,7 @@ def services_list_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
-    load_apps()
+    setup_django()
     from tethys_services.models import (
         SpatialDatasetService,
         PersistentStoreService,

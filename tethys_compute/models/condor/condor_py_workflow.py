@@ -6,8 +6,12 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
-from condorpy import Workflow
+from tethys_portal.optional_dependencies import optional_import
+
 from django.db import models
+
+# optional imports
+Workflow = optional_import("Workflow", from_module="condorpy")
 
 
 class CondorPyWorkflow(models.Model):
