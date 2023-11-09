@@ -1,0 +1,12 @@
+.readthedocs.yaml
+.stickler.yml
+CITATION.cff
+CODE_OF_CONDUCT.md
+*environment.yml
+*.egg-info
+dist/
+build/
+docker/
+conda.recipe/
+.vscode
+.github
