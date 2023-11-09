@@ -157,9 +157,11 @@ on_rtd = os.environ.get("READTHEDOCS") == "True"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 release = get_version(root="..", relative_to=__file__)
+print(f'Building docs for version "{release}"')
 
 # major/minor
 version = ".".join(release.split(".")[:2])
+print(f'Using simplified version "{version}"')
 
 # Determine branch
 git_directory = Path(__file__).parent.parent
