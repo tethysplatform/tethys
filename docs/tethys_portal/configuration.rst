@@ -229,52 +229,53 @@ OAUTH_CONFIG
         # pip
         pip install hs_restclient
 
-================================================== ================================================================================
-Setting                                            Description
-================================================== ================================================================================
-SSO_TENANT_REGEX                                   A regular expression defining the characters allowed in the Tenant field on the /accounts/tenant/ page. This page is only needed when using Multi-Tenant SSO features. Defaults to "^[\w\s_-]+$".
-SOCIAL_AUTH_AZUREAD_OAUTH2_KEY                     Key for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET                  Secret for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_MULTI_TENANT     Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_azuread_multi` Setup.
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY              Key for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET           Secret for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID        The ID of the Tenant/Active Directory to authenticate against. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_MULTI_TENANT        Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_azuread_multi` Setup.
-SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY                 Key for authenticating with Azure Active Directory B2C using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET              Secret for authenticating with Azure Active Directory B2C using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID           The ID of the Tenant/Active Directory to authenticate against in Azure Active Directory B2C. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY              The user flow policy to use. Use `'b2c_'` unless you have created a custom user flow that you would like to use. See :ref:`social_auth_azuread` SSO Setup.
-SOCIAL_AUTH_ADFS_OIDC_MULTI_TENANT                 Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_adfs_multi` Setup.
-SOCIAL_AUTH_ADFS_OIDC_KEY                          Client ID for authenticating with an AD FS services using its Open ID Connect interface. See :ref:`social_adfs` SSO Setup.
-SOCIAL_AUTH_ADFS_OIDC_SECRET                       Secret for authenticating with an AD FS service using its Open ID Connect interface. See :ref:`social_adfs` SSO Setup.
-SOCIAL_AUTH_ADFS_OIDC_DOMAIN                       Domain of the AD FS server. See :ref:`social_adfs` SSO Setup.
-SOCIAL_AUTH_FACEBOOK_KEY                           Key for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
-SOCIAL_AUTH_FACEBOOK_SECRET                        Secret for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
-SOCIAL_AUTH_FACEBOOK_SCOPE                         List of scopes for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY                      Key for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET                   Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
-SOCIAL_AUTH_HYDROSHARE_KEY                         Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
-SOCIAL_AUTH_HYDROSHARE_SECRET                      Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
-SOCIAL_AUTH_ARCGIS_KEY                             Key for authenticating with ArcGIS Online using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
-SOCIAL_AUTH_ARCGIS_SECRET                          Secret for authentication with ArcGIS Online using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
-SOCIAL_AUTH_ARCGIS_PORTAL_KEY                      Key for authenticating with an ArcGIS Enterprise Portal using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
-SOCIAL_AUTH_ARCGIS_PORTAL_SECRET                   Secret for authentication with an ArcGIS Enterprise Portal using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
-SOCIAL_AUTH_ARCGIS_PORTAL_URL                      Root URL of the ArcGIS Enterprise Portal that will provide their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
-SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY                    Key for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
-SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET                 Secret for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
-SOCIAL_AUTH_OKTA_OAUTH2_MULTI_TENANT               Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_okta_multi` Setup.
-SOCIAL_AUTH_OKTA_OAUTH2_KEY                        Client ID for authenticating with Okta using their OAuth 2 interface. See :ref:`social_auth_okta` SSO Setup.
-SOCIAL_AUTH_OKTA_OAUTH2_SECRET                     Secret for authenticating with Okta using their OAuth 2 interface. See :ref:`social_auth_okta` SSO Setup.
-SOCIAL_AUTH_OKTA_OAUTH2_API_URL                    Your Okta Organization URL. See :ref:`social_auth_okta` SSO Setup.
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_MULTI_TENANT        Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_okta_multi` Setup.
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY                 Client ID for authenticating with Okta using their Open ID Connect interface. See :ref:`social_auth_okta` SSO Setup.
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET              Secret for authenticating with Okta using their Open ID Connect interface. See :ref:`social_auth_okta` SSO Setup.
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL             Your Okta Organization URL. See :ref:`social_auth_okta` SSO Setup.
-SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT             Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_onelogin_multi` Setup.
-SOCIAL_AUTH_ONELOGIN_OIDC_KEY                      Client ID for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.
-SOCIAL_AUTH_ONELOGIN_OIDC_SECRET                   Secret for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.
-SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN                Your OneLogin Subdomain. See :ref:`social_auth_onelogin` SSO Setup.
-================================================== ================================================================================
+====================================================== ================================================================================
+Setting                                                Description
+====================================================== ================================================================================
+SSO_TENANT_REGEX                                       A regular expression defining the characters allowed in the Tenant field on the /accounts/tenant/ page. This page is only needed when using Multi-Tenant SSO features. Defaults to "^[\w\s_-]+$".
+SOCIAL_AUTH_AZUREAD_OAUTH2_KEY                         Key for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET                      Secret for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_MULTI_TENANT         Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_azuread_multi` Setup.
+SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY                  Key for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET               Secret for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID            The ID of the Tenant/Active Directory to authenticate against. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_MULTI_TENANT            Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_azuread_multi` Setup.
+SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY                     Key for authenticating with Azure Active Directory B2C using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET                  Secret for authenticating with Azure Active Directory B2C using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID               The ID of the Tenant/Active Directory to authenticate against in Azure Active Directory B2C. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY                  The user flow policy to use. Use `'b2c_'` unless you have created a custom user flow that you would like to use. See :ref:`social_auth_azuread` SSO Setup.
+SOCIAL_AUTH_ADFS_OIDC_MULTI_TENANT                     Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_adfs_multi` Setup.
+SOCIAL_AUTH_ADFS_OIDC_KEY                              Client ID for authenticating with an AD FS services using its Open ID Connect interface. See :ref:`social_adfs` SSO Setup.
+SOCIAL_AUTH_ADFS_OIDC_SECRET                           Secret for authenticating with an AD FS service using its Open ID Connect interface. See :ref:`social_adfs` SSO Setup.
+SOCIAL_AUTH_ADFS_OIDC_DOMAIN                           Domain of the AD FS server. See :ref:`social_adfs` SSO Setup.
+SOCIAL_AUTH_FACEBOOK_KEY                               Key for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
+SOCIAL_AUTH_FACEBOOK_SECRET                            Secret for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
+SOCIAL_AUTH_FACEBOOK_SCOPE                             List of scopes for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY                          Key for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET                       Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
+SOCIAL_AUTH_HYDROSHARE_KEY                             Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
+SOCIAL_AUTH_HYDROSHARE_SECRET                          Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
+SOCIAL_AUTH_ARCGIS_KEY                                 Key for authenticating with ArcGIS Online using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+SOCIAL_AUTH_ARCGIS_SECRET                              Secret for authentication with ArcGIS Online using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+SOCIAL_AUTH_ARCGIS_PORTAL_KEY                          Key for authenticating with an ArcGIS Enterprise Portal using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+SOCIAL_AUTH_ARCGIS_PORTAL_SECRET                       Secret for authentication with an ArcGIS Enterprise Portal using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+SOCIAL_AUTH_ARCGIS_PORTAL_URL                          Root URL of the ArcGIS Enterprise Portal that will provide their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY                        Key for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET                     Secret for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
+SOCIAL_AUTH_OKTA_OAUTH2_MULTI_TENANT                   Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_okta_multi` Setup.
+SOCIAL_AUTH_OKTA_OAUTH2_KEY                            Client ID for authenticating with Okta using their OAuth 2 interface. See :ref:`social_auth_okta` SSO Setup.
+SOCIAL_AUTH_OKTA_OAUTH2_SECRET                         Secret for authenticating with Okta using their OAuth 2 interface. See :ref:`social_auth_okta` SSO Setup.
+SOCIAL_AUTH_OKTA_OAUTH2_API_URL                        Your Okta Organization URL. See :ref:`social_auth_okta` SSO Setup.
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_MULTI_TENANT            Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_okta_multi` Setup.
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY                     Client ID for authenticating with Okta using their Open ID Connect interface. See :ref:`social_auth_okta` SSO Setup.
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET                  Secret for authenticating with Okta using their Open ID Connect interface. See :ref:`social_auth_okta` SSO Setup.
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL                 Your Okta Organization URL. See :ref:`social_auth_okta` SSO Setup.
+SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT                 Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_onelogin_multi` Setup.
+SOCIAL_AUTH_ONELOGIN_OIDC_KEY                          Client ID for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.
+SOCIAL_AUTH_ONELOGIN_OIDC_SECRET                       Secret for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.
+SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN                    Your OneLogin Subdomain. See :ref:`social_auth_onelogin` SSO Setup.
+SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD   The authentication method to use when requesting tokens from the token endpoint. See :ref:`social_auth_onelogin` SSO Setup.
+====================================================== ================================================================================
 
 MFA_CONFIG
 ++++++++++
