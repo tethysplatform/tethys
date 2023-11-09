@@ -299,11 +299,10 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_job_id = mock.MagicMock()
         mock_job1 = mock.MagicMock()
         mock_job1.status = True
-        mock_job2 = mock.MagicMock()
-        mock_tethysjob.objects.filter.return_value = [mock_job1, mock_job2]
+        mock_tethysjob.objects.get_subclass.return_value = mock_job1
 
         update_job_status(mock_request, mock_job_id)
-        mock_tethysjob.objects.filter.assert_called_once_with(id=mock_job_id)
+        mock_tethysjob.objects.get_subclass.assert_called_once_with(id=mock_job_id)
         mock_json_response.assert_called_once_with({"success": True})
 
     @mock.patch("tethys_apps.views.JsonResponse")
@@ -311,10 +310,10 @@ class TethysAppsViewsTest(unittest.TestCase):
     def test_update_job_statusException(self, mock_tethysjob, mock_json_response):
         mock_request = mock.MagicMock()
         mock_job_id = mock.MagicMock()
-        mock_tethysjob.objects.filter.side_effect = Exception
+        mock_tethysjob.objects.get_subclass.side_effect = Exception
 
         update_job_status(mock_request, mock_job_id)
-        mock_tethysjob.objects.filter.assert_called_once_with(id=mock_job_id)
+        mock_tethysjob.objects.get_subclass.assert_called_once_with(id=mock_job_id)
         mock_json_response.assert_called_once_with({"success": False})
 
     @mock.patch("tethys_apps.views.JsonResponse")

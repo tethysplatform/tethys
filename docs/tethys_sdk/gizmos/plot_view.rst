@@ -75,12 +75,15 @@ This method initializes a chart generated from an AJAX request. An example is de
             {% import_gizmo_dependency plot_view %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a plot view gizmo.
-::
 
-    @login_required()
+.. code-block:: python
+
+    @controller(
+        url="dam-break/map/hydrograph",
+    )
     def hydrograph_ajax(request):
         """
         Controller for the hydrograph ajax request.
@@ -91,30 +94,22 @@ Four elements are required:
                         ...
         )
 
-        context = {'flood_plot': flood_plot}
+        context = {"flood_plot": flood_plot}
 
-        return render(request, 'dam_break/hydrograph_ajax.html', context)
+        return render(request, "dam_break/hydrograph_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. hydrograph_ajax.html)
-::
+
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo flood_plot %}
 
-3) A url map to the controller in app.py
-::
 
-    ...
-        UrlMap(name='hydrograph_ajax',
-               url='dam-break/map/hydrograph',
-               controller='dam_break.controllers.hydrograph_ajax'),
-    ...
+3) The AJAX call in the javascript
 
-
-
-4) The AJAX call in the javascript
-::
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

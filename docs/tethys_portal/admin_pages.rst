@@ -17,7 +17,7 @@ Tethys Portal includes administration pages that can be used to manage the websi
 
     If you did not create an administrator user during installation, run the following command in the terminal:
 
-    ::
+    .. code-block:: console
 
         tethys manage createsuperuser
 
@@ -25,6 +25,18 @@ Tethys Portal includes administration pages that can be used to manage the websi
 
 Auth Token
 ==========
+
+.. important::
+
+    This feature requires the ``djangorestframework`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``djangorestframework`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge djangorestframework
+
+        # pip
+        pip install djangorestframework
 
 Tethys REST API tokens for individual users can be managed using the ``Tokens`` link under the ``AUTH TOKEN`` heading (see Figure 2).
 
@@ -154,6 +166,18 @@ Tethys leverages the excellent `Python Social Auth <https://python-social-auth-d
 Terms and Conditions
 ====================
 
+.. important::
+
+    This feature requires the ``django-termsandconditions`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-termsandconditions`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-termsandconditions
+
+        # pip
+        pip install django-termsandconditions
+
 Portal administrators can manage and enforce portal wide terms and conditions and other legal documents via the administrator pages.
 
 Use the ``Terms and Conditions`` link to create new legal documents (see Figure 9). To issue an update to a particular document, create a new entry with the same slug (e.g. 'site-terms'), but a different version number (e.g.: 1.10). This allows you to track multiple versions of the legal document and which users have accepted each. The document will not become active until the ``Date active`` field has been set and the date has past.
@@ -238,6 +262,20 @@ Secret Custom Settings can be used to store sensitive information that is need b
 
 JSON Custom Settings
 ++++++++++++++++++++
+
+.. important::
+
+    This feature requires the ``django-json-widget`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-json-widget`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-json-widget
+
+        # pip
+        pip install django-json-widget
+    
+    **Don't Forget**: If you end up using this feature in your app, add `django-json-widget` as a requirement to your `install.yml`.
 
 JSON Custom Settings store JSON strings and provide an embedded JSON editor on the settings page for easy editing. In addition, you may initialize a JSON Custom Setting with a JSON file when installing an app.
 

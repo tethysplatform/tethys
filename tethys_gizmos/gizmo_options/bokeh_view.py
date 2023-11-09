@@ -1,12 +1,16 @@
 # coding=utf-8
-from bokeh.embed import components
-from bokeh.resources import Resources
-from bokeh.settings import settings as bk_settings
-
 from django.conf import settings
 from django.utils.functional import classproperty
 
 from .base import TethysGizmoOptions
+
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+bokeh = optional_import("bokeh")
+components = optional_import("components", from_module="bokeh.embed")
+Resources = optional_import("Resources", from_module="bokeh.resources")
+bk_settings = optional_import("settings", from_module="bokeh.settings")
 
 __all__ = ["BokehView"]
 
@@ -175,7 +179,6 @@ class BokehView(TethysGizmoOptions):
         select.line('date', 'close', source=source)
         select.ygrid.grid_line_color = None
         select.add_tools(range_tool)
-        select.toolbar.active_multi = range_tool
 
         time_series_plot = BokehView(column(time_series_fig, select))
 
@@ -251,6 +254,8 @@ class BokehView(TethysGizmoOptions):
             # configure bokeh resources
             default = "server" if settings.STATICFILES_USE_NPM else "cdn"
             mode = bk_settings.resources(default=default)
+            if mode == "inline" and int(bokeh.__version__.split(".")[0]) > 2:
+                mode = "server"
             kwargs = {"mode": mode}
             if mode == "server":
                 kwargs["root_url"] = "/"

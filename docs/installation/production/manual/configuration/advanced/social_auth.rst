@@ -6,6 +6,18 @@ Single Sign On (Optional)
 
 **Last Updated:** December 2020
 
+.. important::
+
+   This feature requires the ``social-auth-app-django`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``social-auth-app-django`` using conda or pip as follows:
+
+   .. code-block:: bash
+
+      # conda: conda-forge channel strongly recommended
+      conda install -c conda-forge social-auth-app-django
+
+      # pip
+      pip install social-auth-app-django
+
 Tethys Portal supports authenticating users with several social authentication and single sign on providers such as Google, Facebook, and LinkedIn via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 
 
@@ -187,7 +199,7 @@ Facebook
     b. Press the ``Setup`` button on the tile (or ``Settings`` if setup previously).
     c. Specify the following for the Valid OAuth Redirect URIs field:
 
-      ::
+      .. code-block::
 
           https://<SERVER_DOMAIN_NAME>/oauth2/complete/facebook/
 
@@ -245,7 +257,7 @@ Google
 
       As a security precaution, Google will only accept authentication requests from the hosts listed in the ``Authorized JavaScript Origins`` box. Add the domain of your Tethys Portal to the list. Optionally, you may add a localhost domain to the list to be used during testing:
 
-      ::
+      .. code-block::
 
           https://<SERVER_DOMAIN_NAME>
           http://localhost:8000
@@ -258,7 +270,7 @@ Google
 
       You also need to provide the callback URI for Google to call once it has authenticated the user. This follows the pattern ``http://<host>/oauth2/complete/google-oauth2/``:
 
-      ::
+      .. code-block::
 
           https://<SERVER_DOMAIN_NAME>/oauth2/complete/google-oauth2/
           https://localhost:8000/oauth2/complete/google-oauth2/
@@ -299,6 +311,18 @@ For more detailed information about using Google social authentication see the f
 HydroShare
 ----------
 
+.. important::
+
+    This feature requires the ``hs_restclient`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``hs_restclient`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge hs_restclient
+
+        # pip
+        pip install hs_restclient
+
 1. Create a HydroShare Account
 
     You will need a HydroShare account to register your Tethys Portal with HydroShare. To create an account, visit `https://www.hydroshare.org <https://www.hydroshare.org>`_.
@@ -319,7 +343,7 @@ HydroShare
 
     g. Redirect uris: Add the call back URLs. The protocol (http or https) that matches your Tethys Portal settings should be included in this url. For example:
 
-    ::
+    .. code-block::
 
         if your Tethys Portal was located at the domain ``https://www.my-tethys-portal.com``:
             https://www.my-tethys-portal.com/oauth2/complete/hydroshare/
@@ -509,7 +533,7 @@ LinkedIn
 
     a. Add the call back URLs under the **OAuth 2.0 settings** section:
 
-        ::
+        .. code-block::
 
             https://<SERVER_DOMAIN_NAME>/oauth2/complete/linkedin-oauth2/
             http://localhost:8000/oauth2/complete/linkedin-oauth2/

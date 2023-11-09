@@ -1,5 +1,5 @@
 from tethys_apps.utilities import get_installed_tethys_items, SingletonHarvester
-from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_helpers import setup_django
 from tethys_cli.cli_colors import write_info, write_msg
 
 
@@ -20,7 +20,7 @@ def list_command(args):
     """
     List installed apps.
     """
-    load_apps()
+    setup_django()
     installed_apps = get_installed_tethys_items(apps=True)
     installed_extensions = get_installed_tethys_items(extensions=True)
 

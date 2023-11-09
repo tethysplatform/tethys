@@ -1,4 +1,4 @@
-{% load static app_theme tethys_gizmos terms_tags analytical %}
+{% load static app_theme tethys_gizmos %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -11,7 +11,9 @@
 
   {# Allows custom attributes to be added to the head tag #}
   <head {% block headtag %}{% endblock %}>
-    {% analytical_head_top %}
+    {% if has_analytical %}
+    {% include "analytical_head_top.html" %}
+    {% endif %}
 
     {% comment "meta explanation" %}
       Add custom meta tags to the page. Call block.super to get the default tags
@@ -135,17 +137,23 @@
       {% gizmo_dependencies global_js %}
     {% endblock %}
 
+    {% if has_session_security %}
     {% block session_timeout_modal %}
       {% include 'session_security/all.html' %}
       <link href="{% static 'tethys_portal/css/session_security_override.min.css' %}"  rel="stylesheet" />
     {% endblock %}
+    {% endif %}
 
-    {% analytical_head_bottom %}
+    {% if has_analytical %}
+    {% include "analytical_head_bottom.html" %}
+    {% endif %}
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
   <body {% block bodytag %}class="h-100"{% endblock %}>
-    {% analytical_body_top %}
+    {% if has_analytical %}
+    {% include "analytical_body_top.html" %}
+    {% endif %}
 
     {% block app_content_wrapper_override %}
       <div id="app-content-wrapper" class="{% block show_nav_override %}show-nav{% endblock %}">
@@ -273,7 +281,9 @@
     {% endblock %}
 
     {% block terms-of-service-override %}
-      {% show_terms_if_not_agreed %}
+      {% if has_terms %}
+      {% include "terms.html" %}
+      {% endif %}
     {% endblock %}
 
     {% block page_attributes_override %}
@@ -310,6 +320,8 @@
       {% gizmo_dependencies js %}
     {% endblock %}
 
-  {% analytical_body_bottom %}
+    {% if has_analytical %}
+    {% include "analytical_body_bottom.html" %}
+    {% endif %}
   </body>
 </html>

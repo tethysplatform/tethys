@@ -10,8 +10,6 @@
 from functools import wraps
 
 # Third Party Imports
-from bokeh.document import Document
-from bokeh.embed import server_document
 
 # Django Imports
 from django.http.request import HttpRequest
@@ -19,6 +17,12 @@ from django.shortcuts import render
 
 # Tethys Imports
 from tethys_sdk.workspaces import get_user_workspace, get_app_workspace
+
+from tethys_portal.optional_dependencies import optional_import
+
+# Optional Imports
+Document = optional_import("Document", from_module="bokeh.document")
+server_document = optional_import("server_document", from_module="bokeh.embed")
 
 
 def with_request(handler):

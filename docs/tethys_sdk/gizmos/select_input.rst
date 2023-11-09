@@ -20,55 +20,51 @@ to do so with the SelectInput gizmo.
     in the ``import_gizmos`` block.
 
     For example:
-    ::
+
+    .. code-block:: html+django
 
         {% block import_gizmos %}
             {% import_gizmo_dependency select_input %}
         {% endblock %}
 
-Four elements are required:
+Three elements are required:
 
 1) A controller for the AJAX call with a SelectInput gizmo.
-::
+
+.. code-block:: python
 
     from tethys_sdk.gizmos import SelectInput
         
-    @login_required()
+    @controller(
+        url="app_name/select",
+    )
     def select_input_ajax(request):
         """
         Controller for the bokeh ajax request.
         """
-        select_input2 = SelectInput(display_text='Select2',
-                                    name='select2',
+        select_input2 = SelectInput(display_text="Select2",
+                                    name="select2",
                                     multiple=False,
-                                    options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                    initial=['Three'])
+                                    options=[("One", "1"), ("Two", "2"), ("Three", "3")],
+                                    initial=["Three"])
 
-        context = {'select_input2': select_input2}
+        context = {"select_input2": select_input2}
 
-        return render(request, 'app_name/select_input_ajax.html', context)
+        return render(request, "app_name/select_input_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. select_input_ajax.html)
-::
+
+.. code-block:: html+django
 
     {% load tethys_gizmos %}
 
     {% gizmo select_input2 %}
 
-3) A url map to the controller in app.py
-::
-
-    ...
-        UrlMap(name='select_input_ajax',
-               url='app_name/select',
-               controller='app_name.controllers.select_input_ajax'),
-    ...
-
-4) The AJAX call in the javascript
+3) The AJAX call in the javascript
 
 .. note:: You only need to call the init function if you are using select2.
 
-::
+.. code-block:: javascript
 
     $(function() { //wait for page to load
 

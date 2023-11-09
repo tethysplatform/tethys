@@ -1,7 +1,12 @@
 from ast import literal_eval as make_tuple
 from django.db import models
 from django.core.exceptions import ValidationError
-from distributed.protocol.serialize import serialize, deserialize
+from tethys_portal.optional_dependencies import optional_import
+
+# optional imports
+serialize, deserialize = optional_import(
+    ("serialize", "deserialize"), from_module="distributed.protocol.serialize"
+)
 
 
 class DaskSerializedField(models.Field):
