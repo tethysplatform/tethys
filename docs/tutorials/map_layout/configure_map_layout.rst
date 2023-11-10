@@ -20,7 +20,7 @@ If you wish to use the previous solution as a starting point, do the following:
 
     git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
-    git checkout -b new-app-project-solution new-app-project-solution
+    git checkout -b new-app-project-solution new-app-project-solution-|version|
 
 1. Swap default home controller with Map Layout
 ===============================================
@@ -58,4 +58,4 @@ This concludes the Configure Map Layout portion of the Map Layout Tutorial. You 
 
     git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
-    git checkout -b configure-map-layout-solution configure-map-layout-solution
+    git checkout -b configure-map-layout-solution configure-map-layout-solution-|version|

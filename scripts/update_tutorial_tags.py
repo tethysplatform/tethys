@@ -3,9 +3,10 @@ from github import Github
 from github.GithubException import BadCredentialsException
 
 # Requirements: pip install PyGithub
+# Github token with Contents read/write permissions on all of the tethysplatform tutorial repositories
 
 # Tethys Version to Tag For
-tethys_version = "4.1"
+tethys_version = "4.2"
 
 # Tutorial repos ({<repo_name>: {<branch>: <tag_prefix>}}
 tutorial_repos = {
@@ -61,6 +62,13 @@ tutorial_repos = {
     },
     "tethysplatform/tethysapp-postgis_app": {
         "main": "solution",
+    },
+    "tethysplatform/tethysapp-map_layout_tutorial": {
+        "new-app-project-solution": "new-app-project-solution",
+        "configure-map-layout-solution": "configure-map-layout-solution",
+        "data-prep-solution": "data-prep-solution",
+        "add-spatial-data-solution": "add-spatial-data-solution",
+        "configure-data-plotting-solution": "configure-data-plotting-solution",
     },
 }
 
