@@ -1,5 +1,8 @@
 FROM mambaorg/micromamba:jammy
 ARG PYTHON_VERSION="3.*"
+ARG NEW_MAMBA_USER=tethysdev
+ARG NEW_MAMBA_USER_ID=1000
+ARG NEW_MAMBA_USER_GID=1000
 
 ENV CONDA_HOME="/opt/conda"
 ENV ENV_NAME="tethys"
@@ -15,10 +18,27 @@ ENV TETHYS_SRC="/tethys"
 ENV TERM="xterm"
 
 USER root
+RUN if grep -q '^ID=alpine$' /etc/os-release; then \
+      # alpine does not have usermod/groupmod
+      apk add --no-cache --virtual temp-packages shadow; \
+    fi && \
+    usermod "--login=${NEW_MAMBA_USER}" "--home=/home/${NEW_MAMBA_USER}" \
+        --move-home "-u ${NEW_MAMBA_USER_ID}" "${MAMBA_USER}" && \
+    groupmod "--new-name=${NEW_MAMBA_USER}" \
+        "-g ${NEW_MAMBA_USER_GID}" "${MAMBA_USER}" && \
+    if grep -q '^ID=alpine$' /etc/os-release; then \
+      # remove the packages that were only needed for usermod/groupmod
+      apk del temp-packages; \
+    fi && \
+    # Update the expected value of MAMBA_USER for the
+    # _entrypoint.sh consistency check.
+    echo "${NEW_MAMBA_USER}" > "/etc/arg_mamba_user" && \
+    :
+ENV MAMBA_USER=$NEW_MAMBA_USER
+
 RUN mkdir -p ${TETHYS_SRC} \
  && mkdir -p ${TETHYS_HOME} \
- && useradd -d ${TETHYS_HOME} -s /bin/bash -u 1000 -G ${MAMBA_USER} tethysdev \
- && chown -R tethysdev:${MAMBA_USER} ${TETHYS_SRC} ${TETHYS_HOME} \
+ && chown -R ${MAMBA_USER}:${MAMBA_USER} ${TETHYS_SRC} ${TETHYS_HOME} \
  && chmod -R 775 ${TETHYS_SRC} ${TETHYS_HOME}
 
 # Setup conda symlink for the micromamba command
@@ -39,7 +59,6 @@ ADD --chown=${MAMBA_USER}:${MAMBA_USER} docker/tethys-dev/run.sh ${TETHYS_SRC}/r
 ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 RUN pip install -e ${TETHYS_SRC}
 
-USER tethysdev
 WORKDIR ${TETHYS_HOME}
 
 CMD bash ${TETHYS_SRC}/run.sh
