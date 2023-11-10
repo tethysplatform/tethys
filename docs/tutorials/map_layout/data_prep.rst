@@ -15,7 +15,7 @@ If you wish to use the previous solution as a starting point:
 
     git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
-    git checkout -b configure-map-layout-solution configure-map-layout-solution
+    git checkout -b configure-map-layout-solution configure-map-layout-solution-|version|
 
 1. Download the sample NextGen data
 ===================================
@@ -146,7 +146,7 @@ This concludes the Data Prep portion of the Map Layout Tutorial. You can view th
 
     git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
-    git checkout -b data-prep-solution data-prep-solution
+    git checkout -b data-prep-solution data-prep-solution-|version|
 
 You'll also need to do the following:
 
