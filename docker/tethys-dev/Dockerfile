@@ -17,13 +17,16 @@ ENV TERM="xterm"
 USER root
 RUN mkdir -p ${TETHYS_SRC} \
  && mkdir -p ${TETHYS_HOME} \
- && chown -R ${MAMBA_USER}:${MAMBA_USER} ${TETHYS_SRC} ${TETHYS_HOME}
+ && useradd -d ${TETHYS_HOME} -s /bin/bash -u 1000 -G ${MAMBA_USER} tethysdev \
+ && chown -R tethysdev:${MAMBA_USER} ${TETHYS_SRC} ${TETHYS_HOME} \
+ && chmod -R 775 ${TETHYS_SRC} ${TETHYS_HOME}
 
 # Setup conda symlink for the micromamba command
-RUN mkdir -p ${CONDA_HOME}/bin
-RUN ln -s /bin/micromamba ${CONDA_HOME}/bin/conda
+RUN mkdir -p ${CONDA_HOME}/bin \
+ && ln -s /bin/micromamba ${CONDA_HOME}/bin/conda
 
 # Setup Conda Environment
+USER ${MAMBA_USER}
 COPY --chown=${MAMBA_USER}:${MAMBA_USER} environment.yml /tmp/environment.yml
 RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" /tmp/environment.yml \
  && micromamba create -n "${ENV_NAME}" --yes --file /tmp/environment.yml \
@@ -36,6 +39,7 @@ ADD --chown=${MAMBA_USER}:${MAMBA_USER} docker/tethys-dev/run.sh ${TETHYS_SRC}/r
 ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 RUN pip install -e ${TETHYS_SRC}
 
+USER tethysdev
 WORKDIR ${TETHYS_HOME}
 
 CMD bash ${TETHYS_SRC}/run.sh
