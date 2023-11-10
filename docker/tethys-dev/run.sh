@@ -47,7 +47,7 @@ if [[ ! -z "${TETHYS_DB_HOST}" && ! -z "${TETHYS_DB_PORT}" ]]; then
                     --set "DATABASES.default.PORT" "${TETHYS_DB_PORT}"
 
     # Wait until db starts
-    echo_status "Waiting for db to be ready..."
+    echo_status "Waiting for postgresql db to be ready..."
 
     db_check_count=0
 
@@ -66,14 +66,18 @@ fi
 
 if [[ ! -z "${TETHYS_DB_HOST}" && ! -z "${TETHYS_DB_PORT}" ]]; then
     if ${CONDA_HOME}/envs/${ENV_NAME}/bin/psql -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -U postgres -lqt | cut -d \| -f 1 | grep -qw tethys_platform; then
-        echo_status "Using existing tethys_platform database."
+        echo_status "Using existing postgresql database."
     else
-        echo_status "Creating database..."
+        echo_status "Initializing postgresql database..."
         tethys db configure -y
     fi
-elif [[ ! -e "${TETHYS_HOME}/tethys_platform.sqlite" ]]; then
-    echo_status "Initializing database..."
-    tethys db configure -y
+else
+    if [[ -e "${TETHYS_HOME}/tethys_platform.sqlite" ]]; then
+      echo_status "Using existing sqlite database."
+    else
+      echo_status "Initializing sqlite database..."
+      tethys db configure -y
+    fi
 fi
 
 # Start tethys dev server
