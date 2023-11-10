@@ -13,6 +13,7 @@ services:
   tethys:
     image: tethysplatform/tethys-dev
     # user: "${UID_GID:-1000:1000}"
+    # command: tethys manage start -p 0.0.0.0:8000
     environment:
     - TETHYS_DB_HOST=db
     - TETHYS_DB_PORT=5432

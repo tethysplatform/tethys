@@ -30,7 +30,7 @@ docker compose up
 docker compose up -d && docker compose logs -f tethys
 ```
 
-## Start with UID/GID
+## Start with your UID/GID (unix only)
 
 ```bash
 UID_GID="$(id -u):$(id -g)" docker compose up -d && docker compose logs -f tethys

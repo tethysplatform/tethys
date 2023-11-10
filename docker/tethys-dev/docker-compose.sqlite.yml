@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  tethys:
+    image: tethysplatform/tethys-dev
+    # user: "${UID_GID:-1000:1000}"
+    # command: tethys manage start -p 0.0.0.0:8000
+    volumes:
+    - .:/tethysdev
+    ports:
+    - "8000:8000"
