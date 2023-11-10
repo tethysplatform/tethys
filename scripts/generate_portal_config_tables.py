@@ -108,6 +108,7 @@ d = {
         "SOCIAL_AUTH_ONELOGIN_OIDC_KEY": "Client ID for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.",
         "SOCIAL_AUTH_ONELOGIN_OIDC_SECRET": "Secret for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.",
         "SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN": "Your OneLogin Subdomain. See :ref:`social_auth_onelogin` SSO Setup.",
+        "SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD": "The authentication method to use when requesting tokens from the token endpoint. See :ref:`social_auth_onelogin` SSO Setup.",
     },
     "MFA_CONFIG": {
         "ADMIN_MFA_REQUIRED": "Are admin (staff) users required to set up MFA when MFA_REQUIRED is ``True``. Defaults to ``True``.",

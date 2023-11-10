@@ -75,7 +75,8 @@ class Command(BaseCommand):
         if not module_found and not db_found:
             warnings.warn(
                 f'WARNING: {verbose_name} with name "{item_name}" cannot be uninstalled, '
-                f"because it is not installed or not an {verbose_name}."
+                f"because it is not installed or not an {verbose_name}.",
+                stacklevel=2,
             )
             exit(0)
 

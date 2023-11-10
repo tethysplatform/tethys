@@ -91,12 +91,12 @@ class MapView(TethysGizmoOptions):
 
     Use the following links to learn about options for the different controls:
 
-    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v4.0.1/apidoc/ol.control.FullScreen.html>`_
-    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v4.0.1/apidoc/ol.control.MousePosition.html>`_
-    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v4.0.1/apidoc/ol.control.Rotate.html>`_
-    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v4.0.1/apidoc/ol.control.ScaleLine.html>`_
-    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v4.0.1/apidoc/ol.control.ZoomSlider.html>`_
-    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v4.0.1/apidoc/ol.control.ZoomToExtent.html>`_
+    * FullScreen: `ol.control.FullScreen <https://openlayers.org/en/latest/apidoc/module-ol_control_FullScreen-FullScreen.html>`_
+    * MousePosition: `ol.control.MousePosition <https://openlayers.org/en/latest/apidoc/module-ol_control_MousePosition-MousePosition.html>`_
+    * Rotate: `ol.control.Rotate <https://openlayers.org/en/latest/apidoc/module-ol_control_Rotate-Rotate.html>`_
+    * ScaleLine: `ol.control.ScaleLine <https://openlayers.org/en/latest/apidoc/module-ol_control_ScaleLine-ScaleLine.html>`_
+    * ZoomSlider: `ol.control.ZoomSlider <https://openlayers.org/en/latest/apidoc/module-ol_control_ZoomSlider-ZoomSlider.html>`_
+    * ZoomToExtent: `ol.control.ZoomToExtent <https://openlayers.org/en/latest/apidoc/module-ol_control_ZoomToExtent-ZoomToExtent.html>`_
 
     **Feature Selection**
 
