@@ -7,10 +7,16 @@ services:
     - POSTGRES_DB=postgres
     - POSTGRES_USER=postgres
     - POSTGRES_PASSWORD=mysecretpassword
+    ports:
+    - "5432:5432"
 
   tethys:
     image: tethysplatform/tethys-dev
-    user: "${UID_GID}"
+    # user: "${UID_GID:-1000:1000}"
+    environment:
+    - TETHYS_DB_HOST=db
+    - TETHYS_DB_PORT=5432
+    - PGPASSWORD=mysecretpassword
     volumes:
     - .:/tethysdev
     ports:

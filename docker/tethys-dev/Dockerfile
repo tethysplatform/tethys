@@ -5,13 +5,14 @@ ENV CONDA_HOME="/opt/conda"
 ENV ENV_NAME="tethys"
 ENV TETHYS_DB_HOST=""
 ENV TETHYS_DB_PORT=""
-ENV TETHYS_DB_ENGINE=""
-ENV TETHYS_DB_NAME=""
-ENV TETHYS_DB_USERNAME=""
-ENV TETHYS_DB_PASSWORD=""
-ENV POSTGRES_PASSWORD=""
+ENV TETHYS_DB_USERNAME="tethys_default"
+ENV TETHYS_DB_PASSWORD="pass"
+ENV TETHYS_DB_SUPER_USERNAME="tethys_super"
+ENV TETHYS_DB_SUPER_PASSOWRD="pass"
+ENV PGPASSWORD="mysecretpassword"
 ENV TETHYS_HOME="/tethysdev"
 ENV TETHYS_SRC="/tethys"
+ENV TERM="xterm"
 
 USER root
 RUN mkdir -p ${TETHYS_SRC} \
@@ -30,7 +31,7 @@ RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" /tmp/environment.yml \
 
 # Copy Tethys Src
 ADD --chown=${MAMBA_USER}:${MAMBA_USER} . ${TETHYS_SRC}
-ADD --chown=${MAMBA_USER}:${MAMBA_USER} docker/app-dev-environment/run.sh ${TETHYS_SRC}/run.sh
+ADD --chown=${MAMBA_USER}:${MAMBA_USER} docker/tethys-dev/run.sh ${TETHYS_SRC}/run.sh
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 RUN pip install -e ${TETHYS_SRC}
