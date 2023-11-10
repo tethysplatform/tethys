@@ -4,63 +4,95 @@
 What's New
 **********
 
-**Last Updated:** May 2023
+**Last Updated:** November 2023
 
 Refer to this article for information about each new release of Tethys Platform.
 
 Release |version|
 ==================
 
-Python 3.11
+Python 3.12
 -----------
 
-* Verified Tethys Platform works using Python 3.11
+* Verified Tethys Platform works using Python 3.12
 
-Secret and JSON Custom Settings
--------------------------------
+Conda Forge Package
+------------------------
 
-* Added two new types of Custom App Settings: Secret and JSON.
-* The values of Secret Custom settings are encrypted for additional security of sensitive data (e.g. passwords, API keys, etc.).
-* JSON Custom settings store JSON strings and can be initialized from a JSON file.
-* The app settings page provides an embedded JSON editor for JSON Custom settings.
+* Tethys Platform is now fully packaged on conda-forge!
 
-See: :ref:`app_settings_custom_settings`,  :ref:`tethys_portal_secret_settings`, and :ref:`tethys_portal_json_settings`
+See: :ref:`development_installation`
+
+Optional Dependencies and Micro Tethys
+------------
+
+* Made many of the dependencies of ``tethys-platform`` optional and released new ``micro-tethys-platform`` conda package on the ``tethysplatform`` channel with minimal dependencies
+* Updated docs to reflect what features are now optional and what dependencies are needed to support those features
+
+.. note::
+
+    The ``tethys-platform`` conda package for version 4.2 will still install all of the optional dependencies for backwards compatibility. Starting with Tethys version 5.0 the ``tethys-platform`` package will only have required dependencies. The ``micro-tethys-platform`` package, available on the ``tethysplatform`` channel, will install only the required dependencies allowing for a smaller Tethys environment.
+
+See: :ref:`optional_features`, :ref:`development_installation`
+
+Map Layout
+----------
+
+* Add labeling support for geojson features in MapLayout and MapView Gizmo.
+
+See: `label_options` in :ref:`map_layout`
+
+Admin Pages
+-----------
+
+* Added ability to have an icon on proxy app cards in the apps library to distinguish from native apps
+
+See: :ref:`portal_admin_proxy_apps`
+
+Settings
+--------
+
+* Added new ``PREFIX_URL`` to enable modifying all portal URLs with a prefix
+* Added new settings ``ADDITIONAL_URLPATTERNS`` and ``ADDITIONAL_TEMPLATE_DIRS`` to allow more flexibility for supporting Django plugins
+* Replaced deprecated setting ``AXES_ONLY_USER_FAILURES`` with recommended setting ``AXES_LOCKOUT_PARAMETERS``
+
+See: :ref:`tethys_configuration`
+
+OAuth2 Provider
+---------------
+
+* Added support for the Django OAuth Toolkit plugin to allow a Tethys portal to be an OAuth provider.
+
+See: :ref:`optional_features`
 
 Tethys CLI
 ----------
 
-* Added Docker image (``-i``) name and tag (``-t``) options to the ``tethys docker`` command to allow users to override the default images installed by the ``init`` and ``update`` command.
-* Added port (``-o``) option to tethys scheduler create-condor CLI command.
-* Link Schedulers to App Settings using the ``tethys link`` command.
+* Added a ``--urls`` option to the ``tethys list`` command to list the ``UrlMaps`` for apps.
 
-See: :ref:`tethys_cli_docker`, :ref:`tethys_cli_schedulers`, and :ref:`tethys_cli_link`
+See: :ref:`tethys_list_cmd`
 
-Support for Other Databases
----------------------------
+Bokeh
+-----
 
-* Removed PostgreSQL specific model code for the primary Tethys Platform database to allow using other database engines (MySQL, Microsoft SQL, SQLite, etc.).
-* Made SQLite the default database engine for the Tethys Platform database.
-* Note: Persistent stores still require PostgreSQL, but work is being done to support for more datbase engines.
+* Added support for Bokeh version 3
 
+Jobs Table Gizmo
+----------------
 
-Miscellaneous Changes
----------------------
+* Added a ``cached_status`` property to Tethys Jobs and optimized how the ``JobsTable`` gizmo loads statuses
+* Added ability to sort jobs in the ``JobsTable`` gizmo and specify sorting key
 
-* Removed unused site settings.
-* Refactored base templates for user and account pages to allow for separation and more control with custom CSS settings.
-* Various improvements for Production deployments (See `Pull Request 942 <https://github.com/tethysplatform/tethys/pull/942>`_).
-
-Documentation
--------------
-
-* Updated the Docker Production Deployment Tutorial for Tethys 4
+See: :ref:`jobs-table`
 
 Bug Fixes
 ---------
 
-* Fix `Issue 931 Map Layout Bug Fixes <https://github.com/tethysplatform/tethys/pull/931>`_
-* Fix `Issue 940 Update THREDDS Docker version (4.6.20 no longer published) <https://github.com/tethysplatform/tethys/pull/940>`_
-* Fix `Issue 946 Fixed issue with tethys install when libmamba is set to default solver <https://github.com/tethysplatform/tethys/pull/946>`_
+* Fixed issue with the TethysJob update-status callback endpoint not updating job status
+* Fixed issue with assigning Custom JSON setting error when installing from file
+* Fixed `Issue 985  Remove References to UrlMaps in Gizmo Docs <https://github.com/tethysplatform/tethys/issues/985>`_
+* Fixed `Issue 881 The OneLoginOIDC Oauth backend is not compatible with the latest version of social-auth-core <https://github.com/tethysplatform/tethys/issues/881>`_
+* Fixed `Issue 976 Invalid Links for Map View Controls <https://github.com/tethysplatform/tethys/issues/976>`_
 
 Prior Release Notes
 ===================

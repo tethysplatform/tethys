@@ -704,7 +704,7 @@ OneLogin
 
         .. code-block:: bash
 
-            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN <Subdomain>
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN <Subdomain> OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD "POST"
 
 References
 ++++++++++
@@ -772,10 +772,12 @@ Configuring multi-tenant SSO backends is similar to configuring other SSO backen
         SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Tenant 1 Key>
         SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Tenant 1 Secret>
         SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Tenant 1 Subdomain>
+        SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD: "POST"
       tenant2:
         SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Tenant 2 Key>
         SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Tenant 2 Secret>
         SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Tenant 2 Subdomain>
+        SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD: "POST"
 
 Tenant Keys
 +++++++++++
@@ -1019,10 +1021,12 @@ OneLogin Multi Tenant
             SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
             SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
             SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Subdomain>
+            SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD: "POST"
           <tenant_key>:
             SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
             SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
             SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Subdomain>
+            SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD: "POST"
 
 
 .. _social_auth_settings:
@@ -1106,6 +1110,7 @@ The following settings in the :file:`portal_config.yml` are used to configure so
           SOCIAL_AUTH_ONELOGIN_OIDC_KEY: ''
           SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: ''
           SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: ''
+          SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD: "POST"
 
 You can use the ``tethys settings`` command to easily set the settings in the :file:`portal_config.yml`. For example:
 
