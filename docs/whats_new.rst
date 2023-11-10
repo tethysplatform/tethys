@@ -16,7 +16,14 @@ Python 3.12
 
 * Verified Tethys Platform works using Python 3.12
 
-Micro Tethys
+Conda Forge Package
+------------------------
+
+* Tethys Platform is now fully packaged on conda-forge!
+
+See: :ref:`development_installation`
+
+Optional Dependencies and Micro Tethys
 ------------
 
 * Made many of the dependencies of ``tethys-platform`` optional and released new ``micro-tethys-platform`` conda package on the ``tethysplatform`` channel with minimal dependencies
@@ -84,6 +91,8 @@ Bug Fixes
 * Fixed issue with the TethysJob update-status callback endpoint not updating job status
 * Fixed issue with assigning Custom JSON setting error when installing from file
 * Fixed `Issue 985  Remove References to UrlMaps in Gizmo Docs <https://github.com/tethysplatform/tethys/issues/985>`_
+* Fixed `Issue 881 The OneLoginOIDC Oauth backend is not compatible with the latest version of social-auth-core <https://github.com/tethysplatform/tethys/issues/881>`_
+* Fixed `Issue 976 Invalid Links for Map View Controls <https://github.com/tethysplatform/tethys/issues/976>`_
 
 Prior Release Notes
 ===================
