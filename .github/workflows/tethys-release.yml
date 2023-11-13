@@ -126,9 +126,6 @@ jobs:
           hash -r
           conda config --set always_yes yes --set changeps1 no
           conda update -q conda
-          conda install conda-build anaconda-client
-          conda config --set anaconda_upload no
-          mkdir -p ~/conda-bld
       # Export Conda Build Path
       - name: Set Conda Build Path
         uses: allenevans/set-env@v2.0.0
@@ -193,10 +190,7 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda create -y -c conda-forge -n conda-build conda-build anaconda-client 
           conda activate conda-build
-          conda config --set anaconda_upload no
-          mkdir -p ~/conda-bld
           conda-build -c tethysplatform -c conda-forge ./tethys/conda.recipe
       # Upload to Anaconda Cloud
       - name: Upload to Conda Release Channel - micro
