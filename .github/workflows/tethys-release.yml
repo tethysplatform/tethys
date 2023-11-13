@@ -159,7 +159,7 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
+          conda activate conda-build;
           echo "Publishing to release channel...";
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
       - name: Upload to Conda Dev Channel
@@ -167,7 +167,7 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
+          conda activate conda-build;
           echo "Publishing to dev channel...";
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
 
@@ -198,7 +198,7 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
+          conda activate conda-build;
           echo "Publishing to release channel...";
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
       - name: Upload to Conda Dev Channel - micro
@@ -206,6 +206,6 @@ jobs:
         run: |
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
+          conda activate conda-build;
           echo "Publishing to dev channel...";
           anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
