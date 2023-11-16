@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis
+    environment:
+    - POSTGRES_DB=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=pass
+    ports:
+    - "5432:5432"
+    networks:
+    - tethys
+
+  geoserver:
+    image: kartoza/geoserver
+    environment:
+    - GEOSERVER_ADMIN_USER=admin
+    - GEOSERVER_ADMIN_PASSWORD=pass
+    ports:
+    - "8080:8080"
+    networks:
+    - tethys
+    depends_on:
+    - db
+
+  tethys:
+    image: tethysplatform/tethys-dev:4.2.0
+    # user: "${UID_GID:-1000:1000}"
+    # command: tethys manage start -p 0.0.0.0:8000
+    environment:
+    - TETHYS_DB_HOST=db
+    - TETHYS_DB_PORT=5432
+    - PGPASSWORD=pass
+    volumes:
+    - .:/tethysdev
+    ports:
+    - "8000:8000"
+    networks:
+    - tethys
+    depends_on:
+    - db
+    - geoserver
+
+networks:
+  tethys:
+    driver: bridge
