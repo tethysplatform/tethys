@@ -24,7 +24,7 @@ def add_proxyapps_parser(subparsers):
     proxyapps_parser.add_argument(
         "-a",
         "--add",
-        help="Add a new proxy app. Arguments: proxy_app_name endpoint description [logo_url] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon]",
+        help="Add a new proxy app. Arguments: proxy_app_name endpoint [description] [logo_url] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon]",
         nargs="+",
     )
     proxyapps_parser.add_argument(
@@ -67,10 +67,10 @@ def update_proxyapp(args):
         write_error(f"proxy_app_name cannot be empty")
         return
     if app_key is None:
-        write_error(f"proxy_app_name cannot be empty")
+        write_error(f"proxy_app_key cannot be empty")
         return
     if app_value is None:
-        write_error(f"proxy_app_name cannot be empty")
+        write_error(f"proxy_app_value cannot be empty")
         return
     try:
         proxy_app = ProxyApp.objects.get(name=app_name)
@@ -107,9 +107,6 @@ def add_proxyapp(args):
         return
     if app_endpoint == "":
         write_error(f"proxy_app_endpoint cannot be empty")
-        return
-    if app_description == "":
-        write_error(f"proxy_app_description cannot be empty")
         return
     try:
         proxy_app = ProxyApp.objects.create(
