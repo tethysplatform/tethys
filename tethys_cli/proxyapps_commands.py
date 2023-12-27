@@ -70,13 +70,13 @@ def get_engine():
     database_settings = tethys_settings.get("DATABASES", "")
 
     if database_settings == "":
-        write_error(f"No database settings defined in the portal_config.yml file")
+        write_error("No database settings defined in the portal_config.yml file")
         return engine
 
     database_default_settings = database_settings.get("default", "")
 
     if database_default_settings == "":
-        write_error(f"No default database defined in the portal_config.yml file")
+        write_error("No default database defined in the portal_config.yml file")
         return engine
 
     database_engine = database_default_settings.get("ENGINE", "")
@@ -92,8 +92,8 @@ def get_engine():
             postgres_uri = f"sqlite:///{database_name}"
         engine = create_engine(postgres_uri, pool_pre_ping=True)
 
-    except Exception as e:
-        write_error(f"Error when connecting to the database")
+    except Exception:
+        write_error("Error when connecting to the database")
 
     return engine
 
@@ -113,13 +113,13 @@ def update_proxyapp(args):
     app_value = args[2] if len(args) > 2 else None
 
     if app_name is None:
-        write_error(f"proxy_app_name cannot be empty")
+        write_error("proxy_app_name cannot be empty")
         return
     if app_key is None:
-        write_error(f"proxy_app_key cannot be empty")
+        write_error("proxy_app_key cannot be empty")
         return
     if app_value is None:
-        write_error(f"proxy_app_value cannot be empty")
+        write_error("proxy_app_value cannot be empty")
         return
 
     engine = get_engine()
@@ -170,10 +170,10 @@ def add_proxyapp(args):
     app_order = args[10] if len(args) > 10 else 0
 
     if app_name == "":
-        write_error(f"proxy_app_name argument cannot be empty")
+        write_error("proxy_app_name argument cannot be empty")
         return
     if app_endpoint == "":
-        write_error(f"proxy_app_endpoint argument cannot be empty")
+        write_error("proxy_app_endpoint argument cannot be empty")
         return
     engine = get_engine()
     if engine:

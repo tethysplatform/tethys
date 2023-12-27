@@ -8,7 +8,6 @@ from tethys_cli.proxyapps_commands import (
     get_engine,
 )
 
-from django.test import TestCase
 import unittest
 
 
@@ -78,7 +77,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_engine.connect.return_value = "Mocked SQLite Engine"
 
         # Call the function that uses create_engine
-        engine = get_engine()
+        get_engine()
 
         # Assertions
         mock_create_engine.assert_called_once()
@@ -120,7 +119,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args = ["My_Proxy_App_for_Testing2", "logo_url", "https://fake.com"]
         update_proxyapp(mock_args)
         mock_write_error.assert_called_with(
-            f"Proxy app My_Proxy_App_for_Testing2 does not exits"
+            "Proxy app My_Proxy_App_for_Testing2 does not exits"
         )
 
     @mock.patch("tethys_cli.proxyapps_commands.write_error")
@@ -149,19 +148,20 @@ class TestProxyAppsCommand(unittest.TestCase):
     def test_add_proxy_apps_no_app_name(self, mock_write_error):
         mock_args = []
         add_proxyapp(mock_args)
-        mock_write_error.assert_called_with(f"proxy_app_name argument cannot be empty")
+        mock_write_error.assert_called_with("proxy_app_name argument cannot be empty")
 
     @mock.patch("tethys_cli.proxyapps_commands.write_error")
     def test_add_proxy_apps_no_endpoint(self, mock_write_error):
         mock_args = ["new_proxy_app"]
         add_proxyapp(mock_args)
         mock_write_error.assert_called_with(
-            f"proxy_app_endpoint argument cannot be empty"
+            "proxy_app_endpoint argument cannot be empty"
         )
 
     @mock.patch("tethys_cli.proxyapps_commands.write_error")
     def test_add_proxy_apps_with_existing_proxy_app(self, mock_write_error):
         mock_args = ["My_Proxy_App_for_Testing", "http://foo.example.com/my-proxy-app"]
+        breakpoint()
         add_proxyapp(mock_args)
         mock_write_error.assert_called_with(
             f"There is already a proxy app with that name: {self.app_name}"
@@ -173,6 +173,6 @@ class TestProxyAppsCommand(unittest.TestCase):
         endpoint_mock = "http://foo.example.com/my-proxy-app"
         mock_args = [app_name_mock, endpoint_mock]
         add_proxyapp(mock_args)
-        mock_write_success.assert_called_with(f"Proxy app {app_name_mock} added")
         new_proxy_app = ProxyApp.objects.get(name=app_name_mock)
         new_proxy_app.delete()
+        mock_write_success.assert_called_with(f"Proxy app {app_name_mock} added")
