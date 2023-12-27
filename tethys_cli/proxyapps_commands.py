@@ -6,7 +6,6 @@ from tethys_cli.cli_colors import (
 
 from tethys_cli.cli_helpers import setup_django
 
-from tethys_apps.models import ProxyApp
 from django.db import IntegrityError
 
 
@@ -38,6 +37,8 @@ def add_proxyapps_parser(subparsers):
 
 
 def list_proxyapps():
+    from tethys_apps.models import ProxyApp
+
     proxy_apps = ProxyApp.objects.all()
 
     write_info("Proxy Apps:")
@@ -47,6 +48,7 @@ def list_proxyapps():
 
 def proxyapp_command(args):
     setup_django()
+
     if args.list:
         list_proxyapps()
     elif args.add:
@@ -56,6 +58,8 @@ def proxyapp_command(args):
 
 
 def update_proxyapp(args):
+    from tethys_apps.models import ProxyApp
+
     app_name = args[0] if len(args) > 0 else None
     app_key = args[1] if len(args) > 1 else None
     app_value = args[2] if len(args) > 2 else None
@@ -86,6 +90,8 @@ def add_proxyapp(args):
     """
     Add Proxy app
     """
+    from tethys_apps.models import ProxyApp
+
     app_name = args[0] if len(args) > 0 else ""
     app_endpoint = args[1] if len(args) > 1 else ""
     app_description = args[2] if len(args) > 2 else ""
@@ -121,6 +127,6 @@ def add_proxyapp(args):
         proxy_app.save()
 
         write_success(f"Proxy app {app_name} added")
-    except IntegrityError as e:
-        write_error(f"there is already a proxy app with that name: {app_name}")
+    except IntegrityError:
+        write_error(f"There is already a proxy app with that name: {app_name}")
         return
