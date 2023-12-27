@@ -37,7 +37,8 @@ class TestProxyAppsCommand(unittest.TestCase):
     @mock.patch("tethys_cli.proxyapps_commands.write_info")
     @mock.patch("tethys_cli.proxyapps_commands.print")
     def test_list_proxy_apps(self, mock_print, mock_write_info):
-        list_proxyapps()
+        mock_args = mock.Mock()
+        list_proxyapps(mock_args)
         rts_call_args = mock_print.call_args_list
         check_list = []
 
