@@ -34,54 +34,60 @@ def add_proxyapps_parser(subparsers):
     )
     proxyapps_add_parser.add_argument(
         "endpoint",
-        help="The proxy app endpoint",
+        help='The proxy app endpoint (e.g.: "https://myproxyapp.com").',
     )
     proxyapps_add_parser.add_argument(
-        "description", help="The proxy app description", nargs="?", default=""
+        "description",
+        help='The proxy app description (e.g.: "The following proxy app is a proxy app").',
+        nargs="?",
+        default="",
     )
     proxyapps_add_parser.add_argument(
         "logo_url",
-        help="A URL to a logo image to use for the proxy app tile.",
+        help='A URL to a logo image to use for the proxy app tile (e.g.: "https://the-logo-of-myproxy-app.png").',
         nargs="?",
         default="",
     )
 
     proxyapps_add_parser.add_argument(
-        "tags", help="The proxy app tags", nargs="?", default=""
+        "tags",
+        help='The proxy app tags separated by commas (e.g.: "tag1, tag2, tag3").',
+        nargs="?",
+        default="",
     )
     proxyapps_add_parser.add_argument(
         "enabled",
-        help="Defines if the proxy app is enabled or not",
+        help="Defines if the proxy app is enabled or not (e.g.: True/False).",
         nargs="?",
         default=True,
     )
     proxyapps_add_parser.add_argument(
         "show_in_apps_library",
-        help="Defines if the proxy app is enabled or not",
+        help="Defines if the proxy app is enabled or no (e.g.: True/False).",
         nargs="?",
         default=True,
     )
     proxyapps_add_parser.add_argument(
         "back_url",
-        help="Defines a custom back url for the proxy app",
+        help='Defines a custom back url for the proxy app (e.g.: "https://back-url-of-myproxy-app.com").',
         nargs="?",
         default="",
     )
     proxyapps_add_parser.add_argument(
         "open_new_tab",
-        help="Defines if the proxy app opens in a new tab",
+        help="Defines if the proxy app opens in a new tab (e.g.: True/False).",
         nargs="?",
         default=True,
     )
     proxyapps_add_parser.add_argument(
         "display_external_icon",
-        help="Defines if the proxy app should appear with an icon on it to differentiate it from normal apps",
+        help="Defines if the proxy app should appear with an icon on it to differentiate it from normal apps (e.g.: True/False).",
         nargs="?",
         default=False,
     )
     proxyapps_add_parser.add_argument(
         "order",
-        help="An arbitrary integer value that is used for ordering apps on the App Library page",
+        help="An arbitrary integer value that is used for ordering apps on the App Library page (e.g.: 0).",
         nargs="?",
         default=0,
     )
