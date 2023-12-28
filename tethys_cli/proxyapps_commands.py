@@ -1,8 +1,4 @@
-from tethys_cli.cli_colors import (
-    write_error,
-    write_success,
-    write_info,
-)
+from tethys_cli.cli_colors import write_error, write_success, write_info, write_warning
 
 from tethys_cli.cli_helpers import setup_django
 
@@ -19,62 +15,72 @@ def add_proxyapps_parser(subparsers):
     proxyapps_list_parser = proxyapps_subparsers.add_parser(
         "list", help="list available proxy apps in the current tethys installation"
     )
+    proxyapps_list_parser.add_argument(
+        "-v",
+        "--verbose",
+        help="List all the attributes of each available proxy app",
+        action="store_true",
+    )
+
     proxyapps_list_parser.set_defaults(func=list_proxyapps)
 
     proxyapps_add_parser = proxyapps_subparsers.add_parser(
         "add",
-        help="Add a new proxy app. Arguments: proxy_app_name endpoint [description] [logo_url] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon] [app_order]",
+        help="Add a new proxy app.",
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_name",
-        help="The proxy app name",
+        "name",
+        help='The proxy app name (e.g.: "My App").',
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_endpoint",
+        "endpoint",
         help="The proxy app endpoint",
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_description", help="The proxy app description", nargs="?", default=""
+        "description", help="The proxy app description", nargs="?", default=""
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_logo_url", help="The proxy app logo url", nargs="?", default=""
+        "logo_url",
+        help="A URL to a logo image to use for the proxy app tile.",
+        nargs="?",
+        default="",
     )
 
     proxyapps_add_parser.add_argument(
-        "proxy_app_tags", help="The proxy app tags", nargs="?", default=""
+        "tags", help="The proxy app tags", nargs="?", default=""
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_enabled",
+        "enabled",
         help="Defines if the proxy app is enabled or not",
         nargs="?",
         default=True,
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_show_in_apps_library",
+        "show_in_apps_library",
         help="Defines if the proxy app is enabled or not",
         nargs="?",
         default=True,
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_back_url",
+        "back_url",
         help="Defines a custom back url for the proxy app",
         nargs="?",
         default="",
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_open_new_tab",
+        "open_new_tab",
         help="Defines if the proxy app opens in a new tab",
         nargs="?",
         default=True,
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_display_external_icon",
-        help="Defines if the proxy app opens in a new tab",
+        "display_external_icon",
+        help="Defines if the proxy app should appear with an icon on it to differentiate it from normal apps",
         nargs="?",
         default=False,
     )
     proxyapps_add_parser.add_argument(
-        "proxy_app_order",
+        "order",
         help="Defines if the proxy app opens in a new tab",
         nargs="?",
         default=0,
@@ -84,19 +90,22 @@ def add_proxyapps_parser(subparsers):
 
     proxyapps_update_parser = proxyapps_subparsers.add_parser(
         "update",
-        help="Update a new proxy app. Arguments: proxy_app_name key_value new_value",
+        help="Update a new proxy app. Arguments: name [key_value new_value]",
     )
+
     proxyapps_update_parser.add_argument(
-        "proxy_app_name",
+        "name",
         help="The proxy app name",
     )
+
     proxyapps_update_parser.add_argument(
-        "proxy_app_key",
-        help="The proxy app key that needs to be changed: [name] [endpoint] [description] [logo_url] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon] [app_order] ",
-    )
-    proxyapps_update_parser.add_argument(
-        "proxy_app_key_value",
-        help="Th new value for the proxy app's key",
+        "-s",
+        "--set",
+        dest="set_kwargs",
+        help="Key Value pairs to update proxyapps settings: <key> <value>"
+        "Available keys for update: [name] [endpoint] [description] [logo_url] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon] [app_order]",
+        nargs=2,
+        action="append",
     )
 
     proxyapps_update_parser.set_defaults(func=update_proxyapp)
@@ -110,32 +119,50 @@ def list_proxyapps(args):
 
     write_info("Proxy Apps:")
     for proxy_app in proxy_apps:
-        print(f"  {proxy_app.name}")
+        if args.verbose:
+            print(
+                f"  {proxy_app.name}:\n"
+                f"    endpoint: {proxy_app.endpoint}\n"
+                f"    description: {proxy_app.description}\n"
+                f"    logo_url: {proxy_app.logo_url}\n"
+                f"    tags: {proxy_app.tags}\n"
+                f"    enabled: {proxy_app.enabled}\n"
+                f"    show_in_apps_library: {proxy_app.show_in_apps_library}\n"
+                f"    back_url: {proxy_app.back_url}\n"
+                f"    open_in_new_tab: {proxy_app.open_in_new_tab}\n"
+                f"    display_external_icon: {proxy_app.display_external_icon}\n"
+                f"    order: {proxy_app.order}"
+            )
+        else:
+            print(f"  {proxy_app.name}: {proxy_app.endpoint}")
 
 
 def update_proxyapp(args):
     setup_django()
     from tethys_apps.models import ProxyApp
 
-    app_name = args.proxy_app_name
-    app_key = args.proxy_app_key
-    app_value = args.proxy_app_key_value
+    app_name = args.name
+    for key, value in args.set_kwargs:
+        app_key = key
+        app_value = value
 
-    try:
-        proxy_app = ProxyApp.objects.get(name=app_name)
-        # breakpoint()
-        if not hasattr(proxy_app, app_key):
-            write_error(f"Attribute {app_key} does not exists in Proxy app {app_name}")
+        try:
+            proxy_app = ProxyApp.objects.get(name=app_name)
+            if not hasattr(proxy_app, app_key):
+                write_warning(f"Attribute {app_key} does not exist")
+                continue
+
+            setattr(proxy_app, app_key, app_value)
+            proxy_app.save()
+
+            write_info(f"Attribute {app_key} was updated successfully with {app_value}")
+
+        except ProxyApp.DoesNotExist:
+            write_error(f"Proxy app named '{app_name}' does not exist")
             exit(1)
 
-        setattr(proxy_app, app_key, app_value)
-        proxy_app.save()
-        write_success(f"Proxy app {app_name} was updated")
-        exit(0)
-
-    except ProxyApp.DoesNotExist:
-        write_error(f"Proxy app {app_name} does not exits")
-        exit(1)
+    write_success(f"Proxy app '{app_name}' was updated successfully")
+    exit(0)
 
 
 def add_proxyapp(args):
@@ -146,17 +173,17 @@ def add_proxyapp(args):
 
     from tethys_apps.models import ProxyApp
 
-    app_name = args.proxy_app_name
-    app_endpoint = args.proxy_app_endpoint
-    app_description = args.proxy_app_description
-    app_logo_url = args.proxy_app_logo_url
-    app_tags = args.proxy_app_tags
-    app_enabled = args.proxy_app_enabled
-    app_show_in_app_library = args.proxy_app_show_in_apps_library
-    app_back_url = args.proxy_app_back_url
-    app_open_new_tab = args.proxy_app_open_new_tab
-    app_display_external_icon = args.proxy_app_display_external_icon
-    app_order = args.proxy_app_order
+    app_name = args.name
+    app_endpoint = args.endpoint
+    app_description = args.description
+    app_logo_url = args.logo_url
+    app_tags = args.tags
+    app_enabled = args.enabled
+    app_show_in_app_library = args.show_in_apps_library
+    app_back_url = args.back_url
+    app_open_new_tab = args.open_new_tab
+    app_display_external_icon = args.display_external_icon
+    app_order = args.order
     try:
         proxy_app = ProxyApp.objects.get(name=app_name)
         write_error(f"There is already a proxy app with that name: {app_name}")
