@@ -107,7 +107,9 @@ class TestProxyAppsCommand(unittest.TestCase):
     @mock.patch("tethys_cli.proxyapps_commands.write_success")
     @mock.patch("tethys_cli.proxyapps_commands.write_warning")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
-    def test_update_proxy_apps_no_correct_key(self, mock_exit, mock_write_warning, mock_write_success):
+    def test_update_proxy_apps_no_correct_key(
+        self, mock_exit, mock_write_warning, mock_write_success
+    ):
         mock_args = mock.Mock()
         mock_args.name = self.app_name
         mock_args.set_kwargs = [["non_existing_key", "https://fake.com"]]
@@ -121,7 +123,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         )
 
         mock_write_warning.assert_called_with(
-            f"Attribute non_existing_key does not exist"
+            "Attribute non_existing_key does not exist"
         )
         mock_write_success.assert_called_with(
             f"Proxy app '{self.app_name}' was updated successfully"
@@ -142,7 +144,7 @@ class TestProxyAppsCommand(unittest.TestCase):
             mock_args,
         )
         mock_write_info.assert_called_with(
-            f"Attribute logo_url was updated successfully with https://fake.com"
+            "Attribute logo_url was updated successfully with https://fake.com"
         )
         mock_write_success.assert_called_with(
             f"Proxy app '{self.app_name}' was updated successfully"
