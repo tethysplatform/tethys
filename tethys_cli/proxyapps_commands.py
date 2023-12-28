@@ -81,7 +81,7 @@ def add_proxyapps_parser(subparsers):
     )
     proxyapps_add_parser.add_argument(
         "order",
-        help="Defines if the proxy app opens in a new tab",
+        help="An arbitrary integer value that is used for ordering apps on the App Library page",
         nargs="?",
         default=0,
     )
