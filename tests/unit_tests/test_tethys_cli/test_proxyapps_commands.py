@@ -64,7 +64,6 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args.verbose = True
         list_proxyapps(mock_args)
         rts_call_args = mock_print.call_args_list
-        # breakpoint()
 
         expected_output = (
             f"  {self.app_name}:\n"
@@ -89,9 +88,6 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args = mock.Mock()
         mock_args.name = "non_existing_proxy_app"
         mock_args.set_kwargs = [["non_existing_key", "https://fake.com"]]
-
-        # mock_args.proxy_app_key = "non_existing_key"
-        # mock_args.proxy_app_key_value = "https://fake.com"
 
         self.assertRaises(
             SystemExit,
