@@ -139,9 +139,12 @@ class TestProxyAppsCommand(unittest.TestCase):
             update_proxyapp,
             mock_args,
         )
+        breakpoint()
         try:
-            proxy_app_updated = ProxyApp.objects.get(name=self.app_name)
-            self.assertEqual(proxy_app_updated.endpoint, "https://fake.com")
+            proxy_app_updated = ProxyApp.objects.get(
+                name=self.app_name, logo_url="https://fake.com"
+            )
+            self.assertEqual(proxy_app_updated.logo_url, "https://fake.com")
         except ProxyApp.DoesNotExist:
             self.fail(
                 f"ProxyApp.DoesNotExist was raised, ProxyApp with name {self.app_name} was never updated"
@@ -244,7 +247,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         app_endpoint_mock = "http://foo.example.com/my-proxy-app"
         app_description_mock = "Mock description for proxy app"
         app_logo_url_mock = "http://logo-url.foo.example.com/my-proxy-app"
-        app_tags_mock = "tag1", "tag2", "tag3", "tag4", "tag5"
+        app_tags_mock = '"tag one", "tag two", "tag three"'
         app_enabled_mock = False
         app_show_in_apps_library_mock = False
         app_back_url_mock = "http://back-url.foo.example.com/my-proxy-app"
@@ -270,7 +273,6 @@ class TestProxyAppsCommand(unittest.TestCase):
             add_proxyapp,
             mock_args,
         )
-
         try:
             proxy_app_added = ProxyApp.objects.get(
                 name=app_name_mock,
@@ -281,11 +283,25 @@ class TestProxyAppsCommand(unittest.TestCase):
                 enabled=app_enabled_mock,
                 show_in_apps_library=app_show_in_apps_library_mock,
                 back_url=app_back_url_mock,
-                open_new_tab=app_open_new_tab_mock,
+                open_in_new_tab=app_open_new_tab_mock,
                 display_external_icon=app_display_external_icon_mock,
                 order=app_order_mock,
             )
             self.assertEqual(proxy_app_added.name, app_name_mock)
+            self.assertEqual(proxy_app_added.endpoint, app_endpoint_mock)
+            self.assertEqual(proxy_app_added.description, app_description_mock)
+            self.assertEqual(proxy_app_added.logo_url, app_logo_url_mock)
+            self.assertEqual(proxy_app_added.tags, app_tags_mock)
+            self.assertEqual(proxy_app_added.enabled, app_enabled_mock)
+            self.assertEqual(
+                proxy_app_added.show_in_apps_library, app_show_in_apps_library_mock
+            )
+            self.assertEqual(proxy_app_added.back_url, app_back_url_mock)
+            self.assertEqual(proxy_app_added.open_in_new_tab, app_open_new_tab_mock)
+            self.assertEqual(proxy_app_added.order, app_order_mock)
+            self.assertEqual(
+                proxy_app_added.display_external_icon, app_display_external_icon_mock
+            )
             proxy_app_added.delete()
 
         except ProxyApp.DoesNotExist:
