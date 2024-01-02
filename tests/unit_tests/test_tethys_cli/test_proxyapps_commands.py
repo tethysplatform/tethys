@@ -311,3 +311,75 @@ class TestProxyAppsCommand(unittest.TestCase):
 
         mock_write_success.assert_called_with(f"Proxy app {app_name_mock} added")
         mock_exit.assert_called_with(0)
+
+    @mock.patch("tethys_cli.proxyapps_commands.write_success")
+    @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    def test_add_proxyapp_one_tag_success(self, mock_exit, mock_write_success):
+        app_name_mock = "My_Proxy_App_for_Testing_non_default"
+        app_endpoint_mock = "http://foo.example.com/my-proxy-app"
+        app_description_mock = "Mock description for proxy app"
+        app_logo_url_mock = "http://logo-url.foo.example.com/my-proxy-app"
+        app_tags_mock = "tag with space"
+        app_enabled_mock = False
+        app_show_in_apps_library_mock = False
+        app_back_url_mock = "http://back-url.foo.example.com/my-proxy-app"
+        app_open_new_tab_mock = False
+        app_display_external_icon_mock = True
+        app_order_mock = 1
+
+        mock_args = mock.Mock()
+        mock_args.name = app_name_mock
+        mock_args.endpoint = app_endpoint_mock
+        mock_args.description = app_description_mock
+        mock_args.logo_url = app_logo_url_mock
+        mock_args.tags = app_tags_mock
+        mock_args.enabled = app_enabled_mock
+        mock_args.show_in_apps_library = app_show_in_apps_library_mock
+        mock_args.back_url = app_back_url_mock
+        mock_args.open_new_tab = app_open_new_tab_mock
+        mock_args.display_external_icon = app_display_external_icon_mock
+        mock_args.order = app_order_mock
+
+        self.assertRaises(
+            SystemExit,
+            add_proxyapp,
+            mock_args,
+        )
+        try:
+            proxy_app_added = ProxyApp.objects.get(
+                name=app_name_mock,
+                endpoint=app_endpoint_mock,
+                description=app_description_mock,
+                logo_url=app_logo_url_mock,
+                tags=app_tags_mock,
+                enabled=app_enabled_mock,
+                show_in_apps_library=app_show_in_apps_library_mock,
+                back_url=app_back_url_mock,
+                open_in_new_tab=app_open_new_tab_mock,
+                display_external_icon=app_display_external_icon_mock,
+                order=app_order_mock,
+            )
+            self.assertEqual(proxy_app_added.name, app_name_mock)
+            self.assertEqual(proxy_app_added.endpoint, app_endpoint_mock)
+            self.assertEqual(proxy_app_added.description, app_description_mock)
+            self.assertEqual(proxy_app_added.logo_url, app_logo_url_mock)
+            self.assertEqual(proxy_app_added.tags, app_tags_mock)
+            self.assertEqual(proxy_app_added.enabled, app_enabled_mock)
+            self.assertEqual(
+                proxy_app_added.show_in_apps_library, app_show_in_apps_library_mock
+            )
+            self.assertEqual(proxy_app_added.back_url, app_back_url_mock)
+            self.assertEqual(proxy_app_added.open_in_new_tab, app_open_new_tab_mock)
+            self.assertEqual(proxy_app_added.order, app_order_mock)
+            self.assertEqual(
+                proxy_app_added.display_external_icon, app_display_external_icon_mock
+            )
+            proxy_app_added.delete()
+
+        except ProxyApp.DoesNotExist:
+            self.fail(
+                f"ProxyApp.DoesNotExist was raised, ProxyApp with name {app_name_mock} was never added"
+            )
+
+        mock_write_success.assert_called_with(f"Proxy app {app_name_mock} added")
+        mock_exit.assert_called_with(0)
