@@ -139,7 +139,7 @@ class TestProxyAppsCommand(unittest.TestCase):
             update_proxyapp,
             mock_args,
         )
-        breakpoint()
+
         try:
             proxy_app_updated = ProxyApp.objects.get(
                 name=self.app_name, logo_url="https://fake.com"
@@ -198,7 +198,7 @@ class TestProxyAppsCommand(unittest.TestCase):
             mock_args,
         )
         mock_write_error.assert_called_with(
-            f'Not possible to add the proxy app: {app_name_mock} because one or more values of the wrong type were provided. Run "tethys proxyapp add --help" to see examples for each argument.'
+            f'Not possible to add the proxy app "{app_name_mock}" because one or more values of the wrong type were provided. Run "tethys proxyapp add --help" to see examples for each argument.'
         )
         mock_exit.assert_called_with(1)
 
