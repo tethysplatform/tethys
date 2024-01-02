@@ -51,7 +51,7 @@ def add_proxyapps_parser(subparsers):
 
     proxyapps_add_parser.add_argument(
         "tags",
-        help='The proxy app tags separated by commas (e.g.: "tag1, tag2, tag3").',
+        help='The proxy app tags separated by commas (e.g.: "tag1", "tag2", "tag3", "tag with space").',
         nargs="?",
         default="",
     )
@@ -215,5 +215,7 @@ def add_proxyapp(args):
             write_success(f"Proxy app {app_name} added")
             exit(0)
         except IntegrityError:
-            write_error(f"Not possible to add the proxy app: {app_name}")
+            write_error(
+                f'Not possible to add the proxy app "{app_name}" because one or more values of the wrong type were provided. Run "tethys proxyapp add --help" to see examples for each argument.'
+            )
             exit(1)
