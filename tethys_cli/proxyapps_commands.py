@@ -63,7 +63,7 @@ def add_proxyapps_parser(subparsers):
     )
     proxyapps_add_parser.add_argument(
         "show_in_apps_library",
-        help="Defines if the proxy app is enabled or no (e.g.: True/False).",
+        help="Defines if the proxy app is shown in the apps library page or not (e.g.: True/False).",
         nargs="?",
         default=True,
     )
