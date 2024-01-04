@@ -4,7 +4,8 @@
     padding-top: 5px;
 }
 
-#app-content-wrapper #app-content #app-navigation .nav li a {
+#app-content-wrapper #app-content #app-navigation .nav li a,
+#app-content-wrapper #app-content #app-navigation .nav li a.active {
     color: #666666!important;
     background-color: transparent!important;
 }
