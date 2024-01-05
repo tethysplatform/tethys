@@ -44,6 +44,16 @@ def get_app(request, app):
     except TethysApp.DoesNotExist:
         return JsonResponse({"error": f'Could not find app "{app}".'})
 
+    custom_settings = {}
+    if request.user.is_authenticated:
+        custom_settings = {
+            s.name: {
+                "type": s.type,
+                "value": s.get_value(), 
+            } 
+            for s in app.custom_settings
+        }
+
     metadata = {
         "title": app.name,
         "description": app.description,
@@ -55,5 +65,6 @@ def get_app(request, app):
         "exitUrl": reverse("app_library"),
         "rootUrl": reverse(app.index_url),
         "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{ app.id }/change/',
+        "customSettings": custom_settings,
     }
     return JsonResponse(metadata)
