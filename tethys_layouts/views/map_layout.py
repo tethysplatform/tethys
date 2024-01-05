@@ -319,7 +319,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
         # Add layers to the Map
         log.debug("Composing layers...")
         layer_groups = self.compose_layers(
-            request=request, map_view=map_view, *args, **kwargs
+            *args, request=request, map_view=map_view, **kwargs
         )
         # Add layers to map view if not already added
         for layer_group in layer_groups:
@@ -484,7 +484,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         # Configure initial basemap visibility
         map_view.disable_basemap = self.should_disable_basemap(
-            request=request, *args, **kwargs
+            *args, request=request, **kwargs
         )
 
         # Configure feature selection

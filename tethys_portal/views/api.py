@@ -61,8 +61,8 @@ def get_app(request, app):
         metadata["customSettings"] = {
             s.name: {
                 "type": s.type,
-                "value": s.get_value(), 
-            } 
+                "value": s.get_value(),
+            }
             for s in app.custom_settings
         }
 
