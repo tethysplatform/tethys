@@ -1,3 +1,5 @@
+import datetime
+import uuid
 import unittest
 from unittest import mock
 
@@ -84,3 +86,21 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
 
         # mock redirect after logged in using next parameter or default to user profile
         mock_redirect.assert_called_once_with("foo")
+
+    def test_json_serializer_datetime(self):
+        d = datetime.datetime(2020, 1, 1)
+        ret = utilities.json_serializer(d)
+        self.assertEqual("2020-01-01T00:00:00", ret)
+
+    def test_json_serializer_uuid(self):
+        u = uuid.uuid4()
+        ret = utilities.json_serializer(u)
+        self.assertEqual(str(u), ret)
+
+    def test_json_serializer_other(self):
+        with self.assertRaises(TypeError) as cm:
+            utilities.json_serializer(1)
+
+        self.assertEqual(
+            'Object of type "int" is not JSON serializable', str(cm.exception)
+        )

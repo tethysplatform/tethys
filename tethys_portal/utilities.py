@@ -7,6 +7,8 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import datetime
+from uuid import UUID
 from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -50,3 +52,11 @@ def log_user_in(request, user=None, username=None):
         return redirect(request.GET["next"])
     else:
         return redirect("app_library")
+
+
+def json_serializer(obj):
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+    elif isinstance(obj, UUID):
+        return str(obj)
+    raise TypeError(f'Object of type "{obj.__class__.__name__}" is not JSON serializable')
