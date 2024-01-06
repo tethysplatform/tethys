@@ -195,12 +195,12 @@ class TethysPortalApiTests(TethysTestCase):
         )
         self.assertDictEqual(
             {
-                'change_factor': {'type': 'FLOAT', 'value': None},
-                'default_name': {'type': 'STRING', 'value': None},
-                'enable_feature': {'type': 'BOOLEAN', 'value': None},
-                'max_count': {'type': 'INTEGER', 'value': None}
+                "change_factor": {"type": "FLOAT", "value": None},
+                "default_name": {"type": "STRING", "value": None},
+                "enable_feature": {"type": "BOOLEAN", "value": None},
+                "max_count": {"type": "INTEGER", "value": None},
             },
-            json["customSettings"]
+            json["customSettings"],
         )
 
     def test_get_app_invalid_id(self):

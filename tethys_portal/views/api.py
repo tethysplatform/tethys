@@ -77,7 +77,4 @@ def get_app(request, app):
                 "value": v,
             }
 
-    return JsonResponse(
-        metadata,
-        json_dumps_params={"default": json_serializer}
-    )
+    return JsonResponse(metadata, json_dumps_params={"default": json_serializer})

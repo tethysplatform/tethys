@@ -59,4 +59,6 @@ def json_serializer(obj):
         return obj.isoformat()
     elif isinstance(obj, UUID):
         return str(obj)
-    raise TypeError(f'Object of type "{obj.__class__.__name__}" is not JSON serializable')
+    raise TypeError(
+        f'Object of type "{obj.__class__.__name__}" is not JSON serializable'
+    )
