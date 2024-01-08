@@ -77,8 +77,8 @@ MOCK_MODULES = [
     "sqlalchemy",
     "sqlalchemy.orm",
     "tethys_apps.harvester",
-    "tethys_apps.models",  # Mocked to prevent issues with loading apps during docs build.
-    "tethys_compute.utilities",  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+    # "tethys_apps.models",  # Mocked to prevent issues with loading apps during docs build.
+    # "tethys_compute.utilities",  # Mocked to prevent issues with DictionaryField and List Field during docs build.
     "yaml",
 ]
 
