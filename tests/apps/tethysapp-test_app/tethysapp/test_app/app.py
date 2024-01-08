@@ -82,6 +82,7 @@ class TestApp(TethysAppBase):
             JSONCustomSetting(
                 name="JSON_setting_default_value",
                 description="This is JSON setting with a default value",
+                include_in_api=False,
                 required=False,
                 default={"Test": "JSON test String"},
             ),
