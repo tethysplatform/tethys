@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tethys_apps', '0004_rename_display_external_proxyapp_display_external_icon'),
+        ("tethys_apps", "0004_rename_display_external_proxyapp_display_external_icon"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customsettingbase',
-            name='include_in_api',
+            model_name="customsettingbase",
+            name="include_in_api",
             field=models.BooleanField(default=False),
         ),
     ]

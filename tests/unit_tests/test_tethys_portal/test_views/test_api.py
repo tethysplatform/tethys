@@ -195,10 +195,13 @@ class TethysPortalApiTests(TethysTestCase):
         )
         self.assertDictEqual(
             {
-                "change_factor": {"type": "FLOAT", "value": None},
+                "JSON_setting_default_value_required": {
+                    "type": "JSON",
+                    "value": {"Test": "JSON test String"},
+                },
+                "Secret_Test_required": {"type": "SECRET", "value": None},
                 "default_name": {"type": "STRING", "value": None},
                 "enable_feature": {"type": "BOOLEAN", "value": None},
-                "max_count": {"type": "INTEGER", "value": None},
             },
             json["customSettings"],
         )

@@ -63,7 +63,7 @@ def get_app(request, app):
     if request.user.is_authenticated:
         metadata["customSettings"] = dict()
         for s in app.custom_settings:
-            if s.type_custom_setting != "SIMPLE":
+            if not s.include_in_api:
                 continue
 
             v = None
@@ -73,7 +73,9 @@ def get_app(request, app):
                 pass
 
             metadata["customSettings"][s.name] = {
-                "type": s.type,
+                "type": s.type
+                if s.type_custom_setting == "SIMPLE"
+                else s.type_custom_setting,
                 "value": v,
             }
 
