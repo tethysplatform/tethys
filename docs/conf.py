@@ -77,8 +77,8 @@ MOCK_MODULES = [
     "sqlalchemy",
     "sqlalchemy.orm",
     "tethys_apps.harvester",
-    # "tethys_apps.models",  # Mocked to prevent issues with loading apps during docs build.
-    # "tethys_compute.utilities",  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+    "tethys_apps.models",  # Mocked to prevent issues with loading apps during docs build.
+    "tethys_apps.admin",  # Mocked to prevent issues with loading models during docs build.
     "yaml",
 ]
 
@@ -96,6 +96,9 @@ print(
 )
 print("{}".format(", ".join(MOCK_MODULES)))
 sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
+
+# patcher = mock.patch("tethys_apps.models.register_custom_group")
+# patcher.start()
 
 # Fixes django settings module problem
 sys.path.insert(0, os.path.abspath(".."))
@@ -252,7 +255,7 @@ html_css_files = [
 
 html_theme = "sphinxawesome_theme"
 html_theme_options = {
-    "extra_header_links": {
+    "main_nav_links": {
         "Tutorials": "tutorials",
         "SDK": "tethys_sdk",
         "CLI": "tethys_cli",
