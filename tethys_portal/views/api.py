@@ -4,6 +4,9 @@ from django.templatetags.static import static
 from django.shortcuts import reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from tethys_apps.exceptions import TethysAppSettingNotAssigned
+from tethys_portal.utilities import json_serializer
+
 
 def get_csrf(request):
     if not request.user.is_authenticated:
@@ -56,4 +59,24 @@ def get_app(request, app):
         "rootUrl": reverse(app.index_url),
         "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{ app.id }/change/',
     }
-    return JsonResponse(metadata)
+
+    if request.user.is_authenticated:
+        metadata["customSettings"] = dict()
+        for s in app.custom_settings:
+            if not s.include_in_api:
+                continue
+
+            v = None
+            try:
+                v = s.get_value()
+            except TethysAppSettingNotAssigned:
+                pass
+
+            metadata["customSettings"][s.name] = {
+                "type": s.type
+                if s.type_custom_setting == "SIMPLE"
+                else s.type_custom_setting,
+                "value": v,
+            }
+
+    return JsonResponse(metadata, json_dumps_params={"default": json_serializer})

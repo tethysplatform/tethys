@@ -501,3 +501,54 @@ class CustomSettingTests(TethysTestCase):
         # Check value is a required setting returns None
 
         self.assertEqual(custom_setting.get_value(), None)
+
+    def test_include_in_api(self):
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="default_name"
+        )
+        self.assertTrue(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="max_count"
+        )
+        self.assertFalse(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="change_factor"
+        )
+        self.assertFalse(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="enable_feature"
+        )
+        self.assertTrue(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="JSON_setting_not_default_value_required"
+        )
+        self.assertFalse(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="JSON_setting_not_default_value"
+        )
+        self.assertFalse(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="JSON_setting_default_value_required"
+        )
+        self.assertTrue(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="JSON_setting_default_value"
+        )
+        self.assertFalse(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="Secret_Test_required"
+        )
+        self.assertTrue(custom_setting.include_in_api)
+
+        custom_setting = self.test_app.settings_set.select_subclasses().get(
+            name="Secret_Test2_without_required"
+        )
+        self.assertFalse(custom_setting.include_in_api)
