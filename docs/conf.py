@@ -11,15 +11,17 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-from setuptools_scm import get_version
 import os
-from pathlib import Path
-import subprocess
 import sys
+import subprocess
+from dataclasses import asdict
+from pathlib import Path
 from unittest import mock
 
 import django
 from django.conf import settings
+from setuptools_scm import get_version
+from sphinxawesome_theme import ThemeOptions, LinkIcon
 
 # Mock Dependencies
 # NOTE: No obvious way to automatically anticipate all the sub modules without
@@ -78,7 +80,7 @@ MOCK_MODULES = [
     "sqlalchemy.orm",
     "tethys_apps.harvester",
     "tethys_apps.models",  # Mocked to prevent issues with loading apps during docs build.
-    "tethys_compute.utilities",  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+    "tethys_apps.admin",  # Mocked to prevent issues with loading models during docs build.
     "yaml",
 ]
 
@@ -96,6 +98,9 @@ print(
 )
 print("{}".format(", ".join(MOCK_MODULES)))
 sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
+
+# patcher = mock.patch("tethys_apps.models.register_custom_group")
+# patcher.start()
 
 # Fixes django settings module problem
 sys.path.insert(0, os.path.abspath(".."))
@@ -243,7 +248,7 @@ todo_emit_warnings = True
 
 html_title = f"{project} Documentation"
 html_short_title = "Tethys Docs"
-html_logo = "images/features/tethys-logo-75.png"
+# html_logo = "images/features/tethys-logo-75.png"
 html_favicon = "images/default_favicon.ico"
 html_static_path = ["_static"]
 html_css_files = [
@@ -251,19 +256,27 @@ html_css_files = [
 ]
 
 html_theme = "sphinxawesome_theme"
-html_theme_options = {
-    "extra_header_links": {
+theme_options = ThemeOptions(
+    main_nav_links={
         "Tutorials": "tutorials",
         "SDK": "tethys_sdk",
         "CLI": "tethys_cli",
         "Tethys Portal": "tethys_portal",
         "Migrate Apps": "whats_new/app_migration",
-        "GitHub": "https://github.com/tethysplatform/tethys",
     },
-    "show_breadcrumbs": False,
-    "show_prev_next": True,
-    "show_scrolltop": True,
-}
+    extra_header_link_icons={
+        "GitHub": LinkIcon(
+            icon='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>',
+            link="https://github.com/tethysplatform/tethys",
+        ),
+    },
+    logo_dark="images/features/tethys-logo-75.png",  # todo: svg logo
+    logo_light="images/features/tethys_logo_inverse.png",  # todo: svg logo
+    show_breadcrumbs=False,
+    show_prev_next=True,
+    show_scrolltop=True,
+)
+html_theme_options = asdict(theme_options)
 
 html_collapsible_definitions = True
 

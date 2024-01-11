@@ -244,10 +244,9 @@ class TethysAppSetting(models.Model):
 
 
 class CustomSettingBase(TethysAppSetting):
-    # value = models.CharField(max_length=1024, blank=True, default="")
-    # default = models.CharField(max_length=1024, blank=True, default="")
     objects = InheritanceManager()
     type_custom_setting = models.CharField(max_length=1024, blank=True, default="")
+    include_in_api = models.BooleanField(default=False)
 
 
 class SecretCustomSetting(CustomSettingBase):
@@ -257,6 +256,7 @@ class SecretCustomSetting(CustomSettingBase):
     Attributes:
         name(str): Unique name used to identify the setting.
         description(str): Short description of the setting.
+        include_in_api(bool): If True, the value will be included in Tethys App API responses. Defaults to False.
         required(bool): A value will be required if True.
 
     **Example:**
@@ -274,6 +274,7 @@ class SecretCustomSetting(CustomSettingBase):
         max_count_setting = SecretCustomSetting(
             name='Anaconda_Token',
             description='Anaconda Organization secret token',
+            include_in_api=True,
             required=False
         )
     """  # noqa: E501
@@ -327,6 +328,7 @@ class CustomSetting(CustomSettingBase):
         name(str): Unique name used to identify the setting.
         type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN, CustomSetting.TYPE_UUID
         description(str): Short description of the setting.
+        include_in_api(bool): If True, the value will be included in Tethys App API responses. Defaults to False.
         required(bool): A value will be required if True.
         default(str): Value as a string that may be provided as a default.
 
@@ -362,6 +364,7 @@ class CustomSetting(CustomSettingBase):
             name='enable_feature',
             type=CustomSetting.TYPE_BOOLEAN,
             description='Enable this feature when True.',
+            include_in_api=False,
             required=True
         )
 
@@ -369,6 +372,7 @@ class CustomSetting(CustomSettingBase):
             name='feature_id',
             type=CustomSetting.TYPE_UUID,
             description='Feature ID.',
+            include_in_api=True,
             required=True
         )
 
@@ -469,6 +473,7 @@ class JSONCustomSetting(CustomSettingBase):
     Attributes:
         name(str): Unique name used to identify the setting.
         description(str): Short description of the setting.
+        include_in_api(bool): If True, the value will be included in Tethys App API responses. Defaults to False.
         required(bool): A value will be required if True.
         default(str): Value as a string that may be provided as a default.
 
@@ -488,6 +493,7 @@ class JSONCustomSetting(CustomSettingBase):
         json_setting_2 = JSONCustomSetting(
             name='JSON_setting_default_value',
             description='This is JSON setting with a default value',
+            include_in_api=False,
             required=False,
             default={"Test":"JSON test String"}
         )
@@ -495,6 +501,7 @@ class JSONCustomSetting(CustomSettingBase):
         json_setting_3 = JSONCustomSetting(
             name='JSON_setting_not_default_value',
             description='This is JSON setting without a default value',
+            include_in_api=True,
             required=False,
         )
 

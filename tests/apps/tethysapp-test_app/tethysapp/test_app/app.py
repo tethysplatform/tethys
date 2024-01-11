@@ -39,12 +39,14 @@ class TestApp(TethysAppBase):
                 name="default_name",
                 type=CustomSetting.TYPE_STRING,
                 description="Default model name.",
+                include_in_api=True,
                 required=True,
             ),
             CustomSetting(
                 name="max_count",
                 type=CustomSetting.TYPE_INTEGER,
                 description="Maximum allowed count in a method.",
+                include_in_api=False,
                 required=False,
             ),
             CustomSetting(
@@ -57,6 +59,7 @@ class TestApp(TethysAppBase):
                 name="enable_feature",
                 type=CustomSetting.TYPE_BOOLEAN,
                 description="Enable this feature when True.",
+                include_in_api=True,
                 required=False,
             ),
             JSONCustomSetting(
@@ -72,18 +75,21 @@ class TestApp(TethysAppBase):
             JSONCustomSetting(
                 name="JSON_setting_default_value_required",
                 description="This is JSON setting with a default value",
+                include_in_api=True,
                 required=True,
                 default={"Test": "JSON test String"},
             ),
             JSONCustomSetting(
                 name="JSON_setting_default_value",
                 description="This is JSON setting with a default value",
+                include_in_api=False,
                 required=False,
                 default={"Test": "JSON test String"},
             ),
             SecretCustomSetting(
                 name="Secret_Test_required",
                 description="This is SECRET setting with required True",
+                include_in_api=True,
                 required=True,
             ),
             SecretCustomSetting(

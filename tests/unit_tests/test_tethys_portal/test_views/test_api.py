@@ -156,6 +156,56 @@ class TethysPortalApiTests(TethysTestCase):
             r"^/test/prefix/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
 
+    @override_settings(STATIC_URL="/static")
+    @override_settings(PREFIX_URL="/")
+    @override_settings(LOGIN_URL="/accounts/login/")
+    def test_get_app_authenticated(self):
+        self.client.force_login(self.user)
+        self.reload_urlconf()
+
+        """Test get_app API endpoint with valid app id."""
+        response = self.client.get(reverse("api:get_app", kwargs={"app": "test-app"}))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+        json = response.json()
+        self.assertIn("title", json)
+        self.assertIn("description", json)
+        self.assertIn("tags", json)
+        self.assertIn("package", json)
+        self.assertIn("urlNamespace", json)
+        self.assertIn("color", json)
+        self.assertIn("icon", json)
+        self.assertIn("exitUrl", json)
+        self.assertIn("rootUrl", json)
+        self.assertIn("settingsUrl", json)
+        self.assertEqual("Test App", json["title"])
+        self.assertEqual(
+            "Place a brief description of your app here.", json["description"]
+        )
+        self.assertEqual("", json["tags"])
+        self.assertEqual("test_app", json["package"])
+        self.assertEqual("test_app", json["urlNamespace"])
+        self.assertEqual("#2c3e50", json["color"])
+        self.assertEqual("/static/test_app/images/icon.gif", json["icon"])
+        self.assertEqual("/apps/", json["exitUrl"])
+        self.assertEqual("/apps/test-app/", json["rootUrl"])
+        self.assertRegex(
+            json["settingsUrl"],
+            r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$",
+        )
+        self.assertDictEqual(
+            {
+                "JSON_setting_default_value_required": {
+                    "type": "JSON",
+                    "value": {"Test": "JSON test String"},
+                },
+                "Secret_Test_required": {"type": "SECRET", "value": None},
+                "default_name": {"type": "STRING", "value": None},
+                "enable_feature": {"type": "BOOLEAN", "value": None},
+            },
+            json["customSettings"],
+        )
+
     def test_get_app_invalid_id(self):
         """Test get_app API endpoint with invalid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "foo-bar"}))

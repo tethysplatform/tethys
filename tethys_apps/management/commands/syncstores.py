@@ -31,7 +31,7 @@ class Command(BaseCommand):
             default=False,
             help="When called with this option, the database will be dropped prior to syncing "
             "resulting in a refreshed database.",
-        ),
+        )
         parser.add_argument(
             "-f",
             "--firsttime",
@@ -40,7 +40,7 @@ class Command(BaseCommand):
             default=False,
             help="Call with this option to force the initializer functions to be executed with "
             '"first_time" parameter True.',
-        ),
+        )
         parser.add_argument("-d", "--database", help="Name of database to sync.")
 
     def handle(self, *args, **options):
