@@ -65,7 +65,7 @@ class TethysAppSettingInline(admin.TabularInline):
 
 class CustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "type", "required")
-    fields = ("name", "description", "type", "value", "required")
+    fields = ("name", "description", "type", "value", "include_in_api", "required")
     model = CustomSetting
 
 
@@ -81,19 +81,19 @@ class SecretCustomSettingForm(forms.ModelForm):
 
     class Meta:
         model = SecretCustomSetting
-        fields = ["value"]
+        fields = ["value", "include_in_api"]
 
 
 class SecretCustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
-    fields = ("name", "description", "value", "required")
+    fields = ("name", "description", "value", "include_in_api", "required")
     model = SecretCustomSetting
     form = SecretCustomSettingForm
 
 
 class JSONCustomSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
-    fields = ("name", "description", "value", "required")
+    fields = ("name", "description", "value", "include_in_api", "required")
     model = JSONCustomSetting
     options_default = {
         "modes": ["code", "text"],

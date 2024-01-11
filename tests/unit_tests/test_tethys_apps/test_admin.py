@@ -97,7 +97,14 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     def test_CustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "type", "required")
-        expected_fields = ("name", "description", "type", "value", "required")
+        expected_fields = (
+            "name",
+            "description",
+            "type",
+            "value",
+            "include_in_api",
+            "required",
+        )
         expected_model = CustomSetting
 
         ret = CustomSettingInline(mock.MagicMock(), mock.MagicMock())
@@ -108,7 +115,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     def test_SecretCustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "required")
-        expected_fields = ("name", "description", "value", "required")
+        expected_fields = ("name", "description", "value", "include_in_api", "required")
         expected_model = SecretCustomSetting
 
         ret = SecretCustomSettingInline(mock.MagicMock(), mock.MagicMock())
@@ -119,7 +126,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     def test_JSONCustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "required")
-        expected_fields = ("name", "description", "value", "required")
+        expected_fields = ("name", "description", "value", "include_in_api", "required")
         expected_model = JSONCustomSetting
 
         ret = JSONCustomSettingInline(mock.MagicMock(), mock.MagicMock())

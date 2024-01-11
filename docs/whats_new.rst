@@ -17,14 +17,14 @@ Python 3.12
 * Verified Tethys Platform works using Python 3.12
 
 Conda Forge Package
-------------------------
+-------------------
 
 * Tethys Platform is now fully packaged on conda-forge!
 
 See: :ref:`development_installation`
 
 Optional Dependencies and Micro Tethys
-------------
+--------------------------------------
 
 * Made many of the dependencies of ``tethys-platform`` optional and released new ``micro-tethys-platform`` conda package on the ``tethysplatform`` channel with minimal dependencies
 * Updated docs to reflect what features are now optional and what dependencies are needed to support those features
