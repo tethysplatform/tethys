@@ -14,6 +14,7 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
 from django.utils.functional import classproperty
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .testing.environment import (
     is_testing_environment,
@@ -1838,3 +1839,50 @@ class TethysAppBase(TethysBase):
         """
         Override this method to post-process the app workspace after it is emptied
         """
+
+
+class ConsumerBase(AsyncWebsocketConsumer):
+    _authorized = None
+    permissions = []
+
+    @property
+    async def authorized(self):
+        if self._authorized is None:
+            self._authorized = True
+
+        return self._authorized
+    
+    async def onconnect(self):
+        """Custom class method to run custom code when user connects to the websocket
+        """
+        pass
+    
+    async def ondisconnect(self, event):
+        """Custom class method to run custom code when user connects to the websocket
+        """
+        pass
+    
+    async def onreceive(self, event):
+        """Custom class method to run custom code when user connects to the websocket
+        """
+        pass
+
+    async def connect(self):
+        """Class method to handle when user connects to the websocket
+        """
+        await self.accept()
+        if await self.authorized:
+            await self.onconnect()
+        else:
+            # User not authorized for websocket access
+            await self.close(code=4004)
+
+    async def disconnect(self, event):
+        """Class method to handle when user disconnects from the websocket
+        """
+        await self.ondisconnect(event)
+
+    async def receive(self, text_data):
+        """Class method to handle when websocket receives a message
+        """
+        await self.onreceive(text_data)
