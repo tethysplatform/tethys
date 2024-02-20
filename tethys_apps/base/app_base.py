@@ -1912,4 +1912,5 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         """Class method to handle when websocket receives a message
         """
-        await self.on_receive(text_data)
+        if await self.authorized:
+            await self.on_receive(text_data)

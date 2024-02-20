@@ -1559,7 +1559,15 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
 
     @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.on_receive")
     async def test_receive(self, mock_on_receive):
+        self.consumer._authorized = True
         text_data = "text_data"
         await self.consumer.receive(text_data)
         mock_on_receive.assert_called_with(text_data)
+
+    @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.on_receive")
+    async def test_receive_not_authorized(self, mock_on_receive):
+        self.consumer._authorized = False
+        text_data = "text_data"
+        await self.consumer.receive(text_data)
+        mock_on_receive.assert_not_called()
 
