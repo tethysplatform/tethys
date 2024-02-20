@@ -21,7 +21,7 @@ from .testing.environment import (
     get_test_db_name,
     TESTING_DB_FLAG,
 )
-from .permissions import Permission as TethysPermission, PermissionGroup, scoped_user_has_permission, has_permission
+from .permissions import Permission as TethysPermission, PermissionGroup, scoped_user_has_permission
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
 from .workspace import get_app_workspace, get_user_workspace
