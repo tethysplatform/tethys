@@ -21,7 +21,7 @@ from .testing.environment import (
     get_test_db_name,
     TESTING_DB_FLAG,
 )
-from .permissions import Permission as TethysPermission, PermissionGroup
+from .permissions import Permission as TethysPermission, PermissionGroup, scoped_user_has_permission, has_permission
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
 from .workspace import get_app_workspace, get_user_workspace
@@ -1841,29 +1841,54 @@ class TethysAppBase(TethysBase):
         """
 
 
-class ConsumerBase(AsyncWebsocketConsumer):
-    _authorized = None
+class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
+    """
+    Base class used to create a Django channel websocket consumer for Tethys
+
+    Attributes:
+      permissions (string, list, tuple): List of permissions required to connect and use the websocket.
+    """
     permissions = []
+    _authorized = None
+    _perms = None
+
+    @property
+    def perms(self):
+        if self._perms is None:
+            if type(self.permissions) in [list, tuple]:
+                self._perms = self.permissions
+            elif isinstance(self.permissions, str):
+                self._perms = self.permissions.split(",")
+            else:
+                raise TypeError("permissions must be a list, tuple, or comma separated string")
+        return self._perms
 
     @property
     async def authorized(self):
         if self._authorized is None:
             self._authorized = True
-
+            for perm in self.perms:
+                if not await scoped_user_has_permission(self.scope, perm):
+                    self._authorized = False
         return self._authorized
     
-    async def onconnect(self):
+    async def on_authorized_connect(self):
         """Custom class method to run custom code when user connects to the websocket
         """
         pass
     
-    async def ondisconnect(self, event):
+    async def on_connect(self):
         """Custom class method to run custom code when user connects to the websocket
         """
         pass
     
-    async def onreceive(self, event):
-        """Custom class method to run custom code when user connects to the websocket
+    async def on_disconnect(self, event):
+        """Custom class method to run custom code when user disconnects to the websocket
+        """
+        pass
+    
+    async def on_receive(self, event):
+        """Custom class method to run custom code when websocket receives a message
         """
         pass
 
@@ -1871,8 +1896,10 @@ class ConsumerBase(AsyncWebsocketConsumer):
         """Class method to handle when user connects to the websocket
         """
         await self.accept()
+        await self.on_connect()
+
         if await self.authorized:
-            await self.onconnect()
+            await self.on_authorized_connect()
         else:
             # User not authorized for websocket access
             await self.close(code=4004)
@@ -1880,9 +1907,9 @@ class ConsumerBase(AsyncWebsocketConsumer):
     async def disconnect(self, event):
         """Class method to handle when user disconnects from the websocket
         """
-        await self.ondisconnect(event)
+        await self.on_disconnect(event)
 
     async def receive(self, text_data):
         """Class method to handle when websocket receives a message
         """
-        await self.onreceive(text_data)
+        await self.on_receive(text_data)
