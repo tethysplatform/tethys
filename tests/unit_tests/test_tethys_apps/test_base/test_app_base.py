@@ -1503,7 +1503,10 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(TypeError) as context:
             self.consumer.perms
 
-        self.assertTrue(context.exception.args[0] == 'permissions must be a list, tuple, or comma separated string')
+        self.assertTrue(
+            context.exception.args[0]
+            == "permissions must be a list, tuple, or comma separated string"
+        )
 
     @mock.patch("tethys_apps.base.app_base.scoped_user_has_permission")
     async def test_authorized(self, mock_suhp):
@@ -1512,7 +1515,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(await self.consumer.authorized)
 
     @mock.patch("tethys_apps.base.app_base.scoped_user_has_permission")
-    async def test_authorized(self, mock_suhp):
+    async def test_authorized_not(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         mock_suhp.side_effect = [True, False]
         self.assertFalse(await self.consumer.authorized)
@@ -1531,10 +1534,14 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         event = {}
         await self.consumer.on_receive(event)
 
-    @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.on_authorized_connect")
+    @mock.patch(
+        "tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.on_authorized_connect"
+    )
     @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.on_connect")
     @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.accept")
-    async def test_connect(self, mock_accept, mock_on_connect, mock_on_authorized_connect):
+    async def test_connect(
+        self, mock_accept, mock_on_connect, mock_on_authorized_connect
+    ):
         self.consumer._authorized = True
         await self.consumer.connect()
         mock_accept.assert_called_once()
@@ -1544,7 +1551,9 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.close")
     @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.on_connect")
     @mock.patch("tethys_apps.base.app_base.TethysAsyncWebsocketConsumer.accept")
-    async def test_connect_not_authorized(self, mock_accept, mock_on_connect, mock_close):
+    async def test_connect_not_authorized(
+        self, mock_accept, mock_on_connect, mock_close
+    ):
         self.consumer._authorized = False
         await self.consumer.connect()
         mock_accept.assert_called_once()
@@ -1570,4 +1579,3 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         text_data = "text_data"
         await self.consumer.receive(text_data)
         mock_on_receive.assert_not_called()
-

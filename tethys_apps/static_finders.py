@@ -7,6 +7,7 @@
 * License:
 ********************************************************************************
 """
+
 import os
 from collections import OrderedDict as SortedDict
 from django.contrib.staticfiles import utils

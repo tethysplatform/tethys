@@ -21,7 +21,11 @@ from .testing.environment import (
     get_test_db_name,
     TESTING_DB_FLAG,
 )
-from .permissions import Permission as TethysPermission, PermissionGroup, scoped_user_has_permission
+from .permissions import (
+    Permission as TethysPermission,
+    PermissionGroup,
+    scoped_user_has_permission,
+)
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
 from .workspace import get_app_workspace, get_user_workspace
@@ -1848,6 +1852,7 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
     Attributes:
       permissions (string, list, tuple): List of permissions required to connect and use the websocket.
     """
+
     permissions = []
     _authorized = None
     _perms = None
@@ -1860,7 +1865,9 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
             elif isinstance(self.permissions, str):
                 self._perms = self.permissions.split(",")
             else:
-                raise TypeError("permissions must be a list, tuple, or comma separated string")
+                raise TypeError(
+                    "permissions must be a list, tuple, or comma separated string"
+                )
         return self._perms
 
     @property
@@ -1871,30 +1878,25 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
                 if not await scoped_user_has_permission(self.scope, perm):
                     self._authorized = False
         return self._authorized
-    
+
     async def on_authorized_connect(self):
-        """Custom class method to run custom code when user connects to the websocket
-        """
+        """Custom class method to run custom code when user connects to the websocket"""
         pass
-    
+
     async def on_connect(self):
-        """Custom class method to run custom code when user connects to the websocket
-        """
+        """Custom class method to run custom code when user connects to the websocket"""
         pass
-    
+
     async def on_disconnect(self, event):
-        """Custom class method to run custom code when user disconnects to the websocket
-        """
+        """Custom class method to run custom code when user disconnects to the websocket"""
         pass
-    
+
     async def on_receive(self, event):
-        """Custom class method to run custom code when websocket receives a message
-        """
+        """Custom class method to run custom code when websocket receives a message"""
         pass
 
     async def connect(self):
-        """Class method to handle when user connects to the websocket
-        """
+        """Class method to handle when user connects to the websocket"""
         await self.accept()
         await self.on_connect()
 
@@ -1905,12 +1907,10 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
             await self.close(code=4004)
 
     async def disconnect(self, event):
-        """Class method to handle when user disconnects from the websocket
-        """
+        """Class method to handle when user disconnects from the websocket"""
         await self.on_disconnect(event)
 
     async def receive(self, text_data):
-        """Class method to handle when websocket receives a message
-        """
+        """Class method to handle when websocket receives a message"""
         if await self.authorized:
             await self.on_receive(text_data)

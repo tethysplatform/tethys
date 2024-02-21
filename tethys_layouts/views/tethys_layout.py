@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2021
 ********************************************************************************
 """
+
 import logging
 
 from django.http import HttpResponseNotFound, HttpResponse

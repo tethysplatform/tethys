@@ -8,7 +8,11 @@
 
 # flake8: noqa
 # DO NOT ERASE
-from tethys_apps.base import TethysAppBase, TethysExtensionBase, TethysAsyncWebsocketConsumer
+from tethys_apps.base import (
+    TethysAppBase,
+    TethysExtensionBase,
+    TethysAsyncWebsocketConsumer,
+)
 from tethys_apps.base.url_map import url_map_maker
 from tethys_apps.base.controller import TethysController
 from tethys_apps.base.bokeh_handler import with_request, with_workspaces
