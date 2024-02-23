@@ -19,7 +19,7 @@ from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
 from . import url_map_maker
-from .app_base import DEFAULT_CONTROLLER_MODULES
+from .app_base import DEFAULT_CONTROLLER_MODULES, TethysAsyncWebsocketConsumer
 
 from .bokeh_handler import (
     _get_bokeh_controller,
@@ -58,6 +58,11 @@ def consumer(
     name: str = None,
     url: str = None,
     regex: Union[str, list, tuple] = None,
+    # login_required kwargs
+    login_required: bool = True,
+    # permission_required kwargs
+    permissions_required: Union[str, list, tuple] = None,
+    permissions_use_or: bool = False,
 ) -> Callable:
     """
     Decorator to register a Consumer class as routed consumer endpoint
@@ -99,6 +104,15 @@ def consumer(
             protocol="websocket",
             regex=regex,
         )
+
+        function_or_class.permissions = permissions_required
+        function_or_class.permissions_use_or = permissions_use_or
+        function_or_class.login_required = login_required
+        function_or_class._authorized = None
+        function_or_class._perms = None
+        function_or_class.perms = TethysAsyncWebsocketConsumer.perms
+        function_or_class.authorized = TethysAsyncWebsocketConsumer.authorized
+        function_or_class.connect = TethysAsyncWebsocketConsumer.connect
 
         controller = function_or_class.as_asgi()
         _process_url_kwargs(controller, url_map_kwargs_list)

@@ -1854,6 +1854,8 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
     """
 
     permissions = []
+    permissions_use_or = False
+    login_required = True
     _authorized = None
     _perms = None
 
@@ -1873,44 +1875,35 @@ class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
     @property
     async def authorized(self):
         if self._authorized is None:
-            self._authorized = True
-            for perm in self.perms:
-                if not await scoped_user_has_permission(self.scope, perm):
-                    self._authorized = False
+            if self.login_required and not self.scope['user'].is_authenticated:
+                self._authorized = False
+                return self._authorized
+             
+            if self.permissions_use_or:
+                self._authorized = False
+                for perm in self.perms:
+                    if await scoped_user_has_permission(self.scope, perm):
+                        self._authorized = True
+            else:
+                self._authorized = True
+                for perm in self.perms:
+                    if not await scoped_user_has_permission(self.scope, perm):
+                        self._authorized = False
         return self._authorized
 
     async def on_authorized_connect(self):
         """Custom class method to run custom code when user connects to the websocket"""
         pass
 
-    async def on_connect(self):
+    async def on_unauthorized_connect(self):
         """Custom class method to run custom code when user connects to the websocket"""
-        pass
-
-    async def on_disconnect(self, event):
-        """Custom class method to run custom code when user disconnects to the websocket"""
-        pass
-
-    async def on_receive(self, event):
-        """Custom class method to run custom code when websocket receives a message"""
         pass
 
     async def connect(self):
         """Class method to handle when user connects to the websocket"""
-        await self.accept()
-        await self.on_connect()
-
         if await self.authorized:
+            await self.accept()
             await self.on_authorized_connect()
         else:
             # User not authorized for websocket access
-            await self.close(code=4004)
-
-    async def disconnect(self, event):
-        """Class method to handle when user disconnects from the websocket"""
-        await self.on_disconnect(event)
-
-    async def receive(self, text_data):
-        """Class method to handle when websocket receives a message"""
-        if await self.authorized:
-            await self.on_receive(text_data)
+            await self.on_unauthorized_connect()
