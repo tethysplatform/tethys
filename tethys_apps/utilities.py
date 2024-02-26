@@ -726,28 +726,10 @@ def update_decorated_websocket_consumer_class(function_or_class, permissions_req
         consumer_mixin = TethysAsyncWebsocketConsumerMixin
     else:
         consumer_mixin = TethysWebsocketConsumerMixin
-    breakpoint()
-    function_or_class.permissions = permissions_required
-    function_or_class.permissions_use_or = permissions_use_or
-    function_or_class.login_required = login_required
-    function_or_class._authorized = None
-    function_or_class._perms = None
-    function_or_class.perms = consumer_mixin.perms
-    function_or_class.authorized = consumer_mixin.authorized
-    function_or_class.connect = consumer_mixin.connect
-    function_or_class.disconnect = consumer_mixin.disconnect
-    
-    if not getattr(function_or_class, "authorized_connect", None):
-        function_or_class.authorized_connect = consumer_mixin.authorized_connect
-    
-    if not getattr(function_or_class, "unauthorized_connect", None):
-        function_or_class.unauthorized_connect = consumer_mixin.unauthorized_connect
-    
-    if not getattr(function_or_class, "authorized_disconnect", None):
-        function_or_class.authorized_disconnect = consumer_mixin.authorized_disconnect
-    
-    if not getattr(function_or_class, "unauthorized_disconnect", None):
-        function_or_class.unauthorized_disconnect = consumer_mixin.unauthorized_disconnect
+
+    class_bases = list(function_or_class.__bases__)
+    class_bases.insert(0, consumer_mixin)
+    function_or_class.__bases__ = tuple(class_bases)
     
     return function_or_class
     
