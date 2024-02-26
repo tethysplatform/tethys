@@ -35,7 +35,9 @@ class TethysAsyncWebsocketConsumerMixin:
     @property
     def perms(self):
         if self._perms is None:
-            if type(self.permissions) in [list, tuple]:
+            if self.permissions is None:
+                self._perms = []
+            elif type(self.permissions) in [list, tuple]:
                 self._perms = self.permissions
             elif isinstance(self.permissions, str):
                 self._perms = self.permissions.split(",")

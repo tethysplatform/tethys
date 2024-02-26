@@ -734,5 +734,8 @@ def update_decorated_websocket_consumer_class(
     class_bases = list(function_or_class.__bases__)
     class_bases.insert(0, consumer_mixin)
     function_or_class.__bases__ = tuple(class_bases)
+    function_or_class.permissions = permissions_required
+    function_or_class.permissions_use_or = permissions_use_or
+    function_or_class.login_required = login_required
 
     return function_or_class
