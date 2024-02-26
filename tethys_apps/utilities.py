@@ -720,9 +720,9 @@ def update_decorated_websocket_consumer_class(function_or_class, permissions_req
     Returns:
         class: updated class with necessary properties and function for authorizing user access
     """
-    base_class_name = inspect.getmro(function_or_class)[1].__name__
-    function_or_class_name = function_or_class.__name__
-    if "async" in function_or_class_name.lower() or "async" in base_class_name.lower():
+    base_class_name = inspect.getmro(function_or_class)[1].__name__.lower()
+    function_or_class_name = function_or_class.__name__.lower()
+    if "async" in function_or_class_name or "async" in base_class_name:
         consumer_mixin = TethysAsyncWebsocketConsumerMixin
     else:
         consumer_mixin = TethysWebsocketConsumerMixin
