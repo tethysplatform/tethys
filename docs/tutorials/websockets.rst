@@ -43,7 +43,6 @@ a. Create a new file called ``consumers.py`` and add the following code:
 
         @consumer(name='dam_notification', url='dams/notifications')
         class NotificationsConsumer(AsyncWebsocketConsumer):
-            permissions = []
 
             async def authorized_connect(self):
                 print("-----------WebSocket Connected-----------")
