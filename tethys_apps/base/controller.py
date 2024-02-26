@@ -94,6 +94,17 @@ def consumer(
         )
         class MyConsumer(AsyncWebsocketConsumer):
             pass
+
+        ------------
+
+        @consumer(
+            name='custom_name',
+            url='customized/url',
+            permissions_required='permission',
+            login_required=True
+        )
+        class MyConsumer(AsyncWebsocketConsumer):
+            pass
     """  # noqa: E501
 
     def wrapped(function_or_class):
