@@ -37,18 +37,18 @@ a. Create a new file called ``consumers.py`` and add the following code:
 
     .. code-block:: python
 
-        from tethys_sdk.base import TethysAsyncWebsocketConsumer
+        from channels.generic.websocket import AsyncWebsocketConsumer
         from tethys_sdk.routing import consumer
 
 
         @consumer(name='dam_notification', url='dams/notifications')
-        class NotificationsConsumer(TethysAsyncWebsocketConsumer):
+        class NotificationsConsumer(AsyncWebsocketConsumer):
             permissions = []
 
-            async def on_authorized_connect(self):
+            async def authorized_connect(self):
                 print("-----------WebSocket Connected-----------")
 
-            async def on_disconnect(self, close_code):
+            async def authorized_disconnect(self, close_code):
                 pass
 
 .. note::
@@ -94,14 +94,13 @@ a. Update the ``consumer class`` to look like this.
         ...
 
         @consumer(name='dam_notification', url='dams/notifications')
-        class NotificationsConsumer(TethysAsyncWebsocketConsumer):
-            permissions = []
+        class NotificationsConsumer(AsyncWebsocketConsumer):
 
-            async def on_authorized_connect(self):
+            async def authorized_connect(self):
                 await self.channel_layer.group_add("notifications", self.channel_name)
                 print(f"Added {self.channel_name} channel to notifications")
 
-            async def on_disconnect(self, close_code):
+            async def authorized_disconnect(self, close_code):
                 await self.channel_layer.group_discard("notifications", self.channel_name)
                 print(f"Removed {self.channel_name} channel from notifications")
 
