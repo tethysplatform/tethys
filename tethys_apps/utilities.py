@@ -22,7 +22,10 @@ from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
 
-from tethys_apps.base.mixins import TethysAsyncWebsocketConsumerMixin, TethysWebsocketConsumerMixin
+from tethys_apps.base.mixins import (
+    TethysAsyncWebsocketConsumerMixin,
+    TethysWebsocketConsumerMixin,
+)
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from .harvester import SingletonHarvester
 
@@ -706,8 +709,9 @@ def sign_and_unsign_secret_string(signer, value, is_signing):
         return secret_unsigned
 
 
-def update_decorated_websocket_consumer_class(function_or_class, permissions_required, permissions_use_or,
-                                              login_required):
+def update_decorated_websocket_consumer_class(
+    function_or_class, permissions_required, permissions_use_or, login_required
+):
     """Updates a given consumer class and adds the necessary properties and function for authorizing user access
     depending on the other args given.
 
@@ -730,6 +734,5 @@ def update_decorated_websocket_consumer_class(function_or_class, permissions_req
     class_bases = list(function_or_class.__bases__)
     class_bases.insert(0, consumer_mixin)
     function_or_class.__bases__ = tuple(class_bases)
-    
+
     return function_or_class
-    

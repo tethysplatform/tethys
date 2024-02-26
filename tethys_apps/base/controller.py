@@ -105,8 +105,9 @@ def consumer(
             regex=regex,
         )
 
-        function_or_class = update_decorated_websocket_consumer_class(function_or_class, permissions_required,
-                                                                      permissions_use_or, login_required)
+        function_or_class = update_decorated_websocket_consumer_class(
+            function_or_class, permissions_required, permissions_use_or, login_required
+        )
 
         controller = function_or_class.as_asgi()
         _process_url_kwargs(controller, url_map_kwargs_list)

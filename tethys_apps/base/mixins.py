@@ -1,4 +1,3 @@
-
 from .permissions import scoped_user_has_permission
 
 
@@ -49,10 +48,10 @@ class TethysAsyncWebsocketConsumerMixin:
     @property
     async def authorized(self):
         if self._authorized is None:
-            if self.login_required and not self.scope['user'].is_authenticated:
+            if self.login_required and not self.scope["user"].is_authenticated:
                 self._authorized = False
                 return self._authorized
-             
+
             if self.permissions_use_or:
                 self._authorized = False
                 for perm in self.perms:
@@ -128,10 +127,10 @@ class TethysWebsocketConsumerMixin:
     @property
     def authorized(self):
         if self._authorized is None:
-            if self.login_required and not self.scope['user'].is_authenticated:
+            if self.login_required and not self.scope["user"].is_authenticated:
                 self._authorized = False
                 return self._authorized
-             
+
             if self.permissions_use_or:
                 self._authorized = False
                 for perm in self.perms:

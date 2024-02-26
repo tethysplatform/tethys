@@ -20,12 +20,9 @@ from .testing.environment import (
     get_test_db_name,
     TESTING_DB_FLAG,
 )
-from .permissions import (
-    Permission as TethysPermission,
-    PermissionGroup
-)
+from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
-from .mixins import TethysBaseMixin, TethysAsyncWebsocketConsumerMixin, TethysAsyncWebsocketConsumerMixin
+from .mixins import TethysBaseMixin
 from .workspace import get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
