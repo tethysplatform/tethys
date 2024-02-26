@@ -19,7 +19,7 @@ from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
 from . import url_map_maker
-from .app_base import DEFAULT_CONTROLLER_MODULES, TethysAsyncWebsocketConsumer
+from .app_base import DEFAULT_CONTROLLER_MODULES
 
 from .bokeh_handler import (
     _get_bokeh_controller,
@@ -31,7 +31,7 @@ from .workspace import (
     user_workspace as user_workspace_decorator,
 )
 from ..decorators import login_required as login_required_decorator, permission_required
-from ..utilities import get_all_submodules
+from ..utilities import get_all_submodules, update_decorated_websocket_consumer_class
 
 # imports for type hinting
 from typing import Union, Any
@@ -105,14 +105,8 @@ def consumer(
             regex=regex,
         )
 
-        function_or_class.permissions = permissions_required
-        function_or_class.permissions_use_or = permissions_use_or
-        function_or_class.login_required = login_required
-        function_or_class._authorized = None
-        function_or_class._perms = None
-        function_or_class.perms = TethysAsyncWebsocketConsumer.perms
-        function_or_class.authorized = TethysAsyncWebsocketConsumer.authorized
-        function_or_class.connect = TethysAsyncWebsocketConsumer.connect
+        function_or_class = update_decorated_websocket_consumer_class(function_or_class, permissions_required,
+                                                                      permissions_use_or, login_required)
 
         controller = function_or_class.as_asgi()
         _process_url_kwargs(controller, url_map_kwargs_list)

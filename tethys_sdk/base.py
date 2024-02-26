@@ -11,7 +11,6 @@
 from tethys_apps.base import (
     TethysAppBase,
     TethysExtensionBase,
-    TethysAsyncWebsocketConsumer,
 )
 from tethys_apps.base.url_map import url_map_maker
 from tethys_apps.base.controller import TethysController

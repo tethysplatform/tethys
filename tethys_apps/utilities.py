@@ -12,6 +12,7 @@ import importlib
 import logging
 import os
 from pathlib import Path
+import inspect
 
 import pkgutil
 import yaml
@@ -21,6 +22,7 @@ from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
 
+from tethys_apps.base.mixins import TethysAsyncWebsocketConsumerMixin, TethysWebsocketConsumerMixin
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from .harvester import SingletonHarvester
 
@@ -702,3 +704,50 @@ def sign_and_unsign_secret_string(signer, value, is_signing):
     else:
         secret_unsigned = signer.unsign_object(f"{value}")
         return secret_unsigned
+
+
+def update_decorated_websocket_consumer_class(function_or_class, permissions_required, permissions_use_or,
+                                              login_required):
+    """Updates a given consumer class and adds the necessary properties and function for authorizing user access
+    depending on the other args given.
+
+    Args:
+        function_or_class (class): class of the websocket consumer
+        permissions_required (str, list, tuple): the permissions required for user access
+        permissions_use_or (bool): Determines if all permissions need to be met or just one of them
+        login_required (bool): Determines if the user needs to be logged in to use
+
+    Returns:
+        class: updated class with necessary properties and function for authorizing user access
+    """
+    base_class_name = inspect.getmro(function_or_class)[1].__name__
+    function_or_class_name = function_or_class.__name__
+    if "async" in function_or_class_name.lower() or "async" in base_class_name.lower():
+        consumer_mixin = TethysAsyncWebsocketConsumerMixin
+    else:
+        consumer_mixin = TethysWebsocketConsumerMixin
+    breakpoint()
+    function_or_class.permissions = permissions_required
+    function_or_class.permissions_use_or = permissions_use_or
+    function_or_class.login_required = login_required
+    function_or_class._authorized = None
+    function_or_class._perms = None
+    function_or_class.perms = consumer_mixin.perms
+    function_or_class.authorized = consumer_mixin.authorized
+    function_or_class.connect = consumer_mixin.connect
+    function_or_class.disconnect = consumer_mixin.disconnect
+    
+    if not getattr(function_or_class, "authorized_connect", None):
+        function_or_class.authorized_connect = consumer_mixin.authorized_connect
+    
+    if not getattr(function_or_class, "unauthorized_connect", None):
+        function_or_class.unauthorized_connect = consumer_mixin.unauthorized_connect
+    
+    if not getattr(function_or_class, "authorized_disconnect", None):
+        function_or_class.authorized_disconnect = consumer_mixin.authorized_disconnect
+    
+    if not getattr(function_or_class, "unauthorized_disconnect", None):
+        function_or_class.unauthorized_disconnect = consumer_mixin.unauthorized_disconnect
+    
+    return function_or_class
+    

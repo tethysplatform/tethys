@@ -14,7 +14,6 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
 from django.utils.functional import classproperty
-from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .testing.environment import (
     is_testing_environment,
@@ -23,11 +22,10 @@ from .testing.environment import (
 )
 from .permissions import (
     Permission as TethysPermission,
-    PermissionGroup,
-    scoped_user_has_permission,
+    PermissionGroup
 )
 from .handoff import HandoffManager
-from .mixins import TethysBaseMixin
+from .mixins import TethysBaseMixin, TethysAsyncWebsocketConsumerMixin, TethysAsyncWebsocketConsumerMixin
 from .workspace import get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
@@ -1843,67 +1841,3 @@ class TethysAppBase(TethysBase):
         """
         Override this method to post-process the app workspace after it is emptied
         """
-
-
-class TethysAsyncWebsocketConsumer(AsyncWebsocketConsumer):
-    """
-    Base class used to create a Django channel websocket consumer for Tethys
-
-    Attributes:
-      permissions (string, list, tuple): List of permissions required to connect and use the websocket.
-    """
-
-    permissions = []
-    permissions_use_or = False
-    login_required = True
-    _authorized = None
-    _perms = None
-
-    @property
-    def perms(self):
-        if self._perms is None:
-            if type(self.permissions) in [list, tuple]:
-                self._perms = self.permissions
-            elif isinstance(self.permissions, str):
-                self._perms = self.permissions.split(",")
-            else:
-                raise TypeError(
-                    "permissions must be a list, tuple, or comma separated string"
-                )
-        return self._perms
-
-    @property
-    async def authorized(self):
-        if self._authorized is None:
-            if self.login_required and not self.scope['user'].is_authenticated:
-                self._authorized = False
-                return self._authorized
-             
-            if self.permissions_use_or:
-                self._authorized = False
-                for perm in self.perms:
-                    if await scoped_user_has_permission(self.scope, perm):
-                        self._authorized = True
-            else:
-                self._authorized = True
-                for perm in self.perms:
-                    if not await scoped_user_has_permission(self.scope, perm):
-                        self._authorized = False
-        return self._authorized
-
-    async def on_authorized_connect(self):
-        """Custom class method to run custom code when user connects to the websocket"""
-        pass
-
-    async def on_unauthorized_connect(self):
-        """Custom class method to run custom code when user connects to the websocket"""
-        pass
-
-    async def connect(self):
-        """Class method to handle when user connects to the websocket"""
-        if await self.authorized:
-            await self.accept()
-            await self.on_authorized_connect()
-        else:
-            # User not authorized for websocket access
-            await self.on_unauthorized_connect()
