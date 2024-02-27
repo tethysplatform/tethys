@@ -93,7 +93,9 @@ def consumer(
             url='customized/url',
         )
         class MyConsumer(AsyncWebsocketConsumer):
-            pass
+
+            def connect():
+                pass
 
         ------------
 
@@ -104,7 +106,10 @@ def consumer(
             login_required=True
         )
         class MyConsumer(AsyncWebsocketConsumer):
-            pass
+
+            def authorized_connect():
+                pass
+
     """  # noqa: E501
 
     def wrapped(function_or_class):
