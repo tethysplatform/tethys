@@ -140,6 +140,7 @@ Generate_ASGI_Service_TethysCore:
     - replace: False
     - makedirs: True
 
+{% if TETHYS_DB_ENGINE == 'django.db.backends.postgresql' %}
 Create_Database_User_and_SuperUser_TethysCore:
   cmd.run:
     - name: >
@@ -149,7 +150,8 @@ Create_Database_User_and_SuperUser_TethysCore:
         -N "{{ TETHYS_DB_SUPERUSER }}"
         -P "{{ TETHYS_DB_SUPERUSER_PASS }}"
     - shell: /bin/bash
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f '{{ TETHYS_PERSIST }}/setup_complete' ];"
+{% endif %}
 
 Migrate_Database_TethysCore:
   cmd.run:
@@ -158,6 +160,7 @@ Migrate_Database_TethysCore:
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
+{% if TETHYS_DB_ENGINE == 'django.db.backends.postgresql' %}
 Create_Database_Portal_SuperUser_TethysCore:
   cmd.run:
     - name: >
@@ -168,6 +171,7 @@ Create_Database_Portal_SuperUser_TethysCore:
         {%- if PORTAL_SUPERUSER_EMAIL %}--pe "{{ PORTAL_SUPERUSER_EMAIL }}"{% endif %}
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+{% endif %}
 
 {% if TETHYS_SITE_CONTENT %}
 Modify_Tethys_Site_TethysCore:
