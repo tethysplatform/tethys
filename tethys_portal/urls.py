@@ -14,14 +14,16 @@ from django.conf import settings
 from django.urls import reverse_lazy, include, re_path
 from django.shortcuts import redirect
 from django.views.decorators.cache import never_cache
+from django.views.generic import RedirectView
 from django.contrib import admin
 from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetConfirmView,
     PasswordResetCompleteView,
 )
+from django.conf import settings
 
-from tethys_apps.urls import extension_urls
+from tethys_apps.urls import extension_urls, urlpatterns as tethys_app_urlpatterns
 
 from tethys_portal.views import (
     accounts as tethys_portal_accounts,
@@ -179,12 +181,26 @@ developer_urls = [
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
 
-urlpatterns = [
-    re_path(r"^$", tethys_portal_home.home, name="home"),
+if settings.STANDALONE_APP_CONTROLLER:
+    standalone_app_namespace, _ = settings.STANDALONE_APP_CONTROLLER.split(":")
+    standalone_app_namespace_hyphen = standalone_app_namespace.replace("_", "-")
+    standalone_app_urlpatterns = tethys_app_urlpatterns[1]
+    urlpatterns = [
+        re_path(r"^{0}/".format(standalone_app_namespace_hyphen), include((standalone_app_urlpatterns.url_patterns, standalone_app_namespace), namespace=standalone_app_namespace)),
+        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_namespace_hyphen}/"), name="home"),
+        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_namespace_hyphen}/"), name="app_library")
+    ]
+else:
+    urlpatterns = [
+        re_path(r"^$", include("tethys_apps.urls"), name="home"),
+        re_path(r"^apps/", include("tethys_apps.urls"))
+    ]
+
+
+urlpatterns.extend([
     re_path(r"^admin/", admin_urls),
     re_path(r"^accounts/", include((account_urls, "accounts"), namespace="accounts")),
     re_path(r"^user/", include((user_urls, "user"), namespace="user")),
-    re_path(r"^apps/", include("tethys_apps.urls")),
     re_path(r"^extensions/", include(extension_urls)),
     re_path(r"^developer/", include(developer_urls)),
     re_path(
@@ -208,7 +224,7 @@ urlpatterns = [
         name="update_dask_job_status",
     ),
     re_path(r"^api/", include((api_urls, "api"), namespace="api")),
-]
+])
 
 if has_module(psa_views):
     oauth2_urls = [

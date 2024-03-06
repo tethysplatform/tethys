@@ -19,6 +19,7 @@ from django.core.signing import Signer
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
+from django.conf import settings
 
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from .harvester import SingletonHarvester
@@ -126,6 +127,10 @@ def get_active_app(request=None, url=None, get_class=False):
     from tethys_apps.models import TethysApp
 
     apps_root = "apps"
+    app_root_index_add = 1
+    if settings.STANDALONE_APP_CONTROLLER:
+        app_root_index_add = 0
+        apps_root = settings.STANDALONE_APP_CONTROLLER.split(":")[0].replace("_", "-")
 
     if request is not None:
         the_url = request.path
@@ -140,7 +145,7 @@ def get_active_app(request=None, url=None, get_class=False):
     # Find the app key
     if apps_root in url_parts:
         # The app root_url is the path item following (+1) the apps_root item
-        app_root_url_index = url_parts.index(apps_root) + 1
+        app_root_url_index = url_parts.index(apps_root) + app_root_index_add
         app_root_url = url_parts[app_root_url_index]
 
         if app_root_url:

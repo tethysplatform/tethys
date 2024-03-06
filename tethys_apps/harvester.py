@@ -83,18 +83,21 @@ class SingletonHarvester:
         except Exception:
             """DO NOTHING"""
 
-    def get_url_patterns(self):
+    def get_url_patterns(self, url_namespaces=None):
         """
         Generate the url pattern lists for each app and namespace them accordingly.
         """
         app_url_patterns = dict()
         ext_url_patterns = dict()
         ws_url_patterns = dict()
+        apps = self.apps
+        if url_namespaces:
+            apps = [app for app in apps if app.url_namespace in url_namespaces]
 
-        for app in self.apps:
+        for app in apps:
             app_url_patterns.update(app.url_patterns["http"])
 
-        for app in self.apps:
+        for app in apps:
             ws_url_patterns.update(app.url_patterns["websocket"])
 
         for extension in self.extensions:
@@ -108,17 +111,20 @@ class SingletonHarvester:
 
         return url_patterns
 
-    def get_handler_patterns(self):
+    def get_handler_patterns(self, url_namespaces=None):
         """
         Generate the url handler pattern lists for each app and namespace them accordingly.
         """
         http_handler_patterns = dict()
         ws_handler_patterns = dict()
+        apps = self.apps
+        if url_namespaces:
+            apps = [app for app in apps if app.url_namespace in url_namespaces]
 
-        for app in self.apps:
+        for app in apps:
             http_handler_patterns.update(app.handler_patterns["http"])
 
-        for app in self.apps:
+        for app in apps:
             ws_handler_patterns.update(app.handler_patterns["websocket"])
 
         handler_patterns = {

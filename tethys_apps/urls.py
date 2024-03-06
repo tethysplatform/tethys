@@ -18,16 +18,21 @@ tethys_log = logging.getLogger("tethys." + __name__)
 prefix_url = f"{settings.PREFIX_URL}"
 
 urlpatterns = [
-    re_path(r"^$", library, name="app_library"),
     re_path(
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
 ]
+if settings.STANDALONE_APP_CONTROLLER:
+    standalone_app_namespace, _ = settings.STANDALONE_APP_CONTROLLER.split(":")
+    url_namespaces = [standalone_app_namespace]
+else:
+    urlpatterns.append(re_path(r"^$", library, name="app_library"))
+    url_namespaces = None
 
 # Append the app urls urlpatterns
 harvester = SingletonHarvester()
-normal_url_patterns = harvester.get_url_patterns()
-handler_url_patterns = harvester.get_handler_patterns()
+normal_url_patterns = harvester.get_url_patterns(url_namespaces=url_namespaces)
+handler_url_patterns = harvester.get_handler_patterns(url_namespaces=url_namespaces)
 
 # configure handler HTTP routes
 http_handler_patterns = []
