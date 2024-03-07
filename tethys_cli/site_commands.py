@@ -29,6 +29,11 @@ def add_site_parser(subparsers):
         'Default is "Tethys Portal".',
     )
     site_parser.add_argument(
+        "--standalone-app-mode",
+        dest="standalone_app_mode",
+        help="Boolean determining if the portal will act as a standalone app or host for multiple apps",
+    )
+    site_parser.add_argument(
         "--favicon",
         dest="favicon",
         help="Local or external path to the icon that will display in the browser tab. "

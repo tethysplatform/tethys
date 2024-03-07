@@ -105,6 +105,10 @@ def setting_defaults(category):
         )
 
         category.setting_set.create(
+            name="Standalone App Mode", content="false", date_modified=now
+        )
+
+        category.setting_set.create(
             name="Favicon",
             content="/tethys_portal/images/default_favicon.png",
             date_modified=now,

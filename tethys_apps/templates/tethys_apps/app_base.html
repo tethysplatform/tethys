@@ -112,6 +112,25 @@
           background: var(--app-primary-color, '#7ec1f7');
         }
 
+        #app-header .btn-user-profile {
+          background-color: rgba(255, 255, 255, 0.08);
+          border: none;
+          color: {{ site_globals.primary_text_color }};
+        }
+    
+        #app-header .btn-user-profile:hover {
+          background-color: rgba(255, 255, 255, 0.30);
+        }
+
+        #app-header .user-menu-button .dropdown-menu .dropdown-item {
+          color:#3f3f3f;
+        }
+        
+        #app-header .user-menu-button .dropdown-menu .dropdown-item:active {
+          background-color: {{ site_globals.primary_color }};
+          color: #dddddd;
+        }
+
         #app-navigation .nav li a {
           color: var(--app-primary-color, '#7ec1f7');
         }
@@ -192,16 +211,56 @@
                     {%  endif %}
                   {% endblock %}
                   {% block settings_button_override %}
-                      {% if request.user.is_staff %}
-                      <div class="header-button settings-button">
-                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings"><i class="bi bi-gear"></i></a>
-                      </div>
-                      {%  endif %}
+                    {% if request.user.is_staff %}
+                    <div class="header-button settings-button">
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings"><i class="bi bi-gear"></i></a>
+                    </div>
+                    {%  endif %}
                   {% endblock %}
                   {% block exit_button_override %}
-                    <div class="header-button exit-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
-                    </div>
+                    {% if site_globals.standalone_app_mode == "false" %}
+                      <div class="header-button exit-button">
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
+                      </div>
+                    {%  endif %}
+                  {% endblock %}
+                  {% block user_menu %}
+                    {% if user.is_authenticated and user.is_active and site_globals.standalone_app_mode == "true" %}
+                      <div class="user-menu-button">
+                        <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
+                          <span>
+                            {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                            {% if has_gravatar %}{% include "gravatar.html" with image_size=25 %}{% endif %}
+                          </span>
+                        </a>
+                        <button type="button" class="btn btn-light btn-user-profile dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                          <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <a class="dropdown-item" href="{% url 'user:profile' %}" title="User Settings">
+                              <i class="bi bi-person-fill"></i><span class="ms-2">User Profile</span>
+                            </a>
+                          </li>
+                          {% if user.is_staff %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">
+                                <i class="bi bi-gear-wide-connected"></i><span class="ms-2">Site Admin</span>
+                              </a>
+                            </li>
+                          {% endif %}
+                          <li><hr class="dropdown-divider"></li>
+                          <li>
+                            <a class="dropdown-item" href="{% url 'accounts:logout' %}" title="Log Out">
+                              <i class="bi bi-door-closed-fill"></i><span class="ms-2">Log Out</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    {% else %}
+                      <a class="btn btn-outline-light" role="button" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
+                    {% endif %}
                   {% endblock %}
               </div>
               {% endblock %}
