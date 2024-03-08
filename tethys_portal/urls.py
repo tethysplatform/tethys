@@ -187,7 +187,7 @@ if settings.STANDALONE_APP:
     urlpatterns = [
         re_path(r"^{0}/".format(standalone_app_hyphen), include((standalone_app_urlpatterns.url_patterns, settings.STANDALONE_APP), namespace=settings.STANDALONE_APP)),
         re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="home"),
-        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="app_library")
+        re_path(r"^apps/", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="app_library")
     ]
 else:
     urlpatterns = [

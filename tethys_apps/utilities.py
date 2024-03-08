@@ -127,9 +127,7 @@ def get_active_app(request=None, url=None, get_class=False):
     from tethys_apps.models import TethysApp
 
     apps_root = "apps"
-    app_root_index_add = 1
     if settings.STANDALONE_APP:
-        app_root_index_add = 0
         apps_root = settings.STANDALONE_APP.replace("_", "-")
 
     if request is not None:
@@ -148,7 +146,7 @@ def get_active_app(request=None, url=None, get_class=False):
             app_root_url = apps_root
         else:
             # The app root_url is the path item following (+1) the apps_root item
-            app_root_url_index = url_parts.index(apps_root) + app_root_index_add
+            app_root_url_index = url_parts.index(apps_root) + 1
             app_root_url = url_parts[app_root_url_index]
 
         if app_root_url:
