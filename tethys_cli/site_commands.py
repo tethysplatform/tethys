@@ -3,6 +3,7 @@ from subprocess import call
 from pathlib import Path
 
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_cli.cli_helpers import setup_django
 from tethys_cli.cli_colors import write_msg, write_warning
@@ -379,10 +380,17 @@ def update_site_settings_if_standalone_mode(portal_config_json):
     standalone_app = tethys_portal_config.get('STANDALONE_APP')
 
     if standalone_app:
-        standalone_app_title = standalone_app.replace("_", " ").replace("-", " ").title()
+        from tethys_apps.models import TethysApp
+        try:
+            # Get the app from the database
+            app = TethysApp.objects.get(package=standalone_app)
+            standalone_app_title = app.name
+        except ObjectDoesNotExist:
+            raise Exception('Could not locate app with package "{0}".'.format(standalone_app))
+        
         site_settings = portal_config_json.get("site_settings", {})
         site_settings["GENERAL_SETTINGS"]['STANDALONE_APP_MODE'] = "true"
-        site_settings["GENERAL_SETTINGS"]['BRAND_TEXT'] = standalone_app_title
+        site_settings["GENERAL_SETTINGS"]['APPS_LIBRARY_TITLE'] = standalone_app_title
 
     return portal_config_json
 

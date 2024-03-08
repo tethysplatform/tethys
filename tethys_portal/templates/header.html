@@ -28,7 +28,7 @@
         <ul class="navbar-nav ms-auto">
           {% block header_nav_items %}
             {% url 'app_library' as app_library_url %}
-            {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active and site_globals.standalone_app_mode == "false" %}
+            {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
               <li class="nav-item">
                 <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
               </li>
