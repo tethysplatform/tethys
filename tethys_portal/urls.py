@@ -21,7 +21,6 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
     PasswordResetCompleteView,
 )
-from django.conf import settings
 
 from tethys_apps.urls import extension_urls, urlpatterns as tethys_app_urlpatterns
 
