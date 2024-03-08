@@ -308,7 +308,10 @@ def gen_site_content(args):
         portal_yaml = Path(get_tethys_home_dir()) / "portal_config.yml"
         if portal_yaml.exists():
             with portal_yaml.open() as f:
-                site_settings = yaml.safe_load(f).get("site_settings", {})
+                portal_config_json = yaml.safe_load(f)
+                portal_config_json = update_site_settings_if_standalone_mode(portal_config_json)
+                site_settings = portal_config_json.get("site_settings", {})
+
                 for category in SITE_SETTING_CATEGORIES:
                     category_settings = site_settings.pop(category, {})
                     update_site_settings_content(
@@ -369,6 +372,19 @@ def update_site_settings_content(settings_dict, warn_if_setting_not_found=False)
         if content and obj:
             content = content.replace("\\n", "\n")
             obj.update(content=content, date_modified=timezone.now())
+
+
+def update_site_settings_if_standalone_mode(portal_config_json):
+    tethys_portal_config = portal_config_json.get('settings', {}).get('TETHYS_PORTAL_CONFIG', {})
+    standalone_app = tethys_portal_config.get('STANDALONE_APP')
+    
+    if standalone_app:
+        standalone_app_title = standalone_app.replace("_", " ").replace("-", " ").title()
+        site_settings = portal_config_json.get("site_settings", {})
+        site_settings["GENERAL_SETTINGS"]['STANDALONE_APP_MODE'] = "true"
+        site_settings["GENERAL_SETTINGS"]['BRAND_TEXT'] = standalone_app_title
+    
+    return portal_config_json
 
 
 def uncodify(code_name):

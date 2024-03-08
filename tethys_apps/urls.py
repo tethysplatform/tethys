@@ -22,9 +22,8 @@ urlpatterns = [
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
 ]
-if settings.STANDALONE_APP_CONTROLLER:
-    standalone_app_namespace, _ = settings.STANDALONE_APP_CONTROLLER.split(":")
-    url_namespaces = [standalone_app_namespace]
+if settings.STANDALONE_APP:
+    url_namespaces = [settings.STANDALONE_APP]
 else:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))
     url_namespaces = None

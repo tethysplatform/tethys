@@ -128,9 +128,9 @@ def get_active_app(request=None, url=None, get_class=False):
 
     apps_root = "apps"
     app_root_index_add = 1
-    if settings.STANDALONE_APP_CONTROLLER:
+    if settings.STANDALONE_APP:
         app_root_index_add = 0
-        apps_root = settings.STANDALONE_APP_CONTROLLER.split(":")[0].replace("_", "-")
+        apps_root = settings.STANDALONE_APP.replace("_", "-")
 
     if request is not None:
         the_url = request.path
@@ -143,10 +143,13 @@ def get_active_app(request=None, url=None, get_class=False):
     app = None
 
     # Find the app key
-    if apps_root in url_parts:
-        # The app root_url is the path item following (+1) the apps_root item
-        app_root_url_index = url_parts.index(apps_root) + app_root_index_add
-        app_root_url = url_parts[app_root_url_index]
+    if apps_root in url_parts or (the_url == "/" and settings.STANDALONE_APP):
+        if settings.STANDALONE_APP:
+            app_root_url = apps_root
+        else:
+            # The app root_url is the path item following (+1) the apps_root item
+            app_root_url_index = url_parts.index(apps_root) + app_root_index_add
+            app_root_url = url_parts[app_root_url_index]
 
         if app_root_url:
             try:

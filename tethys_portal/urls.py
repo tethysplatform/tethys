@@ -181,18 +181,17 @@ developer_urls = [
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
 
-if settings.STANDALONE_APP_CONTROLLER:
-    standalone_app_namespace, _ = settings.STANDALONE_APP_CONTROLLER.split(":")
-    standalone_app_namespace_hyphen = standalone_app_namespace.replace("_", "-")
+if settings.STANDALONE_APP:
+    standalone_app_hyphen = settings.STANDALONE_APP.replace("_", "-")
     standalone_app_urlpatterns = tethys_app_urlpatterns[1]
     urlpatterns = [
-        re_path(r"^{0}/".format(standalone_app_namespace_hyphen), include((standalone_app_urlpatterns.url_patterns, standalone_app_namespace), namespace=standalone_app_namespace)),
-        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_namespace_hyphen}/"), name="home"),
-        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_namespace_hyphen}/"), name="app_library")
+        re_path(r"^{0}/".format(standalone_app_hyphen), include((standalone_app_urlpatterns.url_patterns, settings.STANDALONE_APP), namespace=settings.STANDALONE_APP)),
+        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="home"),
+        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="app_library")
     ]
 else:
     urlpatterns = [
-        re_path(r"^$", include("tethys_apps.urls"), name="home"),
+        re_path(r"^$", tethys_portal_home.home, name="home"),
         re_path(r"^apps/", include("tethys_apps.urls"))
     ]
 
