@@ -4,6 +4,7 @@ from guardian.shortcuts import assign_perm
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from django.core.signing import Signer
+from django.test import override_settings
 
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
@@ -140,6 +141,20 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         # Result should be mock for mock_app.objects.get.return_value
         result = utilities.get_active_app(request=mock_request)
         self.assertEqual(mock_app.objects.get(), result)
+
+    @override_settings(STANDALONE_APP="test_app")
+    @mock.patch("tethys_apps.models.TethysApp")
+    def test_get_active_app_request_standalone_app(self, mock_app):
+        # Mock up for TethysApp, and request
+        mock_tethysapp = mock.MagicMock()
+        mock_app.objects.get.return_value = mock_tethysapp
+        mock_request = mock.MagicMock()
+        mock_request.path = "/test-app/"
+
+        # Result should be mock for mock_app.objects.get.return_value
+        result = utilities.get_active_app(request=mock_request)
+        self.assertEqual(mock_tethysapp, result)
+        mock_app.objects.get.assert_called_with(root_url="test-app")
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_url(self, mock_app):

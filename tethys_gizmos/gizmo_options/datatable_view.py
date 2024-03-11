@@ -6,6 +6,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import re
 from json import dumps
 from tethys_portal.dependencies import vendor_static_dependencies

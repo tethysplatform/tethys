@@ -61,7 +61,7 @@ class TestUrlsWithPrefix(TethysTestCase):
         if urlconf is None:
             urlconf = self.settings.ROOT_URLCONF
         if urlconf in self.sys.modules:
-            self.reload(self.sys.modules['tethys_apps.urls'])
+            self.reload(self.sys.modules["tethys_apps.urls"])
             self.reload(self.sys.modules[urlconf])
         else:
             self.import_module(urlconf)
@@ -125,7 +125,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         if urlconf is None:
             urlconf = self.settings.ROOT_URLCONF
         if urlconf in self.sys.modules:
-            self.reload(self.sys.modules['tethys_apps.urls'])
+            self.reload(self.sys.modules["tethys_apps.urls"])
             self.reload(self.sys.modules[urlconf])
         else:
             self.import_module(urlconf)
@@ -145,13 +145,13 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         resolver = resolve(url)
         self.assertEqual("/", url)
         self.assertEqual("RedirectView", resolver.func.__name__)
-        self.assertEqual("/test-app/", resolver.func.view_initkwargs['url'])
+        self.assertEqual("/test-app/", resolver.func.view_initkwargs["url"])
 
         url = reverse("app_library")
         resolver = resolve(url)
         self.assertEqual("/apps/", url)
         self.assertEqual("RedirectView", resolver.func.__name__)
-        self.assertEqual("/test-app/", resolver.func.view_initkwargs['url'])
+        self.assertEqual("/test-app/", resolver.func.view_initkwargs["url"])
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)

@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import inspect
 import logging
 import pkgutil
@@ -214,9 +215,9 @@ class SingletonHarvester:
                             # compile valid apps
                             if validated_ext_instance:
                                 valid_ext_instances.append(validated_ext_instance)
-                                valid_extension_modules[
-                                    extension_name
-                                ] = extension_package
+                                valid_extension_modules[extension_name] = (
+                                    extension_package
+                                )
 
                                 # Notify user that the app has been loaded
                                 loaded_extensions.append(extension_name)

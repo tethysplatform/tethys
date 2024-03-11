@@ -310,7 +310,9 @@ def gen_site_content(args):
         if portal_yaml.exists():
             with portal_yaml.open() as f:
                 portal_config_json = yaml.safe_load(f)
-                portal_config_json = update_site_settings_if_standalone_mode(portal_config_json)
+                portal_config_json = update_site_settings_if_standalone_mode(
+                    portal_config_json
+                )
                 site_settings = portal_config_json.get("site_settings", {})
 
                 for category in SITE_SETTING_CATEGORIES:
@@ -376,32 +378,37 @@ def update_site_settings_content(settings_dict, warn_if_setting_not_found=False)
 
 
 def update_site_settings_if_standalone_mode(portal_config_json):
-    tethys_portal_settings = portal_config_json.get('settings')
+    tethys_portal_settings = portal_config_json.get("settings")
     if not tethys_portal_settings:
         return portal_config_json
-    
-    tethys_portal_config_settings = tethys_portal_settings.get('TETHYS_PORTAL_CONFIG')
+
+    tethys_portal_config_settings = tethys_portal_settings.get("TETHYS_PORTAL_CONFIG")
     if not tethys_portal_config_settings:
         return portal_config_json
 
-    standalone_app = tethys_portal_config_settings.get('STANDALONE_APP')
+    standalone_app = tethys_portal_config_settings.get("STANDALONE_APP")
     if standalone_app:
         from tethys_apps.models import TethysApp
+
         try:
             # Get the app from the database
             app = TethysApp.objects.get(package=standalone_app)
             standalone_app_title = app.name
         except ObjectDoesNotExist:
             raise Exception(f'Could not locate app with package "{standalone_app}".')
-        
+
         if not portal_config_json.get("site_settings"):
             portal_config_json["site_settings"] = {}
-      
+
         if not portal_config_json["site_settings"].get("GENERAL_SETTINGS"):
             portal_config_json["site_settings"]["GENERAL_SETTINGS"] = {}
-            
-        portal_config_json["site_settings"]["GENERAL_SETTINGS"]['STANDALONE_APP_MODE'] = "true"
-        portal_config_json["site_settings"]["GENERAL_SETTINGS"]['APPS_LIBRARY_TITLE'] = standalone_app_title
+
+        portal_config_json["site_settings"]["GENERAL_SETTINGS"][
+            "STANDALONE_APP_MODE"
+        ] = "true"
+        portal_config_json["site_settings"]["GENERAL_SETTINGS"][
+            "APPS_LIBRARY_TITLE"
+        ] = standalone_app_title
 
     return portal_config_json
 

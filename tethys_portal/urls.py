@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import logging
 from importlib import import_module
 
@@ -22,7 +23,7 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
 )
 
-from tethys_apps.urls import extension_urls, urlpatterns as tethys_app_urlpatterns
+from tethys_apps.urls import extension_urls
 
 from tethys_portal.views import (
     accounts as tethys_portal_accounts,
@@ -183,44 +184,50 @@ developer_urls = [
 if settings.STANDALONE_APP:
     standalone_app_hyphen = settings.STANDALONE_APP.replace("_", "-")
     urlpatterns = [
-        re_path(r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="home"),
-        re_path(r"^", include("tethys_apps.urls"))
+        re_path(
+            r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="home"
+        ),
+        re_path(r"^", include("tethys_apps.urls")),
     ]
 else:
     urlpatterns = [
         re_path(r"^$", tethys_portal_home.home, name="home"),
-        re_path(r"^apps/", include("tethys_apps.urls"))
+        re_path(r"^apps/", include("tethys_apps.urls")),
     ]
 
 
-urlpatterns.extend([
-    re_path(r"^admin/", admin_urls),
-    re_path(r"^accounts/", include((account_urls, "accounts"), namespace="accounts")),
-    re_path(r"^user/", include((user_urls, "user"), namespace="user")),
-    re_path(r"^extensions/", include(extension_urls)),
-    re_path(r"^developer/", include(developer_urls)),
-    re_path(
-        r"^handoff/(?P<app_name>[\w-]+)/$",
-        tethys_apps_views.handoff_capabilities,
-        name="handoff_capabilities",
-    ),
-    re_path(
-        r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
-        tethys_apps_views.handoff,
-        name="handoff",
-    ),
-    re_path(
-        r"^update-job-status/(?P<job_id>[\w-]+)/$",
-        tethys_apps_views.update_job_status,
-        name="update_job_status",
-    ),
-    re_path(
-        r"^update-dask-job-status/(?P<key>[\w-]+)/$",
-        tethys_apps_views.update_dask_job_status,
-        name="update_dask_job_status",
-    ),
-    re_path(r"^api/", include((api_urls, "api"), namespace="api")),
-])
+urlpatterns.extend(
+    [
+        re_path(r"^admin/", admin_urls),
+        re_path(
+            r"^accounts/", include((account_urls, "accounts"), namespace="accounts")
+        ),
+        re_path(r"^user/", include((user_urls, "user"), namespace="user")),
+        re_path(r"^extensions/", include(extension_urls)),
+        re_path(r"^developer/", include(developer_urls)),
+        re_path(
+            r"^handoff/(?P<app_name>[\w-]+)/$",
+            tethys_apps_views.handoff_capabilities,
+            name="handoff_capabilities",
+        ),
+        re_path(
+            r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
+            tethys_apps_views.handoff,
+            name="handoff",
+        ),
+        re_path(
+            r"^update-job-status/(?P<job_id>[\w-]+)/$",
+            tethys_apps_views.update_job_status,
+            name="update_job_status",
+        ),
+        re_path(
+            r"^update-dask-job-status/(?P<key>[\w-]+)/$",
+            tethys_apps_views.update_dask_job_status,
+            name="update_dask_job_status",
+        ),
+        re_path(r"^api/", include((api_urls, "api"), namespace="api")),
+    ]
+)
 
 if has_module(psa_views):
     oauth2_urls = [

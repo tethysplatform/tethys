@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import logging
 from django.urls import include, re_path
 from channels.routing import URLRouter
@@ -25,7 +26,13 @@ urlpatterns = [
 ]
 if settings.STANDALONE_APP:
     standalone_app_hyphen = settings.STANDALONE_APP.replace("_", "-")
-    urlpatterns.append(re_path(r"^apps/", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="app_library"))
+    urlpatterns.append(
+        re_path(
+            r"^apps/",
+            RedirectView.as_view(url=f"/{standalone_app_hyphen}/"),
+            name="app_library",
+        )
+    )
     url_namespaces = [settings.STANDALONE_APP]
 else:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))

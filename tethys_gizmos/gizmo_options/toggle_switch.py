@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from tethys_portal.dependencies import vendor_static_dependencies
 from .base import TethysGizmoOptions
 

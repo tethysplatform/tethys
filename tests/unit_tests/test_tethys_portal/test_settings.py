@@ -260,3 +260,15 @@ class TestSettings(TestCase):
         self.assertIn(
             "bokeh_django.static.BokehExtensionFinder", settings.STATICFILES_FINDERS
         )
+
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {"TETHYS_PORTAL_CONFIG": {"STANDALONE_APP": "test_app"}}
+        },
+    )
+    def test_portal_config_settings_standalone_app(self, _):
+        reload(settings)
+
+        self.assertTrue(settings.STANDALONE_APP == "test_app")
+        self.assertTrue(settings.BYPASS_TETHYS_HOME_PAGE)
