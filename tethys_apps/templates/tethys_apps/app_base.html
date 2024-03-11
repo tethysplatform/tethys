@@ -218,14 +218,14 @@
                     {%  endif %}
                   {% endblock %}
                   {% block exit_button_override %}
-                    {% if site_globals.standalone_app_mode == "false" %}
+                    {% if not single_app_mode %}
                       <div class="header-button exit-button">
                         <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
                       </div>
                     {%  endif %}
                   {% endblock %}
                   {% block user_menu %}
-                    {% if user.is_authenticated and user.is_active and site_globals.standalone_app_mode == "true" %}
+                    {% if user.is_authenticated and user.is_active and single_app_mode %}
                       <div class="user-menu-button">
                         <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
                           <span>
@@ -258,8 +258,6 @@
                           </li>
                         </ul>
                       </div>
-                    {% else %}
-                      <a class="btn btn-outline-light" role="button" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
                     {% endif %}
                   {% endblock %}
               </div>

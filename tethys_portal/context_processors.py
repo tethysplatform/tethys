@@ -9,9 +9,12 @@
 """
 
 from .optional_dependencies import has_module
+from django.conf import settings
+from tethys_apps.utilities import get_first_installed_tethys_app
 
 
 def tethys_portal_context(request):
+    single_app_mode, single_app_name = check_single_app_mode()
     context = {
         "has_analytical": has_module("analytical"),
         "has_recaptcha": has_module("snowpenguin.django.recaptcha2"),
@@ -20,6 +23,15 @@ def tethys_portal_context(request):
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
         "has_oauth2_provider": has_module("oauth2_provider"),
+        "single_app_mode": single_app_mode,
+        "single_app_name": single_app_name
     }
 
     return context
+
+
+def check_single_app_mode():
+    if settings.MULTIPLE_APP_MODE:
+        return False, None
+    else:
+        return True, get_first_installed_tethys_app().name

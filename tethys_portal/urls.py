@@ -15,7 +15,6 @@ from django.conf import settings
 from django.urls import reverse_lazy, include, re_path
 from django.shortcuts import redirect
 from django.views.decorators.cache import never_cache
-from django.views.generic import RedirectView
 from django.contrib import admin
 from django.contrib.auth.views import (
     PasswordResetDoneView,
@@ -181,20 +180,15 @@ developer_urls = [
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
 
-if settings.STANDALONE_APP:
-    standalone_app_hyphen = settings.STANDALONE_APP.replace("_", "-")
-    urlpatterns = [
-        re_path(
-            r"^$", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="home"
-        ),
-        re_path(r"^", include("tethys_apps.urls")),
-    ]
-else:
+if settings.MULTIPLE_APP_MODE:
     urlpatterns = [
         re_path(r"^$", tethys_portal_home.home, name="home"),
         re_path(r"^apps/", include("tethys_apps.urls")),
     ]
-
+else:
+    urlpatterns = [
+        re_path(r"^", include("tethys_apps.urls")),
+    ]
 
 urlpatterns.extend(
     [

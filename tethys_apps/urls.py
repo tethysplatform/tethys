@@ -14,6 +14,7 @@ from channels.routing import URLRouter
 from django.views.generic import RedirectView
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
+from tethys_apps.utilities import get_first_installed_tethys_app
 from django.conf import settings
 
 tethys_log = logging.getLogger("tethys." + __name__)
@@ -24,19 +25,22 @@ urlpatterns = [
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
 ]
-if settings.STANDALONE_APP:
-    standalone_app_hyphen = settings.STANDALONE_APP.replace("_", "-")
-    urlpatterns.append(
-        re_path(
-            r"^apps/",
-            RedirectView.as_view(url=f"/{standalone_app_hyphen}/"),
-            name="app_library",
-        )
-    )
-    url_namespaces = [settings.STANDALONE_APP]
-else:
+if settings.MULTIPLE_APP_MODE:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))
     url_namespaces = None
+else:
+    standalone_app = get_first_installed_tethys_app()
+    urlpatterns.extend([
+        re_path(
+            r"^apps/",
+            RedirectView.as_view(url=f"/{standalone_app.root_url}/"),
+            name="app_library",
+        ),
+        re_path(
+            r"^$", RedirectView.as_view(url=f"/{standalone_app.root_url}/"), name="home"
+        )
+    ])
+    url_namespaces = [standalone_app.url_namespace]
 
 # Append the app urls urlpatterns
 harvester = SingletonHarvester()

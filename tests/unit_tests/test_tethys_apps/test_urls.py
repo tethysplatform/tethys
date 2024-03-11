@@ -112,7 +112,7 @@ class TestUrlsWithPrefix(TethysTestCase):
         )
 
 
-@override_settings(STANDALONE_APP="test_app")
+@override_settings(MULTIPLE_APP_MODE=False)
 class TestUrlsWithStandaloneApp(TethysTestCase):
     import sys
     from importlib import reload, import_module
@@ -134,7 +134,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         self.reload_urlconf()
         pass
 
-    @override_settings(STANDALONE_APP=None)
+    @override_settings(MULTIPLE_APP_MODE=True)
     def tearDown(self):
         self.reload_urlconf()
         pass

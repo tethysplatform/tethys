@@ -127,10 +127,6 @@ def get_active_app(request=None, url=None, get_class=False):
     """
     from tethys_apps.models import TethysApp
 
-    apps_root = "apps"
-    if settings.STANDALONE_APP:
-        apps_root = settings.STANDALONE_APP.replace("_", "-")
-
     if request is not None:
         the_url = request.path
     elif url is not None:
@@ -141,16 +137,19 @@ def get_active_app(request=None, url=None, get_class=False):
     url_parts = the_url.split("/")
     app = None
 
+    if settings.MULTIPLE_APP_MODE:
+        apps_root = "apps"
+    else:
+        configured_single_app = get_first_installed_tethys_app()
+        apps_root = configured_single_app.root_url
+
     # Find the app key
-    if apps_root in url_parts or (the_url == "/" and settings.STANDALONE_APP):
-        if settings.STANDALONE_APP:
-            app_root_url = apps_root
-        else:
+    if apps_root in url_parts:
+        if settings.MULTIPLE_APP_MODE:
             # The app root_url is the path item following (+1) the apps_root item
             app_root_url_index = url_parts.index(apps_root) + 1
             app_root_url = url_parts[app_root_url_index]
-
-        if app_root_url:
+            
             try:
                 # Get the app from the database
                 app = TethysApp.objects.get(root_url=app_root_url)
@@ -162,6 +161,8 @@ def get_active_app(request=None, url=None, get_class=False):
                 tethys_log.warning(
                     'Multiple apps found with root url "{0}".'.format(app_root_url)
                 )
+        else:
+            app = configured_single_app
 
     if get_class:
         app = get_app_class(app)
@@ -610,6 +611,15 @@ def get_installed_tethys_items(apps=False, extensions=False):
             """DO NOTHING"""
 
     return paths
+
+
+def get_first_installed_tethys_app():
+    """
+    Returns a list apps installed in the tethysapp directory.
+    """
+    from tethys_apps.models import TethysApp
+
+    return TethysApp.objects.first()
 
 
 def get_installed_tethys_apps():
