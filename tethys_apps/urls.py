@@ -10,6 +10,7 @@
 import logging
 from django.urls import include, re_path
 from channels.routing import URLRouter
+from django.views.generic import RedirectView
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
 from django.conf import settings
@@ -23,6 +24,8 @@ urlpatterns = [
     ),
 ]
 if settings.STANDALONE_APP:
+    standalone_app_hyphen = settings.STANDALONE_APP.replace("_", "-")
+    urlpatterns.append(re_path(r"^apps/", RedirectView.as_view(url=f"/{standalone_app_hyphen}/"), name="app_library"))
     url_namespaces = [settings.STANDALONE_APP]
 else:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))
