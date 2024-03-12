@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from tethys_apps.base.testing.testing import TethysTestCase
 from tethys_compute.models import Scheduler, CondorScheduler
 

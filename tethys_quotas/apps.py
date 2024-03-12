@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 import logging
 from django.apps import AppConfig
 from django.db.utils import ProgrammingError, OperationalError

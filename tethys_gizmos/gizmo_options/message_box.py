@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from .base import TethysGizmoOptions
 
 __all__ = ["MessageBox"]

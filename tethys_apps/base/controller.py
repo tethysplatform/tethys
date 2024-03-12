@@ -31,7 +31,7 @@ from .workspace import (
     user_workspace as user_workspace_decorator,
 )
 from ..decorators import login_required as login_required_decorator, permission_required
-from ..utilities import get_all_submodules
+from ..utilities import get_all_submodules, update_decorated_websocket_consumer_class
 
 # imports for type hinting
 from typing import Union, Any
@@ -58,6 +58,11 @@ def consumer(
     name: str = None,
     url: str = None,
     regex: Union[str, list, tuple] = None,
+    # login_required kwargs
+    login_required: bool = True,
+    # permission_required kwargs
+    permissions_required: Union[str, list, tuple] = None,
+    permissions_use_or: bool = False,
 ) -> Callable:
     """
     Decorator to register a Consumer class as routed consumer endpoint
@@ -88,7 +93,23 @@ def consumer(
             url='customized/url',
         )
         class MyConsumer(AsyncWebsocketConsumer):
-            pass
+
+            def connect():
+                pass
+
+        ------------
+
+        @consumer(
+            name='custom_name',
+            url='customized/url',
+            permissions_required='permission',
+            login_required=True
+        )
+        class MyConsumer(AsyncWebsocketConsumer):
+
+            def authorized_connect():
+                pass
+
     """  # noqa: E501
 
     def wrapped(function_or_class):
@@ -98,6 +119,10 @@ def consumer(
             url=url,
             protocol="websocket",
             regex=regex,
+        )
+
+        function_or_class = update_decorated_websocket_consumer_class(
+            function_or_class, permissions_required, permissions_use_or, login_required
         )
 
         controller = function_or_class.as_asgi()

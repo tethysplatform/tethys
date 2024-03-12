@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 try:
     from ._version import version as __version__
     from ._version import version_tuple  # noqa: F401
