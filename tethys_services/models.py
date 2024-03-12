@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError

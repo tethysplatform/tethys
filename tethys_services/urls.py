@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.urls import re_path, include
 from tethys_services import views as tethys_services_views
 

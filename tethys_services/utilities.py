@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import logging
 from urllib.error import HTTPError, URLError
 from functools import wraps

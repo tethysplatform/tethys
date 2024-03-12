@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import logging
 from django.urls import include, re_path
 from channels.routing import URLRouter

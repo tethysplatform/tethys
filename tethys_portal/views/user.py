@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
