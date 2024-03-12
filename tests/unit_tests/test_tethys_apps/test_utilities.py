@@ -5,6 +5,7 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from django.core.signing import Signer
 from django.test import override_settings
+from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
@@ -1062,3 +1063,51 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
 
             self.assertEqual(result.package, "test_app")
             mock_tethysapp.objects.get.assert_called_with(package="test_app")
+
+    def test_update_decorated_websocket_consumer_class(self):
+        class TestConsumer(WebsocketConsumer):
+            def authorized_connect(self):
+                """Connects to the websocket consumer and adds a notifications group to the channel"""
+                return "authorized_connect_run"
+
+        permissions_required = ["test_permission"]
+        permissions_use_or = True
+        login_required = False
+        updated_class = utilities.update_decorated_websocket_consumer_class(
+            TestConsumer, permissions_required, permissions_use_or, login_required
+        )
+
+        self.assertTrue(updated_class.permissions == permissions_required)
+        self.assertTrue(updated_class.permissions_use_or == permissions_use_or)
+        self.assertTrue(updated_class.login_required == login_required)
+        self.assertTrue(
+            updated_class().authorized_connect() == "authorized_connect_run"
+        )
+
+
+class TestAsyncUtilities(unittest.IsolatedAsyncioTestCase):
+    def set_up(self):
+        pass
+
+    def tear_down(self):
+        pass
+
+    async def test_update_decorated_websocket_consumer_class_async(self):
+        class TestConsumer(AsyncWebsocketConsumer):
+            async def authorized_connect(self):
+                """Connects to the websocket consumer and adds a notifications group to the channel"""
+                return "authorized_connect_run"
+
+        permissions_required = ["test_permission"]
+        permissions_use_or = True
+        login_required = False
+        updated_class = utilities.update_decorated_websocket_consumer_class(
+            TestConsumer, permissions_required, permissions_use_or, login_required
+        )
+
+        self.assertTrue(updated_class.permissions == permissions_required)
+        self.assertTrue(updated_class.permissions_use_or == permissions_use_or)
+        self.assertTrue(updated_class.login_required == login_required)
+        self.assertTrue(
+            await updated_class().authorized_connect() == "authorized_connect_run"
+        )
