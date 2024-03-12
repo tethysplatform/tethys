@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.shortcuts import render, redirect
 from django.conf import settings
 from tethys_config.models import get_custom_template

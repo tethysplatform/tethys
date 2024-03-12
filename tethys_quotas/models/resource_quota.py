@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 import logging
 import inspect
 from django.contrib.auth.models import User
