@@ -140,7 +140,7 @@ def get_active_app(request=None, url=None, get_class=False):
     if settings.MULTIPLE_APP_MODE:
         apps_root = "apps"
     else:
-        configured_single_app = get_first_installed_tethys_app()
+        configured_single_app = get_configured_standalone_app()
         apps_root = configured_single_app.root_url
 
     # Find the app key
@@ -613,13 +613,20 @@ def get_installed_tethys_items(apps=False, extensions=False):
     return paths
 
 
-def get_first_installed_tethys_app():
+def get_configured_standalone_app():
     """
     Returns a list apps installed in the tethysapp directory.
     """
     from tethys_apps.models import TethysApp
 
-    return TethysApp.objects.first()
+    standalone_app = settings.STANDALONE_APP
+
+    if standalone_app:
+        app = TethysApp.objects.get(package=standalone_app)
+    else:
+        app = TethysApp.objects.first()
+
+    return app
 
 
 def get_installed_tethys_apps():

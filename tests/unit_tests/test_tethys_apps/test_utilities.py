@@ -143,7 +143,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(mock_app.objects.get(), result)
 
     @override_settings(MULTIPLE_APP_MODE=False)
-    @mock.patch("tethys_apps.utilities.get_first_installed_tethys_app")
+    @mock.patch("tethys_apps.utilities.get_configured_standalone_app")
     def test_get_active_app_request_standalone_app(self, mock_first_app):
         # Mock up for TethysApp, and request
         mock_tethysapp = mock.MagicMock(root_url="test-app")
@@ -1038,3 +1038,27 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             custom_secret_setting.name(), secret_signed_mock, app_target_name, False
         )
         self.assertEqual(unsigned_secret, mock_val)
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_no_app_name(self):
+        from tethys_apps.models import TethysApp
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            result = utilities.get_configured_standalone_app()
+
+            self.assertEqual(result.package, "test_app")
+            mock_tethysapp.objects.first.assert_called_once()
+
+    @override_settings(MULTIPLE_APP_MODE=False, STANDALONE_APP="test_app")
+    def test_get_configured_standalone_app_given_app_name(self):
+        from tethys_apps.models import TethysApp
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            result = utilities.get_configured_standalone_app()
+
+            self.assertEqual(result.package, "test_app")
+            mock_tethysapp.objects.get.assert_called_with(package="test_app")

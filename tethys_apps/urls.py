@@ -14,7 +14,7 @@ from channels.routing import URLRouter
 from django.views.generic import RedirectView
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
-from tethys_apps.utilities import get_first_installed_tethys_app
+from tethys_apps.utilities import get_configured_standalone_app
 from django.conf import settings
 
 tethys_log = logging.getLogger("tethys." + __name__)
@@ -29,7 +29,7 @@ if settings.MULTIPLE_APP_MODE:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))
     url_namespaces = None
 else:
-    standalone_app = get_first_installed_tethys_app()
+    standalone_app = get_configured_standalone_app()
     urlpatterns.extend(
         [
             re_path(

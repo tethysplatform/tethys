@@ -10,7 +10,7 @@
 
 from .optional_dependencies import has_module
 from django.conf import settings
-from tethys_apps.utilities import get_first_installed_tethys_app
+from tethys_apps.utilities import get_configured_standalone_app
 
 
 def tethys_portal_context(request):
@@ -34,4 +34,4 @@ def check_single_app_mode():
     if settings.MULTIPLE_APP_MODE:
         return False, None
     else:
-        return True, get_first_installed_tethys_app().name
+        return True, get_configured_standalone_app().name
