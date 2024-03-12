@@ -21,6 +21,7 @@ from django.core.signing import Signer
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
+from channels.consumer import SyncConsumer
 
 from tethys_apps.base.mixins import (
     TethysAsyncWebsocketConsumerMixin,
@@ -724,12 +725,10 @@ def update_decorated_websocket_consumer_class(
     Returns:
         class: updated class with necessary properties and function for authorizing user access
     """
-    base_class_name = inspect.getmro(function_or_class)[1].__name__.lower()
-    function_or_class_name = function_or_class.__name__.lower()
-    if "async" in function_or_class_name or "async" in base_class_name:
-        consumer_mixin = TethysAsyncWebsocketConsumerMixin
-    else:
+    if issubclass(function_or_class, SyncConsumer):
         consumer_mixin = TethysWebsocketConsumerMixin
+    else:
+        consumer_mixin = TethysAsyncWebsocketConsumerMixin
 
     class_bases = list(function_or_class.__bases__)
     class_bases.insert(0, consumer_mixin)
