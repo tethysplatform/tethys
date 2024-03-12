@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.core.management.base import BaseCommand
 from tethys_cli.cli_colors import TC_BLUE, TC_WARNING, TC_ENDC
 

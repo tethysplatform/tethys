@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from abc import abstractmethod
 
 from django.db import models

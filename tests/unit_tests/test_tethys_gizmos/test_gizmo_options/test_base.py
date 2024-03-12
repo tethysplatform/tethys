@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 import unittest
 import tethys_gizmos.gizmo_options.base as basetest
 

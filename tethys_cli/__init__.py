@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 # Commandline interface for Tethys
 import argparse
 

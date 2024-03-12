@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from django.contrib.auth.models import User
 from tethys_apps.models import TethysApp
 from tethys_apps.base.workspace import _get_user_workspace, _get_app_workspace
