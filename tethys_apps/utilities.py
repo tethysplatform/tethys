@@ -149,7 +149,7 @@ def get_active_app(request=None, url=None, get_class=False):
             # The app root_url is the path item following (+1) the apps_root item
             app_root_url_index = url_parts.index(apps_root) + 1
             app_root_url = url_parts[app_root_url_index]
-            
+
             try:
                 # Get the app from the database
                 app = TethysApp.objects.get(root_url=app_root_url)

@@ -3,7 +3,6 @@ from subprocess import call
 from pathlib import Path
 
 from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_cli.cli_helpers import setup_django
 from tethys_cli.cli_colors import write_msg, write_warning
@@ -304,9 +303,7 @@ def gen_site_content(args):
         portal_yaml = Path(get_tethys_home_dir()) / "portal_config.yml"
         if portal_yaml.exists():
             with portal_yaml.open() as f:
-                portal_config_json = yaml.safe_load(f)
-                site_settings = portal_config_json.get("site_settings", {})
-
+                site_settings = yaml.safe_load(f).get("site_settings", {})
                 for category in SITE_SETTING_CATEGORIES:
                     category_settings = site_settings.pop(category, {})
                     update_site_settings_content(

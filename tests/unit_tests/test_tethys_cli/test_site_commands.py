@@ -1,7 +1,6 @@
 import unittest
 import os
 from unittest import mock
-from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_cli.site_commands import (
     gen_site_content,

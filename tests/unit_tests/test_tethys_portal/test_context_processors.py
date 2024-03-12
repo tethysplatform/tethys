@@ -1,5 +1,4 @@
 import unittest
-from unittest import mock
 from django.test import override_settings
 from tethys_portal import context_processors
 

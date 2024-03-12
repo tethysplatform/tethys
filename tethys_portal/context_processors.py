@@ -24,7 +24,7 @@ def tethys_portal_context(request):
         "has_session_security": has_module("session_security"),
         "has_oauth2_provider": has_module("oauth2_provider"),
         "single_app_mode": single_app_mode,
-        "single_app_name": single_app_name
+        "single_app_name": single_app_name,
     }
 
     return context

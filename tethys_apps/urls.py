@@ -30,16 +30,20 @@ if settings.MULTIPLE_APP_MODE:
     url_namespaces = None
 else:
     standalone_app = get_first_installed_tethys_app()
-    urlpatterns.extend([
-        re_path(
-            r"^apps/",
-            RedirectView.as_view(url=f"/{standalone_app.root_url}/"),
-            name="app_library",
-        ),
-        re_path(
-            r"^$", RedirectView.as_view(url=f"/{standalone_app.root_url}/"), name="home"
-        )
-    ])
+    urlpatterns.extend(
+        [
+            re_path(
+                r"^apps/",
+                RedirectView.as_view(url=f"/{standalone_app.root_url}/"),
+                name="app_library",
+            ),
+            re_path(
+                r"^$",
+                RedirectView.as_view(url=f"/{standalone_app.root_url}/"),
+                name="home",
+            ),
+        ]
+    )
     url_namespaces = [standalone_app.url_namespace]
 
 # Append the app urls urlpatterns
