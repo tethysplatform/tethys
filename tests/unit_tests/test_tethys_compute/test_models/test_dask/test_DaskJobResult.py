@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from tethys_sdk.testing import TethysTestCase
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.dask.dask_job import DaskJob

@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import format_html
