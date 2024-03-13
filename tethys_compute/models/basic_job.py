@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from tethys_compute.models.tethys_job import TethysJob
 
 

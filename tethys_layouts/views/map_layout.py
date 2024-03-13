@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2021
 ********************************************************************************
 """
+
 from tethys_portal.optional_dependencies import optional_import
 from abc import ABCMeta
 import collections

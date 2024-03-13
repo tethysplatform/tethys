@@ -57,7 +57,7 @@ def get_app(request, app):
         "icon": static(app.icon),
         "exitUrl": reverse("app_library"),
         "rootUrl": reverse(app.index_url),
-        "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{ app.id }/change/',
+        "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{app.id}/change/',
     }
 
     if request.user.is_authenticated:
@@ -73,9 +73,11 @@ def get_app(request, app):
                 pass
 
             metadata["customSettings"][s.name] = {
-                "type": s.type
-                if s.type_custom_setting == "SIMPLE"
-                else s.type_custom_setting,
+                "type": (
+                    s.type
+                    if s.type_custom_setting == "SIMPLE"
+                    else s.type_custom_setting
+                ),
                 "value": v,
             }
 

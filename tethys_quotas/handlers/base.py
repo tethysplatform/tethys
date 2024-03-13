@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from abc import abstractmethod
 from tethys_quotas.utilities import get_resource_available
 

@@ -40,6 +40,7 @@ MOCK_MODULES = [
     "bokeh.server.django.consumers",
     "bokeh.util.compiler",
     "channels",
+    "channels.db",
     "channels.consumer",
     "conda",
     "conda.cli",

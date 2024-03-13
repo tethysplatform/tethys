@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 # from django.contrib import admin
 
 # Register your models here.

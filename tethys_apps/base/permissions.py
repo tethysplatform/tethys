@@ -8,6 +8,8 @@
 ********************************************************************************
 """
 
+from channels.db import database_sync_to_async
+
 
 class Permission:
     """
@@ -139,3 +141,25 @@ def has_permission(request, perm, user=None):
     if user.has_perm(namespaced_perm, app):
         return True
     return False
+
+
+@database_sync_to_async
+def scoped_user_has_permission(scope, perm):
+    """_summary_
+
+    Args:
+        user_id (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    from tethys_apps.utilities import get_active_app
+
+    request_url = scope["path"]
+    user = scope["user"]
+
+    app = get_active_app(url=request_url)
+
+    namespaced_perm = "tethys_apps." + app.package + ":" + perm
+
+    return user.has_perm(namespaced_perm, app)
