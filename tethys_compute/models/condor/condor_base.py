@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 import os
 from abc import abstractmethod
 from pathlib import Path

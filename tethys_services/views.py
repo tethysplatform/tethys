@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.shortcuts import render
 
 from tethys_apps.decorators import login_required
