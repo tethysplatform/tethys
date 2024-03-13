@@ -289,10 +289,9 @@ var TETHYS_MAP_VIEW = (function() {
             // Add legend attributes
             base_map_layer.tethys_legend_title = 'Basemap: ' + label;
             base_map_labels.push(label);
+            // Add the base map to layers
+            m_map.addLayer(base_map_layer);
         }
-
-        // Add the base map to layers
-        m_map.addLayer(base_map_layer);
       });
     }
     else{
