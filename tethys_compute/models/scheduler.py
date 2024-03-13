@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from django.db import models
 from model_utils.managers import InheritanceManager
 

@@ -43,11 +43,11 @@ a. Create a new file called ``consumers.py`` and add the following code:
 
         @consumer(name='dam_notification', url='dams/notifications')
         class NotificationsConsumer(AsyncWebsocketConsumer):
-            async def connect(self):
-                await self.accept()
+
+            async def authorized_connect(self):
                 print("-----------WebSocket Connected-----------")
 
-            async def disconnect(self, close_code):
+            async def authorized_disconnect(self, close_code):
                 pass
 
 .. note::
@@ -94,12 +94,12 @@ a. Update the ``consumer class`` to look like this.
 
         @consumer(name='dam_notification', url='dams/notifications')
         class NotificationsConsumer(AsyncWebsocketConsumer):
-            async def connect(self):
-                await self.accept()
+
+            async def authorized_connect(self):
                 await self.channel_layer.group_add("notifications", self.channel_name)
                 print(f"Added {self.channel_name} channel to notifications")
 
-            async def disconnect(self, close_code):
+            async def authorized_disconnect(self, close_code):
                 await self.channel_layer.group_discard("notifications", self.channel_name)
                 print(f"Removed {self.channel_name} channel from notifications")
 

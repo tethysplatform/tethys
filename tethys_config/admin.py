@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.contrib import admin
 from django.forms import Textarea
 from django.db import models

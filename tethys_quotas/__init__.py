@@ -6,4 +6,5 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 default_app_config = "tethys_quotas.apps.TethysQuotasConfig"

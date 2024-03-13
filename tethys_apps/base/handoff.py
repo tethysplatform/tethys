@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import inspect
 import json
 from django.shortcuts import redirect
@@ -124,10 +125,10 @@ class HandoffManager:
                         json.dumps(error), content_type="application/javascript"
                     )
 
-        error[
-            "message"
-        ] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(
-            manager.app.name, handler_name
+        error["message"] = (
+            "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(
+                manager.app.name, handler_name
+            )
         )
         return HttpResponseBadRequest(
             json.dumps(error), content_type="application/javascript"
