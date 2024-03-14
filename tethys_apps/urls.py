@@ -30,14 +30,12 @@ if settings.MULTIPLE_APP_MODE:
     url_namespaces = None
 else:
     standalone_app = get_configured_standalone_app()
-    urlpatterns.extend(
-        [
-            re_path(
-                r"^apps/",
-                RedirectView.as_view(url=""),
-                name="app_library",
-            )
-        ]
+    urlpatterns.append(
+        re_path(
+            r"^apps/",
+            RedirectView.as_view(pattern_name="home"),
+            name="app_library",
+        )
     )
     url_namespaces = [standalone_app.url_namespace]
 

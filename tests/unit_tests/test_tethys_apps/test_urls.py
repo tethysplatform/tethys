@@ -151,7 +151,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         resolver = resolve(url)
         self.assertEqual("/apps/", url)
         self.assertEqual("RedirectView", resolver.func.__name__)
-        self.assertEqual("", resolver.func.view_initkwargs["url"])
+        self.assertEqual("home", resolver.func.view_initkwargs["pattern_name"])
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
