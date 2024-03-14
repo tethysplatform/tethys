@@ -34,7 +34,7 @@ else:
         [
             re_path(
                 r"^apps/",
-                RedirectView.as_view(url=f""),
+                RedirectView.as_view(url=""),
                 name="app_library",
             )
         ]
@@ -47,7 +47,6 @@ normal_url_patterns = harvester.get_url_patterns(url_namespaces=url_namespaces)
 handler_url_patterns = harvester.get_handler_patterns(url_namespaces=url_namespaces)
 
 # configure handler HTTP routes
-## Nathan, what would be an example of these?
 http_handler_patterns = []
 for namespace, urls in handler_url_patterns["http_handler_patterns"].items():
     root_pattern = r"^apps/{0}/".format(namespace.replace("_", "-"))
@@ -62,15 +61,14 @@ for namespace, urls in normal_url_patterns["app_url_patterns"].items():
     else:
         root_pattern = ""
         home_urls = [url for url in urls if url.name == "home"]
-        urlpatterns.append( 
+        urlpatterns.append(
             re_path(
                 r"",
                 include(home_urls[:1]),
                 name="home",
             ),
         )
-        
-        
+
     urlpatterns.append(
         re_path(root_pattern, include((urls, namespace), namespace=namespace))
     )
