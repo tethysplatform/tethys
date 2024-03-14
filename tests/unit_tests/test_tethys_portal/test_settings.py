@@ -264,11 +264,11 @@ class TestSettings(TestCase):
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
         return_value={
-            "settings": {"TETHYS_PORTAL_CONFIG": {"STANDALONE_APP": "test_app"}}
+            "settings": {"TETHYS_PORTAL_CONFIG": {"MULTIPLE_APP_MODE": False}}
         },
     )
     def test_portal_config_settings_standalone_app(self, _):
         reload(settings)
 
-        self.assertTrue(settings.STANDALONE_APP == "test_app")
+        self.assertTrue(settings.STANDALONE_APP is None)
         self.assertTrue(settings.BYPASS_TETHYS_HOME_PAGE)

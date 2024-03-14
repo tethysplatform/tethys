@@ -1064,6 +1064,20 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             self.assertEqual(result.package, "test_app")
             mock_tethysapp.objects.get.assert_called_with(package="test_app")
 
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_no_app_name_no_installed(self):
+        from tethys_apps.models import TethysApp
+        from django.core.exceptions import ObjectDoesNotExist
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            mock_tethysapp.objects.first.return_value = []
+            with self.assertRaises(ObjectDoesNotExist):
+               utilities.get_configured_standalone_app()
+
+            mock_tethysapp.objects.first.assert_called_once()
+
     def test_update_decorated_websocket_consumer_class(self):
         class TestConsumer(WebsocketConsumer):
             def authorized_connect(self):

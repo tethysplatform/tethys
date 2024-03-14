@@ -630,6 +630,8 @@ def get_configured_standalone_app():
         app = TethysApp.objects.get(package=standalone_app)
     else:
         app = TethysApp.objects.first()
+        if not app:
+            raise ObjectDoesNotExist("No Tethys Apps have been installed")
 
     return app
 
