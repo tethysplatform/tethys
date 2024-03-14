@@ -98,8 +98,6 @@ Generate_Tethys_DB_Conditional_Settings_TethysCore:
   cmd.run:
     - name: >
         tethys settings
-        --set DEBUG {{ DEBUG }}
-        --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
         --set DATABASES.default.ENGINE "{{ TETHYS_DB_ENGINE }}"
         --set DATABASES.default.NAME "{{ TETHYS_DB_NAME }}"
         --set DATABASES.default.USER "{{ TETHYS_DB_USERNAME }}"
