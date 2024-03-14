@@ -70,20 +70,12 @@
 
 {% set TETHYS_SITE_CONTENT = TETHYS_SITE_CONTENT_LIST|join(' ') %}
 
-
-
 Generate_Tethys_Settings_TethysCore:
   cmd.run:
     - name: >
         tethys settings
         --set DEBUG {{ DEBUG }}
         --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
-        --set DATABASES.default.ENGINE "{{ TETHYS_DB_ENGINE }}"
-        --set DATABASES.default.NAME "{{ TETHYS_DB_NAME }}"
-        --set DATABASES.default.USER "{{ TETHYS_DB_USERNAME }}"
-        --set DATABASES.default.PASSWORD "{{ TETHYS_DB_PASSWORD }}"
-        --set DATABASES.default.HOST "{{ TETHYS_DB_HOST }}"
-        --set DATABASES.default.PORT "{{ TETHYS_DB_PORT }}"
         --set INSTALLED_APPS {{ ADD_DJANGO_APPS }}
         --set SESSION_CONFIG.SECURITY_WARN_AFTER {{ SESSION_WARN }}
         --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
@@ -100,6 +92,22 @@ Generate_Tethys_Settings_TethysCore:
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY "{{ RECAPTCHA_PUBLIC_KEY }}"
         {{ OTHER_SETTINGS }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+
+{% if TETHYS_DB_ENGINE == 'django.db.backends.postgresql' %}
+Generate_Tethys_DB_Conditional_Settings_TethysCore:
+  cmd.run:
+    - name: >
+        tethys settings
+        --set DEBUG {{ DEBUG }}
+        --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
+        --set DATABASES.default.ENGINE "{{ TETHYS_DB_ENGINE }}"
+        --set DATABASES.default.NAME "{{ TETHYS_DB_NAME }}"
+        --set DATABASES.default.USER "{{ TETHYS_DB_USERNAME }}"
+        --set DATABASES.default.PASSWORD "{{ TETHYS_DB_PASSWORD }}"
+        --set DATABASES.default.HOST "{{ TETHYS_DB_HOST }}"
+        --set DATABASES.default.PORT "{{ TETHYS_DB_PORT }}"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+{% endif %}
 
 Generate_NGINX_Settings_TethysCore:
   cmd.run:
