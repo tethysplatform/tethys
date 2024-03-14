@@ -144,14 +144,14 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         url = reverse("home")
         resolver = resolve(url)
         self.assertEqual("/", url)
-        self.assertEqual("RedirectView", resolver.func.__name__)
-        self.assertEqual("/test-app/", resolver.func.view_initkwargs["url"])
+        self.assertEqual("home", resolver.func.__name__)
+        self.assertEqual("tethysapp.test_app.controllers", resolver.func.__module__)
 
         url = reverse("app_library")
         resolver = resolve(url)
         self.assertEqual("/apps/", url)
         self.assertEqual("RedirectView", resolver.func.__name__)
-        self.assertEqual("/test-app/", resolver.func.view_initkwargs["url"])
+        self.assertEqual("", resolver.func.view_initkwargs["url"])
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
@@ -161,7 +161,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
 
         url = reverse("test_app:home")
         resolver = resolve(url)
-        self.assertEqual("/test-app/", url)
+        self.assertEqual("/", url)
         self.assertEqual("home", resolver.func.__name__)
         self.assertEqual("tethysapp.test_app.controllers", resolver.func.__module__)
 
