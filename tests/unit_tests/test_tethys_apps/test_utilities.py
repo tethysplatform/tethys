@@ -1074,7 +1074,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         ) as mock_tethysapp:
             mock_tethysapp.objects.first.return_value = []
             with self.assertRaises(ObjectDoesNotExist):
-               utilities.get_configured_standalone_app()
+                utilities.get_configured_standalone_app()
 
             mock_tethysapp.objects.first.assert_called_once()
 
