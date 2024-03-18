@@ -47,12 +47,12 @@ handler_url_patterns = harvester.get_handler_patterns(url_namespaces=url_namespa
 # configure handler HTTP routes
 http_handler_patterns = []
 for namespace, urls in handler_url_patterns["http_handler_patterns"].items():
-    
+
     if settings.MULTIPLE_APP_MODE:
         root_pattern = f'apps/{namespace.replace("_", "-")}/'
     else:
         root_pattern = ""
-    
+
     if prefix_url is not None and prefix_url != "/":
         root_pattern = f"{prefix_url}/{root_pattern}"
     root_pattern = rf"^{root_pattern}"
@@ -106,9 +106,9 @@ def prepare_websocket_urls(app_websocket_url_patterns):
 
         for u in urls:
             url_str = str(u.pattern).replace("^", "")
-            namespaced_url_str = fr"^{root_url}{url_str}"
+            namespaced_url_str = rf"^{root_url}{url_str}"
             if prefix_url is not None and prefix_url != "/":
-                namespaced_url_str = fr"^{prefix_url}/{root_url}{url_str}"
+                namespaced_url_str = rf"^{prefix_url}/{root_url}{url_str}"
             namespaced_url = re_path(namespaced_url_str, u.callback, name=u.name)
             prepared_urls.append(namespaced_url)
 

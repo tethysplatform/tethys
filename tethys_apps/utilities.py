@@ -149,17 +149,18 @@ def get_active_app(request=None, url=None, get_class=False):
             app_root_url_index = url_parts.index(apps_root) + 1
             app_root_url = url_parts[app_root_url_index]
 
-            try:
-                # Get the app from the database
-                app = TethysApp.objects.get(root_url=app_root_url)
-            except ObjectDoesNotExist:
-                tethys_log.warning(
-                    'Could not locate app with root url "{0}".'.format(app_root_url)
-                )
-            except MultipleObjectsReturned:
-                tethys_log.warning(
-                    'Multiple apps found with root url "{0}".'.format(app_root_url)
-                )
+            if app_root_url:
+                try:
+                    # Get the app from the database
+                    app = TethysApp.objects.get(root_url=app_root_url)
+                except ObjectDoesNotExist:
+                    tethys_log.warning(
+                        'Could not locate app with root url "{0}".'.format(app_root_url)
+                    )
+                except MultipleObjectsReturned:
+                    tethys_log.warning(
+                        'Multiple apps found with root url "{0}".'.format(app_root_url)
+                    )
     else:
         app = get_configured_standalone_app()
 
