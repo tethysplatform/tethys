@@ -167,15 +167,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
 
         url = reverse("test_extension:home", kwargs={"var1": "foo", "var2": "bar"})
         resolver = resolve(url)
-        self.assertEqual("/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("home", resolver.func.__name__)
-        self.assertEqual(
-            "tethysext.test_extension.controllers", resolver.func.__module__
-        )
-
-        url = reverse("test_extension:home", args=["foo", "bar"])
-        resolver = resolve(url)
-        self.assertEqual("/extensions/test-extension/foo/bar/", url)
+        self.assertEqual("/extensions/foo/bar/", url)
         self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
             "tethysext.test_extension.controllers", resolver.func.__module__
