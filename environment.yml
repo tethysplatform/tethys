@@ -20,9 +20,9 @@ dependencies:
   - openssl
 
   # core dependencies
-  - django=3.2.*
-  - channels=3.*
-  - daphne=3.*
+  - django
+  - channels
+  - daphne
   - setuptools_scm
   - pip
   - requests # required by lots of things
@@ -48,9 +48,9 @@ dependencies:
 
   # Login/Account Plugins
   - django-gravatar2
-  - django-simple-captcha
+#  - django-simple-captcha - pip
   - django-mfa2
-  - django-recaptcha2
+#  - django-recaptcha2
   - social-auth-app-django
   - hs_restclient  # Used with HydroShare Socail backend
   - python-jose # required by django-mfa2  - used for onelogin backend
@@ -62,7 +62,7 @@ dependencies:
 
    # Misc Plugins
   - django-termsandconditions  # require users to accept terms and conditions
-  - django-analytical  # track usage analytics
+#  - django-analytical  # track usage analytics
   - django-json-widget  # enable json widget for app settings
   - djangorestframework  # enable REST API framework
 
@@ -105,3 +105,7 @@ dependencies:
   - factory_boy
   - flake8
   - flake8-bugbear
+  - pip:
+    - django-recaptcha
+    - django-simple-captcha
+    - django-analytical

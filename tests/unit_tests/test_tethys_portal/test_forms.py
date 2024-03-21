@@ -80,8 +80,8 @@ class TethysPortalFormsTests(TestCase):
             login_form = tp_forms.LoginForm(login_data)
             self.assertTrue(login_form.is_valid())
 
-    def test_LoginForm_recaptcha(self):
-        os.environ["RECAPTCHA_DISABLE"] = "True"
+    @mock.patch("django_recaptcha.fields.ReCaptchaField.validate")
+    def test_LoginForm_recaptcha(self, _):
         login_data = {"username": "admin", "password": "test1231"}
 
         with self.settings(
@@ -92,8 +92,6 @@ class TethysPortalFormsTests(TestCase):
             reload(tp_forms)
             login_form = tp_forms.LoginForm(login_data)
             self.assertTrue(login_form.is_valid())
-
-        del os.environ["RECAPTCHA_DISABLE"]
 
     def test_LoginForm_invalid_username(self):
         login_data = {
