@@ -260,3 +260,12 @@ class TestSettings(TestCase):
         self.assertIn(
             "bokeh_django.static.BokehExtensionFinder", settings.STATICFILES_FINDERS
         )
+
+    @mock.patch("tethys_portal.optional_dependencies.optional_import")
+    def test_bokehjsdir_compatibility(self, mock_oi):
+        mock_bokeh_settings = mock.MagicMock()
+        mock_oi.return_value = mock_bokeh_settings
+        mock_bokeh_settings.bokehjs_path.side_effect = AttributeError()
+        reload(settings)
+        mock_bokeh_settings.bokehjs_path.assert_called_once()
+        mock_bokeh_settings.bokehjsdir.assert_called_once()
