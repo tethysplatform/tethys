@@ -12,16 +12,16 @@ channels:
   - conda-forge
 
 dependencies:
-  - python
+  - python>=3.8
 
   # system dependencies
   - pyopenssl
   - openssl
 
   # core dependencies
-  - django=3.2.*
-  - channels=3.*
-  - daphne=3.*
+  - django>=3.2,<6
+  - channels
+  - daphne
   - setuptools_scm
   - pip
   - requests # required by lots of things
