@@ -272,6 +272,7 @@ class TestSettings(TestCase):
 
         self.assertTrue(settings.STANDALONE_APP is None)
         self.assertTrue(settings.BYPASS_TETHYS_HOME_PAGE)
+
     @mock.patch("tethys_portal.optional_dependencies.optional_import")
     def test_bokehjsdir_compatibility(self, mock_oi):
         mock_bokeh_settings = mock.MagicMock()
