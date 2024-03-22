@@ -84,6 +84,8 @@ STATIC_ROOT                                        the Django `STATIC_ROOT <http
 STATICFILES_USE_NPM                                serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.
 ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overriden.
 ADDITIONAL_URLPATTERNS                             a list of dot-paths to list or tuples that define additional URL patterns to register in the portal. Additional URL patterns will precede default URL patterns so URLs will first match against user specified URL patterns.
+MULTIPLE_APP_MODE                                  boolean indicating if the portal should host multiple apps or be configured for a single standalone app.
+STANDALONE_APP                                     configured app for when ``MULTIPLE_APP_MODE`` is set to ``False``. If ``None``, then the first configured app in the DB will be used.
 ================================================== ================================================================================
 
 SESSION_CONFIG
