@@ -37,9 +37,7 @@ from tethys_cli.gen_commands import generate_secret_key
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
-bokeh_settings, bokehjsdir = optional_import(
-    ("settings", "bokehjsdir"), from_module="bokeh.settings"
-)
+bokeh_settings = optional_import("settings", from_module="bokeh.settings")
 bokeh_django = optional_import("bokeh_django")
 
 log = logging.getLogger(__name__)
@@ -412,8 +410,13 @@ STATIC_URL = portal_config_settings.pop("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-if has_module(bokehjsdir):
-    STATICFILES_DIRS.append(bokehjsdir())
+if has_module(bokeh_settings):
+    try:
+        bokeh_js_dir = bokeh_settings.bokehjs_path()
+    except AttributeError:
+        # support bokeh versions < 3.4
+        bokeh_js_dir = bokeh_settings.bokehjsdir()
+    STATICFILES_DIRS.append(bokeh_js_dir)
 
 STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop("STATICFILES_USE_NPM", False)
 if STATICFILES_USE_NPM:
