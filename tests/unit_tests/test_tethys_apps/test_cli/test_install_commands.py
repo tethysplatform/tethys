@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from unittest import mock
 from conda.cli.python_api import Commands
-from tethys_apps.cli import install_commands
+from tethys_cli import install_commands
 
 FNULL = open(os.devnull, "w")
 

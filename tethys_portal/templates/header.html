@@ -30,7 +30,7 @@
             {% url 'app_library' as app_library_url %}
             {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
               <li class="nav-item">
-                <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
+                <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if single_app_name %}{{ single_app_name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_name %}{{ single_app_name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
               </li>
             {% endif %}
           {% endblock %}
