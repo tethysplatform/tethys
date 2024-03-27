@@ -19,9 +19,9 @@ dependencies:
   - openssl
 
   # core dependencies
-  - django=3.2.*
-  - channels=3.*
-  - daphne=3.*
+  - django
+  - channels
+  - daphne
   - setuptools_scm
   - pip
   - requests # required by lots of things
