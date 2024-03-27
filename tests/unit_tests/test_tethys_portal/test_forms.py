@@ -1,4 +1,3 @@
-import os
 from importlib import reload
 from django.test import TestCase
 from captcha.models import CaptchaStore

@@ -23,7 +23,9 @@ class TestUrls(TethysTestCase):
         url = reverse("accounts:logout")
         resolver = resolve(url)
         self.assertEqual("/accounts/logout/", url)
-        self.assertEqual("tethys_portal.views.accounts.logout_view", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.accounts.logout_view", resolver._func_path
+        )
 
     def test_account_urls_accounts_register(self):
         url = reverse("accounts:register")
@@ -35,13 +37,17 @@ class TestUrls(TethysTestCase):
         url = reverse("accounts:password_reset")
         resolver = resolve(url)
         self.assertEqual("/accounts/password/reset/", url)
-        self.assertEqual("tethys_portal.views.email.TethysPasswordResetView", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.email.TethysPasswordResetView", resolver._func_path
+        )
 
     def test_account_urls_accounts_password_reset_done(self):
         url = reverse("accounts:password_reset_done")
         resolver = resolve(url)
         self.assertEqual("/accounts/password/reset/done/", url)
-        self.assertEqual("django.contrib.auth.views.PasswordResetDoneView", resolver._func_path)
+        self.assertEqual(
+            "django.contrib.auth.views.PasswordResetDoneView", resolver._func_path
+        )
 
     def test_account_urls_accounts_password_confirm(self):
         url = reverse(
@@ -49,13 +55,17 @@ class TestUrls(TethysTestCase):
         )
         resolver = resolve(url)
         self.assertEqual("/accounts/password/reset/f00Bar-tok/", url)
-        self.assertEqual("django.contrib.auth.views.PasswordResetConfirmView", resolver._func_path)
+        self.assertEqual(
+            "django.contrib.auth.views.PasswordResetConfirmView", resolver._func_path
+        )
 
     def test_account_urls_accounts_password_done(self):
         url = reverse("accounts:password_done")
         resolver = resolve(url)
         self.assertEqual("/accounts/password/done/", url)
-        self.assertEqual("django.contrib.auth.views.PasswordResetCompleteView", resolver._func_path)
+        self.assertEqual(
+            "django.contrib.auth.views.PasswordResetCompleteView", resolver._func_path
+        )
 
     def test_oauth2_urls_login(self):
         url = reverse("social:begin", kwargs={"backend": "foo"})
@@ -107,13 +117,17 @@ class TestUrls(TethysTestCase):
         url = reverse("user:change_password")
         resolver = resolve(url)
         self.assertEqual("/user/change-password/", url)
-        self.assertEqual("tethys_portal.views.user.change_password", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.user.change_password", resolver._func_path
+        )
 
     def test_user_urls_disconnect(self):
         url = reverse("user:change_password")
         resolver = resolve(url)
         self.assertEqual("/user/change-password/", url)
-        self.assertEqual("tethys_portal.views.user.change_password", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.user.change_password", resolver._func_path
+        )
 
     def test_user_urls_delete(self):
         url = reverse("user:delete")
@@ -143,7 +157,9 @@ class TestUrls(TethysTestCase):
         url = reverse("update_dask_job_status", kwargs={"key": "123456789"})
         resolver = resolve(url)
         self.assertEqual("/update-dask-job-status/123456789/", url)
-        self.assertEqual("tethys_apps.views.update_dask_job_status", resolver._func_path)
+        self.assertEqual(
+            "tethys_apps.views.update_dask_job_status", resolver._func_path
+        )
 
     @override_settings(REGISTER_CONTROLLER="test")
     @mock.patch("django.urls.re_path")
@@ -218,7 +234,9 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("accounts:logout")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/accounts/logout/", url)
-        self.assertEqual("tethys_portal.views.accounts.logout_view", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.accounts.logout_view", resolver._func_path
+        )
 
     def test_account_urls_accounts_register(self):
         url = reverse("accounts:register")
@@ -230,13 +248,17 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("accounts:password_reset")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/accounts/password/reset/", url)
-        self.assertEqual("tethys_portal.views.email.TethysPasswordResetView", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.email.TethysPasswordResetView", resolver._func_path
+        )
 
     def test_account_urls_accounts_password_reset_done(self):
         url = reverse("accounts:password_reset_done")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/accounts/password/reset/done/", url)
-        self.assertEqual("django.contrib.auth.views.PasswordResetDoneView", resolver._func_path)
+        self.assertEqual(
+            "django.contrib.auth.views.PasswordResetDoneView", resolver._func_path
+        )
 
     def test_account_urls_accounts_password_confirm(self):
         url = reverse(
@@ -244,13 +266,17 @@ class TestUrlsWithPrefix(TethysTestCase):
         )
         resolver = resolve(url)
         self.assertEqual("/test/prefix/accounts/password/reset/f00Bar-tok/", url)
-        self.assertEqual("django.contrib.auth.views.PasswordResetConfirmView", resolver._func_path)
+        self.assertEqual(
+            "django.contrib.auth.views.PasswordResetConfirmView", resolver._func_path
+        )
 
     def test_account_urls_accounts_password_done(self):
         url = reverse("accounts:password_done")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/accounts/password/done/", url)
-        self.assertEqual("django.contrib.auth.views.PasswordResetCompleteView", resolver._func_path)
+        self.assertEqual(
+            "django.contrib.auth.views.PasswordResetCompleteView", resolver._func_path
+        )
 
     def test_oauth2_urls_login(self):
         url = reverse("social:begin", kwargs={"backend": "foo"})
@@ -302,13 +328,17 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("user:change_password")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/user/change-password/", url)
-        self.assertEqual("tethys_portal.views.user.change_password", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.user.change_password", resolver._func_path
+        )
 
     def test_user_urls_disconnect(self):
         url = reverse("user:change_password")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/user/change-password/", url)
-        self.assertEqual("tethys_portal.views.user.change_password", resolver._func_path)
+        self.assertEqual(
+            "tethys_portal.views.user.change_password", resolver._func_path
+        )
 
     def test_user_urls_delete(self):
         url = reverse("user:delete")
@@ -338,7 +368,9 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("update_dask_job_status", kwargs={"key": "123456789"})
         resolver = resolve(url)
         self.assertEqual("/test/prefix/update-dask-job-status/123456789/", url)
-        self.assertEqual("tethys_apps.views.update_dask_job_status", resolver._func_path)
+        self.assertEqual(
+            "tethys_apps.views.update_dask_job_status", resolver._func_path
+        )
 
     @override_settings(REGISTER_CONTROLLER="test")
     @mock.patch("django.urls.re_path")

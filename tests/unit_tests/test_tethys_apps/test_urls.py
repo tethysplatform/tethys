@@ -20,7 +20,9 @@ class TestUrls(TethysTestCase):
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
         self.assertEqual("/apps/send-beta-feedback/", url)
-        self.assertEqual("tethys_apps.views.send_beta_feedback_email", resolver._func_path)
+        self.assertEqual(
+            "tethys_apps.views.send_beta_feedback_email", resolver._func_path
+        )
 
         url = reverse("test_app:home")
         resolver = resolve(url)
@@ -30,12 +32,16 @@ class TestUrls(TethysTestCase):
         url = reverse("test_extension:home", kwargs={"var1": "foo", "var2": "bar"})
         resolver = resolve(url)
         self.assertEqual("/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("tethysext.test_extension.controllers.home", resolver._func_path)
+        self.assertEqual(
+            "tethysext.test_extension.controllers.home", resolver._func_path
+        )
 
         url = reverse("test_extension:home", args=["foo", "bar"])
         resolver = resolve(url)
         self.assertEqual("/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("tethysext.test_extension.controllers.home", resolver._func_path)
+        self.assertEqual(
+            "tethysext.test_extension.controllers.home", resolver._func_path
+        )
 
 
 # probably need to test for extensions manually
@@ -75,7 +81,9 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/apps/send-beta-feedback/", url)
-        self.assertEqual("tethys_apps.views.send_beta_feedback_email", resolver._func_path)
+        self.assertEqual(
+            "tethys_apps.views.send_beta_feedback_email", resolver._func_path
+        )
 
         url = reverse("test_app:home")
         resolver = resolve(url)
@@ -85,9 +93,13 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("test_extension:home", kwargs={"var1": "foo", "var2": "bar"})
         resolver = resolve(url)
         self.assertEqual("/test/prefix/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("tethysext.test_extension.controllers.home", resolver._func_path)
+        self.assertEqual(
+            "tethysext.test_extension.controllers.home", resolver._func_path
+        )
 
         url = reverse("test_extension:home", args=["foo", "bar"])
         resolver = resolve(url)
         self.assertEqual("/test/prefix/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("tethysext.test_extension.controllers.home", resolver._func_path)
+        self.assertEqual(
+            "tethysext.test_extension.controllers.home", resolver._func_path
+        )
