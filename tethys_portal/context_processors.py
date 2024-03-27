@@ -15,7 +15,7 @@ from django.conf import settings
 def tethys_portal_context(request):
     idps = (
         settings.SOCIAL_AUTH_SAML_ENABLED_IDPS
-        if hasattr(settings, 'SOCIAL_AUTH_SAML_ENABLED_IDPS')
+        if hasattr(settings, "SOCIAL_AUTH_SAML_ENABLED_IDPS")
         else {}
     )
     context = {
