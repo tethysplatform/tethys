@@ -13,7 +13,11 @@ from django.conf import settings
 
 
 def tethys_portal_context(request):
-    idps = settings.SOCIAL_AUTH_SAML_ENABLED_IDPS if hasattr(settings, 'SOCIAL_AUTH_SAML_ENABLED_IDPS') else {}
+    idps = (
+        settings.SOCIAL_AUTH_SAML_ENABLED_IDPS
+        if hasattr(settings, 'SOCIAL_AUTH_SAML_ENABLED_IDPS')
+        else {}
+    )
     context = {
         "has_analytical": has_module("analytical"),
         "has_recaptcha": has_module("snowpenguin.django.recaptcha2"),
