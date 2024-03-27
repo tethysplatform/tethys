@@ -37,7 +37,7 @@ class CondorPyJob(models.Model):
             # converted to kwargs (so it can handle passing pk values in place of instances)
             raise ValueError(
                 f"Positional arguments cannot be passed to the {self.__class__.__name__} along with the "
-                f"\"attributes\" or \"condorpy_template_name\" key-word arguments. Please pass all arguments as "
+                f'"attributes" or "condorpy_template_name" key-word arguments. Please pass all arguments as '
                 f"key-word arguments."
             )
         # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes
