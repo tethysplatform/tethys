@@ -1280,7 +1280,7 @@ class ProxyApp(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     endpoint = models.URLField(max_length=512)
-    logo_url = models.URLField(max_length=512, blank=True)
+    icon = models.CharField(max_length=512, default="")
     back_url = models.URLField(max_length=512, blank=True)
     description = models.TextField(max_length=2048, blank=True)
     tags = models.CharField(max_length=200, blank=True, default="")
@@ -1306,10 +1306,6 @@ class ProxyApp(models.Model):
     @property
     def url(self):
         return self.endpoint
-
-    @property
-    def icon(self):
-        return self.logo_url
 
     @classmethod
     def get_content_type(cls):
