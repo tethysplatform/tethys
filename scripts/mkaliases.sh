@@ -40,6 +40,7 @@ echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
 echo "alias cs='tuo; tethys manage collectstatic; tso;'" >> "${ACTIVATE_SCRIPT}"
 echo "alias tsr='tso; sudo systemctl restart supervisord'" >> "${ACTIVATE_SCRIPT}"
 # Add lines that remove the aliases to the deactivate Script
+echo "unset TETHYS_HOME" > "${DEACTIVATE_SCRIPT}"
 echo "unalias vipc" > "${DEACTIVATE_SCRIPT}"
 echo "unalias tethys_user_own" > "${DEACTIVATE_SCRIPT}"
 echo "unalias tuo" >> "${DEACTIVATE_SCRIPT}"
