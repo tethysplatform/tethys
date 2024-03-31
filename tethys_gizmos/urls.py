@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.urls import re_path, include
 from tethys_gizmos.views.gizmos import jobs_table as jobs_table_views
 

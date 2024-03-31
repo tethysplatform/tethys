@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import (
     TethysApp,

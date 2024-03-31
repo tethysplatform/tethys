@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 import logging
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse

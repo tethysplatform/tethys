@@ -43,6 +43,12 @@
     <a class="btn btn-block btn-social btn-onelogin" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="bi bi-onelogin"></i> {{ action }} with OneLogin
     </a>
+  {% elif 'saml' in backend %}
+    {% for idp in idp_backends %}
+    <a class="btn btn-block btn-social btn-saml" href="{% url 'social:begin' backend %}?idp={{ idp }}{% if request.GET.next %}&next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="bi bi-box-arrow-in-left"></i> {{ action }} through {{ idp }} with SAML
+    </a>
+    {% endfor %}
   {% else %}
     <a class="btn btn-block btn-social btn-custom-oauth" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="bi bi-unlock-fill"></i> {{ action }} with {{ backend }}

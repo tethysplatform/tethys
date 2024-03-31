@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from datetime import datetime
 import time
 from social_core.backends.oauth import BaseOAuth2
