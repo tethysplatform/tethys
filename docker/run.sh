@@ -71,11 +71,8 @@ if [[ $test = false ]]; then
       db_check_count=`expr $db_check_count + 1`
       sleep 5
     done
-  elif [[ $db_engine == "django.db.backends.sqlite3" ]]; then
-    echo_status "Using SQLite3 as the database"
-    # Add any SQLite-specific setup here if necessary
   else
-    echo_status "Unsupported database engine: $db_engine"
+    echo_status "Using SQLite3 as the database"
   fi
 
 
