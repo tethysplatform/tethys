@@ -19,9 +19,9 @@ def tethys_portal_context(request):
         if hasattr(settings, "SOCIAL_AUTH_SAML_ENABLED_IDPS")
         else {}
     )
-    
+
     single_app_mode, single_app_name = check_single_app_mode()
-    
+
     context = {
         "has_analytical": has_module("analytical"),
         "has_recaptcha": has_module("snowpenguin.django.recaptcha2"),
