@@ -261,6 +261,18 @@ class TestSettings(TestCase):
             "bokeh_django.static.BokehExtensionFinder", settings.STATICFILES_FINDERS
         )
 
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {"TETHYS_PORTAL_CONFIG": {"MULTIPLE_APP_MODE": False}}
+        },
+    )
+    def test_portal_config_settings_standalone_app(self, _):
+        reload(settings)
+
+        self.assertTrue(settings.STANDALONE_APP is None)
+        self.assertTrue(settings.BYPASS_TETHYS_HOME_PAGE)
+
     @mock.patch("tethys_portal.optional_dependencies.optional_import")
     def test_bokehjsdir_compatibility(self, mock_oi):
         mock_bokeh_settings = mock.MagicMock()
