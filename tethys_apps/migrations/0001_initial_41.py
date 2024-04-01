@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=100, unique=True)),
                 ("endpoint", models.URLField(max_length=512)),
-                ("icon", models.URLField(blank=True, max_length=512)),
+                ("logo_url", models.URLField(blank=True, max_length=512)),
                 ("back_url", models.URLField(blank=True, max_length=512)),
                 ("description", models.TextField(blank=True, max_length=2048)),
                 ("tags", models.CharField(blank=True, default="", max_length=200)),
