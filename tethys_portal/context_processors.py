@@ -14,7 +14,14 @@ from tethys_apps.utilities import get_configured_standalone_app
 
 
 def tethys_portal_context(request):
+    idps = (
+        settings.SOCIAL_AUTH_SAML_ENABLED_IDPS
+        if hasattr(settings, "SOCIAL_AUTH_SAML_ENABLED_IDPS")
+        else {}
+    )
+    
     single_app_mode, single_app_name = check_single_app_mode()
+    
     context = {
         "has_analytical": has_module("analytical"),
         "has_recaptcha": has_module("snowpenguin.django.recaptcha2"),
@@ -25,6 +32,7 @@ def tethys_portal_context(request):
         "has_oauth2_provider": has_module("oauth2_provider"),
         "single_app_mode": single_app_mode,
         "single_app_name": single_app_name,
+        "idp_backends": idps.keys(),
     }
 
     return context
