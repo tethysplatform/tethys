@@ -10,6 +10,7 @@
 
 from .optional_dependencies import has_module
 from django.conf import settings
+from tethys_apps.utilities import get_configured_standalone_app
 
 
 def tethys_portal_context(request):
@@ -18,6 +19,9 @@ def tethys_portal_context(request):
         if hasattr(settings, "SOCIAL_AUTH_SAML_ENABLED_IDPS")
         else {}
     )
+
+    single_app_mode, single_app_name = check_single_app_mode()
+
     context = {
         "has_analytical": has_module("analytical"),
         "has_recaptcha": has_module("snowpenguin.django.recaptcha2"),
@@ -26,7 +30,16 @@ def tethys_portal_context(request):
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
         "has_oauth2_provider": has_module("oauth2_provider"),
+        "single_app_mode": single_app_mode,
+        "single_app_name": single_app_name,
         "idp_backends": idps.keys(),
     }
 
     return context
+
+
+def check_single_app_mode():
+    if settings.MULTIPLE_APP_MODE:
+        return False, None
+    else:
+        return True, get_configured_standalone_app().name

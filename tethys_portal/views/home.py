@@ -22,8 +22,6 @@ def home(request):
     ):
         return redirect("app_library")
 
-    ENABLE_OPEN_PORTAL = getattr(settings, "ENABLE_OPEN_PORTAL", False)
-
     template = get_custom_template("Home Page Template", "tethys_portal/home.html")
 
     return render(
@@ -31,6 +29,6 @@ def home(request):
         template,
         {
             "ENABLE_OPEN_SIGNUP": settings.ENABLE_OPEN_SIGNUP,
-            "ENABLE_OPEN_PORTAL": ENABLE_OPEN_PORTAL,
+            "ENABLE_OPEN_PORTAL": settings.ENABLE_OPEN_PORTAL,
         },
     )

@@ -63,7 +63,7 @@ class TestAsgiApplicationWithURLPrefix(TethysTestCase):
         )
 
     def test_handlers_path(self):
-        expected_path = r"^test/prefix/apps/0/"
+        expected_path = r"^test/prefix/apps/test-app/"
 
         # Get the URLRouter for "http" from the application
         asgi_app = asgi.application.application_mapping["http"]
