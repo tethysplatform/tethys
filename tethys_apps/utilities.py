@@ -20,6 +20,7 @@ from django.core.signing import Signer
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
+from django.conf import settings
 from channels.consumer import SyncConsumer
 
 from tethys_apps.base.mixins import (
@@ -131,36 +132,37 @@ def get_active_app(request=None, url=None, get_class=False):
     """
     from tethys_apps.models import TethysApp
 
-    apps_root = "apps"
-
-    if request is not None:
-        the_url = request.path
-    elif url is not None:
-        the_url = url
-    else:
-        return None
-
-    url_parts = the_url.split("/")
-    app = None
-
     # Find the app key
-    if apps_root in url_parts:
-        # The app root_url is the path item following (+1) the apps_root item
-        app_root_url_index = url_parts.index(apps_root) + 1
-        app_root_url = url_parts[app_root_url_index]
+    if settings.MULTIPLE_APP_MODE:
+        if request is not None:
+            the_url = request.path
+        elif url is not None:
+            the_url = url
+        else:
+            return None
 
-        if app_root_url:
-            try:
-                # Get the app from the database
-                app = TethysApp.objects.get(root_url=app_root_url)
-            except ObjectDoesNotExist:
-                tethys_log.warning(
-                    'Could not locate app with root url "{0}".'.format(app_root_url)
-                )
-            except MultipleObjectsReturned:
-                tethys_log.warning(
-                    'Multiple apps found with root url "{0}".'.format(app_root_url)
-                )
+        url_parts = the_url.split("/")
+        app = None
+        apps_root = "apps"
+        if apps_root in url_parts:
+            # The app root_url is the path item following (+1) the apps_root item
+            app_root_url_index = url_parts.index(apps_root) + 1
+            app_root_url = url_parts[app_root_url_index]
+
+            if app_root_url:
+                try:
+                    # Get the app from the database
+                    app = TethysApp.objects.get(root_url=app_root_url)
+                except ObjectDoesNotExist:
+                    tethys_log.warning(
+                        'Could not locate app with root url "{0}".'.format(app_root_url)
+                    )
+                except MultipleObjectsReturned:
+                    tethys_log.warning(
+                        'Multiple apps found with root url "{0}".'.format(app_root_url)
+                    )
+    else:
+        app = get_configured_standalone_app()
 
     if get_class:
         app = get_app_class(app)
@@ -609,6 +611,24 @@ def get_installed_tethys_items(apps=False, extensions=False):
             """DO NOTHING"""
 
     return paths
+
+
+def get_configured_standalone_app():
+    """
+    Returns a list apps installed in the tethysapp directory.
+    """
+    from tethys_apps.models import TethysApp
+
+    standalone_app = settings.STANDALONE_APP
+
+    if standalone_app:
+        app = TethysApp.objects.get(package=standalone_app)
+    else:
+        app = TethysApp.objects.first()
+        if not app:
+            raise ObjectDoesNotExist("No Tethys Apps have been installed")
+
+    return app
 
 
 def get_installed_tethys_apps():
