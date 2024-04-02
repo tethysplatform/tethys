@@ -94,7 +94,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_NGINX_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_settings.side_effect = ["/foo/workspace", "/foo/static"]
+        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]
 
         generate_command(args=mock_args)
 
@@ -102,6 +102,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_settings.assert_any_call("TETHYS_WORKSPACES_ROOT")
         mock_settings.assert_called_with("STATIC_ROOT")
+        mock_settings.assert_any_call("MEDIA_ROOT")
 
         mock_write_info.assert_called_once()
 
