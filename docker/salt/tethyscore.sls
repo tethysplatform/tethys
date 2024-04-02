@@ -28,6 +28,8 @@
 {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
 {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
 {% set WORKSPACE_ROOT = salt['environ.get']('WORKSPACE_ROOT') %}
+{% set WORKSPACE_URL = salt['environ.get']('WORKSPACE_URL') %}
+{% set MEDIA_ROOT = salt['environ.get']('MEDIA_ROOT') %}
 {% set BYPASS_TETHYS_HOME_PAGE = salt['environ.get']('BYPASS_TETHYS_HOME_PAGE') %}
 {% set QUOTA_HANDLERS = salt['environ.get']('QUOTA_HANDLERS') %}
 {% set DJANGO_ANALYTICAL = salt['environ.get']('DJANGO_ANALYTICAL') %}
@@ -89,6 +91,8 @@ Generate_Tethys_Settings_TethysCore:
         --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
         --set TETHYS_PORTAL_CONFIG.STATIC_ROOT "{{ STATIC_ROOT }}"
         --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT "{{ WORKSPACE_ROOT }}"
+        --set TETHYS_PORTAL_CONFIG.MEDIA_URL "{{ MEDIA_URL }}"
+        --set TETHYS_PORTAL_CONFIG.MEDIA_ROOT "{{ MEDIA_ROOT }}"
         --set TETHYS_PORTAL_CONFIG.BYPASS_TETHYS_HOME_PAGE {{ BYPASS_TETHYS_HOME_PAGE }}
         --set RESOURCE_QUOTA_HANDLERS {{ QUOTA_HANDLERS }}
         --set ANALYTICS_CONFIG {{ DJANGO_ANALYTICAL }}
