@@ -590,13 +590,16 @@ def get__all__(mod):
     try:
         return mod.__all__
     except AttributeError:
-        return [a for a in dir(mod) if not a.startswith('__')]
+        return [a for a in dir(mod) if not a.startswith("__")]
 
 
 ADDITIONAL_SETTINGS_FILES = TETHYS_PORTAL_CONFIG.pop("ADDITIONAL_SETTINGS_FILES", [])
 for settings_module in ADDITIONAL_SETTINGS_FILES:
-    mod = SourceFileLoader("mod", settings_module).load_module() \
-        if Path(settings_module).is_file() else import_module(settings_module)
+    mod = (
+        SourceFileLoader("mod", settings_module).load_module()
+        if Path(settings_module).is_file()
+        else import_module(settings_module)
+    )
     all_settings = get__all__(mod)
     for setting in all_settings:
         value = getattr(mod, setting)

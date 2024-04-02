@@ -283,7 +283,7 @@ class TestSettings(TestCase):
         mock_bokeh_settings.bokehjsdir.assert_called_once()
 
     def test_get__all__(self):
-        expected = '__all__'
+        expected = "__all__"
         mock_mod = mock.MagicMock(__all__=expected)
         actual = settings.get__all__(mock_mod)
         self.assertEqual(expected, actual)
@@ -291,14 +291,18 @@ class TestSettings(TestCase):
     def test_get__all__error(self):
         mock_mod = mock.MagicMock()
         actual = settings.get__all__(mock_mod)
-        expected = [a for a in dir(mock_mod) if not a.startswith('__')]
+        expected = [a for a in dir(mock_mod) if not a.startswith("__")]
         self.assertListEqual(expected, actual)
 
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
         return_value={
             "settings": {
-                "TETHYS_PORTAL_CONFIG": {"ADDITIONAL_SETTINGS_FILES": ['tethysapp.test_app.additional_settings']}
+                "TETHYS_PORTAL_CONFIG": {
+                    "ADDITIONAL_SETTINGS_FILES": [
+                        "tethysapp.test_app.additional_settings"
+                    ]
+                }
             }
         },
     )
