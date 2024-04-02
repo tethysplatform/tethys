@@ -73,7 +73,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_APACHE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]]
+        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]
 
         generate_command(args=mock_args)
 
