@@ -40,6 +40,12 @@ settings:
     #  - tethysapp.myapp.templates
     #  ADDITIONAL_URLPATTERNS:
     #  - tethysext.myextension.urls
+    # ADDITIONAL_SETTINGS_FILES:
+    #  - tethysext.myestension.settings
+    #  - tethys_home/additional_settings.py
+    # MULTIPLE_APP_MODE: True
+    # STANDALONE_APP: my_app
+
 
   SESSION_CONFIG:
     EXPIRE_AT_BROWSER_CLOSE: True
