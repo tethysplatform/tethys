@@ -14,11 +14,7 @@
 {% set POSTGRES_PASSWORD = salt['environ.get']('POSTGRES_PASSWORD') %}
 {% set TETHYS_DB_PORT = salt['environ.get']('TETHYS_DB_PORT') %}
 {% set TETHYS_DB_USERNAME = salt['environ.get']('TETHYS_DB_USERNAME') %}
-{% if salt['environ.get']('SKIP_DB_SETUP') %}
 {% set SKIP_DB_SETUP = salt['environ.get']('SKIP_DB_SETUP') %}
-{% else %}
-{% set SKIP_DB_SETUP = False %}
-{% endif %}
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
 {% set TETHYS_PORT = salt['environ.get']('TETHYS_PORT') %}
 {% set OTHER_SETTINGS = salt['environ.get']('OTHER_SETTINGS') %}
