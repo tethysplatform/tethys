@@ -28,6 +28,7 @@ import logging
 import datetime as dt
 from pathlib import Path
 from importlib import import_module
+from importlib.machinery import SourceFileLoader
 
 from django.contrib.messages import constants as message_constants
 
@@ -586,3 +587,23 @@ if PREFIX_URL is not None and PREFIX_URL != "/":
     STATIC_URL = f"/{PREFIX_URL}/{STATIC_URL.strip('/')}/"
     LOGIN_URL = f"/{PREFIX_URL}/{LOGIN_URL.strip('/')}/"
     FIDO_LOGIN_URL = f"/{PREFIX_URL}/{FIDO_LOGIN_URL.strip('/')}/"
+
+
+def get__all__(mod):
+    try:
+        return mod.__all__
+    except AttributeError:
+        return [a for a in dir(mod) if not a.startswith("__")]
+
+
+ADDITIONAL_SETTINGS_FILES = TETHYS_PORTAL_CONFIG.pop("ADDITIONAL_SETTINGS_FILES", [])
+for settings_module in ADDITIONAL_SETTINGS_FILES:
+    mod = (
+        SourceFileLoader("mod", settings_module).load_module()
+        if Path(settings_module).is_file()
+        else import_module(settings_module)
+    )
+    all_settings = get__all__(mod)
+    for setting in all_settings:
+        value = getattr(mod, setting)
+        setattr(this_module, setting, value)
