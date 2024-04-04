@@ -41,7 +41,7 @@ Apps
 Settings
 ========
 
-Tethys Portal settings. Note: do not edit the :file:`settings.py` directly, Instead set any Django setting in this section, even those not listed here.
+Tethys Portal settings. Note: do not edit the :file:`settings.py` file directly, Instead set any Django setting in this section, even those not listed here. If you need to use Python logic to set specific settings, then you can use the ``ADDITIONAL_SETTINGS_FILES`` key under the ``TETHYS_PORTAL_CONFIG`` key to specify additional Python files to include in the :file:`settings.py` file (see :ref:`tethys_portal_config_settings`).
 
 .. tip::
 
@@ -69,6 +69,8 @@ RESOURCE_QUOTA_HANDLERS                            a list of Tethys ``ResourceQu
 RESOURCE_QUOTA_HANDLERS_OVERRIDE                   override for ``RESOURCE_QUOTA_HANDLERS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.
 ================================================== ================================================================================
 
+.. _tethys_portal_config_settings:
+
 TETHYS_PORTAL_CONFIG
 ++++++++++++++++++++
 
@@ -84,6 +86,9 @@ STATIC_ROOT                                        the Django `STATIC_ROOT <http
 STATICFILES_USE_NPM                                serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.
 ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overriden.
 ADDITIONAL_URLPATTERNS                             a list of dot-paths to list or tuples that define additional URL patterns to register in the portal. Additional URL patterns will precede default URL patterns so URLs will first match against user specified URL patterns.
+ADDITIONAL_SETTINGS_FILES                          a list of dot-paths or file paths to Python files that will be imported into the ``settings.py`` file. Additional settings files are imported at the end of the file and thus will override any previous settings with name conflicts.
+MULTIPLE_APP_MODE                                  boolean indicating if the portal should host multiple apps or be configured for a single standalone app.
+STANDALONE_APP                                     configured app for when ``MULTIPLE_APP_MODE`` is set to ``False``. If ``None``, then the first configured app in the DB will be used.
 ================================================== ================================================================================
 
 SESSION_CONFIG

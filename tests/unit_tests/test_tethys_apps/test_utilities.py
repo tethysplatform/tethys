@@ -4,6 +4,7 @@ from guardian.shortcuts import assign_perm
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from django.core.signing import Signer
+from django.test import override_settings
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 
 
@@ -141,6 +142,18 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         # Result should be mock for mock_app.objects.get.return_value
         result = utilities.get_active_app(request=mock_request)
         self.assertEqual(mock_app.objects.get(), result)
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_apps.utilities.get_configured_standalone_app")
+    def test_get_active_app_request_standalone_app(self, mock_first_app):
+        # Mock up for TethysApp, and request
+        mock_tethysapp = mock.MagicMock(root_url="test-app")
+        mock_first_app.return_value = mock_tethysapp
+        mock_request = mock.MagicMock()
+        mock_request.path = "/test-app/"
+
+        result = utilities.get_active_app(request=mock_request)
+        self.assertEqual(mock_tethysapp, result)
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_url(self, mock_app):
@@ -1026,6 +1039,44 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             custom_secret_setting.name(), secret_signed_mock, app_target_name, False
         )
         self.assertEqual(unsigned_secret, mock_val)
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_no_app_name(self):
+        from tethys_apps.models import TethysApp
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            result = utilities.get_configured_standalone_app()
+
+            self.assertEqual(result.package, "test_app")
+            mock_tethysapp.objects.first.assert_called_once()
+
+    @override_settings(MULTIPLE_APP_MODE=False, STANDALONE_APP="test_app")
+    def test_get_configured_standalone_app_given_app_name(self):
+        from tethys_apps.models import TethysApp
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            result = utilities.get_configured_standalone_app()
+
+            self.assertEqual(result.package, "test_app")
+            mock_tethysapp.objects.get.assert_called_with(package="test_app")
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_no_app_name_no_installed(self):
+        from tethys_apps.models import TethysApp
+        from django.core.exceptions import ObjectDoesNotExist
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            mock_tethysapp.objects.first.return_value = []
+            with self.assertRaises(ObjectDoesNotExist):
+                utilities.get_configured_standalone_app()
+
+            mock_tethysapp.objects.first.assert_called_once()
 
     def test_update_decorated_websocket_consumer_class(self):
         class TestConsumer(WebsocketConsumer):
