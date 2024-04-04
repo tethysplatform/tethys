@@ -309,7 +309,7 @@ Proxy apps are links to external web applications or websites. They are represen
 
 * **Name**: The name of the app that will appear on the app tile on the Apps Library page (e.g.: "My Proxy App").
 * **Endpoint**: The URL that will be opened when the user clicks on the app tile of the proxy app (e.g.: ``https://my.proxy.app/foo/``).
-* **Logo url**: The URL of the image that will be displayed on the app tile of the Proxy App (e.g.: ``https://my.proxy.app/static/foo-logo.org``).
+* **Icon**: Override the icon/logo of the proxy app with a different icon. Accepts a relative path to a static file (e.g.: ``my-first-app/images/other-logo.png``) or a URL to an externally hosted image (e.g.: ``https://some.other-site.org/static/other-logo.png``).
 * **Back url**: A URL to suggest as the back URL; usually points to the referring portal. If the Proxy App is a Tethys App on another Tethys Portal (>4.0.0), the Exit button for the app will be set to this URL (e.g.: ``https://this.portal.org/apps/``).
 * **Description**: A description of the app that will be displayed when the user clicks on the info icon on the app tile.
 * **Tags**: One or more tags for an app. Wrap each tag in double quotes and separate by commas (e.g.: ``"Hydrology","Grided Data","THREDDS"``).

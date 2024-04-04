@@ -43,8 +43,8 @@ def add_proxyapps_parser(subparsers):
         default="",
     )
     proxyapps_add_parser.add_argument(
-        "logo_url",
-        help='A URL to a logo image to use for the proxy app tile (e.g.: "https://the-logo-of-myproxy-app.png").',
+        "icon",
+        help='A URL to a logo image to use for the proxy app icon (e.g.: "https://the-logo-of-myproxy-app.png").',
         nargs="?",
         default="",
     )
@@ -109,7 +109,7 @@ def add_proxyapps_parser(subparsers):
         "--set",
         dest="set_kwargs",
         help="Key Value pairs to update proxyapps settings: <key> <value>"
-        "Available keys for update: [name] [endpoint] [description] [logo_url] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon] [app_order]",
+        "Available keys for update: [name] [endpoint] [description] [icon] [tags] [enabled] [show_in_apps_library] [back_url] [open_new_tab] [display_external_icon] [app_order]",
         nargs=2,
         action="append",
     )
@@ -130,7 +130,7 @@ def list_proxyapps(args):
                 f"  {proxy_app.name}:\n"
                 f"    endpoint: {proxy_app.endpoint}\n"
                 f"    description: {proxy_app.description}\n"
-                f"    logo_url: {proxy_app.logo_url}\n"
+                f"    icon: {proxy_app.icon}\n"
                 f"    tags: {proxy_app.tags}\n"
                 f"    enabled: {proxy_app.enabled}\n"
                 f"    show_in_apps_library: {proxy_app.show_in_apps_library}\n"
@@ -182,7 +182,7 @@ def add_proxyapp(args):
     app_name = args.name
     app_endpoint = args.endpoint
     app_description = args.description
-    app_logo_url = args.logo_url
+    app_icon = args.icon
     app_tags = args.tags
     app_enabled = args.enabled
     app_show_in_app_library = args.show_in_apps_library
@@ -200,7 +200,7 @@ def add_proxyapp(args):
             proxy_app = ProxyApp(
                 name=app_name,
                 endpoint=app_endpoint,
-                logo_url=app_logo_url,
+                icon=app_icon,
                 back_url=app_back_url,
                 description=app_description,
                 tags=app_tags,
