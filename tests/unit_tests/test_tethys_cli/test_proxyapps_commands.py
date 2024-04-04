@@ -27,7 +27,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         self.proxy_app = ProxyApp(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -69,7 +69,7 @@ class TestProxyAppsCommand(unittest.TestCase):
             f"  {self.app_name}:\n"
             f"    endpoint: {self.endpoint}\n"
             f"    description: {self.description}\n"
-            f"    logo_url: {self.logo}\n"
+            f"    icon: {self.logo}\n"
             f"    tags: {self.tags}\n"
             f"    enabled: {self.enabled}\n"
             f"    show_in_apps_library: {self.show_in_apps_library}\n"
@@ -132,7 +132,7 @@ class TestProxyAppsCommand(unittest.TestCase):
     def test_update_proxy_apps(self, mock_exit, mock_write_success, mock_write_info):
         mock_args = mock.Mock()
         mock_args.name = self.app_name
-        mock_args.set_kwargs = [["logo_url", "https://fake.com"]]
+        mock_args.set_kwargs = [["icon", "https://fake.com"]]
 
         self.assertRaises(
             SystemExit,
@@ -142,16 +142,16 @@ class TestProxyAppsCommand(unittest.TestCase):
 
         try:
             proxy_app_updated = ProxyApp.objects.get(
-                name=self.app_name, logo_url="https://fake.com"
+                name=self.app_name, icon="https://fake.com"
             )
-            self.assertEqual(proxy_app_updated.logo_url, "https://fake.com")
+            self.assertEqual(proxy_app_updated.icon, "https://fake.com")
         except ProxyApp.DoesNotExist:
             self.fail(
                 f"ProxyApp.DoesNotExist was raised, ProxyApp with name {self.app_name} was never updated"
             )
 
         mock_write_info.assert_called_with(
-            "Attribute logo_url was updated successfully with https://fake.com"
+            "Attribute icon was updated successfully with https://fake.com"
         )
         mock_write_success.assert_called_with(
             f"Proxy app '{self.app_name}' was updated successfully"
@@ -183,7 +183,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args.name = app_name_mock
         mock_args.endpoint = "http://foo.example.com/my-proxy-app"
         mock_args.description = None
-        mock_args.logo_url = None
+        mock_args.icon = None
         mock_args.tags = None
         mock_args.enabled = None
         mock_args.show_in_apps_library = None
@@ -210,7 +210,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args.name = app_name_mock
         mock_args.endpoint = "http://foo.example.com/my-proxy-app"
         mock_args.description = ""
-        mock_args.logo_url = ""
+        mock_args.icon = ""
         mock_args.tags = ""
         mock_args.enabled = True
         mock_args.show_in_apps_library = True
@@ -246,7 +246,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         app_name_mock = "My_Proxy_App_for_Testing_non_default"
         app_endpoint_mock = "http://foo.example.com/my-proxy-app"
         app_description_mock = "Mock description for proxy app"
-        app_logo_url_mock = "http://logo-url.foo.example.com/my-proxy-app"
+        app_icon_mock = "http://logo-url.foo.example.com/my-proxy-app"
         app_tags_mock = '"tag one", "tag two", "tag three"'
         app_enabled_mock = False
         app_show_in_apps_library_mock = False
@@ -259,7 +259,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args.name = app_name_mock
         mock_args.endpoint = app_endpoint_mock
         mock_args.description = app_description_mock
-        mock_args.logo_url = app_logo_url_mock
+        mock_args.icon = app_icon_mock
         mock_args.tags = app_tags_mock
         mock_args.enabled = app_enabled_mock
         mock_args.show_in_apps_library = app_show_in_apps_library_mock
@@ -278,7 +278,7 @@ class TestProxyAppsCommand(unittest.TestCase):
                 name=app_name_mock,
                 endpoint=app_endpoint_mock,
                 description=app_description_mock,
-                logo_url=app_logo_url_mock,
+                icon=app_icon_mock,
                 tags=app_tags_mock,
                 enabled=app_enabled_mock,
                 show_in_apps_library=app_show_in_apps_library_mock,
@@ -290,7 +290,7 @@ class TestProxyAppsCommand(unittest.TestCase):
             self.assertEqual(proxy_app_added.name, app_name_mock)
             self.assertEqual(proxy_app_added.endpoint, app_endpoint_mock)
             self.assertEqual(proxy_app_added.description, app_description_mock)
-            self.assertEqual(proxy_app_added.logo_url, app_logo_url_mock)
+            self.assertEqual(proxy_app_added.icon, app_icon_mock)
             self.assertEqual(proxy_app_added.tags, app_tags_mock)
             self.assertEqual(proxy_app_added.enabled, app_enabled_mock)
             self.assertEqual(
@@ -318,7 +318,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         app_name_mock = "My_Proxy_App_for_Testing_non_default"
         app_endpoint_mock = "http://foo.example.com/my-proxy-app"
         app_description_mock = "Mock description for proxy app"
-        app_logo_url_mock = "http://logo-url.foo.example.com/my-proxy-app"
+        app_icon_mock = "http://logo-url.foo.example.com/my-proxy-app"
         app_tags_mock = "tag with space"
         app_enabled_mock = False
         app_show_in_apps_library_mock = False
@@ -331,7 +331,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         mock_args.name = app_name_mock
         mock_args.endpoint = app_endpoint_mock
         mock_args.description = app_description_mock
-        mock_args.logo_url = app_logo_url_mock
+        mock_args.icon = app_icon_mock
         mock_args.tags = app_tags_mock
         mock_args.enabled = app_enabled_mock
         mock_args.show_in_apps_library = app_show_in_apps_library_mock
@@ -350,7 +350,7 @@ class TestProxyAppsCommand(unittest.TestCase):
                 name=app_name_mock,
                 endpoint=app_endpoint_mock,
                 description=app_description_mock,
-                logo_url=app_logo_url_mock,
+                icon=app_icon_mock,
                 tags=app_tags_mock,
                 enabled=app_enabled_mock,
                 show_in_apps_library=app_show_in_apps_library_mock,
@@ -362,7 +362,7 @@ class TestProxyAppsCommand(unittest.TestCase):
             self.assertEqual(proxy_app_added.name, app_name_mock)
             self.assertEqual(proxy_app_added.endpoint, app_endpoint_mock)
             self.assertEqual(proxy_app_added.description, app_description_mock)
-            self.assertEqual(proxy_app_added.logo_url, app_logo_url_mock)
+            self.assertEqual(proxy_app_added.icon, app_icon_mock)
             self.assertEqual(proxy_app_added.tags, app_tags_mock)
             self.assertEqual(proxy_app_added.enabled, app_enabled_mock)
             self.assertEqual(

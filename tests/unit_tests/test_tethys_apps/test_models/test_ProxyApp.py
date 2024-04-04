@@ -19,7 +19,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -32,7 +32,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -41,7 +41,6 @@ class ProxyAppTests(TethysTestCase):
         self.assertTrue(proxy_app.proxied)
         self.assertEqual(self.endpoint, proxy_app.url)
         self.assertEqual(self.logo, proxy_app.icon)
-        self.assertEqual(self.logo, proxy_app.logo_url)
         self.assertEqual(self.back_url, proxy_app.back_url)
         self.assertEqual(self.description, proxy_app.description)
         self.assertEqual(self.tags, proxy_app.tags)
@@ -51,7 +50,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -65,7 +64,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -75,7 +74,7 @@ class ProxyAppTests(TethysTestCase):
         ret = ProxyApp.objects.get(name=self.app_name)
 
         self.assertEqual(self.endpoint, ret.endpoint)
-        self.assertEqual(self.logo, ret.logo_url)
+        self.assertEqual(self.logo, ret.icon)
         self.assertEqual(self.back_url, ret.back_url)
         self.assertEqual(self.description, ret.description)
         self.assertEqual(self.tags, ret.tags)
@@ -92,7 +91,7 @@ class ProxyAppTests(TethysTestCase):
         a = ProxyApp.objects.create(
             name="Bad URL Test",
             endpoint=bad_endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -111,7 +110,7 @@ class ProxyAppTests(TethysTestCase):
         b = ProxyApp.objects.create(
             name="HTTP URL Test",
             endpoint=http_url,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -129,7 +128,7 @@ class ProxyAppTests(TethysTestCase):
         c = ProxyApp.objects.create(
             name="HTTPS URL Test",
             endpoint=https_url,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -144,35 +143,34 @@ class ProxyAppTests(TethysTestCase):
 
         self.assertFalse(c_exception_raised)
 
-    def test_logo_url_validation(self):
-        bad_url = "not a url"
+    def test_icon_validation(self):
+        static_file = "statc/image.png"
         http_url = "http://foo.com"
         https_url = "https://foo.com"
 
-        # Bad URL
+        # static file
         a = ProxyApp.objects.create(
             name="Bad URL Test",
             endpoint=self.endpoint,
-            logo_url=bad_url,
+            icon=static_file,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
         )
+        a_exception_raised = False
 
-        with self.assertRaises(ValidationError) as cm:
+        try:
             a.clean_fields()
+        except ValidationError:
+            a_exception_raised = True
 
-        self.assertIn("logo_url", str(cm.exception))
-        self.assertEqual(
-            "{'logo_url': ['Enter a valid URL.']}",
-            str(cm.exception),
-        )
+        self.assertFalse(a_exception_raised)
 
         # HTTP
         b = ProxyApp.objects.create(
             name="HTTP URL Test",
             endpoint=self.endpoint,
-            logo_url=http_url,
+            icon=http_url,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -190,7 +188,7 @@ class ProxyAppTests(TethysTestCase):
         c = ProxyApp.objects.create(
             name="HTTPS URL Test",
             endpoint=self.endpoint,
-            logo_url=https_url,
+            icon=https_url,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -214,7 +212,7 @@ class ProxyAppTests(TethysTestCase):
         a = ProxyApp.objects.create(
             name="Bad URL Test",
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=bad_url,
             description=self.description,
             tags=self.tags,
@@ -233,7 +231,7 @@ class ProxyAppTests(TethysTestCase):
         b = ProxyApp.objects.create(
             name="HTTP URL Test",
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=http_url,
             description=self.description,
             tags=self.tags,
@@ -251,7 +249,7 @@ class ProxyAppTests(TethysTestCase):
         c = ProxyApp.objects.create(
             name="HTTPS URL Test",
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=https_url,
             description=self.description,
             tags=self.tags,
@@ -271,7 +269,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -288,7 +286,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -303,7 +301,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,
@@ -317,7 +315,7 @@ class ProxyAppTests(TethysTestCase):
         proxy_app = ProxyApp.objects.create(
             name=self.app_name,
             endpoint=self.endpoint,
-            logo_url=self.logo,
+            icon=self.logo,
             back_url=self.back_url,
             description=self.description,
             tags=self.tags,

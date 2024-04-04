@@ -14,18 +14,13 @@
     {% endif %}
         <div class="card app-card text-center">
             <div class="card-body">
-            {% if app.proxied %}
-                <img class="card-img-top" {% if app.icon %}src="{{ app.icon }}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+                <img class="card-img-top" {% if app.icon %}{% if 'http' in app.icon %}src="{{ app.icon }}"{% else %}src="{% static app.icon %}"{% endif %}{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} alt="">
                 {% if app.display_external_icon %}
                     <div class="redirect-icon position-absolute bottom-0 end-0 p-2 m-2">
                         <i class="bi bi-box-arrow-up-right"></i>
                     </div>
                 {% endif %}
-            {% else %}
-                <img class="card-img-top" {% if app.icon %}{% if 'http' in app.icon %}src="{{ app.icon }}"{% else %}src="{% static app.icon %}"{% endif %}{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} alt="">
-            {% endif %}
                 <h5 class="card-title app-title mt-2 mb-0">{{ app.name }}</h5>
-                
             </div>
         </div>
     </a>
