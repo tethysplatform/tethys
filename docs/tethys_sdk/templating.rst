@@ -96,6 +96,9 @@ Tethys Tags
 
 In addition to Django's library of template tags, Tethys also defines a few additional template tags that can be used in your templates.
 
+.. automodule:: tethys_apps.templatetags.tags
+   :members: url, public
+
 .. automodule:: tethys_apps.templatetags.humanize
    :members: human_duration
 
@@ -357,7 +360,7 @@ Use this block to add custom buttons to the app header. Use an anchor/link tag f
 
     {% block header_buttons %}
       <div class="header-button glyphicon-button">
-        <a href="{% url my_first_app:another_page %}"><i class="bi bi-boombox"></i></a>
+        <a href="{% url tethys_app|url:'another_page' %}"><i class="bi bi-boombox"></i></a>
       </div>
     {% endblock %}
 

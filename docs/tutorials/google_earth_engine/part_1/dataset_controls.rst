@@ -398,7 +398,7 @@ In this step, you'll create controls using Tethys Gizmos with their initial valu
 
 .. code-block:: html+django
 
-    {% extends "earth_engine/base.html" %}
+    {% extends tethys_app.package|add:"/base.html" %}
     {% load tethys_gizmos static %}
 
     {% block app_navigation_items %}

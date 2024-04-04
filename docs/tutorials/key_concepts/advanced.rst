@@ -585,11 +585,11 @@ c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the
     .. code-block:: html+django
 
         {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos static %}
+        {% load tethys_gizmos static tags %}
 
         {% block styles %}
             {{ block.super }}
-            <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
+            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
         {% endblock %}
 
         {% block app_content %}
@@ -603,7 +603,7 @@ c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the
 
         {% block scripts %}
             {{ block.super }}
-            <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
+            <script src="{% static tethys_app|public:'js/map.js' %}" type="text/javascript"></script>
         {% endblock %}
 
 
@@ -728,9 +728,9 @@ d. Use the ``can_add_dams`` variable to determine whether to show or hide the na
         :emphasize-lines: 8, 10
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
@@ -898,7 +898,7 @@ b. New Template: ``assign_hydrograph.html``
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
+        {% extends tethys_app.package|add:"/base.html" %}
         {% load tethys_gizmos %}
 
         {% block app_content %}
@@ -1021,10 +1021,10 @@ d. Update navigation
     .. code-block:: html+django
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
-        {% url 'dam_inventory:assign_hydrograph' as assign_hydrograph_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
+        {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
@@ -1049,12 +1049,12 @@ a. Create Template ``hydrograph.html``
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys_gizmos tags %}
 
         {% block app_navigation_items %}
         <li class="nav-item title">App Navigation</li>
-        <li class="nav-item "><a class="nav-link" href="{% url 'dam_inventory:dams' %}">Back</a></li>
+        <li class="nav-item "><a class="nav-link" href="{% url tethys_app|url:'dams' %}">Back</a></li>
         {% endblock %}
 
         {% block app_content %}
@@ -1210,7 +1210,7 @@ a. Add Plotly Gizmo dependency to ``home.html``:
     .. code-block:: html+django
         :emphasize-lines: 4-6
 
-        {% extends "dam_inventory/base.html" %}
+        {% extends tethys_app.package|add:"/base.html" %}
         {% load tethys_gizmos static %}
 
         {% block import_gizmos %}

@@ -147,7 +147,7 @@ def update_row(request, job_id):
         statuses = None
         if status in ["Various", "Various-Complete"]:
             # Hard code statues for the gizmo showcase
-            if job.label == "gizmos_showcase":
+            if job.label == "gizmo_showcase":
                 if isinstance(job, CondorWorkflow):
                     statuses = {
                         "Completed": 20,
@@ -227,8 +227,8 @@ def update_workflow_nodes_row(request, job_id):
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
 
-        # Hard code example for gizmos_showcase
-        if job.label == "gizmos_showcase":
+        # Hard code example for gizmo_showcase
+        if job.label == "gizmo_showcase":
             dag = {
                 "a": {
                     "status": "com",

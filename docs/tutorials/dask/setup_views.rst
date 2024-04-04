@@ -187,7 +187,7 @@ Remove the navigation menu from the app by using the ``app_no_nav.html`` base te
 
         {% extends "tethys_apps/app_no_nav.html" %}
 
-        {% load static %}
+        {% load static tags %}
 
         {% block title %}{{ tethys_app.name }}{% endblock %}
 
@@ -207,12 +207,12 @@ Remove the navigation menu from the app by using the ``app_no_nav.html`` base te
 
         {% block content_dependent_styles %}
         {{ block.super }}
-        <link href="{% static 'dask_tutorial/css/main.css' %}" rel="stylesheet"/>
+        <link href="{% static tethys_app|public:'css/main.css' %}" rel="stylesheet"/>
         {% endblock %}
 
         {% block scripts %}
         {{ block.super }}
-        <script src="{% static 'dask_tutorial/js/main.js' %}" type="text/javascript"></script>
+        <script src="{% static tethys_app|public:'js/main.js' %}" type="text/javascript"></script>
         {% endblock %}
 
 

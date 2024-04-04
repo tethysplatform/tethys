@@ -17,6 +17,15 @@ def lighten(hex_color, percentage):
 
     Returns: A hex color value in the format "#2d3436"
 
+    Usage:
+        Be sure to include the ``app_theme`` argument to the ``load`` template tag.
+
+        .. code-block:: html+django
+
+            {% loads app_theme %}
+
+            {{ tethys_app.color|lighten:20 }}
+
     """
     if not re.search(hex_regex_pattern, hex_color):
         raise ValueError(

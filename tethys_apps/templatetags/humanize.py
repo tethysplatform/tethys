@@ -35,9 +35,13 @@ def human_duration(iso_duration_str):
         str: humanized string representing the amount of time from now (e.g.: "in 30 minutes").
 
     Usage:
-        {% load static humanize %}
+        Be sure to include the ``humanize`` argument to the ``load`` template tag.
 
-        {{ P1DT3H6M|human_duration }}
+        .. code-block:: html+django
+
+            {% load static humanize %}
+
+            {{ P1DT3H6M|human_duration }}
     """
     time_change = isodate.parse_duration(iso_duration_str)
     now = arrow.utcnow()

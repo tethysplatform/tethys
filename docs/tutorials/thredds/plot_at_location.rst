@@ -43,8 +43,8 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/loader.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
     {% endblock %}
 
     {% block global_scripts %}
@@ -446,9 +446,9 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/loader.css' %}" />
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/plot.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/plot.css' %}" />
     {% endblock %}
 
 4. Add a modal to :file:`templates/thredds_tutorial/home.html` for displaying the plot:
@@ -457,7 +457,7 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
 
     {% block after_app_content %}
       <div id="loader">
-        <img src="{% static 'thredds_tutorial/images/map-loader.gif' %}">
+        <img src="{% static tethys_app|public:'images/map-loader.gif' %}">
       </div>
       <!-- Plot Modal -->
       <div class="modal fade" id="plot-modal" tabindex="-1" role="dialog" aria-labelledby="plot-modal-label">

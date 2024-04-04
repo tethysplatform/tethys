@@ -9,7 +9,7 @@ from tethys_sdk.routing import controller
 def home(request):
     """Controller for the app home page."""
     # The index.html template loads the React frontend
-    return render(request, '{{project}}/index.html')
+    return app.render(request, 'index.html')
 
 
 @controller

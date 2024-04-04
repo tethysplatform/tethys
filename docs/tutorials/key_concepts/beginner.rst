@@ -109,7 +109,7 @@ a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with th
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
+        {% extends tethys_app.package|add:"/base.html" %}
         {% load tethys_gizmos %}
 
         {% block app_content %}
@@ -205,13 +205,13 @@ b. Load the styles on the ``/templates/dam_inventory/home.html`` template by add
 
     .. code-block:: html+django
 
-        {% load tethys_gizmos static %}
+        {% load tethys_gizmos static tags %}
 
         ...
 
         {% block styles %}
             {{ block.super }}
-            <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
+            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
         {% endblock %}
 
 c. Save your changes to ``map.css`` and ``home.html`` and refresh the page to view the changes. The map should fill the content area now. Notice how the map dynamically resizes if the screen size changes.
@@ -292,7 +292,7 @@ a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app co
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
+        {% extends tethys_app.package|add:"/base.html" %}
         {% load tethys_gizmos %}
 
         {% block app_content %}
@@ -345,8 +345,8 @@ a. Open ``/templates/dam_inventory/base.html`` and replace the ``app_navigation_
 
         {% block app_navigation_items %}
         <li class="nav-item title">Navigation</li>
-        <li class="nav-item"><a class="nav-link active" href="{% url 'dam_inventory:home' %}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'dam_inventory:add_dam' %}">Add Dam</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url tethys_app|url:'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url tethys_app|url:'add_dam' %}">Add Dam</a></li>
         {% endblock %}
 
     Notice that the **Home** link in the app navigation is always highlighed, even if you are on the **Add Dam** page. The highlight is controlled by adding the ``active`` class to the appropriate navigation link. We can get the navigation to highlight appropriately using the following pattern.
@@ -356,8 +356,8 @@ b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html
     .. code-block:: html+django
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>

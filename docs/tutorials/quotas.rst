@@ -318,10 +318,10 @@ h. Finally, remove the permissions restrictions on adding dams so that any user 
     .. code-block:: html+django
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
-        {% url 'dam_inventory:assign_hydrograph' as assign_hydrograph_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
+        {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>

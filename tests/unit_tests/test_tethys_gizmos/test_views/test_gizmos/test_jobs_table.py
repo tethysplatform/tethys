@@ -176,7 +176,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row_showcase(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=TethysJob, status="Various", label="gizmos_showcase"
+            spec=TethysJob, status="Various", label="gizmo_showcase"
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
@@ -199,7 +199,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row_showcase_various_complete(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=TethysJob, status="Various-Complete", label="gizmos_showcase"
+            spec=TethysJob, status="Various-Complete", label="gizmo_showcase"
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
@@ -222,7 +222,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row_showcase_condor_workflow(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=CondorWorkflow, status="Various", label="gizmos_showcase"
+            spec=CondorWorkflow, status="Various", label="gizmo_showcase"
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
@@ -243,7 +243,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row(self, mock_tj, mock_rts):
-        # Another Case where job.label is not gizmos_showcase
+        # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=CondorWorkflow,
@@ -283,7 +283,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row_dask_job_results_ready(self, mock_tj, mock_rts):
-        # Another Case where job.label is not gizmos_showcase
+        # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=DaskJob,
@@ -304,7 +304,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row_condor_workflow_no_statuses(self, mock_tj, mock_rts):
-        # Another Case where job.label is not gizmos_showcase
+        # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=CondorWorkflow,
@@ -411,7 +411,7 @@ class TestJobsTable(unittest.TestCase):
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=CondorWorkflow,
             status="Various",
-            label="gizmos_showcase",
+            label="gizmo_showcase",
         )
 
         request = RequestFactory().post("/jobs")

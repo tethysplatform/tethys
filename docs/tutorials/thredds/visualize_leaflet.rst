@@ -41,7 +41,7 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
 .. code-block:: html+django
 
-    {% extends "thredds_tutorial/base.html" %}
+    {% extends tethys_app.package|add:"/base.html" %}
     {% load tethys_gizmos %}
 
     {% block styles %}
@@ -169,15 +169,15 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
 .. code-block:: html+django
 
-    {% extends "thredds_tutorial/base.html" %}
-    {% load tethys_gizmos static %}
+    {% extends tethys_app.package|add:"/base.html" %}
+    {% load tethys_gizmos static tags %}
 
     {% block styles %}
       {{ block.super }}
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
@@ -189,7 +189,7 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
     {% block scripts %}
       {{ block.super }}
-      <script src="{% static 'thredds_tutorial/js/leaflet_map.js' %}" type="text/javascript"></script>
+      <script src="{% static tethys_app|public:'js/leaflet_map.js' %}" type="text/javascript"></script>
     {% endblock %}
 
 .. tip::
@@ -710,7 +710,7 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
@@ -947,15 +947,15 @@ Depending on the speed of the THREDDS server and the user's internet connection,
        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/loader.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
     {% endblock %}
 
 .. code-block:: html+django
 
     {% block after_app_content %}
       <div id="loader">
-        <img src="{% static 'thredds_tutorial/images/map-loader.gif' %}">
+        <img src="{% static tethys_app|public:'images/map-loader.gif' %}">
       </div>
     {% endblock %}
 

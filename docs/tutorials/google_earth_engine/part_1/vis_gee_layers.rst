@@ -564,8 +564,8 @@ You may have noticed while testing the app, that it can take some time for a lay
 
     {% block content_dependent_styles %}
         {{ block.super }}
-        <link rel="stylesheet" href="{% static 'earth_engine/css/map.css' %}" />
-        <link rel="stylesheet" href="{% static 'earth_engine/css/loader.css' %}" />
+        <link rel="stylesheet" href="{% static tethys_app|public:'css/map.css' %}" />
+        <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
     {% endblock %}
 
 .. code-block:: html+django
@@ -573,7 +573,7 @@ You may have noticed while testing the app, that it can take some time for a lay
     {% block after_app_content %}
       <div id="ee-products" data-ee-products="{{ ee_products|jsonify }}"></div>
       <div id="loader">
-        <img src="{% static 'earth_engine/images/map-loader.gif' %}">
+        <img src="{% static tethys_app|public:'images/map-loader.gif' %}">
       </div>
     {% endblock %}
 

@@ -42,7 +42,7 @@ Create a new :file:`draw.html` template in your template directory and add the f
 
 .. code-block:: python
 
-    {% extends "geoserver_app/base.html" %}
+    {% extends tethys_app.package|add:"/base.html" %}
     {% load tethys_gizmos %}
 
     {% block app_content %}
@@ -68,9 +68,9 @@ Replace the ``app_navigation_items`` block of the :file:`base.html` template wit
 .. code-block:: html+django
 
     {% block app_navigation_items %}
-      {% url 'geoserver_app:home' as home_url %}
-      {% url 'geoserver_app:map' as map_url %}
-      {% url 'geoserver_app:draw' as draw_url %}
+      {% url tethys_app|url:'home' as home_url %}
+      {% url tethys_app|url:'map' as map_url %}
+      {% url tethys_app|url:'draw' as draw_url %}
       <li class="nav-item title">App Navigation</li>
       <li class="nav-item"><a href="{{ home_url }}" class="nav-link{% if request.path == home_url %} active{% endif %}">Upload Shapefile</a></li>
       <li class="nav-item"><a href="{{ map_url }}" class="nav-link{% if request.path == map_url %} active{% endif %}">GeoServer Layers</a></li>

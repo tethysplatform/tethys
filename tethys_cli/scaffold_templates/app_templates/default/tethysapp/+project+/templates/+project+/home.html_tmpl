@@ -1,4 +1,4 @@
-{{ '{%' }} extends "{{project}}/base.html" {{ '%}' }}
+{{ '{%' }} extends tethys_app.package|add:"/base.html" {{ '%}' }}
 {{ '{%' }} load tethys_gizmos {{ '%}' }}
 
 {{ '{%' }} block header_buttons {{ '%}' }}

@@ -56,7 +56,7 @@ The first step to adding a new page to the app is to create a new controller and
         Controller for the app about page.
         """
         context = {}
-        return render(request, 'earth_engine/about.html', context)
+        return app.render(request, 'about.html', context)
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the new page loads. You should see the "This is the About Page" text.
 
@@ -71,11 +71,13 @@ To minimize the amount of code that is duplicated, you will create a new :file:`
 
 .. code-block:: html+django
 
+    {% load tags %}
+
     <div class="header-button glyphicon-button">
-      <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
+      <a href="{% url tethys_app|url:'home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
     </div>
     <div class="header-button glyphicon-button">
-      <a href="{% url 'earth_engine:about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
+      <a href="{% url tethys_app|url:'about' %}" title="About"><i class="bi bi-info-circle-fill"></i></a>
     </div>
 
 2. Add the following lines to the :file:`templates/earth_engine/base.html`, :file:`templates/earth_engine/home.html`, and :file:`templates/earth_engine/about.html` templates:
@@ -83,7 +85,7 @@ To minimize the amount of code that is duplicated, you will create a new :file:`
 .. code-block:: html+django
 
     {% block header_buttons %}
-      {% include "earth_engine/header_buttons.html" %}
+      {% include tethys_app.package|add:"header_buttons.html" %}
     {% endblock %}
 
 3. The Home button is included in :file:`header_buttons.html` and provided by :file:`base.html`, so it will be removed from :file:`viewer.html`. Delete the ``header_buttons`` block in :file:`templates/earth_engine/viewer.html`:
@@ -92,7 +94,7 @@ To minimize the amount of code that is duplicated, you will create a new :file:`
 
     -{% block header_buttons %}
     -  <div class="header-button glyphicon-button">
-    -    <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
+    -    <a href="{% url tethys_app|url:'home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
     -  </div>
     -{% endblock %}
 
@@ -224,13 +226,17 @@ As with the Home page, the Bootstrap Grid System does a good job providing the b
 
 1. Create a new :file:`public/earth_engine/about.css` stylesheet.
 
-2. Include the new :file:`about.css` by adding the ``styles`` block to the :file:`templates/earth_engine/about.html`:
+2. Include the new :file:`about.css` by adding the ``styles`` block to the :file:`templates/earth_engine/about.html`. Be sure to add the ``tags`` argument to the ``loads`` template tag at the top:
 
 .. code-block:: html+django
 
+    {% load static tags %}
+
+    ...
+
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="{% static 'earth_engine/css/about.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/about.css' %}" />
     {% endblock %}
 
 3. Add the following contents to :file:`public/earth_engine/about.css` to customize the style of the page header:
@@ -347,7 +353,7 @@ In this step you will create a new modal that will contain a disclaimer for the 
       <!-- End Plot Modal -->
       <div id="ee-products" data-ee-products="{{ ee_products|jsonify }}"></div>
       <div id="loader">
-        <img src="{% static 'earth_engine/images/map-loader.gif' %}">
+        <img src="{% static tethys_app|public:'images/map-loader.gif' %}">
       </div>
     {% endblock %}
 

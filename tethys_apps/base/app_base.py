@@ -14,6 +14,7 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
 from django.utils.functional import classproperty
+from django.shortcuts import render, redirect, reverse
 
 from .testing.environment import (
     is_testing_environment,
@@ -54,23 +55,6 @@ class TethysBase(TethysBaseMixin):
         self._url_patterns = None
         self._handler_patterns = None
         self._registered_url_maps = None
-
-        # TODO remove compatibility code in v4.1
-        if self.index is not None and ":" in self.index:
-            old_index = self.index
-            self.index = self.index.split(":")[-1]
-
-            # print deprecation warning
-            from tethys_cli.cli_colors import write_warning
-
-            write_warning(
-                f"Deprecation Warning: "
-                f'The app "{self.name}" has an index attribute that includes the URL namespace ("{old_index}").\n'
-                f'  Including the URL namespace as part of the "index" attribute is now deprecated, '
-                f"and support for it will be removed in Tethys v4.1.\n"
-                f'  Please change the "index" attribute to only include the controller name '
-                f"(i.e. index = '{self.index}')"
-            )
 
     @classproperty
     def package_namespace(cls):
@@ -269,20 +253,6 @@ class TethysBase(TethysBaseMixin):
 
     @property
     def registered_url_maps(self):
-        # TODO remove deprecation code
-        try:
-            self._registered_url_maps = self.url_maps()
-            from tethys_cli.cli_colors import write_warning
-
-            write_warning(
-                f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
-                "This method is now deprecated. "
-                'Please use the new "controller", "consumer", and "handler" decorators to register URL maps '
-                "(see docs: http://docs.tethysplatform.org/en/stable/tethys_sdk/routing.html)."
-            )
-        except AttributeError:
-            pass
-
         if self._registered_url_maps is None:
             self._registered_url_maps = self.register_url_maps()
 
@@ -358,6 +328,100 @@ class TethysBase(TethysBaseMixin):
         Remove the instance from the db.
         """
         raise NotImplementedError
+
+    @classmethod
+    def render(
+        cls, request, template, context=None, content_type=None, status=None, using=None
+    ):
+        """Shortcut for Django render function with app package inserted.
+
+        Usage:
+            Use in place of the ``django.shortcuts.render`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+            .. code-block:: python
+
+                # controllers.py
+                from .app import MyFirstApp as app  # note importing the TethysBaseApp object as ``app`` is a convention
+
+                @controller
+                def home(request):
+                    \"""
+                    Controller for the app home page.
+                    \"""
+
+                    context = {}
+
+                    return app.render(request, 'home.html', context)
+        """
+        return render(
+            request,
+            f"{cls.package}/{template}",
+            context=context,
+            content_type=content_type,
+            status=status,
+            using=using,
+        )
+
+    @classmethod
+    def redirect(cls, to, *args, **kwargs):
+        """Shortcut for Django redirect function with app package inserted if `to` is not absolute.
+
+        Usage:
+            Use in place of the ``django.shortcuts.redirect`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+            .. code-block:: python
+
+                # controllers.py
+                from .app import MyFirstApp as app  # note importing the TethysBaseApp object as ``app`` is a convention
+
+                @controller
+                def do_something_and_redirect_home(request):
+                    \"""
+                    Controller to do something before redirecting to the app homepage.
+                    \"""
+
+                    return app.redirect(app.reverse("jobs_table"))
+
+        """
+        to = to if to.startswith("/") else f"{cls.package}:{to}"
+        return redirect(to, *args, **kwargs)
+
+    @classmethod
+    def reverse(cls, viewname, urlconf=None, args=None, kwargs=None, current_app=None):
+        """Shortcut for Django reverse function with app package inserted.
+
+        Usage:
+            Use in place of the ``django.shortcuts.reverse`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+             .. code-block:: python
+
+                # controllers.py
+                from tethys_sdk.gizmos import Button
+                from .app import MyFirstApp as app  # note importing the TethysBaseApp object as ``app`` is a convention
+
+                @controller
+                def home(request):
+                    \"""
+                    Controller for the app home page.
+                    \"""
+
+                    cancel_button = Button(
+                        display_text='Cancel',
+                        name='cancel-button',
+                        href=app.reverse('home')
+                    )
+
+                    context = {'cancel_button': cancel_button}
+
+                    return app.render(request, 'home.html', context)
+        """
+        return reverse(
+            f"{cls.package}:{viewname}",
+            urlconf=urlconf,
+            args=args,
+            kwargs=kwargs,
+            current_app=current_app,
+        )
 
 
 class TethysExtensionBase(TethysBase):

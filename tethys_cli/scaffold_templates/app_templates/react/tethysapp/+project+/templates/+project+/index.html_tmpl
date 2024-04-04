@@ -1,4 +1,4 @@
-{{ '{%' }} load static {{ '%}' }}
+{{ '{%' }} load static tags {{ '%}' }}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,6 +11,6 @@
 	<body style="margin: 0;">
 		<noscript>You need to enable JavaScript to run this app.</noscript>
 		<div id="root"></div>
-		<script src="{{ '{%' }} static '{{project}}/frontend/main.js' {{ '%}' }}"></script>
+		<script src="{{ '{%' }} static tethys_app|public:'frontend/main.js' {{ '%}' }}"></script>
 	</body>
 </html>
