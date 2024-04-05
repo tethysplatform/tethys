@@ -61,7 +61,10 @@ class CondorPyWorkflow(models.Model):
 
     @property
     def nodes(self):
-        return self.node_set.select_subclasses()
+        if self.pk:  # verify that object has been saved before accessing node_set
+            return self.node_set.select_subclasses()
+        else:
+            return []
 
     @property
     def num_jobs(self):
