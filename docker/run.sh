@@ -12,6 +12,8 @@ db_max_count=24;
 no_daemon=true;
 skip_perm=false;
 test=false;
+db_engine=${TETHYS_DB_ENGINE} # Get the DB engine from environment variable
+skip_db_setup=${SKIP_DB_SETUP} # Get the DB setup flag from environment variable
 USAGE="USAGE: . run.sh [options]
 OPTIONS:
 --background              \t run supervisord in background.
@@ -44,32 +46,42 @@ done
 
 echo_status "Starting up..."
 
-# Create Salt Config
-echo "file_client: local" > /etc/salt/minion
-echo "postgres.host: '${TETHYS_DB_HOST}'" >> /etc/salt/minion
-echo "postgres.port: '${TETHYS_DB_PORT}'" >> /etc/salt/minion
-echo "postgres.user: '${TETHYS_DB_USERNAME}'" >> /etc/salt/minion
-echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion
-echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion
 
 if [[ $test = false ]]; then
   # Set extra ENVs
   export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
 
   # Apply States
-  echo_status "Checking if DB is ready"
+  if [[ $skip_db_setup != true ]]; then
+    echo_status "Checking if DB is ready"
+    if [[ $db_engine == "django.db.backends.postgresql" ]]; then
+        # Create Salt Config for PostgreSQL
+        echo "postgres.host: '${TETHYS_DB_HOST}'" >> /etc/salt/minion
+        echo "postgres.port: '${TETHYS_DB_PORT}'" >> /etc/salt/minion
+        echo "postgres.user: '${TETHYS_DB_USERNAME}'" >> /etc/salt/minion
+        echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion
+        echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion
 
-  db_check_count=0
+        db_check_count=0
 
-  until ${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin/pg_isready -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -U postgres; do
-    if [[ $db_check_count -gt $db_max_count ]]; then
-      >&2 echo "DB was not available in time - exiting"
-      exit 1
+        until ${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin/pg_isready -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -U postgres; do
+          if [[ $db_check_count -gt $db_max_count ]]; then
+            >&2 echo "DB was not available in time - exiting"
+            exit 1
+          fi
+          >&2 echo "DB is unavailable - sleeping"
+          db_check_count=`expr $db_check_count + 1`
+          sleep 5
+        done
+      
+
+    else
+      echo_status "Using SQLite3 as the database"
     fi
-    >&2 echo "DB is unavailable - sleeping"
-    db_check_count=`expr $db_check_count + 1`
-    sleep 5
-  done
+  else
+    # Database setup should be skipped
+    echo "Skipping database setup: check SKIP_DB_SETUP environment variable."
+  fi
 fi
 
 echo_status "Enforcing start state... (This might take a bit)"
