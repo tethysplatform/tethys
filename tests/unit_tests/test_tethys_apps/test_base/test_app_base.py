@@ -29,6 +29,14 @@ class TethysAppChild(tethys_app_base.TethysAppBase):
     description = "Place a brief description of your app here."
 
 
+class TethysBaseChild(tethys_app_base.TethysBase):
+    """
+    Tethys Base class for testing
+    """
+
+    package = "test_base"
+
+
 class TestTethysBase(unittest.TestCase):
     def setUp(self):
         pass
@@ -44,14 +52,6 @@ class TestTethysBase(unittest.TestCase):
             return base.package_namespace
 
         self.assertRaises(NotImplementedError, get_package_namespace)
-
-    @mock.patch("tethys_cli.cli_colors.write_warning")
-    def test_index_namespace_deprecation(self, mock_warning):
-        class TethysAppSubChild(TethysAppChild):
-            index = "namespace:home"
-
-        TethysAppSubChild()
-        mock_warning.assert_called_once()
 
     @mock.patch("tethys_apps.base.controller.register_controllers")
     def test_register_url_maps(self, mock_rc):
@@ -70,18 +70,6 @@ class TestTethysBase(unittest.TestCase):
         for m in kwargs["modules"]:
             self.assertIn(m, modules)
         self.assertIn(app.index, kwargs["index"])
-
-    @mock.patch("tethys_cli.cli_colors.write_warning")
-    def test_register_url_maps_deprecation(self, mock_warning):
-        app = tethys_app_base.TethysAppBase()
-        app.package = "package"
-        app.root_url = "root_url"
-        app.index = "index"
-
-        app.url_maps = mock.MagicMock(return_value=["test"])
-        result = app.registered_url_maps
-        self.assertEqual(app.url_maps(), result)
-        mock_warning.assert_called_once()
 
     @mock.patch("tethys_apps.base.app_base.re_path")
     @mock.patch("tethys_apps.base.app_base.TethysBaseMixin")
@@ -393,6 +381,33 @@ class TestTethysBase(unittest.TestCase):
     def test_db_object(self):
         with self.assertRaises(NotImplementedError):
             tethys_app_base.TethysBase.db_object
+
+    @mock.patch("tethys_apps.base.app_base.render")
+    def test_render(self, mock_render):
+        mock_request = mock.MagicMock()
+        template = "test.html"
+        TethysBaseChild.render(mock_request, template)
+        self.assertEqual(
+            mock_render.call_args.args,
+            (mock_request, f"{TethysBaseChild.package}/{template}"),
+        )
+
+    @mock.patch("tethys_apps.base.app_base.redirect")
+    def test_redirect(self, mock_redirect):
+        TethysBaseChild.redirect("test")
+        mock_redirect.assert_called_with(f"{TethysBaseChild.package}:test")
+
+    @mock.patch("tethys_apps.base.app_base.redirect")
+    def test_redirect_absolute(self, mock_redirect):
+        TethysBaseChild.redirect("/test")
+        mock_redirect.assert_called_with("/test")
+
+    @mock.patch("tethys_apps.base.app_base.reverse")
+    def test_reverse(self, mock_reverse):
+        TethysBaseChild.reverse("test")
+        self.assertEqual(
+            mock_reverse.call_args.args, (f"{TethysBaseChild.package}:test",)
+        )
 
 
 class TestTethysExtensionBase(unittest.TestCase):

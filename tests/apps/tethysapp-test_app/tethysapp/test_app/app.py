@@ -20,12 +20,12 @@ class TestApp(TethysAppBase):
     """
 
     name = "Test App"
+    description = "Place a brief description of your app here."
     index = "home"
-    icon = "test_app/images/icon.gif"
     package = "test_app"
+    icon = f"{package}/images/icon.gif"
     root_url = "test-app"
     color = "#2c3e50"
-    description = "Place a brief description of your app here."
     tags = ""
     enable_feedback = False
     feedback_emails = []
