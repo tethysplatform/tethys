@@ -9,12 +9,6 @@
   {{ site_globals.login_css|load_custom_css|safe }}
 {% endblock %}
 
-{% block account_content_top %}
-  {% if has_recaptcha %}
-    {% include "tethys_portal/accounts/recaptcha.html" %}
-  {% endif %}
-{% endblock %}
-
 
 {% block account_form_title %}Log In{% endblock %}
 
