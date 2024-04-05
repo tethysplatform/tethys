@@ -27,18 +27,29 @@ class CondorPyJob(models.Model):
     _num_jobs = models.IntegerField(default=1)
     _remote_input_files = models.JSONField(default=list, null=True, blank=True)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, attributes=None, condorpy_template_name=None, **kwargs):
+        if attributes is None and condorpy_template_name is None:
+            return super().__init__(*args, **kwargs)
+        if args:
+            # Then _attributes might be in args (not necessarily in the second position because of subclasses)
+            # It's tricky to extract _attributes from args and add it to kwargs because
+            # when the object is initialized from the database, it uses some positional arguments that cannot be
+            # converted to kwargs (so it can handle passing pk values in place of instances)
+            raise ValueError(
+                f"Positional arguments cannot be passed to the {self.__class__.__name__} along with the "
+                f'"attributes" or "condorpy_template_name" key-word arguments. Please pass all arguments as '
+                f"key-word arguments."
+            )
         # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes
-        attributes = kwargs.pop("attributes", dict())
+        attributes = attributes or dict()
         _attributes = kwargs.get("_attributes", dict())
         attributes.update(_attributes)
-        condorpy_template_name = kwargs.pop("condorpy_template_name", None)
         if condorpy_template_name is not None:
             template = self.get_condorpy_template(condorpy_template_name)
             template.update(attributes)
             attributes = template
         kwargs["_attributes"] = attributes
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
     @classmethod
     def get_condorpy_template(cls, template_name):
