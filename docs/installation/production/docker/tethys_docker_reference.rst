@@ -98,7 +98,7 @@ Use these build arguments with the ``build`` command to customize how the image 
 +===========================+==========================================================================================+
 | PYTHON_VERSION            | The version of Python to build the Tethys environment with. Defaults to "3.*".           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| MICRO_TETHYS              | Set to True if you intent to use `micro-tethys`. Defaults to False.                      |
+| MICRO_TETHYS              | Set to True to use `micro-tethys` environment. Defaults to False.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
 Important Paths
 ---------------
