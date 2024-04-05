@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tethys_apps', '0006_auto_20240401_2032'),
+        ("tethys_apps", "0006_auto_20240401_2032"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tethysapp',
-            name='back_url',
-            field=models.CharField(blank=True, default='', max_length=512),
+            model_name="tethysapp",
+            name="back_url",
+            field=models.CharField(blank=True, default="", max_length=512),
         ),
     ]
