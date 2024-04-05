@@ -112,6 +112,16 @@
           background: var(--app-primary-color, '#7ec1f7');
         }
 
+        #app-header .btn-user-profile {
+          background-color: rgba(255, 255, 255, 0.08);
+          border: none;
+          color: {{ site_globals.primary_text_color }};
+        }
+    
+        #app-header .btn-user-profile:hover {
+          background-color: rgba(255, 255, 255, 0.30);
+        }
+
         #app-navigation .nav li a {
           color: var(--app-primary-color, '#7ec1f7');
         }
@@ -192,16 +202,23 @@
                     {%  endif %}
                   {% endblock %}
                   {% block settings_button_override %}
-                      {% if request.user.is_staff %}
-                      <div class="header-button settings-button">
-                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings"><i class="bi bi-gear"></i></a>
-                      </div>
-                      {%  endif %}
+                    {% if request.user.is_staff %}
+                    <div class="header-button settings-button">
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings"><i class="bi bi-gear"></i></a>
+                    </div>
+                    {%  endif %}
                   {% endblock %}
                   {% block exit_button_override %}
-                    <div class="header-button exit-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
-                    </div>
+                    {% if not single_app_mode %}
+                      <div class="header-button exit-button">
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
+                      </div>
+                    {%  endif %}
+                  {% endblock %}
+                  {% block user_menu %}
+                    {% if user.is_authenticated and user.is_active and single_app_mode %}
+                      {% include "tethys_portal/user/user_header_menu.html" %} 
+                    {% endif %}
                   {% endblock %}
               </div>
               {% endblock %}

@@ -30,45 +30,14 @@
             {% url 'app_library' as app_library_url %}
             {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
               <li class="nav-item">
-                <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
+                <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if single_app_name %}{{ single_app_name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_name %}{{ single_app_name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
               </li>
             {% endif %}
           {% endblock %}
         </ul>
         {% block user_menu %}
           {% if user.is_authenticated and user.is_active %}
-            <div class="btn-group">
-              <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
-                <span>
-                  {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
-                  {% if has_gravatar %}{% include "gravatar.html" with image_size=25 %}{% endif %}
-                </span>
-              </a>
-              <button type="button" class="btn btn-light btn-user-profile dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a class="dropdown-item" href="{% url 'user:profile' %}" title="User Settings">
-                    <i class="bi bi-person-fill"></i><span class="ms-2">User Profile</span>
-                  </a>
-                </li>
-                {% if user.is_staff %}
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">
-                      <i class="bi bi-gear-wide-connected"></i><span class="ms-2">Site Admin</span>
-                    </a>
-                  </li>
-                {% endif %}
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'accounts:logout' %}" title="Log Out">
-                    <i class="bi bi-door-closed-fill"></i><span class="ms-2">Log Out</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
+            {% include "tethys_portal/user/user_header_menu.html" %}   
           {% else %}
             <a class="btn btn-outline-light" role="button" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
           {% endif %}
