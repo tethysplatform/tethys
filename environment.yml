@@ -13,16 +13,16 @@ channels:
   - conda-forge
 
 dependencies:
-  - python
+  - python>=3.8
 
   # system dependencies
   - pyopenssl
   - openssl
 
   # core dependencies
-  - django=3.2.*
-  - channels=3.*
-  - daphne=3.*
+  - django>=3.2,<6
+  - channels
+  - daphne
   - setuptools_scm
   - pip
   - requests # required by lots of things
@@ -50,9 +50,9 @@ dependencies:
   - django-gravatar2
   - django-simple-captcha
   - django-mfa2
-  - django-recaptcha2
+  - django-recaptcha
   - social-auth-app-django
-  - hs_restclient  # Used with HydroShare Socail backend
+  - hs_restclient  # Used with HydroShare Social backend
   - python-jose # required by django-mfa2  - used for onelogin backend
   - django-oauth-toolkit
 

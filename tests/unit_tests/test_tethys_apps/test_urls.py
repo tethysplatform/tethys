@@ -15,35 +15,32 @@ class TestUrls(TethysTestCase):
         url = reverse("app_library")
         resolver = resolve(url)
         self.assertEqual("/apps/", url)
-        self.assertEqual("library", resolver.func.__name__)
-        self.assertEqual("tethys_apps.views", resolver.func.__module__)
+        self.assertEqual("tethys_apps.views.library", resolver._func_path)
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
         self.assertEqual("/apps/send-beta-feedback/", url)
-        self.assertEqual("send_beta_feedback_email", resolver.func.__name__)
-        self.assertEqual("tethys_apps.views", resolver.func.__module__)
+        self.assertEqual(
+            "tethys_apps.views.send_beta_feedback_email", resolver._func_path
+        )
 
         url = reverse("test_app:home")
         resolver = resolve(url)
         self.assertEqual("/apps/test-app/", url)
-        self.assertEqual("home", resolver.func.__name__)
-        self.assertEqual("tethysapp.test_app.controllers", resolver.func.__module__)
+        self.assertEqual("tethysapp.test_app.controllers.home", resolver._func_path)
 
         url = reverse("test_extension:home", kwargs={"var1": "foo", "var2": "bar"})
         resolver = resolve(url)
         self.assertEqual("/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
-            "tethysext.test_extension.controllers", resolver.func.__module__
+            "tethysext.test_extension.controllers.home", resolver._func_path
         )
 
         url = reverse("test_extension:home", args=["foo", "bar"])
         resolver = resolve(url)
         self.assertEqual("/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
-            "tethysext.test_extension.controllers", resolver.func.__module__
+            "tethysext.test_extension.controllers.home", resolver._func_path
         )
 
 
@@ -80,35 +77,32 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("app_library")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/apps/", url)
-        self.assertEqual("library", resolver.func.__name__)
-        self.assertEqual("tethys_apps.views", resolver.func.__module__)
+        self.assertEqual("tethys_apps.views.library", resolver._func_path)
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/apps/send-beta-feedback/", url)
-        self.assertEqual("send_beta_feedback_email", resolver.func.__name__)
-        self.assertEqual("tethys_apps.views", resolver.func.__module__)
+        self.assertEqual(
+            "tethys_apps.views.send_beta_feedback_email", resolver._func_path
+        )
 
         url = reverse("test_app:home")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/apps/test-app/", url)
-        self.assertEqual("home", resolver.func.__name__)
-        self.assertEqual("tethysapp.test_app.controllers", resolver.func.__module__)
+        self.assertEqual("tethysapp.test_app.controllers.home", resolver._func_path)
 
         url = reverse("test_extension:home", kwargs={"var1": "foo", "var2": "bar"})
         resolver = resolve(url)
         self.assertEqual("/test/prefix/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
-            "tethysext.test_extension.controllers", resolver.func.__module__
+            "tethysext.test_extension.controllers.home", resolver._func_path
         )
 
         url = reverse("test_extension:home", args=["foo", "bar"])
         resolver = resolve(url)
         self.assertEqual("/test/prefix/extensions/test-extension/foo/bar/", url)
-        self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
-            "tethysext.test_extension.controllers", resolver.func.__module__
+            "tethysext.test_extension.controllers.home", resolver._func_path
         )
 
 
@@ -150,7 +144,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         url = reverse("app_library")
         resolver = resolve(url)
         self.assertEqual("/apps/", url)
-        self.assertEqual("RedirectView", resolver.func.__name__)
+        self.assertEqual("django.views.generic.base.RedirectView", resolver._func_path)
         self.assertEqual("home", resolver.func.view_initkwargs["pattern_name"])
 
         url = reverse("send_beta_feedback")

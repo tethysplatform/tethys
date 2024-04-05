@@ -137,7 +137,7 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          tethys gen metayaml -p minor --overwrite;
+          tethys gen metayaml -p ${CONDA_BUILD_PIN_LEVEL} --overwrite;
       # Show Tethys Meta
       - name: Show Tethys Meta
         run: |
@@ -179,7 +179,7 @@ jobs:
           cd ..
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate tethys;
-          tethys gen metayaml -p minor --micro --overwrite;
+          tethys gen metayaml -p ${CONDA_BUILD_PIN_LEVEL} --micro --overwrite;
       # Show Tethys Meta
       - name: Show Tethys Meta - micro
         run: |

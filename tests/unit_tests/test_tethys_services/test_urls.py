@@ -14,8 +14,7 @@ class TestTethysServicesUrls(TethysTestCase):
         url = reverse("services:wps_service", kwargs={"service": "foo"})
         resolver = resolve(url)
         self.assertEqual("/developer/services/wps/foo/", url)
-        self.assertEqual("wps_service", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.wps_service", resolver._func_path)
 
     def test_service_urls_wps_process(self):
         url = reverse(
@@ -23,22 +22,19 @@ class TestTethysServicesUrls(TethysTestCase):
         )
         resolver = resolve(url)
         self.assertEqual("/developer/services/wps/foo/process/bar/", url)
-        self.assertEqual("wps_process", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.wps_process", resolver._func_path)
 
     def test_urlpatterns_datasethome(self):
         url = reverse("services:datasets_home")
         resolver = resolve(url)
         self.assertEqual("/developer/services/datasets/", url)
-        self.assertEqual("datasets_home", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.datasets_home", resolver._func_path)
 
     def test_urlpatterns_wpshome(self):
         url = reverse("services:wps_home")
         resolver = resolve(url)
         self.assertEqual("/developer/services/wps/", url)
-        self.assertEqual("wps_home", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.wps_home", resolver._func_path)
 
 
 @override_settings(PREFIX_URL="test/prefix")
@@ -71,8 +67,7 @@ class TestTethysServicesUrlsWithPrefix(TethysTestCase):
         url = reverse("services:wps_service", kwargs={"service": "foo"})
         resolver = resolve(url)
         self.assertEqual("/test/prefix/developer/services/wps/foo/", url)
-        self.assertEqual("wps_service", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.wps_service", resolver._func_path)
 
     def test_service_urls_wps_process(self):
         url = reverse(
@@ -80,19 +75,16 @@ class TestTethysServicesUrlsWithPrefix(TethysTestCase):
         )
         resolver = resolve(url)
         self.assertEqual("/test/prefix/developer/services/wps/foo/process/bar/", url)
-        self.assertEqual("wps_process", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.wps_process", resolver._func_path)
 
     def test_urlpatterns_datasethome(self):
         url = reverse("services:datasets_home")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/developer/services/datasets/", url)
-        self.assertEqual("datasets_home", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.datasets_home", resolver._func_path)
 
     def test_urlpatterns_wpshome(self):
         url = reverse("services:wps_home")
         resolver = resolve(url)
         self.assertEqual("/test/prefix/developer/services/wps/", url)
-        self.assertEqual("wps_home", resolver.func.__name__)
-        self.assertEqual("tethys_services.views", resolver.func.__module__)
+        self.assertEqual("tethys_services.views.wps_home", resolver._func_path)

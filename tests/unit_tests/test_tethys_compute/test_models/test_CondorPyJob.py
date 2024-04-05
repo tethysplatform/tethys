@@ -51,6 +51,11 @@ class CondorPyJobTest(TethysTestCase):
         # Check return vanilla Django base
         self.assertEqual("vanilla", ret.attributes["universe"])
 
+    def test_init_args_kwargs(self):
+        args = (99, {"foo": "bar"})
+        kwargs = dict(condorpy_template_name="vanilla_base")
+        self.assertRaises(ValueError, CondorPyJob, *args, **kwargs)
+
     def test_get_condorpy_template(self):
         ret = CondorPyJob.get_condorpy_template("vanilla_base")
 
