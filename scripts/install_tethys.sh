@@ -371,7 +371,8 @@ then
           --set DATABASES.default.USER ${TETHYS_DB_SUPER_USERNAME} \
           --set DATABASES.default.PASSWORD ${TETHYS_DB_PASSWORD} \
           --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
-          --set DATABASES.default.DIR ${TETHYS_DB_DIR}
+          --set DATABASES.default.DIR ${TETHYS_DB_DIR} \
+          --set DATABASES.default.ENGINE django.db.backends.postgresql
     fi
 
     if [ -n "${SETUP_DB}" ]
