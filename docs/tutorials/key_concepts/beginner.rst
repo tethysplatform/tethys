@@ -110,7 +110,7 @@ a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with th
     .. code-block:: html+django
 
         {% extends tethys_app.package|add:"/base.html" %}
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% block app_content %}
         {% gizmo dam_inventory_map %}
@@ -143,9 +143,9 @@ a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button
 
     .. code-block:: python
 
-        from django.shortcuts import render
         from tethys_sdk.gizmos import MapView, Button
         from tethys_sdk.routing import controller
+        from .app import App
 
 
         @controller
@@ -174,7 +174,7 @@ a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button
                 'add_dam_button': add_dam_button
             }
 
-            return render(request, 'dam_inventory/home.html', context)
+            return App.render(request, 'home.html', context)
 
 b. Save your changes to ``controllers.py`` and ``home.html`` and refresh the page to view the map.
 
@@ -205,7 +205,7 @@ b. Load the styles on the ``/templates/dam_inventory/home.html`` template by add
 
     .. code-block:: html+django
 
-        {% load tethys_gizmos static tags %}
+        {% load static tethys %}
 
         ...
 
@@ -244,7 +244,7 @@ b. Create a new controller function called ``add_dam`` at the bottom of the ``co
             Controller for the Add Dam page.
             """
             context = {}
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
     This is the most basic controller function you can write: a function that accepts an argument called ``request`` and a return value that is the result of the ``render`` function. The ``render`` function renders the Django template into valid HTML using the ``request`` and ``context`` provided.
 
@@ -269,7 +269,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
 
     .. code-block:: python
 
-        from django.shortcuts import reverse
+        from .app import App
 
         ...
 
@@ -282,7 +282,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
                 name='add-dam-button',
                 icon='plus-square',
                 style='success',
-                href=reverse('dam_inventory:add_dam')
+                href=App.reverse('add_dam')
             )
 
 9. Build Out New Page
@@ -293,7 +293,7 @@ a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app co
     .. code-block:: html+django
 
         {% extends tethys_app.package|add:"/base.html" %}
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% block app_content %}
         <h1>Add Dam</h1>
@@ -331,7 +331,7 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
                 'cancel_button': cancel_button,
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 
 10. Customize Navigation

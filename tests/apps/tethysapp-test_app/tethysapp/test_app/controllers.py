@@ -1,6 +1,6 @@
 from tethys_sdk.routing import handler, consumer
 from tethys_sdk.gizmos import Button
-from .app import TestApp as app
+from .app import App
 
 from channels.generic.websocket import WebsocketConsumer
 import json
@@ -72,7 +72,7 @@ def home_controller(request):
         "script": script,
     }
 
-    return app.render(request, "home.html", context)
+    return App.render(request, "home.html", context)
 
 
 @handler(

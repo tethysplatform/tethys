@@ -108,9 +108,9 @@ Anytime you wish to use a WPS service in an app, you will need to obtain an ``ow
 
 ::
 
-    from my_first_app.app import MyFirstApp as app
+    from .app import App
 
-    wps_engine = app.get_web_processing_service('primary_52n', as_engine=True)
+    wps_engine = App.get_web_processing_service('primary_52n', as_engine=True)
 
 Alternatively, you can create an ``owslib.wps.WebProcessingService`` engine object directly without using the convenience function. This can be useful if you want to vary the credentials for WPS service access frequently (e.g.: to provide user specific credentials).
 

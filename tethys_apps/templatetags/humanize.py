@@ -35,11 +35,11 @@ def human_duration(iso_duration_str):
         str: humanized string representing the amount of time from now (e.g.: "in 30 minutes").
 
     Usage:
-        Be sure to include the ``humanize`` argument to the ``load`` template tag.
+        Be sure to include the ``tethys`` argument to the ``load`` template tag.
 
         .. code-block:: html+django
 
-            {% load static humanize %}
+            {% load tethys %}
 
             {{ P1DT3H6M|human_duration }}
     """

@@ -1,6 +1,6 @@
 {{ '{%' }} extends "tethys_apps/app_base.html" {{ '%}' }}
 
-{{ '{%' }} load static tags {{ '%}' }}
+{{ '{%' }} load static tethys {{ '%}' }}
 
 {{ '{%' }} block title {{ '%}' }}{{ '{{' }} tethys_app.name {{ '}}' }}{{ '{%' }} endblock {{ '%}' }}
 

@@ -14,7 +14,7 @@ from tethys_sdk.app_settings import (
 from tethys_sdk.handoff import HandoffHandler
 
 
-class TestApp(TethysAppBase):
+class App(TethysAppBase):
     """
     Tethys app class for Test App.
     """

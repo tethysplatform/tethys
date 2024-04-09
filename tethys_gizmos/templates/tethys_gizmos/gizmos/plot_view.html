@@ -1,4 +1,4 @@
-{% load tethys_gizmos %}
+{% load tethys %}
 
 <div class="{% if engine == 'd3' %}d3-plot{% else %}highcharts-plot{% endif %}{% if classes %} {{ classes }}{% endif %}"
   {% if plot_object|isstring %}

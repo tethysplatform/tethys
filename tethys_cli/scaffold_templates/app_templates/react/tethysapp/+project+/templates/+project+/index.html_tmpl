@@ -1,4 +1,4 @@
-{{ '{%' }} load static tags {{ '%}' }}
+{{ '{%' }} load static tethys {{ '%}' }}
 <!DOCTYPE html>
 <html>
 	<head>

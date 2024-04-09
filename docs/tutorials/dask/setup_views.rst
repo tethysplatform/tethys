@@ -58,17 +58,16 @@ Replacte the contents of :file:`controller.py` with the following:
     .. code-block:: python
 
         import random
-        from django.shortcuts import render, reverse, redirect
         from tethys_sdk.routing import controller
         from django.http.response import HttpResponseRedirect
         from django.contrib import messages
         from tethys_sdk.gizmos import Button
         from tethys_sdk.gizmos import JobsTable
         from tethys_compute.models.dask.dask_job_exception import DaskJobException
-        from tethysapp.dask_tutorial.app import DaskTutorial as app
+        from .app import App
 
         # get job manager for the app
-        job_manager = app.get_job_manager()
+        job_manager = App.get_job_manager()
 
 
         @controller
@@ -85,14 +84,14 @@ Replacte the contents of :file:`controller.py` with the following:
                     'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
-                href=reverse('dask_tutorial:jobs_table')
+                href=App.reverse('jobs_table')
             )
 
             context = {
                 'jobs_button': jobs_button
             }
 
-            return render(request, 'dask_tutorial/home.html', context)
+            return App.render(request, 'home.html', context)
 
 
         @controller
@@ -108,7 +107,7 @@ Replacte the contents of :file:`controller.py` with the following:
                 striped=False,
                 bordered=False,
                 condensed=False,
-                results_url='dask_tutorial:result',
+                results_url=f'{App.package}:result',
                 refresh_interval=1000,
                 delete_btn=True,
                 show_detailed_status=True,
@@ -122,12 +121,12 @@ Replacte the contents of :file:`controller.py` with the following:
                     'data-bs-placement': 'top',
                     'title': 'Home'
                 },
-                href=reverse('dask_tutorial:home')
+                href=App.reverse('home')
             )
 
             context = {'jobs_table': jobs_table_options, 'home_button': home_button}
 
-            return render(request, 'dask_tutorial/jobs_table.html', context)
+            return App.render(request, 'jobs_table.html', context)
 
 
         @controller
@@ -147,7 +146,7 @@ Replacte the contents of :file:`controller.py` with the following:
                     'data-bs-placement': 'top',
                     'title': 'Home'
                 },
-                href=reverse('dask_tutorial:home')
+                href=App.reverse('home')
             )
 
             jobs_button = Button(
@@ -158,7 +157,7 @@ Replacte the contents of :file:`controller.py` with the following:
                     'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
-                href=reverse('dask_tutorial:jobs_table')
+                href=App.reverse('jobs_table')
             )
 
             context = {
@@ -168,13 +167,13 @@ Replacte the contents of :file:`controller.py` with the following:
                 'jobs_button': jobs_button
             }
 
-            return render(request, 'dask_tutorial/results.html', context)
+            return App.render(request, 'results.html', context)
 
 
         @controller
         def error_message(request):
             messages.add_message(request, messages.ERROR, 'Invalid Scheduler!')
-            return redirect(reverse('dask_tutorial:home'))
+            return App.redirect(App.reverse('home'))
 
 
 
@@ -187,7 +186,7 @@ Remove the navigation menu from the app by using the ``app_no_nav.html`` base te
 
         {% extends "tethys_apps/app_no_nav.html" %}
 
-        {% load static tags %}
+        {% load static tethys %}
 
         {% block title %}{{ tethys_app.name }}{% endblock %}
 
@@ -220,8 +219,8 @@ Replace the contents of :file:`templates/dask_tutorial/home.html` with the follo
 
     .. code-block:: html+django
 
-        {% extends "dask_tutorial/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_actions %}
         {% gizmo jobs_button %}
@@ -231,10 +230,8 @@ Create :file:`templates/dask_tutorial/jobs_table.html` with the following conten
 
     .. code-block:: html+django
 
-        {% extends "dask_tutorial/base.html" %}
-        {% load static tethys_gizmos %}
-
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load static tethys %}
 
         {% block global_scripts %}
             {{ block.super }}
@@ -273,10 +270,8 @@ Create :file:`templates/dask_tutorial/results.html` with the following contents:
 
     .. code-block:: html+django
 
-        {% extends "dask_tutorial/base.html" %}
-        {% load static tethys_gizmos %}
-
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load static tethys %}
 
         {% block title %}- Gizmos - Map View{% endblock %}
 
@@ -316,8 +311,8 @@ Create :file:`templates/dask_tutorial/error.html` with the following contents:
 
     .. code-block:: html+django
 
-        {% extends "dask_tutorial/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         <div class="error-message">

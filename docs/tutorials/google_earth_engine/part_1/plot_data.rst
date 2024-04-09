@@ -279,13 +279,13 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
             context['error'] = f'An unexpected error has occurred. Please try again.'
             log.exception('An unexpected error occurred.')
 
-        return render(request, 'earth_engine/plot.html', context)
+        return App.render(request, 'plot.html', context)
 
 3. Create a new template called :file:`templates/earth_engine/plot.html` with the following contents:
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% if plot_view %}
       {% gizmo plot_view %}

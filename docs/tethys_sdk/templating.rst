@@ -91,10 +91,18 @@ Examples:
 
     See the `Django Tag Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
 
-Tethys Tags
-+++++++++++
+Tethys Filters
+++++++++++++++
 
-In addition to Django's library of template tags, Tethys also defines a few additional template tags that can be used in your templates.
+In addition to Django's library of template filters, Tethys also defines several additional template filters that can be used in your templates.
+
+.. note::
+
+    To load the Tethys template filters you will need to add a include ``tethys`` in the ``load`` tag:
+
+    .. code-block:: html+django
+
+        {% load tethys %}
 
 .. automodule:: tethys_apps.templatetags.tags
    :members: url, public

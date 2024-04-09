@@ -83,11 +83,11 @@ def url(app, controller_name):
         str: A controller name with the namespace from the active Tethys app prepended
 
     Usage:
-        Be sure to include the ``tags`` argument to the ``load`` template tag.
+        Be sure to include the ``tethys`` argument to the ``load`` template tag.
 
         .. code-block:: html+django
 
-            {% load tags %}
+            {% load tethys %}
 
             {% url tethys_app|url:'home' %}
 
@@ -98,7 +98,7 @@ def url(app, controller_name):
 
         .. code-block:: html+django
 
-            {% load tags %}
+            {% load tethys %}
 
             {% url tethys_app|url:'home' %}
 
@@ -126,11 +126,11 @@ def public(app, static_path):
         str: The path to the static file with the active Tethys app's namespace prepended
 
     Usage:
-        Be sure to include the ``tags`` argument to the ``load`` template tag.
+        Be sure to include the ``tethys`` argument to the ``load`` template tag.
 
         .. code-block:: html+django
 
-            {% load tags %}
+            {% load static tethys %}
 
             {% static tethys_app|public:'css/main.css' %}
 
@@ -141,13 +141,15 @@ def public(app, static_path):
 
         .. code-block:: html+django
 
-            {% load tags %}
+            {% load static tethys %}
 
             {% static tethys_app|public:'css/main.css' %}
 
         Equivalent (but not recommended):
 
         .. code-block:: html+django
+
+            {% load static %}
 
             {% static 'my_first_app/css/main.css' %}
 

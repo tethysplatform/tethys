@@ -50,7 +50,7 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 
 .. code-block:: python
 
-    return render(request, 'earth_engine/viewer.html', context)
+    return App.render(request, 'viewer.html', context)
 
 4. Set custom URLs for the ``get_image_collection`` and  ``get_time_series_plot`` controllers in :file:`controllers.py`: so that their URLs are relative to the ``viewer`` url:
 
@@ -76,7 +76,7 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
 .. code-block:: html+django
 
     {% extends tethys_app.package|add:"/base.html" %}
-    {% load tethys_gizmos static %}
+    {% load static tethys %}
 
     {% block app_content %}
     <h1>Home Page</h1>
@@ -92,7 +92,7 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
         Controller for the app home page.
         """
         context = {}
-        return render(request, 'earth_engine/home.html', context)
+        return App.render(request, 'home.html', context)
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the new home page loads with text "Home Page".
 
@@ -112,7 +112,7 @@ As the app is not very complex (i.e. it only has two pages), the navigation menu
 
    -{% extends tethys_app.package|add:"/base.html" %}
    +{% extends "tethys_apps/app_header_content.html" %}
-    {% load tethys_gizmos static %}
+    {% load static tethys %}
 
     {% block app_content %}
     <h1>Home Page</h1>

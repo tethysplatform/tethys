@@ -11,6 +11,8 @@ Add a new controller to the :file:`controller.py` module:
 
 .. code-block:: python
 
+    from .app import App
+
     @controller
     def draw(request):
         drawing_options = MVDraw(
@@ -33,7 +35,7 @@ Add a new controller to the :file:`controller.py` module:
         context = {'map_options': map_options,
                    'geometry': geometry}
 
-        return render(request, 'geoserver_app/draw.html', context)
+        return App.render(request, 'draw.html', context)
 
 2. Spatial Input Template
 =========================
@@ -43,7 +45,7 @@ Create a new :file:`draw.html` template in your template directory and add the f
 .. code-block:: python
 
     {% extends tethys_app.package|add:"/base.html" %}
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% block app_content %}
         <h1>Draw on the Map</h1>

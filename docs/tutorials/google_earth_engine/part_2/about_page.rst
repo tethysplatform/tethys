@@ -71,7 +71,7 @@ To minimize the amount of code that is duplicated, you will create a new :file:`
 
 .. code-block:: html+django
 
-    {% load tags %}
+    {% load tethys %}
 
     <div class="header-button glyphicon-button">
       <a href="{% url tethys_app|url:'home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
@@ -230,7 +230,7 @@ As with the Home page, the Bootstrap Grid System does a good job providing the b
 
 .. code-block:: html+django
 
-    {% load static tags %}
+    {% load static tethys %}
 
     ...
 

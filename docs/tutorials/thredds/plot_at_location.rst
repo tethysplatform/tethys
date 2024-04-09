@@ -390,13 +390,13 @@ In this step you will create a new controller that will query the dataset at the
             context['error'] = f'An unexpected error has occurred. Please try again.'
             log.exception('An unexpected error occurred.')
 
-        return render(request, 'thredds_tutorial/plot.html', context)
+        return App.render(request, 'plot.html', context)
 
 4. Create a new template for the ``get_time_series_plot`` controller, :file:`templates/thredds_tutorial/plot.html`, with the following contents:
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% if plot_view %}
       {% gizmo plot_view %}

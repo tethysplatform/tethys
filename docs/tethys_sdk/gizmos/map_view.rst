@@ -288,13 +288,13 @@ Three elements are required:
         
             context = { "map_options": map_options }
             
-            return render(request, "dam_break_map_ajax/map_ajax.html", context)
+            return App.render(request, "map_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. map_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo map_options %}
 
