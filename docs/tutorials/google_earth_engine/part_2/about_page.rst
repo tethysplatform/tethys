@@ -56,7 +56,7 @@ The first step to adding a new page to the app is to create a new controller and
         Controller for the app about page.
         """
         context = {}
-        return app.render(request, 'about.html', context)
+        return App.render(request, 'about.html', context)
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the new page loads. You should see the "This is the About Page" text.
 
