@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
 from django.utils.functional import classproperty
 from django.shortcuts import render, redirect, reverse
+from django.template.loader import render_to_string
 
 from .testing.environment import (
     is_testing_environment,
@@ -421,6 +422,42 @@ class TethysBase(TethysBaseMixin):
             args=args,
             kwargs=kwargs,
             current_app=current_app,
+        )
+
+    @classmethod
+    def render_to_string(cls, template_name, context=None, request=None, using=None):
+        """Shortcut for Django render_to_string function with app package inserted.
+
+        Usage:
+            Use in place of the ``django.template.loader.render_to_string`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+             .. code-block:: python
+
+                # controllers.py
+                from tethys_sdk.gizmos import Button
+                from .app import App
+
+                @controller
+                def home(request):
+                    \"""
+                    Controller for the app home page.
+                    \"""
+
+                    cancel_button = Button(
+                        display_text='Cancel',
+                        name='cancel-button',
+                        href=App.reverse('home')
+                    )
+
+                    context = {'cancel_button': cancel_button}
+
+                    html = App.render_to_string('home.html', context)
+        """
+        return render_to_string(
+            f"{cls.package}/{template_name}",
+            context=context,
+            request=request,
+            using=using,
         )
 
 

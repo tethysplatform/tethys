@@ -409,6 +409,13 @@ class TestTethysBase(unittest.TestCase):
             mock_reverse.call_args.args, (f"{TethysBaseChild.package}:test",)
         )
 
+    @mock.patch("tethys_apps.base.app_base.render_to_string")
+    def test_render_to_string(self, mock_render):
+        TethysBaseChild.render_to_string("test")
+        self.assertEqual(
+            mock_render.call_args.args, (f"{TethysBaseChild.package}/test",)
+        )
+
 
 class TestTethysExtensionBase(unittest.TestCase):
     def setUp(self):

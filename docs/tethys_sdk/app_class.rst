@@ -109,3 +109,5 @@ Class Methods
 .. automethod:: tethys_apps.base.app_base.TethysBase.redirect
 
 .. automethod:: tethys_apps.base.app_base.TethysBase.reverse
+
+.. automethod:: tethys_apps.base.app_base.TethysBase.render_to_string
