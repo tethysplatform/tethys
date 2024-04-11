@@ -31,11 +31,14 @@ To create a job call the ``create_job`` method on the job manager. The required 
 
 .. code-block::
 
-    from tethysapp.my_first_app.app import MyFirstApp as app
-    from tethys_sdk.workspaces import app_workspace
+    from tethys_sdk.routing import controller
+    from .app import App
 
+    job_manager = App.get_job_manager()
 
-    @app_workspace
+    @controller(
+        app_workspace=True,
+    )
     def some_controller(request, app_workspace):
         # create a new job from the job manager
         job = job_manager.create_job(

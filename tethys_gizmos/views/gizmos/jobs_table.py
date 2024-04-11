@@ -11,7 +11,7 @@ from tethys_portal.optional_dependencies import optional_import
 # optional imports
 server_document = optional_import("server_document", from_module="bokeh.embed")
 
-log = logging.getLogger("tethys.tethys_gizmos.views.jobs_table")
+logger = logging.getLogger(f"tethys.{__name__}")
 
 
 def perform_action(request, job_id, action, success_message="", error_message=None):
@@ -22,8 +22,7 @@ def perform_action(request, job_id, action, success_message="", error_message=No
         message = success_message
     except Exception as e:
         success = False
-        log.exception(e)
-        log.error(
+        logger.error(
             f'The following error occurred when running "{action}" on job {job_id}: {str(e)}'
         )
         message = error_message or f"Unable to {action} job {job_id}."
@@ -46,7 +45,9 @@ def delete(request, job_id):
     except Exception as e:
         success = False
         message = str(e)
-        log.error(f"The following error occurred when deleting job {job_id}: {message}")
+        logger.error(
+            f"The following error occurred when deleting job {job_id}: {message}"
+        )
     return JsonResponse({"success": success, "message": message})
 
 
@@ -93,8 +94,9 @@ def show_log(request, job_id):
             {"success": True, "html": html, "log_contents": log_contents}
         )
     except Exception as e:
+        logger.exception(e)
         message = str(e)
-        log.error(
+        logger.error(
             "The following error occurred when retrieving logs for job %s: %s",
             job_id,
             message,
@@ -124,7 +126,7 @@ def get_log_content(request, job_id, key1, key2=None):
         if key2 is None:
             key2 = ""  # for error message formatting
         message = str(e)
-        log.error(
+        logger.error(
             "The following error occurred when retrieving log content for log %s in job %s: %s",
             job_id,
             f"{key1} {key2}",
@@ -147,7 +149,7 @@ def update_row(request, job_id):
         statuses = None
         if status in ["Various", "Various-Complete"]:
             # Hard code statues for the gizmo showcase
-            if job.label == "gizmos_showcase":
+            if job.label == "gizmo_showcase":
                 if isinstance(job, CondorWorkflow):
                     statuses = {
                         "Completed": 20,
@@ -202,7 +204,7 @@ def update_row(request, job_id):
         html = render_to_string("tethys_gizmos/gizmos/job_row.html", data)
     except Exception as e:
         error_msg = "Updating row for job {} failed: {}".format(job_id, str(e))
-        log.warning(error_msg)
+        logger.warning(error_msg)
         user_friendly_error = (
             'An unexpected error occurred while updating this row. Press the "Refresh Status" '
             "button to update the row manually."
@@ -227,8 +229,8 @@ def update_workflow_nodes_row(request, job_id):
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
 
-        # Hard code example for gizmos_showcase
-        if job.label == "gizmos_showcase":
+        # Hard code example for gizmo_showcase
+        if job.label == "gizmo_showcase":
             dag = {
                 "a": {
                     "status": "com",
@@ -289,7 +291,7 @@ def update_workflow_nodes_row(request, job_id):
 
         success = True
     except Exception as e:
-        log.error(
+        logger.error(
             "The following error occurred when updating details row for job %s: %s",
             job_id,
             str(e),
@@ -329,7 +331,7 @@ def bokeh_row(request, job_id, type="individual-graph"):
         success = True
 
     except Exception as e:
-        log.error(
+        logger.error(
             "The following error occurred when getting bokeh chart "
             "from scheduler {} for job {}: {}".format(
                 dask_scheduler.name, job_id, str(e)

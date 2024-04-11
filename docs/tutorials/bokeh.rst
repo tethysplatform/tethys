@@ -305,8 +305,8 @@ Note that in this case we are not using a custom template, but we add the ``app_
 .. code-block:: html+django
 
     {% block app_navigation_items %}
-      {% url 'bokeh_tutorial:home' as home_url %}
-      {% url 'bokeh_tutorial:shapes' as shapes_url %}
+      {% url tethys_app|url:'home' as home_url %}
+      {% url tethys_app|url:'shapes' as shapes_url %}
       <li class="title">Examples</li>
       <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Sea Surface</a></li>
       <li class="{% if request.path == shapes_url %}active{% endif %}"><a href="{{ shapes_url }}">Shapes</a></li>

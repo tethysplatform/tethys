@@ -31,6 +31,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
     .. code-block:: python
         :emphasize-lines: 6-15, 29
 
+
         @controller
         def home(request):
             """
@@ -55,7 +56,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
-                href=reverse('dask_tutorial:jobs_table')
+                href=App.reverse('jobs_table')
             )
 
             context = {
@@ -63,7 +64,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 'jobs_button': jobs_button
             }
 
-            return render(request, 'dask_tutorial/home.html', context)
+            return App.render(request, 'home.html', context)
 
 
 Add the ``run_job`` controller to the :file:`controller.py` module as well:

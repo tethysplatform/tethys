@@ -82,7 +82,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Show All Jobs'
                 },
-                href=reverse('dask_tutorial:jobs_table')
+                href=App.reverse('jobs_table')
             )
 
             context = {
@@ -92,7 +92,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                 'jobs_button': jobs_button,
             }
 
-            return render(request, 'dask_tutorial/home.html', context)
+            return App.render(request, 'home.html', context)
 
 Update the ``run_job`` controller to call the Multi Leaf Job:
 

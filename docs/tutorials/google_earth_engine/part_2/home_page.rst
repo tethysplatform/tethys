@@ -50,7 +50,7 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 
 .. code-block:: python
 
-    return render(request, 'earth_engine/viewer.html', context)
+    return App.render(request, 'viewer.html', context)
 
 4. Set custom URLs for the ``get_image_collection`` and  ``get_time_series_plot`` controllers in :file:`controllers.py`: so that their URLs are relative to the ``viewer`` url:
 
@@ -75,8 +75,8 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
 
 .. code-block:: html+django
 
-    {% extends "earth_engine/base.html" %}
-    {% load tethys_gizmos static %}
+    {% extends tethys_app.package|add:"/base.html" %}
+    {% load static tethys %}
 
     {% block app_content %}
     <h1>Home Page</h1>
@@ -92,7 +92,7 @@ In this step you will create a new ``home`` controller and :file:`home.html` tem
         Controller for the app home page.
         """
         context = {}
-        return render(request, 'earth_engine/home.html', context)
+        return App.render(request, 'home.html', context)
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the new home page loads with text "Home Page".
 
@@ -110,9 +110,9 @@ As the app is not very complex (i.e. it only has two pages), the navigation menu
 
 .. code-block:: diff
 
-   -{% extends "earth_engine/base.html" %}
+   -{% extends tethys_app.package|add:"/base.html" %}
    +{% extends "tethys_apps/app_header_content.html" %}
-    {% load tethys_gizmos static %}
+    {% load static tethys %}
 
     {% block app_content %}
     <h1>Home Page</h1>
@@ -256,7 +256,7 @@ In this step we'll add a the title and some filler content to the About panel of
       <h2 class="info-title">About</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget est lorem ipsum dolor sit amet. Morbi tincidunt augue interdum velit euismod in pellentesque.</p>
       <p>Ac felis donec et odio pellentesque. Quis ipsum suspendisse ultrices gravida dictum fusce ut. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Sed euismod nisi porta lorem mollis. Nisi scelerisque eu ultrices vitae. Sit amet consectetur adipiscing elit duis. At in tellus integer feugiat scelerisque varius morbi enim.</p>
-      <img id="feature-image" src="{% static 'earth_engine/images/earth-engine-viewer.png' %}">
+      <img id="feature-image" src="{% static tethys_app|public:'images/earth-engine-viewer.png' %}">
     </div>
 
 4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the title "About", filler paragraphs, and screenshot appear in the panel on the left.
@@ -296,7 +296,7 @@ In this step we'll add the content to the Resources panel of the home page. The 
       <div class="d-flex align-items-center">
         <div class="flex-shrink-0">
           <a href="#coast">
-            <img class="media-object" src="{% static 'earth_engine/images/coast_80_80.jpg' %}" alt="coast">
+            <img class="media-object" src="{% static tethys_app|public:'images/coast_80_80.jpg' %}" alt="coast">
           </a>
         </div>
         <div class="media-body flex-grow-1 ms-3">
@@ -308,7 +308,7 @@ In this step we'll add the content to the Resources panel of the home page. The 
       <div class="d-flex align-items-center mt-2">
         <div class="flex-shrink-0">
           <a href="#condensation">
-            <img class="media-object" src="{% static 'earth_engine/images/condensation_80_80.jpg' %}" alt="condensation">
+            <img class="media-object" src="{% static tethys_app|public:'images/condensation_80_80.jpg' %}" alt="condensation">
           </a>
         </div>
         <div class="media-body flex-grow-1 ms-3">
@@ -320,7 +320,7 @@ In this step we'll add the content to the Resources panel of the home page. The 
       <div class="d-flex align-items-center mt-2">
         <div class="flex-shrink-0">
           <a href="#waterfall">
-            <img class="media-object" src="{% static 'earth_engine/images/waterfall_80_80.jpg' %}" alt="waterfall">
+            <img class="media-object" src="{% static tethys_app|public:'images/waterfall_80_80.jpg' %}" alt="waterfall">
           </a>
         </div>
         <div class="media-body flex-grow-1 ms-3">
@@ -346,7 +346,7 @@ In this step you will add the content to the Get Started panel. This panel is ar
     <div class="info-container">
       <h2 class="info-title">Get Started</h2>
       <p>Press the button below to launch the viewer</p>
-      <a id="get-started-btn" href="{% url 'earth_engine:viewer' %}">Launch Viewer</a>
+      <a id="get-started-btn" href="{% url tethys_app|url:'viewer' %}">Launch Viewer</a>
     </div>
 
 2. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the title "Get Started", paragraph, and Launch Viewer link appear in the panel on the bottom right. Click on the Launch Viewer link to verify that it directs the user to the map view page.
@@ -364,7 +364,7 @@ The Bootstrap CSS framework provides a good base for styling pages in the apps. 
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="{% static 'earth_engine/css/home.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/home.css' %}" />
     {% endblock %}
 
 3. Add the following lines to :file:`public/css/home.css` to customize the appearance of the ``info-container`` panels:
@@ -483,7 +483,7 @@ In this step you will add a Home button to the Viewer page so that users can eas
 
     {% block header_buttons %}
       <div class="header-button glyphicon-button">
-        <a href="{% url 'earth_engine:home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
+        <a href="{% url tethys_app|url:'home' %}" title="Home"><i class="bi bi-house-door-fill"></i></a>
       </div>
     {% endblock %}
 

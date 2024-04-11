@@ -42,7 +42,7 @@ class BokehView(TethysGizmoOptions):
 
     Template Code Example::
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% gizmo bokeh_view_input %}
 
@@ -214,7 +214,7 @@ class BokehView(TethysGizmoOptions):
 
     Template Code::
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% gizmo scatter_plot %}
         {% gizmo line_plot %}

@@ -33,6 +33,7 @@ Three elements are required:
 .. code-block:: python
 
     import json
+    from .app import App
 
     @controller
     def datatable_ajax(request):
@@ -57,13 +58,13 @@ Three elements are required:
 
         context = {"datatable_options": datatable_default}
 
-        return render(request, "app_name/datatable_ajax.html", context)
+        return App.render(request, "datatable_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. datatable_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo datatable_options %}
 

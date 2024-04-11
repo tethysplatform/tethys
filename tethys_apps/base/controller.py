@@ -457,7 +457,7 @@ def handler(
         ------------
 
         from bokeh.embed import server_document
-        from django.shortcuts import render
+        from .app import App
 
         def home_controller(request):
             # custom logic here
@@ -468,7 +468,7 @@ def handler(
                 'script': script,
                 'custom_key': custom_value,
             }
-            return render(request, 'my_app/home.html', context)
+            return App.render(request, 'home.html', context)
 
         @handler(
             name='home',

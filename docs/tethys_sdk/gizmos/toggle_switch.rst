@@ -33,6 +33,7 @@ Three elements are required:
 .. code-block:: python
 
     import json
+    from .app import App
 
     @controller
     def toggle_ajax(request):
@@ -45,13 +46,13 @@ Three elements are required:
 
         context = {"toggle_switch": toggle_switch}
 
-        return render(request, "app_name/toggle_ajax.html", context)
+        return App.render(request, "toggle_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. toggle_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo toggle_switch %}
 

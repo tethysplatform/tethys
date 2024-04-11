@@ -141,7 +141,7 @@ In this step you'll add the ``MapView`` to the home view. You'll also add a cust
 
     {% block content_dependent_styles %}
         {{ block.super }}
-        <link rel="stylesheet" href="{% static 'earth_engine/css/map.css' %}" />
+        <link rel="stylesheet" href="{% static tethys_app|public:'css/map.css' %}" />
     {% endblock %}
 
 3. Test and Verify
