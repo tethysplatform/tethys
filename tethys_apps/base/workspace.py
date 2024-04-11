@@ -288,10 +288,10 @@ def get_user_workspace(app_class_or_request, user_or_request) -> TethysWorkspace
 
         import os
         from tethys_sdk.workspaces import get_user_workspace
-        from .app import MyFirstApp as app
+        from .app import App
 
         def some_function(user):
-            user_workspace = get_user_workspace(app, user)
+            user_workspace = get_user_workspace(App, user)
             ...
     """  # noqa: E501
     from tethys_apps.base.app_base import TethysAppBase
@@ -342,7 +342,7 @@ def user_workspace(controller):
     ::
 
         import os
-        from my_first_app.app import MyFirstApp as app
+        from .app import App
         from tethys_sdk.workspaces import user_workspace
 
         @user_workspace
@@ -357,7 +357,7 @@ def user_workspace(controller):
 
             context = {}
 
-            return render(request, 'my_first_app/template.html', context)
+            return App.render(request, 'template.html', context)
 
     """  # noqa:E501
 
@@ -416,10 +416,10 @@ def get_app_workspace(app_or_request) -> TethysWorkspace:
 
         import os
         from tethys_sdk.workspaces import get_app_workspace
-        from .app import MyFirstApp as app
+        from .app import App
 
         def some_function():
-            app_workspace = get_app_workspace(app)
+            app_workspace = get_app_workspace(App)
             ...
     """
     from tethys_apps.base.app_base import TethysAppBase
@@ -455,7 +455,7 @@ def app_workspace(controller):
     ::
 
         import os
-        from my_first_app.app import MyFirstApp as app
+        from .app import App
         from tethys_sdk.workspaces import app_workspace
 
         @app_workspace
@@ -470,7 +470,7 @@ def app_workspace(controller):
 
             context = {}
 
-            return render(request, 'my_first_app/template.html', context)
+            return App.render(request, 'template.html', context)
 
     """  # noqa:E501
 

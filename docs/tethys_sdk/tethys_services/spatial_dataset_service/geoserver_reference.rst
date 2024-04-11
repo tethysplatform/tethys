@@ -45,10 +45,10 @@ Upload Shapefile
 
 ::
 
-    from my_first_app.app import MyFirstApp as app
+    from .app import App
 
     # First get an engine
-    engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
+    engine = App.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
     # Create a workspace named after our app
     engine.create_workspace(workspace_id='my_app', uri='http://www.example.com/apps/my-app')

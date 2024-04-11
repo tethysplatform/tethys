@@ -56,6 +56,7 @@ Three elements are required:
     import plotly.graph_objs as go
     from tethys_sdk.gizmos import PlotlyView
     from tethys_sdk.routing import controller
+    from .app import App
 
         
     @controller(name='plotly_ajax', url='app-name/plotly')
@@ -71,13 +72,13 @@ Three elements are required:
 
         context = {'plotly_view_input': my_plotly_view}
 
-        return render(request, 'app_name/plotly_ajax.html', context)
+        return App.render(request, 'plotly_ajax.html', context)
 
 2) A template for with the tethys gizmo (e.g. plotly_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo plotly_view_input %}
 

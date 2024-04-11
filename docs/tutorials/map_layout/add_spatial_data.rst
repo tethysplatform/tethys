@@ -42,12 +42,12 @@ Replace :file:`controller.py` with the following:
     from pathlib import Path
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
-    from .app import MapLayoutTutorial as app
+    from .app import App
 
 
     @controller(name="home", app_workspace=True)
     class MapLayoutTutorialMap(MapLayout):
-        app = app
+        app = App
         base_template = 'map_layout_tutorial/base.html'
         map_title = 'Map Layout Tutorial'
         map_subtitle = 'NOAA-OWP NextGen Model Outputs'
@@ -248,12 +248,12 @@ Replace your :file:`controllers.py` with the following:
     from pathlib import Path
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
-    from .app import MapLayoutTutorial as app
+    from .app import App
 
 
     @controller(name="home", app_workspace=True)
     class MapLayoutTutorialMap(MapLayout):
-        app = app
+        app = App
         base_template = 'map_layout_tutorial/base.html'
         map_title = 'Map Layout Tutorial'
         map_subtitle = 'NOAA-OWP NextGen Model Outputs'

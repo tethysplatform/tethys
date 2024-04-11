@@ -136,15 +136,17 @@ Finally, include the following context variables in the controller for the page:
 
 .. code-block:: python
 
-    from django.shortcuts import reverse, render
+    from tethys_sdk.routing import controller
+    from .app import App
 
+    @controller
     def some_controller(request):
         context = {
             'nav_title': 'My Title',
             'nav_subtitle': 'My Subtitle',
-            'back_url': reverse('my_first_app:some_url')
+            'back_url': App.reverse('some_url')
         }
-        return render(request, 'my_first_app/some_template.html', context)
+        return App.render(request, 'some_template.html', context)
 
 nav_tabs.css
 ------------

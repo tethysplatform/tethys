@@ -1,15 +1,15 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 import pandas as pd
 
 from tethys_sdk.routing import controller
+from .app import App
 
 
 @controller
 def home(request):
     """Controller for the app home page."""
     # The index.html template loads the React frontend
-    return render(request, '{{project}}/index.html')
+    return App.render(request, 'index.html')
 
 
 @controller

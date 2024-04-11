@@ -117,7 +117,7 @@ In this step you'll learn how to create a JavaScript module using the closure me
 
     {% block scripts %}
       {{ block.super }}
-      <script src="{% static 'earth_engine/js/gee_datasets.js' %}" type="text/javascript"></script>
+      <script src="{% static tethys_app|public:'js/gee_datasets.js' %}" type="text/javascript"></script>
     {% endblock %}
 
 2. Implement Methods
