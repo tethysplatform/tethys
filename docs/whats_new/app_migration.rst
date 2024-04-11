@@ -79,12 +79,12 @@ For example, the following controllers:
 .. code-block:: python
 
     from tethys_sdk.workspaces import app_workspace
-    from .app import MyFirstApp as app
+    from .app import App
 
 
     def controller_a(request):
         """Gets user workspace from old app class method."""
-        user_workspace = app.get_user_workspace(request.user)
+        user_workspace = App.get_user_workspace(request.user)
         uw_path = user_workspace.path
         ...
  

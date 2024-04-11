@@ -305,7 +305,7 @@ class JobsTable(TethysGizmoOptions):
         # Initialize super class
         super().__init__(attributes=attributes, classes=classes)
 
-        self.jobs = jobs
+        self.jobs = list(jobs)
         if sort:
             key = sort if callable(sort) else lambda j: j.creation_time
             self.jobs.sort(key=key, reverse=reverse_sort)

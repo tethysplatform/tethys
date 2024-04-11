@@ -264,7 +264,6 @@ In this step, you'll create controls using Tethys Gizmos with their initial valu
 .. code-block:: python
 
     import datetime as dt
-    from django.shortcuts import render
     from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput, DatePicker, Button
     from .gee.products import EE_PRODUCTS
@@ -392,14 +391,14 @@ In this step, you'll create controls using Tethys Gizmos with their initial valu
             'load_button': load_button,
         }
 
-        return render(request, 'earth_engine/home.html', context)
+        return App.render(request, 'home.html', context)
 
 2. Replace the contents of the `templates/earth_engine/home.html` template with the following:
 
 .. code-block:: html+django
 
-    {% extends "earth_engine/base.html" %}
-    {% load tethys_gizmos static %}
+    {% extends tethys_app.package|add:"/base.html" %}
+    {% load static tethys %}
 
     {% block app_navigation_items %}
       <li class="title">Select Dataset</li>

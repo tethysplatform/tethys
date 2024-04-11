@@ -366,6 +366,11 @@ function bind_jobs_table_actions(table_elem){
     else if(action.data('modal-url')){
       bind_modal_url(action);
     }
+    else if(action.hasClass('job-action-refresh-status')){
+        action.on('click', function(){
+            update_row(table_elem);
+        });
+    }
     else{
       bind_action(action);
     }

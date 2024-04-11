@@ -81,6 +81,8 @@ Three elements are required:
 
 .. code-block:: python
 
+    from .app import App
+
     @controller(
         url="dam-break/map/hydrograph",
     )
@@ -96,13 +98,13 @@ Three elements are required:
 
         context = {"flood_plot": flood_plot}
 
-        return render(request, "dam_break/hydrograph_ajax.html", context)
+        return App.render(request, "hydrograph_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. hydrograph_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo flood_plot %}
 

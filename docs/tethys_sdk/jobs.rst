@@ -58,13 +58,13 @@ To use the Job Manager in your app you first need to import the TethysAppBase su
 
 ::
 
-    from app import MyFirstApp as app
+    from .app import App
 
 You can then get the job manager by calling the method ``get_job_manager`` on the app.
 
 ::
 
-    job_manager = app.get_job_manager()
+    job_manager = App.get_job_manager()
 
 You can now use the job manager to create a new job, or retrieve an existing job or jobs.
 
@@ -197,7 +197,7 @@ The Jobs Table Gizmo facilitates job management through the web interface and is
 
 ::
 
-    job_manager = app.get_job_manager()
+    job_manager = App.get_job_manager()
 
     jobs = job_manager.list_jobs(request.user)
 
@@ -209,7 +209,7 @@ The Jobs Table Gizmo facilitates job management through the web interface and is
         striped=False,
         bordered=False,
         condensed=False,
-        results_url='app_name:results_controller',
+        results_url=f'{App.package}:results_controller',
     )
 
 .. seealso::
@@ -238,7 +238,7 @@ This URL can be retrieved from the job manager with the ``get_job_status_callbac
 
 ::
 
-    job_manager = app.get_job_manager()
+    job_manager = App.get_job_manager()
     callback_url = job_manager.get_job_status_callback_url(request, job_id)
 
 API Documentation

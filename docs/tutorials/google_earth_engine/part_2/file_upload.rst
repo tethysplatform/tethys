@@ -63,7 +63,7 @@ Create a new `Bootstrap Modal <https://getbootstrap.com/docs/5.2/components/moda
         'map_view': map_view
     }
 
-    return render(request, 'earth_engine/viewer.html', context)
+    return App.render(request, 'viewer.html', context)
 
 2. Add the new button with help text to the ``app_navigation_items`` block in :file:`templates/earth_engine/viewer.html`:
 
@@ -246,7 +246,7 @@ The ``action`` attribute of the HTML ``form`` element dictates endpoint to which
         'map_view': map_view
     }
 
-    return render(request, 'earth_engine/viewer.html', context)
+    return App.render(request, 'viewer.html', context)
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_. Press the **Set Boundary** button to open the Set Boundary form. Choose a file and press the **Set Boundary** button in the modal to upload it. Verify that the name of the file is printed to the console.
 

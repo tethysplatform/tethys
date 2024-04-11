@@ -767,14 +767,14 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     def test_get_app_class(self, mock_harvester):
         """"""
-        from tethysapp.test_app.app import TestApp
+        from tethysapp.test_app.app import App
 
-        test_app = TestApp()
+        test_app = App()
         mock_harvester().apps = [test_app]
 
         mock_db_app = mock.MagicMock()
-        mock_db_app.name = TestApp.name  # This should match the name of TestApp
-        mock_db_app.package = "test_app"  # This should match the package of TestApp
+        mock_db_app.name = App.name  # This should match the name of App
+        mock_db_app.package = App.package  # This should match the package of App
 
         ret = utilities.get_app_class(mock_db_app)
 
@@ -784,14 +784,14 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     def test_get_app_class__different_name(self, mock_harvester):
         """Test case when user changes name of app in DB (from app settings)."""
-        from tethysapp.test_app.app import TestApp
+        from tethysapp.test_app.app import App
 
-        test_app = TestApp()
+        test_app = App()
         mock_harvester().apps = [test_app]
 
         mock_db_app = mock.MagicMock()
-        mock_db_app.name = "Different Name"  # This shouldn't match the name of TestApp
-        mock_db_app.package = "test_app"  # This should match the package of TestApp
+        mock_db_app.name = "Different Name"  # This shouldn't match the name of App
+        mock_db_app.package = "test_app"  # This should match the package of App
 
         ret = utilities.get_app_class(mock_db_app)
 
@@ -801,14 +801,14 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     def test_get_app_class__no_matching_class(self, mock_harvester):
         """Test case when no app class can be found for the app."""
-        from tethysapp.test_app.app import TestApp
+        from tethysapp.test_app.app import App
 
-        mock_harvester().apps = [TestApp()]
+        mock_harvester().apps = [App()]
 
         mock_db_app = mock.MagicMock()
-        mock_db_app.name = TestApp.name  # This should match the name of TestApp
+        mock_db_app.name = App.name  # This should match the name of App
         mock_db_app.package = (
-            "does_not_exist"  # This shouldn't match the package of TestApp
+            "does_not_exist"  # This shouldn't match the package of App
         )
 
         ret = utilities.get_app_class(mock_db_app)

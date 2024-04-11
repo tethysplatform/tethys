@@ -71,13 +71,13 @@ Three elements are required:
 
             context = { "cesium_map_view": cesium_map_view }
 
-            return render(request, "dam_break_map_ajax/map_ajax.html", context)
+            return App.render(request, "map_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. map_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo cesium_map_view %}
 

@@ -104,4 +104,10 @@ Class Methods
 
 .. automethod:: tethys_apps.base.TethysAppBase.create_persistent_store
 
-.. automethod:: tethys_apps.base.TethysAppBase.drop_persistent_store
+.. automethod:: tethys_apps.base.app_base.TethysAppBase.render
+
+.. automethod:: tethys_apps.base.app_base.TethysBase.redirect
+
+.. automethod:: tethys_apps.base.app_base.TethysBase.reverse
+
+.. automethod:: tethys_apps.base.app_base.TethysBase.render_to_string

@@ -1,5 +1,5 @@
-{{ '{%' }} extends "{{project}}/base.html" {{ '%}' }}
-{{ '{%' }} load tethys_gizmos {{ '%}' }}
+{{ '{%' }} extends tethys_app.package|add:"/base.html" {{ '%}' }}
+{{ '{%' }} load tethys {{ '%}' }}
 
 {{ '{%' }} block header_buttons {{ '%}' }}
   <div class="header-button glyphicon-button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Help">

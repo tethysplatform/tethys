@@ -1,7 +1,7 @@
 from tethys_sdk.base import TethysExtensionBase
 
 
-class TestExtension(TethysExtensionBase):
+class Extension(TethysExtensionBase):
     """
     Tethys extension class for Test Extension.
     """

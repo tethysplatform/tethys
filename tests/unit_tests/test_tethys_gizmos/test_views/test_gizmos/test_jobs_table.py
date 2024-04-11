@@ -33,7 +33,7 @@ class TestJobsTable(unittest.TestCase):
 
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_execute_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
@@ -56,7 +56,7 @@ class TestJobsTable(unittest.TestCase):
 
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_terminate_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
@@ -77,7 +77,7 @@ class TestJobsTable(unittest.TestCase):
 
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_delete_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
@@ -98,7 +98,7 @@ class TestJobsTable(unittest.TestCase):
 
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_resubmit_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
@@ -120,7 +120,7 @@ class TestJobsTable(unittest.TestCase):
         result = gizmo_jobs_table.show_log(request="", job_id="1")
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_show_log_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
@@ -156,7 +156,7 @@ class TestJobsTable(unittest.TestCase):
         )
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_get_log_content_exception(self, mock_tj, mock_log):
         tj = mock_tj.objects.get_subclass()
@@ -176,7 +176,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row_showcase(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=TethysJob, status="Various", label="gizmos_showcase"
+            spec=TethysJob, status="Various", label="gizmo_showcase"
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
@@ -199,7 +199,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row_showcase_various_complete(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=TethysJob, status="Various-Complete", label="gizmos_showcase"
+            spec=TethysJob, status="Various-Complete", label="gizmo_showcase"
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
@@ -222,7 +222,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row_showcase_condor_workflow(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=CondorWorkflow, status="Various", label="gizmos_showcase"
+            spec=CondorWorkflow, status="Various", label="gizmo_showcase"
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
@@ -243,7 +243,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row(self, mock_tj, mock_rts):
-        # Another Case where job.label is not gizmos_showcase
+        # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=CondorWorkflow,
@@ -283,7 +283,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row_dask_job_results_ready(self, mock_tj, mock_rts):
-        # Another Case where job.label is not gizmos_showcase
+        # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=DaskJob,
@@ -304,7 +304,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row_condor_workflow_no_statuses(self, mock_tj, mock_rts):
-        # Another Case where job.label is not gizmos_showcase
+        # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=CondorWorkflow,
@@ -330,7 +330,7 @@ class TestJobsTable(unittest.TestCase):
         self.assertEqual("Submitted", rts_call_args[0][0][1]["job_status"])
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_row_exception(self, mock_tj, mock_log):
         mock_tj.objects.get_subclass.side_effect = Exception("error")
@@ -411,7 +411,7 @@ class TestJobsTable(unittest.TestCase):
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(
             spec=CondorWorkflow,
             status="Various",
-            label="gizmos_showcase",
+            label="gizmo_showcase",
         )
 
         request = RequestFactory().post("/jobs")
@@ -466,7 +466,7 @@ class TestJobsTable(unittest.TestCase):
             data["dag"],
         )
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
     def test_update_workflow_nodes_row_exception(self, mock_tj, mock_log):
         mock_tj.objects.get_subclass.side_effect = Exception
@@ -508,7 +508,7 @@ class TestJobsTable(unittest.TestCase):
         self.assertIn('"html": "test_html"', ret.content.decode("utf-8"))
         mock_bokeh.assert_called_with("http://test_dashboard/individual-graph")
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.log")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.server_document")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.DaskScheduler")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")

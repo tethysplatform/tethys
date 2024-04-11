@@ -100,6 +100,7 @@ Use these build arguments with the ``build`` command to customize how the image 
 +---------------------------+------------------------------------------------------------------------------------------+
 | MICRO_TETHYS              | Set to True to use `micro-tethys` environment. Defaults to False.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
+
 Important Paths
 ---------------
 
@@ -166,6 +167,7 @@ These environment variables are used to configure the database and database user
 +--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 | SKIP_DB_SETUP            | Set to True to skip database creation, useful for existing databases configured for Tethys. Defaults to False.                      |
 +--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+
 Tethys Portal Admin User
 ------------------------
 

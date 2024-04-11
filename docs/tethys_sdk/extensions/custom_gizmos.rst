@@ -237,6 +237,7 @@ Import and create a new instance of the gizmo in your controller:
 ::
 
     from tethysext.my_first_extension.gizmos import CustomSelectInput
+    from .app import App
 
 
     def my_app_controller(request):
@@ -253,13 +254,13 @@ Import and create a new instance of the gizmo in your controller:
         context = {
             'my_select': my_select,
         }
-        return render(request, 'my_first_app/a_template.html', context)
+        return App.render(request, 'a_template.html', context)
 
 Then use the gizmo as usual in ``a_template.html``:
 
 .. code-block::django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo my_select %}
 

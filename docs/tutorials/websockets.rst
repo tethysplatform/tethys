@@ -259,6 +259,7 @@ b. Let's create a message box to display our notification when a new app is adde
     .. code-block:: python
 
         from tethys_sdk.gizmos import MessageBox
+        from .app import App
 
         ...
 
@@ -281,7 +282,7 @@ b. Let's create a message box to display our notification when a new app is adde
                 'can_add_dams': has_permission(request, 'add_dams')
             }
 
-            return render(request, 'dam_inventory/home.html', context)
+            return App.render(request, 'home.html', context)
 
         ...
 

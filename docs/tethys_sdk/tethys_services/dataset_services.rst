@@ -135,9 +135,9 @@ Call the ``get_dataset_service()`` method of the app class to get a ``DatasetEng
 
 .. code-block:: python
 
-    from my_first_app.app import MyFirstApp as app
+    from .app import App
 
-    ckan_engine = app.get_dataset_service('primary_ckan', as_engine=True)
+    ckan_engine = App.get_dataset_service('primary_ckan', as_engine=True)
 
 You can also create a ``DatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials):
 
@@ -159,9 +159,9 @@ After you have a ``DatasetEngine``, simply call the desired method on it. All ``
 
 .. code-block:: python
 
-    from my_first_app.app import MyFirstApp as app
+    from .app import MyFirstApp as App
 
-    dataset_engine = app.get_dataset_service('primary_ckan', as_engine=True)
+    dataset_engine = App.get_dataset_service('primary_ckan', as_engine=True)
 
     result = dataset_engine.list_datasets()
 
@@ -183,18 +183,18 @@ Use the dataset service engines references above for descriptions of the methods
     .. code-block:: python
 
         from tethys_sdk.services import get_dataset_engine, ensure_oauth2
-        from .app import MyFirstApp as app
+        from .app import App
 
         @ensure_oauth2('hydroshare')
         def my_controller(request):
             """
             This is an example controller that uses the HydroShare API.
             """
-            engine = app.get_dataset_service('hydroshare', request=request)
+            engine = App.get_dataset_service('hydroshare', request=request)
 
             response = engine.list_datasets()
 
             context = {}
 
-            return render(request, 'my_first_app/home.html', context)
+            return App.render(request, 'home.html', context)
 
