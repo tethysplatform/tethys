@@ -40,9 +40,9 @@ class JobManager:
 
         ::
 
-            from app import MyApp as app
+            from .app import App
 
-            job_manager = app.get_job_manager()
+            job_manager = App.get_job_manager()
     """
 
     def __init__(self, app):

@@ -14,6 +14,8 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
 from django.utils.functional import classproperty
+from django.shortcuts import render, redirect, reverse
+from django.template.loader import render_to_string
 
 from .testing.environment import (
     is_testing_environment,
@@ -54,23 +56,6 @@ class TethysBase(TethysBaseMixin):
         self._url_patterns = None
         self._handler_patterns = None
         self._registered_url_maps = None
-
-        # TODO remove compatibility code in v4.1
-        if self.index is not None and ":" in self.index:
-            old_index = self.index
-            self.index = self.index.split(":")[-1]
-
-            # print deprecation warning
-            from tethys_cli.cli_colors import write_warning
-
-            write_warning(
-                f"Deprecation Warning: "
-                f'The app "{self.name}" has an index attribute that includes the URL namespace ("{old_index}").\n'
-                f'  Including the URL namespace as part of the "index" attribute is now deprecated, '
-                f"and support for it will be removed in Tethys v4.1.\n"
-                f'  Please change the "index" attribute to only include the controller name '
-                f"(i.e. index = '{self.index}')"
-            )
 
     @classproperty
     def package_namespace(cls):
@@ -269,20 +254,6 @@ class TethysBase(TethysBaseMixin):
 
     @property
     def registered_url_maps(self):
-        # TODO remove deprecation code
-        try:
-            self._registered_url_maps = self.url_maps()
-            from tethys_cli.cli_colors import write_warning
-
-            write_warning(
-                f'Deprecation Warning: The "{self.name}" app has the `url_maps` method defined. '
-                "This method is now deprecated. "
-                'Please use the new "controller", "consumer", and "handler" decorators to register URL maps '
-                "(see docs: http://docs.tethysplatform.org/en/stable/tethys_sdk/routing.html)."
-            )
-        except AttributeError:
-            pass
-
         if self._registered_url_maps is None:
             self._registered_url_maps = self.register_url_maps()
 
@@ -358,6 +329,136 @@ class TethysBase(TethysBaseMixin):
         Remove the instance from the db.
         """
         raise NotImplementedError
+
+    @classmethod
+    def render(
+        cls, request, template, context=None, content_type=None, status=None, using=None
+    ):
+        """Shortcut for Django render function with app package inserted.
+
+        Usage:
+            Use in place of the ``django.shortcuts.render`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+            .. code-block:: python
+
+                # controllers.py
+                from .app import App
+
+                @controller
+                def home(request):
+                    \"""
+                    Controller for the app home page.
+                    \"""
+
+                    context = {}
+
+                    return App.render(request, 'home.html', context)
+        """
+        return render(
+            request,
+            f"{cls.package}/{template}",
+            context=context,
+            content_type=content_type,
+            status=status,
+            using=using,
+        )
+
+    @classmethod
+    def redirect(cls, to, *args, **kwargs):
+        """Shortcut for Django redirect function with app package inserted if `to` is not absolute.
+
+        Usage:
+            Use in place of the ``django.shortcuts.redirect`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+            .. code-block:: python
+
+                # controllers.py
+                from .app import App
+
+                @controller
+                def do_something_and_redirect_home(request):
+                    \"""
+                    Controller to do something before redirecting to the app homepage.
+                    \"""
+
+                    return App.redirect(App.reverse("jobs_table"))
+
+        """
+        to = to if to.startswith("/") else f"{cls.package}:{to}"
+        return redirect(to, *args, **kwargs)
+
+    @classmethod
+    def reverse(cls, viewname, urlconf=None, args=None, kwargs=None, current_app=None):
+        """Shortcut for Django reverse function with app package inserted.
+
+        Usage:
+            Use in place of the ``django.shortcuts.reverse`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+             .. code-block:: python
+
+                # controllers.py
+                from tethys_sdk.gizmos import Button
+                from .app import App
+
+                @controller
+                def home(request):
+                    \"""
+                    Controller for the app home page.
+                    \"""
+
+                    cancel_button = Button(
+                        display_text='Cancel',
+                        name='cancel-button',
+                        href=App.reverse('home')
+                    )
+
+                    context = {'cancel_button': cancel_button}
+
+                    return App.render(request, 'home.html', context)
+        """
+        return reverse(
+            f"{cls.package}:{viewname}",
+            urlconf=urlconf,
+            args=args,
+            kwargs=kwargs,
+            current_app=current_app,
+        )
+
+    @classmethod
+    def render_to_string(cls, template_name, context=None, request=None, using=None):
+        """Shortcut for Django render_to_string function with app package inserted.
+
+        Usage:
+            Use in place of the ``django.template.loader.render_to_string`` function to avoid hard-coding the namespace for the Tethys app/extension
+
+             .. code-block:: python
+
+                # controllers.py
+                from tethys_sdk.gizmos import Button
+                from .app import App
+
+                @controller
+                def home(request):
+                    \"""
+                    Controller for the app home page.
+                    \"""
+
+                    cancel_button = Button(
+                        display_text='Cancel',
+                        name='cancel-button',
+                        href=App.reverse('home')
+                    )
+
+                    context = {'cancel_button': cancel_button}
+
+                    html = App.render_to_string('home.html', context)
+        """
+        return render_to_string(
+            f"{cls.package}/{template_name}",
+            context=context,
+            request=request,
+            using=using,
+        )
 
 
 class TethysExtensionBase(TethysBase):
@@ -985,11 +1086,11 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
             @controller
             def my_controller(request):
-                user_workspace = app.get_user_workspace(request.user)
+                user_workspace = App.get_user_workspace(request.user)
                 ...
         """  # noqa: E501
         return get_user_workspace(cls, user_or_request)
@@ -1009,11 +1110,11 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
             @controller
             def my_controller(request):
-                app_workspace = app.get_app_workspace()
+                app_workspace = App.get_app_workspace()
                 ...
         """
         return get_app_workspace(cls)
@@ -1033,10 +1134,10 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
             scheduler = app.get_scheduler('primary_condor')
-            job_manager = app.get_job_manager()
+            job_manager = App.get_job_manager()
             job_manager.create_job(
                 name='do_the_thing',
                 job_type='CONDORJOB',
@@ -1073,9 +1174,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            max_count = app.get_custom_setting('max_count')
+            max_count = App.get_custom_setting('max_count')
 
         """
         from tethys_apps.models import TethysApp
@@ -1102,9 +1203,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            max_count = app.set_custom_setting('max_count', 5)
+            max_count = App.set_custom_setting('max_count', 5)
 
         """
         from tethys_apps.models import TethysApp
@@ -1184,9 +1285,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            ckan_engine = app.get_dataset_service('primary_ckan', as_engine=True)
+            ckan_engine = App.get_dataset_service('primary_ckan', as_engine=True)
 
         """
         from tethys_apps.models import TethysApp
@@ -1233,9 +1334,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            geoserver_engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
+            geoserver_engine = App.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
 
         """
@@ -1281,9 +1382,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            wps_engine = app.get_web_processing_service('primary_52n')
+            wps_engine = App.get_web_processing_service('primary_52n')
 
         """
         from tethys_apps.models import TethysApp
@@ -1320,11 +1421,11 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            conn_engine = app.get_persistent_store_connection('primary')
-            conn_url = app.get_persistent_store_connection('primary', as_url=True)
-            SessionMaker = app.get_persistent_store_database('primary', as_sessionmaker=True)
+            conn_engine = App.get_persistent_store_connection('primary')
+            conn_url = App.get_persistent_store_connection('primary', as_url=True)
+            SessionMaker = App.get_persistent_store_database('primary', as_sessionmaker=True)
             session = SessionMaker()
 
         """
@@ -1366,11 +1467,11 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            db_engine = app.get_persistent_store_database('example_db')
-            db_url = app.get_persistent_store_database('example_db', as_url=True)
-            SessionMaker = app.get_persistent_store_database('example_db', as_sessionmaker=True)
+            db_engine = App.get_persistent_store_database('example_db')
+            db_url = App.get_persistent_store_database('example_db', as_url=True)
+            SessionMaker = App.get_persistent_store_database('example_db', as_sessionmaker=True)
             session = SessionMaker()
 
         """
@@ -1429,12 +1530,12 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            result = app.create_persistent_store('example_db', 'primary')
+            result = App.create_persistent_store('example_db', 'primary')
 
             if result:
-                engine = app.get_persistent_store_engine('example_db')
+                engine = App.get_persistent_store_engine('example_db')
 
         """  # noqa: E501
         # Get named persistent store service connection
@@ -1525,9 +1626,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            result = app.drop_persistent_store('example_db')
+            result = App.drop_persistent_store('example_db')
 
             if result:
                 # App database 'example_db' was successfully destroyed and no longer exists
@@ -1570,9 +1671,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            ps_databases = app.list_persistent_store_databases()
+            ps_databases = App.list_persistent_store_databases()
 
         """
         from tethys_apps.models import TethysApp
@@ -1607,9 +1708,9 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            ps_connections = app.list_persistent_store_connections()
+            ps_connections = App.list_persistent_store_connections()
 
         """
         from tethys_apps.models import TethysApp
@@ -1638,12 +1739,12 @@ class TethysAppBase(TethysBase):
 
         ::
 
-            from .app import MyFirstApp as app
+            from .app import App
 
-            result = app.persistent_store_exists('example_db')
+            result = App.persistent_store_exists('example_db')
 
             if result:
-                engine = app.get_persistent_store_engine('example_db')
+                engine = App.get_persistent_store_engine('example_db')
 
         """
         from tethys_apps.models import TethysApp

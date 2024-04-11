@@ -70,12 +70,12 @@ Although using the :file:`gee/params.py` file to store our service account crede
 
 .. code-block:: python
 
-    from ..app import EarthEngine as app
+    from ..app import App
 
 .. code-block:: python
 
-    service_account = app.get_custom_setting('service_account_email')
-    private_key_path = app.get_custom_setting('private_key_file')
+    service_account = App.get_custom_setting('service_account_email')
+    private_key_path = App.get_custom_setting('private_key_file')
 
     if service_account and private_key_path and os.path.isfile(private_key_path):
         try:

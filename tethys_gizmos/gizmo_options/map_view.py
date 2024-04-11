@@ -316,7 +316,7 @@ class MapView(TethysGizmoOptions):
 
     ::
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% gizmo map_view_options %}
 

@@ -279,13 +279,13 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
             context['error'] = f'An unexpected error has occurred. Please try again.'
             log.exception('An unexpected error occurred.')
 
-        return render(request, 'earth_engine/plot.html', context)
+        return App.render(request, 'plot.html', context)
 
 3. Create a new template called :file:`templates/earth_engine/plot.html` with the following contents:
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% if plot_view %}
       {% gizmo plot_view %}
@@ -374,7 +374,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
       <!-- End Plot Modal -->
       <div id="ee-products" data-ee-products="{{ ee_products|jsonify }}"></div>
       <div id="loader">
-        <img src="{% static 'earth_engine/images/map-loader.gif' %}">
+        <img src="{% static tethys_app|public:'images/map-loader.gif' %}">
       </div>
     {% endblock %}
 
@@ -449,9 +449,9 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
 
     {% block content_dependent_styles %}
         {{ block.super }}
-        <link rel="stylesheet" href="{% static 'earth_engine/css/map.css' %}" />
-        <link rel="stylesheet" href="{% static 'earth_engine/css/loader.css' %}" />
-        <link rel="stylesheet" href="{% static 'earth_engine/css/plot.css' %}" />
+        <link rel="stylesheet" href="{% static tethys_app|public:'css/map.css' %}" />
+        <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
+        <link rel="stylesheet" href="{% static tethys_app|public:'css/plot.css' %}" />
     {% endblock %}
 
 .. tip::

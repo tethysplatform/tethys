@@ -1,4 +1,4 @@
-{% load static tags site_settings %}
+{% load static tethys %}
 <div class="app-card-container position-relative" data-tags="{{ app|get_tag_class }}">
     {% if not unconfigured %}
     <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}"

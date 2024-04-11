@@ -41,8 +41,8 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
 .. code-block:: html+django
 
-    {% extends "thredds_tutorial/base.html" %}
-    {% load tethys_gizmos %}
+    {% extends tethys_app.package|add:"/base.html" %}
+    {% load tethys %}
 
     {% block styles %}
       {{ block.super }}
@@ -169,15 +169,15 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
 .. code-block:: html+django
 
-    {% extends "thredds_tutorial/base.html" %}
-    {% load tethys_gizmos static %}
+    {% extends tethys_app.package|add:"/base.html" %}
+    {% load static tethys %}
 
     {% block styles %}
       {{ block.super }}
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
@@ -189,7 +189,7 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
     {% block scripts %}
       {{ block.super }}
-      <script src="{% static 'thredds_tutorial/js/leaflet_map.js' %}" type="text/javascript"></script>
+      <script src="{% static tethys_app|public:'js/leaflet_map.js' %}" type="text/javascript"></script>
     {% endblock %}
 
 .. tip::
@@ -214,7 +214,6 @@ In this step, you'll create controls to allow the user to search for and select 
 
 .. code-block:: python
 
-    from django.shortcuts import render
     from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput
 
@@ -266,7 +265,7 @@ In this step, you'll create controls to allow the user to search for and select 
             'variable_select': variable_select,
             'style_select': style_select,
         }
-        return render(request, 'thredds_tutorial/home.html', context)
+        return App.render(request, 'home.html', context)
 
 2. Add the controls to the ``app_navigation_items`` block in :file:`templates/thredds_tutorial/home.html`:
 
@@ -387,7 +386,7 @@ At this point the select controls are empty and don't do anything. In this step,
     from django.shortcuts import render
     from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput
-    from .app import ThreddsTutorial as app
+    from .app import App
     from .thredds_methods import parse_datasets
 
 .. code-block:: python
@@ -397,7 +396,7 @@ At this point the select controls are empty and don't do anything. In this step,
         """
         Controller for the app home page.
         """
-        catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+        catalog = App.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
 
         # Retrieve dataset options from the THREDDS service
         print('Retrieving Datasets...')
@@ -429,7 +428,7 @@ At this point the select controls are empty and don't do anything. In this step,
 
         from siphon.http_util import session_manager
         session_manager.set_session_options(verify=False)
-        catalog = app.get_spatial_dataset_service('my_thredds_service', as_engine=True)
+        catalog = App.get_spatial_dataset_service('my_thredds_service', as_engine=True)
 
     .. warning::
 
@@ -710,7 +709,7 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
@@ -947,15 +946,15 @@ Depending on the speed of the THREDDS server and the user's internet connection,
        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/leaflet_map.css' %}"/>
-      <link rel="stylesheet" href="{% static 'thredds_tutorial/css/loader.css' %}" />
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
+      <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
     {% endblock %}
 
 .. code-block:: html+django
 
     {% block after_app_content %}
       <div id="loader">
-        <img src="{% static 'thredds_tutorial/images/map-loader.gif' %}">
+        <img src="{% static tethys_app|public:'images/map-loader.gif' %}">
       </div>
     {% endblock %}
 

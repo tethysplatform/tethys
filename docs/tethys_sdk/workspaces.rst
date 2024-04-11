@@ -67,13 +67,13 @@ In cases where it is not possible to use one of the decorators, the :term:`app c
 
 .. code-block:: python
 
-    from .app import MyFirstApp as app
+    from .app import App
+    from django.contrib.auth.models import User
 
-    @controller
-    def my_controller(request):
-        app_workspace = app.get_app_workspace()
-        user_workspace = app.get_user_workspace(request.user)
-        ...
+    user = User.objects.get(id=1)
+    app_workspace = App.get_app_workspace()
+    user_workspace = App.get_user_workspace(user)
+    ...
 
 For more details see :ref:`app_base_class_api`
 

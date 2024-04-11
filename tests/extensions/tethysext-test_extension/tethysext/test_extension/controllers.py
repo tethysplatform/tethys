@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from tethys_sdk.routing import controller
+from .ext import Extension
 
 
 @controller(
@@ -14,4 +14,4 @@ def home(request, var1, var2):
         "var2": var2,
     }
 
-    return render(request, "test_extension/home.html", context)
+    return Extension.render(request, "home.html", context)

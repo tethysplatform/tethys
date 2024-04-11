@@ -34,10 +34,10 @@ This example is adapted from the `Siphon NCSS Time Series Example <https://unida
 
     import datetime
     from netCDF4 import num2date
-    from my_first_app.app import MyFirstApp as app
+    from .app import App
 
     # This returns a siphon.catalog.TDSCatalog bound to the THREDDS service
-    catalog = app.get_spatial_dataset_service('primary_thredds', as_engine=True)
+    catalog = App.get_spatial_dataset_service('primary_thredds', as_engine=True)
 
     # Retrieve a dataset
     datasets = catalog.datasets

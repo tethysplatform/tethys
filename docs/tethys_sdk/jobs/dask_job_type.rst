@@ -50,14 +50,14 @@ The example below shows the pattern used to create Dask Jobs using the ``dask.de
 
 ::
 
-    from tethysapp.my_first_app.app import MyFirstApp as app
     from tethysapp.my_first_app.job_functions import delayed_job
+    from .app import App
 
     # 1. Get a Dask Scheduler
-    scheduler = app.get_scheduler(name='dask_primary')
+    scheduler = App.get_scheduler(name='dask_primary')
 
     # 2. Get job manager for this app
-    job_manager = app.get_job_manager()
+    job_manager = App.get_job_manager()
 
     # 3. Call function that builds the ``dask.delayed`` job, returning one ``dask.Delayed`` object
     delayed = delayed_job()
@@ -105,14 +105,14 @@ The example below shows the pattern used to create Dask Jobs using the ``dask.di
 
 ::
 
-    from tethysapp.my_first_app.app import MyFirstApp as app
     from tethysapp.my_first_app.job_functions import distributed_job, convert_to_dollar_sign
+    from .app import App
 
     # 1. Get a Dask Scheduler
-    scheduler = app.get_scheduler(name='dask_primary')
+    scheduler = App.get_scheduler(name='dask_primary')
 
     # 2. Get job manager for this app
-    job_manager = app.get_job_manager()
+    job_manager = App.get_job_manager()
 
     # 3. Get the dask.distributed.Client instance from the scheduler
     try:
@@ -166,14 +166,14 @@ The following example shows how to create multiple Dask Jobs to tracke a multi-l
 
 ::
 
-    from tethysapp.my_first_app.app import MyFirstApp as app
     from tethysapp.my_first_app.job_functions import muliple_leaf_job
+    from .app import App
 
     # 1. Get a Dask Scheduler
-    scheduler = app.get_scheduler(name='dask_primary')
+    scheduler = App.get_scheduler(name='dask_primary')
 
     # 2. Get job manager for this app
-    job_manager = app.get_job_manager()
+    job_manager = App.get_job_manager()
 
     # 3. Get the dask.distributed.Client instance from the scheduler
     try:
@@ -182,7 +182,7 @@ The following example shows how to create multiple Dask Jobs to tracke a multi-l
         return redirect(reverse('dask_tutorial:error_message'))
 
     # 4. Call function that builds the dask.distributed job, returning multiple dask.distributed.Future objects
-    futures = muliple_leaf_job(client)
+    futures = multiple_leaf_job(client)
 
     # 5. Iterate through the list of futures, creating a new DaskJob for each one and calling DaskJob.execute on it.
     i = random.randint(1, 10000)
