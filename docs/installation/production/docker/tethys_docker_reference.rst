@@ -125,7 +125,12 @@ These environment variables point to important paths in the container. Changing 
 |                           | :file:`portal_config.yml`. Defaults to "${TETHYS_PERSIST}/static"                        |
 +---------------------------+------------------------------------------------------------------------------------------+
 | WORKSPACE_ROOT            | Path to the tethys workspaces root folder. This also sets the associated setting in the  |
-|                           | :file:`portal_config.yml`. Defaults to "${TETHYS_PERSIST}/workspaces"                    |
+|                           | :file:`portal_config.yml`. Defaults to "/media/"                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| MEDIA_ROOT                | URL to be used fort ethys media. This also sets the associated setting in the            |
+|                           | :file:`portal_config.yml`. Defaults to ""                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| MEDIA_URL                 | Path to the tethys media root folder. This also sets the associated setting in the       |
 +---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_MANAGE             | Path to manage.py file. Defaults to "${TETHYS_HOME}/tethys/tethys_portal/manage.py"      |
 +---------------------------+------------------------------------------------------------------------------------------+

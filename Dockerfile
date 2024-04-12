@@ -45,7 +45,8 @@ ENV SESSION_WARN=1500
 ENV SESSION_EXPIRE=1800
 ENV STATIC_ROOT="${TETHYS_PERSIST}/static"
 ENV WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces"
-ENV MEDIA_ROOT="${WORKSPACE_ROOT}"
+ENV MEDIA_ROOT="${TETHYS_PERSIST}/media}"
+ENV MEDIA_URL="${MEDIA_URL}"
 ENV QUOTA_HANDLERS="\"[]\""
 ENV DJANGO_ANALYTICAL="\"{}\""
 ENV ADD_BACKENDS="\"[]\""
@@ -140,7 +141,7 @@ RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
 # INSTALL #
 ###########
 # Make dirs
-RUN mkdir -p ${TETHYS_PERSIST} ${TETHYS_APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
+RUN mkdir -p ${TETHYS_PERSIST} ${TETHYS_APPS_ROOT} ${WORKSPACE_ROOT} ${MEDIA_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
 
 # Setup www user, run supervisor and nginx processes as www user
 RUN groupadd www \

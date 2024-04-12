@@ -453,7 +453,7 @@ TETHYS_WORKSPACES_ROOT = TETHYS_PORTAL_CONFIG.pop(
 )
 
 MEDIA_URL = portal_config_settings.pop("MEDIA_URL", "/media/")
-MEDIA_ROOT = portal_config_settings.pop("MEDIA_ROOT", TETHYS_WORKSPACES_ROOT)
+MEDIA_ROOT = portal_config_settings.pop("MEDIA_ROOT", relative_to_tethys_home("media", as_str=True))
 
 # add any additional TETHYS_PORTAL_CONFIG settings
 for setting, value in TETHYS_PORTAL_CONFIG.items():
