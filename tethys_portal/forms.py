@@ -20,10 +20,10 @@ def get_captcha():
         if getattr(settings, "RECAPTCHA_PRIVATE_KEY", "") and getattr(
             settings, "RECAPTCHA_PUBLIC_KEY", ""
         ):
-            from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-            from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+            from django_recaptcha.fields import ReCaptchaField
+            from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
-            return ReCaptchaField(label="", widget=ReCaptchaWidget())
+            return ReCaptchaField(label="", widget=ReCaptchaV2Checkbox())
         else:
             from captcha.fields import CaptchaField
 

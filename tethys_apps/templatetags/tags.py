@@ -68,3 +68,91 @@ def get_tag_class(app):
     # Join tags into a single space delimited string
     tags_list = " ".join(tags)
     return tags_list
+
+
+@register.filter
+def url(app, controller_name):
+    """
+    A shortcut to add the active Tethys app namespace to a controller name.
+
+    Args:
+        app: the active Tethys app loaded in the context
+        controller_name: the name of the controller from the active Tethys app to get the URL for
+
+    Returns:
+        str: A controller name with the namespace from the active Tethys app prepended
+
+    Usage:
+        Be sure to include the ``tethys`` argument to the ``load`` template tag.
+
+        .. code-block:: html+django
+
+            {% load tethys %}
+
+            {% url tethys_app|url:'home' %}
+
+    Note:
+        This filter allows you to avoid having the app package hardcoded in your templates. If the active app package is ``my_first_app``, then the following would be equivalent:
+
+        Recommended Usage:
+
+        .. code-block:: html+django
+
+            {% load tethys %}
+
+            {% url tethys_app|url:'home' %}
+
+        Equivalent (but not recommended):
+
+        .. code-block:: html+django
+
+            {% url 'my_first_app:home' %}
+
+    """
+    app_package = app["package"] if isinstance(app, dict) else app.package
+    return f"{app_package}:{controller_name}"
+
+
+@register.filter
+def public(app, static_path):
+    """
+    Add the active Tethys app namespace to a public filepath.
+
+    Args:
+        app: the active Tethys app loaded in the context
+        static_path: the relative path to a static file in the active Tethys app's ``public`` directory
+
+    Returns:
+        str: The path to the static file with the active Tethys app's namespace prepended
+
+    Usage:
+        Be sure to include the ``tethys`` argument to the ``load`` template tag.
+
+        .. code-block:: html+django
+
+            {% load static tethys %}
+
+            {% static tethys_app|public:'css/main.css' %}
+
+    Note:
+        This filter allows you to avoid having the app package hardcoded in your templates. If the active app package is ``my_first_app``, then the following would be equivalent:
+
+        Recommended Usage:
+
+        .. code-block:: html+django
+
+            {% load static tethys %}
+
+            {% static tethys_app|public:'css/main.css' %}
+
+        Equivalent (but not recommended):
+
+        .. code-block:: html+django
+
+            {% load static %}
+
+            {% static 'my_first_app/css/main.css' %}
+
+    """
+    app_package = app["package"] if isinstance(app, dict) else app.package
+    return f"{app_package}/{static_path}"

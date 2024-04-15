@@ -36,11 +36,10 @@ Replace the contents of :file:`controllers.py` module with the following:
     import random
     import string
 
-    from django.shortcuts import render
     from tethys_sdk.routing import controller
 
     from tethys_sdk.gizmos import *
-    from .app import GeoserverApp as app
+    from .app import App
 
 
     WORKSPACE = 'geoserver_app'
@@ -53,7 +52,7 @@ Replace the contents of :file:`controllers.py` module with the following:
         Controller for the app home page.
         """
         # Retrieve a geoserver engine
-        geoserver_engine = app.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
+        geoserver_engine = App.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
 
         # Check for workspace and create workspace for app if it doesn't exist
         response = geoserver_engine.list_workspaces()
@@ -82,7 +81,7 @@ Replace the contents of :file:`controllers.py` module with the following:
 
         context = {}
 
-        return render(request, 'geoserver_app/home.html', context)
+        return App.render(request, 'home.html', context)
 
 
 3. Test Shapefile Upload

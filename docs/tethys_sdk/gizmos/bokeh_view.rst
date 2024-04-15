@@ -55,6 +55,7 @@ Three elements are required:
     from tethys_sdk.gizmos import BokehView
     from tethys_sdk.routing import controller
     from bokeh.plotting import figure
+    from .app import App
         
     @controller(name="bokeh_ajax", url="app-name/bokeh")
     def bokeh_ajax(request):
@@ -67,13 +68,13 @@ Three elements are required:
 
         context = {'bokeh_view_input': my_bokeh_view}
 
-        return render(request, 'app_name/bokeh_ajax.html', context)
+        return App.render(request, 'bokeh_ajax.html', context)
 
 2) A template for with the tethys gizmo (e.g. bokeh_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo bokeh_view_input %}
 

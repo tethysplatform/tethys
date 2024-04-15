@@ -34,6 +34,7 @@ Three elements are required:
 .. code-block:: python
 
     from tethys_sdk.gizmos import SelectInput
+    from .app import App
         
     @controller(
         url="app_name/select",
@@ -50,13 +51,13 @@ Three elements are required:
 
         context = {"select_input2": select_input2}
 
-        return render(request, "app_name/select_input_ajax.html", context)
+        return App.render(request, "select_input_ajax.html", context)
 
 2) A template for with the tethys gizmo (e.g. select_input_ajax.html)
 
 .. code-block:: html+django
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
     {% gizmo select_input2 %}
 

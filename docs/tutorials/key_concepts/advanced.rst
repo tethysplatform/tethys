@@ -107,7 +107,7 @@ c. Define a table called ``dams`` by creating a new class in ``model.py`` called
         from sqlalchemy import Column, Integer, Float, String
         from sqlalchemy.orm import sessionmaker
 
-        from .app import DamInventory as app
+        from .app import App
 
         Base = declarative_base()
 
@@ -329,7 +329,7 @@ g. Refactor the ``add_dam`` controller to use the updated model methods:
 
                 if not has_errors:
                     add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
-                    return redirect(reverse('dam_inventory:home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -408,7 +408,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
         :emphasize-lines: 1-2, 57-69
 
         from .model import Dam
-        from .app import DamInventory as app
+        from .app import App
 
         ...
 
@@ -477,7 +477,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
                     else:
                         messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
 
-                    return redirect(reverse('dam_inventory:home'))
+                    return App.redirect(reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -584,12 +584,12 @@ c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos static %}
+        {% extends tethys_app.package|add:"base.html" %}
+        {% load static tethys %}
 
         {% block styles %}
             {{ block.super }}
-            <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
+            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
         {% endblock %}
 
         {% block app_content %}
@@ -603,7 +603,7 @@ c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the
 
         {% block scripts %}
             {{ block.super }}
-            <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
+            <script src="{% static tethys_app|public:'js/map.js' %}" type="text/javascript"></script>
         {% endblock %}
 
 
@@ -678,6 +678,7 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
         :emphasize-lines: 1, 12, 27, 42
 
         from tethys_sdk.permissions import has_permission
+        from .app import App
 
         @controller
         def home(request):
@@ -691,7 +692,7 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
                 'can_add_dams': has_permission(request, 'add_dams')
             }
 
-            return render(request, 'dam_inventory/home.html', context)
+            return App.render(request, 'home.html', context)
 
 
         @controller(url='dams/add', permission_required='add_dams')
@@ -706,7 +707,7 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
                 'can_add_dams': has_permission(request, 'add_dams')
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 
         @controller(name='dams', url='dams')
@@ -720,7 +721,7 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
                 ...
                 'can_add_dams': has_permission(request, 'add_dams')
             }
-            return render(request, 'dam_inventory/list_dams.html', context)
+            return App.render(request, 'list_dams.html', context)
 
 d. Use the ``can_add_dams`` variable to determine whether to show or hide the navigation link to the Add Dam View in ``base.html``:
 
@@ -728,9 +729,9 @@ d. Use the ``can_add_dams`` variable to determine whether to show or hide the na
         :emphasize-lines: 8, 10
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
@@ -898,8 +899,8 @@ b. New Template: ``assign_hydrograph.html``
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         <h1>Assign Hydrograph</h1>
@@ -926,6 +927,7 @@ c. New Controller
     .. code-block:: python
 
         from .model import assign_hydrograph_to_dam
+        from .app import App
 
         ...
 
@@ -935,7 +937,7 @@ c. New Controller
             Controller for the Add Hydrograph page.
             """
             # Get dams from database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
             all_dams = session.query(Dam).all()
 
@@ -976,7 +978,7 @@ c. New Controller
                         messages.info(request, 'Successfully assigned hydrograph.')
                     else:
                         messages.info(request, 'Unable to assign hydrograph. Please try again.')
-                    return redirect(reverse('dam_inventory:home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -1001,7 +1003,7 @@ c. New Controller
             cancel_button = Button(
                 display_text='Cancel',
                 name='cancel-button',
-                href=reverse('dam_inventory:home')
+                href=App.reverse('home')
             )
 
             context = {
@@ -1014,17 +1016,17 @@ c. New Controller
 
             session.close()
 
-            return render(request, 'dam_inventory/assign_hydrograph.html', context)
+            return App.render(request, 'assign_hydrograph.html', context)
 
 d. Update navigation
 
     .. code-block:: html+django
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
-        {% url 'dam_inventory:assign_hydrograph' as assign_hydrograph_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
+        {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
@@ -1049,12 +1051,12 @@ a. Create Template ``hydrograph.html``
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_navigation_items %}
         <li class="nav-item title">App Navigation</li>
-        <li class="nav-item "><a class="nav-link" href="{% url 'dam_inventory:dams' %}">Back</a></li>
+        <li class="nav-item "><a class="nav-link" href="{% url tethys_app|url:'dams' %}">Back</a></li>
         {% endblock %}
 
         {% block app_content %}
@@ -1068,7 +1070,7 @@ b. Create ``helpers.py``
         from plotly import graph_objs as go
         from tethys_gizmos.gizmo_options import PlotlyView
 
-        from .app import DamInventory as app
+        from .app import App
         from .model import Hydrograph
 
 
@@ -1077,7 +1079,7 @@ b. Create ``helpers.py``
             Generates a plotly view of a hydrograph.
             """
             # Get objects from database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
             hydrograph = session.query(Hydrograph).get(int(hydrograph_id))
             dam = hydrograph.dam
@@ -1124,7 +1126,7 @@ c. Create Controller
                 'hydrograph_plot': hydrograph_plot,
                 'can_add_dams': has_permission(request, 'add_dams')
             }
-            return render(request, 'dam_inventory/hydrograph.html', context)
+            return App.render(request, 'hydrograph.html', context)
 
 .. tip::
 
@@ -1169,7 +1171,7 @@ e. Modify ``list_dams`` controller (and add needed imports):
             for dam in dams:
                 hydrograph_id = get_hydrograph(dam.id)
                 if hydrograph_id:
-                    url = reverse('dam_inventory:hydrograph', kwargs={'hydrograph_id': hydrograph_id})
+                    url = App.reverse('hydrograph', kwargs={'hydrograph_id': hydrograph_id})
                     dam_hydrograph = format_html('<a class="btn btn-primary" href="{}">Hydrograph Plot</a>'.format(url))
                 else:
                     dam_hydrograph = format_html('<a class="btn btn-primary disabled" title="No hydrograph assigned" '
@@ -1196,7 +1198,7 @@ e. Modify ``list_dams`` controller (and add needed imports):
                 'can_add_dams': has_permission(request, 'add_dams')
             }
 
-            return render(request, 'dam_inventory/list_dams.html', context)
+            return App.render(request, 'list_dams.html', context)
 
 f. Test by going to the Dams page and clicking on the new ``Hydrograph Plot`` button in the table for a dam that has already been assigned a hydrograph.
 
@@ -1210,8 +1212,8 @@ a. Add Plotly Gizmo dependency to ``home.html``:
     .. code-block:: html+django
         :emphasize-lines: 4-6
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos static %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load static tethys %}
 
         {% block import_gizmos %}
             {% import_gizmo_dependency plotly_view %}
@@ -1223,7 +1225,7 @@ b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
 
     .. code-block:: html+django
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% if hydrograph_plot %}
             {% gizmo hydrograph_plot %}
@@ -1253,7 +1255,7 @@ c. Create an AJAX controller ``hydrograph_ajax``
             }
 
             session.close()
-            return render(request, 'dam_inventory/hydrograph_ajax.html', context)
+            return App.render(request, 'hydrograph_ajax.html', context)
 
 d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
 

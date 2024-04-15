@@ -98,7 +98,7 @@ a. Add the :ref:`user_workspace` argument to the ``controller`` decorator and a 
                         messages.info(request, 'Successfully assigned hydrograph.')
                     else:
                         messages.info(request, 'Unable to assign hydrograph. Please try again.')
-                    return redirect(reverse('dam_inventory:home'))
+                    return App.redirect(reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -318,10 +318,10 @@ h. Finally, remove the permissions restrictions on adding dams so that any user 
     .. code-block:: html+django
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
-        {% url 'dam_inventory:assign_hydrograph' as assign_hydrograph_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
+        {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
@@ -348,7 +348,7 @@ a. Creating a custom quota is pretty simple. Create a new file called ``dam_quot
 
         from tethys_quotas.handlers.base import ResourceQuotaHandler
         from .model import Dam
-        from .app import DamInventory as app
+        from .app import App
 
 
         class DamQuotaHandler(ResourceQuotaHandler):
@@ -457,7 +457,7 @@ a. Create the ``delete_dam`` function in ``controllers.py``:
 
             messages.success(request, "{} Dam has been successfully deleted.".format(dam.name))
 
-            return redirect(reverse('dam_inventory:dams'))
+            return App.redirect(reverse('dams'))
 
 d. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. The code will restrict user's to deleting only dams that they created.
 
@@ -475,14 +475,14 @@ d. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. 
             for dam in dams:
                 hydrograph_id = get_hydrograph(dam.id)
                 if hydrograph_id:
-                    url = reverse('dam_inventory:hydrograph', kwargs={'hydrograph_id': hydrograph_id})
+                    url = App.reverse('hydrograph', kwargs={'hydrograph_id': hydrograph_id})
                     dam_hydrograph = format_html('<a class="btn btn-primary" href="{}">Hydrograph Plot</a>'.format(url))
                 else:
                     dam_hydrograph = format_html('<a class="btn btn-primary disabled" title="No hydrograph assigned" '
                                                  'style="pointer-events: auto;">Hydrograph Plot</a>')
 
                 if dam.user_id == request.user.id:
-                    url = reverse('dam_inventory:delete_dam', kwargs={'dam_id': dam.id})
+                    url = App.reverse('delete_dam', kwargs={'dam_id': dam.id})
                     dam_delete = format_html('<a class="btn btn-danger" href="{}">Delete Dam</a>'.format(url))
                 else:
                     dam_delete = format_html('<a class="btn btn-danger disabled" title="You are not the creator of this dam" '
@@ -509,7 +509,7 @@ d. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. 
                 'can_add_dams': has_permission(request, 'add_dams')
             }
 
-            return render(request, 'dam_inventory/list_dams.html', context)
+            return App.render(request, 'list_dams.html', context)
 
 e. Test by deleting a dam or two (while logged in as the non-administrator) and trying to add new dams. This time you shouldn't be redirected to the error page, but should be able to add a dam like normal because you brought the number of dams created by the current user below the quota's default value.
 

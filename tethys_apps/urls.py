@@ -49,7 +49,6 @@ handler_url_patterns = harvester.get_handler_patterns(url_namespaces=url_namespa
 # configure handler HTTP routes
 http_handler_patterns = []
 for namespace, urls in handler_url_patterns["http_handler_patterns"].items():
-
     if settings.MULTIPLE_APP_MODE:
         root_pattern = f'apps/{namespace.replace("_", "-")}/'
     else:

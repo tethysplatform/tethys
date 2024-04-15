@@ -98,7 +98,6 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 .. code-block:: python
 
     import logging
-    from django.shortcuts import render
     from tethys_sdk.routing import controller
 
     log = logging.getLogger(f'tethys.apps.{__name__}')
@@ -110,7 +109,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         Controller for the app home page.
         """
         context = {}
-        return render(request, 'earth_engine/home.html', context)
+        return App.render(request, 'home.html', context)
 
 
     @controller
@@ -119,7 +118,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
         Controller for the app about page.
         """
         context = {}
-        return render(request, 'earth_engine/about.html', context)
+        return App.render(request, 'about.html', context)
 
 3. Copy the ``viewer``, ``get_image_collection``, and ``get_time_series_plot`` controller functions with any imports they need into the new :file:`controllers/viewer.py` module:
 
@@ -152,7 +151,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
         ...  # Code not shown for brevity
 
-        return render(request, 'earth_engine/viewer.html', context)
+        return App.render(request, 'viewer.html', context)
 
 
     @controller(url='viewer/get-image-collection')
@@ -171,7 +170,7 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
         ...  # Code not shown for brevity
 
-        return render(request, 'earth_engine/plot.html', context)
+        return App.render(request, 'plot.html', context)
 
 5. Delete the old :file:`controllers.py` file.
 

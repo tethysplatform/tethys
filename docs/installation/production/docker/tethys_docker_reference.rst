@@ -98,6 +98,8 @@ Use these build arguments with the ``build`` command to customize how the image 
 +===========================+==========================================================================================+
 | PYTHON_VERSION            | The version of Python to build the Tethys environment with. Defaults to "3.*".           |
 +---------------------------+------------------------------------------------------------------------------------------+
+| MICRO_TETHYS              | Set to True to use `micro-tethys` environment. Defaults to False.                        |
++---------------------------+------------------------------------------------------------------------------------------+
 
 Important Paths
 ---------------
@@ -142,32 +144,34 @@ Database Parameters
 
 These environment variables are used to configure the database and database users Tethys Portal will use. If the database doesn't exist, then it will be created using the ``postgres`` user.
 
-+---------------------------+------------------------------------------------------------------------------------------+
-| Environment Variable      | Description                                                                              |
-+===========================+==========================================================================================+
-| POSTGRES_PASSWORD         | Password of the postgres user. Used to initialize the Tethys Portal database.            |
-|                           | Defaults to "pass".                                                                      |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_HOST            | Host of the database server where the primary Tethys Portal database resides.            |
-|                           | Defaults to "db".                                                                        |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_PORT            | Port of the database server where the primary Tethys Portal database resides.            |
-|                           | Defaults to "5432".                                                                      |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_ENGINE          | Type of database backend to use for the primary Tethys Portal database.                  |
-|                           | Defaults to "django.db.backends.postgresql".                                             |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_NAME            | Name of the primary Tethys Portal database. Defaults to "tethys_platform".               |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_USERNAME        | Username of the owner of the primary Tethys Portal database.                             |
-|                           | Defaults to "tethys_default".                                                            |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_PASSWORD        | Password of the owner of the primary Tethys Portal database. Defaults to "pass".         |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_SUPERUSER       | Name of the database superuser used by Tethys Portal. Defaults to "tethys_super".        |
-+---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_DB_SUPERUSER_PASS  | Password of the database superuser used by Tethys Portal. Defaults to "pass".            |
-+---------------------------+------------------------------------------------------------------------------------------+
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+| Environment Variable     | Description                                                                                                                         |
++==========================+=====================================================================================================================================+
+|| POSTGRES_PASSWORD       || Password of the postgres user. Used to initialize the Tethys Portal database.                                                      |
+||                         || Defaults to "pass".                                                                                                                |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+|| TETHYS_DB_HOST          || Host of the database server where the primary Tethys Portal database resides.                                                      |
+||                         || Defaults to "db".                                                                                                                  |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+|| TETHYS_DB_PORT          || Port of the database server where the primary Tethys Portal database resides.                                                      |
+||                         || Defaults to "5432".                                                                                                                |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+|| TETHYS_DB_ENGINE        || Type of database backend to use for the primary Tethys Portal database.                                                            |
+||                         || Defaults to "django.db.backends.postgresql".                                                                                       |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+| TETHYS_DB_NAME           | Name of the primary Tethys Portal database. Defaults to "tethys_platform".                                                          |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+|| TETHYS_DB_USERNAME      || Username of the owner of the primary Tethys Portal database.                                                                       |
+||                         || Defaults to "tethys_default".                                                                                                      |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+| TETHYS_DB_PASSWORD       | Password of the owner of the primary Tethys Portal database. Defaults to "pass".                                                    |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+| TETHYS_DB_SUPERUSER      | Name of the database superuser used by Tethys Portal. Defaults to "tethys_super".                                                   |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+| TETHYS_DB_SUPERUSER_PASS | Password of the database superuser used by Tethys Portal. Defaults to "pass".                                                       |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+| SKIP_DB_SETUP            | Set to True to skip database creation, useful for existing databases configured for Tethys. Defaults to False.                      |
++--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 
 Tethys Portal Admin User
 ------------------------

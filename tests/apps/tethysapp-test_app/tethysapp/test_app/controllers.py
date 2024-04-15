@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from tethys_sdk.routing import handler, consumer
 from tethys_sdk.gizmos import Button
+from .app import App
 
 from channels.generic.websocket import WebsocketConsumer
 import json
@@ -72,7 +72,7 @@ def home_controller(request):
         "script": script,
     }
 
-    return render(request, "test_app/home.html", context)
+    return App.render(request, "home.html", context)
 
 
 @handler(

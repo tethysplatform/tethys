@@ -76,7 +76,7 @@ Add a new controller to the :file:`controller.py` module:
             'select_options': select_options
         }
 
-        return render(request, 'geoserver_app/map.html', context)
+        return App.render(request, 'map.html', context)
 
 2. Map Page Template
 ====================
@@ -85,8 +85,8 @@ Create a new :file:`map.html` template in your template directory and add the fo
 
 .. code-block:: html+django
 
-    {% extends "geoserver_app/base.html" %}
-    {% load tethys_gizmos %}
+    {% extends tethys_app.package|add:"/base.html" %}
+    {% load tethys %}
 
     {% block app_content %}
         <h1>GeoServer Layers</h1>

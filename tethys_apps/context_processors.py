@@ -29,6 +29,7 @@ def tethys_apps_context(request):
         context["tethys_app"] = {
             "id": app.id,
             "name": app.name,
+            "package": app.package,
             "index": app.index,
             "icon": app.icon,
             "color": app.color,

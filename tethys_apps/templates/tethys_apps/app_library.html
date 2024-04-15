@@ -1,7 +1,6 @@
-
 {% extends "base.html" %}
 
-{% load static tags site_settings %}
+{% load static tethys %}
 
 {% block title %}{{ block.super }} - {% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}{% endblock %}
 
