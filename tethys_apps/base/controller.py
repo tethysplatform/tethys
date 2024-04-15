@@ -10,7 +10,7 @@ import inspect
 from collections import OrderedDict
 import traceback
 
-from channels.consumer import AsyncConsumer
+from channels.consumer import SyncConsumer, AsyncConsumer
 from django.views.generic import View
 from django.http import HttpRequest
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -24,11 +24,17 @@ from .app_base import DEFAULT_CONTROLLER_MODULES
 from .bokeh_handler import (
     _get_bokeh_controller,
     with_workspaces as with_workspaces_decorator,
+    with_paths as with_paths_decorator,
     with_request as with_request_decorator,
 )
-from .workspace import (
-    app_workspace as app_workspace_decorator,
-    user_workspace as user_workspace_decorator,
+from .paths import (
+    _add_path_decorator,
+    get_app_workspace,
+    get_user_workspace,
+    get_app_media,
+    get_user_media,
+    get_app_resources,
+    get_app_public,
 )
 from ..decorators import login_required as login_required_decorator, permission_required
 from ..utilities import get_all_submodules, update_decorated_websocket_consumer_class
@@ -50,14 +56,26 @@ class TethysController(View):
         return cls.as_view(**kwargs)
 
 
+# TODO integrate with update_decorated_websocket_consumer_class?
+def consumer_with_paths(call_func):
+    async def wrapper(self, scope, *args, **kwargs):
+        self.scope = scope
+        await self._initialize_app_and_user()
+        result = await call_func(self, scope, *args, **kwargs)
+
+        return result
+    return wrapper
+
+
 def consumer(
-    function_or_class=None,
+    consumer_class: Union[SyncConsumer, AsyncConsumer] = None,
     /,
     *,
     # UrlMap Overrides
     name: str = None,
     url: str = None,
     regex: Union[str, list, tuple] = None,
+    with_paths: bool = False,
     # login_required kwargs
     login_required: bool = True,
     # permission_required kwargs
@@ -72,7 +90,11 @@ def consumer(
         name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the class being decorated.
         url: URL pattern to map the endpoint for the consumer. If a `list` then a seperate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name`_1, `name`_2 ... `name`_n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
         regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
-
+        with_paths:
+        login_required:
+        permissions_required:
+        permissions_use_or:
+        
     **Example:**
 
     ::
@@ -112,24 +134,24 @@ def consumer(
 
     """  # noqa: E501
 
-    def wrapped(function_or_class):
+    def wrapped(consumer_class):
         url_map_kwargs_list = _get_url_map_kwargs_list(
-            function_or_class=function_or_class,
+            function_or_class=consumer_class,
             name=name,
             url=url,
             protocol="websocket",
             regex=regex,
         )
 
-        function_or_class = update_decorated_websocket_consumer_class(
-            function_or_class, permissions_required, permissions_use_or, login_required
+        consumer_class = update_decorated_websocket_consumer_class(
+            consumer_class, permissions_required, permissions_use_or, login_required, with_paths,
         )
 
-        controller = function_or_class.as_asgi()
-        _process_url_kwargs(controller, url_map_kwargs_list)
-        return function_or_class
+        asgi_controller = consumer_class.as_asgi()
+        _process_url_kwargs(asgi_controller, url_map_kwargs_list)
+        return consumer_class
 
-    return wrapped if function_or_class is None else wrapped(function_or_class)
+    return wrapped if consumer_class is None else wrapped(consumer_class)
 
 
 def controller(
@@ -149,9 +171,13 @@ def controller(
     login_required: bool = True,
     redirect_field_name: str = REDIRECT_FIELD_NAME,
     login_url: str = None,
-    # workspace decorators
+    # paths decorators
     app_workspace: bool = False,
     user_workspace: bool = False,
+    app_media: bool = False,
+    user_media: bool = False,
+    app_resources: bool = False,
+    app_public: bool = False,
     # ensure_oauth2 kwarg
     ensure_oauth2_provider: str = None,
     # enforce_quota kwargs
@@ -178,6 +204,10 @@ def controller(
         login_url: URL to send users to in order to authenticate.
         app_workspace: Whether to pass the app workspace as an argument to the controller.
         user_workspace: Whether to pass the user workspace as an argument to the controller.
+        app_media:
+        user_media:
+        app_resources:
+        app_public:
         ensure_oauth2_provider: An OAuth2 provider name to ensure is authenticated to access the controller.
         enforce_quotas: The name(s) of quotas to enforce on the controller.
         permissions_required: The name(s) of permissions that a user is required to have to access the controller.
@@ -366,11 +396,22 @@ def controller(
         else:
             controller = function_or_class
 
-        if user_workspace:
-            controller = user_workspace_decorator(controller)
-
-        if app_workspace:
-            controller = app_workspace_decorator(controller)
+        # add decorator arguments to local (nested) scope
+        nonlocal app_media
+        nonlocal user_media
+        nonlocal app_resources
+        nonlocal app_public
+        # process paths and add keyword arguments to controller
+        for argument_name, path_func in (
+            ("app_public", get_app_public),
+            ("app_resources", get_app_resources),
+            ("user_media", get_user_media),
+            ("app_media", get_app_media),
+            ("user_workspace", get_user_workspace),
+            ("app_workspace", get_app_workspace),
+        ):
+            if locals()[argument_name]:
+                controller = _add_path_decorator(path_func, argument_name, "user" in argument_name)(controller)
 
         if permissions_required:
             controller = permission_required(
@@ -412,6 +453,7 @@ def handler(
     handler_type: str = "bokeh",
     with_request: bool = False,
     with_workspaces: bool = False,
+    with_paths: bool = False,
     **kwargs,
 ):
     """
@@ -425,7 +467,8 @@ def handler(
         handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
         with_request: If `True` then the ``HTTPRequest`` object will be added to the `Bokeh Document`.
         with_workspaces: if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
-
+        with_paths: 
+    
     **Example:**
 
     ::
@@ -550,7 +593,10 @@ def handler(
     def wrapped(function):
         controller.__name__ = function.__name__
 
-        if with_workspaces:
+        if with_paths:
+            function = with_paths_decorator(function)
+        elif with_workspaces:
+            # TODO deprecation warning
             function = with_workspaces_decorator(function)
         elif with_request:
             function = with_request_decorator(function)

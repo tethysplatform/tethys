@@ -62,26 +62,26 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         }
         self.assertFalse(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_permissions_and(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         mock_suhp.side_effect = [True, True]
         self.assertTrue(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_inadequate_permissions_and(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         mock_suhp.side_effect = [True, False]
         self.assertFalse(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_permissions_or(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         self.consumer.permissions_use_or = True
         mock_suhp.side_effect = [True, False]
         self.assertTrue(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_inadequate_permissions_or(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         self.consumer.permissions_use_or = True
@@ -187,14 +187,14 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
     def test_authorized_permissions_and(self):
         self.consumer.permissions = ["test_permission"]
         with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
+            "tethys_apps.base.mixins._has_permission", user_has_perms
         ):
             self.assertTrue(self.consumer.authorized)
 
     def test_authorized_inadequate_permissions_and(self):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
+            "tethys_apps.base.mixins._has_permission", user_has_perms
         ):
             self.assertFalse(self.consumer.authorized)
 
@@ -202,7 +202,7 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         self.consumer.permissions_use_or = True
         with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
+            "tethys_apps.base.mixins._has_permission", user_has_perms
         ):
             self.assertTrue(self.consumer.authorized)
 
@@ -210,7 +210,7 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         self.consumer.permissions = ["test_permission1"]
         self.consumer.permissions_use_or = True
         with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
+            "tethys_apps.base.mixins._has_permission", user_has_perms
         ):
             self.assertFalse(self.consumer.authorized)
 
@@ -265,7 +265,7 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         mock_unauthorized_disconnect.assert_called_once()
 
 
-def user_has_perms(_, perm):
+def user_has_perms(_, __, perm):
     if perm == "test_permission":
         return True
     return False

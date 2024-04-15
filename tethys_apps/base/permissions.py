@@ -8,8 +8,6 @@
 ********************************************************************************
 """
 
-from channels.db import database_sync_to_async
-
 
 class Permission:
     """
@@ -93,13 +91,22 @@ class PermissionGroup:
         self.permissions = permissions
 
     def _repr(self):
-        return '<Group name="{0}">'.format(self.name)
+        return f'<Group name="{self.name}">'
 
     def __str__(self):
         return self._repr()
 
     def __repr__(self):
         return self._repr()
+
+
+def _has_permission(app, user, perm):
+    namespaced_perm = f"tethys_apps.{app.package}:{perm}"
+
+    # Check permission
+    if user.has_perm(namespaced_perm, app):
+        return True
+    return False
 
 
 def has_permission(request, perm, user=None):
@@ -135,31 +142,4 @@ def has_permission(request, perm, user=None):
     if user is None:
         user = request.user
 
-    namespaced_perm = "tethys_apps." + app.package + ":" + perm
-
-    # Check permission
-    if user.has_perm(namespaced_perm, app):
-        return True
-    return False
-
-
-@database_sync_to_async
-def scoped_user_has_permission(scope, perm):
-    """_summary_
-
-    Args:
-        user_id (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    from tethys_apps.utilities import get_active_app
-
-    request_url = scope["path"]
-    user = scope["user"]
-
-    app = get_active_app(url=request_url)
-
-    namespaced_perm = "tethys_apps." + app.package + ":" + perm
-
-    return user.has_perm(namespaced_perm, app)
+    return _has_permission(app, user, perm)

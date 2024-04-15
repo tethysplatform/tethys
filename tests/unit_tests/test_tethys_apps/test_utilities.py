@@ -1109,8 +1109,9 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         permissions_required = ["test_permission"]
         permissions_use_or = True
         login_required = False
+        with_paths = False
         updated_class = utilities.update_decorated_websocket_consumer_class(
-            TestConsumer, permissions_required, permissions_use_or, login_required
+            TestConsumer, permissions_required, permissions_use_or, login_required, with_paths
         )
 
         self.assertTrue(updated_class.permissions == permissions_required)
@@ -1137,8 +1138,9 @@ class TestAsyncUtilities(unittest.IsolatedAsyncioTestCase):
         permissions_required = ["test_permission"]
         permissions_use_or = True
         login_required = False
+        with_paths = False
         updated_class = utilities.update_decorated_websocket_consumer_class(
-            TestConsumer, permissions_required, permissions_use_or, login_required
+            TestConsumer, permissions_required, permissions_use_or, login_required, with_paths
         )
 
         self.assertTrue(updated_class.permissions == permissions_required)

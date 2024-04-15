@@ -8,10 +8,10 @@ from django.http import HttpRequest
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.workspace import (
     _get_user_workspace,
-    get_user_workspace,
+    get_user_workspace_old,
     user_workspace,
     _get_app_workspace,
-    get_app_workspace,
+    get_app_workspace_old,
     app_workspace,
 )
 
@@ -190,7 +190,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_user_workspace_aor_app_instance(self, mock_guw, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
-        ret = get_user_workspace(self.app, self.user)
+        ret = get_user_workspace_old(self.app, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
         mock_guw.assert_called_with(self.app, self.user)
@@ -200,7 +200,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_user_workspace_aor_app_class(self, mock_guw, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
-        ret = get_user_workspace(TethysAppChild, self.user)
+        ret = get_user_workspace_old(TethysAppChild, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
         mock_guw.assert_called_with(TethysAppChild, self.user)
@@ -215,7 +215,7 @@ class TestUrlMap(unittest.TestCase):
         mock_guw.return_value = mock_workspace
         mock_app = mock.MagicMock()
         mock_gaa.return_value = mock_app
-        ret = get_user_workspace(request, self.user)
+        ret = get_user_workspace_old(request, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_called_with(request, get_class=True)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
@@ -223,7 +223,7 @@ class TestUrlMap(unittest.TestCase):
 
     def test_get_user_workspace_aor_error(self):
         with self.assertRaises(ValueError) as context:
-            get_user_workspace("not_app_or_request", self.user)
+            get_user_workspace_old("not_app_or_request", self.user)
 
         self.assertEqual(
             str(context.exception),
@@ -235,7 +235,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_user_workspace_uor_user(self, mock_guw, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
-        ret = get_user_workspace(self.app, self.user)
+        ret = get_user_workspace_old(self.app, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
         mock_guw.assert_called_with(self.app, self.user)
@@ -247,21 +247,21 @@ class TestUrlMap(unittest.TestCase):
         request.user = self.user
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
-        ret = get_user_workspace(self.app, request)
+        ret = get_user_workspace_old(self.app, request)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
         mock_guw.assert_called_with(self.app, self.user)
 
     def test_get_user_workspace_uor_error(self):
         with self.assertRaises(ValueError) as context:
-            get_user_workspace(self.app, "not_user_or_request")
+            get_user_workspace_old(self.app, "not_user_or_request")
 
         self.assertEqual(
             str(context.exception),
             'Argument "user_or_request" must be of type HttpRequest or User: "<class \'str\'>" given.',
         )
 
-    @mock.patch("tethys_apps.base.workspace.get_user_workspace")
+    @mock.patch("tethys_apps.base.workspace.get_user_workspace_old")
     def test_user_workspace_decorator_user(self, mock_guw):
         request = HttpRequest()
         request.user = self.user
@@ -295,7 +295,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_app_workspace_app_instance(self, mock_gaw, mock_gaa, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
-        ret = get_app_workspace(self.app)
+        ret = get_app_workspace_old(self.app)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_not_called()
         mock_pq.assert_called_with(self.app, "app_workspace_quota")
@@ -307,7 +307,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_app_workspace_app_class(self, mock_gaw, mock_gaa, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
-        ret = get_app_workspace(TethysAppChild)
+        ret = get_app_workspace_old(TethysAppChild)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_not_called()
         mock_pq.assert_called_with(TethysAppChild, "app_workspace_quota")
@@ -322,7 +322,7 @@ class TestUrlMap(unittest.TestCase):
         mock_gaw.return_value = mock_workspace
         mock_app = mock.MagicMock()
         mock_gaa.return_value = mock_app
-        ret = get_app_workspace(request)
+        ret = get_app_workspace_old(request)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_called_with(request, get_class=True)
         mock_pq.assert_called_with(mock_app, "app_workspace_quota")
@@ -330,7 +330,7 @@ class TestUrlMap(unittest.TestCase):
 
     def test_get_app_workspace_error(self):
         with self.assertRaises(ValueError) as context:
-            get_app_workspace("not_app_or_request")
+            get_app_workspace_old("not_app_or_request")
 
         self.assertEqual(
             str(context.exception),
@@ -338,7 +338,7 @@ class TestUrlMap(unittest.TestCase):
         )
 
     @mock.patch("tethys_apps.utilities.get_active_app")
-    @mock.patch("tethys_apps.base.workspace.get_app_workspace")
+    @mock.patch("tethys_apps.base.workspace.get_app_workspace_old")
     def test_app_workspace_decorator(self, mock_gaw, mock_gaa):
         request = HttpRequest()
         mock_workspace = mock.MagicMock()

@@ -613,3 +613,7 @@ for settings_module in ADDITIONAL_SETTINGS_FILES:
     for setting in all_settings:
         value = getattr(mod, setting)
         setattr(this_module, setting, value)
+
+
+# TODO backward compatibility setting. Remove in Tethys 5.0
+USE_OLD_WORKSPACES_API = False

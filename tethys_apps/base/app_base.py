@@ -9,6 +9,8 @@
 import logging
 import traceback
 import uuid
+from importlib.resources import files
+
 from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -25,7 +27,8 @@ from .testing.environment import (
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
-from .workspace import get_app_workspace, get_user_workspace
+from .workspace import get_app_workspace_old, get_user_workspace_old
+from .paths import TethysPath
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 has_bokeh_django = True
@@ -60,6 +63,18 @@ class TethysBase(TethysBaseMixin):
     @classproperty
     def package_namespace(cls):
         raise NotImplementedError()
+
+    @property
+    def _package_files(self):
+        return files(f"{self.package_namespace}.{self.package}")
+
+    @property
+    def public_path(self):
+        return TethysPath(self._package_files / 'public')
+
+    @property
+    def resources_path(self):
+        return TethysPath(self._package_files / 'resources')
 
     @classproperty
     def db_model(cls):
@@ -1093,7 +1108,7 @@ class TethysAppBase(TethysBase):
                 user_workspace = App.get_user_workspace(request.user)
                 ...
         """  # noqa: E501
-        return get_user_workspace(cls, user_or_request)
+        return get_user_workspace_old(cls, user_or_request)
 
     @classmethod
     def get_app_workspace(cls):
@@ -1117,7 +1132,7 @@ class TethysAppBase(TethysBase):
                 app_workspace = App.get_app_workspace()
                 ...
         """
-        return get_app_workspace(cls)
+        return get_app_workspace_old(cls)
 
     @classmethod
     def get_scheduler(cls, name):

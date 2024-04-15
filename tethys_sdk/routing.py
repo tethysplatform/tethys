@@ -15,5 +15,6 @@ from tethys_apps.base.controller import (
     handler,
     register_controllers,
 )
+from tethys_apps.base.mixins import TethysAsyncWebsocketConsumerMixin, TethysWebsocketConsumerMixin
 from tethys_apps.base.bokeh_handler import with_request, with_workspaces
 from tethys_apps.base.url_map import url_map_maker

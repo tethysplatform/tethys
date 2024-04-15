@@ -733,30 +733,47 @@ def sign_and_unsign_secret_string(signer, value, is_signing):
 
 
 def update_decorated_websocket_consumer_class(
-    function_or_class, permissions_required, permissions_use_or, login_required
+    consumer_class, permissions_required, permissions_use_or, login_required, with_paths
 ):
     """Updates a given consumer class and adds the necessary properties and function for authorizing user access
     depending on the other args given.
 
     Args:
-        function_or_class (class): class of the websocket consumer
+        consumer_class (class): class of the websocket consumer
         permissions_required (str, list, tuple): the permissions required for user access
         permissions_use_or (bool): Determines if all permissions need to be met or just one of them
         login_required (bool): Determines if the user needs to be logged in to use
+        with_paths (bool): Determines if the path attributes on the class should be initialized
 
     Returns:
         class: updated class with necessary properties and function for authorizing user access
     """
-    if issubclass(function_or_class, SyncConsumer):
+    if issubclass(consumer_class, SyncConsumer):
         consumer_mixin = TethysWebsocketConsumerMixin
     else:
         consumer_mixin = TethysAsyncWebsocketConsumerMixin
 
-    class_bases = list(function_or_class.__bases__)
+    class_bases = list(consumer_class.__bases__)
     class_bases.insert(0, consumer_mixin)
-    function_or_class.__bases__ = tuple(class_bases)
-    function_or_class.permissions = permissions_required
-    function_or_class.permissions_use_or = permissions_use_or
-    function_or_class.login_required = login_required
+    consumer_class.__bases__ = tuple(class_bases)
+    consumer_class.permissions = permissions_required
+    consumer_class.permissions_use_or = permissions_use_or
+    consumer_class.login_required = login_required
 
-    return function_or_class
+    if with_paths or login_required:
+        consumer_class.__call__ = initialize_consumer_app_and_user(consumer_class.__call__)
+
+    return consumer_class
+
+
+def initialize_consumer_app_and_user(call_func):
+    """Wrapper for Consumer class with Tethys(Async)WebsocketConsumerMixin __call__ function to initialize
+    the active app and user properties
+    """
+    async def wrapper(self, scope, *args, **kwargs):
+        self.scope = scope
+        await self._initialize_app_and_user()
+        result = await call_func(self, scope, *args, **kwargs)
+
+        return result
+    return wrapper
