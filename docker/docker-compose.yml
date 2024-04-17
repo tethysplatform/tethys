@@ -13,6 +13,11 @@ services:
       TETHYS_DB_SUPERUSER: "tethys_super"
       TETHYS_DB_SUPERUSER_PASS: "pass"
       CLIENT_MAX_BODY_SIZE: "75M"
+    healthcheck:
+      test: ["CMD", "./liveness-probe.sh"]
+      interval: 10s
+      timeout: 6s
+      retries: 2
     links:
       - db
     depends_on:

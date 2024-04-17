@@ -207,6 +207,7 @@ EXPOSE 80
 ###############*
 ADD docker/salt/ /srv/salt/
 ADD docker/run.sh ${TETHYS_HOME}/
+ADD docker/liveness-probe.sh ${TETHYS_HOME}/
 
 ########
 # RUN! #
@@ -215,7 +216,4 @@ WORKDIR ${TETHYS_HOME}
 # Create Salt configuration based on ENVs
 CMD bash run.sh
 HEALTHCHECK --start-period=240s \
-  CMD  function check_process_is_running(){ if [ "$(ps $1 | wc -l)" -ne 2 ]; then echo The $2 process \($1\) is  not running. 1>&2; return 1; fi }; \
-  check_process_is_running $(cat $(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')) supervisor; \
-  check_process_is_running $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) nginx; \
-  check_process_is_running $(ls -l /run/tethys_asgi0.sock.lock | awk -F'-> ' '{print $2}') asgi;
+  CMD ./liveness-probe.sh
