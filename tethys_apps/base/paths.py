@@ -332,12 +332,12 @@ def _add_path_decorator(func, argument_name, pass_user=False):
                     "No request given. The adding paths only works on controllers."
                 )
 
-            args = [request]
+            func_args = [request]
             if pass_user:
-                args.append(request.user)
-            the_path = func(*args)
+                func_args.append(request.user)
+            the_path = func(*func_args)
 
-            return controller(*args, **{argument_name, the_path}, **kwargs)
+            return controller(*args, **{argument_name: the_path}, **kwargs)
 
         return wrapper
 
