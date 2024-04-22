@@ -1,3 +1,4 @@
+from pathlib import Path
 from types import FunctionType
 import unittest
 from unittest import mock
@@ -11,6 +12,7 @@ from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
 )
 import tethys_apps.base.app_base as tethys_app_base
+from tethys_apps.base.paths import TethysPath
 from tethys_apps.base.permissions import Permission, PermissionGroup
 from ... import UserFactory
 
@@ -52,6 +54,19 @@ class TestTethysBase(unittest.TestCase):
             return base.package_namespace
 
         self.assertRaises(NotImplementedError, get_package_namespace)
+
+    @mock.patch("tethys_cli.cli_colors.write_error")
+    def test_resolve_bokeh_handler(self, mock_write_error):
+        base = tethys_app_base.TethysBase()
+        with mock.patch("tethys_apps.base.app_base.has_bokeh_django", False):
+            base._resolve_bokeh_handler(None, None, print, None)
+            mock_write_error.assert_called_once()
+            mock_write_error.assert_called_with(
+                    f'ERROR! The the "" app has a Bokeh-type handler "print", '
+                    f'but the "bokeh_django" package is not installed. '
+                    f'Please install "bokeh_django" for the app to function properly.'
+            )
+
 
     @mock.patch("tethys_apps.base.controller.register_controllers")
     def test_register_url_maps(self, mock_rc):
@@ -363,7 +378,7 @@ class TestTethysBase(unittest.TestCase):
             'the handler function "test_app.controllers.home_handler1"'
         )
         self.assertIn(error_message, rts_call_args.args[0])
-
+                
     def test_sync_with_tethys_db(self):
         self.assertRaises(
             NotImplementedError, tethys_app_base.TethysBase().sync_with_tethys_db
@@ -541,6 +556,18 @@ class TestTethysAppBase(unittest.TestCase):
     def test_package_namespace(self):
         ret = tethys_app_base.TethysAppBase.package_namespace
         self.assertEqual("tethysapp", ret)
+        
+    @mock.patch("tethys_apps.base.app_base.files")
+    def test_public_path(self, mock_files):
+        mock_files.return_value = Path("tethysapp")
+        ret = tethys_app_base.TethysAppBase().public_path
+        self.assertEqual(TethysPath("tethysapp/public").path, ret.path)
+
+    @mock.patch("tethys_apps.base.app_base.files")
+    def test_resrouces_path(self, mock_files):
+        mock_files.return_value = Path("tethysapp")
+        ret = tethys_app_base.TethysAppBase().resources_path
+        self.assertEqual(TethysPath("tethysapp/resources").path, ret.path)
 
     def test_db_model(self):
         from tethys_apps.models import TethysApp

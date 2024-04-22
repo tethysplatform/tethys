@@ -139,7 +139,7 @@ class TethysAsyncWebsocketConsumerMixin:
 
     @property
     def user_media(self):
-        return get_user_media(self.activate_app, self.user)
+        return get_user_media(self.active_app, self.user)
 
     @property
     def app_resources(self):
