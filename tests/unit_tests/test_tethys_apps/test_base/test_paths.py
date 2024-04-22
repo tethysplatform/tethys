@@ -292,7 +292,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     def test_add_path_decorator(self):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
-        
+
         mock_user_media_func = mock.MagicMock()
         mock_user_media_func.return_value = "user_media_return"
 
@@ -301,28 +301,30 @@ class TestTethysPathHelpers(unittest.TestCase):
         )(fake_controller)
 
         user_media = wrapped_controller(self.mock_request)
-        self.assertEqual(user_media, 'user_media_return')
-        mock_user_media_func.assert_called_with(self.mock_request, self.mock_request.user)
+        self.assertEqual(user_media, "user_media_return")
+        mock_user_media_func.assert_called_with(
+            self.mock_request, self.mock_request.user
+        )
 
     def test_add_path_decorator_no_user(self):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
-        
+
         mock_user_media_func = mock.MagicMock()
         mock_user_media_func.return_value = "user_media_return"
-        
+
         wrapped_controller_no_user = paths._add_path_decorator(
             mock_user_media_func, "user_media", False
         )(fake_controller)
 
         user_media_no_user = wrapped_controller_no_user(self.mock_request)
-        self.assertEqual(user_media_no_user, 'user_media_return')
+        self.assertEqual(user_media_no_user, "user_media_return")
         mock_user_media_func.assert_called_with(self.mock_request)
 
     def test_add_path_decorator_no_request(self):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
-        
+
         mock_user_media_func = mock.MagicMock()
         mock_user_media_func.return_value = "user_media_return"
 
@@ -332,4 +334,7 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         with self.assertRaises(ValueError) as exc:
             wrapped_controller_no_request(None)
-        self.assertEqual(str(exc.exception), "No request given. The adding paths only works on controllers.")
+        self.assertEqual(
+            str(exc.exception),
+            "No request given. The adding paths only works on controllers.",
+        )
