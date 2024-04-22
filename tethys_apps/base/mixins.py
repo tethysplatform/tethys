@@ -68,8 +68,15 @@ class TethysAsyncWebsocketConsumerMixin:
         if self.login_required and not self.scope["user"].is_authenticated:
             self._authorized = False
         else:
-            perm_values = [await database_sync_to_async(_has_permission)(self.active_app, self.user, perm) for perm in self.perms]
-            self._authorized = any(perm_values) if self.permissions_use_or else all(perm_values)
+            perm_values = [
+                await database_sync_to_async(_has_permission)(
+                    self.active_app, self.user, perm
+                )
+                for perm in self.perms
+            ]
+            self._authorized = (
+                any(perm_values) if self.permissions_use_or else all(perm_values)
+            )
 
     @property
     async def authorized(self):

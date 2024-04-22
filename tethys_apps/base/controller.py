@@ -64,6 +64,7 @@ def consumer_with_paths(call_func):
         result = await call_func(self, scope, *args, **kwargs)
 
         return result
+
     return wrapper
 
 
@@ -144,7 +145,11 @@ def consumer(
         )
 
         consumer_class = update_decorated_websocket_consumer_class(
-            consumer_class, permissions_required, permissions_use_or, login_required, with_paths,
+            consumer_class,
+            permissions_required,
+            permissions_use_or,
+            login_required,
+            with_paths,
         )
 
         asgi_controller = consumer_class.as_asgi()
@@ -411,7 +416,9 @@ def controller(
             ("app_workspace", get_app_workspace),
         ):
             if locals()[argument_name]:
-                controller = _add_path_decorator(path_func, argument_name, "user" in argument_name)(controller)
+                controller = _add_path_decorator(
+                    path_func, argument_name, "user" in argument_name
+                )(controller)
 
         if permissions_required:
             controller = permission_required(

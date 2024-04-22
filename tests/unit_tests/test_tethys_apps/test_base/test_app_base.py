@@ -62,9 +62,9 @@ class TestTethysBase(unittest.TestCase):
             base._resolve_bokeh_handler(None, None, print, None)
             mock_write_error.assert_called_once()
             mock_write_error.assert_called_with(
-                    'ERROR! The the "" app has a Bokeh-type handler "print", '
-                    'but the "bokeh_django" package is not installed. '
-                    'Please install "bokeh_django" for the app to function properly.'
+                'ERROR! The the "" app has a Bokeh-type handler "print", '
+                'but the "bokeh_django" package is not installed. '
+                'Please install "bokeh_django" for the app to function properly.'
             )
 
     @mock.patch("tethys_apps.base.controller.register_controllers")

@@ -69,11 +69,11 @@ class TethysBase(TethysBaseMixin):
 
     @property
     def public_path(self):
-        return TethysPath(self._package_files / 'public')
+        return TethysPath(self._package_files / "public")
 
     @property
     def resources_path(self):
-        return TethysPath(self._package_files / 'resources')
+        return TethysPath(self._package_files / "resources")
 
     @classproperty
     def db_model(cls):

@@ -98,10 +98,21 @@ class TestBokehHandler(unittest.TestCase):
         self.assertIsNotNone(getattr(ret_doc, "user_media_path", None))
         self.assertIsNotNone(getattr(ret_doc, "app_resources_path", None))
 
-        self.assertEqual(TethysPath("workspaces/user_workspaces/mock-username").path, ret_doc.user_workspace.path)
-        self.assertEqual(TethysPath("workspaces/app_workspace").path, ret_doc.app_workspace.path)
-        self.assertEqual(TethysPath("app-media-root/media/app_media").path, ret_doc.app_media_path.path)
-        self.assertEqual(TethysPath("app-media-root/media/user_media/mock-username").path, ret_doc.user_media_path.path)
+        self.assertEqual(
+            TethysPath("workspaces/user_workspaces/mock-username").path,
+            ret_doc.user_workspace.path,
+        )
+        self.assertEqual(
+            TethysPath("workspaces/app_workspace").path, ret_doc.app_workspace.path
+        )
+        self.assertEqual(
+            TethysPath("app-media-root/media/app_media").path,
+            ret_doc.app_media_path.path,
+        )
+        self.assertEqual(
+            TethysPath("app-media-root/media/user_media/mock-username").path,
+            ret_doc.user_media_path.path,
+        )
         self.assertEqual(TethysPath("resources").path, ret_doc.app_resources_path.path)
         self.assertEqual(TethysPath("public").path, ret_doc.app_public_path.path)
 

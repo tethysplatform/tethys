@@ -761,7 +761,9 @@ def update_decorated_websocket_consumer_class(
     consumer_class.login_required = login_required
 
     if with_paths or login_required:
-        consumer_class.__call__ = initialize_consumer_app_and_user(consumer_class.__call__)
+        consumer_class.__call__ = initialize_consumer_app_and_user(
+            consumer_class.__call__
+        )
 
     return consumer_class
 
@@ -770,10 +772,12 @@ def initialize_consumer_app_and_user(call_func):
     """Wrapper for Consumer class with Tethys(Async)WebsocketConsumerMixin __call__ function to initialize
     the active app and user properties
     """
+
     async def wrapper(self, scope, *args, **kwargs):
         self.scope = scope
         await self._initialize_app_and_user()
         result = await call_func(self, scope, *args, **kwargs)
 
         return result
+
     return wrapper

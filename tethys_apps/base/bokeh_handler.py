@@ -20,7 +20,7 @@ from django.shortcuts import render
 # TODO remove deprecated workspaces imports in 5.0
 from tethys_sdk.workspaces import (
     get_user_workspace as get_user_workspace_old,
-    get_app_workspace as get_app_workspace_old
+    get_app_workspace as get_app_workspace_old,
 )
 
 from tethys_portal.optional_dependencies import optional_import

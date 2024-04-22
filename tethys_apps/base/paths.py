@@ -138,7 +138,7 @@ class TethysPath:
 
         """
         if self.read_only:
-            raise RuntimeError('Read only TethysPaths cannot be cleared')
+            raise RuntimeError("Read only TethysPaths cannot be cleared")
 
         if exclude is None:
             exclude = list()
@@ -179,10 +179,12 @@ class TethysPath:
 
         """  # noqa: E501
         if self.read_only:
-            raise RuntimeError('Cannot remove files from read-only TethysPaths')
+            raise RuntimeError("Cannot remove files from read-only TethysPaths")
         item = Path(item).resolve()
 
-        assert item.relative_to(self.path)   # TODO add an if statement with a helpful error message
+        assert item.relative_to(
+            self.path
+        )  # TODO add an if statement with a helpful error message
 
         if item.is_dir():
             shutil.rmtree(item)
@@ -215,8 +217,8 @@ def _resolve_app_class(app_class_or_request):
 
     # Get app
     if isinstance(app_class_or_request, TethysAppBase) or (
-            isinstance(app_class_or_request, type)
-            and issubclass(app_class_or_request, TethysAppBase)
+        isinstance(app_class_or_request, type)
+        and issubclass(app_class_or_request, TethysAppBase)
     ):
         app = app_class_or_request
     elif isinstance(app_class_or_request, HttpRequest):
@@ -241,7 +243,7 @@ def _resolve_username(user_or_request):
 
     # Get user
     if isinstance(user_or_request, User) or isinstance(
-            user_or_request, SimpleLazyObject
+        user_or_request, SimpleLazyObject
     ):
         user = user_or_request
     elif isinstance(user_or_request, HttpRequest):
@@ -338,4 +340,5 @@ def _add_path_decorator(func, argument_name, pass_user=False):
             return controller(*args, **{argument_name, the_path}, **kwargs)
 
         return wrapper
+
     return decorator
