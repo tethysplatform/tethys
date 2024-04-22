@@ -35,6 +35,10 @@ server {
         alias {{ static_root }}; # your Tethys static files - amend as required
     }
 
+    location /media {
+        alias {{ media_root }}; # your Tethys media files - amend as required
+    }
+
     # Finally, send all non-media requests to the Django server.
     location / {
         try_files $uri @proxy_to_app;
