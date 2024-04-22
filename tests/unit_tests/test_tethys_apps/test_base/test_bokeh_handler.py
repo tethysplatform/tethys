@@ -26,9 +26,11 @@ def with_request_decorated(doc: Document):
 def with_workspaces_decorated(doc: Document):
     return doc
 
+
 @with_paths
 def with_paths_decorated(doc: Document):
     return doc
+
 
 class TestBokehHandler(unittest.TestCase):
     def setUp(self) -> None:

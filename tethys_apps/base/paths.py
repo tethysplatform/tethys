@@ -327,7 +327,7 @@ def _add_path_decorator(func, argument_name, pass_user=False):
 
             if request is None:
                 raise ValueError(
-                    f"No request given. The adding paths only works on controllers."
+                    "No request given. The adding paths only works on controllers."
                 )
 
             args = [request]

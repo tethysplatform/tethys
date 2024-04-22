@@ -106,18 +106,17 @@ class TestTethysPath(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 tethys_path_read_only.clear()
 
-            
             self.assertEqual(len(fs), 1)
             self.assertEqual(len(ds), 3)
 
             tethys_path = TethysPath(temp_dir)
-            
+
             fs2 = tethys_path.files()
             ds2 = tethys_path.directories()
 
             self.assertEqual(len(fs2), 1)
             self.assertEqual(len(ds2), 3)
-        
+
             tethys_path.clear()
 
             fs3 = tethys_path.files()
@@ -139,7 +138,7 @@ class TestTethysPath(unittest.TestCase):
                 for j in range(1, 3):
                     with open(os.path.join(new_dir, f'file{j}.txt'), 'w') as temp_file:
                         temp_file.write(f'This is file {j} in dir{i}')
-        
+
             # test read only
             tethys_path_read_only = TethysPath(temp_dir, read_only=True)
             with self.assertRaises(RuntimeError):
@@ -154,7 +153,7 @@ class TestTethysPath(unittest.TestCase):
             tethys_path.remove(f'{temp_dir}/file1.txt')
             fs2 = tethys_path.files()
             ds2 = tethys_path.directories()
-            
+
             self.assertEqual(len(fs2), 0)
             self.assertEqual(len(ds2), 3)
 
@@ -192,7 +191,7 @@ class TestTethysPath(unittest.TestCase):
 class TestTethysPathHelpers(unittest.TestCase):
 
     def setUp(self):
-        from django.contrib.auth.models import User        
+        from django.contrib.auth.models import User
         from tethys_apps.models import TethysApp
         self.mock_app_base_class = tethys_app_base.TethysAppBase()
         self.mock_request = mock.Mock(spec=HttpRequest)

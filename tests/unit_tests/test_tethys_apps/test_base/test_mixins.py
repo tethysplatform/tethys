@@ -57,7 +57,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     def test_app_workspace(self, gaw, _):
         gaw.return_value = Path("workspaces")
         self.assertEqual(
-            TethysPath("workspaces/app_workspace").path, 
+            TethysPath("workspaces/app_workspace").path,
             self.consumer.app_workspace.path
         )
 
@@ -69,7 +69,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         gaw.return_value = Path("workspaces")
         ru.return_value = "mock-username"
         self.assertEqual(
-            TethysPath("workspaces/user_workspaces/mock-username").path, 
+            TethysPath("workspaces/user_workspaces/mock-username").path,
             self.consumer.user_workspace.path
         )
 
@@ -79,7 +79,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     def test_app_media(self, gamr, _):
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
-            TethysPath("app-media-root/media/app_media").path, 
+            TethysPath("app-media-root/media/app_media").path,
             self.consumer.app_media.path
         )
 
@@ -93,7 +93,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         ru.return_value = "mock-username"
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
-            TethysPath("app-media-root/media/user_media/mock-username").path, 
+            TethysPath("app-media-root/media/user_media/mock-username").path,
             self.consumer.user_media.path
         )
 
@@ -103,7 +103,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         mock_app.resources_path = TethysPath("resources")
         rac.return_value = mock_app
         self.assertEqual(
-            TethysPath("resources").path, 
+            TethysPath("resources").path,
             self.consumer.app_resources.path
         )
 
@@ -113,7 +113,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         mock_app.public_path = TethysPath("public")
         rac.return_value = mock_app
         self.assertEqual(
-            TethysPath("public").path, 
+            TethysPath("public").path,
             self.consumer.app_public.path
         )
 

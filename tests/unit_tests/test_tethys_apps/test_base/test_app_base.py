@@ -62,11 +62,10 @@ class TestTethysBase(unittest.TestCase):
             base._resolve_bokeh_handler(None, None, print, None)
             mock_write_error.assert_called_once()
             mock_write_error.assert_called_with(
-                    f'ERROR! The the "" app has a Bokeh-type handler "print", '
-                    f'but the "bokeh_django" package is not installed. '
-                    f'Please install "bokeh_django" for the app to function properly.'
+                    'ERROR! The the "" app has a Bokeh-type handler "print", '
+                    'but the "bokeh_django" package is not installed. '
+                    'Please install "bokeh_django" for the app to function properly.'
             )
-
 
     @mock.patch("tethys_apps.base.controller.register_controllers")
     def test_register_url_maps(self, mock_rc):
@@ -378,7 +377,7 @@ class TestTethysBase(unittest.TestCase):
             'the handler function "test_app.controllers.home_handler1"'
         )
         self.assertIn(error_message, rts_call_args.args[0])
-                
+
     def test_sync_with_tethys_db(self):
         self.assertRaises(
             NotImplementedError, tethys_app_base.TethysBase().sync_with_tethys_db
@@ -556,7 +555,7 @@ class TestTethysAppBase(unittest.TestCase):
     def test_package_namespace(self):
         ret = tethys_app_base.TethysAppBase.package_namespace
         self.assertEqual("tethysapp", ret)
-        
+
     @mock.patch("tethys_apps.base.app_base.files")
     def test_public_path(self, mock_files):
         mock_files.return_value = Path("tethysapp")

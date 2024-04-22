@@ -94,7 +94,7 @@ def consumer(
         login_required:
         permissions_required:
         permissions_use_or:
-        
+
     **Example:**
 
     ::
@@ -467,8 +467,7 @@ def handler(
         handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
         with_request: If `True` then the ``HTTPRequest`` object will be added to the `Bokeh Document`.
         with_workspaces: if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
-        with_paths: 
-    
+        with_paths: if `True` then the `app_media_path`, `user_media_path`, and `app_resources_path` will be added to the `Bokeh Document`.
     **Example:**
 
     ::
