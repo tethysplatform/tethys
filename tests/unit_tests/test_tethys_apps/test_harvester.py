@@ -226,7 +226,7 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.exception")
     @mock.patch(
-        "tethysapp.test_app.app.TestApp.registered_url_maps",
+        "tethysapp.test_app.app.App.registered_url_maps",
         new_callable=mock.PropertyMock,
     )
     def test_harvest_app_instances_load_url_patterns_exception(
@@ -254,7 +254,7 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.exception")
     @mock.patch(
-        "tethysapp.test_app.app.TestApp.registered_url_maps",
+        "tethysapp.test_app.app.App.registered_url_maps",
         new_callable=mock.PropertyMock,
     )
     def test_harvest_app_instances_load_handler_patterns_exception(
@@ -282,7 +282,7 @@ class HarvesterTest(unittest.TestCase):
 
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
-    @mock.patch("tethysapp.test_app.app.TestApp.register_app_permissions")
+    @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
     def test_harvest_app_instances_programming_error(
         self, mock_permissions, mock_logwarning, mock_stdout
     ):
@@ -309,7 +309,7 @@ class HarvesterTest(unittest.TestCase):
 
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
-    @mock.patch("tethysapp.test_app.app.TestApp.register_app_permissions")
+    @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
     def test_harvest_app_instances_object_does_not_exist(
         self, mock_permissions, mock_logwarning, mock_stdout
     ):

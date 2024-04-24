@@ -47,7 +47,7 @@ To use the extension models to query the database, import them from the extensio
 
 ::
 
-    from tethysapp.my_first_app.app import MyFirstApp as app
+    from tethysapp.my_first_app.app import App
     from tethysext.my_first_extension.models import Project
 
 
@@ -63,4 +63,4 @@ To use the extension models to query the database, import them from the extensio
             'project': project
         }
 
-        return render(request, 'my_first_app/some_template.html', context)
+        return App.render(request, 'some_template.html', context)

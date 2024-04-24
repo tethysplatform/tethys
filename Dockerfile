@@ -3,6 +3,7 @@ FROM mambaorg/micromamba:bullseye
 # BUILD ARGUMENTS #
 ###################
 ARG PYTHON_VERSION=3.*
+ARG MICRO_TETHYS=false
 
 ###############
 # ENVIRONMENT #
@@ -14,6 +15,7 @@ ENV TETHYS_APPS_ROOT="/var/www/tethys/apps"
 ENV TETHYS_PORT=8000
 ENV NGINX_PORT=80
 ENV POSTGRES_PASSWORD="pass"
+ENV SKIP_DB_SETUP=false
 ENV TETHYS_DB_ENGINE='django.db.backends.postgresql'
 ENV TETHYS_DB_NAME='tethys_platform'
 ENV TETHYS_DB_USERNAME="tethys_default"
@@ -45,6 +47,8 @@ ENV SESSION_WARN=1500
 ENV SESSION_EXPIRE=1800
 ENV STATIC_ROOT="${TETHYS_PERSIST}/static"
 ENV WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces"
+ENV MEDIA_ROOT="${TETHYS_PERSIST}/media}"
+ENV MEDIA_URL="${MEDIA_URL}"
 ENV QUOTA_HANDLERS="\"[]\""
 ENV DJANGO_ANALYTICAL="\"{}\""
 ENV ADD_BACKENDS="\"[]\""
@@ -112,14 +116,14 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 
 # Install APT packages
 RUN rm -rf /var/lib/apt/lists/*\
- && apt-get update \
- && apt-get -y install curl \
- && mkdir /etc/apt/keyrings \
- && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/debian/11/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
- && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=amd64] https://repo.saltproject.io/salt/py3/debian/11/amd64/latest bullseye main" | tee /etc/apt/sources.list.d/salt.list \
- && apt-get update \
- && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get update \
+  && apt-get -y install curl \
+  && mkdir /etc/apt/keyrings \
+  && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/debian/11/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=amd64] https://repo.saltproject.io/salt/py3/debian/11/amd64/latest bullseye main" | tee /etc/apt/sources.list.d/salt.list \
+  && apt-get update \
+  && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
+  && rm -rf /var/lib/apt/lists/*
 
 # Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
@@ -130,16 +134,27 @@ RUN ln -s /bin/micromamba ${CONDA_HOME}/bin/conda
 
 # Setup Conda Environment
 COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml ${TETHYS_HOME}/tethys/
+COPY --chown=$MAMBA_USER:$MAMBA_USER micro_environment.yml ${TETHYS_HOME}/tethys/
+
 WORKDIR ${TETHYS_HOME}/tethys
-RUN sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml \
- && micromamba create -n "${CONDA_ENV_NAME}" --yes --file "environment.yml" \
- && micromamba clean --all --yes
+
+RUN if [ "${MICRO_TETHYS}" = "true" ]; then \
+  sed -i "s/- python$/- python=${PYTHON_VERSION}/g" micro_environment.yml && \
+  micromamba create -n "${CONDA_ENV_NAME}" --yes --file "micro_environment.yml" && \
+  micromamba clean --all --yes && \
+  rm -rf environment.yml; \
+  else \
+  sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml && \
+  micromamba create -n "${CONDA_ENV_NAME}" --yes --file "environment.yml" && \
+  micromamba clean --all --yes && \
+  rm -rf micro_environment.yml; \
+  fi
 
 ###########
 # INSTALL #
 ###########
 # Make dirs
-RUN mkdir -p ${TETHYS_PERSIST} ${TETHYS_APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
+RUN mkdir -p ${TETHYS_PERSIST} ${TETHYS_APPS_ROOT} ${WORKSPACE_ROOT} ${MEDIA_ROOT} ${STATIC_ROOT} ${TETHYS_LOG}
 
 # Setup www user, run supervisor and nginx processes as www user
 RUN groupadd www \

@@ -45,14 +45,14 @@ Replace :file:`controller.py` with the following:
     import pandas as pd
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
-    from .app import MapLayoutTutorial as app
+    from .app import App
 
 
     MODEL_OUTPUT_FOLDER_NAME = 'sample_nextgen_data'
 
     @controller(name="home", app_workspace=True)
     class MapLayoutTutorialMap(MapLayout):
-        app = app
+        app = App
         base_template = 'map_layout_tutorial/base.html'
         map_title = 'Map Layout Tutorial'
         map_subtitle = 'NOAA-OWP NextGen Model Outputs'

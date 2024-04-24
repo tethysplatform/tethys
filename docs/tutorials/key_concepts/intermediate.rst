@@ -38,8 +38,8 @@ HTML forms are the primary mechanism for obtaining input from users of your app.
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         <h1>Add Dam</h1>
@@ -117,7 +117,7 @@ b. Define the options for the form gizmos in the controller and change the ``add
             cancel_button = Button(
                 display_text='Cancel',
                 name='cancel-button',
-                href=reverse('dam_inventory:home')
+                href=App.reverse('home')
             )
 
             context = {
@@ -129,7 +129,7 @@ b. Define the options for the form gizmos in the controller and change the ``add
                 'cancel_button': cancel_button,
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 2. Handle Form Submission
 =========================
@@ -141,7 +141,6 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
     .. code-block:: python
         :emphasize-lines: 1-2, 11-53, 59-60, 68-69, 76-77, 87-88
 
-        from django.shortcuts import redirect
         from django.contrib import messages
 
         ...
@@ -243,7 +242,7 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
             cancel_button = Button(
                 display_text='Cancel',
                 name='cancel-button',
-                href=reverse('dam_inventory:home')
+                href=App.reverse('home')
             )
 
             context = {
@@ -255,7 +254,7 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
                 'cancel_button': cancel_button,
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 .. tip::
 
@@ -452,7 +451,7 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
             cancel_button = Button(
                 display_text='Cancel',
                 name='cancel-button',
-                href=reverse('dam_inventory:home')
+                href=App.reverse('home')
             )
 
             context = {
@@ -464,7 +463,7 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
                 'cancel_button': cancel_button,
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 c. Use the Add Dam page to add several dams for the Dam Inventory app.
 
@@ -508,8 +507,8 @@ b. Add a new template ``/templates/dam_inventory/list_dams.html`` with the follo
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         <h1>Dams</h1>
@@ -553,7 +552,7 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
                 'dams_table': dams_table
             }
 
-            return render(request, 'dam_inventory/list_dams.html', context)
+            return App.render(request, 'list_dams.html', context)
         
     .. note::
 
@@ -565,9 +564,9 @@ d. Open ``/templates/dam_inventory/base.html`` and add navigation links for the 
         :emphasize-lines: 4, 7
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
-        {% url 'dam_inventory:dams' as list_dam_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
+        {% url tethys_app|url:'dams' as list_dam_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
@@ -585,8 +584,8 @@ a. Open ``/templates/dam_inventory/add_dam.html`` and add the ``location_input``
     .. code-block:: html+django
         :emphasize-lines: 8-12
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         <h1>Add Dam</h1>
@@ -743,7 +742,7 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
             cancel_button = Button(
                 display_text='Cancel',
                 name='cancel-button',
-                href=reverse('dam_inventory:home')
+                href=App.reverse('home')
             )
 
             context = {
@@ -757,7 +756,7 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
                 'cancel_button': cancel_button,
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 c. Modify the ``add_new_dam`` Model Method to store spatial data:
 
@@ -903,7 +902,7 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
                 name='add-dam-button',
                 icon='plus-square',
                 style='success',
-                href=reverse('dam_inventory:add_dam')
+                href=App.reverse('add_dam')
             )
 
             context = {
@@ -911,7 +910,7 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
                 'add_dam_button': add_dam_button
             }
 
-            return render(request, 'dam_inventory/home.html', context)
+            return App.render(request, 'home.html', context)
 
 7. Solution
 ===========

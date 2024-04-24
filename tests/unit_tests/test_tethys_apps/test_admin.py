@@ -371,6 +371,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = CustomUser(mock.MagicMock(), mock.MagicMock())
 
+        ret.inlines = tuple(ret.inlines)  # inlines is sometimes a tuple in django 4
         # Add custom inline when change_view is called
         ret.change_view(mock.MagicMock())
         mock_ua_change_view.assert_called()

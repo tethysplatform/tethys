@@ -32,6 +32,7 @@ In this case, we import ``DatePicker`` and initialize a new object called ``date
 ::
 
     from tethys_sdk.gizmos import DatePicker
+    from .app import App
 
     def gizmo_controller(request):
         """
@@ -50,18 +51,18 @@ In this case, we import ``DatePicker`` and initialize a new object called ``date
 
         context = {'date_picker': date_picker}
 
-        return render(request, 'my_first_app/template.html', context)
+        return App.render(request, 'template.html', context)
 
 The :ref:`gizmo_options` section provides detailed descriptions of each Gizmo option object, valid parameters, and examples of how to use them.
 
 2. Load Gizmo Library in Template
 ---------------------------------
 
-Now near the top of the template where the Gizmo will be inserted, load the ``tethys_gizmos`` library using the `Django load tag <https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#load>`_. This only needs to be done once per template:
+Now near the top of the template where the Gizmo will be inserted, load the ``tethys`` library using the `Django load tag <https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#load>`_. This only needs to be done once per template:
 
 ::
 
-    {% load tethys_gizmos %}
+    {% load tethys %}
 
 
 4. Insert the Gizmo
@@ -96,7 +97,11 @@ The Gizmo Showcase App provides live demos and code examples of every Tethys Giz
 API Documentation
 =================
 
-This section contains a brief explanation of the template tags that power Gizmos. These are provided by the ``tethys_gizmos`` library that you load at the top of templates that use Gizmos.
+This section contains a brief explanation of the template tags that power Gizmos. These are provided by the ``tethys`` library that you load at the top of templates that use Gizmos.
+
+.. code-block:: html+django
+
+    {% load tethys%}
 
 **gizmo**
 ---------
@@ -150,7 +155,7 @@ Tells the ``gizmo_dependencies`` to load in the dependencies for the gizmo. This
 **gizmo_dependencies**
 ----------------------
 
-Inserts of the CSS and JavaScript dependencies at the location of the tag for all gizmos loaded in the template with the **gizmo** tag. This tag must appear after all occurrences of the ``gizmo`` tag. In Tethys Apps, these depenencies are imported for you, so this tag is not required. For external Django projects that use the tethys_gizmos Django app, this tag is required.
+Inserts of the CSS and JavaScript dependencies at the location of the tag for all gizmos loaded in the template with the ``gizmo`` tag. This tag must appear after all occurrences of the ``gizmo`` tag. In Tethys Apps, these dependencies are imported for you, so this tag is not required. For external Django projects that use the tethys_gizmos Django app, this tag is required.
 
 *Parameters*:
 

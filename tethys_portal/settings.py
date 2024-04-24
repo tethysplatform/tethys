@@ -247,7 +247,7 @@ for module in [
     "rest_framework",
     "rest_framework.authtoken",
     "session_security",
-    "snowpenguin.django.recaptcha2",
+    "django_recaptcha",
     "social_django",
     "termsandconditions",
 ]:
@@ -452,6 +452,11 @@ TETHYS_WORKSPACES_ROOT = TETHYS_PORTAL_CONFIG.pop(
     "TETHYS_WORKSPACES_ROOT", relative_to_tethys_home("workspaces", as_str=True)
 )
 
+MEDIA_URL = portal_config_settings.pop("MEDIA_URL", "/media/")
+MEDIA_ROOT = portal_config_settings.pop(
+    "MEDIA_ROOT", relative_to_tethys_home("media", as_str=True)
+)
+
 # add any additional TETHYS_PORTAL_CONFIG settings
 for setting, value in TETHYS_PORTAL_CONFIG.items():
     setattr(this_module, setting, value)
@@ -552,6 +557,10 @@ for setting, value in LOCKOUT_CONFIG.items():
 ANONYMOUS_USER_ID = -1
 
 CAPTCHA_CONFIG = portal_config_settings.pop("CAPTCHA_CONFIG", {})
+# RECAPTCHA values need a default or else they will throw an error
+#  - Alternative is to set SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
+CAPTCHA_CONFIG.setdefault("RECAPTCHA_PRIVATE_KEY", None)
+CAPTCHA_CONFIG.setdefault("RECAPTCHA_PUBLIC_KEY", None)
 for setting, value in CAPTCHA_CONFIG.items():
     setattr(this_module, setting, value)
 

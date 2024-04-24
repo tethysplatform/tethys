@@ -1,18 +1,12 @@
 {% extends "tethys_portal/accounts/base.html" %}
 
-{% load django_bootstrap5 site_settings %}
+{% load django_bootstrap5 tethys %}
 
 {% block title %}{{ block.super }} - Log In{% endblock %}
 
 {% block styles %}
   {{ block.super }}
   {{ site_globals.login_css|load_custom_css|safe }}
-{% endblock %}
-
-{% block account_content_top %}
-  {% if has_recaptcha %}
-    {% include "tethys_portal/accounts/recaptcha.html" %}
-  {% endif %}
 {% endblock %}
 
 

@@ -28,7 +28,9 @@ class DecoratorsTest(unittest.TestCase):
             codename="foo", applies_to="tethys_apps.models.TethysApp"
         )
         mock_request = mock.MagicMock(spec=HttpRequest)
-        mock_active_app.return_value = mock.MagicMock(TethysApp(name="Test App"))
+        mock_active_app.return_value = mock.MagicMock(
+            TethysApp.objects.get(name="Test App")
+        )
 
         ret = a_controller(mock_request)
 

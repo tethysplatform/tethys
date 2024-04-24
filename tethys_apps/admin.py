@@ -239,6 +239,8 @@ class TethysExtensionAdmin(GuardedModelAdmin):
 
 class CustomUser(UserAdmin):
     def change_view(self, *args, **kwargs):
+        if not isinstance(self.inlines, list):
+            self.inlines = list(self.inlines)
         if UserQuotasSettingInline not in self.inlines:
             self.inlines.append(UserQuotasSettingInline)
         response = super().change_view(*args, **kwargs)

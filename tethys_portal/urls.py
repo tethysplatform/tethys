@@ -258,7 +258,7 @@ if has_module("oauth2_provider"):
             include("oauth2_provider.urls", namespace="oauth2_provider"),
         )
     )
-if has_module("snowpenguin.django.recaptcha2"):
+if has_module("django_recaptcha"):
     urlpatterns.append(re_path(r"^captcha/", include("captcha.urls")))
 if has_module("termsandconditions"):
     urlpatterns.append(re_path(r"^terms/", include("termsandconditions.urls")))

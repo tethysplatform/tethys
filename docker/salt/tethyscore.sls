@@ -14,6 +14,7 @@
 {% set POSTGRES_PASSWORD = salt['environ.get']('POSTGRES_PASSWORD') %}
 {% set TETHYS_DB_PORT = salt['environ.get']('TETHYS_DB_PORT') %}
 {% set TETHYS_DB_USERNAME = salt['environ.get']('TETHYS_DB_USERNAME') %}
+{% set SKIP_DB_SETUP = salt['environ.get']('SKIP_DB_SETUP') %}
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
 {% set TETHYS_PORT = salt['environ.get']('TETHYS_PORT') %}
 {% set OTHER_SETTINGS = salt['environ.get']('OTHER_SETTINGS') %}
@@ -28,6 +29,8 @@
 {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
 {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
 {% set WORKSPACE_ROOT = salt['environ.get']('WORKSPACE_ROOT') %}
+{% set MEDIA_URL = salt['environ.get']('MEDIA_URL') %}
+{% set MEDIA_ROOT = salt['environ.get']('MEDIA_ROOT') %}
 {% set BYPASS_TETHYS_HOME_PAGE = salt['environ.get']('BYPASS_TETHYS_HOME_PAGE') %}
 {% set QUOTA_HANDLERS = salt['environ.get']('QUOTA_HANDLERS') %}
 {% set DJANGO_ANALYTICAL = salt['environ.get']('DJANGO_ANALYTICAL') %}
@@ -70,25 +73,19 @@
 
 {% set TETHYS_SITE_CONTENT = TETHYS_SITE_CONTENT_LIST|join(' ') %}
 
-
-
 Generate_Tethys_Settings_TethysCore:
   cmd.run:
     - name: >
         tethys settings
         --set DEBUG {{ DEBUG }}
         --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
-        --set DATABASES.default.ENGINE "{{ TETHYS_DB_ENGINE }}"
-        --set DATABASES.default.NAME "{{ TETHYS_DB_NAME }}"
-        --set DATABASES.default.USER "{{ TETHYS_DB_USERNAME }}"
-        --set DATABASES.default.PASSWORD "{{ TETHYS_DB_PASSWORD }}"
-        --set DATABASES.default.HOST "{{ TETHYS_DB_HOST }}"
-        --set DATABASES.default.PORT "{{ TETHYS_DB_PORT }}"
         --set INSTALLED_APPS {{ ADD_DJANGO_APPS }}
         --set SESSION_CONFIG.SECURITY_WARN_AFTER {{ SESSION_WARN }}
         --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
         --set TETHYS_PORTAL_CONFIG.STATIC_ROOT "{{ STATIC_ROOT }}"
         --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT "{{ WORKSPACE_ROOT }}"
+        --set TETHYS_PORTAL_CONFIG.MEDIA_URL "{{ MEDIA_URL }}"
+        --set TETHYS_PORTAL_CONFIG.MEDIA_ROOT "{{ MEDIA_ROOT }}"
         --set TETHYS_PORTAL_CONFIG.BYPASS_TETHYS_HOME_PAGE {{ BYPASS_TETHYS_HOME_PAGE }}
         --set RESOURCE_QUOTA_HANDLERS {{ QUOTA_HANDLERS }}
         --set ANALYTICS_CONFIG {{ DJANGO_ANALYTICAL }}
@@ -98,6 +95,24 @@ Generate_Tethys_Settings_TethysCore:
         --set CHANNEL_LAYERS.default.CONFIG {{ CHANNEL_LAYERS_CONFIG }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY "{{ RECAPTCHA_PRIVATE_KEY }}"
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY "{{ RECAPTCHA_PUBLIC_KEY }}"
+        {%- if TETHYS_DB_ENGINE %}
+        --set DATABASES.default.ENGINE "{{ TETHYS_DB_ENGINE }}"
+        {%- endif %}
+        {%- if TETHYS_DB_NAME %}
+        --set DATABASES.default.NAME "{{ TETHYS_DB_NAME }}"
+        {%- endif %}
+        {%- if TETHYS_DB_USERNAME %}
+        --set DATABASES.default.USER "{{ TETHYS_DB_USERNAME }}"
+        {%- endif %}
+        {%- if TETHYS_DB_PASSWORD %}
+        --set DATABASES.default.PASSWORD "{{ TETHYS_DB_PASSWORD }}"
+        {%- endif %}          
+        {%- if TETHYS_DB_HOST %}
+        --set DATABASES.default.HOST "{{ TETHYS_DB_HOST }}"
+        {%- endif %}
+        {%- if TETHYS_DB_PORT %}
+        --set DATABASES.default.PORT "{{ TETHYS_DB_PORT }}"
+        {%- endif %}                   
         {{ OTHER_SETTINGS }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
@@ -140,6 +155,7 @@ Generate_ASGI_Service_TethysCore:
     - replace: False
     - makedirs: True
 
+{% if TETHYS_DB_ENGINE == 'django.db.backends.postgresql' %}
 Create_Database_User_and_SuperUser_TethysCore:
   cmd.run:
     - name: >
@@ -149,7 +165,8 @@ Create_Database_User_and_SuperUser_TethysCore:
         -N "{{ TETHYS_DB_SUPERUSER }}"
         -P "{{ TETHYS_DB_SUPERUSER_PASS }}"
     - shell: /bin/bash
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f '{{ TETHYS_PERSIST }}/setup_complete' ] || {{ SKIP_DB_SETUP | lower }};"
+{% endif %}
 
 Migrate_Database_TethysCore:
   cmd.run:

@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from tethys_sdk.routing import controller
 from tethys_sdk.gizmos import Button
+from .app import App
 
 @controller
 def home(request):
@@ -71,4 +71,4 @@ def home(request):
         'next_button': next_button
     }
 
-    return render(request, '{{project}}/home.html', context)
+    return App.render(request, 'home.html', context)
