@@ -26,6 +26,7 @@ def backward(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ("tethys_apps", "0005_customsettingbase_include_in_api"),
     ]
