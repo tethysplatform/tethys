@@ -58,9 +58,7 @@ class HydroShareBackendTest(unittest.TestCase):
 
         hydro_share_auth2_obj.set_expires_in_to = 100
 
-        ret = hydro_share_auth2_obj.extra_data(
-            "user1", "0001-009", mock_response, details={}
-        )
+        ret = hydro_share_auth2_obj.extra_data("user1", "0001-009", mock_response)
 
         self.assertEqual("foo@gmail.com", ret["email"])
         self.assertEqual("token1", ret["access_token"])

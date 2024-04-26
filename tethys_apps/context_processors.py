@@ -35,7 +35,6 @@ def tethys_apps_context(request):
             "color": app.color,
             "tags": app.tags,
             "description": app.description,
-            "back_url": app.back_url,
             "namespace": app.url_namespace,
         }
 
