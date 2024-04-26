@@ -176,7 +176,6 @@ class TethysAppAdmin(GuardedModelAdmin):
         "icon",
         "color",
         "tags",
-        "back_url",
         "order",
         "enabled",
         "show_in_apps_library",
