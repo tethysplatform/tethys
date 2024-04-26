@@ -120,7 +120,7 @@ class HandoffManager:
                     urlish = handler(request, **kwargs)
                     return redirect(urlish)
                 except TypeError as e:
-                    error[" message"] = "HTTP 400 Bad Request: {0}. ".format(str(e))
+                    error["message"] = "HTTP 400 Bad Request: {0}. ".format(str(e))
                     return HttpResponseBadRequest(
                         json.dumps(error), content_type="application/javascript"
                     )
