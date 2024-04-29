@@ -5,7 +5,7 @@
   <nav id="header-navbar" class="navbar navbar-expand-md navbar-dark shadow px-4 py-3 mx-3" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
     <div class="container-fluid">
       {% block header_brand %}
-        <a id="header-brand" class="navbar-brand" href="{% url 'home' %}">
+        <a id="header-brand" class="navbar-brand" href="{% if single_app_mode %} {% url single_app_mode.index_url %} {% else %} {% url 'home' %} {% endif %}">
           {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
             <img  src="{{ site_globals.brand_image }}" alt="" class="d-inline-block align-text-top">
           {% elif site_globals.brand_image %}
@@ -27,10 +27,14 @@
       <div id="header-navbar-nav" class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
           {% block header_nav_items %}
-            {% url 'app_library' as app_library_url %}
+            {% if single_app_mode %}
+              {% url single_app_mode.index_url as header_url %}
+            {% else %}
+              {% url 'app_library' as header_url %}
+            {% endif %}
             {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
               <li class="nav-item">
-                <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if single_app_name %}{{ single_app_name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_name %}{{ single_app_name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
+                <a class="h5 me-3 mb-0 nav-link{% if request.path == header_url %} active" aria-current="page{% endif %}" href="{{ header_url }}" title="{% if single_app_mode %}{{ single_app_mode.name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_mode %}{{ single_app_mode.name }}{% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
               </li>
             {% endif %}
           {% endblock %}

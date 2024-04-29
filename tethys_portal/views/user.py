@@ -178,7 +178,10 @@ def delete_account(request):
         messages.success(request, "Your account has been successfully deleted.")
 
         # Redirect to home
-        return redirect("home")
+        if django_settings.MULTIPLE_APP_MODE:
+            return redirect("home")
+        else:
+            return redirect("/accounts/login/")
 
     context = {}
 

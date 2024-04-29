@@ -20,7 +20,7 @@ def tethys_portal_context(request):
         else {}
     )
 
-    single_app_mode, single_app_name = check_single_app_mode()
+    standalone_app = check_single_app_mode()
 
     context = {
         "has_analytical": has_module("analytical"),
@@ -29,8 +29,7 @@ def tethys_portal_context(request):
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
         "has_oauth2_provider": has_module("oauth2_provider"),
-        "single_app_mode": single_app_mode,
-        "single_app_name": single_app_name,
+        "single_app_mode": standalone_app if standalone_app else False,
         "idp_backends": idps.keys(),
     }
 
@@ -39,6 +38,6 @@ def tethys_portal_context(request):
 
 def check_single_app_mode():
     if settings.MULTIPLE_APP_MODE:
-        return False, None
+        return None
     else:
-        return True, get_configured_standalone_app().name
+        return get_configured_standalone_app()

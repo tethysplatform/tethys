@@ -33,13 +33,6 @@ if settings.MULTIPLE_APP_MODE:
     url_namespaces = None
 else:
     standalone_app = get_configured_standalone_app()
-    urlpatterns.append(
-        re_path(
-            r"^apps/",
-            RedirectView.as_view(pattern_name=standalone_app.index_url),
-            name="app_library",
-        )
-    )
     url_namespaces = [standalone_app.url_namespace]
 
 # Append the app urls urlpatterns
@@ -67,11 +60,6 @@ for namespace, urls in normal_url_patterns["app_url_patterns"].items():
         root_pattern = r"^{0}/".format(namespace.replace("_", "-"))
     else:
         root_pattern = ""
-        index_urls = [url for url in urls if url.name == standalone_app.index]
-        app_index_url = copy.deepcopy(index_urls[0])
-        app_index_url.name = "home"
-        app_index_url.pattern.name = "home"
-        urlpatterns.append(app_index_url)
 
     urlpatterns.append(
         re_path(root_pattern, include((urls, namespace), namespace=namespace))
