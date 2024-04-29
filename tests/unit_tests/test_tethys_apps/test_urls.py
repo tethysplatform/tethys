@@ -1,6 +1,7 @@
 from django.urls import reverse, resolve
 from tethys_sdk.testing import TethysTestCase
 from django.test import override_settings
+from django.urls.exceptions import NoReverseMatch
 
 
 class TestUrls(TethysTestCase):
@@ -135,17 +136,9 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
 
     def test_urls(self):
         # This executes the code at the module level
-        url = reverse("home")
-        resolver = resolve(url)
-        self.assertEqual("/", url)
-        self.assertEqual("home", resolver.func.__name__)
-        self.assertEqual("tethysapp.test_app.controllers", resolver.func.__module__)
-
-        url = reverse("app_library")
-        resolver = resolve(url)
-        self.assertEqual("/apps/", url)
-        self.assertEqual("django.views.generic.base.RedirectView", resolver._func_path)
-        self.assertEqual("test_app:home", resolver.func.view_initkwargs["pattern_name"])
+        with self.assertRaises(NoReverseMatch):
+            reverse("home")
+            reverse("app_library")
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)

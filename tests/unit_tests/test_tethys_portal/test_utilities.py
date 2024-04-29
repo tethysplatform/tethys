@@ -2,6 +2,7 @@ import datetime
 import uuid
 import unittest
 from unittest import mock
+from django.test import override_settings
 
 from tethys_portal import utilities
 
@@ -64,6 +65,29 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
 
         # mock redirect after logged in using next parameter or default to user profile
         mock_redirect.assert_called_once_with("app_library")
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_portal.utilities.login")
+    @mock.patch("tethys_portal.utilities.redirect")
+    def test_utilities_no_user_exist_single_app_mode(self, mock_redirect, mock_authenticate):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.POST = "login-submit"
+        mock_request.user.is_anonymous = True
+        mock_request.user.username = "sam"
+        mock_request.GET = ""
+
+        # mock authenticate
+        mock_user = mock.MagicMock()
+        mock_authenticate.return_value = mock_user
+
+        # mock the password has been verified for the user
+        mock_user.is_active = True
+
+        utilities.log_user_in(mock_request, user=mock_user)
+
+        # mock redirect after logged in using next parameter or default to user profile
+        mock_redirect.assert_called_once_with("/")
 
     @mock.patch("tethys_portal.utilities.login")
     @mock.patch("tethys_portal.utilities.redirect")

@@ -76,6 +76,23 @@ class DecoratorsTest(unittest.TestCase):
         self.assertIsInstance(ret, HttpResponseRedirect)
         self.assertEqual("/apps/", ret.url)
 
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_apps.decorators.messages")
+    @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
+    def test_permission_required_no_pass_authenticated_single_app_mode(self, _, mock_messages):
+        request = self.request_factory.get("/apps/test-app")
+        request.user = self.user
+
+        @permission_required("create_projects")
+        def create_projects(request, *args, **kwargs):
+            return "expected_result"
+
+        ret = create_projects(request)
+
+        mock_messages.add_message.assert_called()
+        self.assertIsInstance(ret, HttpResponseRedirect)
+        self.assertEqual("/user/", ret.url)
+
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
     def test_permission_required_no_pass_authenticated_with_referrer(
@@ -286,6 +303,23 @@ class DecoratorsWithPrefixTest(TestCase):
         mock_messages.add_message.assert_called()
         self.assertIsInstance(ret, HttpResponseRedirect)
         self.assertEqual("/test/prefix/apps/", ret.url)
+    
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_apps.decorators.messages")
+    @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
+    def test_permission_required_no_pass_authenticated_single_app_mode(self, _, mock_messages):
+        request = self.request_factory.get("/apps/test-app")
+        request.user = self.user
+
+        @permission_required("create_projects")
+        def create_projects(request, *args, **kwargs):
+            return "expected_result"
+
+        ret = create_projects(request)
+
+        mock_messages.add_message.assert_called()
+        self.assertIsInstance(ret, HttpResponseRedirect)
+        self.assertEqual("/test/prefix/user/", ret.url)
 
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
