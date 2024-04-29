@@ -59,11 +59,11 @@ def get_app(request, app):
         "rootUrl": reverse(app.index_url),
         "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{app.id}/change/',
     }
-    
+
     if settings.MULTIPLE_APP_MODE:
-        metadata['exitUrl'] = reverse("app_library")
+        metadata["exitUrl"] = reverse("app_library")
     else:
-        metadata['exitUrl'] = reverse(app.index_url)
+        metadata["exitUrl"] = reverse(app.index_url)
 
     if request.user.is_authenticated:
         metadata["customSettings"] = dict()

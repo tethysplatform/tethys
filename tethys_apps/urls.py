@@ -9,10 +9,8 @@
 """
 
 import logging
-import copy
 from django.urls import include, re_path
 from channels.routing import URLRouter
-from django.views.generic import RedirectView
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
 from tethys_apps.utilities import get_configured_standalone_app
