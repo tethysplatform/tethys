@@ -9,6 +9,7 @@
 """
 
 import logging
+import copy
 from django.urls import include, re_path
 from channels.routing import URLRouter
 from django.views.generic import RedirectView
@@ -35,7 +36,7 @@ else:
     urlpatterns.append(
         re_path(
             r"^apps/",
-            RedirectView.as_view(pattern_name="home"),
+            RedirectView.as_view(pattern_name=standalone_app.index_url),
             name="app_library",
         )
     )
@@ -66,14 +67,11 @@ for namespace, urls in normal_url_patterns["app_url_patterns"].items():
         root_pattern = r"^{0}/".format(namespace.replace("_", "-"))
     else:
         root_pattern = ""
-        home_urls = [url for url in urls if url.name == "home"]
-        urlpatterns.append(
-            re_path(
-                r"",
-                include(home_urls[:1]),
-                name="home",
-            ),
-        )
+        index_urls = [url for url in urls if url.name == standalone_app.index]
+        app_index_url = copy.deepcopy(index_urls[0])
+        app_index_url.name = "home"
+        app_index_url.pattern.name = "home"
+        urlpatterns.append(app_index_url)
 
     urlpatterns.append(
         re_path(root_pattern, include((urls, namespace), namespace=namespace))

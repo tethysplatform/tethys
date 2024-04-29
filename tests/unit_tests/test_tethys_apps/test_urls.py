@@ -145,7 +145,7 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         resolver = resolve(url)
         self.assertEqual("/apps/", url)
         self.assertEqual("django.views.generic.base.RedirectView", resolver._func_path)
-        self.assertEqual("home", resolver.func.view_initkwargs["pattern_name"])
+        self.assertEqual("test_app:home", resolver.func.view_initkwargs["pattern_name"])
 
         url = reverse("send_beta_feedback")
         resolver = resolve(url)
