@@ -56,14 +56,14 @@ def get_app(request, app):
         "urlNamespace": app.url_namespace,
         "color": app.color,
         "icon": static(app.icon),
+        "exitUrl": (
+            reverse("app_library")
+            if settings.MULTIPLE_APP_MODE
+            else reverse(app.index_url)
+        ),
         "rootUrl": reverse(app.index_url),
         "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{app.id}/change/',
     }
-
-    if settings.MULTIPLE_APP_MODE:
-        metadata["exitUrl"] = reverse("app_library")
-    else:
-        metadata["exitUrl"] = reverse(app.index_url)
 
     if request.user.is_authenticated:
         metadata["customSettings"] = dict()
