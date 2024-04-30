@@ -69,7 +69,9 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
     @override_settings(MULTIPLE_APP_MODE=False)
     @mock.patch("tethys_portal.utilities.login")
     @mock.patch("tethys_portal.utilities.redirect")
-    def test_utilities_no_user_exist_single_app_mode(self, mock_redirect, mock_authenticate):
+    def test_utilities_no_user_exist_single_app_mode(
+        self, mock_redirect, mock_authenticate
+    ):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"
         mock_request.POST = "login-submit"

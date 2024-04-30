@@ -79,7 +79,9 @@ class DecoratorsTest(unittest.TestCase):
     @override_settings(MULTIPLE_APP_MODE=False)
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
-    def test_permission_required_no_pass_authenticated_single_app_mode(self, _, mock_messages):
+    def test_permission_required_no_pass_authenticated_single_app_mode(
+        self, _, mock_messages
+    ):
         request = self.request_factory.get("/apps/test-app")
         request.user = self.user
 
@@ -303,11 +305,13 @@ class DecoratorsWithPrefixTest(TestCase):
         mock_messages.add_message.assert_called()
         self.assertIsInstance(ret, HttpResponseRedirect)
         self.assertEqual("/test/prefix/apps/", ret.url)
-    
+
     @override_settings(MULTIPLE_APP_MODE=False)
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
-    def test_permission_required_no_pass_authenticated_single_app_mode(self, _, mock_messages):
+    def test_permission_required_no_pass_authenticated_single_app_mode(
+        self, _, mock_messages
+    ):
         request = self.request_factory.get("/apps/test-app")
         request.user = self.user
 

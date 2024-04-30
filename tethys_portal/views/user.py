@@ -181,7 +181,7 @@ def delete_account(request):
         if django_settings.MULTIPLE_APP_MODE:
             return redirect("home")
         else:
-            return redirect("/accounts/login/")
+            return redirect("accounts:login")
 
     context = {}
 
