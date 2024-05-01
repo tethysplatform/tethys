@@ -1067,14 +1067,28 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
     @override_settings(MULTIPLE_APP_MODE=False)
     def test_get_configured_standalone_app_no_app_name_no_installed(self):
         from tethys_apps.models import TethysApp
-        from django.core.exceptions import ObjectDoesNotExist
 
         with mock.patch(
             "tethys_apps.models.TethysApp", wraps=TethysApp
         ) as mock_tethysapp:
             mock_tethysapp.objects.first.return_value = []
-            with self.assertRaises(ObjectDoesNotExist):
-                utilities.get_configured_standalone_app()
+            app = utilities.get_configured_standalone_app()
+            
+            self.assertTrue(app == [])
+            mock_tethysapp.objects.first.assert_called_once()
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_db_not_ready(self):
+        from tethys_apps.models import TethysApp
+        from django.db.utils import ProgrammingError
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            mock_tethysapp.objects.first.side_effect = [ProgrammingError]
+            app = utilities.get_configured_standalone_app()
+            
+            self.assertIsNone(app)
 
             mock_tethysapp.objects.first.assert_called_once()
 

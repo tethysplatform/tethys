@@ -29,6 +29,7 @@ from tethys_apps.base.mixins import (
 )
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from .harvester import SingletonHarvester
+from django.db.utils import ProgrammingError
 
 tethys_log = logging.getLogger("tethys." + __name__)
 
@@ -620,13 +621,16 @@ def get_configured_standalone_app():
     from tethys_apps.models import TethysApp
 
     standalone_app = settings.STANDALONE_APP
+    app = None
 
-    if standalone_app:
-        app = TethysApp.objects.get(package=standalone_app)
-    else:
-        app = TethysApp.objects.first()
-        if not app:
-            raise ObjectDoesNotExist("No Tethys Apps have been installed")
+    try:
+        if standalone_app:
+            app = TethysApp.objects.get(package=standalone_app)
+        else:
+            app = TethysApp.objects.first()
+    except ProgrammingError as e:
+        # This catch ensures that tethys can still configuration commands when tethys portal is being created
+        tethys_log.warning(f"{str(e)}. Process will continue with the assumption that tethys is still being setup")
 
     return app
 

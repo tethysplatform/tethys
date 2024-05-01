@@ -16,6 +16,7 @@ from tethys_apps.views import library, send_beta_feedback_email
 from tethys_apps.utilities import get_configured_standalone_app
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
 
 tethys_log = logging.getLogger("tethys." + __name__)
 prefix_url = f"{settings.PREFIX_URL}"
@@ -26,12 +27,15 @@ urlpatterns = [
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+url_namespaces = None
 if settings.MULTIPLE_APP_MODE:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))
-    url_namespaces = None
 else:
     standalone_app = get_configured_standalone_app()
-    url_namespaces = [standalone_app.url_namespace]
+    if standalone_app:
+        url_namespaces = [standalone_app.url_namespace]
+    else:
+        urlpatterns.append(re_path(r"^$", RedirectView.as_view(pattern_name="user:profile"), name="home"))
 
 # Append the app urls urlpatterns
 harvester = SingletonHarvester()
