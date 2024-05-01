@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -34,8 +33,9 @@ class TestTethysPath(unittest.TestCase):
 
     def test_files(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir).resolve()
             for i in range(1, 4):
-                with open(os.path.join(temp_dir, f"file{i}.txt"), "w") as temp_file:
+                with (temp_dir / f"file{i}.txt").open("w") as temp_file:
                     temp_file.write(f"This is file {i}")
 
             # List the files in the directory to verify they were created
@@ -49,21 +49,16 @@ class TestTethysPath(unittest.TestCase):
             self.assertTrue("file3.txt" in tethys_path_files_names_only)
             self.assertEqual(len(tethys_path_files), 3)
 
-            self.assertTrue(
-                Path(os.path.join(temp_dir, "file1.txt")) in tethys_path_files
-            )
-            self.assertTrue(
-                Path(os.path.join(temp_dir, "file2.txt")) in tethys_path_files
-            )
-            self.assertTrue(
-                Path(os.path.join(temp_dir, "file3.txt")) in tethys_path_files
-            )
+            self.assertTrue(temp_dir / "file1.txt" in tethys_path_files)
+            self.assertTrue(temp_dir / "file2.txt" in tethys_path_files)
+            self.assertTrue(temp_dir / "file3.txt" in tethys_path_files)
             self.assertEqual(len(tethys_path_files), 3)
 
     def test_directories(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir).resolve()
             for i in range(1, 4):
-                os.makedirs(os.path.join(temp_dir, f"dir{i}"))
+                (temp_dir / f"dir{i}").mkdir(parents=True)
 
             tethys_path = TethysPath(temp_dir)
 
@@ -77,37 +72,32 @@ class TestTethysPath(unittest.TestCase):
             self.assertTrue("dir3" in tethys_path_directories_names_only)
             self.assertEqual(len(tethys_path_directories), 3)
 
-            self.assertTrue(
-                Path(os.path.join(temp_dir, "dir1")) in tethys_path_directories
-            )
-            self.assertTrue(
-                Path(os.path.join(temp_dir, "dir2")) in tethys_path_directories
-            )
-            self.assertTrue(
-                Path(os.path.join(temp_dir, "dir3")) in tethys_path_directories
-            )
+            self.assertTrue(temp_dir / "dir1" in tethys_path_directories)
+            self.assertTrue(temp_dir / "dir2" in tethys_path_directories)
+            self.assertTrue(temp_dir / "dir3" in tethys_path_directories)
             self.assertEqual(len(tethys_path_directories), 3)
 
     def test_clear(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir).resolve()
             # Create three directories in the temporary directory
-            with open(os.path.join(temp_dir, "file1.txt"), "w") as temp_file:
+            with (temp_dir / "file1.txt").open("w") as temp_file:
                 temp_file.write("This is file 1")
             for i in range(1, 4):
-                new_dir = os.path.join(temp_dir, f"dir{i}")
-                os.makedirs(new_dir)
+                new_dir = temp_dir / f"dir{i}"
+                new_dir.mkdir(parents=True)
 
                 # Create two files in each new directory
                 for j in range(1, 3):
-                    with open(os.path.join(new_dir, f"file{j}.txt"), "w") as temp_file:
+                    with (new_dir / f"file{j}.txt").open("w") as temp_file:
                         temp_file.write(f"This is file {j} in dir{i}")
 
                 # Create a subdirectory in each new directory
-                sub_dir = os.path.join(new_dir, "subdir")
-                os.makedirs(sub_dir)
+                sub_dir = new_dir / "subdir"
+                sub_dir.mkdir(parents=True)
 
                 # Create one file in the subdirectory
-                with open(os.path.join(sub_dir, "file1.txt"), "w") as temp_file:
+                with (sub_dir / "file1.txt").open("w") as temp_file:
                     temp_file.write("This is file 1 in subdir of dir{i}")
 
             tethys_path_read_only = TethysPath(temp_dir, read_only=True)
@@ -141,16 +131,17 @@ class TestTethysPath(unittest.TestCase):
 
     def test_remove(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir).resolve()
             # Create three directories in the temporary directory
-            with open(os.path.join(temp_dir, "file1.txt"), "w") as temp_file:
+            with (temp_dir / "file1.txt").open("w") as temp_file:
                 temp_file.write("This is file 1")
             for i in range(1, 4):
-                new_dir = os.path.join(temp_dir, f"dir{i}")
-                os.makedirs(new_dir)
+                new_dir = temp_dir / f"dir{i}"
+                new_dir.mkdir(parents=True)
 
                 # Create two files in each new directory
                 for j in range(1, 3):
-                    with open(os.path.join(new_dir, f"file{j}.txt"), "w") as temp_file:
+                    with (new_dir / f"file{j}.txt").open("w") as temp_file:
                         temp_file.write(f"This is file {j} in dir{i}")
 
             # test read only
@@ -179,16 +170,17 @@ class TestTethysPath(unittest.TestCase):
 
     def test_get_size(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir).resolve()
             # Create three directories in the temporary directory
-            with open(os.path.join(temp_dir, "file1.txt"), "w") as temp_file:
+            with (temp_dir / "file1.txt").open("w") as temp_file:
                 temp_file.write("This is file 1")
             for i in range(1, 4):
-                new_dir = os.path.join(temp_dir, f"dir{i}")
-                os.makedirs(new_dir)
+                new_dir = temp_dir / f"dir{i}"
+                new_dir.mkdir(parents=True)
 
                 # Create two files in each new directory
                 for j in range(1, 3):
-                    with open(os.path.join(new_dir, f"file{j}.txt"), "w") as temp_file:
+                    with (new_dir / f"file{j}.txt").open("w") as temp_file:
                         temp_file.write(f"This is file {j} in dir{i}")
 
             tethys_path = TethysPath(temp_dir)
@@ -289,37 +281,37 @@ class TestTethysPathHelpers(unittest.TestCase):
         p = paths._get_app_media_root(self.mock_app)
         self.assertEqual(p, Path(settings.MEDIA_ROOT + "/app_package"))
 
-    def test_add_path_decorator(self):
+    @mock.patch("tethys_apps.base.paths._get_app_media_root")
+    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths.TethysPath")
+    def test_add_path_decorator(self, mock_TethysPath, _, __, ___):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
 
-        mock_user_media_func = mock.MagicMock()
-        mock_user_media_func.return_value = "user_media_return"
+        mock_TethysPath.return_value = "user_media_return"
 
-        wrapped_controller = paths._add_path_decorator(
-            mock_user_media_func, "user_media", True
-        )(fake_controller)
+        wrapped_controller = paths._add_path_decorator("user_media")(fake_controller)
 
         user_media = wrapped_controller(self.mock_request)
         self.assertEqual(user_media, "user_media_return")
-        mock_user_media_func.assert_called_with(
-            self.mock_request, self.mock_request.user
-        )
 
-    def test_add_path_decorator_no_user(self):
+    @mock.patch("tethys_apps.base.paths._get_app_media_root")
+    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths.TethysPath")
+    def test_add_path_decorator_no_user(self, mock_TethysPath, _, __, ___):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
 
-        mock_user_media_func = mock.MagicMock()
-        mock_user_media_func.return_value = "user_media_return"
+        mock_TethysPath.return_value = "user_media_return"
 
-        wrapped_controller_no_user = paths._add_path_decorator(
-            mock_user_media_func, "user_media", False
-        )(fake_controller)
+        wrapped_controller_no_user = paths._add_path_decorator("user_media")(
+            fake_controller
+        )
 
         user_media_no_user = wrapped_controller_no_user(self.mock_request)
         self.assertEqual(user_media_no_user, "user_media_return")
-        mock_user_media_func.assert_called_with(self.mock_request)
 
     def test_add_path_decorator_no_request(self):
         def fake_controller(request, user_media, *args, **kwargs):
@@ -328,13 +320,43 @@ class TestTethysPathHelpers(unittest.TestCase):
         mock_user_media_func = mock.MagicMock()
         mock_user_media_func.return_value = "user_media_return"
 
-        wrapped_controller_no_request = paths._add_path_decorator(
-            mock_user_media_func, "user_media", False
-        )(fake_controller)
+        wrapped_controller_no_request = paths._add_path_decorator("user_media")(
+            fake_controller
+        )
 
         with self.assertRaises(ValueError) as exc:
             wrapped_controller_no_request(None)
         self.assertEqual(
             str(exc.exception),
-            "No request given. The adding paths only works on controllers.",
+            "No request given. The user_media decorator only works on controllers.",
         )
+
+    @mock.patch("tethys_apps.base.paths._add_path_decorator")
+    def test_app_workspace_decorator(self, mock_add_path):
+        paths.app_workspace(mock.MagicMock)
+        mock_add_path.assert_called_with(paths.app_workspace.__name__)
+
+    @mock.patch("tethys_apps.base.paths._add_path_decorator")
+    def test_user_workspace_decorator(self, mock_add_path):
+        paths.user_workspace(mock.MagicMock)
+        mock_add_path.assert_called_with(paths.user_workspace.__name__)
+
+    @mock.patch("tethys_apps.base.paths._add_path_decorator")
+    def test_app_media_decorator(self, mock_add_path):
+        paths.app_media(mock.MagicMock)
+        mock_add_path.assert_called_with(paths.app_media.__name__)
+
+    @mock.patch("tethys_apps.base.paths._add_path_decorator")
+    def test_user_media_decorator(self, mock_add_path):
+        paths.user_media(mock.MagicMock)
+        mock_add_path.assert_called_with(paths.user_media.__name__)
+
+    @mock.patch("tethys_apps.base.paths._add_path_decorator")
+    def test_app_public_decorator(self, mock_add_path):
+        paths.app_public(mock.MagicMock)
+        mock_add_path.assert_called_with(paths.app_public.__name__)
+
+    @mock.patch("tethys_apps.base.paths._add_path_decorator")
+    def test_app_resources_decorator(self, mock_add_path):
+        paths.app_resources(mock.MagicMock)
+        mock_add_path.assert_called_with(paths.app_resources.__name__)

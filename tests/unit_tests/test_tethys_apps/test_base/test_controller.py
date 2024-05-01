@@ -150,6 +150,13 @@ class TestController(unittest.TestCase):
         tethys_controller.handler(with_workspaces=True)(function)
         mock_with_request.assert_called_with(function)
 
+    @mock.patch("tethys_apps.base.controller.with_paths_decorator")
+    def test_handler_with_paths(self, mock_with_request):
+        function = mock.MagicMock(__name__="test")
+        mock_with_request.return_value = function
+        tethys_controller.handler(with_paths=True)(function)
+        mock_with_request.assert_called_with(function)
+
     @mock.patch("tethys_apps.base.controller.importlib.import_module")
     @mock.patch("tethys_apps.base.controller.get_all_submodules")
     def test_register_controllers(self, mock_submodules, mock_import):

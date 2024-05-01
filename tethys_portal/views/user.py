@@ -17,7 +17,7 @@ from django.views.decorators.cache import never_cache
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 from tethys_apps.models import TethysApp
-from tethys_apps.base.workspace import _get_user_workspace
+from tethys_apps.base.paths import get_user_workspace
 from tethys_apps.utilities import get_app_class
 from tethys_apps.decorators import login_required
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
@@ -201,7 +201,7 @@ def clear_workspace(request, root_url):
         app = get_app_class(app)
 
         user = request.user
-        workspace = _get_user_workspace(app, user)
+        workspace = get_user_workspace(app, user)
 
         app.pre_delete_user_workspace(user)
         workspace.clear()
@@ -228,7 +228,7 @@ def manage_storage(request):
     user = request.user
 
     for app in apps:
-        workspace = _get_user_workspace(app, user)
+        workspace = get_user_workspace(app, user)
         app.current_use = _convert_storage_units("gb", workspace.get_size("gb"))
 
     codename = "user_workspace_quota"

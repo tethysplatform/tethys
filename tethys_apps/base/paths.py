@@ -167,15 +167,15 @@ class TethysPath:
 
         ::
 
-            workspace.remove('file.txt')
-            workspace.remove('/full/path/to/file.txt')
-            workspace.remove('relative/path/to/file.txt')
-            workspace.remove('directory')
-            workspace.remove('/full/path/to/directory')
-            workspace.remove('relative/path/to/directory')
-            workspace.remove(path_object)
+            tethys_path.remove('file.txt')
+            tethys_path.remove('/full/path/to/file.txt')
+            tethys_path.remove('relative/path/to/file.txt')
+            tethys_path.remove('directory')
+            tethys_path.remove('/full/path/to/directory')
+            tethys_path.remove('relative/path/to/directory')
+            tethys_path.remove(path_object)
 
-        **Note:** Though you can specify relative paths, the ``remove()`` method will not allow you to back into other directories using "../" or similar notation. Futhermore, absolute paths given must contain the path of the workspace to be valid.
+        **Note:** Though you can specify relative paths, the ``remove()`` method will not allow you to back into other directories using "../" or similar notation. Furthermore, absolute paths given must contain the path of the tethys_path to be valid.
 
         """  # noqa: E501
         if self.read_only:
@@ -184,7 +184,7 @@ class TethysPath:
 
         assert item.relative_to(
             self.path
-        )  # TODO add an if statement with a helpful error message
+        ), f'The item to remove ({item}) must be relative to "{self.path}".'
 
         if item.is_dir():
             shutil.rmtree(item)
@@ -317,7 +317,17 @@ def get_app_public(app_or_request):
     return app.public_path
 
 
-def _add_path_decorator(func, argument_name, pass_user=False):
+def _add_path_decorator(argument_name):
+    """Creates a decorator that adds the TethysPath for `argument_name`.
+
+    Args:
+        argument_name (str): The name of the argument to add to the controller that represents a TethysPath.
+            Must be one of (app_workspace, user_workspace, app_media, user_media, app_public, app_resources).
+
+    Returns: A decorator for a controller function.
+
+    """
+
     def decorator(controller):
         @wraps(controller)
         def wrapper(*args, **kwargs):
@@ -329,12 +339,14 @@ def _add_path_decorator(func, argument_name, pass_user=False):
 
             if request is None:
                 raise ValueError(
-                    "No request given. The adding paths only works on controllers."
+                    f"No request given. The {argument_name} decorator only works on controllers."
                 )
 
             func_args = [request]
-            if pass_user:
+            if "user" in argument_name:
                 func_args.append(request.user)
+
+            func = globals()[f"get_{argument_name}"]
             the_path = func(*func_args)
 
             return controller(*args, **{argument_name: the_path}, **kwargs)
@@ -342,3 +354,204 @@ def _add_path_decorator(func, argument_name, pass_user=False):
         return wrapper
 
     return decorator
+
+
+def app_workspace(controller):
+    """
+    **Decorator:** Get the app resources directory for the app. Add an argument named "app_workspace" to your controller. The TethysPath object representing the app workspace directory will be passed to via this argument.
+
+    Args:
+        controller (callable): A controller function to add the TethysPath to.
+
+    Returns: A decorated controller function.
+
+    **Example:**
+
+    ::
+        from .app import App
+        from tethys_sdk.paths import app_workspace
+
+        @app_workspace
+        def a_controller(request, app_workspace):
+            \"""
+            Example controller that uses @app_workspace() decorator.
+            \"""
+            new_file_path = app_workspace.path / 'new_file.txt'
+
+            with new_file_path.open('w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return App.render(request, 'template.html', context)
+
+    """  # noqa:E501
+    argument_name = app_workspace.__name__
+    return _add_path_decorator(argument_name)(controller)
+
+
+def user_workspace(controller):
+    """
+    **Decorator:** Get the app resources directory for the app. Add an argument named "user_workspace" to your controller. The TethysPath object representing the user workspace directory will be passed to via this argument.
+
+    Args:
+        controller (callable): A controller function to add the TethysPath to.
+
+    Returns: A decorated controller function.
+
+    **Example:**
+
+    ::
+        from .app import App
+        from tethys_sdk.paths import user_workspace
+
+        @user_workspace
+        def a_controller(request, user_workspace):
+            \"""
+            Example controller that uses @user_workspace() decorator.
+            \"""
+            new_file_path = user_workspace.path / 'new_file.txt'
+
+            with new_file_path.open('w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return App.render(request, 'template.html', context)
+
+    """  # noqa:E501
+    argument_name = user_workspace.__name__
+    return _add_path_decorator(argument_name)(controller)
+
+
+def app_media(controller):
+    """
+    **Decorator:** Get the app resources directory for the app. Add an argument named "app_media" to your controller. The TethysPath object representing the app media directory will be passed to via this argument.
+
+    Args:
+        controller (callable): A controller function to add the TethysPath to.
+
+    Returns: A decorated controller function.
+
+    **Example:**
+
+    ::
+        from .app import App
+        from tethys_sdk.paths import app_media
+
+        @app_media
+        def a_controller(request, app_media):
+            \"""
+            Example controller that uses @app_media() decorator.
+            \"""
+            new_file_path = app_media.path / 'new_file.txt'
+
+            with new_file_path.open('w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return App.render(request, 'template.html', context)
+
+    """  # noqa:E501
+    argument_name = app_media.__name__
+    return _add_path_decorator(argument_name)(controller)
+
+
+def user_media(controller):
+    """
+    **Decorator:** Get the app resources directory for the app. Add an argument named "user_media" to your controller. The TethysPath object representing the user media directory will be passed to via this argument.
+
+    Args:
+        controller (callable): A controller function to add the TethysPath to.
+
+    Returns: A decorated controller function.
+
+    **Example:**
+
+    ::
+        from .app import App
+        from tethys_sdk.paths import user_media
+
+        @user_media
+        def a_controller(request, user_media):
+            \"""
+            Example controller that uses @user_media() decorator.
+            \"""
+            new_file_path = user_media.path / 'new_file.txt'
+
+            with new_file_path.open('w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return App.render(request, 'template.html', context)
+
+    """  # noqa:E501
+    argument_name = user_media.__name__
+    return _add_path_decorator(argument_name)(controller)
+
+
+def app_public(controller):
+    """
+    **Decorator:** Get the app resources directory for the app. Add an argument named "app_public" to your controller. The TethysPath object representing the app public directory will be passed to via this argument.
+
+    Args:
+        controller (callable): A controller function to add the TethysPath to.
+
+    Returns: A decorated controller function.
+
+    **Example:**
+
+    ::
+        from .app import App
+        from tethys_sdk.paths import app_public
+
+        @app_public
+        def a_controller(request, app_public):
+            \"""
+            Example controller that uses @app_public() decorator.
+            \"""
+            static_file_path = app_public.path / 'static_file.css'
+
+            context = {}
+
+            return App.render(request, 'template.html', context)
+
+    """  # noqa:E501
+    argument_name = app_public.__name__
+    return _add_path_decorator(argument_name)(controller)
+
+
+def app_resources(controller):
+    """
+    **Decorator:** Get the app resources directory for the app. Add an argument named "app_resources" to your controller. The TethysPath object representing the app resources directory will be passed to via this argument.
+
+    Args:
+        controller (callable): A controller function to add the TethysPath to.
+
+    Returns: A decorated controller function.
+
+    **Example:**
+
+    ::
+        from .app import App
+        from tethys_sdk.paths import app_resources
+
+        @app_resources
+        def a_controller(request, app_resources):
+            \"""
+            Example controller that uses @app_resources() decorator.
+            \"""
+            new_file_path = app_resources.path / 'new_file.txt'
+
+            with new_file_path.open('w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return App.render(request, 'template.html', context)
+
+    """  # noqa:E501
+    argument_name = app_resources.__name__
+    return _add_path_decorator(argument_name)(controller)

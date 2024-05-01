@@ -12,7 +12,6 @@ import os
 import sys
 import shutil
 import logging
-from django.utils.functional import wraps
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 
@@ -330,57 +329,6 @@ def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorks
     return _get_user_workspace(app, user)
 
 
-def user_workspace(controller):
-    """
-    **Decorator:** Get the file workspace (directory) for the given User. Add an argument named "user_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
-
-    Returns:
-      TethysWorkspace: An object representing the workspace.
-
-    **Example:**
-
-    ::
-
-        import os
-        from .app import App
-        from tethys_sdk.workspaces import user_workspace
-
-        @user_workspace
-        def a_controller(request, user_workspace):
-            \"""
-            Example controller that uses @user_workspace() decorator.
-            \"""
-            new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
-
-            with open(new_file_path, 'w') as a_file:
-                a_file.write('...')
-
-            context = {}
-
-            return App.render(request, 'template.html', context)
-
-    """  # noqa:E501
-
-    @wraps(controller)
-    def wrapper(*args, **kwargs):
-        request = None
-        for _, arg in enumerate(args):
-            if isinstance(arg, HttpRequest):
-                request = arg
-                break
-
-        if request is None:
-            raise ValueError(
-                "No request given. The user_workspace decorator only works on controllers."
-            )
-
-        the_workspace = get_user_workspace_old(request, request.user)
-
-        return controller(*args, user_workspace=the_workspace, **kwargs)
-
-    return wrapper
-
-
 def _get_app_workspace(app_class):
     """
     Get the file workspace (directory) for the app.
@@ -441,54 +389,3 @@ def get_app_workspace_old(app_or_request) -> TethysWorkspace:
     assert passes_quota(app, "app_workspace_quota")
 
     return _get_app_workspace(app)
-
-
-def app_workspace(controller):
-    """
-    **Decorator:** Get the file workspace (directory) for the app. Add an argument named "app_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
-
-    Returns:
-      TethysWorkspace: An object representing the workspace.
-
-    **Example:**
-
-    ::
-
-        import os
-        from .app import App
-        from tethys_sdk.workspaces import app_workspace
-
-        @app_workspace
-        def a_controller(request, app_workspace):
-            \"""
-            Example controller that uses @app_workspace() decorator.
-            \"""
-            new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
-
-            with open(new_file_path, 'w') as a_file:
-                a_file.write('...')
-
-            context = {}
-
-            return App.render(request, 'template.html', context)
-
-    """  # noqa:E501
-
-    @wraps(controller)
-    def wrapper(*args, **kwargs):
-        request = None
-        for _, arg in enumerate(args):
-            if isinstance(arg, HttpRequest):
-                request = arg
-                break
-
-        if request is None:
-            raise ValueError(
-                "No request given. The app_workspace decorator only works on controllers."
-            )
-
-        the_workspace = get_app_workspace_old(request)
-
-        return controller(*args, app_workspace=the_workspace, **kwargs)
-
-    return wrapper

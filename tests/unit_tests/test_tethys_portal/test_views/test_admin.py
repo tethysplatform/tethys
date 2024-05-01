@@ -38,7 +38,7 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_portal.views.admin.get_app_class")
-    @mock.patch("tethys_portal.views.admin._get_app_workspace")
+    @mock.patch("tethys_portal.views.admin.get_app_workspace")
     @mock.patch("tethys_portal.views.admin.TethysApp")
     @mock.patch("tethys_portal.views.admin.messages.success")
     @mock.patch("tethys_portal.views.admin.redirect")

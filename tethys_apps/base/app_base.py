@@ -26,8 +26,7 @@ from .testing.environment import (
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
-from .workspace import get_app_workspace_old, get_user_workspace_old
-from .paths import TethysPath
+from .paths import TethysPath, get_app_workspace, get_user_workspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 has_bokeh_django = True
@@ -1107,7 +1106,7 @@ class TethysAppBase(TethysBase):
                 user_workspace = App.get_user_workspace(request.user)
                 ...
         """  # noqa: E501
-        return get_user_workspace_old(cls, user_or_request)
+        return get_user_workspace(cls, user_or_request)
 
     @classmethod
     def get_app_workspace(cls):
@@ -1131,7 +1130,7 @@ class TethysAppBase(TethysBase):
                 app_workspace = App.get_app_workspace()
                 ...
         """
-        return get_app_workspace_old(cls)
+        return get_app_workspace(cls)
 
     @classmethod
     def get_scheduler(cls, name):

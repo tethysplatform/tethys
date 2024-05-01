@@ -18,6 +18,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
+from tethys_utils import deprecation_warning
 from . import url_map_maker
 from .app_base import DEFAULT_CONTROLLER_MODULES
 
@@ -56,18 +57,6 @@ class TethysController(View):
         return cls.as_view(**kwargs)
 
 
-# TODO integrate with update_decorated_websocket_consumer_class?
-def consumer_with_paths(call_func):
-    async def wrapper(self, scope, *args, **kwargs):
-        self.scope = scope
-        await self._initialize_app_and_user()
-        result = await call_func(self, scope, *args, **kwargs)
-
-        return result
-
-    return wrapper
-
-
 def consumer(
     consumer_class: Union[SyncConsumer, AsyncConsumer] = None,
     /,
@@ -76,7 +65,7 @@ def consumer(
     name: str = None,
     url: str = None,
     regex: Union[str, list, tuple] = None,
-    with_paths: bool = False,
+    with_paths: bool = False,  # TODO docstring
     # login_required kwargs
     login_required: bool = True,
     # permission_required kwargs
@@ -407,18 +396,16 @@ def controller(
         nonlocal app_resources
         nonlocal app_public
         # process paths and add keyword arguments to controller
-        for argument_name, path_func in (
-            ("app_public", get_app_public),
-            ("app_resources", get_app_resources),
-            ("user_media", get_user_media),
-            ("app_media", get_app_media),
-            ("user_workspace", get_user_workspace),
-            ("app_workspace", get_app_workspace),
+        for argument_name in (
+            "app_public",
+            "app_resources",
+            "user_media",
+            "app_media",
+            "user_workspace",
+            "app_workspace",
         ):
             if locals()[argument_name]:
-                controller = _add_path_decorator(
-                    path_func, argument_name, "user" in argument_name
-                )(controller)
+                controller = _add_path_decorator(argument_name)(controller)
 
         if permissions_required:
             controller = permission_required(
@@ -602,7 +589,12 @@ def handler(
         if with_paths:
             function = with_paths_decorator(function)
         elif with_workspaces:
-            # TODO deprecation warning
+            deprecation_warning(
+                "5.0",
+                'the "with_workspaces" argument to the "handler" decorator',
+                'The workspaces API has been replaced with the new Paths API. In place of the "with_workspaces" '
+                'argument please use the "with_paths" argument (see <>).',  # TODO add docs ref
+            )
             function = with_workspaces_decorator(function)
         elif with_request:
             function = with_request_decorator(function)

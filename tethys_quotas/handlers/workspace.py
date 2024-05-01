@@ -9,7 +9,7 @@
 
 from django.contrib.auth.models import User
 from tethys_apps.models import TethysApp
-from tethys_apps.base.workspace import _get_user_workspace, _get_app_workspace
+from tethys_apps.base.paths import get_user_workspace, get_app_workspace
 from tethys_apps.harvester import SingletonHarvester
 from tethys_quotas.handlers.base import ResourceQuotaHandler
 
@@ -43,7 +43,7 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             installed_apps = harvester.apps
 
             for app in installed_apps:
-                workspace = _get_user_workspace(app, self.entity)
+                workspace = get_user_workspace(app, self.entity)
                 current_use += float(workspace.get_size(self.units))
 
         elif isinstance(self.entity, TethysApp):
@@ -55,6 +55,6 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             )
 
             if tethys_app is not None:
-                current_use = float(_get_app_workspace(tethys_app).get_size(self.units))
+                current_use = float(get_app_workspace(tethys_app).get_size(self.units))
 
         return current_use
