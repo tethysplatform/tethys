@@ -28,15 +28,7 @@ from .bokeh_handler import (
     with_paths as with_paths_decorator,
     with_request as with_request_decorator,
 )
-from .paths import (
-    _add_path_decorator,
-    get_app_workspace,
-    get_user_workspace,
-    get_app_media,
-    get_user_media,
-    get_app_resources,
-    get_app_public,
-)
+from .paths import _add_path_decorator
 from ..decorators import login_required as login_required_decorator, permission_required
 from ..utilities import get_all_submodules, update_decorated_websocket_consumer_class
 
