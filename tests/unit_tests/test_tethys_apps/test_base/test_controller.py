@@ -143,12 +143,13 @@ class TestController(unittest.TestCase):
         tethys_controller.handler(with_request=True)(function)
         mock_with_request.assert_called_with(function)
 
+    @mock.patch("tethys_apps.base.controller.deprecation_warning")
     @mock.patch("tethys_apps.base.controller.with_workspaces_decorator")
-    def test_handler_with_workspaces(self, mock_with_request):
+    def test_handler_with_workspaces(self, mock_with_workspaces, __):
         function = mock.MagicMock(__name__="test")
-        mock_with_request.return_value = function
+        mock_with_workspaces.return_value = function
         tethys_controller.handler(with_workspaces=True)(function)
-        mock_with_request.assert_called_with(function)
+        mock_with_workspaces.assert_called_with(function)
 
     @mock.patch("tethys_apps.base.controller.with_paths_decorator")
     def test_handler_with_paths(self, mock_with_request):

@@ -17,21 +17,6 @@ from tethys_apps.base.bokeh_handler import (
 from tethys_apps.base.paths import TethysPath
 
 
-@with_request
-def with_request_decorated(doc: Document):
-    return doc
-
-
-@with_workspaces
-def with_workspaces_decorated(doc: Document):
-    return doc
-
-
-@with_paths
-def with_paths_decorated(doc: Document):
-    return doc
-
-
 class TestBokehHandler(unittest.TestCase):
     def setUp(self) -> None:
         self.app = baa.Application()
@@ -50,20 +35,29 @@ class TestBokehHandler(unittest.TestCase):
         return mock_session_context
 
     def test_with_request_decorator(self):
+        @with_request
+        def with_request_decorated(doc: Document):
+            return doc
+
         ret_doc = with_request_decorated(self.doc)
 
         self.assertIsNotNone(getattr(ret_doc, "request", None))
         self.assertIsNotNone(getattr(ret_doc.request, "user", None))
         self.assertIsInstance(ret_doc.request, HttpRequest)
 
+    @mock.patch("tethys_apps.base.bokeh_handler.deprecation_warning")
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
     @mock.patch("tethys_apps.utilities.get_active_app")
     @mock.patch("tethys_apps.base.bokeh_handler.get_user_workspace_old")
     @mock.patch("tethys_apps.base.bokeh_handler.get_app_workspace_old")
-    def test_with_workspaces_decorator(self, mock_gaw, mock_guw, _, __, ___):
+    def test_with_workspaces_decorator(self, mock_gaw, mock_guw, _, __, ___, ____):
         mock_guw.return_value = "user-workspace"
         mock_gaw.return_value = "app-workspace"
+
+        @with_workspaces
+        def with_workspaces_decorated(doc: Document):
+            return doc
 
         ret_doc = with_workspaces_decorated(self.doc)
         self.assertIsNotNone(getattr(ret_doc, "user_workspace", None))
@@ -90,6 +84,10 @@ class TestBokehHandler(unittest.TestCase):
         rac.return_value = mock_app
 
         username.return_value = "mock-username"
+
+        @with_paths
+        def with_paths_decorated(doc: Document):
+            return doc
 
         ret_doc = with_paths_decorated(self.doc)
         self.assertIsNotNone(getattr(ret_doc, "user_workspace", None))
