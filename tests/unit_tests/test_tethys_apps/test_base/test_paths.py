@@ -276,6 +276,20 @@ class TestTethysPathHelpers(unittest.TestCase):
         mock_get_user_workspace_old.assert_called_once()
         self.assertEqual(ws, mock_return)
 
+    @mock.patch("tethys_apps.base.paths._get_user_workspace")
+    @mock.patch("tethys_apps.utilities.get_active_app")
+    @override_settings(USE_OLD_WORKSPACES_API=True)
+    def test_get_user_workspace_old_bypass(
+        self, mock_get_active_app, mock_get_user_workspace_old
+    ):
+        mock_get_active_app.return_value = self.mock_app
+        mock_return = mock.MagicMock()
+        mock_get_user_workspace_old.return_value = mock_return
+        ws = paths.get_user_workspace(self.mock_request, self.user, bypass_quota=True)
+
+        mock_get_user_workspace_old.assert_called_once()
+        self.assertEqual(ws, mock_return)
+
     @override_settings(MEDIA_ROOT="media_root")
     def test_get_app_media_root(self):
         p = paths._get_app_media_root(self.mock_app)

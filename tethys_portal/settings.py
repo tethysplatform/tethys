@@ -325,6 +325,10 @@ RESOURCE_QUOTA_HANDLERS = tuple(
     RESOURCE_QUOTA_HANDLERS + portal_config_settings.pop("RESOURCE_QUOTA_HANDLERS", [])
 )
 
+SUPPRESS_QUOTA_WARNINGS = portal_config_settings.pop(
+    "SUPPRESS_QUOTA_WARNINGS", ["user_workspace_quota"]
+)
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (

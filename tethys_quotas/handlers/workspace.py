@@ -9,14 +9,19 @@
 
 from django.contrib.auth.models import User
 from tethys_apps.models import TethysApp
-from tethys_apps.base.paths import get_user_workspace, get_app_workspace
+from tethys_apps.base.paths import (
+    get_user_workspace,
+    get_app_workspace,
+    get_user_media,
+    get_app_media,
+)
 from tethys_apps.harvester import SingletonHarvester
 from tethys_quotas.handlers.base import ResourceQuotaHandler
 
 
 class WorkspaceQuotaHandler(ResourceQuotaHandler):
     """
-    Defines quotas for workspace storage for the given entity (User or TethysApp).
+    Defines quotas for workspace (and media) storage for the given entity (User or TethysApp).
 
     inherits from ResourceQuotaHandler
     """  # noqa: E501
@@ -43,8 +48,11 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             installed_apps = harvester.apps
 
             for app in installed_apps:
-                workspace = get_user_workspace(app, self.entity)
-                current_use += float(workspace.get_size(self.units))
+                workspace = get_user_workspace(app, self.entity, bypass_quota=True)
+                media = get_user_media(app, self.entity, bypass_quota=True)
+                current_use += float(workspace.get_size(self.units)) + float(
+                    media.get_size(self.units)
+                )
 
         elif isinstance(self.entity, TethysApp):
             harvester = SingletonHarvester()
@@ -55,6 +63,8 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             )
 
             if tethys_app is not None:
-                current_use = float(get_app_workspace(tethys_app).get_size(self.units))
+                current_use = float(
+                    get_app_workspace(tethys_app).get_size(self.units)
+                ) + float(get_app_media(tethys_app.get_size(self.units)))
 
         return current_use

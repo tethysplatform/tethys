@@ -20,7 +20,11 @@ from django.utils.functional import SimpleLazyObject
 
 from tethys_quotas.utilities import passes_quota, _get_storage_units
 
-from .workspace import get_app_workspace_old, get_user_workspace_old
+from .workspace import (
+    get_app_workspace_old,
+    get_user_workspace_old,
+    _get_user_workspace,
+)
 
 log = logging.getLogger(f"tethys.{__name__}")
 
@@ -234,7 +238,7 @@ def _resolve_app_class(app_class_or_request):
     return app
 
 
-def _resolve_username(user_or_request):
+def _resolve_username(user_or_request, bypass_quota=False):
     """
     Gets the username from user or request object
     (Also check quotas?)
@@ -254,8 +258,8 @@ def _resolve_username(user_or_request):
             f'"{type(user_or_request)}" given.'
         )
 
-    # TODO Need to add the user_media usage into the user_workspace_quota
-    assert passes_quota(user, "user_workspace_quota")
+    if not bypass_quota:
+        assert passes_quota(user, "user_workspace_quota")
 
     return user.username
 
@@ -273,11 +277,15 @@ def get_app_workspace(app_or_request) -> TethysPath:
     return TethysPath(_get_app_workspace_root(app) / "app_workspace")
 
 
-def get_user_workspace(app_class_or_request, user_or_request) -> TethysPath:
+def get_user_workspace(
+    app_class_or_request, user_or_request, bypass_quota=False
+) -> TethysPath:
     app = _resolve_app_class(app_class_or_request)
-    username = _resolve_username(user_or_request)
+    username = _resolve_username(user_or_request, bypass_quota=bypass_quota)
 
     if settings.USE_OLD_WORKSPACES_API:
+        if bypass_quota:
+            return _get_user_workspace(app, username)
         return get_user_workspace_old(app, user_or_request)
 
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
@@ -295,9 +303,9 @@ def get_app_media(app_or_request):
     return TethysPath(_get_app_media_root(app) / "app_media")
 
 
-def get_user_media(app_or_request, username_or_request):
+def get_user_media(app_or_request, username_or_request, bypass_quota=False):
     app = _resolve_app_class(app_or_request)
-    username = _resolve_username(username_or_request)
+    username = _resolve_username(username_or_request, bypass_quota=bypass_quota)
     return TethysPath(_get_app_media_root(app) / "user_media" / username)
 
 

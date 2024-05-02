@@ -93,7 +93,8 @@ def passes_quota(entity, codename, raise_on_false=True):
         return passes
 
     except ResourceQuota.DoesNotExist:
-        log.info("ResourceQuota with codename {} does not exist.".format(codename))
+        if codename not in settings.SUPPRESS_QUOTA_WARNINGS:
+            log.info(f"ResourceQuota with codename {codename} does not exist.")
         return True
 
 
