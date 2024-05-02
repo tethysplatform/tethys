@@ -91,33 +91,6 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
         # mock redirect after logged in using next parameter or default to user profile
         mock_redirect.assert_called_once_with("/")
 
-    @override_settings(MULTIPLE_APP_MODE=False)
-    @mock.patch("tethys_portal.utilities.login")
-    @mock.patch("tethys_portal.utilities.redirect")
-    @mock.patch("tethys_portal.utilities.get_configured_standalone_app")
-    def test_utilities_no_user_exist_single_app_mode_no_app(
-        self, mock_get_configured_standalone_app, mock_redirect, mock_authenticate
-    ):
-        mock_request = mock.MagicMock()
-        mock_request.method = "POST"
-        mock_request.POST = "login-submit"
-        mock_request.user.is_anonymous = True
-        mock_request.user.username = "sam"
-        mock_request.GET = ""
-        mock_get_configured_standalone_app.return_value = None
-
-        # mock authenticate
-        mock_user = mock.MagicMock()
-        mock_authenticate.return_value = mock_user
-
-        # mock the password has been verified for the user
-        mock_user.is_active = True
-
-        utilities.log_user_in(mock_request, user=mock_user)
-
-        # mock redirect after logged in using next parameter or default to user profile
-        mock_redirect.assert_called_once_with("user:profile")
-
     @mock.patch("tethys_portal.utilities.login")
     @mock.patch("tethys_portal.utilities.redirect")
     def test_utilities_no_user_exist_next(self, mock_redirect, mock_authenticate):

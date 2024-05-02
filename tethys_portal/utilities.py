@@ -59,8 +59,6 @@ def log_user_in(request, user=None, username=None):
         else:
             if get_configured_standalone_app():
                 return redirect("/")
-            else:
-                return redirect("user:profile")
 
 
 def json_serializer(obj):
