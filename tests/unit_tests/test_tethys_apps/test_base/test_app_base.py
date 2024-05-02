@@ -556,14 +556,16 @@ class TestTethysAppBase(unittest.TestCase):
         ret = tethys_app_base.TethysAppBase.package_namespace
         self.assertEqual("tethysapp", ret)
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.app_base.files")
-    def test_public_path(self, mock_files):
+    def test_public_path(self, mock_files, __):
         mock_files.return_value = Path("tethysapp")
         ret = tethys_app_base.TethysAppBase().public_path
         self.assertEqual(TethysPath("tethysapp/public").path, ret.path)
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.app_base.files")
-    def test_resrouces_path(self, mock_files):
+    def test_resrouces_path(self, mock_files, __):
         mock_files.return_value = Path("tethysapp")
         ret = tethys_app_base.TethysAppBase().resources_path
         self.assertEqual(TethysPath("tethysapp/resources").path, ret.path)

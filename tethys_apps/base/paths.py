@@ -23,7 +23,6 @@ from tethys_quotas.utilities import passes_quota, _get_storage_units
 from .workspace import (
     get_app_workspace_old,
     get_user_workspace_old,
-    _get_user_workspace,
 )
 
 log = logging.getLogger(f"tethys.{__name__}")
@@ -269,25 +268,21 @@ def _get_app_workspace_root(app):
 
 
 def get_app_workspace(app_or_request) -> TethysPath:
-    app = _resolve_app_class(app_or_request)
-
     if settings.USE_OLD_WORKSPACES_API:
-        return get_app_workspace_old(app)
+        return get_app_workspace_old(app_or_request)
 
+    app = _resolve_app_class(app_or_request)
     return TethysPath(_get_app_workspace_root(app) / "app_workspace")
 
 
 def get_user_workspace(
     app_class_or_request, user_or_request, bypass_quota=False
 ) -> TethysPath:
+    if settings.USE_OLD_WORKSPACES_API:
+        return get_user_workspace_old(app_class_or_request, user_or_request)
+
     app = _resolve_app_class(app_class_or_request)
     username = _resolve_username(user_or_request, bypass_quota=bypass_quota)
-
-    if settings.USE_OLD_WORKSPACES_API:
-        if bypass_quota:
-            return _get_user_workspace(app, username)
-        return get_user_workspace_old(app, user_or_request)
-
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
 
 

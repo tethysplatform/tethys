@@ -51,21 +51,23 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
             == "permissions must be a list, tuple, or comma separated string"
         )
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_app_workspace(self, gaw, _):
+    def test_app_workspace(self, gaw, _, __):
         gaw.return_value = Path("workspaces")
         self.assertEqual(
             TethysPath("workspaces/app_workspace").path,
             self.consumer.app_workspace.path,
         )
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_user_workspace(self, gaw, ru, _):
+    def test_user_workspace(self, gaw, ru, _, __):
         gaw.return_value = Path("workspaces")
         ru.return_value = "mock-username"
         self.assertEqual(
@@ -73,21 +75,23 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
             self.consumer.user_workspace.path,
         )
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_app_media(self, gamr, _):
+    def test_app_media(self, gamr, _, __):
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
             TethysPath("app-media-root/media/app_media").path,
             self.consumer.app_media.path,
         )
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_user_media(self, gamr, ru, rac):
+    def test_user_media(self, gamr, ru, rac, __):
         mock_app = mock.MagicMock()
         rac.return_value = mock_app
         ru.return_value = "mock-username"
@@ -97,15 +101,17 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
             self.consumer.user_media.path,
         )
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
-    def test_app_resources(self, rac):
+    def test_app_resources(self, rac, __):
         mock_app = mock.MagicMock()
         mock_app.resources_path = TethysPath("resources")
         rac.return_value = mock_app
         self.assertEqual(TethysPath("resources").path, self.consumer.app_resources.path)
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
-    def test_app_public(self, rac):
+    def test_app_public(self, rac, __):
         mock_app = mock.MagicMock()
         mock_app.public_path = TethysPath("public")
         rac.return_value = mock_app

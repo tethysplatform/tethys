@@ -57,7 +57,7 @@ def consumer(
     name: str = None,
     url: str = None,
     regex: Union[str, list, tuple] = None,
-    with_paths: bool = False,  # TODO docstring
+    with_paths: bool = False,
     # login_required kwargs
     login_required: bool = True,
     # permission_required kwargs
@@ -72,10 +72,10 @@ def consumer(
         name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the class being decorated.
         url: URL pattern to map the endpoint for the consumer. If a `list` then a seperate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name`_1, `name`_2 ... `name`_n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
         regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
-        with_paths:
-        login_required:
-        permissions_required:
-        permissions_use_or:
+        with_paths: If `True` then initialize the following path properties on the consumer class when it is called (`app_workspace`, `user_workspace`, `app_media`, `user_media`, `app_public`, `app_resources`). Default is `False`
+        login_required: If user is required to be logged in to access the consumer endpoint. Default is `True`.
+        permissions_required: The name(s) of permissions that a user is required to have to access the consumer endpoint. Default is `None`
+        permissions_use_or: When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default. Default is `False`
 
     **Example:**
 
@@ -108,6 +108,17 @@ def consumer(
             url='customized/url',
             permissions_required='permission',
             login_required=True
+        )
+        class MyConsumer(AsyncWebsocketConsumer):
+
+            def authorized_connect():
+                pass
+
+       ------------
+
+        @consumer(
+            with_paths=True,
+            login_required=True,
         )
         class MyConsumer(AsyncWebsocketConsumer):
 
@@ -190,10 +201,10 @@ def controller(
         login_url: URL to send users to in order to authenticate.
         app_workspace: Whether to pass the app workspace as an argument to the controller.
         user_workspace: Whether to pass the user workspace as an argument to the controller.
-        app_media:
-        user_media:
-        app_resources:
-        app_public:
+        app_media: Whether to pass the app media directory as an argument to the controller.
+        user_media: Whether to pass the user media directory as an argument to the controller.
+        app_resources: Whether to pass the app resources directory as an argument to the controller.
+        app_public: Whether to pass the app public directory as an argument to the controller.
         ensure_oauth2_provider: An OAuth2 provider name to ensure is authenticated to access the controller.
         enforce_quotas: The name(s) of quotas to enforce on the controller.
         permissions_required: The name(s) of permissions that a user is required to have to access the controller.
@@ -284,11 +295,15 @@ def controller(
         @controller(
             app_workspace=True,
             user_workspace=True,
+            app_media=True,
+            user_media=True,
+            app_resources=True,
+            app_public=True,
         )
-        def my_app_controller(request, app_workspace, user_workspace, url_arg):
-            # Note that if both the ``app_workspace`` and ``user_workspace`` arguments are passed to the controller
-            # decorator, then "app_workspace" should precede "user_workspace" in the function argument list,
-            # and both should be directly after the "request" argument.
+        def my_app_controller(request, app_workspace, user_workspace, app_media, user_media, app_public, app_resources, url_arg):
+            # Note that the path arguments are passed in as key-word arguments, so the order does not matter,
+            #   but the name of the argument must match what is shown here (i.e. the same as the argument name
+            #   that is passed to the controller decorator).
             ...
 
         ------------
@@ -382,21 +397,16 @@ def controller(
         else:
             controller = function_or_class
 
-        # add decorator arguments to local (nested) scope
-        nonlocal app_media
-        nonlocal user_media
-        nonlocal app_resources
-        nonlocal app_public
         # process paths and add keyword arguments to controller
-        for argument_name in (
-            "app_public",
-            "app_resources",
-            "user_media",
-            "app_media",
-            "user_workspace",
-            "app_workspace",
+        for argument_name, value in (
+            ("app_public", app_public),
+            ("app_resources", app_resources),
+            ("user_media", user_media),
+            ("app_media", app_media),
+            ("user_workspace", user_workspace),
+            ("app_workspace", app_workspace),
         ):
-            if locals()[argument_name]:
+            if value:
                 controller = _add_path_decorator(argument_name)(controller)
 
         if permissions_required:

@@ -20,16 +20,18 @@ class TestTethysPath(unittest.TestCase):
         pass
 
     def test_repr(self):
-        tethys_path = TethysPath("test_path")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            tethys_path = TethysPath(temp_dir)
         string_path = tethys_path.path
         self.assertEqual(repr(tethys_path), f'<TethysPath path="{string_path}">')
 
     def test_read_only(self):
-        tethys_path = TethysPath("test_path")
-        self.assertFalse(tethys_path.read_only)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            tethys_path = TethysPath(temp_dir)
+            self.assertFalse(tethys_path.read_only)
 
-        tethys_path = TethysPath("test_path", read_only=True)
-        self.assertTrue(tethys_path.read_only)
+            tethys_path = TethysPath(temp_dir, read_only=True)
+            self.assertTrue(tethys_path.read_only)
 
     def test_files(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -272,20 +274,6 @@ class TestTethysPathHelpers(unittest.TestCase):
         mock_return = mock.MagicMock()
         mock_get_user_workspace_old.return_value = mock_return
         ws = paths.get_user_workspace(self.mock_request, self.user)
-
-        mock_get_user_workspace_old.assert_called_once()
-        self.assertEqual(ws, mock_return)
-
-    @mock.patch("tethys_apps.base.paths._get_user_workspace")
-    @mock.patch("tethys_apps.utilities.get_active_app")
-    @override_settings(USE_OLD_WORKSPACES_API=True)
-    def test_get_user_workspace_old_bypass(
-        self, mock_get_active_app, mock_get_user_workspace_old
-    ):
-        mock_get_active_app.return_value = self.mock_app
-        mock_return = mock.MagicMock()
-        mock_get_user_workspace_old.return_value = mock_return
-        ws = paths.get_user_workspace(self.mock_request, self.user, bypass_quota=True)
 
         mock_get_user_workspace_old.assert_called_once()
         self.assertEqual(ws, mock_return)

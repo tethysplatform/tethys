@@ -65,6 +65,7 @@ class TestBokehHandler(unittest.TestCase):
         self.assertEqual("user-workspace", ret_doc.user_workspace)
         self.assertEqual("app-workspace", ret_doc.app_workspace)
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
     @mock.patch("tethys_apps.utilities.get_active_app")
@@ -73,7 +74,9 @@ class TestBokehHandler(unittest.TestCase):
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_with_paths_decorator(self, username, rac, mock_gamr, mock_gaw, _, __, ___):
+    def test_with_paths_decorator(
+        self, username, rac, mock_gamr, mock_gaw, _, __, ___, ____
+    ):
         mock_gaw.return_value = Path("workspaces")
         mock_gamr.return_value = Path("app-media-root/media")
 
