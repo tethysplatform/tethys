@@ -10,6 +10,7 @@
 
 from .optional_dependencies import has_module
 from django.conf import settings
+from django.contrib import messages
 from tethys_apps.utilities import get_configured_standalone_app
 
 
@@ -20,7 +21,7 @@ def tethys_portal_context(request):
         else {}
     )
 
-    single_app_mode, configured_single_app = check_single_app_mode()
+    single_app_mode, configured_single_app = check_single_app_mode(request)
 
     context = {
         "has_analytical": has_module("analytical"),
@@ -37,8 +38,15 @@ def tethys_portal_context(request):
     return context
 
 
-def check_single_app_mode():
+def check_single_app_mode(request):
     if settings.MULTIPLE_APP_MODE:
         return False, None
     else:
-        return True, get_configured_standalone_app()
+        configured_app = get_configured_standalone_app()
+        if not configured_app:
+            messages.warning(
+                request,
+                "MULTIPLE_APP_MODE is disabled but there is no configured tethys application.",
+            )
+
+        return True, configured_app

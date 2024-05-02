@@ -628,11 +628,11 @@ def get_configured_standalone_app():
             app = TethysApp.objects.get(package=standalone_app)
         else:
             app = TethysApp.objects.first()
-    except ProgrammingError as e:
-        # This catch ensures that tethys can still configuration commands when tethys portal is being created
-        tethys_log.warning(
-            f"{str(e)}. Process will continue with the assumption that tethys is still being setup"
-        )
+    except ProgrammingError:
+        # When MULTIPLE_APP_MODE is enabled but there is no app installed, then setting up the tethys DB fails because
+        # the code is trying to fetch data from a table that doesn't exist. Catch this exception and pass so setup can
+        # finish
+        pass
 
     return app
 

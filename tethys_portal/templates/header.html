@@ -37,9 +37,11 @@
               {% url 'app_library' as header_url %}
             {% endif %}
             {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
-              <li class="nav-item">
-                <a class="h5 me-3 mb-0 nav-link{% if request.path == header_url %} active" aria-current="page{% endif %}" href="{{ header_url }}" title="{% if single_app_mode %} {% if configured_single_app %} {{ configured_single_app.name }}  {% else %} No Configured Apps {% endif %} {% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_mode %} {% if configured_single_app %} {{ configured_single_app.name }}  {% else %} No Configured Apps {% endif %} {% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
-              </li>
+              {% if not single_app_mode or single_app_mode and configured_single_app.name %}
+                <li class="nav-item">
+                  <a class="h5 me-3 mb-0 nav-link{% if request.path == header_url %} active" aria-current="page{% endif %}" href="{{ header_url }}" title="{% if single_app_mode %} {% if configured_single_app %} {{ configured_single_app.name }} {% endif %} {% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_mode %} {% if configured_single_app %} {{ configured_single_app.name }} {% endif %} {% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
+                </li>
+              {% endif %}
             {% endif %}
           {% endblock %}
         </ul>
