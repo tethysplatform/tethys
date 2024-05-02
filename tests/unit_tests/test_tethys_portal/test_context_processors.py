@@ -12,12 +12,17 @@ class TestStaticDependency(unittest.TestCase):
 
     @override_settings(MULTIPLE_APP_MODE=False)
     def test_check_single_app_mode_single(self):
-        single_app_mode = context_processors.check_single_app_mode()
+        single_app_mode, configured_single_app = (
+            context_processors.check_single_app_mode()
+        )
 
         self.assertTrue(single_app_mode)
-        self.assertTrue(single_app_mode.name == "Test App")
+        self.assertTrue(configured_single_app.name == "Test App")
 
     def test_check_single_app_mode_multiple(self):
-        single_app_mode = context_processors.check_single_app_mode()
+        single_app_mode, configured_single_app = (
+            context_processors.check_single_app_mode()
+        )
 
-        self.assertTrue(single_app_mode is None)
+        self.assertFalse(single_app_mode)
+        self.assertIsNone(configured_single_app)

@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.conf import settings
+from tethys_apps.utilities import get_configured_standalone_app
 
 
 def log_user_in(request, user=None, username=None):
@@ -56,7 +57,10 @@ def log_user_in(request, user=None, username=None):
         if settings.MULTIPLE_APP_MODE:
             return redirect("app_library")
         else:
-            return redirect("/")
+            if get_configured_standalone_app():
+                return redirect("/")
+            else:
+                return redirect("user:profile")
 
 
 def json_serializer(obj):

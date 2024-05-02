@@ -1073,7 +1073,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         ) as mock_tethysapp:
             mock_tethysapp.objects.first.return_value = []
             app = utilities.get_configured_standalone_app()
-            
+
             self.assertTrue(app == [])
             mock_tethysapp.objects.first.assert_called_once()
 
@@ -1087,7 +1087,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         ) as mock_tethysapp:
             mock_tethysapp.objects.first.side_effect = [ProgrammingError]
             app = utilities.get_configured_standalone_app()
-            
+
             self.assertIsNone(app)
 
             mock_tethysapp.objects.first.assert_called_once()

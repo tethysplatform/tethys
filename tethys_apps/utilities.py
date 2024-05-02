@@ -630,7 +630,9 @@ def get_configured_standalone_app():
             app = TethysApp.objects.first()
     except ProgrammingError as e:
         # This catch ensures that tethys can still configuration commands when tethys portal is being created
-        tethys_log.warning(f"{str(e)}. Process will continue with the assumption that tethys is still being setup")
+        tethys_log.warning(
+            f"{str(e)}. Process will continue with the assumption that tethys is still being setup"
+        )
 
     return app
 
