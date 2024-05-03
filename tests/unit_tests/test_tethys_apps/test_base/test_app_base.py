@@ -798,11 +798,24 @@ class TestTethysAppBase(unittest.TestCase):
         mock_guw.assert_called_with(TethysAppChild, mock_user)
         self.assertEqual(ret, mock_guw())
 
+    @mock.patch("tethys_apps.base.app_base.get_user_media")
+    def test_get_user_media(self, mock_gum):
+        mock_user = mock.MagicMock()
+        ret = TethysAppChild.get_user_media(mock_user)
+        mock_gum.assert_called_with(TethysAppChild, mock_user)
+        self.assertEqual(ret, mock_gum())
+
     @mock.patch("tethys_apps.base.app_base.get_app_workspace")
     def test_get_app_workspace(self, mock_gaw):
         ret = TethysAppChild.get_app_workspace()
         mock_gaw.assert_called_with(TethysAppChild)
         self.assertEqual(ret, mock_gaw())
+
+    @mock.patch("tethys_apps.base.app_base.get_app_media")
+    def test_get_app_media(self, mock_gam):
+        ret = TethysAppChild.get_app_media()
+        mock_gam.assert_called_with(TethysAppChild)
+        self.assertEqual(ret, mock_gam())
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_custom_setting(self, mock_ta):

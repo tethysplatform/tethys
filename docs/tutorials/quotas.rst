@@ -29,7 +29,7 @@ If you wish to use the advanced solution as a starting point:
 
 In the :ref:`key_concepts_advanced_tutorial` tutorial we refactored the Model to use an SQL database, rather than files. However, we might want to store some data as files in case we want to export them later. This will also allow us to demonstrate the use of the built-in workspace qutoas that come with the :doc:`../../tethys_sdk/tethys_quotas`.
 
-a. Add the :ref:`user_workspace` argument to the ``controller`` decorator and a `user_workspace` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
+a. Add the ``user_workspace`` argument to the ``controller`` decorator and a `user_workspace` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
 
     .. code-block:: python
         :emphasize-lines: 5-6, 44-59
@@ -277,7 +277,7 @@ g. Finally, add the ``pre_delete_user_workspace`` method to the app class in :fi
 
     .. code-block:: python
 
-        class DamInventory(TethysAppBase):
+        class App(TethysAppBase):
             """
             Tethys app class for Dam Inventory.
             """

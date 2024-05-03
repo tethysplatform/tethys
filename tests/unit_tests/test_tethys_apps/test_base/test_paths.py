@@ -332,33 +332,3 @@ class TestTethysPathHelpers(unittest.TestCase):
             str(exc.exception),
             "No request given. The user_media decorator only works on controllers.",
         )
-
-    @mock.patch("tethys_apps.base.paths._add_path_decorator")
-    def test_app_workspace_decorator(self, mock_add_path):
-        paths.app_workspace(mock.MagicMock)
-        mock_add_path.assert_called_with(paths.app_workspace.__name__)
-
-    @mock.patch("tethys_apps.base.paths._add_path_decorator")
-    def test_user_workspace_decorator(self, mock_add_path):
-        paths.user_workspace(mock.MagicMock)
-        mock_add_path.assert_called_with(paths.user_workspace.__name__)
-
-    @mock.patch("tethys_apps.base.paths._add_path_decorator")
-    def test_app_media_decorator(self, mock_add_path):
-        paths.app_media(mock.MagicMock)
-        mock_add_path.assert_called_with(paths.app_media.__name__)
-
-    @mock.patch("tethys_apps.base.paths._add_path_decorator")
-    def test_user_media_decorator(self, mock_add_path):
-        paths.user_media(mock.MagicMock)
-        mock_add_path.assert_called_with(paths.user_media.__name__)
-
-    @mock.patch("tethys_apps.base.paths._add_path_decorator")
-    def test_app_public_decorator(self, mock_add_path):
-        paths.app_public(mock.MagicMock)
-        mock_add_path.assert_called_with(paths.app_public.__name__)
-
-    @mock.patch("tethys_apps.base.paths._add_path_decorator")
-    def test_app_resources_decorator(self, mock_add_path):
-        paths.app_resources(mock.MagicMock)
-        mock_add_path.assert_called_with(paths.app_resources.__name__)

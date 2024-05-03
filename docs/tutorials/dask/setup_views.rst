@@ -334,7 +334,7 @@ Update the ``icon`` property of the :term:`app class` in :file:`app.py` to use t
     .. code-block:: python
         :emphasize-lines: 6
 
-        class DaskTutorial(TethysAppBase):
+        class App(TethysAppBase):
             """
             Tethys app class for Dask Tutorial.
             """

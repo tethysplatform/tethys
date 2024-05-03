@@ -582,10 +582,6 @@ ASGI_APPLICATION = "tethys_portal.asgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Add any additional specified settings to module
-for setting, value in portal_config_settings.items():
-    setattr(this_module, setting, value)
-
 COOKIE_CONFIG = portal_config_settings.pop("COOKIE_CONFIG", {})
 for setting, value in COOKIE_CONFIG.items():
     setattr(this_module, setting, value)
@@ -622,6 +618,9 @@ for settings_module in ADDITIONAL_SETTINGS_FILES:
         value = getattr(mod, setting)
         setattr(this_module, setting, value)
 
-
 # TODO backward compatibility setting. Remove in Tethys 5.0
-USE_OLD_WORKSPACES_API = False
+USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", True)
+
+# Add any additional specified settings to module
+for setting, value in portal_config_settings.items():
+    setattr(this_module, setting, value)

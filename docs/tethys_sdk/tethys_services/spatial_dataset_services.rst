@@ -49,7 +49,7 @@ Using dataset services in your app is accomplished by adding the ``spatial_datas
 
     from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys App Class for My First App.
         """

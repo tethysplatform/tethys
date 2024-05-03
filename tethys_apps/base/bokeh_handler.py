@@ -24,7 +24,7 @@ from tethys_sdk.workspaces import (
 )
 
 from tethys_portal.optional_dependencies import optional_import
-from tethys_utils import deprecation_warning
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
 
 from .paths import (
     _resolve_app_class,
@@ -59,8 +59,10 @@ def with_workspaces(handler):
     deprecation_warning(
         "5.0",
         'the "with_workspaces" decorator',
-        'The workspaces API has been replaced with the new Paths API. In place of the "with_workspaces" decorator '
-        'please use the "with_paths" decorator (see <>).',  # TODO add docs ref
+        'The workspaces API has been replaced by the new Paths API. In place of the "with_workspaces" decorator '
+        f'please use the "with_paths" decorator (see {DOCS_BASE_URL}tethys_sdk/paths.html#handler-decorator).\n'
+        f"For a full guide to transitioning to the Paths API see "
+        f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
     )
 
     @with_request

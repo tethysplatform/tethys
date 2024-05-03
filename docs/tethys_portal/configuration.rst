@@ -67,6 +67,7 @@ AUTHENTICATION_BACKENDS                            the Django `AUTHENTICATION_BA
 AUTHENTICATION_BACKENDS_OVERRIDE                   override for ``AUTHENTICATION_BACKENDS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.
 RESOURCE_QUOTA_HANDLERS                            a list of Tethys ``ResourceQuotaHandler`` classes to load (see: :ref:`sdk_quotas_api`). For convenience, any quota handlers listed here will be appended to the default list of quota handlerss. To override ``RESOURCE_QUOTA_HANDLERS`` completely, use the ``RESOURCE_QUOTA_HANDLERS_OVERRIDE`` setting.
 RESOURCE_QUOTA_HANDLERS_OVERRIDE                   override for ``RESOURCE_QUOTA_HANDLERS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.
+USE_OLD_WORKSPACES_API                             a temporary setting that maintains backward compatibility for the :ref:`tethys_workspaces_api` when True. When False the the new :ref:`tethys_paths_api` functionality will apply. Defaults to True.
 ================================================== ================================================================================
 
 .. _tethys_portal_config_settings:

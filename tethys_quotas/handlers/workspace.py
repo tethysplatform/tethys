@@ -10,9 +10,9 @@
 from django.contrib.auth.models import User
 from tethys_apps.models import TethysApp
 from tethys_apps.base.paths import (
-    get_user_workspace,
+    _get_user_workspace,
     get_app_workspace,
-    get_user_media,
+    _get_user_media,
     get_app_media,
 )
 from tethys_apps.harvester import SingletonHarvester
@@ -48,8 +48,8 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             installed_apps = harvester.apps
 
             for app in installed_apps:
-                workspace = get_user_workspace(app, self.entity, bypass_quota=True)
-                media = get_user_media(app, self.entity, bypass_quota=True)
+                workspace = _get_user_workspace(app, self.entity, _bypass_quota=True)
+                media = _get_user_media(app, self.entity, bypass_quota=True)
                 current_use += float(workspace.get_size(self.units)) + float(
                     media.get_size(self.units)
                 )

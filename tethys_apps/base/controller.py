@@ -18,7 +18,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
-from tethys_utils import deprecation_warning
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from . import url_map_maker
 from .app_base import DEFAULT_CONTROLLER_MODULES
 
@@ -79,7 +79,7 @@ def consumer(
 
     **Example:**
 
-    ::
+    .. code-block:: python
 
         from tethys_sdk.routing import consumer
 
@@ -97,9 +97,7 @@ def consumer(
             url='customized/url',
         )
         class MyConsumer(AsyncWebsocketConsumer):
-
-            def connect():
-                pass
+            pass
 
         ------------
 
@@ -111,8 +109,8 @@ def consumer(
         )
         class MyConsumer(AsyncWebsocketConsumer):
 
-            def authorized_connect():
-                pass
+            async def authorized_connect(self):
+                ...
 
        ------------
 
@@ -122,8 +120,13 @@ def consumer(
         )
         class MyConsumer(AsyncWebsocketConsumer):
 
-            def authorized_connect():
-                pass
+            async def authorized_connect(self):
+                self.app_workspace
+                self.user_workspace
+                self.app_media
+                self.user_media
+                self.app_public
+                self.app_resources
 
     """  # noqa: E501
 
@@ -462,11 +465,12 @@ def handler(
         app_package: The app_package name from the `app.py` file. Used as an alternative to `controller` and `template` to automatically create a controller and template that extends the app's "base.html" template. If none of `controller`, `template` and `app_package` are provided then a default controller and template will be created.
         handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
         with_request: If `True` then the ``HTTPRequest`` object will be added to the `Bokeh Document`.
-        with_workspaces: if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
+        with_workspaces (DEPRECATED): if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
         with_paths: if `True` then the `app_media_path`, `user_media_path`, and `app_resources_path` will be added to the `Bokeh Document`.
+
     **Example:**
 
-    ::
+    .. code-block:: python
 
         from tethys_sdk.routing import handler
 
@@ -546,13 +550,17 @@ def handler(
         ------------
 
         @handler(
-            with_workspaces=True
+            with_paths=True
         )
         def my_app_handler(document):
-            # attributes available when using "with_workspaces" argument
+            # attributes available when using "with_paths" argument
             request = document.request
             user_workspace = document.user_workspace
+            user_media = document.user_media
             app_workspace = document.app_workspace
+            app_media = document.app_media
+            app_public = document.app_public
+            app_resources = document.app_resources
             ...
 
         ------------
@@ -595,7 +603,10 @@ def handler(
                 "5.0",
                 'the "with_workspaces" argument to the "handler" decorator',
                 'The workspaces API has been replaced with the new Paths API. In place of the "with_workspaces" '
-                'argument please use the "with_paths" argument (see <>).',  # TODO add docs ref
+                'argument please use the "with_paths" argument '
+                f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#consumer-decorator>).]n"
+                f"For a full guide to transitioning to the Paths API see "
+                f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
             )
             function = with_workspaces_decorator(function)
         elif with_request:

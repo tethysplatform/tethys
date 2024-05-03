@@ -9,9 +9,21 @@ import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.workspace import (
     _get_user_workspace,
     get_user_workspace_old,
+    user_workspace,
     _get_app_workspace,
     get_app_workspace_old,
+    app_workspace,
 )
+
+
+@user_workspace
+def user_dec_controller(request, user_workspace):
+    return user_workspace
+
+
+@app_workspace
+def app_dec_controller(request, app_workspace):
+    return app_workspace
 
 
 class TethysAppChild(tethys_app_base.TethysAppBase):
@@ -249,6 +261,26 @@ class TestUrlMap(unittest.TestCase):
             'Argument "user_or_request" must be of type HttpRequest or User: "<class \'str\'>" given.',
         )
 
+    @mock.patch("tethys_apps.base.workspace.get_user_workspace_old")
+    def test_user_workspace_decorator_user(self, mock_guw):
+        request = HttpRequest()
+        request.user = self.user
+        mock_workspace = mock.MagicMock()
+        mock_guw.return_value = mock_workspace
+        ret = user_dec_controller(request)
+        self.assertEqual(ret, mock_workspace)
+        mock_guw.assert_called_with(request, self.user)
+
+    def test_user_workspace_decorator_HttpRequest_not_given(self):
+        not_a_request = mock.MagicMock()
+        with self.assertRaises(ValueError) as context:
+            user_dec_controller(not_a_request)
+
+        self.assertEqual(
+            str(context.exception),
+            "No request given. The user_workspace decorator only works on controllers.",
+        )
+
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     def test__get_app_workspace(self, mock_tws):
         ret = _get_app_workspace(self.app)
@@ -303,4 +335,27 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(
             str(context.exception),
             'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: "<class \'str\'>" given.',
+        )
+
+    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.base.workspace.get_app_workspace_old")
+    def test_app_workspace_decorator(self, mock_gaw, mock_gaa):
+        request = HttpRequest()
+        mock_workspace = mock.MagicMock()
+        mock_gaw.return_value = mock_workspace
+        mock_app = mock.MagicMock()
+        mock_gaa.return_value = mock_app
+        ret = app_dec_controller(request)
+        self.assertEqual(ret, mock_workspace)
+        mock_gaw.assert_called_with(request)
+
+    def test_app_workspace_decorator_HttpRequest_not_given(self):
+        not_a_request = mock.MagicMock()
+
+        with self.assertRaises(ValueError) as context:
+            app_dec_controller(not_a_request)
+
+        self.assertEqual(
+            str(context.exception),
+            "No request given. The app_workspace decorator only works on controllers.",
         )

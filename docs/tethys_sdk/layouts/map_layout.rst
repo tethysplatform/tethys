@@ -696,7 +696,7 @@ Define the following permissions in the ``permissions()`` method of your app cla
     from tethys_sdk.permissions import Permission, PermissionGroup
 
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
 
         ...
 
