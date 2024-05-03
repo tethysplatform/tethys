@@ -404,11 +404,10 @@ class GOPAppAccessForm(forms.ModelForm):
             # permissions
             if "_permissions" in field:
                 assign_perms_query = self.cleaned_data[field]
-                if self.fields[field].initial:
-                    remove_perms_query = self.fields[field].initial.difference(
-                        assign_perms_query
+                if initial := self.fields[field].initial:
+                    remove_perms_query = set(initial).difference(
+                        set(assign_perms_query)
                     )
-
                     for perm in remove_perms_query:
                         remove_perm(
                             perm.codename,
