@@ -109,8 +109,8 @@ a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with th
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         {% gizmo dam_inventory_map %}
@@ -143,9 +143,9 @@ a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button
 
     .. code-block:: python
 
-        from django.shortcuts import render
         from tethys_sdk.gizmos import MapView, Button
         from tethys_sdk.routing import controller
+        from .app import App
 
 
         @controller
@@ -174,7 +174,7 @@ a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button
                 'add_dam_button': add_dam_button
             }
 
-            return render(request, 'dam_inventory/home.html', context)
+            return App.render(request, 'home.html', context)
 
 b. Save your changes to ``controllers.py`` and ``home.html`` and refresh the page to view the map.
 
@@ -205,13 +205,13 @@ b. Load the styles on the ``/templates/dam_inventory/home.html`` template by add
 
     .. code-block:: html+django
 
-        {% load tethys_gizmos static %}
+        {% load static tethys %}
 
         ...
 
         {% block styles %}
             {{ block.super }}
-            <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
+            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
         {% endblock %}
 
 c. Save your changes to ``map.css`` and ``home.html`` and refresh the page to view the changes. The map should fill the content area now. Notice how the map dynamically resizes if the screen size changes.
@@ -244,7 +244,7 @@ b. Create a new controller function called ``add_dam`` at the bottom of the ``co
             Controller for the Add Dam page.
             """
             context = {}
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
     This is the most basic controller function you can write: a function that accepts an argument called ``request`` and a return value that is the result of the ``render`` function. The ``render`` function renders the Django template into valid HTML using the ``request`` and ``context`` provided.
 
@@ -269,7 +269,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
 
     .. code-block:: python
 
-        from django.shortcuts import reverse
+        from .app import App
 
         ...
 
@@ -282,7 +282,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
                 name='add-dam-button',
                 icon='plus-square',
                 style='success',
-                href=reverse('dam_inventory:add_dam')
+                href=App.reverse('add_dam')
             )
 
 9. Build Out New Page
@@ -292,8 +292,8 @@ a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app co
 
     .. code-block:: html+django
 
-        {% extends "dam_inventory/base.html" %}
-        {% load tethys_gizmos %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
 
         {% block app_content %}
         <h1>Add Dam</h1>
@@ -331,7 +331,7 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
                 'cancel_button': cancel_button,
             }
 
-            return render(request, 'dam_inventory/add_dam.html', context)
+            return App.render(request, 'add_dam.html', context)
 
 
 10. Customize Navigation
@@ -345,8 +345,8 @@ a. Open ``/templates/dam_inventory/base.html`` and replace the ``app_navigation_
 
         {% block app_navigation_items %}
         <li class="nav-item title">Navigation</li>
-        <li class="nav-item"><a class="nav-link active" href="{% url 'dam_inventory:home' %}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'dam_inventory:add_dam' %}">Add Dam</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url tethys_app|url:'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url tethys_app|url:'add_dam' %}">Add Dam</a></li>
         {% endblock %}
 
     Notice that the **Home** link in the app navigation is always highlighed, even if you are on the **Add Dam** page. The highlight is controlled by adding the ``active`` class to the appropriate navigation link. We can get the navigation to highlight appropriately using the following pattern.
@@ -356,8 +356,8 @@ b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html
     .. code-block:: html+django
 
         {% block app_navigation_items %}
-        {% url 'dam_inventory:home' as home_url %}
-        {% url 'dam_inventory:add_dam' as add_dam_url %}
+        {% url tethys_app|url:'home' as home_url %}
+        {% url tethys_app|url:'add_dam' as add_dam_url %}
         <li class="nav-item title">Navigation</li>
         <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
         <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>

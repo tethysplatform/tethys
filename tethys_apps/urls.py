@@ -16,6 +16,7 @@ from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
 from tethys_apps.utilities import get_configured_standalone_app
 from django.conf import settings
+from django.conf.urls.static import static
 
 tethys_log = logging.getLogger("tethys." + __name__)
 prefix_url = f"{settings.PREFIX_URL}"
@@ -24,7 +25,8 @@ urlpatterns = [
     re_path(
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.MULTIPLE_APP_MODE:
     urlpatterns.append(re_path(r"^$", library, name="app_library"))
     url_namespaces = None
@@ -47,7 +49,6 @@ handler_url_patterns = harvester.get_handler_patterns(url_namespaces=url_namespa
 # configure handler HTTP routes
 http_handler_patterns = []
 for namespace, urls in handler_url_patterns["http_handler_patterns"].items():
-
     if settings.MULTIPLE_APP_MODE:
         root_pattern = f'apps/{namespace.replace("_", "-")}/'
     else:

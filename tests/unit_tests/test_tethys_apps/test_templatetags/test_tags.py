@@ -78,3 +78,15 @@ class TestTags(unittest.TestCase):
         )
         ret_tag_list = t.get_tags_from_apps(self.mock_dict_apps)
         self.assertNotIn("disabled", ret_tag_list)
+
+    def test_url(self):
+        app = {"package": "test"}
+        controller_name = "controller"
+        ret = t.url(app, controller_name)
+        self.assertEqual(ret, f"{app['package']}:{controller_name}")
+
+    def test_public(self):
+        app = {"package": "test"}
+        static_path = "path/to/static"
+        ret = t.public(app, static_path)
+        self.assertEqual(ret, f"{app['package']}/{static_path}")

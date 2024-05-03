@@ -295,7 +295,7 @@ def gizmo(parser, token):
 
     Example::
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% gizmo options %}
 
@@ -303,7 +303,7 @@ def gizmo(parser, token):
 
     Example::
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% gizmo gizmo_name options %}
 
@@ -337,7 +337,7 @@ def import_gizmo_dependency(parser, token):
 
     Example::
 
-        {% load tethys_gizmos %}
+        {% load tethys %}
 
         {% block import_gizmos %}
             {% import_gizmo_dependency example_gizmo %}

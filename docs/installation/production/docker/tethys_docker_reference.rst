@@ -100,6 +100,7 @@ Use these build arguments with the ``build`` command to customize how the image 
 +---------------------------+------------------------------------------------------------------------------------------+
 | MICRO_TETHYS              | Set to True to use `micro-tethys` environment. Defaults to False.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
+
 Important Paths
 ---------------
 
@@ -127,6 +128,11 @@ These environment variables point to important paths in the container. Changing 
 +---------------------------+------------------------------------------------------------------------------------------+
 | WORKSPACE_ROOT            | Path to the tethys workspaces root folder. This also sets the associated setting in the  |
 |                           | :file:`portal_config.yml`. Defaults to "${TETHYS_PERSIST}/workspaces"                    |
++---------------------------+------------------------------------------------------------------------------------------+
+| MEDIA_URL                 | URL to be used for tethys media. This also sets the associated setting in the            |
+|                           | :file:`portal_config.yml`. Defaults to "/media/"                                         |
++---------------------------+------------------------------------------------------------------------------------------+
+| MEDIA_ROOT                | Path to the tethys media root folder. This also sets the associated setting in the       |
 +---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_MANAGE             | Path to manage.py file. Defaults to "${TETHYS_HOME}/tethys/tethys_portal/manage.py"      |
 +---------------------------+------------------------------------------------------------------------------------------+
@@ -166,6 +172,7 @@ These environment variables are used to configure the database and database user
 +--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 | SKIP_DB_SETUP            | Set to True to skip database creation, useful for existing databases configured for Tethys. Defaults to False.                      |
 +--------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+
 Tethys Portal Admin User
 ------------------------
 
