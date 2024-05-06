@@ -238,10 +238,10 @@ For the ``workspace`` and ``media`` paths the location of the paths from all app
 
 .. _tethys_quotas_workspace_manage:
 
-Handling Workspace Clearing
-===========================
+Handling Workspace/Media Clearing
+=================================
 
-Users and portal administrators are able to clear their user and app workspaces through pages in the Tethys Portal. The app class provides methods to allow the app developer to customize how the app handles clearing user/app workspaces. Override these methods in your app class to handle workspaces clearing appropriately in your app. When a workspace is cleared through the portal admin pages or user profile pages, the appropriate 'pre-delete' method is called, the workspace is cleared, and then the appropriate 'post-delete' method is called.
+Users and portal administrators are able to clear their user and app workspaces through pages in the Tethys Portal. The app class provides methods to allow the app developer to customize how the app handles clearing user/app workspaces and media directories. Override these methods in your app class to handle clearing workspaces and media directories appropriately in your app. When a workspace/media directory is cleared through the portal admin pages or user profile pages, the appropriate 'pre-delete' method is called, the workspace or media directory is cleared, and then the appropriate 'post-delete' method is called.
 
 .. automethod:: tethys_sdk.base.TethysAppBase.pre_delete_app_workspace
     :noindex:
@@ -253,4 +253,16 @@ Users and portal administrators are able to clear their user and app workspaces 
     :noindex:
 
 .. automethod:: tethys_sdk.base.TethysAppBase.post_delete_user_workspace
+    :noindex:
+
+.. automethod:: tethys_sdk.base.TethysAppBase.pre_delete_app_media
+    :noindex:
+
+.. automethod:: tethys_sdk.base.TethysAppBase.post_delete_app_media
+    :noindex:
+
+.. automethod:: tethys_sdk.base.TethysAppBase.pre_delete_user_media
+    :noindex:
+
+.. automethod:: tethys_sdk.base.TethysAppBase.post_delete_user_media
     :noindex:

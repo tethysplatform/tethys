@@ -37,27 +37,32 @@ class TethysPortalTethysAppTests(unittest.TestCase):
             expected_context,
         )
 
-    @mock.patch("tethys_portal.views.admin.get_app_class")
+    @mock.patch("tethys_portal.views.admin.get_app_media")
     @mock.patch("tethys_portal.views.admin.get_app_workspace")
+    @mock.patch("tethys_portal.views.admin.get_app_class")
     @mock.patch("tethys_portal.views.admin.TethysApp")
     @mock.patch("tethys_portal.views.admin.messages.success")
     @mock.patch("tethys_portal.views.admin.redirect")
     def test_clear_workspace_successful(
-        self, mock_redirect, mock_message, mock_app, mock_gaw, mock_get_app_class
+        self,
+        mock_redirect,
+        mock_message,
+        mock_app,
+        mock_get_app_class,
+        _,
+        __,
     ):
         mock_request = mock.MagicMock(method="POST", POST="clear-workspace-submit")
-        app = TethysApp(name="app_name")
+        app = mock.MagicMock()
+        app.name = "app_name"
         mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
-        app.pre_delete_app_workspace = mock.MagicMock()
-        app.post_delete_app_workspace = mock.MagicMock()
-        mock_gaw.return_value = mock.MagicMock()
-        # reload_urlconf()
 
         clear_workspace(mock_request, "myapp")
 
         mock_message.assert_called_once_with(
-            mock_request, "Your workspace has been successfully cleared."
+            mock_request,
+            "The workspace and media directory for the app_name app have been successfully cleared.",
         )
         mock_redirect.assert_called_once_with(
             "/admin/tethys_apps/tethysapp/myapp/change/"

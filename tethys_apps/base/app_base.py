@@ -2022,3 +2022,35 @@ class TethysAppBase(TethysBase):
         """
         Override this method to post-process the app workspace after it is emptied
         """
+
+    @classmethod
+    def pre_delete_user_media(cls, user):
+        """
+        Override this method to pre-process a user's media directory before it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their media directory
+        """
+
+    @classmethod
+    def post_delete_user_media(cls, user):
+        """
+        Override this method to post-process a user's media directory after it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their media directory
+        """
+
+    @classmethod
+    def pre_delete_app_media(cls):
+        """
+        Override this method to pre-process the app media directory before it is emptied
+        """
+
+    @classmethod
+    def post_delete_app_media(cls):
+        """
+        Override this method to post-process the app media directory after it is emptied
+        """

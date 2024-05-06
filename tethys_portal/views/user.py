@@ -17,7 +17,7 @@ from django.views.decorators.cache import never_cache
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 from tethys_apps.models import TethysApp
-from tethys_apps.base.paths import get_user_workspace
+from tethys_apps.base.paths import get_user_workspace, get_user_media
 from tethys_apps.utilities import get_app_class
 from tethys_apps.decorators import login_required
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
@@ -207,8 +207,16 @@ def clear_workspace(request, root_url):
         workspace.clear()
         app.post_delete_user_workspace(user)
 
+        media = get_user_media(app, user)
+        app.pre_delete_user_media(user)
+        media.clear()
+        app.post_delete_user_media(user)
+
         # Give feedback
-        messages.success(request, "Your workspace has been successfully cleared.")
+        messages.success(
+            request,
+            "Your workspace and media directory have been successfully cleared.",
+        )
 
         # Redirect to home
         return redirect("user:manage_storage")
