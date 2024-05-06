@@ -73,8 +73,8 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
                 "secondary_color": "#a2d6f9",
                 "secondary_text_color": "#212529",
                 "secondary_text_hover_color": "#aaaaaa",
-                'brand_image': 'test_app/images/icon.gif',
-                'brand_text': 'Test App'
+                "brand_image": "test_app/images/icon.gif",
+                "brand_text": "Test App",
             },
         }
         self.assertDictEqual(expected_context, ret)
