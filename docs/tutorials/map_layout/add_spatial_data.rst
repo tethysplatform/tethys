@@ -24,7 +24,7 @@ If you wish to use the previous solution as a starting point:
 You'll also need to do the following:
 
 1. Download the solution version of the sample NextGen data used in this tutorial: `sample_nextgen_data_solution.zip <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
-2. Save to :file:`tethysapp-map_layout_tutorial/tethysapp/map_layout_tutorial/workspaces/app_workspace`
+2. Save to :file:`$TETHYS_HOME/workspaces/map_layout_tutorial/app_workspace`
 3. Unzip the contents to the same location
 4. Delete the zip file
 5. Rename the :file:`sample_nextgen_data_solution` to :file:`sample_nextgen_data` (i.e. remove "_solution")
@@ -57,7 +57,7 @@ Replace :file:`controller.py` with the following:
             Add layers to the MapLayout and create associated layer group objects.
             """
             # Load GeoJSON from files
-            config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
+            config_directory = app_workspace.path / 'sample_nextgen_data' / 'config'
 
             # Nexus Points
             nexus_path = config_directory / 'nexus_4326.geojson'
@@ -127,7 +127,7 @@ Here's a closer look at that function:
         Add layers to the MapLayout and create associated layer group objects.
         """
         # Load GeoJSON from files
-        config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
+        config_directory = app_workspace.path / 'sample_nextgen_data' / 'config'
 
         # Nexus Points
         nexus_path = config_directory / 'nexus_4326.geojson'
@@ -178,7 +178,7 @@ This function is passed three standard arguments: ``request``, ``map_view``, ``a
 
 For both the ``nexus`` data and the ``catchments`` data, you'll note the following:
 
- 1. The path to the :file:`.geojson` file are composed relative to the ``app_workspace`` direcotry using the ``Path`` class
+ 1. The path to the :file:`.geojson` file are composed relative to the ``app_workspace`` directory using the ``Path`` class
  2. The ``json`` package is used to open and read the GeoJSON data, since GeoJSON is just a flavor of standard JSON
  3. The layers are configured using the built-in method of the MapLayout class called ``build_geojson_layer``. Appropriate arguments are provided to define how the layer will be handled by the application:
 
@@ -266,7 +266,7 @@ Replace your :file:`controllers.py` with the following:
             Add layers to the MapLayout and create associated layer group objects.
             """
             # Load GeoJSON from files
-            config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
+            config_directory = app_workspace.path / 'sample_nextgen_data' / 'config'
 
             # Nexus Points
             nexus_path = config_directory / 'nexus_4326.geojson'
@@ -391,7 +391,7 @@ This concludes the Add Spatial Data portion of the Map Layout Tutorial. You can 
 You'll also need to do the following:
 
 1. Download the solution version of the sample NextGen data used in this tutorial: `sample_nextgen_data_solution.zip <https://drive.google.com/file/d/1HA6fF_EdGtiE5ceKF0wH2H8GDElMA3zM/view?usp=share_link>`_.
-2. Save to :file:`tethysapp-map_layout_tutorial/tethysapp/map_layout_tutorial/workspaces/app_workspace`
+2. Save to :file:`$TETHYS_HOME/workspaces/map_layout_tutorial/app_workspace`
 3. Unzip the contents to the same location
 4. Delete the zip file
 5. Rename the :file:`sample_nextgen_data_solution` to :file:`sample_nextgen_data` (i.e. remove "_solution")
