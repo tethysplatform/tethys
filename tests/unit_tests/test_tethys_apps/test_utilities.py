@@ -1085,6 +1085,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         with mock.patch(
             "tethys_apps.models.TethysApp", wraps=TethysApp
         ) as mock_tethysapp:
+            mock_tethysapp.DoesNotExist = TethysApp.DoesNotExist
             mock_tethysapp.objects.first.side_effect = [ProgrammingError]
             app = utilities.get_configured_standalone_app()
 

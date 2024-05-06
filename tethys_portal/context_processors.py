@@ -21,7 +21,24 @@ def tethys_portal_context(request):
         else {}
     )
 
-    single_app_mode, configured_single_app = check_single_app_mode(request)
+    configured_single_app = None
+    if not settings.MULTIPLE_APP_MODE:
+        configured_single_app = get_configured_standalone_app()
+        if not configured_single_app:
+            messages.warning(
+                request,
+                "MULTIPLE_APP_MODE is disabled but there is no Tethys application installed.",
+            )
+
+    show_app_library_button = (
+        True
+        if settings.MULTIPLE_APP_MODE
+        and (
+            settings.ENABLE_OPEN_PORTAL
+            or (request.user.is_authenticated and request.user.is_active)
+        )
+        else False
+    )
 
     context = {
         "has_analytical": has_module("analytical"),
@@ -30,23 +47,10 @@ def tethys_portal_context(request):
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
         "has_oauth2_provider": has_module("oauth2_provider"),
-        "single_app_mode": single_app_mode,
+        "show_app_library_button": show_app_library_button,
+        "single_app_mode": not settings.MULTIPLE_APP_MODE,
         "configured_single_app": configured_single_app,
         "idp_backends": idps.keys(),
     }
 
     return context
-
-
-def check_single_app_mode(request):
-    if settings.MULTIPLE_APP_MODE:
-        return False, None
-    else:
-        configured_app = get_configured_standalone_app()
-        if not configured_app:
-            messages.warning(
-                request,
-                "MULTIPLE_APP_MODE is disabled but there is no configured tethys application.",
-            )
-
-        return True, configured_app

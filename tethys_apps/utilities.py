@@ -622,16 +622,13 @@ def get_configured_standalone_app():
 
     standalone_app = settings.STANDALONE_APP
     app = None
-
     try:
         if standalone_app:
             app = TethysApp.objects.get(package=standalone_app)
         else:
             app = TethysApp.objects.first()
-    except ProgrammingError:
-        # When MULTIPLE_APP_MODE is enabled but there is no app installed, then setting up the tethys DB fails because
-        # the code is trying to fetch data from a table that doesn't exist. Catch this exception and pass so setup can
-        # finish
+    except (ProgrammingError, TethysApp.DoesNotExist):
+        # If a tethys application is not actually installed or DB is not setup yet, continue and the UI will notify the user
         pass
 
     return app

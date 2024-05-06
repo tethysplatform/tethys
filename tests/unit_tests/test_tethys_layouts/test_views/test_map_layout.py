@@ -105,6 +105,7 @@ class TestMapLayout(TestCase):
     def setUp(self):
         self.inst = MapLayout()
         self.factory = RequestFactory()
+        self.mock_user = mock.MagicMock(is_active=True, is_authenticated=True)
 
     def tearDown(self):
         pass
@@ -737,6 +738,7 @@ class TestMapLayout(TestCase):
                 "layer_id": "12345",
             },
         )
+        request.user = self.mock_user
         controller = MapLayout.as_controller()
         ret = controller(request)
         self.assertIsInstance(ret, JsonResponse)
@@ -843,6 +845,7 @@ class TestMapLayout(TestCase):
                 "show_download": "false",
             },
         )
+        request.user = self.mock_user
 
         controller = MapLayout.as_controller()
         ret = controller(request)
@@ -997,6 +1000,7 @@ class TestMapLayout(TestCase):
                 "show_download": "true",
             },
         )
+        request.user = self.mock_user
 
         controller = MapLayout.as_controller()
         ret = controller(request)

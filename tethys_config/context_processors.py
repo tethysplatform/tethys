@@ -9,7 +9,10 @@
 """
 
 import datetime as dt
+import re
+from django.conf import settings
 from tethys_portal.optional_dependencies import optional_import, has_module
+from tethys_apps.utilities import get_configured_standalone_app
 
 
 def tethys_global_settings_context(request):
@@ -51,6 +54,19 @@ def tethys_global_settings_context(request):
     # Get terms and conditions
     if has_module(TermsAndConditions):
         site_globals.update({"documents": TermsAndConditions.get_active_terms_list()})
+
+    # Override settings for single app mode
+    if not settings.MULTIPLE_APP_MODE:
+        configured_single_app = get_configured_standalone_app()
+        brand_image = site_globals.get("brand_image", "")
+        brand_text = site_globals.get("brand_text")
+        if configured_single_app and (
+            not brand_image
+            or re.match(r"/tethys_portal/images/tethys-logo-\d{2}.png", brand_image)
+        ):
+            site_globals["brand_image"] = configured_single_app.icon
+        if configured_single_app and (not brand_text or brand_text == "Tethys Portal"):
+            site_globals["brand_text"] = configured_single_app.name
 
     context = {
         "site_globals": site_globals,

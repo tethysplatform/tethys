@@ -27,21 +27,11 @@
       <div id="header-navbar-nav" class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
           {% block header_nav_items %}
-            {% if single_app_mode %}
-              {% if configured_single_app %}
-                {% url configured_single_app.index_url as header_url %}
-              {% else %} 
-                {% url 'user:profile' as header_url  %} 
-              {% endif %}
-            {% else %}
-              {% url 'app_library' as header_url %}
-            {% endif %}
-            {% if ENABLE_OPEN_PORTAL or user.is_authenticated and user.is_active %}
-              {% if not single_app_mode or single_app_mode and configured_single_app.name %}
+            {% url 'app_library' as app_library_url %}
+            {% if show_app_library_button %}
                 <li class="nav-item">
-                  <a class="h5 me-3 mb-0 nav-link{% if request.path == header_url %} active" aria-current="page{% endif %}" href="{{ header_url }}" title="{% if single_app_mode %} {% if configured_single_app %} {{ configured_single_app.name }} {% endif %} {% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if single_app_mode %} {% if configured_single_app %} {{ configured_single_app.name }} {% endif %} {% elif site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
+                  <a class="h5 me-3 mb-0 nav-link{% if request.path == app_library_url %} active" aria-current="page{% endif %}" href="{{ app_library_url }}" title="{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps{% endif %}</a>
                 </li>
-              {% endif %}
             {% endif %}
           {% endblock %}
         </ul>
