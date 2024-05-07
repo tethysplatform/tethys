@@ -366,13 +366,13 @@ then
     if [ -n "${DJANGO_VERSION}" ]
     then
         echo "Updating environment.yml Django version ${DJANGO_VERSION}..."
-        sudo sed -i "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/environment.yml"
     fi
 
     if [ -n "${PYTHON_VERSION}" ]
     then
         echo "Updating environment.yml Python version ${DJANGO_VERSION}..."
-        sudo sed -i "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
     fi
 
     if [ -n "${CREATE_ENV}" ]
@@ -456,7 +456,7 @@ enterprise_linux_production_install() {
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
-    sudo sed -i'' -e '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
+    sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
     SUPERVISOR_SITES_DIR='supervisord.d'
 }
 
