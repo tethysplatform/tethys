@@ -55,8 +55,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        python-version: [3.10, 3.11, 3.12]
-        django-version: [3.2, 4.2, 5.0]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
@@ -98,8 +98,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10, 3.11, 3.12]
-        django-version: [3.2, 4.2, 5.0]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
@@ -138,8 +138,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10, 3.11, 3.12]
-        django-version: [3.2, 4.2, 5.0]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     services:
       tethys-postgis:
         image: postgis/postgis:14-3.3
@@ -172,7 +172,7 @@ jobs:
             -e TETHYS_DB_PASSWORD=${{ env.TETHYS_DB_PASSWORD }} \
             -e TETHYS_DB_SUPERUSER=${{ env.TETHYS_DB_SUPERUSER }} \
             -e TETHYS_DB_SUPERUSER_PASS=${{ env.TETHYS_DB_SUPERUSER_PASS }} \
-            ${{ env.TEST_IMAGE }} \
+            ${{ env.TEST_IMAGE }}-${{ matrix.django-version }}-${{ matrix.python-version }} \
             /bin/bash -c "cd /usr/lib/tethys && source ./run.sh --test"
 
   conda-build:
@@ -182,8 +182,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10, 3.11, 3.12]
-        django-version: [3.2, 4.2, 5.0]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
