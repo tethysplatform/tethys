@@ -371,7 +371,7 @@ then
 
     if [ -n "${PYTHON_VERSION}" ]
     then
-        echo "Updating environment.yml Python version ${DJANGO_VERSION}..."
+        echo "Updating environment.yml Python version ${PYTHON_VERSION}..."
         sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
     fi
 
