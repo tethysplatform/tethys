@@ -49,13 +49,14 @@ jobs:
       - uses: psf/black@stable
 
   tests:
-    name: Tests (${{ matrix.platform }})
+    name: Tests (${{ matrix.platform }}, ${{ matrix.python-version }}, ${{ matrix.django-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        python-version: [3.7]
+        python-version: [3.10, 3.11, 3.12]
+        django-version: [3.2, 4.2, 5.0]
     steps:
       # Checkout the source
       - name: Checkout Source
@@ -67,7 +68,7 @@ jobs:
         run: |
           cd ..
           bash ./tethys/scripts/install_tethys.sh -h
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -d ${{ matrix.django-version }} -p ${{ matrix.python-version }}
       # Setup Tethys and Conda
       - name: Setup Tethys and Conda
         run: |
@@ -91,13 +92,14 @@ jobs:
           coveralls --service=github
 
   docker-build:
-    name: Docker Build
+    name: Docker Build (${{ matrix.platform }}, ${{ matrix.python-version }}, ${{ matrix.django-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.10, 3.11, 3.12]
+        django-version: [3.2, 4.2, 5.0]
     steps:
       # Checkout the source
       - name: Checkout Source
@@ -107,8 +109,8 @@ jobs:
       # Build the docker for no tag
       - name: Build Without Tag
         run: |
-          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:dev .;
-          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:dev ${{ env.TEST_IMAGE }};
+          docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ secrets.DOCKER_UPLOAD_URL }}:dev .;
+          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:dev ${{ env.TEST_IMAGE }}-${{ matrix.python-version }}-${{ matrix.django-version }};
       # Upload docker if pull request no tag
       - name: Upload Docker No Tag
         if: ${{ github.event_name != 'pull_request' }}
@@ -125,13 +127,19 @@ jobs:
       - name: Upload Docker Artifact
         uses: ishworkh/docker-image-artifact-upload@v1
         with:
-          image: ${{ env.TEST_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}-${{ matrix.python-version }}-${{ matrix.django-version }}
           retention_days: "1"
 
   startup_test:
-    name: Docker Start-up Test
+    name: Docker Start-up Test (${{ matrix.platform }}, ${{ matrix.python-version }}, ${{ matrix.django-version }})
     needs: [docker-build]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: [3.10, 3.11, 3.12]
+        django-version: [3.2, 4.2, 5.0]
     services:
       tethys-postgis:
         image: postgis/postgis:14-3.3
@@ -151,7 +159,7 @@ jobs:
       - name: Download Docker Artifact
         uses: ishworkh/docker-image-artifact-download@v1
         with:
-          image: ${{ env.TEST_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}-${{ matrix.python-version }}-${{ matrix.django-version }}
       - name: Run Salt Test
         run: |
           docker run --rm \
@@ -168,13 +176,14 @@ jobs:
             /bin/bash -c "cd /usr/lib/tethys && source ./run.sh --test"
 
   conda-build:
-    name: Conda Build
+    name: Conda Build (${{ matrix.platform }}, ${{ matrix.python-version }}, ${{ matrix.django-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.10, 3.11, 3.12]
+        django-version: [3.2, 4.2, 5.0]
     steps:
       # Checkout the source
       - name: Checkout Source
@@ -185,7 +194,7 @@ jobs:
       - name: Setup Tethys
         run: |
           cd ..
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys -d ${{ matrix.django-version }} -p ${{ matrix.python-version }}
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           hash -r
