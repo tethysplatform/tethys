@@ -456,7 +456,7 @@ enterprise_linux_production_install() {
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
-    sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
+    sudo sed -i'' -e '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
     SUPERVISOR_SITES_DIR='supervisord.d'
 }
 

@@ -12,7 +12,7 @@ env:
 
 jobs:
   docker-build:
-    name: Docker Build (${{ matrix.platform }}, ${{ matrix.python-version }}, ${{ matrix.django-version }})
+    name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -33,7 +33,7 @@ jobs:
       - name: Safe Tag
         id: safetag
         run: |
-          full_tag="${{ steps.version.outputs.full }}-${{ matrix.python-version }}-${{ matrix.django-version }}";
+          full_tag="${{ steps.version.outputs.full }}-${{ matrix.django-version }}-${{ matrix.python-version }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
           echo "safetag=$safe_tag" >> $GITHUB_OUTPUT;
@@ -77,7 +77,7 @@ jobs:
           docker push ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
 
   conda-build:
-    name: Conda Build (${{ matrix.platform }}, ${{ matrix.python-version }}, ${{ matrix.django-version }})
+    name: Conda Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -98,7 +98,7 @@ jobs:
       - name: Safe Tag
         id: safetag
         run: |
-          full_tag="${{ steps.version.outputs.full }}-${{ matrix.python-version }}-${{ matrix.django-version }}";
+          full_tag="${{ steps.version.outputs.full }}-${{ matrix.django-version }}-${{ matrix.python-version }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
           echo "safetag=$safe_tag" >> $GITHUB_OUTPUT;
