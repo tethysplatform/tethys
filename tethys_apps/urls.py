@@ -25,7 +25,7 @@ urlpatterns = [
     re_path(
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 url_namespaces = None
 if settings.MULTIPLE_APP_MODE:

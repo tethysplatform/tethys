@@ -12,6 +12,7 @@ import logging
 from importlib import import_module
 
 from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import reverse_lazy, include, re_path
 from django.shortcuts import redirect
 from django.views.decorators.cache import never_cache
@@ -220,6 +221,7 @@ urlpatterns.extend(
             name="update_dask_job_status",
         ),
         re_path(r"^api/", include((api_urls, "api"), namespace="api")),
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     ]
 )
 
