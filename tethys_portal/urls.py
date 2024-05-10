@@ -221,7 +221,7 @@ urlpatterns.extend(
             name="update_dask_job_status",
         ),
         re_path(r"^api/", include((api_urls, "api"), namespace="api")),
-        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     ]
 )
 
