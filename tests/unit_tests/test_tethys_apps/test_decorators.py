@@ -1,8 +1,8 @@
-import unittest
 from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
+from tethys_sdk.testing import TethysTestCase
 from django.test.utils import override_settings
 from django.http import HttpResponseRedirect
 
@@ -11,10 +11,28 @@ from tethys_sdk.permissions import login_required
 from .. import UserFactory
 
 
-class DecoratorsTest(unittest.TestCase):
+@override_settings(MULTIPLE_APP_MODE=True)
+class DecoratorsTest(TethysTestCase):
+    import sys
+    from importlib import reload, import_module
+    from django.conf import settings
+    from django.urls import clear_url_caches
+
+    @classmethod
+    def reload_urlconf(self, urlconf=None):
+        self.clear_url_caches()
+        if urlconf is None:
+            urlconf = self.settings.ROOT_URLCONF
+        if urlconf in self.sys.modules:
+            self.reload(self.sys.modules["tethys_apps.urls"])
+            self.reload(self.sys.modules[urlconf])
+        else:
+            self.import_module(urlconf)
+
     def setUp(self):
         self.request_factory = RequestFactory()
         self.user = UserFactory()
+        self.reload_urlconf()
 
     def tearDown(self):
         pass
@@ -229,6 +247,7 @@ class DecoratorsTest(unittest.TestCase):
         self.assertEqual(f.method(request), "expected_result")
 
 
+@override_settings(MULTIPLE_APP_MODE=True)
 @override_settings(PREFIX_URL="test/prefix")
 @override_settings(LOGIN_URL="/test/prefix/test/login/")
 class DecoratorsWithPrefixTest(TestCase):
@@ -243,6 +262,7 @@ class DecoratorsWithPrefixTest(TestCase):
         if urlconf is None:
             urlconf = self.settings.ROOT_URLCONF
         if urlconf in self.sys.modules:
+            self.reload(self.sys.modules["tethys_apps.urls"])
             self.reload(self.sys.modules[urlconf])
         else:
             self.import_module(urlconf)
@@ -257,6 +277,7 @@ class DecoratorsWithPrefixTest(TestCase):
         self.reload_urlconf()
         pass
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
     def test_permission_required_message(self, _, mock_messages):
@@ -290,6 +311,7 @@ class DecoratorsWithPrefixTest(TestCase):
         self.assertIsInstance(ret, HttpResponseRedirect)
         self.assertIn("test/prefix/test/login/", ret.url)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.decorators.messages")
     @mock.patch("tethys_apps.decorators.has_permission", return_value=False)
     def test_permission_required_no_pass_authenticated(self, _, mock_messages):

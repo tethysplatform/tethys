@@ -10,6 +10,7 @@ class TestTethysPortalContext(TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_context_processors_multiple_app_mode(self):
         mock_user = mock.MagicMock(is_authenticated=True, is_active=True)
         mock_request = mock.MagicMock(user=mock_user)

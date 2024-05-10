@@ -645,6 +645,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
 
         mock_get_template.assert_called_once()
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.views.accounts.messages")
     @mock.patch("tethys_portal.views.accounts.logout")
     @mock.patch("tethys_portal.views.accounts.redirect")

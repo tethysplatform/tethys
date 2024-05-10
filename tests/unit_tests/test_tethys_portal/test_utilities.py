@@ -44,6 +44,7 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
         # mock redirect after logged in using next parameter or default to user profile
         mock_redirect.assert_called_once_with("accounts:login")
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.utilities.login")
     @mock.patch("tethys_portal.utilities.redirect")
     def test_utilities_no_user_exist(self, mock_redirect, mock_authenticate):

@@ -2,7 +2,7 @@ import json
 import tempfile
 from unittest import mock
 import zipfile
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.http import JsonResponse
 
 from tethys_gizmos.gizmo_options import (
@@ -723,6 +723,7 @@ class TestMapLayout(TestCase):
             },
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_build_legend_item(self):
         request = self.factory.post(
             "/some/endpoint",
@@ -829,6 +830,7 @@ class TestMapLayout(TestCase):
             },
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_build_layer_tree_item_create(self):
         request = self.factory.post(
             "/some/endpoint",
@@ -984,6 +986,7 @@ class TestMapLayout(TestCase):
             },
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_build_layer_tree_item_append_with_rename_remove_download(self):
         request = self.factory.post(
             "/some/endpoint",

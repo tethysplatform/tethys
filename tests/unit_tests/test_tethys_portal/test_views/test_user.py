@@ -406,6 +406,7 @@ class TethysPortalUserTests(unittest.TestCase):
             mock_request, "tethys_portal/user/disconnect.html", expected_context
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.views.user.messages.success")
     @mock.patch("tethys_portal.views.user.logout")
     @mock.patch("tethys_portal.views.user.redirect")

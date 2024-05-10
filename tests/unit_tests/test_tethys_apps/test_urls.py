@@ -6,13 +6,34 @@ from unittest import mock
 from django.views.generic.base import RedirectView
 
 
+@override_settings(MULTIPLE_APP_MODE=True)
 class TestUrls(TethysTestCase):
+    import sys
+    from importlib import reload, import_module
+    from django.conf import settings
+    from django.urls import clear_url_caches
+
+    @classmethod
+    def reload_urlconf(self, urlconf=None):
+        self.clear_url_caches()
+        if urlconf is None:
+            urlconf = self.settings.ROOT_URLCONF
+        if urlconf in self.sys.modules:
+            self.reload(self.sys.modules["tethys_apps.urls"])
+            self.reload(self.sys.modules[urlconf])
+        else:
+            self.import_module(urlconf)
+
     def set_up(self):
+        self.reload_urlconf()
         pass
 
-    def tear_down(self):
+    @override_settings(PREFIX_URL="/")
+    def tearDown(self):
+        self.reload_urlconf()
         pass
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_urls(self):
         # This executes the code at the module level
         url = reverse("app_library")
@@ -48,6 +69,7 @@ class TestUrls(TethysTestCase):
 
 
 # probably need to test for extensions manually
+@override_settings(MULTIPLE_APP_MODE=True)
 @override_settings(PREFIX_URL="test/prefix")
 class TestUrlsWithPrefix(TethysTestCase):
     import sys

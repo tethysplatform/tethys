@@ -13,6 +13,7 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("termsandconditions.models.TermsAndConditions")
     @mock.patch("tethys_config.models.Setting")
     def test_tethys_global_settings_context(self, mock_setting, mock_terms):
