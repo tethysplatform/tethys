@@ -77,15 +77,12 @@ jobs:
           docker push ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
 
   conda-build:
-    name: Conda Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
+    name: Conda Build (${{ matrix.platform }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12"]
-        django-version: ["3.2", "4.2", "5.0"]
-    steps:
       # Checkout the source
       - name: Checkout Source
         uses: actions/checkout@v2
@@ -98,7 +95,7 @@ jobs:
       - name: Safe Tag
         id: safetag
         run: |
-          full_tag="${{ steps.version.outputs.full }}-${{ matrix.django-version }}-${{ matrix.python-version }}";
+          full_tag="${{ steps.version.outputs.full }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
           echo "safetag=$safe_tag" >> $GITHUB_OUTPUT;
