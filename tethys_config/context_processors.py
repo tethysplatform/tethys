@@ -60,6 +60,7 @@ def tethys_global_settings_context(request):
         configured_single_app = get_configured_standalone_app()
         brand_image = site_globals.get("brand_image", "")
         brand_text = site_globals.get("brand_text")
+        site_title = site_globals.get("site_title")
         if configured_single_app and (
             not brand_image
             or re.match(r"/tethys_portal/images/tethys-logo-\d{2}.png", brand_image)
@@ -67,6 +68,8 @@ def tethys_global_settings_context(request):
             site_globals["brand_image"] = configured_single_app.icon
         if configured_single_app and (not brand_text or brand_text == "Tethys Portal"):
             site_globals["brand_text"] = configured_single_app.name
+        if configured_single_app and (not site_title or site_title == "Tethys Portal"):
+            site_globals["site_title"] = configured_single_app.name
 
     context = {
         "site_globals": site_globals,
