@@ -2,7 +2,7 @@ import json
 import tempfile
 from unittest import mock
 import zipfile
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.http import JsonResponse
 
 from tethys_gizmos.gizmo_options import (
@@ -105,6 +105,7 @@ class TestMapLayout(TestCase):
     def setUp(self):
         self.inst = MapLayout()
         self.factory = RequestFactory()
+        self.mock_user = mock.MagicMock(is_active=True, is_authenticated=True)
 
     def tearDown(self):
         pass
@@ -722,6 +723,7 @@ class TestMapLayout(TestCase):
             },
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_build_legend_item(self):
         request = self.factory.post(
             "/some/endpoint",
@@ -737,6 +739,7 @@ class TestMapLayout(TestCase):
                 "layer_id": "12345",
             },
         )
+        request.user = self.mock_user
         controller = MapLayout.as_controller()
         ret = controller(request)
         self.assertIsInstance(ret, JsonResponse)
@@ -827,6 +830,7 @@ class TestMapLayout(TestCase):
             },
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_build_layer_tree_item_create(self):
         request = self.factory.post(
             "/some/endpoint",
@@ -843,6 +847,7 @@ class TestMapLayout(TestCase):
                 "show_download": "false",
             },
         )
+        request.user = self.mock_user
 
         controller = MapLayout.as_controller()
         ret = controller(request)
@@ -981,6 +986,7 @@ class TestMapLayout(TestCase):
             },
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_build_layer_tree_item_append_with_rename_remove_download(self):
         request = self.factory.post(
             "/some/endpoint",
@@ -997,6 +1003,7 @@ class TestMapLayout(TestCase):
                 "show_download": "true",
             },
         )
+        request.user = self.mock_user
 
         controller = MapLayout.as_controller()
         ret = controller(request)
