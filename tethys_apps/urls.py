@@ -15,7 +15,6 @@ from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
 from tethys_apps.utilities import get_configured_standalone_app
 from django.conf import settings
-from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 
 tethys_log = logging.getLogger("tethys." + __name__)
