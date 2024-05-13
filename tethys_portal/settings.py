@@ -216,7 +216,7 @@ LOGGERS.setdefault(
 )
 
 default_installed_apps = [
-    "channels",
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -233,6 +233,7 @@ default_installed_apps = [
     "tethys_services",
     "tethys_quotas",
     "guardian",
+    "reactpy_django",
 ]
 
 for module in [
@@ -320,6 +321,12 @@ RESOURCE_QUOTA_HANDLERS = portal_config_settings.pop(
 RESOURCE_QUOTA_HANDLERS = tuple(
     RESOURCE_QUOTA_HANDLERS + portal_config_settings.pop("RESOURCE_QUOTA_HANDLERS", [])
 )
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),

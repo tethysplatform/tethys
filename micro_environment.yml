@@ -36,3 +36,4 @@ dependencies:
   - django-bootstrap5
   - django-model-utils
   - django-guardian
+  - reactpy-django

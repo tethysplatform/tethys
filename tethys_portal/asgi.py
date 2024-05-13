@@ -8,10 +8,12 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from django.urls import re_path
+from reactpy_django import REACTPY_WEBSOCKET_ROUTE
 
 
 def build_application(asgi_app):
     from tethys_apps.urls import app_websocket_urls, http_handler_patterns
+    app_websocket_urls.append(REACTPY_WEBSOCKET_ROUTE)
 
     application = ProtocolTypeRouter(
         {

@@ -313,3 +313,6 @@ if (
             name="login_prefix",
         )
     )
+
+urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+

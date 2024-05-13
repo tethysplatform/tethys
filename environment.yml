@@ -65,6 +65,7 @@ dependencies:
   - django-analytical  # track usage analytics
   - django-json-widget  # enable json widget for app settings
   - djangorestframework  # enable REST API framework
+  - reactpy-django
 
   # Map Layout
   - PyShp
