@@ -14,6 +14,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
 def log_user_in(request, user=None, username=None):
@@ -52,7 +53,10 @@ def log_user_in(request, user=None, username=None):
     if "next" in request.GET:
         return redirect(request.GET["next"])
     else:
-        return redirect("app_library")
+        if settings.MULTIPLE_APP_MODE:
+            return redirect("app_library")
+        else:
+            return redirect("/")
 
 
 def json_serializer(obj):

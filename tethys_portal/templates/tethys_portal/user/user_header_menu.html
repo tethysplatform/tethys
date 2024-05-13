@@ -1,4 +1,4 @@
-<div class="btn-group">
+<div class="btn-group" style="margin-right: 15px">
   <a id="user-profile" class="btn btn-light btn-user-profile" href="{% url 'user:profile' %}" title="User Profile">
     <span>
       {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}

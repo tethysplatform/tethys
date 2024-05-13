@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+from django.test.utils import override_settings
 
 from tethys_cli.list_command import list_command
 
@@ -83,6 +84,7 @@ class ListCommandTests(unittest.TestCase):
         self.assertIn("  bar", check_list)
         self.assertIn("  baz", check_list)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_cli.list_command.write_msg")
     def test_list_command_urls(self, mock_msg):
         mock_args = mock.MagicMock(urls=True)

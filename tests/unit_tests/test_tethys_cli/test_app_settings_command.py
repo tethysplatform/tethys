@@ -2,6 +2,7 @@ import unittest
 import json
 from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist
+from django.test import override_settings
 import tethys_cli.app_settings_commands as cli_app_settings_command
 from tethys_sdk.testing import TethysTestCase
 
@@ -1113,6 +1114,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         self.assertEqual(mock_write_success.call_count, 1)
         mock_exit.assert_called_with(1)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_cli.app_settings_commands.Path.exists")
     @mock.patch("tethys_cli.app_settings_commands.call")
     @mock.patch("tethys_cli.app_settings_commands.gen_salt_string_for_setting")
