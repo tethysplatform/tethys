@@ -3,6 +3,7 @@ from django.middleware.csrf import get_token
 from django.templatetags.static import static
 from django.shortcuts import reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.conf import settings
 
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from tethys_portal.utilities import json_serializer
@@ -55,7 +56,11 @@ def get_app(request, app):
         "urlNamespace": app.url_namespace,
         "color": app.color,
         "icon": static(app.icon),
-        "exitUrl": reverse("app_library"),
+        "exitUrl": (
+            reverse("app_library")
+            if settings.MULTIPLE_APP_MODE
+            else reverse(app.index_url)
+        ),
         "rootUrl": reverse(app.index_url),
         "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{app.id}/change/',
     }

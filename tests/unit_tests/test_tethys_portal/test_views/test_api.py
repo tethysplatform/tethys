@@ -80,6 +80,7 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("foo", json["username"])
         self.assertTrue(json["isAuthenticated"])
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @override_settings(STATIC_URL="/static")
     @override_settings(PREFIX_URL="/")
     @override_settings(LOGIN_URL="/accounts/login/")
@@ -117,6 +118,7 @@ class TethysPortalApiTests(TethysTestCase):
             r"^/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @override_settings(PREFIX_URL="test/prefix")
     @override_settings(LOGIN_URL="/test/prefix/test/login/")
     @override_settings(STATIC_URL="/test/prefix/test/static/")
@@ -156,6 +158,7 @@ class TethysPortalApiTests(TethysTestCase):
             r"^/test/prefix/admin/tethys_apps/tethysapp/[0-9]+/change/$",
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @override_settings(STATIC_URL="/static")
     @override_settings(PREFIX_URL="/")
     @override_settings(LOGIN_URL="/accounts/login/")

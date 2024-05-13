@@ -123,6 +123,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertTrue(test_app)
         self.assertTrue(test_ext)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_get_active_app_none_none(self):
         # Get the active TethysApp object, with a request of None and url of None
         result = utilities.get_active_app(request=None, url=None)
@@ -132,6 +133,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_active_app()
         self.assertEqual(None, result)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_request(self, mock_app):
         # Mock up for TethysApp, and request
@@ -155,6 +157,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_active_app(request=mock_request)
         self.assertEqual(mock_tethysapp, result)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_url(self, mock_app):
         # Mock up for TethysApp
@@ -164,6 +167,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_active_app(url="/apps/foo/bar")
         self.assertEqual(mock_app.objects.get(), result)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_class(self, mock_app, mock_harvester):
@@ -177,6 +181,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_active_app(url="/apps/foo/bar", get_class=True)
         self.assertEqual(mock_app.objects.get(), result)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_request_bad_path(self, mock_app):
         # Mock up for TethysApp
@@ -189,6 +194,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_active_app(request=mock_request)
         self.assertEqual(None, result)
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.utilities.tethys_log.warning")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_request_exception1(self, mock_app, mock_log_warning):
@@ -206,6 +212,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
             'Could not locate app with root url "foo".'
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.utilities.tethys_log.warning")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_request_exception2(self, mock_app, mock_log_warning):
@@ -1067,14 +1074,29 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
     @override_settings(MULTIPLE_APP_MODE=False)
     def test_get_configured_standalone_app_no_app_name_no_installed(self):
         from tethys_apps.models import TethysApp
-        from django.core.exceptions import ObjectDoesNotExist
 
         with mock.patch(
             "tethys_apps.models.TethysApp", wraps=TethysApp
         ) as mock_tethysapp:
             mock_tethysapp.objects.first.return_value = []
-            with self.assertRaises(ObjectDoesNotExist):
-                utilities.get_configured_standalone_app()
+            app = utilities.get_configured_standalone_app()
+
+            self.assertTrue(app == [])
+            mock_tethysapp.objects.first.assert_called_once()
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_get_configured_standalone_app_db_not_ready(self):
+        from tethys_apps.models import TethysApp
+        from django.db.utils import ProgrammingError
+
+        with mock.patch(
+            "tethys_apps.models.TethysApp", wraps=TethysApp
+        ) as mock_tethysapp:
+            mock_tethysapp.DoesNotExist = TethysApp.DoesNotExist
+            mock_tethysapp.objects.first.side_effect = [ProgrammingError]
+            app = utilities.get_configured_standalone_app()
+
+            self.assertIsNone(app)
 
             mock_tethysapp.objects.first.assert_called_once()
 
