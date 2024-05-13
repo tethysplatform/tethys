@@ -4,6 +4,9 @@ FROM mambaorg/micromamba:bullseye
 ###################
 ARG PYTHON_VERSION=3.*
 ARG MICRO_TETHYS=false
+ARG DJANGO_VERSION=4.2.*
+ARG DJANGO_CHANNELS_VERSION
+ARG DAPHNE_VERSION
 
 ###############
 # ENVIRONMENT #
@@ -47,8 +50,8 @@ ENV SESSION_WARN=1500
 ENV SESSION_EXPIRE=1800
 ENV STATIC_ROOT="${TETHYS_PERSIST}/static"
 ENV WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces"
-ENV MEDIA_ROOT="${TETHYS_PERSIST}/media}"
-ENV MEDIA_URL="${MEDIA_URL}"
+ENV MEDIA_ROOT="${TETHYS_PERSIST}/media"
+ENV MEDIA_URL="/media/"
 ENV QUOTA_HANDLERS="\"[]\""
 ENV DJANGO_ANALYTICAL="\"{}\""
 ENV ADD_BACKENDS="\"[]\""
@@ -138,6 +141,18 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER micro_environment.yml ${TETHYS_HOME}/tethys
 
 WORKDIR ${TETHYS_HOME}/tethys
 
+# Set the versions of Django, Channels, and Daphne if provided in environment.tyml and micro_environment.yml
+RUN if [ -n "$DJANGO_VERSION" ]; then \
+  sed -i "s/\s*- django[^-].*/  - django==${DJANGO_VERSION}/" environment.yml micro_environment.yml; \
+  fi && \
+  if [ -n "$DJANGO_CHANNELS_VERSION" ]; then \
+  sed -i "s/\s*- channels.*/  - channels==${DJANGO_CHANNELS_VERSION}/" environment.yml micro_environment.yml; \
+  fi && \
+  if [ -n "$DAPHNE_VERSION" ]; then \
+  sed -i "s/\s*- daphne.*/  - daphne==${DAPHNE_VERSION}/" environment.yml micro_environment.yml; \
+  fi
+
+# Create the conda environment based on the environment.yml or micro_environment.yml file
 RUN if [ "${MICRO_TETHYS}" = "true" ]; then \
   sed -i "s/- python$/- python=${PYTHON_VERSION}/g" micro_environment.yml && \
   micromamba create -n "${CONDA_ENV_NAME}" --yes --file "micro_environment.yml" && \
@@ -209,6 +224,7 @@ EXPOSE 80
 ###############*
 ADD docker/salt/ /srv/salt/
 ADD docker/run.sh ${TETHYS_HOME}/
+ADD docker/liveness-probe.sh ${TETHYS_HOME}/
 
 ########
 # RUN! #
@@ -217,7 +233,4 @@ WORKDIR ${TETHYS_HOME}
 # Create Salt configuration based on ENVs
 CMD bash run.sh
 HEALTHCHECK --start-period=240s \
-  CMD  function check_process_is_running(){ if [ "$(ps $1 | wc -l)" -ne 2 ]; then echo The $2 process \($1\) is  not running. 1>&2; return 1; fi }; \
-  check_process_is_running $(cat $(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')) supervisor; \
-  check_process_is_running $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) nginx; \
-  check_process_is_running $(ls -l /run/tethys_asgi0.sock.lock | awk -F'-> ' '{print $2}') asgi;
+  CMD ./liveness-probe.sh
