@@ -168,7 +168,10 @@ def permission_required(*args, **kwargs):
                         messages.add_message(request, messages.WARNING, message)
 
                         # Default redirect URL
-                        redirect_url = reverse("app_library")
+                        if settings.MULTIPLE_APP_MODE:
+                            redirect_url = reverse("app_library")
+                        else:
+                            redirect_url = reverse("user:profile")
 
                         # If there is a referer (i.e.: we followed a link to get here)
                         if "HTTP_REFERER" in request.META:

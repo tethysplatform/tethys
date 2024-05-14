@@ -1330,6 +1330,8 @@ class ProxyApp(models.Model):
         return f"{self.package}:access_app"
 
     def save(self, *args, **kwargs):
+        if not self.package:
+            self.__package = self.name
         is_new = self.pk is None
         super().save(*args, **kwargs)
         if is_new and self.name:
