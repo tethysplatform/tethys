@@ -406,6 +406,7 @@ class TethysPortalUserTests(unittest.TestCase):
             mock_request, "tethys_portal/user/disconnect.html", expected_context
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.views.user.messages.success")
     @mock.patch("tethys_portal.views.user.logout")
     @mock.patch("tethys_portal.views.user.redirect")
@@ -432,6 +433,34 @@ class TethysPortalUserTests(unittest.TestCase):
         )
 
         mock_redirect.assert_called_once_with("home")
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_portal.views.user.messages.success")
+    @mock.patch("tethys_portal.views.user.logout")
+    @mock.patch("tethys_portal.views.user.redirect")
+    def test_delete_account_post_with_single_app_mode(
+        self, mock_redirect, mock_logout, mock_messages_success
+    ):
+        mock_user = mock.MagicMock()
+        mock_user.username = "foo"
+
+        mock_request = mock.MagicMock()
+        mock_request.user = mock_user
+
+        mock_request.method = "POST"
+        mock_request.POST = "delete-account-submit"
+
+        delete_account(mock_request)
+
+        mock_request.user.delete.assert_called()
+
+        mock_logout.assert_called_once_with(mock_request)
+
+        mock_messages_success.assert_called_once_with(
+            mock_request, "Your account has been successfully deleted."
+        )
+
+        mock_redirect.assert_called_once_with("accounts:login")
 
     @mock.patch("tethys_portal.views.user.render")
     def test_delete_account_not_post(self, mock_render):

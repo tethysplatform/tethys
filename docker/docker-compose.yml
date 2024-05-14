@@ -13,6 +13,12 @@ services:
       TETHYS_DB_SUPERUSER: "tethys_super"
       TETHYS_DB_SUPERUSER_PASS: "pass"
       CLIENT_MAX_BODY_SIZE: "75M"
+    healthcheck:
+      test: ["CMD", "./liveness-probe.sh"]
+      interval: 30s  # docker default
+      timeout: 30s  # docker default
+      retries: 3  # docker default
+      start_period: 4m
     links:
       - db
     depends_on:

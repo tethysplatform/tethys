@@ -324,3 +324,9 @@ class ProxyAppTests(TethysTestCase):
         proxy_app.save()
         Permission.objects.get(codename=proxy_app.permission_codename).delete()
         proxy_app.delete()
+
+    def test_save_no_package(self):
+        proxy_app = ProxyApp()
+        proxy_app.name = self.app_name
+        proxy_app.save()
+        self.assertEqual(proxy_app.package, self.app_name)

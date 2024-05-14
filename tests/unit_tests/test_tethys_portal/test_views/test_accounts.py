@@ -645,6 +645,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
 
         mock_get_template.assert_called_once()
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.views.accounts.messages")
     @mock.patch("tethys_portal.views.accounts.logout")
     @mock.patch("tethys_portal.views.accounts.redirect")
@@ -668,3 +669,30 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         )
 
         mock_redirect.assert_called_once_with("home")
+
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_portal.views.accounts.messages")
+    @mock.patch("tethys_portal.views.accounts.logout")
+    @mock.patch("tethys_portal.views.accounts.redirect")
+    def test_logout_view_with_single_app_mode(
+        self, mock_redirect, mock_logout, mock_messages
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_anonymous = False
+        mock_request.user.first_name = "foo"
+        mock_request.user.username = "bar"
+
+        mock_redirect.return_value = "home"
+
+        ret = logout_view(mock_request)
+
+        self.assertEqual("home", ret)
+
+        mock_logout.assert_called_once_with(mock_request)
+
+        mock_messages.success.assert_called_once_with(
+            mock_request,
+            "Goodbye, {0}. Come back soon!".format(mock_request.user.first_name),
+        )
+
+        mock_redirect.assert_called_once_with("accounts:login")
