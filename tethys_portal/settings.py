@@ -322,11 +322,7 @@ RESOURCE_QUOTA_HANDLERS = tuple(
     RESOURCE_QUOTA_HANDLERS + portal_config_settings.pop("RESOURCE_QUOTA_HANDLERS", [])
 )
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
