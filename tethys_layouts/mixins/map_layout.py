@@ -705,6 +705,7 @@ class MapLayoutMixin:
         removable=False,
         show_legend=True,
         legend_url=None,
+        cql_filter=None,
     ):
         """
         Build an WMS MVLayer object with supplied arguments.
@@ -736,6 +737,7 @@ class MapLayoutMixin:
             removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
             show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
             legend_url(str): URL of a legend image to display for the layer when legends are enabled.
+            cql_filter(str): geoserver CQL filter string.
 
         Returns:
             MVLayer: the MVLayer object.
@@ -748,6 +750,9 @@ class MapLayoutMixin:
 
         if viewparams:
             params["VIEWPARAMS"] = viewparams
+
+        if cql_filter:
+            params["CQL_FILTER"] = cql_filter
 
         if styles:
             params["STYLES"] = styles
