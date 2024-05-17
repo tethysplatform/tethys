@@ -1177,6 +1177,60 @@ class TestMapLayoutMixin(unittest.TestCase):
             },
         )
 
+    def test_build_wms_layer_cql_filter(self):
+        class CustomMapLayoutThing(MapLayoutMixin):
+            map_extent = [-65.69, 23.81, -129.17, 49.38]
+
+        ret = CustomMapLayoutThing.build_wms_layer(
+            endpoint="http://example.com/geoserver/wms",
+            layer_name="foo:bar",
+            layer_title="Foo Bar",
+            layer_variable="baz",
+            env="foo:1;bar:baz",
+            cql_filter="baz > 1",
+        )
+
+        self.assertIsInstance(ret, MVLayer)
+        self.assertEqual(ret.source, "TileWMS")
+        self.assertEqual(ret.legend_title, "Foo Bar")
+        self.assertListEqual(ret.legend_extent, [-65.69, 23.81, -129.17, 49.38])
+        self.assertFalse(ret.feature_selection)
+        self.assertListEqual(ret.legend_classes, [])
+        self.assertDictEqual(
+            ret.options,
+            {
+                "url": "http://example.com/geoserver/wms",
+                "params": {
+                    "LAYERS": "foo:bar",
+                    "TILED": True,
+                    "TILESORIGIN": "0.0,0.0",
+                    "ENV": "foo:1;bar:baz",
+                    "CQL_FILTER": "baz > 1",
+                },
+                "serverType": "geoserver",
+                "crossOrigin": None,
+                "tileGrid": _DEFAULT_TILE_GRID,
+            },
+        )
+        self.assertDictEqual(
+            ret.layer_options, {"visible": True, "show_download": False}
+        )
+        self.assertDictEqual(
+            ret.data,
+            {
+                "layer_id": "foo:bar",
+                "layer_name": "foo:bar",
+                "popup_title": "Foo Bar",
+                "layer_variable": "baz",
+                "toggle_status": True,
+                "excluded_properties": ["id", "type", "layer_name"],
+                "removable": False,
+                "renamable": False,
+                "show_legend": True,
+                "legend_url": None,
+            },
+        )
+
     def test_build_arc_gis_layer_default(self):
         class CustomMapLayoutThing(MapLayoutMixin):
             map_extent = [-65.69, 23.81, -129.17, 49.38]
