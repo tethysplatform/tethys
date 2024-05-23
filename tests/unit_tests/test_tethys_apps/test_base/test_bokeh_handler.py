@@ -107,11 +107,11 @@ class TestBokehHandler(unittest.TestCase):
             TethysPath("workspaces/app_workspace").path, ret_doc.app_workspace.path
         )
         self.assertEqual(
-            TethysPath("app-media-root/media/app_media").path,
+            TethysPath("app-media-root/media/app").path,
             ret_doc.app_media_path.path,
         )
         self.assertEqual(
-            TethysPath("app-media-root/media/user_media/mock-username").path,
+            TethysPath("app-media-root/media/user/mock-username").path,
             ret_doc.user_media_path.path,
         )
         self.assertEqual(TethysPath("resources").path, ret_doc.app_resources_path.path)

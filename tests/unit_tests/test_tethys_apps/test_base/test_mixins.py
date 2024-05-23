@@ -82,7 +82,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     def test_app_media(self, gamr, _, __):
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
-            TethysPath("app-media-root/media/app_media").path,
+            TethysPath("app-media-root/media/app").path,
             self.consumer.app_media.path,
         )
 
@@ -97,7 +97,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         ru.return_value = "mock-username"
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
-            TethysPath("app-media-root/media/user_media/mock-username").path,
+            TethysPath("app-media-root/media/user/mock-username").path,
             self.consumer.user_media.path,
         )
 
