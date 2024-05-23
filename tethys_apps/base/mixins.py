@@ -1,4 +1,15 @@
-from .permissions import scoped_user_has_permission
+from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
+
+from .permissions import _has_permission
+from .paths import (
+    get_app_workspace,
+    get_user_workspace,
+    get_app_media,
+    get_user_media,
+    get_app_resources,
+    get_app_public,
+)
 
 
 class TethysBaseMixin:
@@ -31,6 +42,12 @@ class TethysAsyncWebsocketConsumerMixin:
     login_required = True
     _authorized = None
     _perms = None
+    _active_app = None
+    _user = None
+
+    async def _initialize_app_and_user(self):
+        self._user = self.scope.get("user")
+        await database_sync_to_async(self._get_active_app)()
 
     @property
     def perms(self):
@@ -47,23 +64,24 @@ class TethysAsyncWebsocketConsumerMixin:
                 )
         return self._perms
 
+    async def _authorize(self):
+        if self.login_required and not self.scope["user"].is_authenticated:
+            self._authorized = False
+        else:
+            perm_values = [
+                await database_sync_to_async(_has_permission)(
+                    self.active_app, self.user, perm
+                )
+                for perm in self.perms
+            ]
+            self._authorized = (
+                any(perm_values) if self.permissions_use_or else all(perm_values)
+            )
+
     @property
     async def authorized(self):
         if self._authorized is None:
-            if self.login_required and not self.scope["user"].is_authenticated:
-                self._authorized = False
-                return self._authorized
-
-            if self.permissions_use_or:
-                self._authorized = False
-                for perm in self.perms:
-                    if await scoped_user_has_permission(self.scope, perm):
-                        self._authorized = True
-            else:
-                self._authorized = True
-                for perm in self.perms:
-                    if not await scoped_user_has_permission(self.scope, perm):
-                        self._authorized = False
+            await self._authorize()
         return self._authorized
 
     async def authorized_connect(self):
@@ -74,11 +92,11 @@ class TethysAsyncWebsocketConsumerMixin:
         """Custom class method to run custom code when an unauthorized user connects to the websocket"""
         pass
 
-    async def authorized_disconnect(self, close_code):
+    async def authorized_disconnect(self, *args):
         """Custom class method to run custom code when an authorized user connects to the websocket"""
         pass
 
-    async def unauthorized_disconnect(self, close_code):
+    async def unauthorized_disconnect(self, *args):
         """Custom class method to run custom code when an unauthorized user connects to the websocket"""
         pass
 
@@ -91,58 +109,63 @@ class TethysAsyncWebsocketConsumerMixin:
             # User not authorized for websocket access
             await self.unauthorized_connect()
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, *args):
         """Class method to handle when user disconnects to the websocket"""
         if await self.authorized:
-            await self.authorized_disconnect(close_code)
+            await self.authorized_disconnect(*args)
         else:
             # User not authorized for websocket access
-            await self.unauthorized_disconnect(close_code)
+            await self.unauthorized_disconnect(*args)
+
+    def _get_active_app(self):
+        from tethys_apps.utilities import get_active_app
+
+        request_url = self.scope["path"]
+
+        self._active_app = get_active_app(url=request_url)
+
+    @property
+    def active_app(self):
+        return self._active_app
+
+    @property
+    def user(self):
+        return self.scope.get("user")
+
+    @property
+    def app_workspace(self):
+        return get_app_workspace(self.active_app)
+
+    @property
+    def user_workspace(self):
+        return get_user_workspace(self.active_app, self.user)
+
+    @property
+    def app_media(self):
+        return get_app_media(self.active_app)
+
+    @property
+    def user_media(self):
+        return get_user_media(self.active_app, self.user)
+
+    @property
+    def app_resources(self):
+        return get_app_resources(self.active_app)
+
+    @property
+    def app_public(self):
+        return get_app_public(self.active_app)
 
 
-class TethysWebsocketConsumerMixin:
+class TethysWebsocketConsumerMixin(TethysAsyncWebsocketConsumerMixin):
     """
     Provides methods and properties common to Tethys websocket consumers.
     """
 
-    permissions = []
-    permissions_use_or = False
-    login_required = True
-    _authorized = None
-    _perms = None
-
-    @property
-    def perms(self):
-        if self._perms is None:
-            if self.permissions is None:
-                self._perms = []
-            elif type(self.permissions) in [list, tuple]:
-                self._perms = self.permissions
-            elif isinstance(self.permissions, str):
-                self._perms = self.permissions.split(",")
-            else:
-                raise TypeError(
-                    "permissions must be a list, tuple, or comma separated string"
-                )
-        return self._perms
-
     @property
     def authorized(self):
         if self._authorized is None:
-            if self.login_required and not self.scope["user"].is_authenticated:
-                self._authorized = False
-                return self._authorized
-
-            if self.permissions_use_or:
-                self._authorized = False
-                for perm in self.perms:
-                    if scoped_user_has_permission(self.scope, perm):
-                        self._authorized = True
-            else:
-                self._authorized = True
-                for perm in self.perms:
-                    if not scoped_user_has_permission(self.scope, perm):
-                        self._authorized = False
+            async_to_sync(self._authorize)()
         return self._authorized
 
     def authorized_connect(self):
@@ -153,11 +176,11 @@ class TethysWebsocketConsumerMixin:
         """Custom class method to run custom code when an unauthorized user connects to the websocket"""
         pass
 
-    def authorized_disconnect(self, close_code):
+    def authorized_disconnect(self, *args):
         """Custom class method to run custom code when an authorized user connects to the websocket"""
         pass
 
-    def unauthorized_disconnect(self, close_code):
+    def unauthorized_disconnect(self, *args):
         """Custom class method to run custom code when an unauthorized user connects to the websocket"""
         pass
 
@@ -170,10 +193,10 @@ class TethysWebsocketConsumerMixin:
             # User not authorized for websocket access
             self.unauthorized_connect()
 
-    def disconnect(self, close_code):
+    def disconnect(self, *args):
         """Class method to handle when user disconnects to the websocket"""
         if self.authorized:
-            self.authorized_disconnect(close_code)
+            self.authorized_disconnect(*args)
         else:
             # User not authorized for websocket access
-            self.unauthorized_disconnect(close_code)
+            self.unauthorized_disconnect(*args)

@@ -56,7 +56,7 @@ a. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInve
 
         ...
 
-        class DamInventory(TethysAppBase):
+        class App(TethysAppBase):
             """
             Tethys app class for Dam Inventory.
             """

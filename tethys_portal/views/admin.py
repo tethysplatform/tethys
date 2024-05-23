@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
 from tethys_apps.models import TethysApp
 from tethys_apps.utilities import get_app_class
-from tethys_apps.base.workspace import _get_app_workspace
+from tethys_apps.base.paths import get_app_workspace, get_app_media
 
 
 @staff_member_required
@@ -16,14 +16,23 @@ def clear_workspace(request, app_id):
 
     # Handle form submission
     if request.method == "POST" and "clear-workspace-submit" in request.POST:
-        workspace = _get_app_workspace(app)
+        workspace = get_app_workspace(app)
 
         app.pre_delete_app_workspace()
         workspace.clear()
         app.post_delete_app_workspace()
 
+        media = get_app_media(app)
+
+        app.pre_delete_app_media()
+        media.clear()
+        app.post_delete_app_media()
+
         # Give feedback
-        messages.success(request, "Your workspace has been successfully cleared.")
+        messages.success(
+            request,
+            f"The workspace and media directory for the {app.name} app have been successfully cleared.",
+        )
 
         # Redirect to home
         return redirect(url)

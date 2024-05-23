@@ -46,7 +46,7 @@ Using dataset services in your app is accomplished by adding the ``dataset_servi
 
     from tethys_sdk.app_settings import DatasetServiceSetting
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys App Class for My First App.
         """

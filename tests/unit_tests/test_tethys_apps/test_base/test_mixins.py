@@ -1,6 +1,9 @@
+from pathlib import Path
 import unittest
 from unittest import mock
+from django.test import override_settings
 import tethys_apps.base.mixins as tethys_mixins
+from tethys_apps.base.paths import TethysPath
 from ... import UserFactory
 
 
@@ -48,6 +51,72 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
             == "permissions must be a list, tuple, or comma separated string"
         )
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
+    @override_settings(USE_OLD_WORKSPACES_API=False)
+    def test_app_workspace(self, gaw, _, __):
+        gaw.return_value = Path("workspaces")
+        self.assertEqual(
+            TethysPath("workspaces/app_workspace").path,
+            self.consumer.app_workspace.path,
+        )
+
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
+    @override_settings(USE_OLD_WORKSPACES_API=False)
+    def test_user_workspace(self, gaw, ru, _, __):
+        gaw.return_value = Path("workspaces")
+        ru.return_value = "mock-username"
+        self.assertEqual(
+            TethysPath("workspaces/user_workspaces/mock-username").path,
+            self.consumer.user_workspace.path,
+        )
+
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths._get_app_media_root")
+    @override_settings(USE_OLD_WORKSPACES_API=False)
+    def test_app_media(self, gamr, _, __):
+        gamr.return_value = Path("app-media-root/media")
+        self.assertEqual(
+            TethysPath("app-media-root/media/app").path,
+            self.consumer.app_media.path,
+        )
+
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._get_app_media_root")
+    @override_settings(USE_OLD_WORKSPACES_API=False)
+    def test_user_media(self, gamr, ru, rac, __):
+        mock_app = mock.MagicMock()
+        rac.return_value = mock_app
+        ru.return_value = "mock-username"
+        gamr.return_value = Path("app-media-root/media")
+        self.assertEqual(
+            TethysPath("app-media-root/media/user/mock-username").path,
+            self.consumer.user_media.path,
+        )
+
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    def test_app_resources(self, rac, __):
+        mock_app = mock.MagicMock()
+        mock_app.resources_path = TethysPath("resources")
+        rac.return_value = mock_app
+        self.assertEqual(TethysPath("resources").path, self.consumer.app_resources.path)
+
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    def test_app_public(self, rac, __):
+        mock_app = mock.MagicMock()
+        mock_app.public_path = TethysPath("public")
+        rac.return_value = mock_app
+        self.assertEqual(TethysPath("public").path, self.consumer.app_public.path)
+
     async def test_authorized_login_required_success(self):
         self.consumer.permissions = []
         self.consumer.login_required = True
@@ -62,26 +131,26 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
         }
         self.assertFalse(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_permissions_and(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         mock_suhp.side_effect = [True, True]
         self.assertTrue(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_inadequate_permissions_and(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         mock_suhp.side_effect = [True, False]
         self.assertFalse(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_permissions_or(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         self.consumer.permissions_use_or = True
         mock_suhp.side_effect = [True, False]
         self.assertTrue(await self.consumer.authorized)
 
-    @mock.patch("tethys_apps.base.mixins.scoped_user_has_permission")
+    @mock.patch("tethys_apps.base.mixins._has_permission")
     async def test_authorized_inadequate_permissions_or(self, mock_suhp):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         self.consumer.permissions_use_or = True
@@ -186,32 +255,24 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
 
     def test_authorized_permissions_and(self):
         self.consumer.permissions = ["test_permission"]
-        with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
-        ):
+        with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
             self.assertTrue(self.consumer.authorized)
 
     def test_authorized_inadequate_permissions_and(self):
         self.consumer.permissions = ["test_permission", "test_permission1"]
-        with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
-        ):
+        with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
             self.assertFalse(self.consumer.authorized)
 
     def test_authorized_permissions_or(self):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         self.consumer.permissions_use_or = True
-        with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
-        ):
+        with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
             self.assertTrue(self.consumer.authorized)
 
     def test_authorized_inadequate_permissions_or(self):
         self.consumer.permissions = ["test_permission1"]
         self.consumer.permissions_use_or = True
-        with mock.patch(
-            "tethys_apps.base.mixins.scoped_user_has_permission", user_has_perms
-        ):
+        with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
             self.assertFalse(self.consumer.authorized)
 
     def test_authorized_connect(self):
@@ -265,7 +326,7 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         mock_unauthorized_disconnect.assert_called_once()
 
 
-def user_has_perms(_, perm):
+def user_has_perms(_, __, perm):
     if perm == "test_permission":
         return True
     return False
