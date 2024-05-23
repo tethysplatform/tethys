@@ -78,6 +78,9 @@ Functions and decorators that were imported from ``tethys_sdk.workspaces`` shoul
 Note that the Paths API has additional functions and decorators. For more information the :ref:`tethys_paths_api` documentation.
 
 
+Workspaces Overview
+===================
+
 The Workspaces API makes it easy for you to create directories for storing files that your app operates on. This can be a tricky task for a web application, because of the multi-user, simultaneous-connection environment of the web. The Workspaces API provides a simple mechanism for creating and managing a global workspace for your app and individual workspaces for each user of your app to prevent unwanted overwrites and file lock conflicts.
 
 Getting Workspaces

@@ -29,8 +29,8 @@ Read/Write
 Read-Only
 ---------
 
-* App Public: The location of the app's public directory (i.e. were static files like css and JavaScrip are stored)
-* App Resources: The location where version-controlled app resource files (e.g. configuration files) are stored
+* **App Public**: The location of the app's public directory (i.e. were static files like css and JavaScrip are stored)
+* **App Resources**: The location where version-controlled app resource files (e.g. configuration files) are stored
 
 
 Getting Paths

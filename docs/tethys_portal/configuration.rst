@@ -67,7 +67,7 @@ AUTHENTICATION_BACKENDS                            the Django `AUTHENTICATION_BA
 AUTHENTICATION_BACKENDS_OVERRIDE                   override for ``AUTHENTICATION_BACKENDS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.
 RESOURCE_QUOTA_HANDLERS                            a list of Tethys ``ResourceQuotaHandler`` classes to load (see: :ref:`sdk_quotas_api`). For convenience, any quota handlers listed here will be appended to the default list of quota handlerss. To override ``RESOURCE_QUOTA_HANDLERS`` completely, use the ``RESOURCE_QUOTA_HANDLERS_OVERRIDE`` setting.
 RESOURCE_QUOTA_HANDLERS_OVERRIDE                   override for ``RESOURCE_QUOTA_HANDLERS`` setting. CAUTION: improper use of this setting can break the Tethys Portal.
-USE_OLD_WORKSPACES_API                             a temporary setting that maintains backward compatibility for the :ref:`tethys_workspaces_api` when True. When False the the new :ref:`tethys_paths_api` functionality will apply. Defaults to True.
+USE_OLD_WORKSPACES_API                             a temporary setting that maintains backward compatibility for the :ref:`tethys_workspaces_api` when True. When False the the new :ref:`tethys_paths_api` functionality will apply. Defaults to True. Will be removed in 5.0.
 ================================================== ================================================================================
 
 .. _tethys_portal_config_settings:
@@ -82,7 +82,7 @@ ENABLE_OPEN_SIGNUP                                 anyone can create a Tethys Po
 REGISTER_CONTROLLER                                override the default registration page with a custom controller. The value should be the dot-path to the controller function/class (e.g. ``tethysext.my_extension.controllers.custom_registration``)
 ENABLE_OPEN_PORTAL                                 no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``controller`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
 ENABLE_RESTRICTED_APP_ACCESS                       app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.
-TETHYS_WORKSPACES_ROOT                             location to which app/user workspaces will created. Defaults to :file:`<TETHYS_HOME>/workspaces`.
+TETHYS_WORKSPACES_ROOT                             location to where app/user workspaces will be created. Defaults to :file:`<TETHYS_HOME>/workspaces`.
 STATIC_ROOT                                        the Django `STATIC_ROOT <https://docs.djangoproject.com/en/3.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 MEDIA_URL                                          the Django `MEDIA_URL <https://docs.djangoproject.com/en/3.2/ref/settings/#media-url>`_ setting. Defaults to ``'/media/'``.
 MEDIA_ROOT                                         the Django `MEDIA_ROOT <https://docs.djangoproject.com/en/3.2/ref/settings/#media-root>`_ setting. Defaults to :file:`~/.tethys/media/`.

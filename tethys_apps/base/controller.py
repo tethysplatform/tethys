@@ -50,7 +50,7 @@ class TethysController(View):
 
 
 def consumer(
-    consumer_class: Union[SyncConsumer, AsyncConsumer] = None,
+    consumer_class: SyncConsumer | AsyncConsumer = None,
     /,
     *,
     # UrlMap Overrides
