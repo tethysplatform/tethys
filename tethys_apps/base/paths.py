@@ -78,11 +78,11 @@ class TethysPath:
 
         .. code-block:: python
 
-            # List file names
+            # List of Path objects for each file
             tethys_path.files()
 
-            # List full path file names
-            tethys_path.files(full_path=True)
+            # List of file names
+            tethys_path.files(names_only=True)
 
         """
         path, dirs, files = next(os.walk(self.path))
