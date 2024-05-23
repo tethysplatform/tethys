@@ -53,7 +53,6 @@ class HydroShareBackendTest(unittest.TestCase):
             refresh_token="234234",
             scope="scope",
         )
-
         mock_details = dict(
             name="",
             alias="",
