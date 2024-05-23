@@ -82,6 +82,8 @@ def passes_quota(entity, codename, raise_on_false=True):
 
     Returns:
         False if the entity has exceeded the quota, otherwise True.
+
+    Raises: PermissionDenied error if `raise_on_false` is True and user does not pass quota.
     """
     from tethys_quotas.models import ResourceQuota
 
@@ -93,7 +95,8 @@ def passes_quota(entity, codename, raise_on_false=True):
         return passes
 
     except ResourceQuota.DoesNotExist:
-        log.info("ResourceQuota with codename {} does not exist.".format(codename))
+        if codename not in settings.SUPPRESS_QUOTA_WARNINGS:
+            log.info(f"ResourceQuota with codename {codename} does not exist.")
         return True
 
 

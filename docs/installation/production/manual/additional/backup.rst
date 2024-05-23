@@ -13,11 +13,8 @@ App Workspaces
 
 The apps often write data to their workspaces that is either user data or critical to the functioning of the app. In a production deployment of Tethys Portal, all workspaces are collected to the ``TETHYS_WORKSPACES_ROOT`` directory. Including the ``TETHYS_WORKSPACES_ROOT`` directory in a backup should be sufficient to restore this data.
 
-To restore lost workspaces from a backup, simply copy the backed-up directory to ``TETHYS_WORKSPACES_ROOT`` and run the ``tethys manage collectworkspaces`` command to relink the workspaces with the apps. 
+To restore lost workspaces from a backup, simply copy the backed-up directory to ``TETHYS_WORKSPACES_ROOT``.
 
-.. note::
-
-    By default, the ``tethys manage collectworkspaces`` command will not overwrite an app workspace if it is already present in ``TETHYS_WORKSPACES_ROOT``, which is helpful in a restore-from-backup situation.
 
 Static Files
 ============

@@ -101,8 +101,9 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
         self.assertEqual("--noinput", process_call_args[1][0][0][3])
 
+    @mock.patch("tethys_cli.manage_commands.deprecation_warning")
     @mock.patch("tethys_cli.manage_commands.run_process")
-    def test_manage_command_manage_manage_collect_workspace(self, mock_run_process):
+    def test_manage_command_manage_manage_collect_workspace(self, mock_run_process, _):
         # mock the input args
         args = mock.MagicMock(
             manage="", command=MANAGE_COLLECTWORKSPACES, port="8080", force=True
@@ -120,9 +121,10 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual("collectworkspaces", process_call_args[0][0][0][2])
         self.assertEqual("--force", process_call_args[0][0][0][3])
 
+    @mock.patch("tethys_cli.manage_commands.deprecation_warning")
     @mock.patch("tethys_cli.manage_commands.run_process")
     def test_manage_command_manage_manage_collect_workspace_with_no_force(
-        self, mock_run_process
+        self, mock_run_process, _
     ):
         # mock the input args
         args = mock.MagicMock(manage="", command=MANAGE_COLLECTWORKSPACES, force=False)
@@ -139,8 +141,9 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual("collectworkspaces", process_call_args[0][0][0][2])
         self.assertNotIn("--force", process_call_args[0][0][0])
 
+    @mock.patch("tethys_cli.manage_commands.deprecation_warning")
     @mock.patch("tethys_cli.manage_commands.run_process")
-    def test_manage_command_manage_manage_collect(self, mock_run_process):
+    def test_manage_command_manage_manage_collect(self, mock_run_process, _):
         # mock the input args
         args = mock.MagicMock(
             manage="", command=MANAGE_COLLECT, port="8080", noinput=False
@@ -168,8 +171,9 @@ class TestManageCommands(unittest.TestCase):
         self.assertIn("manage.py", process_call_args[2][0][0][1])
         self.assertEqual("collectworkspaces", process_call_args[2][0][0][2])
 
+    @mock.patch("tethys_cli.manage_commands.deprecation_warning")
     @mock.patch("tethys_cli.manage_commands.run_process")
-    def test_manage_command_manage_manage_collect_no_input(self, mock_run_process):
+    def test_manage_command_manage_manage_collect_no_input(self, mock_run_process, _):
         # mock the input args
         args = mock.MagicMock(
             manage="", command=MANAGE_COLLECT, port="8080", noinput=True

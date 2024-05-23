@@ -75,7 +75,7 @@ b. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by ad
 
         from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
 
-        class DamInventory(TethysAppBase):
+        class App(TethysAppBase):
             """
             Tethys app class for Dam Inventory.
             """
@@ -637,7 +637,7 @@ a. Define permissions for the app by adding the ``permissions`` method to the ap
 
         from tethys_sdk.permissions import Permission, PermissionGroup
 
-        class DamInventory(TethysAppBase):
+        class App(TethysAppBase):
             """
             Tethys app class for Dam Inventory.
             """

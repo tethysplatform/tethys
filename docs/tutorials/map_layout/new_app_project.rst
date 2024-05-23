@@ -86,7 +86,7 @@ Download this :download:`NOAA Digital Logo <./resources/noaa_digital_logo-2022.p
 
 .. code-block:: python
 
-    class MapLayoutTutorial(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Map Layout Tutorial.
         """

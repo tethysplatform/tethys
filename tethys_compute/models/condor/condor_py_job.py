@@ -29,7 +29,8 @@ class CondorPyJob(models.Model):
 
     def __init__(self, *args, attributes=None, condorpy_template_name=None, **kwargs):
         if attributes is None and condorpy_template_name is None:
-            return super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
+            return
         if args:
             # Then _attributes might be in args (not necessarily in the second position because of subclasses)
             # It's tricky to extract _attributes from args and add it to kwargs because
