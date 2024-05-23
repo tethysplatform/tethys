@@ -104,11 +104,11 @@ class TethysPath:
 
         .. code-block:: python
 
-            # List directory names
+            # List Path objects for each directory
             tethys_path.directories()
 
-            # List full path directory names
-            tethys_path.directories(full_path=True)
+            # List of directory names
+            tethys_path.directories(names_only=True)
 
         """
         path, dirs, files = next(os.walk(self.path))
