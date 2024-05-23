@@ -41,9 +41,10 @@ class TethysPath:
         Constructor
         """
         self._path = Path(path).resolve()
-        assert (
-            not self._path.is_file()
-        ), f"TethysPath objects can only be created for directories. {path} is a file."
+        if self._path.is_file():
+            raise ValueError(
+                f"TethysPath objects can only be created for directories. {path} is a file."
+            )
         # Create the path if it doesn't already exist
         self._path.mkdir(parents=True, exist_ok=True)
 
@@ -187,9 +188,8 @@ class TethysPath:
             raise RuntimeError("Cannot remove files from read-only TethysPaths")
         item = Path(item).resolve()
 
-        assert item.relative_to(
-            self.path
-        ), f'The item to remove ({item}) must be relative to "{self.path}".'
+        # ensure item is a subpath of self.path (raises ValueError if not)
+        item.relative_to(self.path)
 
         if item.is_dir():
             shutil.rmtree(item)
@@ -199,10 +199,10 @@ class TethysPath:
     def get_size(self, units="b"):
         """
         Get the size on disk of the TethysPath directory.
-        
+
         Args:
             units (str): Disk size units. One of "byte", "bytes", "KB", "MB", "GB", "TB", or "PB". Defaults to "b" (bytes).
-        
+
         Returns:
             float: size on disk of TethysPath directory.
         """
@@ -418,7 +418,7 @@ def _get_app_media(app_or_request, bypass_quota=False):
 
     """
     app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
-    return TethysPath(_get_app_media_root(app) / "app_media")
+    return TethysPath(_get_app_media_root(app) / "app")
 
 
 def get_app_media(app_or_request):
@@ -457,7 +457,7 @@ def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
     """
     app = _resolve_app_class(app_or_request)
     username = _resolve_username(username_or_request, bypass_quota=bypass_quota)
-    return TethysPath(_get_app_media_root(app) / "user_media" / username)
+    return TethysPath(_get_app_media_root(app) / "user" / username)
 
 
 def get_user_media(app_or_request, username_or_request):

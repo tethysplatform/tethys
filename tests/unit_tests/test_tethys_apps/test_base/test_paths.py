@@ -19,6 +19,14 @@ class TestTethysPath(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch("tethys_apps.base.paths.Path")
+    def test__init__value_error(self, mock_path):
+        mock_file = mock.MagicMock()
+        mock_file.is_file.return_value = True
+        mock_path().resolve.return_value = mock_file
+        self.assertRaises(ValueError, TethysPath, mock.MagicMock())
+        mock_file.is_file.assert_called_once()
+
     def test_repr(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             tethys_path = TethysPath(temp_dir)
@@ -156,6 +164,10 @@ class TestTethysPath(unittest.TestCase):
             ds = tethys_path.directories()
             self.assertEqual(len(fs), 1)
             self.assertEqual(len(ds), 3)
+
+            # test relative to
+            with self.assertRaises(ValueError):
+                tethys_path.remove(f"{temp_dir}/../test.txt")
 
             tethys_path.remove(f"{temp_dir}/file1.txt")
             fs2 = tethys_path.files()

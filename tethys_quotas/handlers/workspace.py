@@ -48,7 +48,7 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
             installed_apps = harvester.apps
 
             for app in installed_apps:
-                workspace = _get_user_workspace(app, self.entity, _bypass_quota=True)
+                workspace = _get_user_workspace(app, self.entity, bypass_quota=True)
                 media = _get_user_media(app, self.entity, bypass_quota=True)
                 current_use += float(workspace.get_size(self.units)) + float(
                     media.get_size(self.units)
