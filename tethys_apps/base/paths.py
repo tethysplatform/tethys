@@ -166,7 +166,7 @@ class TethysPath:
         Remove a file or directory from the TethysPath directory.
 
         Args:
-          item(str): Name of the item to remove from the TethysPath directory.
+          item(str | Path): Name, string path, or Path object of the item to remove from the TethysPath directory.
 
         **Examples:**
 
@@ -197,6 +197,15 @@ class TethysPath:
             item.unlink()
 
     def get_size(self, units="b"):
+        """
+        Get the size on disk of the TethysPath directory.
+        
+        Args:
+            units (str): Disk size units. One of "byte", "bytes", "KB", "MB", "GB", "TB", or "PB". Defaults to "b" (bytes).
+        
+        Returns:
+            float: size on disk of TethysPath directory.
+        """
         total_size = 0
         for file in self.files():
             total_size += os.path.getsize(file)
