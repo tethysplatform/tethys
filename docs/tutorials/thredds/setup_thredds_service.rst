@@ -38,7 +38,7 @@ This app will need a THREDDS service, so add the following method to the :term:`
 
 .. code-block:: python
 
-    class ThreddsTutorial(TethysAppBase):
+    class App(TethysAppBase):
         ...
 
         THREDDS_SERVICE_NAME = 'thredds_service'

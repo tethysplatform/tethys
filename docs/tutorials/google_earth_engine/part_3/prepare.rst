@@ -256,7 +256,7 @@ Resource files that are required by in Tethys Apps include CSS, JavaScript, HTML
 
     resource_files = find_all_resource_files(app_package, TethysAppBase.package_namespace)
 
-These lines use a helper function provided by Tethys Platform ``find_all_resource_files`` to automatically locate and include all files in the :file:`templates`, :file:`public`, and :file:`workspaces` directories. If your app had additional directories with non-python files that need to be included, you would need to add calls to another helper function, ``find_resource_files``, like so:
+These lines use a helper function provided by Tethys Platform ``find_all_resource_files`` to automatically locate and include all files in the :file:`templates`, :file:`public`, and :file:`resources` directories. If your app had additional directories with non-python files that need to be included, you would need to add calls to another helper function, ``find_resource_files``, like so:
 
 .. code-block:: python
 

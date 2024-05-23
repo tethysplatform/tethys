@@ -41,6 +41,7 @@ MOCK_MODULES = [
     "bokeh.util.compiler",
     "channels",
     "channels.db",
+    "channels.db.database_sync_to_async",
     "channels.consumer",
     "conda",
     "conda.cli",

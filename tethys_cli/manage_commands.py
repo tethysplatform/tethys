@@ -11,6 +11,7 @@
 from django.core.management import get_commands
 
 from tethys_cli.cli_helpers import get_manage_path, run_process
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
 
 MANAGE_START = "start"
 MANAGE_COLLECTSTATIC = "collectstatic"
@@ -119,6 +120,15 @@ def manage_command(args, unknown_args=None):
 
     elif args.command == MANAGE_COLLECTWORKSPACES:
         # Run collectworkspaces command
+        deprecation_warning(
+            version="5.0",
+            feature='the "collectworkspaces" command',
+            message="The Workspaces API has been replaced by the new Paths API. After converting apps to using the "
+            'the Paths API the "collectworkspaces" command will not be necessary '
+            f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#centralized-paths).\n"
+            f"For a full guide to transitioning to the Paths API see "
+            f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
+        )
         if args.force:
             primary_process = ["python", manage_path, "collectworkspaces", "--force"]
         else:
@@ -126,6 +136,17 @@ def manage_command(args, unknown_args=None):
 
     elif args.command == MANAGE_COLLECT:
         # Convenience command to run collectstatic and collectworkspaces
+        deprecation_warning(
+            version="5.0",
+            feature='the "collectall" command',
+            message="The Workspaces API has been replaced by the new Paths API. After converting apps to using the "
+            'the Paths API the "collectworkspaces" command will not be necessary and thus "collectstatic" '
+            'should be run in place of "collectall" '
+            f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#centralized-paths).\n"
+            f"For a full guide to transitioning to the Paths API see "
+            f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
+        )
+
         # Run pre_collectstatic
         intermediate_process = ["python", manage_path, "pre_collectstatic"]
         run_process(intermediate_process)

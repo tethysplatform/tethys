@@ -33,7 +33,7 @@ Example
 ++++++++++
   ::
 
-      class MyFirstApp(TethysAppBase):
+      class App(TethysAppBase):
         """
         Tethys app class for My First App.
         """

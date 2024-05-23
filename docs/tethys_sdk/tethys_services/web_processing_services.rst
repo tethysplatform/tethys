@@ -15,7 +15,7 @@ Using web processing services in your app is accomplished by adding the ``web_pr
 
       from tethys_sdk.app_settings import WebProcessingServiceSetting
 
-      class MyFirstApp(TethysAppBase):
+      class App(TethysAppBase):
           """
           Tethys App Class for My First App.
           """

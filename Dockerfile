@@ -190,6 +190,7 @@ ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
 ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
 ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
 ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
+ADD --chown=www:www tethys_utils ${TETHYS_HOME}/tethys/tethys_utils/
 ADD --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
 ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
 ADD --chown=www:www LICENSE ${TETHYS_HOME}/tethys/

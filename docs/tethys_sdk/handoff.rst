@@ -50,7 +50,7 @@ The Handoff handler needs to be registered to make it available for other apps t
 
     from tethys_sdk.handoff import HandoffHandler
 
-    class HydrographPlotter(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Hydrograph Plotter
         """
@@ -117,7 +117,7 @@ A HandoffHandler can be marked as internal when it is registered in :term:`app c
 
     from tethys_sdk.handoff import HandoffHandler
 
-    class HydrographPlotter(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Hydrograph Plotter
         """

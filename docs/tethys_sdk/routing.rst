@@ -158,7 +158,7 @@ For existing apps with controllers located in modules with different names than 
 
 .. code-block:: python
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         ...
         controller_modules = [
             'custom_controllers',  # For a module named custom_controller.py in the same directory as app.py

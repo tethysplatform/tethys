@@ -17,9 +17,24 @@ from django.http.request import HttpRequest
 from django.shortcuts import render
 
 # Tethys Imports
-from tethys_sdk.workspaces import get_user_workspace, get_app_workspace
+# TODO remove deprecated workspaces imports in 5.0
+from tethys_sdk.workspaces import (
+    get_user_workspace as get_user_workspace_old,
+    get_app_workspace as get_app_workspace_old,
+)
 
 from tethys_portal.optional_dependencies import optional_import
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
+
+from .paths import (
+    _resolve_app_class,
+    get_app_workspace,
+    get_user_workspace,
+    get_app_media,
+    get_user_media,
+    get_app_resources,
+    get_app_public,
+)
 
 # Optional Imports
 Document = optional_import("Document", from_module="bokeh.document")
@@ -41,11 +56,37 @@ def with_request(handler):
 
 
 def with_workspaces(handler):
+    deprecation_warning(
+        "5.0",
+        'the "with_workspaces" decorator',
+        'The workspaces API has been replaced by the new Paths API. In place of the "with_workspaces" decorator '
+        f'please use the "with_paths" decorator (see {DOCS_BASE_URL}tethys_sdk/paths.html#handler-decorator).\n'
+        f"For a full guide to transitioning to the Paths API see "
+        f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
+    )
+
     @with_request
     @wraps(handler)
     def wrapper(doc: Document):
-        doc.user_workspace = get_user_workspace(doc.request, doc.request.user)
-        doc.app_workspace = get_app_workspace(doc.request)
+        doc.user_workspace = get_user_workspace_old(doc.request, doc.request.user)
+        doc.app_workspace = get_app_workspace_old(doc.request)
+        return handler(doc)
+
+    return wrapper
+
+
+def with_paths(handler):
+    @with_request
+    @wraps(handler)
+    def wrapper(doc: Document):
+        app = _resolve_app_class(doc.request)
+        user = doc.request.user
+        doc.app_workspace = get_app_workspace(app)
+        doc.user_workspace = get_user_workspace(app, user)
+        doc.app_media_path = get_app_media(app)
+        doc.user_media_path = get_user_media(app, user)
+        doc.app_resources_path = get_app_resources(app)
+        doc.app_public_path = get_app_public(app)
         return handler(doc)
 
     return wrapper

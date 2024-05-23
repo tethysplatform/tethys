@@ -84,7 +84,7 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
 .. code-block:: python
 
-    class ThreddsTutorial(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Thredds Tutorial.
         """

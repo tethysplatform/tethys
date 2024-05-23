@@ -31,7 +31,7 @@ Registering spatially enabled persistent stores is the same process as registeri
     from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
 
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys App Class for My First App.
         """
