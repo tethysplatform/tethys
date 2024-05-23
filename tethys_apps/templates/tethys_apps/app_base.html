@@ -210,9 +210,16 @@
                   {% endblock %}
                   {% block exit_button_override %}
                     {% if not single_app_mode %}
+                      {% if tethys_app.back_url %}
+                      <div class="header-button exit-button">
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{{ tethys_app.back_url }}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
+                      </div>
+                      {%  else %}
                       <div class="header-button exit-button">
                         <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-bs-toggle="tooltip" data-bs-placement="bottom" title="Exit"><i class="bi bi-x"></i></a>
                       </div>
+                      {%  endif %}
+
                     {%  endif %}
                   {% endblock %}
                   {% block user_menu %}
