@@ -367,12 +367,14 @@ then
     then
         echo "Updating environment.yml Django version ${DJANGO_VERSION}..."
         sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
     fi
 
     if [ -n "${PYTHON_VERSION}" ]
     then
         echo "Updating environment.yml Python version ${PYTHON_VERSION}..."
         sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
     fi
 
     if [ -n "${CREATE_ENV}" ]
