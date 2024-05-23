@@ -17,13 +17,13 @@ Create a new app, but don't install it yet:
 2. Create Spatial Dataset Service Setting
 =========================================
 
-Open the ``app.py`` and add the following method to the ``GeoserverApp`` class:
+Open the ``app.py`` and add the following method to the ``App`` class:
 
 .. code-block:: python
 
     from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
-    class GeoserverApp(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Geoserver App.
         """

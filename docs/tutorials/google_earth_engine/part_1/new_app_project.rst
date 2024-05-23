@@ -92,7 +92,7 @@ Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-
     from tethys_sdk.base import TethysAppBase
 
 
-    class EarthEngine(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Earth Engine.
         """

@@ -527,7 +527,7 @@ In this step you will add the logic to validate that the file contained in the Z
 7. Save Shapefile to the User's Workspace Directory
 ===================================================
 
-At this point you have confirmed that the user uploaded a ZIP archive containing a shapefile of polygons but the file is still stored as a temporary file and will be deleted as soon as the code finishes executing. In this step you will add the logic to write the file to the user's workspace directory. This will involve creating a few new helper functions and using the :ref:`tethys_workspaces_api`.
+At this point you have confirmed that the user uploaded a ZIP archive containing a shapefile of polygons but the file is still stored as a temporary file and will be deleted as soon as the code finishes executing. In this step you will add the logic to write the file to the user's workspace directory. This will involve creating a few new helper functions and using the :ref:`tethys_paths_api`.
 
 1. The shapefile and its sidecars will be stored in a directory called :file:`boundary` within the user's workspace. Only one boundary shapefile will be stored for each user, so if the :file:`boundary` directory already exists, it will need to be cleared out. The ``prep_boundary_dir`` helper function will be responsible for initializing the :file:`boundary` directory in the user's workspace and clearing it out if needed. Add the following imports and create the ``prep_boundary_dir`` function in :file:`helpers.py`:
 
@@ -608,7 +608,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
 .. tip:
 
-    For more information about Tethys Workspaces, see :ref:`tethys_workspaces_api`.
+    For more information about Tethys Workspaces, see :ref:`tethys_paths_api`.
 
 4. The ``viewer`` controller will need to be able to pass the ``user_workspace`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`helpers.py`:
 
@@ -621,7 +621,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
         Args:
             request (django.Request): the request object.
-            user_workspace (tethys_sdk.workspaces.Workspace): the User workspace object.
+            user_workspace (tethys_sdk.paths.TethysPath): the User workspace object.
 
         Returns:
             str: Error string if errors occurred.

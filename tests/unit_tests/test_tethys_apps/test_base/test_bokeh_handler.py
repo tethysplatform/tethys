@@ -1,3 +1,4 @@
+from pathlib import Path
 import unittest
 from unittest import mock
 
@@ -6,21 +7,14 @@ from bokeh.document import Document
 
 from django.contrib.auth.models import User
 from django.http import HttpRequest
+from django.test import override_settings
 from tethys_apps.base.bokeh_handler import (
     with_request,
     with_workspaces,
+    with_paths,
     _get_bokeh_controller,
 )
-
-
-@with_request
-def with_request_decorated(doc: Document):
-    return doc
-
-
-@with_workspaces
-def with_workspaces_decorated(doc: Document):
-    return doc
+from tethys_apps.base.paths import TethysPath
 
 
 class TestBokehHandler(unittest.TestCase):
@@ -41,26 +35,87 @@ class TestBokehHandler(unittest.TestCase):
         return mock_session_context
 
     def test_with_request_decorator(self):
+        @with_request
+        def with_request_decorated(doc: Document):
+            return doc
+
         ret_doc = with_request_decorated(self.doc)
 
         self.assertIsNotNone(getattr(ret_doc, "request", None))
         self.assertIsNotNone(getattr(ret_doc.request, "user", None))
         self.assertIsInstance(ret_doc.request, HttpRequest)
 
+    @mock.patch("tethys_apps.base.bokeh_handler.deprecation_warning")
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
     @mock.patch("tethys_apps.utilities.get_active_app")
-    @mock.patch("tethys_apps.base.workspace._get_user_workspace")
-    @mock.patch("tethys_apps.base.workspace._get_app_workspace")
-    def test_with_workspaces_decorator(self, mock_gaw, mock_guw, _, __, ___):
+    @mock.patch("tethys_apps.base.bokeh_handler.get_user_workspace_old")
+    @mock.patch("tethys_apps.base.bokeh_handler.get_app_workspace_old")
+    def test_with_workspaces_decorator(self, mock_gaw, mock_guw, _, __, ___, ____):
         mock_guw.return_value = "user-workspace"
         mock_gaw.return_value = "app-workspace"
+
+        @with_workspaces
+        def with_workspaces_decorated(doc: Document):
+            return doc
 
         ret_doc = with_workspaces_decorated(self.doc)
         self.assertIsNotNone(getattr(ret_doc, "user_workspace", None))
         self.assertIsNotNone(getattr(ret_doc, "app_workspace", None))
         self.assertEqual("user-workspace", ret_doc.user_workspace)
         self.assertEqual("app-workspace", ret_doc.app_workspace)
+
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_quotas.utilities.log")
+    @mock.patch("tethys_apps.base.workspace.log")
+    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
+    @mock.patch("tethys_apps.base.paths._get_app_media_root")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @override_settings(USE_OLD_WORKSPACES_API=False)
+    def test_with_paths_decorator(
+        self, username, rac, mock_gamr, mock_gaw, _, __, ___, ____
+    ):
+        mock_gaw.return_value = Path("workspaces")
+        mock_gamr.return_value = Path("app-media-root/media")
+
+        mock_app = mock.MagicMock()
+        mock_app.package = "mock-app-package"
+        mock_app.resources_path = TethysPath("resources")
+        mock_app.public_path = TethysPath("public")
+        rac.return_value = mock_app
+
+        username.return_value = "mock-username"
+
+        @with_paths
+        def with_paths_decorated(doc: Document):
+            return doc
+
+        ret_doc = with_paths_decorated(self.doc)
+        self.assertIsNotNone(getattr(ret_doc, "user_workspace", None))
+        self.assertIsNotNone(getattr(ret_doc, "app_workspace", None))
+        self.assertIsNotNone(getattr(ret_doc, "app_media_path", None))
+        self.assertIsNotNone(getattr(ret_doc, "user_media_path", None))
+        self.assertIsNotNone(getattr(ret_doc, "app_resources_path", None))
+
+        self.assertEqual(
+            TethysPath("workspaces/user_workspaces/mock-username").path,
+            ret_doc.user_workspace.path,
+        )
+        self.assertEqual(
+            TethysPath("workspaces/app_workspace").path, ret_doc.app_workspace.path
+        )
+        self.assertEqual(
+            TethysPath("app-media-root/media/app").path,
+            ret_doc.app_media_path.path,
+        )
+        self.assertEqual(
+            TethysPath("app-media-root/media/user/mock-username").path,
+            ret_doc.user_media_path.path,
+        )
+        self.assertEqual(TethysPath("resources").path, ret_doc.app_resources_path.path)
+        self.assertEqual(TethysPath("public").path, ret_doc.app_public_path.path)
 
     @mock.patch("tethys_apps.base.bokeh_handler.render")
     @mock.patch("tethys_apps.base.bokeh_handler.server_document")

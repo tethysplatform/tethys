@@ -39,7 +39,7 @@ Using :term:`persistent stores` in your app is accomplished by adding the ``pers
     from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
 
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys App Class for My First App.
         """

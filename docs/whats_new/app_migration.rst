@@ -22,7 +22,7 @@ For example, a Tethys app with an ``index`` property looking like this:
 .. code-block:: python
     :emphasize-lines: 2
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         index = "my_first_app:home"
 
 should be changed to this:
@@ -30,7 +30,7 @@ should be changed to this:
 .. code-block:: python
     :emphasize-lines: 2
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         index = "home"
 
 Controller Decorators
@@ -62,7 +62,7 @@ However, you may also use the ``controller_modules`` property of the :term:`app 
 
 .. code-block:: python
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
         ...
         controller_modules = [
             'custom_controllers',  # For a module named custom_controller.py in the same directory as app.py
