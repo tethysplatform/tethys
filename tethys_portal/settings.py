@@ -326,7 +326,7 @@ RESOURCE_QUOTA_HANDLERS = tuple(
 )
 
 SUPPRESS_QUOTA_WARNINGS = portal_config_settings.pop(
-    "SUPPRESS_QUOTA_WARNINGS", ["user_workspace_quota"]
+    "SUPPRESS_QUOTA_WARNINGS", ["user_workspace_quota", "app_workspace_quota"]
 )
 
 REST_FRAMEWORK = {
