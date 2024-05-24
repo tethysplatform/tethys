@@ -18,7 +18,7 @@ class TestAsgiApplication(TethysTestCase):
         self.assertIn("http", application.application_mapping)
 
 
-@override_settings(PREFIX_URL="test/prefix")
+@override_settings(PREFIX_URL="test/prefix", MULTIPLE_APP_MODE=True)
 class TestAsgiApplicationWithURLPrefix(TethysTestCase):
     import sys
     from importlib import reload, import_module
@@ -31,6 +31,7 @@ class TestAsgiApplicationWithURLPrefix(TethysTestCase):
         if urlconf is None:
             urlconf = self.settings.ROOT_URLCONF
         if urlconf in self.sys.modules:
+            self.reload(self.sys.modules["tethys_apps.urls"])
             self.reload(self.sys.modules[urlconf])
         else:
             self.import_module(urlconf)

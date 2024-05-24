@@ -15,6 +15,7 @@ The Tethys Platform provides a Python Software Development Kit (SDK) to make it 
    tethys_sdk/handoff
    tethys_sdk/jobs
    tethys_sdk/layouts
+   tethys_sdk/paths
    tethys_sdk/permissions
    tethys_sdk/rest_api
    tethys_sdk/routing

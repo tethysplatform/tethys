@@ -17,7 +17,7 @@ from django.views.decorators.cache import never_cache
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 from tethys_apps.models import TethysApp
-from tethys_apps.base.workspace import _get_user_workspace
+from tethys_apps.base.paths import get_user_workspace, get_user_media
 from tethys_apps.utilities import get_app_class
 from tethys_apps.decorators import login_required
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
@@ -178,7 +178,10 @@ def delete_account(request):
         messages.success(request, "Your account has been successfully deleted.")
 
         # Redirect to home
-        return redirect("home")
+        if django_settings.MULTIPLE_APP_MODE:
+            return redirect("home")
+        else:
+            return redirect("accounts:login")
 
     context = {}
 
@@ -198,14 +201,22 @@ def clear_workspace(request, root_url):
         app = get_app_class(app)
 
         user = request.user
-        workspace = _get_user_workspace(app, user)
+        workspace = get_user_workspace(app, user)
 
         app.pre_delete_user_workspace(user)
         workspace.clear()
         app.post_delete_user_workspace(user)
 
+        media = get_user_media(app, user)
+        app.pre_delete_user_media(user)
+        media.clear()
+        app.post_delete_user_media(user)
+
         # Give feedback
-        messages.success(request, "Your workspace has been successfully cleared.")
+        messages.success(
+            request,
+            "Your workspace and media directory have been successfully cleared.",
+        )
 
         # Redirect to home
         return redirect("user:manage_storage")
@@ -225,7 +236,7 @@ def manage_storage(request):
     user = request.user
 
     for app in apps:
-        workspace = _get_user_workspace(app, user)
+        workspace = get_user_workspace(app, user)
         app.current_use = _convert_storage_units("gb", workspace.get_size("gb"))
 
     codename = "user_workspace_quota"

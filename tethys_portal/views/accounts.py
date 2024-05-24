@@ -173,4 +173,7 @@ def logout_view(request):
         logout(request)
 
     # Redirect home
-    return redirect("home")
+    if settings.MULTIPLE_APP_MODE:
+        return redirect("home")
+    else:
+        return redirect("accounts:login")

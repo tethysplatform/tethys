@@ -114,7 +114,7 @@ jobs:
       - name: Setup Tethys
         run: |
           cd ..
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys -p "3.8"
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys -x  -p "3.8"
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           hash -r

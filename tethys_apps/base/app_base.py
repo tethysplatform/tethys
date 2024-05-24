@@ -5,10 +5,11 @@
 # * Copyright: (c) Brigham Young University 2013
 # * License: BSD 2-Clause
 # ********************************************************************************
-
 import logging
 import traceback
 import uuid
+from importlib.resources import files
+
 from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -25,7 +26,13 @@ from .testing.environment import (
 from .permissions import Permission as TethysPermission, PermissionGroup
 from .handoff import HandoffManager
 from .mixins import TethysBaseMixin
-from .workspace import get_app_workspace, get_user_workspace
+from .paths import (
+    TethysPath,
+    get_app_workspace,
+    get_user_workspace,
+    get_app_media,
+    get_user_media,
+)
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 has_bokeh_django = True
@@ -60,6 +67,30 @@ class TethysBase(TethysBaseMixin):
     @classproperty
     def package_namespace(cls):
         raise NotImplementedError()
+
+    @property
+    def _package_files(self):
+        return files(f"{self.package_namespace}.{self.package}")
+
+    @property
+    def public_path(self):
+        """
+        Property to access the public directory of the app where static files such as CSS and JavaScript are stored.
+
+        Returns: TethysPath: path object bound to the app public directory.
+
+        """
+        return TethysPath(self._package_files / "public")
+
+    @property
+    def resources_path(self):
+        """
+        Property to access the resources directory of an app where version-controlled, non-code resource files are stored.
+
+        Returns: TethysPath: path object bound to the app resources directory.
+
+        """
+        return TethysPath(self._package_files / "resources")
 
     @classproperty
     def db_model(cls):
@@ -536,13 +567,13 @@ class TethysAppBase(TethysBase):
 
     Attributes:
       name (string): Name of the app.
+      description (string): Description of the app.
+      package (string): Name of the app package. (Note: should not be changed)
       index (string): Lookup term for the index URL of the app.
       icon (string): Location of the image to use for the app icon.
-      package (string): Name of the app package.
       root_url (string): Root URL of the app.
       color (string): App theme color as RGB hexadecimal.
-      description (string): Description of the app.
-      tag (string): A string for filtering apps.
+      tags (string): A string for filtering apps.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
@@ -1080,11 +1111,11 @@ class TethysAppBase(TethysBase):
             AssertionError: if quota for the user workspace has been exceeded.
 
         Returns:
-            TethysWorkspace: workspace object bound to the user's workspace directory.
+            TethysPath (or TethysWorkspace): workspace object bound to the user's workspace directory.
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1096,6 +1127,34 @@ class TethysAppBase(TethysBase):
         return get_user_workspace(cls, user_or_request)
 
     @classmethod
+    def get_user_media(cls, user_or_request):
+        """
+        Get the dedicated user media directory for this app. If an HttpRequest is given, the media directory of the logged-in user will be returned (i.e. request.user).
+
+        Args:
+            request_or_user (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
+
+        Raises:
+            ValueError: if user_or_request is not of type HttpRequest or User.
+            AssertionError: if quota for the user workspace has been exceeded.
+
+        Returns:
+            TethysPath: path object bound to the user's media directory.
+
+        **Example:**
+
+        .. code-block:: python
+
+            from .app import App
+
+            @controller
+            def my_controller(request):
+                user_workspace = App.get_user_media(request.user)
+                ...
+        """  # noqa: E501
+        return get_user_media(cls, user_or_request)
+
+    @classmethod
     def get_app_workspace(cls):
         """
         Get the app workspace for the given Tethys App class.
@@ -1104,11 +1163,11 @@ class TethysAppBase(TethysBase):
             AssertionError: if quota for the app workspace has been exceeded.
 
         Returns:
-            TethysWorkspace: workspace object bound to the app workspace.
+            TethysPath (or TethysWorkspace): workspace object bound to the app workspace.
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1118,6 +1177,30 @@ class TethysAppBase(TethysBase):
                 ...
         """
         return get_app_workspace(cls)
+
+    @classmethod
+    def get_app_media(cls):
+        """
+        Get the app media directory for the given Tethys App class.
+
+        Raises:
+            AssertionError: if quota for the app workspace has been exceeded.
+
+        Returns:
+            TethysPath: path object bound to the app media directory.
+
+        **Example:**
+
+        .. code-block:: python
+
+            from .app import App
+
+            @controller
+            def my_controller(request):
+                app_media = App.get_app_media()
+                ...
+        """
+        return get_app_media(cls)
 
     @classmethod
     def get_scheduler(cls, name):
@@ -1132,7 +1215,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1172,7 +1255,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1201,7 +1284,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1283,7 +1366,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1332,7 +1415,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1380,7 +1463,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1419,7 +1502,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1465,7 +1548,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1528,7 +1611,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1624,7 +1707,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1669,7 +1752,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1706,7 +1789,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1737,7 +1820,7 @@ class TethysAppBase(TethysBase):
 
         **Example:**
 
-        ::
+        .. code-block:: python
 
             from .app import App
 
@@ -1938,4 +2021,36 @@ class TethysAppBase(TethysBase):
     def post_delete_app_workspace(cls):
         """
         Override this method to post-process the app workspace after it is emptied
+        """
+
+    @classmethod
+    def pre_delete_user_media(cls, user):
+        """
+        Override this method to pre-process a user's media directory before it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their media directory
+        """
+
+    @classmethod
+    def post_delete_user_media(cls, user):
+        """
+        Override this method to post-process a user's media directory after it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their media directory
+        """
+
+    @classmethod
+    def pre_delete_app_media(cls):
+        """
+        Override this method to pre-process the app media directory before it is emptied
+        """
+
+    @classmethod
+    def post_delete_app_media(cls):
+        """
+        Override this method to post-process the app media directory after it is emptied
         """

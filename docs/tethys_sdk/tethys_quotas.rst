@@ -59,7 +59,7 @@ To load a custom quota, append the classpath to the ``RESOURCE_QUOTA_HANDLERS`` 
 Enforcing Quotas
 ================
 
-Using the :ref:`app_workspace` or :ref:`user_workspace` decorators will automatically enforce the built in workspace quotas. To enforce a custom quota, the ``@enforce_quota`` decorator must be used. Within the decorator initialization, pass in the respective ``codename`` of the quota you wish to enforce.
+Using the :ref:`tethys_paths_api` to access workspaces and media directories will automatically enforce the built in workspace quotas. To enforce a custom quota, the ``@enforce_quota`` decorator must be used. Within the decorator initialization, pass in the respective ``codename`` of the quota you wish to enforce.
 
 ::
 

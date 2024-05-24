@@ -68,7 +68,7 @@ jobs:
         run: |
           cd ..
           bash ./tethys/scripts/install_tethys.sh -h
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -d ${{ matrix.django-version }} -p ${{ matrix.python-version }}
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -x -d ${{ matrix.django-version }} -p ${{ matrix.python-version }}
       # Setup Tethys and Conda
       - name: Setup Tethys and Conda
         run: |

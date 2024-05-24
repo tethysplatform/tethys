@@ -406,6 +406,7 @@ class TethysPortalUserTests(unittest.TestCase):
             mock_request, "tethys_portal/user/disconnect.html", expected_context
         )
 
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.views.user.messages.success")
     @mock.patch("tethys_portal.views.user.logout")
     @mock.patch("tethys_portal.views.user.redirect")
@@ -433,6 +434,34 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_redirect.assert_called_once_with("home")
 
+    @override_settings(MULTIPLE_APP_MODE=False)
+    @mock.patch("tethys_portal.views.user.messages.success")
+    @mock.patch("tethys_portal.views.user.logout")
+    @mock.patch("tethys_portal.views.user.redirect")
+    def test_delete_account_post_with_single_app_mode(
+        self, mock_redirect, mock_logout, mock_messages_success
+    ):
+        mock_user = mock.MagicMock()
+        mock_user.username = "foo"
+
+        mock_request = mock.MagicMock()
+        mock_request.user = mock_user
+
+        mock_request.method = "POST"
+        mock_request.POST = "delete-account-submit"
+
+        delete_account(mock_request)
+
+        mock_request.user.delete.assert_called()
+
+        mock_logout.assert_called_once_with(mock_request)
+
+        mock_messages_success.assert_called_once_with(
+            mock_request, "Your account has been successfully deleted."
+        )
+
+        mock_redirect.assert_called_once_with("accounts:login")
+
     @mock.patch("tethys_portal.views.user.render")
     def test_delete_account_not_post(self, mock_render):
         mock_user = mock.MagicMock()
@@ -452,7 +481,7 @@ class TethysPortalUserTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_quotas.utilities.log")
-    @mock.patch("tethys_portal.views.user._get_user_workspace")
+    @mock.patch("tethys_portal.views.user.get_user_workspace")
     @mock.patch("tethys_portal.views.user._convert_storage_units")
     @mock.patch("tethys_portal.views.user.SingletonHarvester")
     @mock.patch("tethys_portal.views.user.render")
@@ -492,27 +521,32 @@ class TethysPortalUserTests(unittest.TestCase):
             mock_request, "tethys_portal/user/clear_workspace.html", expected_context
         )
 
+    @mock.patch("tethys_portal.views.user.get_user_media")
+    @mock.patch("tethys_portal.views.user.get_user_workspace")
     @mock.patch("tethys_portal.views.user.get_app_class")
-    @mock.patch("tethys_portal.views.user._get_user_workspace")
     @mock.patch("tethys_portal.views.user.TethysApp")
     @mock.patch("tethys_portal.views.user.messages.success")
     @mock.patch("tethys_portal.views.user.redirect")
     def test_clear_workspace_successful(
-        self, mock_redirect, mock_message, mock_app, mock_guw, mock_get_app_class
+        self,
+        mock_redirect,
+        mock_message,
+        mock_app,
+        mock_get_app_class,
+        _,
+        __,
     ):  # noqa: E501
         mock_request = mock.MagicMock(method="POST", POST="clear-workspace-submit")
         mock_request.user.username = "ThisIsMe"
 
-        app = TethysApp(name="app_name")
+        app = mock.MagicMock()
         mock_app.objects.get.return_value = app
         mock_get_app_class.return_value = app
-        app.pre_delete_user_workspace = mock.MagicMock()
-        app.post_delete_user_workspace = mock.MagicMock()
-        mock_guw.return_value = mock.MagicMock()
 
         clear_workspace(mock_request, "root_url")
 
         mock_message.assert_called_once_with(
-            mock_request, "Your workspace has been successfully cleared."
+            mock_request,
+            "Your workspace and media directory have been successfully cleared.",
         )
         mock_redirect.assert_called_once_with("user:manage_storage")

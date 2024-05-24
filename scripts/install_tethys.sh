@@ -399,6 +399,7 @@ then
           --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
           --set DATABASES.default.DIR ${TETHYS_DB_DIR} \
           --set DATABASES.default.ENGINE django.db.backends.postgresql
+        cat ${TETHYS_HOME}/portal_config.yml
     fi
 
     if [ -n "${SETUP_DB}" ]
