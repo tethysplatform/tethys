@@ -172,7 +172,7 @@ jobs:
             -e TETHYS_DB_PASSWORD=${{ env.TETHYS_DB_PASSWORD }} \
             -e TETHYS_DB_SUPERUSER=${{ env.TETHYS_DB_SUPERUSER }} \
             -e TETHYS_DB_SUPERUSER_PASS=${{ env.TETHYS_DB_SUPERUSER_PASS }} \
-            ${{ env.TEST_IMAGE }}-${{ matrix.django-version }}-${{ matrix.python-version }} \
+            ${{ env.TEST_IMAGE }}:${{ matrix.python-version }}-${{ matrix.django-version }}-dev \
             /bin/bash -c "cd /usr/lib/tethys && source ./run.sh --test"
 
   conda-build:
