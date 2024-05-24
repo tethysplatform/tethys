@@ -159,7 +159,7 @@ jobs:
       - name: Download Docker Artifact
         uses: ishworkh/docker-image-artifact-download@v1
         with:
-          image: ${{ env.TEST_IMAGE }}-${{ matrix.django-version }}-${{ matrix.python-version }}
+          image: ${{ env.TEST_IMAGE }}:${{ matrix.python-version }}-${{ matrix.django-version }}-dev
       - name: Run Salt Test
         run: |
           docker run --rm \
