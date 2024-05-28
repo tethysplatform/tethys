@@ -200,9 +200,8 @@ jobs:
           conda update -q conda
       # Export Conda Build Path
       - name: Set Conda Build Path
-        uses: allenevans/set-env@v3.0.0
-        with:
-          CONDA_BLD_PATH: "/home/runner/conda-bld"
+        run: |
+          echo "CONDA_BLD_PATH=/home/runner/conda-bld" >> $GITHUB_ENV
       # Generate Conda Recipe Without Constrained Dependencies
       - name: Generate Conda Recipe
         run: |
