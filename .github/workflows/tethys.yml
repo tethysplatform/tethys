@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install Flake8
@@ -45,7 +45,7 @@ jobs:
     name: Check Black Formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: psf/black@stable
 
   tests:
@@ -60,7 +60,7 @@ jobs:
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Install Tethys
@@ -103,7 +103,7 @@ jobs:
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Build the docker for no tag
@@ -125,7 +125,7 @@ jobs:
           echo "Uploading is skipped for pull requests."
       # Save image as artifact for startup test job
       - name: Upload Docker Artifact
-        uses: ishworkh/docker-image-artifact-upload@v1
+        uses: ishworkh/container-image-artifact-upload@v1.1.1
         with:
           image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
           retention_days: "1"
@@ -157,7 +157,7 @@ jobs:
           - 5432:5432
     steps:
       - name: Download Docker Artifact
-        uses: ishworkh/docker-image-artifact-download@v1
+        uses: ishworkh/container-image-artifact-download@v1.1.1
         with:
           image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
       - name: Run Salt Test
@@ -185,7 +185,7 @@ jobs:
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Setup Tethys
@@ -200,7 +200,7 @@ jobs:
           conda update -q conda
       # Export Conda Build Path
       - name: Set Conda Build Path
-        uses: allenevans/set-env@v2.0.0
+        uses: allenevans/set-env@v3.0.0
         with:
           CONDA_BLD_PATH: "/home/runner/conda-bld"
       # Generate Conda Recipe Without Constrained Dependencies
