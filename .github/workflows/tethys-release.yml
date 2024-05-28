@@ -12,13 +12,14 @@ env:
 
 jobs:
   docker-build:
-    name: Docker Build (${{ matrix.platform }})
+    name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
@@ -32,7 +33,7 @@ jobs:
       - name: Safe Tag
         id: safetag
         run: |
-          full_tag="${{ steps.version.outputs.full }}";
+          full_tag="${{ steps.version.outputs.full }}-py${{ matrix.python-version }}-dj${{ matrix.django-version }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
           echo "safetag=$safe_tag" >> $GITHUB_OUTPUT;
@@ -68,12 +69,6 @@ jobs:
         run: |
           echo "Pushing to docker registry";
           docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }};
-      - name: Upload Docker With Latest Tag
-        if: ${{ steps.version.outputs.prerelease == '' }}
-        run: |
-          echo "Updating latest on the docker registry";
-          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }} ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
 
   conda-build:
     name: Conda Build (${{ matrix.platform }})
@@ -82,9 +77,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10]
-    steps:
       # Checkout the source
+    steps:
       - name: Checkout Source
         uses: actions/checkout@v2
         with:
