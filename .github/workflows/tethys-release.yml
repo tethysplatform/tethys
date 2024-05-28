@@ -33,7 +33,7 @@ jobs:
       - name: Safe Tag
         id: safetag
         run: |
-          full_tag="${{ steps.version.outputs.full }}-${{ matrix.django-version }}-${{ matrix.python-version }}";
+          full_tag="${{ steps.version.outputs.full }}-py${{ matrix.python-version }}-dj${{ matrix.django-version }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
           echo "safetag=$safe_tag" >> $GITHUB_OUTPUT;
@@ -114,7 +114,7 @@ jobs:
       - name: Setup Tethys
         run: |
           cd ..
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys -x  -p "3.8"
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys -x
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           hash -r
