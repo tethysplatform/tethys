@@ -15,6 +15,8 @@ OPTIONS:\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'main'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda.\n
+\t    -d, --django-version <VERSION>      \t\t Version of Django to install. Default is '4.2'.\n
+\t    -p, --python-version <VERSION>      \t\t Version of Python to install. Default is '3.12'.\n
 \t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
 \t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
 \t    --db-super-username <USERNAME>      \t Username for super user on the tethys database server. Default is 'tethys_super'.\n
@@ -88,6 +90,8 @@ TETHYS_DB_SUPER_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 TETHYS_DB_DIR='psql'
 CONDA_HOME=~/miniconda
+PYTHON_VERSION='3.12'
+DJANGO_VERSION='4.2'
 CONDA_ENV_NAME='tethys-dev'
 BRANCH='main'
 
@@ -148,6 +152,14 @@ case $key in
     ;;
     -n|--conda-env-name)
     set_option_value CONDA_ENV_NAME "$2"
+    shift # past argument
+    ;;
+    -d|--django-version)
+    set_option_value DJANGO_VERSION "$2"
+    shift # past argument
+    ;;
+    -v|--python-version)
+    set_option_value PYTHON_VERSION "$2"
     shift # past argument
     ;;
     --db-username)
@@ -349,6 +361,20 @@ then
         cd "${TETHYS_SRC}"
         conda activate
         git checkout ${BRANCH}
+    fi
+
+    if [ -n "${DJANGO_VERSION}" ]
+    then
+        echo "Updating environment.yml Django version ${DJANGO_VERSION}..."
+        sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
+    fi
+
+    if [ -n "${PYTHON_VERSION}" ]
+    then
+        echo "Updating environment.yml Python version ${PYTHON_VERSION}..."
+        sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
     fi
 
     if [ -n "${CREATE_ENV}" ]
