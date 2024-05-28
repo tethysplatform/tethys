@@ -6,6 +6,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 # flake8: noqa
 # DO NOT ERASE
 from tethys_layouts.views.map_layout import MapLayout

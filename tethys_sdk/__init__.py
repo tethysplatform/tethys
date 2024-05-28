@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 # flake8: noqa
 # This module provides a centralized location for SDK imports.
 from tethys_portal import __version__

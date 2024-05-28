@@ -6,6 +6,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from social_core.backends.arcgis import ArcGISOAuth2
 from django.conf import settings
 

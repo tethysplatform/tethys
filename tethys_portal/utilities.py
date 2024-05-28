@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import redirect
