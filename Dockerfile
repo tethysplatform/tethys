@@ -154,12 +154,12 @@ RUN if [ -n "$DJANGO_VERSION" ]; then \
 
 # Create the conda environment based on the environment.yml or micro_environment.yml file
 RUN if [ "${MICRO_TETHYS}" = "true" ]; then \
-  sed -i "s/- python[^-].*/ - python==${PYTHON_VERSION}/g" micro_environment.yml && \
+  sed -i "s/- python[^-].*/- python==${PYTHON_VERSION}/g" micro_environment.yml && \
   micromamba create -n "${CONDA_ENV_NAME}" --yes --file "micro_environment.yml" && \
   micromamba clean --all --yes && \
   rm -rf environment.yml; \
   else \
-  sed -i "s/- python[^-].*/ - python==${PYTHON_VERSION}/g" environment.yml && \
+  sed -i "s/- python[^-].*/- python==${PYTHON_VERSION}/g" environment.yml && \
   micromamba create -n "${CONDA_ENV_NAME}" --yes --file "environment.yml" && \
   micromamba clean --all --yes && \
   rm -rf micro_environment.yml; \
