@@ -158,7 +158,7 @@ case $key in
     set_option_value DJANGO_VERSION "$2"
     shift # past argument
     ;;
-    -v|--python-version)
+    -p|--python-version)
     set_option_value PYTHON_VERSION "$2"
     shift # past argument
     ;;
@@ -366,15 +366,15 @@ then
     if [ -n "${DJANGO_VERSION}" ]
     then
         echo "Updating environment.yml Django version ${DJANGO_VERSION}..."
-        sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/environment.yml"
-        sudo sed -i.bak "s/django>=.*/django>=${DJANGO_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
+        sudo sed -i.bak "s/django>=.*/django==${DJANGO_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/django==${DJANGO_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
     fi
 
     if [ -n "${PYTHON_VERSION}" ]
     then
         echo "Updating environment.yml Python version ${PYTHON_VERSION}..."
-        sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
-        sudo sed -i.bak "s/django>=.*/python>=${PYTHON_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
+        sudo sed -i.bak "s/django>=.*/python==${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml"
+        sudo sed -i.bak "s/django>=.*/python==${PYTHON_VERSION}/" "${TETHYS_SRC}/micro_environment.yml"
     fi
 
     if [ -n "${CREATE_ENV}" ]
