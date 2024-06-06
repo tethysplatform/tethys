@@ -205,9 +205,9 @@ RUN tethys gen portal_config
 
 # Install channel-redis
 RUN if [ "${DJANGO_VERSION}" = "3.2" ]; then \
-    pip install channels==4.0.0 channels_redis \
+  pip install channels==4.0.0 channels_redis \
   else \
-    pip install channels_redis \
+  pip install channels_redis \
   fi
 
 ############
