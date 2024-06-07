@@ -204,7 +204,7 @@ RUN pip install -e .
 RUN tethys gen portal_config
 
 # Install channel-redis
-RUN pip install channels_redis
+RUN micromamba install -c conda-forge --yes channels_redis
 
 ############
 # CLEAN UP #
