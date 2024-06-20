@@ -55,7 +55,7 @@ Use start up the development server:
     tethys manage start
 
 
-Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
+Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login the default portal user is:
 
 * **username**: admin
 * **password**: pass
