@@ -72,7 +72,7 @@ Install the app and it's dependencies into your development Tethys Portal. In a 
 
     To stop the development server press :kbd:`CTRL-C`.
 
-2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
+2. Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login. The default portal user is:
 
 * **username**: admin
 * **password**: pass
