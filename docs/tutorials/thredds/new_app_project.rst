@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** June 2022
+**Last Updated:** June 2024
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
@@ -109,18 +109,6 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 .. tip::
 
     To stop the development server press :kbd:`CTRL-C`.
-
-    If you get errors related to Tethys not being able to connect to the database, start the database by running:
-
-    .. code-block:: bash
-
-        tethys db start
-
-    You can also stop the Tethys database by running:
-
-    .. code-block:: bash
-
-        tethys db stop
 
 2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
 

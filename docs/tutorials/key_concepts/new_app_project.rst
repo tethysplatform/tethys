@@ -4,7 +4,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** May 2022
+**Last Updated:** June 2024
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
@@ -54,19 +54,6 @@ Use start up the development server:
 
     tethys manage start
 
-.. note::
-
-    If you get errors related to Tethys not being able to connect to the database, start the database by running:
-
-    .. code-block:: bash
-
-        tethys db start
-
-    You can also stop the Tethys database by running:
-
-    .. code-block:: bash
-
-        tethys db stop
 
 Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
 
