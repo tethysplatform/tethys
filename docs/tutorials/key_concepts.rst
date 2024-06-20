@@ -4,7 +4,7 @@
 Key Concepts
 ************
 
-**Last Updated:** May 2022
+**Last Updated:** June 2024
 
 This tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.
 
