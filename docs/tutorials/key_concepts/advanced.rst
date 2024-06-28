@@ -4,7 +4,7 @@
 Advanced Concepts
 *****************
 
-**Last Updated:** May 2022
+**Last Updated:** June 2024
 
 This tutorial introduces advanced concepts for Tethys developers. The topics covered include:
 
