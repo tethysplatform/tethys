@@ -4,7 +4,7 @@
 Beginner Concepts
 *****************
 
-**Last Updated:** May 2022
+**Last Updated:** June 2024
 
 This tutorial introduces important concepts for first-time or beginner Tethys developers. The topics covered include:
 
@@ -48,7 +48,7 @@ b. Change the Name and Description of your app by changing their respective valu
 
 You can also create custom settings for your app that can be configured on the app settings page:
 
-a. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInventory`` class. Don't for get to import ``CustomSetting``:
+a. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInventory`` class. Don't forget to import ``CustomSetting``:
 
     .. code-block:: python
 
@@ -160,7 +160,6 @@ a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button
                 layers=[],
                 basemap=['OpenStreetMap'],
             )
-
 
             add_dam_button = Button(
                 display_text='Add Dam',
