@@ -14,7 +14,7 @@ from tethys_compute.models.dask.dask_job_exception import DaskJobException
 from tethys_portal.optional_dependencies import optional_import
 
 # optional imports
-Client = optional_import("client", from_module="dask.distributed")
+Client = optional_import("Client", from_module="dask.distributed")
 
 log = logging.getLogger("tethys." + __name__)
 
