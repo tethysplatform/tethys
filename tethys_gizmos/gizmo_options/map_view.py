@@ -57,7 +57,7 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
+    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
 
         {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'control_label': 'Bing Aerial'}}
 
@@ -65,7 +65,6 @@ class MapView(TethysGizmoOptions):
 
     * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
     * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
-    * Stamen: `ol/source/Stamen <http://openlayers.org/en/latest/apidoc/module-ol_source_Stamen-Stamen.html>`_
     * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
 
     .. note::
@@ -281,9 +280,6 @@ class MapView(TethysGizmoOptions):
         ]
         esri_layers = [{'ESRI': {'layer': l}} for l in esri_layer_names]
         basemaps = [
-            'Stamen',
-            {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
-            {'Stamen': {'layer': 'watercolor'}},
             'OpenStreetMap',
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},

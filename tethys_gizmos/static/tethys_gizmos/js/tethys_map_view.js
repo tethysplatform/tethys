@@ -6,8 +6,8 @@
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 
- // Backward/forward compatability for OpenLayers
- if (typeof ol.inherits === 'undefined') {
+// Backward/forward compatability for OpenLayers
+if (typeof ol.inherits === 'undefined') {
   ol.inherits = function (child, parent) {
       child.prototype = Object.create(parent.prototype);
       child.prototype.constructor = child;
@@ -186,13 +186,6 @@ ol_base_map_init = function()
       return new ol.source.XYZ(options);
     },
     label_property: 'layer',
-  },
-  'Stamen': {
-      source_class: ol.source.Stamen,
-      default_source_options: {
-        layer: 'terrain',
-      },
-      label_property: 'layer',
   },
   'ESRI': {
       source_class: function(options){
@@ -794,7 +787,7 @@ ol_layers_init = function()
       KML = 'KML';
 
   var TILE_SOURCES = ['TileDebug', 'TileUTFGrid', 'UrlTile', 'TileImage', 'VectorTile', 'BingMaps', 'TileArcGISRest',
-                      'TileJSON', 'TileWMS', 'WMTS', 'XYZ', 'Zoomify', 'CartoDB', 'OSM', 'Stamen'];
+                      'TileJSON', 'TileWMS', 'WMTS', 'XYZ', 'Zoomify', 'CartoDB', 'OSM'];
 
   var IMAGE_SOURCES = ['ImageArcGISRest', 'ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageWMS', 'ImageVector',
                        'Raster'];

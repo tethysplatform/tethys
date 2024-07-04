@@ -86,7 +86,6 @@ In this step you'll add the ``MapView`` to the home view. You'll also add a cust
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},
             'OpenStreetMap',
-            'Stamen',
             'ESRI'
         ],
         view=MVView(
