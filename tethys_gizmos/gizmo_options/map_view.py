@@ -57,9 +57,15 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
+    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Azure`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
 
         {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'control_label': 'Bing Aerial'}}
+        {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}}
+        
+    .. note::
+    
+        The Bing Map service has been depricated in favor of Azure Maps service.
+        
 
     For additional options that can be provided to each base map service see the following links:
 
@@ -279,31 +285,39 @@ class MapView(TethysGizmoOptions):
             'World_Topo_Map',
         ]
         esri_layers = [{'ESRI': {'layer': l}} for l in esri_layer_names]
+        azure_layers = [
+            {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}},
+            [
+                {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}},
+                {'Azure': {'tilesetId': 'microsoft.base.labels.road', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Label'}}
+            ],
+            {'Azure': {'tilesetId': 'microsoft.base.road', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Road'}}
+        ]
         basemaps = [
             'OpenStreetMap',
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},
             {'CartoDB': {'style': 'light', 'labels': False, 'control_label': 'CartoDB-light-no-labels'}},
-            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'control_label': 'Wikimedia'}}
+            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'control_label': 'Wikimedia'}},
             'ESRI',
         ]
-        basemaps.extend(esri_layers)
+        basemaps.extend([esri_layers, azure_layers])
 
         # Specify OpenLayers version
         MapView.ol_version = '5.3.0'
 
         # Define map view options
         map_view_options = MapView(
-                height='600px',
-                width='100%',
-                controls=['ZoomSlider', 'Rotate', 'FullScreen',
-                          {'MousePosition': {'projection': 'EPSG:4326'}},
-                          {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-                layers=[geojson_layer, geojson_point_layer, geoserver_layer, kml_layer, arc_gis_layer],
-                view=view_options,
-                basemap=basemaps,
-                draw=drawing_options,
-                legend=True
+            height='600px',
+            width='100%',
+            controls=['ZoomSlider', 'Rotate', 'FullScreen',
+                        {'MousePosition': {'projection': 'EPSG:4326'}},
+                        {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
+            layers=[geojson_layer, geojson_point_layer, geoserver_layer, kml_layer, arc_gis_layer],
+            view=view_options,
+            basemap=basemaps,
+            draw=drawing_options,
+            legend=True
         )
 
         context = {'map_view_options': map_view_options}
