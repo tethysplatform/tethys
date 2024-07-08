@@ -10,6 +10,7 @@
 
 import logging
 from tethys_portal.dependencies import vendor_static_dependencies
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 log = logging.getLogger("tethys.tethys_gizmos.gizmo_options.map_view")
@@ -359,6 +360,17 @@ class MapView(TethysGizmoOptions):
 
         self.height = height
         self.width = width
+        # for basemap_layer in basemap:
+        #     for basemap_type, _options in basemap_layer.items():
+        #         if basemap_type.lower() == 'bing':
+        #             deprecation_warning(
+        #                 version="5.0",
+        #                 feature='the Bing base map',
+        #                 message="The Bing Map service has been depricated in favor of Azure Maps service and will be "
+        #                 'retired on June 30, 2028. Please switch to Azure Maps if necessary. '
+        #                 f"For how to use Azure Maps see "
+        #                 f"{DOCS_BASE_URL}/tethys_sdk/gizmos/map_view.html",
+        #             )
         self.basemap = basemap
         self.view = view or {"center": [-100, 40], "zoom": 2}
         self.controls = controls or []
