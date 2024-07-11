@@ -8,7 +8,7 @@ tail_file() {
   PAD=`perl -e "print ' ' x $PADDING;"`
   file="/var/log/$1"
   # each tail runs in the background but prints to stdout
-	# sed outputs each line from tail prepended with the filename+padding
+  # sed outputs each line from tail prepended with the filename+padding
   tail -qF $file | sed "s|^|$1${PAD}:|g" &
 }
 
