@@ -1,5 +1,17 @@
 #!/bin/bash
 
+tail_file() {
+  echo "tailing file $1"
+  ALIGN=27
+  LENGTH=`echo $1 | wc -c`
+  PADDING=`expr ${ALIGN} - ${LENGTH}`
+  PAD=`perl -e "print ' ' x $PADDING;"`
+  file="/var/log/$1"
+  # each tail runs in the background but prints to stdout
+	# sed outputs each line from tail prepended with the filename+padding
+  tail -qF $file | sed "s|^|$1${PAD}:|g" &
+}
+
 echo_status() {
   local args="${@}"
   tput setaf 4
@@ -101,12 +113,26 @@ if [[ $test = false ]]; then
   echo_status "Starting supervisor"
 
   # Start Supervisor
-  /usr/bin/supervisord $([[ $no_daemon = true ]] && printf %s "-n")
+  /usr/bin/supervisord
 
   echo_status "Done!"
 
   # Watch Logs
-  echo_status "Watching logs"
-  tail -qF /var/log/supervisor/* /var/log/nginx/* /var/log/tethys/*
-fi
+  echo_status "Watching logs. You can ignore errors from either apache (httpd) or nginx depending on which one you are using."
 
+  log_files=("httpd/access_log" 
+    "httpd/error_log" 
+    "nginx/access.log" 
+    "nginx/error.log" 
+    "supervisor/supervisord.log" 
+    "tethys/tethys.log")
+
+  # When this exits, exit all background tail processes
+  trap 'kill $(jobs -p)' EXIT
+  for log_file in "${log_files[@]}"; do
+    tail_file "${log_file}"
+  done
+
+  # Read output from tail; wait for kill or stop command (docker waits here)
+  wait
+fi
