@@ -62,12 +62,12 @@ class MapView(TethysGizmoOptions):
 
         {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'control_label': 'Bing Aerial'}}
         {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}}
-        
+
     .. note::
-    
+
         The Bing Map service has been depricated in favor of Azure Maps service.
         For moe options for Azure Maps tilesetId, please refer to the link: https://learn.microsoft.com/en-us/rest/api/maps/render/get-map-tile?view=rest-maps-2024-04-01&tabs=HTTP#tilesetid
-        
+
 
     For additional options that can be provided to each base map service see the following links:
 
