@@ -361,17 +361,29 @@ class MapView(TethysGizmoOptions):
 
         self.height = height
         self.width = width
-        for basemap_layer in basemap:
-            for basemap_type, _options in basemap_layer.items():
-                if basemap_type.lower() == 'bing':
-                    deprecation_warning(
-                        version="5.0",
-                        feature='the Bing base map',
-                        message="The Bing Map service has been depricated in favor of Azure Maps service and will be "
-                        'retired on June 30, 2028. Please switch to Azure Maps at your erliest convenience. '
-                        f"For instructions on using Azure Maps, see "
-                        f"{DOCS_BASE_URL}/tethys_sdk/gizmos/map_view.html",
-                    )
+
+        def check_bing_map(map_type):
+            if map_type.lower() == 'bing':
+                deprecation_warning(
+                    version="5.0",
+                    feature='the Bing base map',
+                    message="The Bing Map service has been depricated in favor of Azure Maps service and will be "
+                    'retired on June 30, 2028. Please switch to Azure Maps at your erliest convenience. '
+                    f"For instructions on using Azure Maps, see "
+                    f"{DOCS_BASE_URL}/tethys_sdk/gizmos/map_view.html",
+                )
+
+        for layer_group in basemap:
+            if isinstance(layer_group, str):
+                check_bing_map(layer_group)
+            elif isinstance(layer_group, list):
+                for layer in layer_group:
+                    for map_type, _ in layer.items():
+                        check_bing_map(map_type)
+            else:  # dict
+                for map_type, _ in layer_group.items():
+                    check_bing_map(map_type)
+
         self.basemap = basemap
         self.view = view or {"center": [-100, 40], "zoom": 2}
         self.controls = controls or []

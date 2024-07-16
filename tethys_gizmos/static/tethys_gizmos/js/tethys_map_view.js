@@ -297,13 +297,13 @@ ol_base_map_init = function()
       var base_map_layer_names = [], base_map_layer_arguments = [];
 
       if (typeof base_map_option === 'string') {
-          base_map_layer_names.push(base_map_option);
-          base_map_layer_arguments = null;
+        base_map_layer_names.push(base_map_option);
+        base_map_layer_arguments.push(null);
       }
       else if (typeof base_map_option === 'object'){
         // turn the base_map_option into an array of objects
         base_map_option = Array.isArray(base_map_option) ? base_map_option : [base_map_option];
-        for(let option of base_map_option) {
+        for (let option of base_map_option) {
           let layer_name = Object.getOwnPropertyNames(option)[0];
           base_map_layer_names.push(layer_name);
           base_map_layer_arguments.push(option[layer_name]);
