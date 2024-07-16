@@ -363,12 +363,12 @@ class MapView(TethysGizmoOptions):
         self.width = width
 
         def check_bing_map(map_type):
-            if map_type.lower() == 'bing':
+            if map_type.lower() == "bing":
                 deprecation_warning(
                     version="5.0",
-                    feature='the Bing base map',
-                    message="The Bing Map service has been deprecated in favor of Azure Maps service and will be "
-                    'retired on June 30, 2028. Please switch to Azure Maps at your earliest convenience. '
+                    feature="the Bing base map",
+                    message="The Bing Map service has been depricated in favor of Azure Maps service and will be "
+                    "retired on June 30, 2028. Please switch to Azure Maps at your erliest convenience. "
                     f"For instructions on using Azure Maps, see "
                     f"{DOCS_BASE_URL}/tethys_sdk/gizmos/map_view.html",
                 )
