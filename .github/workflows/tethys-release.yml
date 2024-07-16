@@ -59,7 +59,7 @@ jobs:
           full_tag="${{ steps.version.outputs.full }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
-          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:"${{ steps.safetag.outputs.safetag }}" .;
+          docker build -t ${{ env.DOCKER_UPLOAD_URL }}:"${{ steps.safetag.outputs.safetag }}" .;
       # Authenticate docker
       - name: Authenticate Docker
         run: |
@@ -68,7 +68,7 @@ jobs:
       - name: Upload Docker With Tag
         run: |
           echo "Pushing to docker registry";
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }};
+          docker push ${{ env.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }};
 
   conda-build:
     name: Conda Build (${{ matrix.platform }})
