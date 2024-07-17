@@ -1,5 +1,6 @@
 {% set DEBUG = salt['environ.get']('DEBUG') %}
 {% set ALLOWED_HOSTS = salt['environ.get']('ALLOWED_HOSTS') %}
+{% set CSRF_TRUSTED_ORIGINS = salt['environ.get']('CSRF_TRUSTED_ORIGINS') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
 {% set NGINX_PORT = salt['environ.get']('NGINX_PORT') %}
@@ -79,6 +80,7 @@ Generate_Tethys_Settings_TethysCore:
         tethys settings
         --set DEBUG {{ DEBUG }}
         --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
+        --set CSRF_TRUSTED_ORIGINS {{ CSRF_TRUSTED_ORIGINS }}
         --set INSTALLED_APPS {{ ADD_DJANGO_APPS }}
         --set SESSION_CONFIG.SECURITY_WARN_AFTER {{ SESSION_WARN }}
         --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
