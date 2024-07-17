@@ -201,6 +201,10 @@ The following environment variables can be used to set some of the Tethys Settin
 | ALLOWED_HOSTS             | The Django ALLOWED_HOSTS setting. Defaults to "\"[localhost, 127.0.0.1]\"".              |
 |                           | See :ref:`tethys_configuration`                                                          |
 +---------------------------+------------------------------------------------------------------------------------------+
+| CSRF_TRUSTED_ORIGINS      | The Django CSRF_TRUSTED_ORIGINS setting. Defaults to                                     |
+|                           | "\"[http://localhost, http://127.0.0.1]\"".                                              |
+|                           | See :ref:`tethys_configuration`                                                          |
++---------------------------+------------------------------------------------------------------------------------------+
 | BYPASS_TETHYS_HOME_PAGE   | The home page of Tethys Portal redirects to the Apps Library when True.                  |
 |                           | Defaults to False. See :ref:`tethys_configuration`                                       |
 +---------------------------+------------------------------------------------------------------------------------------+
