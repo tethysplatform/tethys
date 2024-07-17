@@ -40,7 +40,7 @@ The following settings should be changed for a production installation of Tethys
 ALLOWED_HOSTS
 -------------
 
-The `ALLOWED_HOSTS <https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts>`_ setting is used to specify a list of host/domain names that this Django site can serve. If a request comes in with a host/domain name that is not listed here, it will be rejected. You should set this to the domain(s) of your server. For example, you can set this setting using the ``tethys settings`` command as follows:
+The `ALLOWED_HOSTS <https://docs.djangoproject.com/en/5.0/ref/settings/#allowed-hosts>`_ setting is used to specify a list of host/domain names that this Django site can serve. If a request comes in with a host/domain name that is not listed here, it will be rejected. You should set this to the domain(s) of your server. For example, you can set this setting using the ``tethys settings`` command as follows:
 
     .. code-block:: bash
 
@@ -54,10 +54,25 @@ The `ALLOWED_HOSTS <https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-
 
         The first entry in ``ALLOWED_HOSTS`` will be used to set the server name in the NGINX configuration file in one of the following sections of this guide.
 
+
+CSRF_TRUSTED_ORIGINS
+--------------------
+
+The `CSRF_TRUSTED_ORIGINS <https://docs.djangoproject.com/en/5.0/ref/settings/#csrf-trusted-origins>`_ setting is used to specify a list of trusted origins for unsafe requests (e.g. POST). Beginning with Django 4.0 the list of origins must be fully qualified domain names (e.g. https://example.com). You should set this to the domain(s) of your server. For example, you can set this setting using the ``tethys settings`` command as follows:
+
+    .. code-block:: bash
+
+        tethys settings --set CSRF_TRUSTED_ORIGINS "['<SCHEME><SERVER_DOMAIN_NAME>']"
+
+    .. note::
+
+        Replace ``<SCHEME>`` with ``http://`` or ``https://`` as appropriate for your deployment.
+        Replace ``<SERVER_DOMAIN_NAME>`` with the domain name you identified during the :ref:`production_preparation` step.
+
 DEBUG
 -----
 
-The `DEBUG <https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ settings is used to enable debug mode. You should never deploy a site into production with ``DEBUG`` turned on. You should set this setting to ``False`` as follows:
+The `DEBUG <https://docs.djangoproject.com/en/5.0/ref/settings/#debug>`_ settings is used to enable debug mode. You should never deploy a site into production with ``DEBUG`` turned on. You should set this setting to ``False`` as follows:
 
     .. code-block:: bash
 
@@ -66,7 +81,7 @@ The `DEBUG <https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ setting
 4. Review the Django Deployment Checklist
 =========================================
 
-Review the `Django Deployment Checklist <https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/>`_ carefully.
+Review the `Django Deployment Checklist <https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/>`_ carefully.
 
     .. important::
 
