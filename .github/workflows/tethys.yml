@@ -109,7 +109,7 @@ jobs:
       # Build the docker for no tag
       - name: Build Without Tag
         run: |
-          docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} .;
+          docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ vars.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} .;
           docker tag ${{ vars.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }};
       # Upload docker if pull request no tag
       - name: Upload Docker No Tag
