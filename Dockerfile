@@ -44,6 +44,7 @@ ENV CLIENT_MAX_BODY_SIZE="75M"
 # Tethys settings arguments
 ENV DEBUG="False"
 ENV ALLOWED_HOSTS="\"[localhost, 127.0.0.1]\""
+ENV CSRF_TRUSTED_ORIGINS="\"[http://localhost, http://127.0.0.1]\""
 ENV BYPASS_TETHYS_HOME_PAGE="True"
 ENV ADD_DJANGO_APPS="\"[]\""
 ENV SESSION_WARN=1500
