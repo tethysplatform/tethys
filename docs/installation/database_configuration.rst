@@ -46,4 +46,4 @@ While Tethys Platform uses the SQLite database by default for ease of use in dev
 Using Other Databases
 =====================
 
-While many of the convenience tools that Tethys provides only support SQLite and PostgreSQL, Tethys can be configured with other Database engines. See `<https://docs.djangoproject.com/en/3.2/ref/databases/>`_ for more information.
+While many of the convenience tools that Tethys provides only support SQLite and PostgreSQL, Tethys can be configured with other Database engines. See `<https://docs.djangoproject.com/en/5.0/ref/databases/>`_ for more information.
