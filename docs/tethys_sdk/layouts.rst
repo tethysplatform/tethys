@@ -57,7 +57,7 @@ Most of the configuration for a Layout is done by setting/overriding class prope
    class MyMapLayout(MapLayout):
       map_title = 'My Map Layout'
       map_subtitle = 'Subtitle'
-      basemaps = ['OpenStreetMap', 'ESRI', 'Stamen']
+      basemaps = ['OpenStreetMap', 'ESRI']
       default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
       max_zoom = 16
       min_zoom = 2
