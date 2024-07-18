@@ -5,11 +5,11 @@ tail_file() {
   ALIGN=27
   LENGTH=`echo $1 | wc -c`
   PADDING=`expr ${ALIGN} - ${LENGTH}`
-  PAD=`perl -e "print ' ' x $PADDING;"`
+  PREFIX=$1`perl -e "print ' ' x $PADDING;"`
   file="/var/log/$1"
   # each tail runs in the background but prints to stdout
   # sed outputs each line from tail prepended with the filename+padding
-  tail -qF $file | sed "s|^|$1${PAD}:|g" &
+  tail -qF $file | sed --unbuffered "s|^|${PREFIX}:|g" &
 }
 
 echo_status() {
