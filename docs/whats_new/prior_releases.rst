@@ -819,7 +819,7 @@ Map View Gizmo
 --------------
 
 * Added support for many more basemaps.
-* Added Esri, Stamen, CartoDB.
+* Added Esri, CartoDB.
 * Support for custom XYZ services as basemaps.
 * User can set OpenLayers version.
 * Uses jsdelivr to load custom versions (see: `<https://cdn.jsdelivr.net/npm/openlayers>`_)

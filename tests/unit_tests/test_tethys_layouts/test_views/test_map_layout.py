@@ -121,15 +121,7 @@ class TestMapLayout(TestCase):
         )
         self.assertEqual(inst.map_subtitle, "")
         self.assertEqual(inst.map_title, "")
-        self.assertListEqual(
-            inst.basemaps,
-            [
-                "Stamen",
-                {"Stamen": {"layer": "toner", "control_label": "Black and White"}},
-                "OpenStreetMap",
-                "ESRI",
-            ],
-        )
+        self.assertListEqual(inst.basemaps, ["OpenStreetMap", "ESRI"])
         self.assertIsNone(inst.cesium_ion_token)
         self.assertFalse(inst.default_disable_basemap)
         self.assertIsNone(inst.geocode_api_key)
