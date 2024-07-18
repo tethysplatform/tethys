@@ -91,12 +91,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     map_title = ""
 
     # Optional Properties
-    basemaps = [
-        "Stamen",
-        {"Stamen": {"layer": "toner", "control_label": "Black and White"}},
-        "OpenStreetMap",
-        "ESRI",
-    ]
+    basemaps = ["OpenStreetMap", "ESRI"]
     cesium_ion_token = None
     default_disable_basemap = False
     default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # USA EPSG:4326

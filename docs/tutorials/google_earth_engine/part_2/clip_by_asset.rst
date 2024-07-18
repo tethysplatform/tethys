@@ -601,7 +601,6 @@ In this step you will modify the ``MapView`` on the Viewer page to use the exten
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},
             'OpenStreetMap',
-            'Stamen',
             'ESRI'
         ],
         view=MVView(

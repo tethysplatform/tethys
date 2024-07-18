@@ -509,7 +509,6 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},
             'OpenStreetMap',
-            'Stamen',
             'ESRI'
         ],
         view=MVView(
