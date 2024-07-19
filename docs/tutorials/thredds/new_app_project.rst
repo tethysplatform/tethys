@@ -91,7 +91,7 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
         name = 'THREDDS Tutorial'
         index = 'thredds_tutorial:home'
-        icon = 'thredds_tutorial/images/unidata_logo.png'
+        icon = f'{package}/images/unidata_logo.png'
         package = 'thredds_tutorial'
         root_url = 'thredds-tutorial'
         color = '#008e8d'
