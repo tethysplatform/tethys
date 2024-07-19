@@ -690,7 +690,7 @@ def install_packages(conda_config, update_installed=False):
             )
 
 
-def install_command(args):
+def install_command(args, do_exit=True):
     """
     install Command
     """
@@ -799,7 +799,7 @@ def install_command(args):
 
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:
-        successful_exit(app_name, "installed dependencies for")
+        successful_exit(app_name, "installed dependencies for", do_exit=do_exit)
 
     # Install Python Package
     write_msg("Running application install....")
@@ -815,7 +815,7 @@ def install_command(args):
         call(cmd, stdout=FNULL, stderr=STDOUT)
 
     if args.no_db_sync:
-        successful_exit(app_name)
+        successful_exit(app_name, do_exit=do_exit)
 
     call(["tethys", "db", "sync"])
 
@@ -858,7 +858,7 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
-    successful_exit(app_name)
+    successful_exit(app_name, do_exit=do_exit)
 
 
 def validate_schema(check_str, check_list):
@@ -869,9 +869,10 @@ def validate_schema(check_str, check_list):
     )
 
 
-def successful_exit(app_name, action="installed"):
+def successful_exit(app_name, action="installed", do_exit=True):
     write_success(f"Successfully {action} {app_name}.")
-    exit(0)
+    if do_exit:
+        exit(0)
 
 
 def assign_json_value(value):
