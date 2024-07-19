@@ -46,16 +46,16 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-       crossorigin=""/>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+        crossorigin=""/>
     {% endblock %}
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
-       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
-       crossorigin=""></script>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
+        crossorigin=""></script>
     {% endblock %}
 
     {% block header_buttons %}
@@ -174,17 +174,17 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-       crossorigin=""/>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+        crossorigin=""/>
       <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
-       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
-       crossorigin=""></script>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
+        crossorigin=""></script>
     {% endblock %}
 
     {% block scripts %}
@@ -217,6 +217,7 @@ In this step, you'll create controls to allow the user to search for and select 
     from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput
 
+    from .app import App
 
     @controller
     def home(request):
@@ -396,7 +397,7 @@ At this point the select controls are empty and don't do anything. In this step,
         """
         Controller for the app home page.
         """
-        catalog = App.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+        catalog = App.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
 
         # Retrieve dataset options from the THREDDS service
         print('Retrieving Datasets...')
@@ -446,6 +447,8 @@ Each time a new dataset is selected, the options in the variable and style contr
 .. code-block:: python
 
     from owslib.wms import WebMapService
+    import requests
+    import chardet
 
 .. code-block:: python
 
@@ -459,7 +462,21 @@ Each time a new dataset is selected, the options in the variable and style contr
         Returns:
             dict<layer_name:dict<styles,bbox>>: A dictionary with a key for each WMS layer available and a dictionary value containing metadata about the layer.
         """
-        wms = WebMapService(wms_url)
+        params = {
+            'service': 'WMS',
+            'version': '1.1.1',
+            'request': 'GetCapabilities'
+        }
+        request_url = f"{wms_url}?{'&'.join(f'{key}={value}' for key, value in params.items())}"
+        
+        response = requests.get(request_url)
+        encoding = chardet.detect(response.content)['encoding']
+        
+        response_content = response.content.decode(encoding)
+        utf8_content = response_content.encode('utf-8')
+                
+        wms = WebMapService(None, xml=utf8_content)
+
         layers = wms.contents
         from pprint import pprint
         print('WMS Contents:')
@@ -705,18 +722,18 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-       crossorigin=""/>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
     {% endblock %}
 
     {% block global_scripts %}
       {{ block.super }}
-      <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
-       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
-       crossorigin=""></script>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
+        crossorigin=""></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js"></script>
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js"></script>
     {% endblock %}
@@ -761,7 +778,37 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
 
     var update_layer;
 
-3. **Insert** the ``update_layer`` method just after the ``init_map`` method in :file:`public/js/leaflet_map.js`:
+3. Add proxy controller to :file:`controllers.py` to allow the JavaScript to access the WMS service:
+
+First, add the necessary imports
+
+.. code-block:: python
+
+    from django.http import HttpResponseNotAllowed, JsonResponse, HttpResponse # new import: HttpResponse
+    import requests
+
+Then, add the new controller
+
+.. code-block:: python
+
+    @controller(name='getWMSImageFromServer', url='getWMSImageFromServer/')
+    def wms_image_from_server(request):
+        try:
+            if 'main_url' in request.GET:
+                request_url = request.GET.get('main_url')
+                query_params = request.GET.dict()
+                query_params.pop('main_url', None)
+                r = requests.get(request_url, params=query_params)
+                return HttpResponse(r.content, content_type="image/png")
+            else:
+                return JsonResponse({})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': e})
+
+This controller will act as a proxy to the WMS service. It will take a URL and any query parameters and return the image data from the WMS service. This is necessary because the WMS service does not have CORS enabled, so the JavaScript cannot access it directly.
+
+4. **Insert** the ``update_layer`` method just after the ``init_map`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -769,9 +816,11 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
         if (m_td_layer) {
             m_map.removeLayer(m_td_layer);
         }
+    
+        var proxyWMSURL = `getWMSImageFromServer?main_url=${encodeURIComponent(m_curr_wms_url)}`;
 
         // Layer
-        m_layer = L.tileLayer.wms(m_curr_wms_url, {
+        m_layer = L.tileLayer.wms(proxyWMSURL, {
             layers: m_curr_variable,
             format: 'image/png',
             transparent: true,
@@ -791,7 +840,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
         m_td_layer.addTo(m_map);
     };
 
-4. Call the ``update_layer`` method when the style changes. **Replace** the on-change handler for the *style control* (i.e. ``$('#style').on('change', ...);``) defined in the ``init_controls`` method in :file:`public/js/leaflet_map.js` with this updated implementation:
+5. Call the ``update_layer`` method when the style changes. **Replace** the on-change handler for the *style control* (i.e. ``$('#style').on('change', ...);``) defined in the ``init_controls`` method in :file:`public/js/leaflet_map.js` with this updated implementation:
 
 .. code-block:: javascript
 
@@ -807,7 +856,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
 
     The style is changed not only when the user selects a new style, but also whenever the dataset or variable changes. Consequently, the ``update_layer`` method will be called anytime the dataset, variable, or style controls changes.
 
-5. Use the bounding box retrieved from the WMS service to automatically frame the selected layer on the map. **Replace** the on-change handler for the *variable control* (i.e. ``$('#variable').on('change', ...);``) defined in the ``init_controls`` method with this updated implementation:
+6. Use the bounding box retrieved from the WMS service to automatically frame the selected layer on the map. **Replace** the on-change handler for the *variable control* (i.e. ``$('#variable').on('change', ...);``) defined in the ``init_controls`` method with this updated implementation:
 
 .. code-block:: javascript
 
@@ -822,7 +871,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
         m_map.fitBounds(bbox);
     });
 
-5. Verify that the layers show up on the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
+7. Verify that the layers show up on the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
 
 9. Implement Legend for Layers
 ==============================
@@ -942,9 +991,9 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
     {% block styles %}
       {{ block.super }}
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-       integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-       crossorigin=""/>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+        crossorigin=""/>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" />
       <link rel="stylesheet" href="{% static tethys_app|public:'css/leaflet_map.css' %}"/>
       <link rel="stylesheet" href="{% static tethys_app|public:'css/loader.css' %}" />
@@ -1096,7 +1145,7 @@ During development it is common to use print statements. Rather than delete thes
         """
         Controller for the app home page.
         """
-        catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+        catalog = app.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
 
         # Retrieve dataset options from the THREDDS service
         log.info('Retrieving Datasets...')
@@ -1143,7 +1192,20 @@ During development it is common to use print statements. Rather than delete thes
         Returns:
             dict<layer_name:dict<styles,bbox>>: A dictionary with a key for each WMS layer available and a dictionary value containing metadata about the layer.
         """
-        wms = WebMapService(wms_url)
+        params = {
+            'service': 'WMS',
+            'version': '1.1.1',
+            'request': 'GetCapabilities'
+        }
+        request_url = f"{wms_url}?{'&'.join(f'{key}={value}' for key, value in params.items())}"
+        
+        response = requests.get(request_url)
+        encoding = chardet.detect(response.content)['encoding']
+        
+        response_content = response.content.decode(encoding)
+        utf8_content = response_content.encode('utf-8')
+                
+        wms = WebMapService(None, xml=utf8_content)
         layers = wms.contents
         log.debug('WMS Contents:')
         log.debug(layers)

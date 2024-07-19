@@ -31,8 +31,10 @@ The current implementation uses hard-coded values for the color scale range of t
 
     update_layer = function() {
         ...
+        var proxyWMSURL = `getWMSImageFromServer?main_url=${encodeURIComponent(m_curr_wms_url)}`;
+
         // Layer
-        m_layer = L.tileLayer.wms(m_curr_wms_url, {
+        m_layer = L.tileLayer.wms(proxyWMSURL, {
             layers: m_curr_variable,
             format: 'image/png',
             transparent: true,
