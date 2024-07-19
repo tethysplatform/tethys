@@ -54,10 +54,10 @@ def add_scaffold_parser(subparsers):
         help="Attempt to overwrite project automatically if it already exists.",
     )
     scaffold_parser.add_argument(
-        "-p", 
-        "--prefix", 
-        dest="prefix", 
-        help="The absolute path to the directory within which the new app should be scaffolded."
+        "-p",
+        "--prefix",
+        dest="prefix",
+        help="The absolute path to the directory within which the new app should be scaffolded.",
     )
     scaffold_parser.set_defaults(
         func=scaffold_command, template="default", extension=False, prefix=os.getcwd()
