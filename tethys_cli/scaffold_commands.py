@@ -53,8 +53,14 @@ def add_scaffold_parser(subparsers):
         action="store_true",
         help="Attempt to overwrite project automatically if it already exists.",
     )
+    scaffold_parser.add_argument(
+        "-p", 
+        "--prefix", 
+        dest="prefix", 
+        help="The absolute path to the directory within which the new app should be scaffolded."
+    )
     scaffold_parser.set_defaults(
-        func=scaffold_command, template="default", extension=False
+        func=scaffold_command, template="default", extension=False, prefix=os.getcwd()
     )
 
 
@@ -371,7 +377,7 @@ def scaffold_command(args):
     log.debug("Template context: {}".format(context))
 
     # Create root directory
-    project_root = os.path.join(os.getcwd(), project_dir)
+    project_root = os.path.join(args.prefix, project_dir)
     log.debug("Project root path: {}".format(project_root))
 
     if os.path.isdir(project_root):
