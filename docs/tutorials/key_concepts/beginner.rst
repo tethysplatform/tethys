@@ -4,7 +4,7 @@
 Beginner Concepts
 *****************
 
-**Last Updated:** June 2024
+**Last Updated:** July 2024
 
 This tutorial introduces important concepts for first-time or beginner Tethys developers. The topics covered include:
 
@@ -262,7 +262,8 @@ Finally, you can also link to the page from another page using a button.
 
 a. Modify the ``add_dam_button`` on the Home page to link to the newly created page (don't forget the import):
 
-    .. code-block:: diff
+    .. code-block:: python
+        :emphasize-lines: 14
 
         from .app import App
 
@@ -277,7 +278,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
                 name='add-dam-button',
                 icon='plus-square',
                 style='success',
-       +        href=App.reverse('add_dam')
+                href=App.reverse('add_dam')
             )
 
 1. Build Out New Page

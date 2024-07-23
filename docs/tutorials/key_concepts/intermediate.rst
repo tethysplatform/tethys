@@ -4,7 +4,7 @@
 Intermediate Concepts
 *********************
 
-**Last Updated:** June 2024
+**Last Updated:** July 2024
 
 This tutorial introduces intermediate concepts for Tethys developers. The topics covered include:
 
@@ -37,6 +37,7 @@ HTML forms are the primary mechanism for obtaining input from users of your app.
     a. Add a form to the Add Dam page by modifying the ``/templates/dam_inventory/add_dam.html`` template as follows:
 
     .. code-block:: html+django
+        :emphasize-lines: 6-12
 
         {% extends tethys_app.package|add:"/base.html" %}
         {% load tethys %}
@@ -64,7 +65,7 @@ HTML forms are the primary mechanism for obtaining input from users of your app.
 b. Define the options for the form gizmos in the controller and change the ``add_button`` gizmo to be a submit button for the form in the ``add_dam`` controller:
 
     .. code-block:: python
-        :emphasize-lines: 1, 10-38, 45-46, 56-59
+        :emphasize-lines: 1, 11-38, 45-46, 56-59
 
         from tethys_sdk.gizmos import TextInput, DatePicker, SelectInput
 
@@ -139,7 +140,7 @@ At this point the form will be functional, but the app is not doing anything wit
 a. Change the ``add_dam`` controller to handle the form data using the form validation pattern:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 11-53, 59-60, 68-69, 76-77, 87-88
+        :emphasize-lines: 1-2, 10-52, 58-59, 67-68, 75-76, 86-87
 
         from django.contrib import messages
 
@@ -190,7 +191,7 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
 
                 if not has_errors:
                     # Do stuff here
-                    return redirect(reverse('dam_inventory:home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -260,24 +261,24 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
 
     **Form Validation Pattern**: The example above implements a common pattern for handling and validating form input. Generally, the steps are:
 
-    1. **define a "value" variable for each input in the form and assign it the initial value for the input**
-    2. **define an "error" variable for each input to handle error messages and initially set them to the empty string**
-    3. **check to see if the form is submitted and if the form has been submitted:**
-        a. extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
-        b. validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
-        c. if there are no errors, save or process the data, and then redirect to a different page
-        d. if there are errors continue on and re-render the form with error messages
-    4. **define all gizmos and variables used to populate the form:**
-        a. pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
-        b. pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
-    5. **render the page, passing all gizmos to the template through the context**
+    1. **Define a "value" variable for each input in the form and assign it the initial value for the input**
+    2. **Define an "error" variable for each input to handle error messages and initially set them to the empty string**
+    3. **Check to see if the form is submitted and if the form has been submitted:**
+        a. Extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
+        b. Validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
+        c. If there are no errors, save or process the data, and then redirect to a different page
+        d. If there are errors continue on and re-render the form with error messages
+    4. **Define all gizmos and variables used to populate the form:**
+        a. Pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
+        b. Pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
+    5. **Render the page, passing all gizmos to the template through the context**
 
 3. Create the Model and File IO
 ===============================
 
-Now that we are able to get information about new dams to add to the dam inventory from the user, we need to persist the data to some sort of database. It's time to create the Model for the app.
+Now that we are able to get information about new dams to add to the dam inventory from the user, we need to save or persist the data so we can load it in future page loads. It's time to create the Model for the app.
 
-In this tutorial we will start with a file database model to illustrate how to work with files in Tethys apps. In the :doc:`./advanced` tutorial we will convert this file database model to an SQL database model. Here is an overview of the file-based model:
+In this tutorial we will start with a simple file database model to illustrate how to work with files in Tethys apps. In the :doc:`./advanced` tutorial we will convert this file database model to an SQL database model. Here is an overview of the file-based model:
 
 * One text file will be created per dam
 * The name of the file will be the id of the dam (e.g.: *a1e26591-d6bb-4194-b4a7-1222fe0195fd.json*)
@@ -298,7 +299,7 @@ In this tutorial we will start with a file database model to illustrate how to w
 
 .. tip::
 
-    For more information on file workspaces see the :doc:`../../tethys_sdk/workspaces`.
+    For more information on file workspaces see the :ref:`tethys_paths_api`.
 
 .. warning::
 
@@ -308,12 +309,13 @@ a. Create a new file called ``model.py`` in the ``dam_inventory`` directory and 
 
     .. code-block:: python
 
+        import json
         import os
         import uuid
-        import json
+        from pathlib import Path
 
 
-        def add_new_dam(db_directory, name, owner, river, date_built):
+        def add_new_dam(db_directory: Path | str, name: str, owner: str, river: str, date_built: str):
             """
             Persist new dam.
             """
@@ -331,24 +333,22 @@ a. Create a new file called ``model.py`` in the ``dam_inventory`` directory and 
 
             # Write to file in {{db_directory}}/dams/{{uuid}}.json
             # Make dams dir if it doesn't exist
-            dams_dir = os.path.join(db_directory, 'dams')
-            if not os.path.exists(dams_dir):
-                os.mkdir(dams_dir)
+            dams_dir = Path(db_directory) / 'dams'
+            if not dams_dir.exists():
+                os.makedirs(dams_dir, exist_ok=True)
 
             # Name of the file is its id
             file_name = str(new_dam_id) + '.json'
-            file_path = os.path.join(dams_dir, file_name)
+            file_path = dams_dir / file_name
 
             # Write json
-            with open(file_path, 'w') as f:
+            with file_path.open('w') as f:
                 f.write(dam_json)
-
-
 
 b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function to persist the dam data:
 
     .. code-block:: python
-        :emphasize-lines: 1, 5-6, 49
+        :emphasize-lines: 1, 5-6, 49-55
 
         from .model import add_new_dam
 
@@ -398,8 +398,14 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
                     date_error = 'Date Built is required.'
 
                 if not has_errors:
-                    add_new_dam(db_directory=app_workspace.path, name=name, owner=owner, river=river, date_built=date_built)
-                    return redirect(reverse('dam_inventory:home'))
+                    add_new_dam(
+                        db_directory=app_workspace.path,
+                        name=name,
+                        owner=owner,
+                        river=river,
+                        date_built=date_built
+                    )
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -469,7 +475,7 @@ c. Use the Add Dam page to add several dams for the Dam Inventory app.
 
 d. Navigate to ``workspaces/app_workspace/dams`` to see the JSON files that are being written.
 
-4. Develop Table View Page
+1. Develop Table View Page
 ==========================
 
 Now that the data is being persisted in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table, which will provide a good review of Model View Controller:
@@ -478,27 +484,22 @@ a. Open ``model.py`` and add a model method for listing the dams called ``get_al
 
     .. code-block:: python
 
-        def get_all_dams(db_directory):
+        def get_all_dams(db_directory: Path | str):
             """
             Get all persisted dams.
             """
             # Write to file in {{db_directory}}/dams/{{uuid}}.json
             # Make dams dir if it doesn't exist
-            dams_dir = os.path.join(db_directory, 'dams')
-            if not os.path.exists(dams_dir):
-                os.mkdir(dams_dir)
+            dams_dir = Path(db_directory) / 'dams'
+            if not dams_dir.exists():
+                os.makedirs(dams_dir, exist_ok=True)
 
             dams = []
 
-            # Open each file and convert contents to python objects
-            for dam_json in os.listdir(dams_dir):
-                # Make sure we are only looking at json files
-                if '.json' not in dam_json:
-                    continue
-
-                dam_json_path = os.path.join(dams_dir, dam_json)
-                with open(dam_json_path, 'r') as f:
-                    dam_dict = json.loads(f.readlines()[0])
+            # Open each json file and convert contents to python dictionaries
+            for dam_json in dams_dir.glob('*.json'):
+                with dam_json.open('r') as f:
+                    dam_dict = json.loads(f.read())
                     dams.append(dam_dict)
 
             return dams
@@ -611,7 +612,7 @@ a. Open ``/templates/dam_inventory/add_dam.html`` and add the ``location_input``
 b. Add the definition of the ``location_input`` gizmo and validation code to the ``add_dam`` controller in ``controllers.py``:
 
     .. code-block:: python
-        :emphasize-lines: 1, 15, 22, 32, 50-53, 97-116, 138-139
+        :emphasize-lines: 1, 15, 22, 32, 51-53, 58, 104-123, 145-146
 
         from tethys_sdk.gizmos import MVDraw, MVView
 
@@ -668,8 +669,15 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
                     location_error = 'Location is required.'
 
                 if not has_errors:
-                    add_new_dam(db_directory=app_workspace.path, location=location, name=name, owner=owner, river=river, date_built=date_built)
-                    return redirect(reverse('dam_inventory:home'))
+                    add_new_dam(
+                        db_directory=app_workspace.path,
+                        location=location,
+                        name=name,
+                        owner=owner,
+                        river=river,
+                        date_built=date_built
+                    )
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
