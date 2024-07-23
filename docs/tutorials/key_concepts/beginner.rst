@@ -196,10 +196,6 @@ a. Create a new file ``/public/css/map.css`` and add the following contents:
             padding: 0;
         }
 
-        #app-content, #inner-app-content, #map_view_outer_container {
-            height: 100%;
-        }
-
 b. Load the styles on the ``/templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``static`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
 
     .. code-block:: html+django
@@ -217,12 +213,12 @@ c. Save your changes to ``map.css`` and ``home.html`` and refresh the page to vi
 
 .. important::
 
-    Don't forget the ``{{ block.super }}``! The ``{{ block.super }}`` statement loads all previously loaded styles in this block. If you forget the ``{{ block.super }}``, it will result in a broken page with no styles applied.
+    Don't forget the ``{{ block.super }}``! It loads all previously loaded styles in this block. If you forget the ``{{ block.super }}``, it will result in a broken page with no styles applied.
 
-7. Create a New Page
+1. Create a New Page
 ====================
 
-Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller to ``controllers.py``, and (3) define the routing using the ``controller`` decorator.
+Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller function to ``controllers.py``, and (3) define the routing using the ``controller`` decorator.
 
 a. Create a new file ``/templates/dam_inventory/add_dam.html`` and add the following contents:
 
@@ -266,7 +262,7 @@ Finally, you can also link to the page from another page using a button.
 
 a. Modify the ``add_dam_button`` on the Home page to link to the newly created page (don't forget the import):
 
-    .. code-block:: python
+    .. code-block:: diff
 
         from .app import App
 
@@ -281,10 +277,10 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
                 name='add-dam-button',
                 icon='plus-square',
                 style='success',
-                href=App.reverse('add_dam')
+       +        href=App.reverse('add_dam')
             )
 
-9. Build Out New Page
+1. Build Out New Page
 =====================
 
 a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app content area and add ``Add`` and ``Cancel`` buttons to the app actions area:
@@ -322,7 +318,7 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
             cancel_button = Button(
                 display_text='Cancel',
                 name='cancel-button',
-                href=reverse('dam_inventory:home')
+                href=App.reverse('home')
             )
 
             context = {
@@ -333,7 +329,7 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
             return App.render(request, 'add_dam.html', context)
 
 
-10. Customize Navigation
+1.  Customize Navigation
 ========================
 
 Now that there are two pages in the app, we should modify the app navigation to have links to the **Home** and **Add Dam** pages.
