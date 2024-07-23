@@ -103,7 +103,7 @@ Tethys apps are developed using the :term:`Model View Controller` (MVC) software
 4. Views
 ========
 
-Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, HTML templates can use the Django Template Language, because Tethys Platform is build on Django. This allows you to coding logic into your HTML documents, using template tags, making the web pages of your app dynamic and reusable.
+Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, HTML templates can use the Django Template Language, because Tethys Platform is build on Django. This allows you to code logic into your HTML documents, using template tags, making the web pages of your app dynamic and reusable.
 
 a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with the following:
 

@@ -4,7 +4,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** June 2024
+**Last Updated:** July 2024
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
@@ -55,7 +55,7 @@ Use start up the development server:
     tethys manage start
 
 
-Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login the default portal user is:
+Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login with the **default portal user**:
 
 * **username**: admin
 * **password**: pass
@@ -74,7 +74,7 @@ If all has gone well, you should see your app listed on the app library page. Cl
 
 
 
-4. App Project Paths
+1. App Project Paths
 ====================
 
 Throughout the tutorial, you will be asked to open various files. Most of the files will be located in your :term:`app package` directory which shares the name of your app: "dam_inventory". Relative to the ``tethysapp-dam_inventory`` directory, this directory is located at:
@@ -85,7 +85,7 @@ Throughout the tutorial, you will be asked to open various files. Most of the fi
 
 
 
-For convenience, all paths in the following tutorials will be given relative to the :term:`app package` directory. For example:
+For simplicity, all paths in the following tutorials will be given relative to the :term:`app package` directory. For example:
 
 .. code-block:: bash
 
@@ -104,4 +104,4 @@ For convenience, all paths in the following tutorials will be given relative to 
 
 .. danger::
 
-    The :file:`tethysapp` directory should no longer contain an :file:`\_\_init\_\_.py` as it did in version of Tethys Platform prior to 3.0. This directory is a Python namespace directory and in Tethys Platform 3.0 the implicit namespace pattern is used. Adding an :file:`\_\_init\_\_.py` to this directory will break the app.
+    The :file:`tethysapp` directory **SHOULD NOT** contain an :file:`\_\_init\_\_.py` as it did in versions of Tethys Platform prior to 3.0. This directory is a Python namespace directory and in Tethys Platform 3.0 the implicit namespace pattern is used. Adding an :file:`\_\_init\_\_.py` to this directory will break the app or cause other installed apps not to appear.

@@ -123,12 +123,15 @@ installed_apps = [
     "tethys_layouts",
 ]
 
-settings.configure(
-    INSTALLED_APPS=installed_apps,
-    DEBUG=True,
-    SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs",
-)
-django.setup()
+try:
+    settings.configure(
+        INSTALLED_APPS=installed_apps,
+        DEBUG=True,
+        SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs",
+    )
+    django.setup()
+except:
+    pass
 
 # Sphinx extensions
 extensions = [
