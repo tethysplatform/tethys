@@ -4,7 +4,7 @@
 Advanced Concepts
 *****************
 
-**Last Updated:** June 2024
+**Last Updated:** July 2024
 
 This tutorial introduces advanced concepts for Tethys developers. The topics covered include:
 
@@ -28,45 +28,107 @@ If you wish to use the intermediate solution as a starting point:
     cd tethysapp-dam_inventory
     git checkout -b intermediate-solution intermediate-|version|
 
+1. Install PostgreSQL with PostGIS
+==================================
+
+The peristent store API currently only works with the PostgreSQL databases. However, the default installation of Tethys Platform uses SQLite as the database backend. In this section you will reconfigure your Tethys installation to use a PostgreSQL database instead of SQLite. There are many ways to install PostgreSQL, but for this tutorial you will learn how to install PostgreSQL using Docker.
+
+a. Install PostgreSQL database with the PostGIS extension using Docker:
+
+    a. Install `Docker Desktop <https://www.docker.com/products/docker-desktop>`_ or `Docker Engine <https://docs.docker.com/engine/install/>`_.
+
+    b. Open a terminal and run the following command to create a new PostgreSQL with PostGIS Docker container:
+
+    .. code-block:: bash
+
+        docker run -d --name tethys_postgis -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 postgis/postgis
+
+    c. Verify in Docker desktop that you have a new container running with the name "tethys_postgis" on port ``5432`` (**5432**:5432).
+
+b. Add necessary Python dependencies:
+
+    To use the PostgreSQL database you need to install the ``psycopg2`` library. Install it using one of the following commands:
+
+    .. code-block:: bash
+
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge psycopg2
+
+            # pip
+            pip install psycopg2
+
+c. Configure Tethys to use PostgreSQL database:
+
+    a. Stop the Tethys development server if it is running by pressing :kbd:`CTRL-C` in the terminal.
+
+    b. Configure the Tethys Portal to use the new Docker database using the ``tethys settings`` command:
+
+    .. code-block:: bash
+
+        tethys settings --set DATABASES.default.ENGINE django.db.backends.postgresql --set DATABASES.default.NAME tethys_platform --set DATABASES.default.USER tethys_default --set DATABASES.default.PASSWORD pass --set DATABASES.default.HOST localhost --set DATABASES.default.PORT 5432
+
+    c. Run the ``tethys db configure`` command to prepare the database for use by the Tethys portal:
+
+    .. code-block:: bash
+
+        PGPASSWORD=mysecretpassword tethys db configure
+
+    The default password for the ``postgis/postgis`` container is "mysecretpassword". If you changed it, you will need to replace it in the command above.
+
+    d. Start Tethys the development server (``tethys manage start``) and verify that the app is still working.
+
+.. important::
+
+    You will now need to start the "tethys_postgis" container each time you want to start the Tethys development server. You can do this using the Docker Desktop application or by running the following command:
+
+    .. code-block:: bash
+
+        docker start tethys_postgis
+
 1. Persistent Store Database
 ============================
 
-In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
+    In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
 
-a. Add necessary dependencies:
+    a. Add necessary dependencies:
 
-Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+    Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
 
-.. code-block:: console
+    .. code-block:: bash
 
-        # conda: conda-forge channel strongly recommended
-        conda install -c conda-forge "sqlalchemy<2" psycopg2
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge "sqlalchemy<2" psycopg2
 
-        # pip
-        pip install "sqlalchemy<2" psycopg2
+            # pip
+            pip install "sqlalchemy<2" psycopg2
 
-Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
+    Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
 
-.. code-block:: yaml
+    .. code-block:: yaml
+        :emphasize-lines: 13, 15-16
 
-    # This file should be committed to your app code.
-    version: 1.0
-    # This should match the app - package name in your setup.py
-    name: dam_inventory
+        # This file should be committed to your app code.
+        version: 1.1
+        # This should be greater or equal to your tethys-platform in your environment
+        tethys_version: ">=4.0.0"
+        # This should match the app - package name in your setup.py
+        name: dam_inventory
 
-    requirements:
-      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-      skip: false
-      conda:
-        channels:
-          - conda-forge
-        packages:
-          - sqlalchemy<2
-          - psycopg2
+        requirements:
+        # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+        skip: false
+        conda:
+            channels:
+            - conda-forge
+            packages:
+            - sqlalchemy<2
+            - psycopg2
 
-      pip:
+        pip:
 
-    post:
+        npm:
+
+        post:
 
 
 b. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
@@ -163,7 +225,7 @@ d. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` wi
             )
 
             # Get connection/session to database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Add the new dam record to the session
@@ -179,7 +241,7 @@ d. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` wi
             Get all persisted dams.
             """
             # Get connection/session to database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Query for all dam records
@@ -237,7 +299,7 @@ e. Create a new function called ``init_primary_db`` at the bottom of ``model.py`
 f. Refactor ``home`` controller in ``controllers.py`` to use the updated model methods:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 7, 13-14, 19-20, 23-27
+        :emphasize-lines: 1-2, 7, 13-14, 19-20, 22-28
 
         @controller
         def home(request):
@@ -275,7 +337,7 @@ f. Refactor ``home`` controller in ``controllers.py`` to use the updated model m
 g. Refactor the ``add_dam`` controller to use the updated model methods:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 52
+        :emphasize-lines: 1-2, 52-58
 
         @controller(url='dams/add')
         def add_dam(request):
@@ -328,7 +390,13 @@ g. Refactor the ``add_dam`` controller to use the updated model methods:
                     location_error = 'Location is required.'
 
                 if not has_errors:
-                    add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                    add_new_dam(
+                        location=location,
+                        name=name,
+                        owner=owner,
+                        river=river,
+                        date_built=date_built
+                    )
                     return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
@@ -374,8 +442,7 @@ i. Add a **Persistent Store Service** to Tethys Portal:
 
 .. important::
 
-    The username and password for the persistent store service must be a superuser to use spatial persistent stores.
-    Note that the default installation of Tethys Portal includes a superuser named "tethys_super", password: "pass".
+    The username and password for the persistent store service must be a user with permissions to create databases to use spatial persistent stores. The ``tethys db configure`` command creates a superuser named "tethys_super", password: "pass".
 
 j. Assign the new **Persistent Store Service** to the Dam Inventory App:
 
@@ -397,7 +464,7 @@ k. Execute the **syncstores** command to create the tables in the Persistent Sto
 
         tethys syncstores dam_inventory
 
-2. Use Custom Settings
+3. Use Custom Settings
 ======================
 
 In the :doc:`./beginner` tutorial, we created a custom setting named `max_dams`. In this section, we'll show you how to use the custom setting in one of your controllers.
@@ -405,7 +472,7 @@ In the :doc:`./beginner` tutorial, we created a custom setting named `max_dams`.
 a. Modify the `add_dam` controller, such that it won't add a new dam if the `max_dams` limit has been reached:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 57-69
+        :emphasize-lines: 1-2, 57-75
 
         from .model import Dam
         from .app import App
@@ -464,16 +531,22 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
 
                 if not has_errors:
                     # Get value of max_dams custom setting
-                    max_dams = app.get_custom_setting('max_dams')
+                    max_dams = App.get_custom_setting('max_dams')
 
                     # Query database for count of dams
-                    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                    Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
                     session = Session()
                     num_dams = session.query(Dam).count()
 
                     # Only add the dam if custom setting doesn't exist or we have not exceed max_dams
                     if not max_dams or num_dams < max_dams:
-                        add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                        add_new_dam(
+                            location=location,
+                            name=name,
+                            owner=owner,
+                            river=river,
+                            date_built=date_built
+                        )
                     else:
                         messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
 
@@ -489,7 +562,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
         For more information on app settings, see :doc:`../../tethys_sdk/app_settings`.
 
 
-3. Use JavaScript APIs
+4. Use JavaScript APIs
 ======================
 
 JavaScript is the programming language that is used to program web browsers. You can use JavaScript in your Tethys apps to enrich the user experience and add dynamic effects. Many of the Tethys Gizmos include JavaScript APIs to allow you to access the underlying JavaScript objects and library to customize them. In this section, we'll use the JavaScript API of the Map View gizmo to add pop-ups to the map whenever a user clicks on one of the dams.
@@ -583,14 +656,11 @@ b. Create a new file called ``/public/js/map.js`` and add the following contents
 c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the ``app_content`` area of the page with an id ``popup``, and load the ``map.js`` script to the bottom of the page:
 
     .. code-block:: html+django
+        :emphasize-lines: 7, 19-22
 
-        {% extends tethys_app.package|add:"base.html" %}
+        {% extends tethys_app.package|add:"/base.html" %}
+        {% load tethys %}
         {% load static tethys %}
-
-        {% block styles %}
-            {{ block.super }}
-            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
-        {% endblock %}
 
         {% block app_content %}
             {% gizmo dam_inventory_map %}
@@ -599,6 +669,11 @@ c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the
 
         {% block app_actions %}
             {% gizmo add_dam_button %}
+        {% endblock %}
+
+        {% block styles %}
+            {{ block.super }}
+            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
         {% endblock %}
 
         {% block scripts %}
@@ -620,11 +695,8 @@ d. Open ``public/css/map.css`` and add the following contents:
             padding: 0;
         }
 
-        #app-content, #inner-app-content, #map_view_outer_container {
-            height: 100%;
-        }
 
-4. App Permissions
+5. App Permissions
 ==================
 
 By default, any user logged into the app can access any part of it. You may want to restrict access to certain areas of the app to privileged users. This can be done using the :doc:`../../tethys_sdk/permissions`. Let's modify the app so that only admin users of the app can add dams to the app.
@@ -664,6 +736,7 @@ a. Define permissions for the app by adding the ``permissions`` method to the ap
 b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``permissions_required`` argument of the ``controller`` decorator:
 
     .. code-block:: python
+        emphasize-lines: 1
 
         @controller(url='dams/add', permission_required='add_dams')
         def add_dam(request):
@@ -675,7 +748,7 @@ b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``pe
 c. Add a context variable called ``can_add_dams`` to the context of each controller with the value of the return value of the ``has_permission`` function:
 
     .. code-block:: python
-        :emphasize-lines: 1, 12, 27, 42
+        :emphasize-lines: 1, 13, 28, 43
 
         from tethys_sdk.permissions import has_permission
         from .app import App
@@ -746,9 +819,9 @@ e. Use the ``can_add_dams`` variable to determine whether to show or hide the "A
         :emphasize-lines: 2, 4
 
         {% block app_actions %}
-        {% if can_add_dams %}
-            {% gizmo add_dam_button %}
-        {% endif %}
+            {% if can_add_dams %}
+                {% gizmo add_dam_button %}
+            {% endif %}
         {% endblock %}
 
 f. The ``admin`` user of Tethys is a superuser and has all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
@@ -772,7 +845,7 @@ g. Log in with each user account. If the permission has been applied correctly, 
 
     For more details on Permissions, see: :doc:`../../tethys_sdk/permissions`.
 
-5. Persistent Store Related Tables
+6. Persistent Store Related Tables
 ==================================
 
 Add Flood Hydrograph table
@@ -833,7 +906,7 @@ b. Execute **syncstores** command again to add the new tables to the database:
         tethys syncstores dam_inventory
 
 
-6. File Upload
+7. File Upload
 ==============
 
 CSV File Upload
@@ -863,7 +936,7 @@ a. New Model function
                         continue
 
                 if len(hydro_points) > 0:
-                    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                    Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
                     session = Session()
 
                     # Get dam object
@@ -1021,6 +1094,7 @@ c. New Controller
 d. Update navigation
 
     .. code-block:: html+django
+        :emphasize-lines: 5, 11
 
         {% block app_navigation_items %}
         {% url tethys_app|url:'home' as home_url %}
@@ -1042,7 +1116,7 @@ e. Test upload with these files:
 
     :download:`Sample Hydrograph CSVs <./hydrographs.zip>`
 
-7. URL Variables and Plotting
+8. URL Variables and Plotting
 =============================
 
 Create a new page with hydrograph plotted for selected Dam
@@ -1140,7 +1214,7 @@ d. Add ``get_hydrograph`` helper function to ``model.py``
             """
             Get hydrograph id from dam id.
             """
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Query if hydrograph exists for dam
@@ -1155,6 +1229,7 @@ d. Add ``get_hydrograph`` helper function to ``model.py``
 e. Modify ``list_dams`` controller (and add needed imports):
 
     .. code-block:: python
+        :emphasize-lines: 14-20, 16, 31
 
         from django.utils.html import format_html
         from .model import get_hydrograph
@@ -1202,12 +1277,53 @@ e. Modify ``list_dams`` controller (and add needed imports):
 
 f. Test by going to the Dams page and clicking on the new ``Hydrograph Plot`` button in the table for a dam that has already been assigned a hydrograph.
 
-8. Dynamic Hydrograph Plot in Pop-Ups
+9. Dynamic Hydrograph Plot in Pop-Ups
 =====================================
 
 Add Hydrographs to pop-ups if they exist.
 
-a. Add Plotly Gizmo dependency to ``home.html``:
+a. Add necessary dependencies:
+
+    Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+
+    .. code-block:: bash
+
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge plotly
+
+            # pip
+            pip install plotly
+
+    Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
+
+    .. code-block:: yaml
+        :emphasize-lines: 17
+
+        # This file should be committed to your app code.
+        version: 1.1
+        # This should be greater or equal to your tethys-platform in your environment
+        tethys_version: ">=4.0.0"
+        # This should match the app - package name in your setup.py
+        name: dam_inventory
+
+        requirements:
+        # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+        skip: false
+        conda:
+            channels:
+            - conda-forge
+            packages:
+            - sqlalchemy<2
+            - psycopg2
+            - plotly
+
+        pip:
+
+        npm:
+
+        post:
+
+b. Add Plotly Gizmo dependency to ``home.html``:
 
     .. code-block:: html+django
         :emphasize-lines: 4-6
@@ -1221,7 +1337,7 @@ a. Add Plotly Gizmo dependency to ``home.html``:
 
         ...
 
-b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
+c. Create a template for the AJAX plot (``hydrograph_ajax.html``)
 
     .. code-block:: html+django
 
@@ -1231,7 +1347,7 @@ b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
             {% gizmo hydrograph_plot %}
         {% endif %}
 
-c. Create an AJAX controller ``hydrograph_ajax``
+d. Create an AJAX controller ``hydrograph_ajax``
 
     .. code-block:: python
 
@@ -1241,7 +1357,7 @@ c. Create an AJAX controller ``hydrograph_ajax``
             Controller for the Hydrograph Page.
             """
             # Get dams from database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
             dam = session.query(Dam).get(int(dam_id))
 
@@ -1257,7 +1373,7 @@ c. Create an AJAX controller ``hydrograph_ajax``
             session.close()
             return App.render(request, 'hydrograph_ajax.html', context)
 
-d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
+e. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
 
     .. code-block:: javascript
         :emphasize-lines: 37, 57-58
@@ -1333,7 +1449,7 @@ d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
 f. Update ``map.css``:
 
     .. code-block:: css
-        :emphasize-lines: 1-5
+        :emphasize-lines: 1-5, 8
 
         .popover-body {
             width: 400px;
@@ -1349,12 +1465,9 @@ f. Update ``map.css``:
             padding: 0;
         }
 
-        #app-content, #inner-app-content, #map_view_outer_container {
-            height: 100%;
-        }
 
-9. Solution
-===========
+1.  Solution
+============
 
 This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
