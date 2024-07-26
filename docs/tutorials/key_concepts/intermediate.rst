@@ -475,7 +475,7 @@ c. Use the Add Dam page to add several dams for the Dam Inventory app.
 
 d. Navigate to ``workspaces/app_workspace/dams`` to see the JSON files that are being written.
 
-1. Develop Table View Page
+4. Develop Table View Page
 ==========================
 
 Now that the data is being persisted in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table, which will provide a good review of Model View Controller:
@@ -559,19 +559,37 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
 
         The ``name`` argument can be used to set a custom name for the route that maps a URL to a controller as shown above. The default name is the same name as the controller function. This name is used to look up the URL of the controller using either the ``url`` tag in templates (see next step) or the ``reverse`` function in Python code.
 
-d. Open ``/templates/dam_inventory/base.html`` and add navigation links for the List View page:
+d. Open ``/templates/dam_inventory/base.html`` and add a header button and a navigation link for the Dams table view page:
+
+    .. code-block:: html+django
+        :emphasize-lines: 4, 8-10
+
+        {% block header_buttons %}
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          <div class="header-button glyphicon-button">
+            <a href="{{ home_url }}" title="Map"><i class="bi bi-map"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ list_dam_url }}" title="Dams"><i class="bi bi-list-ul"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ add_dam_url }}" title="Add Dam"><i class="bi bi-plus-circle"></i></a>
+          </div>
+        {% endblock %}
 
     .. code-block:: html+django
         :emphasize-lines: 4, 7
 
         {% block app_navigation_items %}
-        {% url tethys_app|url:'home' as home_url %}
-        {% url tethys_app|url:'add_dam' as add_dam_url %}
-        {% url tethys_app|url:'dams' as list_dam_url %}
-        <li class="nav-item title">Navigation</li>
-        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          <li class="nav-item title">Navigation</li>
+          <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Map</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
         {% endblock %}
 
 
@@ -812,113 +830,158 @@ e. Create several new entries using the updated Add Dam form.
 6. Render Spatial Data on Map
 =============================
 
-Finally, we'll add logic to the home controller to display all of the dams in our dam inventory on the map.
+Finally, we'll add logic to the home ``HomeMap`` controller to display all of the dams in our dam inventory on the map.
 
-a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
+a. Modify the ``HomeMap`` controller in ``controllers.py`` to map the list of dams:
 
     .. code-block:: python
-        :emphasize-lines: 1, 5-6, 10-77, 82, 84
+        :emphasize-lines: 1, 8, 10-134
 
-        from tethys_sdk.gizmos import MVLayer
+        @controller(name="home", app_workspace=True)
+        class HomeMap(MapLayout):
+            app = App
+            base_template = f'{App.package}/base.html'
+            map_title = 'Dam Inventory'
+            map_subtitle = 'Tutorial'
+            basemaps = ['OpenStreetMap', 'ESRI']
+            show_properties_popup = True
 
-        ...
+            def compose_layers(self, request, map_view, app_workspace, *args, **kwargs):
+                # Get list of dams and create dams MVLayer:
+                dams = get_all_dams(app_workspace.path)
+                features = []
 
-        @controller(app_workspace=True)
-        def home(request, app_workspace):
+                # Define GeoJSON Features
+                for dam in dams:
+                    dam_location = dam.get('location')
+                    dam_feature = {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': dam_location['type'],
+                            'coordinates': dam_location['coordinates'],
+                        },
+                        'properties': {
+                            'id': dam['id'],
+                            'name': dam['name'],
+                            'owner': dam['owner'],
+                            'river': dam['river'],
+                            'date_built': dam['date_built']
+                        }
+                    }
+
+                    features.append(dam_feature)
+
+                # Define GeoJSON FeatureCollection
+                dams_feature_collection = {
+                    'type': 'FeatureCollection',
+                    'crs': {
+                        'type': 'name',
+                        'properties': {
+                            'name': 'EPSG:4326'
+                        }
+                    },
+                    'features': features
+                }
+
+                # Compute zoom extent for the dams layer
+                layer_extent = self.compute_dams_extent(dams)
+
+                dam_layer = self.build_geojson_layer(
+                    geojson=dams_feature_collection,
+                    layer_name='dams',
+                    layer_title='Dams',
+                    layer_variable='dams',
+                    extent=layer_extent,
+                    visible=True,
+                    selectable=True,
+                    plottable=True,
+                )
+
+                layer_groups = [
+                    self.build_layer_group(
+                        id='all-layers',
+                        display_name='Layers',
+                        layer_control='checkbox',
+                        layers=[dam_layer]
+                    )
+                ]
+
+                # Update the map view with the new extent
+                map_view.view = MVView(
+                    projection='EPSG:4326',
+                    extent=layer_extent,
+                    maxZoom=self.max_zoom,
+                    minZoom=self.min_zoom,
+                )
+
+                return layer_groups
+
+        def build_map_extent_and_view(self, request, app_workspace, *args, **kwargs):
             """
-            Controller for the app home page.
+            Builds the default MVView and BBOX extent for the map.
+
+            Returns:
+                MVView, 4-list<float>: default view and extent of the project.
             """
-            # Get list of dams and create dams MVLayer:
             dams = get_all_dams(app_workspace.path)
-            features = []
+            extent = self.compute_dams_extent(dams)
+
+            # Construct the default view
+            view = MVView(
+                projection="EPSG:4326",
+                extent=extent,
+                maxZoom=self.max_zoom,
+                minZoom=self.min_zoom,
+            )
+
+            return view, extent
+
+        def compute_dams_extent(self, dams):
+            """Compute the extent/bbox of the given dams."""
             lat_list = []
             lng_list = []
 
             # Define GeoJSON Features
             for dam in dams:
-                dam_location = dam.pop('location')
+                dam_location = dam.get('location')
                 lat_list.append(dam_location['coordinates'][1])
                 lng_list.append(dam_location['coordinates'][0])
 
-                dam_feature = {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': dam_location['type'],
-                        'coordinates': dam_location['coordinates'],
-                    }
-                }
+            if len(lat_list) > 1:
+                # Compute the bounding box of all the dams
+                min_x = min(lng_list)
+                min_y = min(lat_list)
+                max_x = max(lng_list)
+                max_y = max(lat_list)
+                x_dist = max_x - min_x
+                y_dist = max_y - min_y
 
-                features.append(dam_feature)
+                # Buffer the bounding box
+                buffer_factor = 0.1
+                x_buffer = x_dist * buffer_factor
+                y_buffer = y_dist * buffer_factor
+                min_xb = min_x - x_buffer
+                min_yb = min_y - y_buffer
+                max_xb = max_x + x_buffer
+                max_yb = max_y + y_buffer
 
-            # Define GeoJSON FeatureCollection
-            dams_feature_collection = {
-                'type': 'FeatureCollection',
-                'crs': {
-                    'type': 'name',
-                    'properties': {
-                        'name': 'EPSG:4326'
-                    }
-                },
-                'features': features
-            }
+                # Bounding box for the view
+                extent = [min_xb, min_yb, max_xb, max_yb]
+            else:
+                extent = [-125.771484, 24.527135, -66.005859, 49.667628]  # CONUS
 
-            style = {'ol.style.Style': {
-                'image': {'ol.style.Circle': {
-                    'radius': 10,
-                    'fill': {'ol.style.Fill': {
-                        'color':  '#d84e1f'
-                    }},
-                    'stroke': {'ol.style.Stroke': {
-                        'color': '#ffffff',
-                        'width': 1
-                    }}
-                }}
-            }}
+            return extent
 
-            # Create a Map View Layer
-            dams_layer = MVLayer(
-                source='GeoJSON',
-                options=dams_feature_collection,
-                legend_title='Dams',
-                layer_options={'style': style}
-            )
+    .. tip::
 
-            # Define view centered on dam locations
-            try:
-                view_center = [sum(lng_list) / float(len(lng_list)), sum(lat_list) / float(len(lat_list))]
-            except ZeroDivisionError:
-                view_center = [-98.6, 39.8]
+        Here are some key points to note about the changes made to the ``HomeMap`` controller:
 
-            view_options = MVView(
-                projection='EPSG:4326',
-                center=view_center,
-                zoom=4.5,
-                maxZoom=18,
-                minZoom=2
-            )
-
-            dam_inventory_map = MapView(
-                height='100%',
-                width='100%',
-                layers=[dams_layer],
-                basemap=['OpenStreetMap'],
-                view=view_options
-            )
-
-            add_dam_button = Button(
-                display_text='Add Dam',
-                name='add-dam-button',
-                icon='plus-square',
-                style='success',
-                href=App.reverse('add_dam')
-            )
-
-            context = {
-                'dam_inventory_map': dam_inventory_map,
-                'add_dam_button': add_dam_button
-            }
-
-            return App.render(request, 'home.html', context)
+        * The ``compose_layers`` method has been added to define layers that should be displayed on the map. The method builds a GeoJSON FeatureCollection from the list of dams and then creates a GeoJSON layer from the FeatureCollection.
+        * The ``build_map_extent_and_view`` method has been added to define the default view and zoom extent of the map. The method computes the bounding box of the dams and returns a view and extent for the map.
+        * The ``compute_dams_extent`` method has been added to compute the bounding box of the dams. The method calculates the bounding box of the dams and then buffers the bounding box to ensure that all the dams are visible on the map. It is used by both the ``compose_layers`` and ``build_map_extent_and_view`` methods.
+        * The ``show_properties_popup`` attribute has been set to ``True`` to enable the display of a popup with the properties of the dams when they are clicked on the map.
+  
+b. Save your changes to ``controllers.py`` and navigate to the home page to see the dams displayed on the map.
 
 7. Solution
 ===========
