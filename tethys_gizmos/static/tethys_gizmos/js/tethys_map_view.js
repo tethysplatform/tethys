@@ -150,7 +150,7 @@ var TETHYS_MAP_VIEW = (function() {
   var update_field;
 
   // Utility Methods
-  var is_defined, in_array, string_to_function, build_ol_objects;
+  var is_defined, in_array, string_to_function, build_ol_objects, add_default_layer;
 
   // Class Declarations
   var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -291,16 +291,18 @@ var TETHYS_MAP_VIEW = (function() {
             base_map_labels.push(label);
             // Add the base map to layers
             m_map.addLayer(base_map_layer);
+        } else {
+          console.warn('Unsupported base map: ' + base_map_layer_name);
         }
       });
+      if (m_map.getLayers().getLength() == 0) {
+        // Default base map
+        add_default_layer();
+      }
     }
     else{
         // Default base map
-        base_map_layer = new ol.layer.Tile({
-          source: new ol.source.OSM()
-        });
-        // Add the base map to layers
-        m_map.addLayer(base_map_layer);
+        add_default_layer();
     }
   }
 
@@ -2331,6 +2333,14 @@ var TETHYS_MAP_VIEW = (function() {
       }
     }
     return stack;
+  };
+
+  add_default_layer = function() {
+    var default_base_map_layer = new ol.layer.Tile({
+      source: new ol.source.OSM()
+    });
+    // Add the base map to layers
+    m_map.addLayer(default_base_map_layer);
   };
 
   /***********************************
