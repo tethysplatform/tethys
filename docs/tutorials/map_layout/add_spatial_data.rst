@@ -2,7 +2,7 @@
 Add Spatial Data to Map Layout
 ******************************
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will learn how to visualize GeoJSON data in your Tethys app, building on Map Layout concepts
 
@@ -57,7 +57,7 @@ Replace :file:`controller.py` with the following:
             Add layers to the MapLayout and create associated layer group objects.
             """
             # Load GeoJSON from files
-            config_directory = app_workspace.path / 'sample_nextgen_data' / 'config'
+            config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
 
             # Nexus Points
             nexus_path = config_directory / 'nexus_4326.geojson'
@@ -127,7 +127,7 @@ Here's a closer look at that function:
         Add layers to the MapLayout and create associated layer group objects.
         """
         # Load GeoJSON from files
-        config_directory = app_workspace.path / 'sample_nextgen_data' / 'config'
+        config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
 
         # Nexus Points
         nexus_path = config_directory / 'nexus_4326.geojson'
@@ -266,7 +266,7 @@ Replace your :file:`controllers.py` with the following:
             Add layers to the MapLayout and create associated layer group objects.
             """
             # Load GeoJSON from files
-            config_directory = app_workspace.path / 'sample_nextgen_data' / 'config'
+            config_directory = Path(app_workspace.path) / 'sample_nextgen_data' / 'config'
 
             # Nexus Points
             nexus_path = config_directory / 'nexus_4326.geojson'

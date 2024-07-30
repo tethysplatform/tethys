@@ -2,7 +2,7 @@
 Add About Page and Disclaimer Modal
 ***********************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add an About page and a disclaimer modal. The requirements for the About page include a fixed width content area, two columns with text on the left and images on the right, and a list of sponsor logos at the bottom. The Disclaimer modal needs to be available from any page in the app and should also include the sponsor logos. The following topics will be reviewed in this tutorial:
 

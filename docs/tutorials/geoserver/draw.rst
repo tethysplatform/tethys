@@ -2,7 +2,7 @@
 Spatial Input
 *************
 
-**Last Updated:** June 2020
+**Last Updated:** July 2024
 
 1. Spatial Input Controller
 ===========================
@@ -13,7 +13,7 @@ Add a new controller to the :file:`controller.py` module:
 
     from .app import App
 
-    @controller
+    @controller(name='draw')
     def draw(request):
         drawing_options = MVDraw(
             controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],

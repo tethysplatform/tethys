@@ -2,7 +2,7 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** June 2020
+**Last Updated:** July 2024
 
 1. Map Page Controller
 ======================
@@ -16,7 +16,7 @@ Add a new controller to the :file:`controller.py` module:
         """
         Controller for the map page
         """
-        geoserver_engine = app.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
+        geoserver_engine = App.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
 
         options = []
 

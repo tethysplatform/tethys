@@ -2,7 +2,7 @@
 Build Dataset Selection Controls
 ********************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add controls to the app that will eventually be used to select various Google Earth Engine datasets to display. The following topics will be reviewed in this tutorial:
 
@@ -52,7 +52,7 @@ In this step, you'll define a variable that will effectively contain a list of a
 
 The metadata parameters for each dataset were derived from the examples of each dataset that can be found in the `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_ or the `Earth Engine Code Editor <https://code.earthengine.google.com/>`_ example scripts. Additional datasets can be easily added to the app by following this pattern.
 
-Create a new package (a folder with an empty :file:`__init__.py`) called :file:``gee`` to house Google Earth Engine related logic in the :file:`earth_engine` directory. Add a Python module called :file:`products.py` to this package with the following contents:
+Create a new package (a folder with an empty :file:`__init__.py`) called :file:`gee` to house Google Earth Engine related logic in the :file:`earth_engine` directory. Add a Python module called :file:`products.py` to this package with the following contents:
 
 .. code-block:: python
 

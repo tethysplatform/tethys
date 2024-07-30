@@ -2,7 +2,7 @@
 Plot Data at a Location
 ***********************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In the final tutorial you will add the ability for users to drop a point or draw a polygon and generate a time series of the selected dataset at that location. The following topics will be reviewed in this tutorial:
 

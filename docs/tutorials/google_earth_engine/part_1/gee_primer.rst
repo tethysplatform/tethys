@@ -2,9 +2,9 @@
 Part 1 Primer: Google Earth Engine for Tethys Developers
 ********************************************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
-This tutorial provides links to Google Earth Engine tutorials and resources that can be used to learn what you need to know for this Tethys tutorial. This is by no means exhaustive and we encourage you familiarize yourself with everything Google Earth Engine has to offer by visiting their documentation: `<https://developers.google.com/earth-engine/>`_. You will need an active `Google Earth Engine account <https://signup.earthengine.google.com>`_ to complete this tutorial.
+This tutorial provides links to Google Earth Engine tutorials and resources that can be used to learn what you need to know for this Tethys tutorial. This is by no means exhaustive and we encourage you to familiarize yourself with everything Google Earth Engine has to offer by visiting their documentation: `<https://developers.google.com/earth-engine/>`_. You will need an active `Google Earth Engine account <https://signup.earthengine.google.com>`_ to complete this tutorial.
 
 1. What is Google Earth Engine?
 ===============================
