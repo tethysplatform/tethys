@@ -131,8 +131,11 @@ try:
         SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs",
     )
     django.setup()
-except:
-    pass
+except RuntimeError as e:
+    # Ignore error if settings are already configured
+    # This can occur when using sphinx-autobuild
+    if "settings already configured" in str(e).lower():
+        pass
 
 # Sphinx extensions
 extensions = [
