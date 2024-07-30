@@ -10,13 +10,12 @@ This tutorial introduces important concepts for first-time or beginner Tethys de
 
 * The App Class
 * Model View Controller
-* Introduction to the View
-* Django Template Language
-* Introduction to the Controller
-* Templating Gizmos
-* Custom Styles and CSS
-* Linking Between Pages
+* Map Layout
 * App Navigation
+
+.. figure:: ../../images/tutorial/advanced/key-concepts-beginner-screenshot.png
+    :width: 800px
+    :align: center
 
 1. App Class
 ============

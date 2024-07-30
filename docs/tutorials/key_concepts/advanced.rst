@@ -10,12 +10,13 @@ This tutorial introduces advanced concepts for Tethys developers. The topics cov
 
 * Tethys Services API
 * PersistentStores API
-* Gizmo JavaScript APIs
-* JavaScript and AJAX
 * Permissions API
 * Advanced HTML Forms - File Upload
 * Plotting Gizmos
 
+.. figure:: ../../images/tutorial/advanced/key-concepts-advanced-screenshot.png
+    :width: 800px
+    :align: center
 
 0. Start From Intermediate Solution (Optional)
 ==============================================

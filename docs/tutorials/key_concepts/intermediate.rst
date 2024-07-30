@@ -9,14 +9,13 @@ Intermediate Concepts
 This tutorial introduces intermediate concepts for Tethys developers. The topics covered include:
 
 * HTML Forms and User Input
-* Handling Form Submissions in Controllers
-* Form Validation Pattern
 * Introduction to the Model
 * File IO and Workspaces
-* Intermediate Template Gizmos
-* Review of Model View Controller
-* Spatial Inputs in Forms
-* Rendering Spatial Data on the Map View Gizmo
+* Rendering Spatial Data on the Map Layout
+
+.. figure:: ../../images/tutorial/advanced/key-concepts-intermediate-screenshot.png
+    :width: 800px
+    :align: center
 
 0. Start From Beginner Solution (Optional)
 ==========================================
