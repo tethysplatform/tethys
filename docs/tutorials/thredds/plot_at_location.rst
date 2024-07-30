@@ -2,7 +2,7 @@
 Plot Time Series at Location
 ****************************
 
-**Last Updated:** August 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location and display it on a plot. Topics covered in this tutorial include:
 

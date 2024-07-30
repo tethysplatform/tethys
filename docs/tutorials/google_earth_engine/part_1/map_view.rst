@@ -2,7 +2,7 @@
 Add Map View
 ************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add a map to the Home Page using the Tethys MapView Gizmo. The following topics will be reviewed in this tutorial:
 

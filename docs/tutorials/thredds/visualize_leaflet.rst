@@ -2,7 +2,7 @@
 Visualize THREDDS Services with Leaflet
 ***************************************
 
-**Last Updated:** June 2022
+**Last Updated:** July 2024
 
 In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_ map to a Tethys App for visualizing layers from a THREDDS server. This tutorial is adapted from `Time Dimension Example 1 <https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/js/example1.js>`_ and the `Siphon NCSS Time Series Example <https://unidata.github.io/siphon/latest/examples/ncss/NCSS_Timeseries_Examples.html#sphx-glr-examples-ncss-ncss-timeseries-examples-py>`_. The following topics will be covered in this tutorial:
 

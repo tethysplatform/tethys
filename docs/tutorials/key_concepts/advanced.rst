@@ -427,7 +427,41 @@ h. Refactor the ``list_dams`` controller to use updated model methods:
 
             ...
 
-i. Add a **Persistent Store Service** to Tethys Portal:
+i. Remove references to workspace in ``build_map_extent_and_view`` method: 
+
+.. code-block:: python
+    :emphasize-lines: 1, 8
+
+    def build_map_extent_and_view(self, request, *args, **kwargs):
+        """
+        Builds the default MVView and BBOX extent for the map.
+
+        Returns:
+            MVView, 4-list<float>: default view and extent of the project.
+        """
+        dams = get_all_dams()
+        extent = self.compute_dams_extent(dams)
+
+        ...
+
+j. Refactor the ``compute_dams_extent`` method to use updated model methods:
+
+.. code-block:: python
+    :emphasize-lines: 8-9
+
+    def compute_dams_extent(self, dams):
+        """Compute the extent/bbox of the given dams."""
+        lat_list = []
+        lng_list = []
+
+        # Define GeoJSON Features
+        for dam in dams:
+            lat_list.append(dam.latitude)
+            lng_list.append(dam.longitude)
+        
+        ...
+
+k. Add a **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -445,7 +479,7 @@ i. Add a **Persistent Store Service** to Tethys Portal:
 
     The username and password for the persistent store service must be a user with permissions to create databases to use spatial persistent stores. The ``tethys db configure`` command creates a superuser named "tethys_super", password: "pass".
 
-j. Assign the new **Persistent Store Service** to the Dam Inventory App:
+l. Assign the new **Persistent Store Service** to the Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -459,7 +493,7 @@ j. Assign the new **Persistent Store Service** to the Dam Inventory App:
     :width: 100%
     :align: center
 
-k. Execute the **syncstores** command to create the tables in the Persistent Store database:
+m. Execute the **syncstores** command to create the tables in the Persistent Store database:
 
     .. code-block:: bash
 
@@ -1030,7 +1064,7 @@ Create a new page with hydrograph plotted for selected Dam
 
 a. Add necessary dependencies:
 
-    Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+    In order to plot the hydrograph, you will need to install the ``plotly`` library. Install this library using one of the following commands:
 
     .. code-block:: bash
 

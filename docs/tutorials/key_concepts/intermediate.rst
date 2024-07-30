@@ -302,7 +302,7 @@ In this tutorial we will start with a simple file database model to illustrate h
 
 .. warning::
 
-    File database models can be problematic for web applications, especially in a production environment. We recommend using and SQL or other database that can handle concurrent requests and heavy traffic.
+    File database models can be problematic for web applications, especially in a production environment. We recommend using a SQL or other type of database that can handle concurrent requests and heavy traffic.
 
 a. Create a new file called ``model.py`` in the ``dam_inventory`` directory and add a new function called ``add_new_dam``:
 
@@ -631,7 +631,7 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
     .. code-block:: python
         :emphasize-lines: 1, 15, 22, 32, 51-53, 58, 104-123, 145-146
 
-        from tethys_sdk.gizmos import MVDraw, MVView
+        from tethys_sdk.gizmos import MapView, MVDraw, MVView
 
         ...
 
@@ -915,61 +915,61 @@ a. Modify the ``HomeMap`` controller in ``controllers.py`` to map the list of da
 
                 return layer_groups
 
-        def build_map_extent_and_view(self, request, app_workspace, *args, **kwargs):
-            """
-            Builds the default MVView and BBOX extent for the map.
+            def build_map_extent_and_view(self, request, app_workspace, *args, **kwargs):
+                """
+                Builds the default MVView and BBOX extent for the map.
 
-            Returns:
-                MVView, 4-list<float>: default view and extent of the project.
-            """
-            dams = get_all_dams(app_workspace.path)
-            extent = self.compute_dams_extent(dams)
+                Returns:
+                    MVView, 4-list<float>: default view and extent of the project.
+                """
+                dams = get_all_dams(app_workspace.path)
+                extent = self.compute_dams_extent(dams)
 
-            # Construct the default view
-            view = MVView(
-                projection="EPSG:4326",
-                extent=extent,
-                maxZoom=self.max_zoom,
-                minZoom=self.min_zoom,
-            )
+                # Construct the default view
+                view = MVView(
+                    projection="EPSG:4326",
+                    extent=extent,
+                    maxZoom=self.max_zoom,
+                    minZoom=self.min_zoom,
+                )
 
-            return view, extent
+                return view, extent
 
-        def compute_dams_extent(self, dams):
-            """Compute the extent/bbox of the given dams."""
-            lat_list = []
-            lng_list = []
+            def compute_dams_extent(self, dams):
+                """Compute the extent/bbox of the given dams."""
+                lat_list = []
+                lng_list = []
 
-            # Define GeoJSON Features
-            for dam in dams:
-                dam_location = dam.get('location')
-                lat_list.append(dam_location['coordinates'][1])
-                lng_list.append(dam_location['coordinates'][0])
+                # Define GeoJSON Features
+                for dam in dams:
+                    dam_location = dam.get('location')
+                    lat_list.append(dam_location['coordinates'][1])
+                    lng_list.append(dam_location['coordinates'][0])
 
-            if len(lat_list) > 1:
-                # Compute the bounding box of all the dams
-                min_x = min(lng_list)
-                min_y = min(lat_list)
-                max_x = max(lng_list)
-                max_y = max(lat_list)
-                x_dist = max_x - min_x
-                y_dist = max_y - min_y
+                if len(lat_list) > 1:
+                    # Compute the bounding box of all the dams
+                    min_x = min(lng_list)
+                    min_y = min(lat_list)
+                    max_x = max(lng_list)
+                    max_y = max(lat_list)
+                    x_dist = max_x - min_x
+                    y_dist = max_y - min_y
 
-                # Buffer the bounding box
-                buffer_factor = 0.1
-                x_buffer = x_dist * buffer_factor
-                y_buffer = y_dist * buffer_factor
-                min_xb = min_x - x_buffer
-                min_yb = min_y - y_buffer
-                max_xb = max_x + x_buffer
-                max_yb = max_y + y_buffer
+                    # Buffer the bounding box
+                    buffer_factor = 0.1
+                    x_buffer = x_dist * buffer_factor
+                    y_buffer = y_dist * buffer_factor
+                    min_xb = min_x - x_buffer
+                    min_yb = min_y - y_buffer
+                    max_xb = max_x + x_buffer
+                    max_yb = max_y + y_buffer
 
-                # Bounding box for the view
-                extent = [min_xb, min_yb, max_xb, max_yb]
-            else:
-                extent = [-125.771484, 24.527135, -66.005859, 49.667628]  # CONUS
+                    # Bounding box for the view
+                    extent = [min_xb, min_yb, max_xb, max_yb]
+                else:
+                    extent = [-125.771484, 24.527135, -66.005859, 49.667628]  # CONUS
 
-            return extent
+                return extent
 
     .. tip::
 

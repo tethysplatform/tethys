@@ -4,7 +4,7 @@
 THREDDS Primer
 **************
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will be introduced to THREDDS using the Docker container that is included with Tethys Platform. This primer is adapted from the `THREDDS Data Server Documentation <https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html>`_. Topics covered include:
 

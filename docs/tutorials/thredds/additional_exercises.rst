@@ -2,7 +2,7 @@
 Additional Exercises
 ********************
 
-**Last Updated:** June 2022
+**Last Updated:** July 2024
 
 Now that you have completed the THREDDS tutorial, try one of the following exercises on your own to improve the usability of the app:
 
