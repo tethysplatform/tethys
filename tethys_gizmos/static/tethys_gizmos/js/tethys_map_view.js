@@ -298,7 +298,6 @@ ol_base_map_init = function()
         visible = true;
         first_flag = false;
       }
-      
       var base_map_layer_names = [], base_map_layer_arguments = [];
 
       if (typeof base_map_option === 'string') {
