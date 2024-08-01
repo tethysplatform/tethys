@@ -150,7 +150,7 @@ var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 var update_field;
 
 // Utility Methods
-var is_defined, in_array, string_to_function, build_ol_objects;
+var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer;
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -270,14 +270,18 @@ ol_base_map_init = function()
   
           layers.push(layer);
           labels.push(label);
+      } else {
+        console.warn('Unsupported base map: ' + layer_name);
       }
     }
     if (layers.length > 1) {
       base_map_layer = new ol.layer.Group({layers: layers, visible: visible});
       base_map_layer_label = labels.join('+');
-    } else {
+    } else if (layers.length == 1) {
       base_map_layer = layers[0];
       base_map_layer_label = labels[0];
+    } else {
+      return null;
     }
     base_map_layer.tethys_legend_title = 'Basemap: ' + base_map_layer_label;
     base_map_labels.push(base_map_layer_label);
@@ -287,13 +291,13 @@ ol_base_map_init = function()
   if (is_defined(m_base_map_options)) {
     var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
     var first_flag = true;
+    var valid_base_map_found = false;
     base_map_options.forEach(function (base_map_option) {
       var visible = false;
       if (first_flag) {
         visible = true;
         first_flag = false;
       }
-
       var base_map_layer_names = [], base_map_layer_arguments = [];
 
       if (typeof base_map_option === 'string') {
@@ -312,16 +316,20 @@ ol_base_map_init = function()
 
       // Add the base map to layers
       let base_map_layer = ol_base_map_layer_init(base_map_layer_names, base_map_layer_arguments, visible);
-      m_map.addLayer(base_map_layer);
+      if (base_map_layer) {
+        m_map.addLayer(base_map_layer);
+        valid_base_map_found = true;
+      }
+      
     });
+    if (!valid_base_map_found) {
+      // Default base map
+      add_default_base_map_layer();
+    }
   }
   else{
       // Default base map
-      base_map_layer = new ol.layer.Tile({
-        source: new ol.source.OSM()
-      });
-      // Add the base map to layers
-      m_map.addLayer(base_map_layer);
+      add_default_base_map_layer();
   }
 }
 
@@ -2353,6 +2361,15 @@ build_ol_objects = function(obj, stack) {
   }
   return stack;
 };
+
+add_default_base_map_layer = function() {
+  let default_base_map_layer = new ol.layer.Tile({
+    source: new ol.source.OSM()
+  });
+  // Add the base map to layers
+  m_map.addLayer(default_base_map_layer);
+  base_map_labels.push("Open Street Map");
+}
 
 /***********************************
  * Class Implementations
