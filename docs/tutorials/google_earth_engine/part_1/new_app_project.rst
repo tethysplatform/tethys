@@ -11,7 +11,7 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 * Adding a Custom Icon
 * Customizing App Theme Color
 
-.. figure:: ./resources/new_app_project_solution.png
+.. figure:: ../../../images/tutorial/gee/scaffolded_app.png
     :width: 800px
     :align: center
 

@@ -12,7 +12,7 @@ In this tutorial you will load the GEE dataset the user has selected into the ma
 * Retrieving GEE XYZ Tile Layer Endpoints
 * Logging in Tethys
 
-.. figure:: ./resources/vis_gee_layers_solution.png
+.. figure:: ../../../images/tutorial/gee/visualize_gee_layers.png
     :width: 800px
     :align: center
 
@@ -64,15 +64,8 @@ To use GEE services, your app will need to authenticate using a GEE Account. Thi
         try:
             ee.Initialize()
         except EEException as e:
-            from oauth2client.service_account import ServiceAccountCredentials
-            credentials = ServiceAccountCredentials.from_p12_keyfile(
-                service_account_email='',
-                filename='',
-                private_key_password='notasecret',
-                scopes=ee.oauth.SCOPE + ' https://www.googleapis.com/auth/drive '
-            )
-            ee.Initialize(credentials)
-
+            log.warning('Unable to initialize GEE. If installing ignore this warning.')
+            
 
     def image_to_map_id(image_name, vis_params={}):
         """

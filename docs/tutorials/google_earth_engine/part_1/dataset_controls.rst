@@ -9,7 +9,7 @@ In this tutorial you will add controls to the app that will eventually be used t
 * Tethys Gizmos API
 * Tethys Templating API
 
-.. figure:: ./resources/dataset_controls_solution.png
+.. figure:: ../../../images/tutorial/gee/dataset_controls.png
     :width: 800px
     :align: center
 
@@ -61,7 +61,7 @@ Create a new package (a folder with an empty :file:`__init__.py`) called :file:`
             'terra': {
                 'snow': {
                     'display': 'Snow Cover Daily Global 500m',
-                    'collection': 'MODIS/006/MOD10A1',
+                    'collection': 'MODIS/061/MOD10A1',
                     'index': 'NDSI_Snow_Cover',
                     'vis_params': {
                         'min': 0.0,
@@ -73,7 +73,7 @@ Create a new package (a folder with an empty :file:`__init__.py`) called :file:`
                 },
                 'temperature': {
                     'display': 'Land Surface Temperature and Emissivity Daily Global 1km',
-                    'collection': 'MODIS/006/MOD11A1',
+                    'collection': 'MODIS/061/MOD11A1',
                     'index': 'LST_Day_1km',
                     'vis_params': {
                         'min': 13000.0,
@@ -156,57 +156,13 @@ Create a new package (a folder with an empty :file:`__init__.py`) called :file:`
             }
         },
         'landsat': {
-            '7': {
-                'surface': {
-                    'display': 'Surface Reflectance',
-                    'collection': 'LANDSAT/LE07/C01/T1_SR',
-                    'index': None,
-                    'vis_params': {
-                        'bands': ['B3', 'B2', 'B1'],
-                        'min': 0,
-                        'max': 3000,
-                        'gamma': 1.4,
-                    },
-                    'cloud_mask': 'cloud_mask_l457',
-                    'start_date': '1999-01-01',
-                    'end_date': None  # to present
-                },
-                'evi': {
-                    'display': '8-day Enhanced Vegetation Index (EVI)',
-                    'collection': 'LANDSAT/LE07/C01/T1_8DAY_EVI',
-                    'index': 'EVI',
-                    'vis_params': {
-                        'min': 0.0,
-                        'max': 1.0,
-                        'palette': [
-                            'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718', '74A901',
-                            '66A000', '529400', '3E8601', '207401', '056201', '004C00', '023B01',
-                            '012E01', '011D01', '011301'
-                        ],
-                    },
-                    'start_date': '1999-01-01',
-                    'end_date': None  # to present
-                },
-                'ndwi': {
-                    'display': '8-day Normalized Difference Water Index (NDWI)',
-                    'collection': 'LANDSAT/LE07/C01/T1_8DAY_NDWI',
-                    'index': 'NDWI',
-                    'vis_params': {
-                        'min': 0.0,
-                        'max': 1.0,
-                        'palette': ['0000ff', '00ffff', 'ffff00', 'ff0000', 'ffffff'],
-                    },
-                    'start_date': '1999-01-01',
-                    'end_date': None  # to present
-                },
-            },
             '8': {
                 'surface': {
                     'display': 'Surface Reflectance',
-                    'collection': 'LANDSAT/LC08/C01/T1_SR',
+                    'collection': 'LANDSAT/LC08/C02/T1_L2',
                     'index': None,
                     'vis_params': {
-                        'bands': ['B4', 'B3', 'B2'],
+                        'bands': ['SR_B4', 'SR_B3', 'SR_B2'],
                         'min': 0,
                         'max': 3000,
                         'gamma': 1.4,
@@ -215,30 +171,46 @@ Create a new package (a folder with an empty :file:`__init__.py`) called :file:`
                     'start_date': '2013-04-01',
                     'end_date': None  # to present
                 },
-                'ndvi': {
-                    'display': '8-day Normalized Difference Vegetation (NDVI)',
-                    'collection': 'LANDSAT/LC08/C01/T1_8DAY_NDVI',
-                    'index': 'NDVI',
+                'toa': {
+                    'display': 'Top-of-Atmosphere(TOA) Reflectance',
+                    'collection': 'LANDSAT/LC08/C02/T1_TOA', 
+                    'index': None,
                     'vis_params': {
-                        'min': 0.0,
-                        'max': 1.0,
-                        'palette': [
-                            'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718', '74A901',
-                            '66A000', '529400', '3E8601', '207401', '056201', '004C00', '023B01',
-                            '012E01', '011D01', '011301'
-                        ],
+                        'bands': ['B4', 'B3', 'B2'],
+                        'min': 0,
+                        'max': 3000,
+                        'gamma': 1.4,
                     },
                     'start_date': '2013-04-01',
                     'end_date': None  # to present
                 },
-                'ndsi': {
-                    'display': '8-day Normalized Difference Snow Index (NDSI)',
-                    'collection': 'LANDSAT/LC08/C01/T1_8DAY_NDSI',
-                    'index': 'NDSI',
+            },
+            '9': {
+                'surface': {
+                    'display': 'Surface Reflectance',
+                    'collection': 'LANDSAT/LC09/C02/T1_L2',
+                    'index': None,
                     'vis_params': {
-                        'palette': ['000088', '0000FF', '8888FF', 'FFFFFF'],
+                        'bands': ['SR_B4', 'SR_B3', 'SR_B2'],
+                        'min': 0,
+                        'max': 3000,
+                        'gamma': 1.4,
                     },
-                    'start_date': '2013-04-01',
+                    'cloud_mask': 'mask_l8_sr',
+                    'start_date': '2021-10-31',
+                    'end_date': None  # to present
+                },
+                'toa': {
+                    'display': 'Top-of-Atmosphere(TOA) Reflectance',
+                    'collection': 'LANDSAT/LC09/C02/T1_TOA', 
+                    'index': None,
+                    'vis_params': {
+                        'bands': ['B4', 'B3', 'B2'],
+                        'min': 0,
+                        'max': 3000,
+                        'gamma': 1.4,
+                    },
+                    'start_date': '2021-10-31',
                     'end_date': None  # to present
                 },
             }

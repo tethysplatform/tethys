@@ -11,7 +11,8 @@ In this tutorial you will add a map to the Home Page using the Tethys MapView Gi
 * Remove Padding from App Content Area
 * Custom CSS
 
-.. figure:: ./resources/map_view_solution.png
+.. figure:: ../../../images/tutorial/gee/map_view.png
+
     :width: 800px
     :align: center
 

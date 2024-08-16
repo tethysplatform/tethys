@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** June 2024
+**Last Updated:** August 2024
 
 1. Generate Scaffold
 ====================

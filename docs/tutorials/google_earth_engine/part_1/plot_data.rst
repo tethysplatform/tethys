@@ -11,7 +11,7 @@ In the final tutorial you will add the ability for users to drop a point or draw
 * GEE Geoprocessing
 * Adding New App Dependencies
 
-.. figure:: ./resources/plot_data_solution.png
+.. figure:: ../../../images/tutorial/gee/plot_data.png
     :width: 800px
     :align: center
 
@@ -31,15 +31,16 @@ If you wish to use the previous solution as a starting point:
 
 In this step you'll expand the GEE functions to include a function that can extract time series at one or more points or polygons.
 
-1. Install new dependency, ``geojson``, in Tethys environment:
+1. Install new dependency, ``geojson``, ``simplejson``, ``pandas`` in Tethys environment:
 
 .. code-block:: bash
 
-    conda install -c conda-forge geojson pandas
+    conda install -c conda-forge geojson simplejson pandas
 
-2. Add ``geojson`` as a dependency in the :file:`install.yml`:
+2. Add ``geojson``, ``simplejson``, ``pandas``, as dependencies in the :file:`install.yml`:
 
 .. code-block:: yaml
+    :emphasize-lines: 17-19
 
     # This file should be committed to your app code.
     version: 1.0
@@ -58,6 +59,7 @@ In this step you'll expand the GEE functions to include a function that can extr
           - earthengine-api
           - oauth2client
           - geojson
+          - simplejson
           - pandas
       pip:
 

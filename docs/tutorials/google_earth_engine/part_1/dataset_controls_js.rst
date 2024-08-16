@@ -10,7 +10,8 @@ In this tutorial you will add dynamic behavior to the dataset controls created i
 * JavaScript Closure Module Method
 * Using JavaScript with Tethys Gizmos
 
-.. figure:: ./resources/dataset_controls_js_solution.png
+.. figure:: ../../../images/tutorial/gee/dataset_controls_js.png
+
     :width: 800px
     :align: center
 

@@ -42,7 +42,7 @@ Add a new controller to the :file:`controller.py` module:
             geoserver_layer = MVLayer(
                 source='ImageWMS',
                 options={
-                    'url': 'http://localhost:8181/geoserver/wms',
+                    'url': geoserver_engine.get_wms_endpoint(),
                     'params': {'LAYERS': selected_layer},
                     'serverType': 'geoserver'
                 },
@@ -68,7 +68,8 @@ Add a new controller to the :file:`controller.py` module:
             width='100%',
             layers=map_layers,
             legend=True,
-            view=view_options
+            view=view_options,
+            basemap='OpenStreetMap'
         )
 
         context = {

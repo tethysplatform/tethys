@@ -15,7 +15,7 @@ In this tutorial you will add an About page and a disclaimer modal. The requirem
 * Linking to other pages and navigation
 * Placeholder content for development: lorem ipsum and images
 
-.. figure:: ./resources/about_page_solution.png
+.. figure:: ../../../images/tutorial/gee/about_page.png
     :width: 800px
     :align: center
 
