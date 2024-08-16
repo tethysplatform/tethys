@@ -602,7 +602,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 .. code-block:: python
     :emphasize-lines: 1-2
 
-    @controller(user_media=True)
+    @controller(user_media=True, url='viewer')
     def viewer(request, user_media):
         """
         Controller for the app viewer page.
