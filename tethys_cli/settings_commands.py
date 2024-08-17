@@ -100,7 +100,7 @@ def set_settings(tethys_settings, kwargs):
     write_settings(tethys_settings)
 
 
-def get_setting(tethys_settings, key):
+def get_setting(tethys_settings, key, return_value=False):
     if key == "all":
         all_settings = {
             k: getattr(settings, k)
@@ -111,6 +111,8 @@ def get_setting(tethys_settings, key):
         return
     try:
         value = getattr(settings, key)
+        if return_value:
+            return value
         write_info(f"{key}: {pformat(value)}")
     except AttributeError:
         result = _get_dict_key_handle(tethys_settings, key)

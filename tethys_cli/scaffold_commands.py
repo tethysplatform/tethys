@@ -34,7 +34,7 @@ def add_scaffold_parser(subparsers):
         "letters, numbers, and underscores allowed.",
     )
     scaffold_parser.add_argument(
-        "-t", "--template", dest="template", help="Name of template to use."
+        "-t", "--template", dest="template", help="Name of template to use.", choices=os.listdir(APP_PATH)
     )
     scaffold_parser.add_argument(
         "-e", "--extension", dest="extension", action="store_true"
@@ -442,6 +442,26 @@ def scaffold_command(args):
                 shutil.copy(template_file_path, project_file_path)
 
             write_pretty_output('Created: "{}"'.format(project_file_path), FG_WHITE)
+    
+    if template_name == 'reactpy':
+        from .settings_commands import read_settings, write_settings
+        from argparse import Namespace
+        tethys_settings = read_settings()
+        if 'INSTALLED_APPS' not in tethys_settings:
+            tethys_settings['INSTALLED_APPS'] = []
+        if 'reactpy_django' not in tethys_settings['INSTALLED_APPS']:
+            tethys_settings['INSTALLED_APPS'].append('reactpy_django')
+            write_settings(tethys_settings)
+    
+    if template_name == 'reactpy':
+        from .settings_commands import read_settings, write_settings
+        from argparse import Namespace
+        tethys_settings = read_settings()
+        if 'INSTALLED_APPS' not in tethys_settings:
+            tethys_settings['INSTALLED_APPS'] = []
+        if 'reactpy_django' not in tethys_settings['INSTALLED_APPS']:
+            tethys_settings['INSTALLED_APPS'].append('reactpy_django')
+            write_settings(tethys_settings)
 
     write_pretty_output(
         'Successfully scaffolded new project "{}"'.format(project_name), FG_WHITE

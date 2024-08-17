@@ -21,8 +21,7 @@ dependencies:
 
   # core dependencies
   - django>=3.2,<6
-  - channels
-  - daphne
+  - channels["daphne"]
   - setuptools_scm
   - pip
   - requests # required by lots of things
@@ -65,7 +64,6 @@ dependencies:
   - django-analytical  # track usage analytics
   - django-json-widget  # enable json widget for app settings
   - djangorestframework  # enable REST API framework
-  - reactpy-django
 
   # Map Layout
   - PyShp

@@ -27,6 +27,8 @@ class UrlMapBase:
         regex=None,
         handler=None,
         handler_type=None,
+        title=None,
+        index=None
     ):
         """
         Constructor
@@ -39,6 +41,8 @@ class UrlMapBase:
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
           handler (str): Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
           handler_type (str): Tethys supported handler type. 'bokeh' is the only handler type currently supported.
+          title (str): The title to be used both in built-in Navigation components and in the browser tab
+          index (int): Used to determine the render order of nav items in built-in Navigation components. Defaults to the unpredictable processing order of the @page decorated functions. Set to -1 to remove from built-in Navigation components.
         """  # noqa: E501
         # Validate
         if regex and (
@@ -57,6 +61,8 @@ class UrlMapBase:
         self.custom_match_regex = regex
         self.handler = handler
         self.handler_type = handler_type
+        self.title = title
+        self.index = index
 
     def __repr__(self):
         """
@@ -64,7 +70,7 @@ class UrlMapBase:
         """
         return (
             f"<UrlMap: name={self.name}, url={self.url}, controller={self.controller}, protocol={self.protocol}, "
-            f"handler={self.handler}, handler_type={self.handler_type}>"
+            f"handler={self.handler}, handler_type={self.handler_type}, title={self.title}, index={self.index}>"
         )
 
     @staticmethod

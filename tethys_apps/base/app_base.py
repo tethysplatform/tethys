@@ -36,7 +36,7 @@ except ImportError:
 
 tethys_log = logging.getLogger("tethys.app_base")
 
-DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers"]
+DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages"]
 
 
 class TethysBase(TethysBaseMixin):
@@ -51,6 +51,8 @@ class TethysBase(TethysBaseMixin):
     root_url = ""
     index = None
     controller_modules = []
+    default_layout = None
+    custom_css = []
 
     def __init__(self):
         self._url_patterns = None
@@ -75,6 +77,10 @@ class TethysBase(TethysBaseMixin):
     def id(cls):
         """Returns ID of Django database object."""
         return cls.db_object.id
+
+    @classproperty
+    def layout(cls):
+        return cls.default_layout
 
     @classmethod
     def _resolve_ref_function(cls, ref, ref_type):

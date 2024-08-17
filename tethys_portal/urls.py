@@ -314,4 +314,5 @@ if (
         )
     )
 
-urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+if has_module("reactpy_django"):
+    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))

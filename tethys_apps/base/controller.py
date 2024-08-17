@@ -14,12 +14,16 @@ from channels.consumer import AsyncConsumer
 from django.views.generic import View
 from django.http import HttpRequest
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.conf import settings
+from django.shortcuts import render
 
+from tethys_components.library import Library as ComponentLibrary
 from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
 from . import url_map_maker
 from .app_base import DEFAULT_CONTROLLER_MODULES
+
 
 from .bokeh_handler import (
     _get_bokeh_controller,
@@ -37,6 +41,7 @@ from ..utilities import get_all_submodules, update_decorated_websocket_consumer_
 from typing import Union, Any
 from collections.abc import Callable
 
+from reactpy import component
 
 app_controllers_list = list()
 
@@ -398,6 +403,127 @@ def controller(
 
     return wrapped if function_or_class is None else wrapped(function_or_class)
 
+def page(
+    function_or_class: Union[
+        Callable[[HttpRequest, ...], Any], TethysController
+    ] = None,
+    /,
+    *,
+    # UrlMap Overrides
+    name: str = None,
+    url: Union[str, list, tuple, dict, None] = None,
+    protocol: str = "http",
+    regex: Union[str, list, tuple] = None,
+    _handler: Union[str, Callable] = None,
+    _handler_type: str = None,
+    # login_required kwargs
+    login_required: bool = True,
+    redirect_field_name: str = REDIRECT_FIELD_NAME,
+    login_url: str = None,
+    # workspace decorators
+    app_workspace: bool = False,
+    user_workspace: bool = False,
+    # ensure_oauth2 kwarg
+    ensure_oauth2_provider: str = None,
+    # enforce_quota kwargs
+    enforce_quotas: Union[str, list, tuple, None] = None,
+    # permission_required kwargs
+    permissions_required: Union[str, list, tuple] = None,
+    permissions_use_or: bool = False,
+    permissions_message: str = None,
+    permissions_raise_exception: bool = False,
+    # additional kwargs to pass to TethysController.as_controller
+    layout="default",
+    title=None,
+    index=None,
+    custom_css=[],
+    custom_js=[]
+) -> Callable:
+    """
+    Decorator to register a function or TethysController class as a controller
+    (by automatically registering a UrlMap for it).
+
+    Args:
+        name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the function being decorated.
+        url: URL pattern to map the endpoint for the controller or consumer. If a `list` then a separate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name` _1, `name` _2 ... `name` _n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
+        protocol: 'http' for controllers or 'websocket' for consumers. Default is http.
+        regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
+        login_required: If user is required to be logged in to access the controller. Default is `True`.
+        redirect_field_name: URL query string parameter for the redirect path. Default is "next".
+        login_url: URL to send users to in order to authenticate.
+        app_workspace: Whether to pass the app workspace as an argument to the controller.
+        user_workspace: Whether to pass the user workspace as an argument to the controller.
+        ensure_oauth2_provider: An OAuth2 provider name to ensure is authenticated to access the controller.
+        enforce_quotas: The name(s) of quotas to enforce on the controller.
+        permissions_required: The name(s) of permissions that a user is required to have to access the controller.
+        permissions_use_or: When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
+        permissions_message: Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
+        permissions_raise_exception: Raise 403 error if True. Defaults to False.
+        layout: Layout within which the page content will be wrapped
+        title: Title of page as used in both the built-in Navigation component and the browser tab
+        index: Index of the page as used to determine the display order in the built-in Navigation component. Defaults to top-to-bottom as written in code. Pass -1 to remove from built-in Navigation component.
+        custom_css: A list of URLs to additional css files that should be rendered with the page. These will be rendered in the order provided.
+        custom_js: A list of URLs to additional js files that should be rendered with the page. These will be rendered in the order provided.
+
+    **NOTE:** The :ref:`handler-decorator` should be used in favor of using the following arguments directly.
+
+    Args:
+        _handler: Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
+        _handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
+    """  # noqa: E501
+
+    permissions_required = _listify(permissions_required)
+    enforce_quota_codenames = _listify(enforce_quotas)
+    layout = f'{layout.__module__}.{layout.__name__}' if callable(layout) else layout
+
+    def wrapped(function_or_class):
+        page_module_path = f'{function_or_class.__module__}.{function_or_class.__name__}'
+        url_map_kwargs_list = _get_url_map_kwargs_list(
+            function_or_class=function_or_class,
+            name=name,
+            url=url,
+            protocol=protocol,
+            regex=regex,
+            handler=_handler,
+            handler_type=_handler_type,
+            app_workspace=app_workspace,
+            user_workspace=user_workspace,
+            title=title,
+            index=index
+        )
+
+        def controller_wrapper(request):
+            controller = _global_page_component_controller
+            if permissions_required:
+                controller = permission_required(
+                    *permissions_required,
+                    use_or=permissions_use_or,
+                    message=permissions_message,
+                    raise_exception=permissions_raise_exception,
+                )(controller)
+
+            for codename in enforce_quota_codenames:
+                controller = enforce_quota(codename)(controller)
+
+            if ensure_oauth2_provider:
+                # this needs to come before login_required
+                controller = ensure_oauth2(ensure_oauth2_provider)(controller)
+
+            if login_required:
+                # this should be at the end, so it's the first to be evaluated
+                controller = login_required_decorator(
+                    redirect_field_name=redirect_field_name, login_url=login_url
+                )(controller)
+            
+            return controller(request, inspect.getsource(function_or_class), layout, page_module_path, url_map_kwargs_list[0]['title'], custom_css, custom_js)
+
+        # UNCOMMENT IF WE DECIDE TO GO WITH USING THE COMPONENT FUNCITON DIRECTLY, AS OPPOSED TO WRAPPING
+        # IT WITH THE GLOBAL_COMPONENT FUNCTION
+        # register_component(component_module_path)
+        _process_url_kwargs(controller_wrapper, url_map_kwargs_list)
+        return function_or_class
+
+    return wrapped if function_or_class is None else wrapped(function_or_class)
 
 controller_decorator = controller
 
@@ -568,6 +694,20 @@ def handler(
     return wrapped if function is None else wrapped(function)
 
 
+def _global_page_component_controller(request, component_source_code, layout, page_module_path, title=None, custom_css=[], custom_js=[]):
+    ComponentLibrary.refresh(new_identifier=page_module_path.split('.')[-1].replace('_', '-'))
+    ComponentLibrary.load_dependencies_from_source_code(component_source_code)
+    context = {
+        'page_module_path_context_arg': page_module_path,
+        'reactjs_version': ComponentLibrary.REACTJS_VERSION,
+        'layout_context_arg': layout,
+        'title': title,
+        'custom_css': custom_css,
+        'custom_js': custom_js
+    }
+
+    return render(request, 'tethys_apps/reactpy_base.html', context)
+
 def _get_url_map_kwargs_list(
     function_or_class: Union[
         Callable[[HttpRequest, ...], Any], TethysController
@@ -580,6 +720,8 @@ def _get_url_map_kwargs_list(
     handler_type: str = None,
     app_workspace=False,
     user_workspace=False,
+    title=None,
+    index=None
 ):
     final_urls = []
     if url is not None:
@@ -636,6 +778,9 @@ def _get_url_map_kwargs_list(
             f"{url_name}_{i}" if i else url_name: final_url
             for i, final_url in enumerate(final_urls)
         }
+    
+    if not title:
+        title = url_name.replace('_', ' ').title()
 
     return [
         dict(
@@ -646,6 +791,8 @@ def _get_url_map_kwargs_list(
             regex=regex,
             handler=handler,
             handler_type=handler_type,
+            title=title,
+            index=index
         )
         for url_name, final_url in final_urls.items()
     ]
@@ -772,3 +919,61 @@ def register_controllers(
         )
 
     return url_maps
+
+@component
+def page_component_wrapper(layout, page_module_path):
+    from reactpy_django.hooks import use_user # Avoid Django configuration error
+    path_parts = page_module_path.split('.')
+    
+    app_name = path_parts[1]
+    app_module_name = f'tethysapp.{app_name}.app'
+    app_module = __import__(app_module_name, fromlist=['App'])
+    if hasattr(settings, "DEBUG") and settings.DEBUG:
+        importlib.reload(app_module)
+    App = app_module.App()
+
+    component_module_name = '.'.join(path_parts[:-1])
+    component_name = path_parts[-1]
+    component_module = __import__(component_module_name, fromlist=[component_name])
+    if hasattr(settings, "DEBUG") and settings.DEBUG:
+        importlib.reload(component_module)
+    Component = getattr(component_module, component_name)
+
+    if layout is not None:
+        Layout = None
+        if layout == 'default':
+            if callable(App.layout):
+                Layout = App.layout
+            else:
+                layout_module_name = 'tethys_components.layouts'
+                layout_name = App.layout
+        else:
+            layout_module_path_parts = layout.split('.')
+            layout_module_name = '.'.join(layout_module_path_parts[:-1])
+            layout_name = layout_module_path_parts[-1]
+        
+        if not Layout:
+            layout_module = __import__(layout_module_name, fromlist=[layout_name])
+            Layout = getattr(layout_module, layout_name)
+
+        user = use_user()
+        nav_links = []
+        for url_map in sorted(App.registered_url_maps, key=lambda x: x.index if x.index is not None else 999):
+            if url_map.index == -1: continue  # Do not render
+            nav_links.append(
+                {
+                    'title': url_map.title, 
+                    'href': f'/apps/{App.root_url}/{url_map.name.replace('_', '-') + '/' if url_map.name != App.index else ""}'
+                }
+            )
+
+        return Layout(
+            {
+                'app': App,
+                'user': user,
+                'nav-links': nav_links
+            },
+            Component()
+        )
+    else:
+        return Component()

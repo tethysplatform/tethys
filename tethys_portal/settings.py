@@ -232,8 +232,7 @@ default_installed_apps = [
     "tethys_sdk",
     "tethys_services",
     "tethys_quotas",
-    "guardian",
-    "reactpy_django",
+    "guardian"
 ]
 
 for module in [
