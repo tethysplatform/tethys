@@ -44,6 +44,7 @@ ENV CLIENT_MAX_BODY_SIZE="75M"
 # Tethys settings arguments
 ENV DEBUG="False"
 ENV ALLOWED_HOSTS="\"[localhost, 127.0.0.1]\""
+ENV CSRF_TRUSTED_ORIGINS="\"[http://localhost, http://127.0.0.1]\""
 ENV BYPASS_TETHYS_HOME_PAGE="True"
 ENV ADD_DJANGO_APPS="\"[]\""
 ENV SESSION_WARN=1500
@@ -154,12 +155,12 @@ RUN if [ -n "$DJANGO_VERSION" ]; then \
 
 # Create the conda environment based on the environment.yml or micro_environment.yml file
 RUN if [ "${MICRO_TETHYS}" = "true" ]; then \
-  sed -i "s/- python$/- python=${PYTHON_VERSION}/g" micro_environment.yml && \
+  sed -i "s/- python[^-].*/- python==${PYTHON_VERSION}/g" micro_environment.yml && \
   micromamba create -n "${CONDA_ENV_NAME}" --yes --file "micro_environment.yml" && \
   micromamba clean --all --yes && \
   rm -rf environment.yml; \
   else \
-  sed -i "s/- python$/- python=${PYTHON_VERSION}/g" environment.yml && \
+  sed -i "s/- python[^-].*/- python==${PYTHON_VERSION}/g" environment.yml && \
   micromamba create -n "${CONDA_ENV_NAME}" --yes --file "environment.yml" && \
   micromamba clean --all --yes && \
   rm -rf micro_environment.yml; \
@@ -190,6 +191,7 @@ ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
 ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
 ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
 ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
+ADD --chown=www:www tethys_utils ${TETHYS_HOME}/tethys/tethys_utils/
 ADD --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
 ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
 ADD --chown=www:www LICENSE ${TETHYS_HOME}/tethys/
@@ -203,7 +205,7 @@ RUN pip install -e .
 RUN tethys gen portal_config
 
 # Install channel-redis
-RUN pip install channels_redis
+RUN micromamba install -c conda-forge --yes channels_redis
 
 ############
 # CLEAN UP #

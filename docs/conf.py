@@ -41,6 +41,7 @@ MOCK_MODULES = [
     "bokeh.util.compiler",
     "channels",
     "channels.db",
+    "channels.db.database_sync_to_async",
     "channels.consumer",
     "conda",
     "conda.cli",
@@ -246,6 +247,15 @@ todo_include_todos = True
 
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
+
+# Define the canonical URL if you are using a custom domain on Read the Docs
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+
+# Tell Jinja2 templates the build is running on Read the Docs
+if os.environ.get("READTHEDOCS", "") == "True":
+    if "html_context" not in globals():
+        html_context = {}
+    html_context["READTHEDOCS"] = True
 
 html_title = f"{project} Documentation"
 html_short_title = "Tethys Docs"

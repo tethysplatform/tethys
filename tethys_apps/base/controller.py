@@ -10,7 +10,7 @@ import inspect
 from collections import OrderedDict
 import traceback
 
-from channels.consumer import AsyncConsumer
+from channels.consumer import SyncConsumer, AsyncConsumer
 from django.views.generic import View
 from django.http import HttpRequest
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -21,6 +21,7 @@ from tethys_components.library import Library as ComponentLibrary
 from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from . import url_map_maker
 from .app_base import DEFAULT_CONTROLLER_MODULES
 
@@ -28,12 +29,10 @@ from .app_base import DEFAULT_CONTROLLER_MODULES
 from .bokeh_handler import (
     _get_bokeh_controller,
     with_workspaces as with_workspaces_decorator,
+    with_paths as with_paths_decorator,
     with_request as with_request_decorator,
 )
-from .workspace import (
-    app_workspace as app_workspace_decorator,
-    user_workspace as user_workspace_decorator,
-)
+from .paths import _add_path_decorator
 from ..decorators import login_required as login_required_decorator, permission_required
 from ..utilities import get_all_submodules, update_decorated_websocket_consumer_class
 
@@ -56,13 +55,14 @@ class TethysController(View):
 
 
 def consumer(
-    function_or_class=None,
+    consumer_class: SyncConsumer | AsyncConsumer = None,
     /,
     *,
     # UrlMap Overrides
     name: str = None,
     url: str = None,
     regex: Union[str, list, tuple] = None,
+    with_paths: bool = False,
     # login_required kwargs
     login_required: bool = True,
     # permission_required kwargs
@@ -77,10 +77,14 @@ def consumer(
         name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the class being decorated.
         url: URL pattern to map the endpoint for the consumer. If a `list` then a seperate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name`_1, `name`_2 ... `name`_n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
         regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
+        with_paths: If `True` then initialize the following path properties on the consumer class when it is called (`app_workspace`, `user_workspace`, `app_media`, `user_media`, `app_public`, `app_resources`). Default is `False`
+        login_required: If user is required to be logged in to access the consumer endpoint. Default is `True`.
+        permissions_required: The name(s) of permissions that a user is required to have to access the consumer endpoint. Default is `None`
+        permissions_use_or: When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default. Default is `False`
 
     **Example:**
 
-    ::
+    .. code-block:: python
 
         from tethys_sdk.routing import consumer
 
@@ -98,9 +102,7 @@ def consumer(
             url='customized/url',
         )
         class MyConsumer(AsyncWebsocketConsumer):
-
-            def connect():
-                pass
+            pass
 
         ------------
 
@@ -112,29 +114,49 @@ def consumer(
         )
         class MyConsumer(AsyncWebsocketConsumer):
 
-            def authorized_connect():
-                pass
+            async def authorized_connect(self):
+                ...
+
+       ------------
+
+        @consumer(
+            with_paths=True,
+            login_required=True,
+        )
+        class MyConsumer(AsyncWebsocketConsumer):
+
+            async def authorized_connect(self):
+                self.app_workspace
+                self.user_workspace
+                self.app_media
+                self.user_media
+                self.app_public
+                self.app_resources
 
     """  # noqa: E501
 
-    def wrapped(function_or_class):
+    def wrapped(consumer_class):
         url_map_kwargs_list = _get_url_map_kwargs_list(
-            function_or_class=function_or_class,
+            function_or_class=consumer_class,
             name=name,
             url=url,
             protocol="websocket",
             regex=regex,
         )
 
-        function_or_class = update_decorated_websocket_consumer_class(
-            function_or_class, permissions_required, permissions_use_or, login_required
+        consumer_class = update_decorated_websocket_consumer_class(
+            consumer_class,
+            permissions_required,
+            permissions_use_or,
+            login_required,
+            with_paths,
         )
 
-        controller = function_or_class.as_asgi()
-        _process_url_kwargs(controller, url_map_kwargs_list)
-        return function_or_class
+        asgi_controller = consumer_class.as_asgi()
+        _process_url_kwargs(asgi_controller, url_map_kwargs_list)
+        return consumer_class
 
-    return wrapped if function_or_class is None else wrapped(function_or_class)
+    return wrapped if consumer_class is None else wrapped(consumer_class)
 
 
 def controller(
@@ -154,9 +176,13 @@ def controller(
     login_required: bool = True,
     redirect_field_name: str = REDIRECT_FIELD_NAME,
     login_url: str = None,
-    # workspace decorators
+    # paths decorators
     app_workspace: bool = False,
     user_workspace: bool = False,
+    app_media: bool = False,
+    user_media: bool = False,
+    app_resources: bool = False,
+    app_public: bool = False,
     # ensure_oauth2 kwarg
     ensure_oauth2_provider: str = None,
     # enforce_quota kwargs
@@ -183,6 +209,10 @@ def controller(
         login_url: URL to send users to in order to authenticate.
         app_workspace: Whether to pass the app workspace as an argument to the controller.
         user_workspace: Whether to pass the user workspace as an argument to the controller.
+        app_media: Whether to pass the app media directory as an argument to the controller.
+        user_media: Whether to pass the user media directory as an argument to the controller.
+        app_resources: Whether to pass the app resources directory as an argument to the controller.
+        app_public: Whether to pass the app public directory as an argument to the controller.
         ensure_oauth2_provider: An OAuth2 provider name to ensure is authenticated to access the controller.
         enforce_quotas: The name(s) of quotas to enforce on the controller.
         permissions_required: The name(s) of permissions that a user is required to have to access the controller.
@@ -273,11 +303,15 @@ def controller(
         @controller(
             app_workspace=True,
             user_workspace=True,
+            app_media=True,
+            user_media=True,
+            app_resources=True,
+            app_public=True,
         )
-        def my_app_controller(request, app_workspace, user_workspace, url_arg):
-            # Note that if both the ``app_workspace`` and ``user_workspace`` arguments are passed to the controller
-            # decorator, then "app_workspace" should precede "user_workspace" in the function argument list,
-            # and both should be directly after the "request" argument.
+        def my_app_controller(request, app_workspace, user_workspace, app_media, user_media, app_public, app_resources, url_arg):
+            # Note that the path arguments are passed in as key-word arguments, so the order does not matter,
+            #   but the name of the argument must match what is shown here (i.e. the same as the argument name
+            #   that is passed to the controller decorator).
             ...
 
         ------------
@@ -371,11 +405,17 @@ def controller(
         else:
             controller = function_or_class
 
-        if user_workspace:
-            controller = user_workspace_decorator(controller)
-
-        if app_workspace:
-            controller = app_workspace_decorator(controller)
+        # process paths and add keyword arguments to controller
+        for argument_name, value in (
+            ("app_public", app_public),
+            ("app_resources", app_resources),
+            ("user_media", user_media),
+            ("app_media", app_media),
+            ("user_workspace", user_workspace),
+            ("app_workspace", app_workspace),
+        ):
+            if value:
+                controller = _add_path_decorator(argument_name)(controller)
 
         if permissions_required:
             controller = permission_required(
@@ -538,6 +578,7 @@ def handler(
     handler_type: str = "bokeh",
     with_request: bool = False,
     with_workspaces: bool = False,
+    with_paths: bool = False,
     **kwargs,
 ):
     """
@@ -550,11 +591,12 @@ def handler(
         app_package: The app_package name from the `app.py` file. Used as an alternative to `controller` and `template` to automatically create a controller and template that extends the app's "base.html" template. If none of `controller`, `template` and `app_package` are provided then a default controller and template will be created.
         handler_type: Tethys supported handler type. 'bokeh' is the only handler type currently supported.
         with_request: If `True` then the ``HTTPRequest`` object will be added to the `Bokeh Document`.
-        with_workspaces: if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
+        with_workspaces (DEPRECATED): if `True` then the `app_workspace` and `user_workspace` will be added to the `Bokeh Document`.
+        with_paths: if `True` then the `app_media_path`, `user_media_path`, and `app_resources_path` will be added to the `Bokeh Document`.
 
     **Example:**
 
-    ::
+    .. code-block:: python
 
         from tethys_sdk.routing import handler
 
@@ -634,13 +676,17 @@ def handler(
         ------------
 
         @handler(
-            with_workspaces=True
+            with_paths=True
         )
         def my_app_handler(document):
-            # attributes available when using "with_workspaces" argument
+            # attributes available when using "with_paths" argument
             request = document.request
             user_workspace = document.user_workspace
+            user_media = document.user_media
             app_workspace = document.app_workspace
+            app_media = document.app_media
+            app_public = document.app_public
+            app_resources = document.app_resources
             ...
 
         ------------
@@ -676,7 +722,18 @@ def handler(
     def wrapped(function):
         controller.__name__ = function.__name__
 
-        if with_workspaces:
+        if with_paths:
+            function = with_paths_decorator(function)
+        elif with_workspaces:
+            deprecation_warning(
+                "5.0",
+                'the "with_workspaces" argument to the "handler" decorator',
+                'The workspaces API has been replaced with the new Paths API. In place of the "with_workspaces" '
+                'argument please use the "with_paths" argument '
+                f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#consumer-decorator>).]n"
+                f"For a full guide to transitioning to the Paths API see "
+                f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
+            )
             function = with_workspaces_decorator(function)
         elif with_request:
             function = with_request_decorator(function)

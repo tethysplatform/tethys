@@ -15,8 +15,9 @@ on:
 
 env:
   CONDA_BUILD_PIN_LEVEL: minor
+  DOCKER_UPLOAD_URL: tethysplatform/tethys-core
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  TEST_IMAGE: tethys:dev
+  TEST_IMAGE: tethys
   POSTGRES_DB: tethys_postgis
   POSTGRES_PASSWORD: please_dont_use_default_passwords
   POSTGRES_PORT: 5432
@@ -33,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install Flake8
@@ -45,21 +46,22 @@ jobs:
     name: Check Black Formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: psf/black@stable
 
   tests:
-    name: Tests (${{ matrix.platform }})
+    name: Tests (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        python-version: [3.7]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Install Tethys
@@ -67,7 +69,7 @@ jobs:
         run: |
           cd ..
           bash ./tethys/scripts/install_tethys.sh -h
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -x -d ${{ matrix.django-version }} --python-version ${{ matrix.python-version }}
       # Setup Tethys and Conda
       - name: Setup Tethys and Conda
         run: |
@@ -84,38 +86,39 @@ jobs:
           tethys test -c -u -v 2
       # Generate Coverage Report
       - name: Generate Coverage Report
-        if: matrix.platform == 'ubuntu-latest'
+        if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.django-version == '4.2' }}
         run: |
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           coveralls --service=github
 
   docker-build:
-    name: Docker Build
+    name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.7]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Build the docker for no tag
       - name: Build Without Tag
         run: |
-          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:dev .;
-          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:dev ${{ env.TEST_IMAGE }};
+          docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} .;
+          docker tag ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }};
       # Upload docker if pull request no tag
       - name: Upload Docker No Tag
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           echo "Pushing to docker registry";
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin;
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:dev;
+          docker push ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }};
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
@@ -123,15 +126,21 @@ jobs:
           echo "Uploading is skipped for pull requests."
       # Save image as artifact for startup test job
       - name: Upload Docker Artifact
-        uses: ishworkh/docker-image-artifact-upload@v1
+        uses: ishworkh/container-image-artifact-upload@v1.1.1
         with:
-          image: ${{ env.TEST_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
           retention_days: "1"
 
   startup_test:
-    name: Docker Start-up Test
+    name: Docker Start-up Test (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     needs: [docker-build]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     services:
       tethys-postgis:
         image: postgis/postgis:14-3.3
@@ -149,9 +158,9 @@ jobs:
           - 5432:5432
     steps:
       - name: Download Docker Artifact
-        uses: ishworkh/docker-image-artifact-download@v1
+        uses: ishworkh/container-image-artifact-download@v1.1.1
         with:
-          image: ${{ env.TEST_IMAGE }}
+          image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
       - name: Run Salt Test
         run: |
           docker run --rm \
@@ -164,7 +173,7 @@ jobs:
             -e TETHYS_DB_PASSWORD=${{ env.TETHYS_DB_PASSWORD }} \
             -e TETHYS_DB_SUPERUSER=${{ env.TETHYS_DB_SUPERUSER }} \
             -e TETHYS_DB_SUPERUSER_PASS=${{ env.TETHYS_DB_SUPERUSER_PASS }} \
-            ${{ env.TEST_IMAGE }} \
+            ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} \
             /bin/bash -c "cd /usr/lib/tethys && source ./run.sh --test"
 
   conda-build:
@@ -174,11 +183,10 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.7]
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Setup Tethys
@@ -193,9 +201,8 @@ jobs:
           conda update -q conda
       # Export Conda Build Path
       - name: Set Conda Build Path
-        uses: allenevans/set-env@v2.0.0
-        with:
-          CONDA_BLD_PATH: "/home/runner/conda-bld"
+        run: |
+          echo "CONDA_BLD_PATH=/home/runner/conda-bld" >> $GITHUB_ENV
       # Generate Conda Recipe Without Constrained Dependencies
       - name: Generate Conda Recipe
         run: |

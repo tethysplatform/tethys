@@ -223,7 +223,7 @@ class TestSettings(TestCase):
         "tethys_portal.settings.yaml.safe_load",
         return_value={"settings": {"DATABASES": {"default": {"DIR": "test"}}}},
     )
-    @mock.patch("tethys_cli.cli_colors.write_warning")
+    @mock.patch("tethys_utils.deprecation_warning")
     def test_deprecated_postgres_db_config(self, mock_warning, _):
         reload(settings)
         mock_warning.assert_called_once()
@@ -232,7 +232,7 @@ class TestSettings(TestCase):
         "tethys_portal.settings.yaml.safe_load",
         return_value={"settings": {}},
     )
-    @mock.patch("tethys_cli.cli_colors.write_warning")
+    @mock.patch("tethys_utils.deprecation_warning")
     @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
     def test_deprecated_no_config_existing_db(self, mock_home, mock_warning, _):
         mock_home().exists.return_value = True

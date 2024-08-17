@@ -1,17 +1,92 @@
 .. _tethys_workspaces_api:
 
-**************
-Workspaces API
-**************
+***************************
+Workspaces API (DEPRECATED)
+***************************
 
-**Last Updated:** September 2022
+**Last Updated:** May 2024
+
+.. warning::
+
+    The Workspaces API has been replaced by the Paths API and is now deprecated. It will be removed in Tethys v5.0. Please see :ref:`tethys_paths_api` to start using the Paths API.
+
+.. _transition_to_paths_guide:
+
+Guide to transitioning to the Paths API
+=======================================
+
+Use the following guide to transition apps that have been using the Workspaces API to use the new Paths API.
+
+In Tethys v4.3 a temporary setting (``USE_OLD_WORKSPACES_API``) was introduces to ensure that apps will not break with the introduction of the Paths API. To begin using the Paths API set the value of ``USE_OLD_WORKSPACES_API`` to ``False``.
+
+    .. code-block:: shell
+
+        tethys settings -s USE_OLD_WORKSPACES_API False
+
+The primary difference with transitioning to the Paths API is that rather than returning ``TethysWorkspace`` objects Paths API calls will return a ``TethysPath`` object. The ``TethysPath`` object has the same interface as the ``TethysWorkspace`` with the exception that it will return Python ``pathlib.Path`` objects to represent files and directories rather than strings. For example when using the Workspaces API you might do something along these lines:
+
+.. code-block:: python
+
+    import os
+    ...
+
+    @controller(
+        app_workspace=True
+    )
+    def my_controller(request, app_workspace):
+        my_path = os.path.join(app_workspace.path, 'my_dir')
+        ...
+
+When using the Paths API it would look something like this:
+
+.. code-block:: python
+
+    ...
+
+    @controller(
+        app_workspace=True
+    )
+    def my_controller(request, app_workspace):
+        my_path = app_workspace.path / 'my_dir'
+        ...
+
+.. note:: if you are unfamiliar with Python's ``pathlib`` module then see the `pathlib documentation <https://docs.python.org/3/library/pathlib.html>`_
+
+If you are using workspaces with the :ref:`handler-decorator` then note that the ``with_workspaces`` argument should be replaced with ``with_paths``:
+
+.. code-block:: python
+
+    from tethys_sdk.routing import handler
+
+    @handler(
+        with_paths=True
+    )
+    def my_handler(doc):
+        my_dir = doc.app_workspace.path / 'my_dir'
+
+Functions and decorators that were imported from ``tethys_sdk.workspaces`` should now be imported from ``tethys_sdk.paths``.
+
+.. code-block:: python
+
+    from tethys_sdk.paths import (
+        get_app_workspace,
+        get_user_workspace,
+        app_workspace,
+        user_workspace,
+    )
+
+Note that the Paths API has additional functions and decorators. For more information the :ref:`tethys_paths_api` documentation.
+
+
+Workspaces Overview
+===================
 
 The Workspaces API makes it easy for you to create directories for storing files that your app operates on. This can be a tricky task for a web application, because of the multi-user, simultaneous-connection environment of the web. The Workspaces API provides a simple mechanism for creating and managing a global workspace for your app and individual workspaces for each user of your app to prevent unwanted overwrites and file lock conflicts.
 
 Getting Workspaces
 ==================
 
-There are three methods for obtaining the workspaces that are supported in Tethys Platform. In order of recommended use, the workspace methods are:
+There are four methods for obtaining the workspaces that are supported in Tethys Platform. In order of recommended use, the workspace methods are:
 
 * Controller Decorator
 * Workspaces Decorators
@@ -46,14 +121,14 @@ Workspace Decorators
 
 The Workspaces API includes two decorators, that can be used to retrieve the app workspace and the user workspaces, respectively. To use these decorators, import them from ``tethys_sdk.workspaces``. Explanations of the decorators and example usage follows.
 
-.. _app_workspace:
+.. _workspace_app_workspace:
 
 @app_workspace
 ++++++++++++++
 
 .. automethod:: tethys_apps.base.workspace.app_workspace
 
-.. _user_workspace:
+.. _workspace_user_workspace:
 
 @user_workspace
 +++++++++++++++
@@ -82,13 +157,13 @@ Workspace Functions
 
 In the rare cases where you need to use a workspace where it is not convenient or not possible to use one of the decorators OR the :term:`app class` methods, the Workspaces API provides function versions of the getters. Import them from ``tethys_sdk.workspaces``:
 
-.. _get_app_workspace_func:
+.. _workspace_get_app_workspace_func:
 
-.. automethod:: tethys_apps.base.workspace.get_app_workspace
+.. automethod:: tethys_apps.base.paths.get_app_workspace
 
-.. _get_user_workspace_func:
+.. _workspace_get_user_workspace_func:
 
-.. automethod:: tethys_apps.base.workspace.get_user_workspace
+.. automethod:: tethys_apps.base.paths.get_user_workspace
 
 
 Working with Workspaces
@@ -133,7 +208,7 @@ Run the ``collectworkspaces`` command to automatically move all of the workspace
 
         tethys manage collectall
 
-.. _tethys_quotas_workspace_manage:
+.. _workspace_tethys_quotas_workspace_manage:
 
 Handling Workspace Clearing
 ===========================

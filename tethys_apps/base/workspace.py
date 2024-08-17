@@ -269,7 +269,7 @@ def _get_user_workspace(app_class, user_or_request):
     return TethysWorkspace(workspace_directory)
 
 
-def get_user_workspace(app_class_or_request, user_or_request) -> TethysWorkspace:
+def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorkspace:
     """
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
@@ -374,7 +374,7 @@ def user_workspace(controller):
                 "No request given. The user_workspace decorator only works on controllers."
             )
 
-        the_workspace = get_user_workspace(request, request.user)
+        the_workspace = get_user_workspace_old(request, request.user)
 
         return controller(*args, user_workspace=the_workspace, **kwargs)
 
@@ -396,7 +396,7 @@ def _get_app_workspace(app_class):
     return TethysWorkspace(workspace_directory)
 
 
-def get_app_workspace(app_or_request) -> TethysWorkspace:
+def get_app_workspace_old(app_or_request) -> TethysWorkspace:
     """
     Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
 
@@ -487,7 +487,7 @@ def app_workspace(controller):
                 "No request given. The app_workspace decorator only works on controllers."
             )
 
-        the_workspace = get_app_workspace(request)
+        the_workspace = get_app_workspace_old(request)
 
         return controller(*args, app_workspace=the_workspace, **kwargs)
 

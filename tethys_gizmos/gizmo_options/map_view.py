@@ -10,6 +10,7 @@
 
 import logging
 from tethys_portal.dependencies import vendor_static_dependencies
+from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 log = logging.getLogger("tethys.tethys_gizmos.gizmo_options.map_view")
@@ -57,15 +58,21 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
+    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Azure`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
 
         {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'control_label': 'Bing Aerial'}}
+        {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}}
+
+    .. note::
+
+        The Bing Map service has been depricated in favor of Azure Maps service.
+        For more options for Azure Maps tilesetId, please refer to this link: `TilesetID <https://learn.microsoft.com/en-us/rest/api/maps/render/get-map-tile?view=rest-maps-2024-04-01&tabs=HTTP#tilesetid>`_
+
 
     For additional options that can be provided to each base map service see the following links:
 
     * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
     * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
-    * Stamen: `ol/source/Stamen <http://openlayers.org/en/latest/apidoc/module-ol_source_Stamen-Stamen.html>`_
     * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
 
     .. note::
@@ -280,34 +287,39 @@ class MapView(TethysGizmoOptions):
             'World_Topo_Map',
         ]
         esri_layers = [{'ESRI': {'layer': l}} for l in esri_layer_names]
+        azure_layers = [
+            {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}},
+            [
+                {'Azure': {'tilesetId': 'microsoft.imagery', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Imagery'}},
+                {'Azure': {'tilesetId': 'microsoft.base.labels.road', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Label'}}
+            ],
+            {'Azure': {'tilesetId': 'microsoft.base.road', 'subscriptionKey': 'Ap|k3yheRE', 'layer': 'Road'}}
+        ]
         basemaps = [
-            'Stamen',
-            {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
-            {'Stamen': {'layer': 'watercolor'}},
             'OpenStreetMap',
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},
             {'CartoDB': {'style': 'light', 'labels': False, 'control_label': 'CartoDB-light-no-labels'}},
-            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'control_label': 'Wikimedia'}}
+            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'control_label': 'Wikimedia'}},
             'ESRI',
         ]
-        basemaps.extend(esri_layers)
+        basemaps.extend([esri_layers, azure_layers])
 
         # Specify OpenLayers version
         MapView.ol_version = '5.3.0'
 
         # Define map view options
         map_view_options = MapView(
-                height='600px',
-                width='100%',
-                controls=['ZoomSlider', 'Rotate', 'FullScreen',
-                          {'MousePosition': {'projection': 'EPSG:4326'}},
-                          {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-                layers=[geojson_layer, geojson_point_layer, geoserver_layer, kml_layer, arc_gis_layer],
-                view=view_options,
-                basemap=basemaps,
-                draw=drawing_options,
-                legend=True
+            height='600px',
+            width='100%',
+            controls=['ZoomSlider', 'Rotate', 'FullScreen',
+                        {'MousePosition': {'projection': 'EPSG:4326'}},
+                        {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
+            layers=[geojson_layer, geojson_point_layer, geoserver_layer, kml_layer, arc_gis_layer],
+            view=view_options,
+            basemap=basemaps,
+            draw=drawing_options,
+            legend=True
         )
 
         context = {'map_view_options': map_view_options}
@@ -349,6 +361,29 @@ class MapView(TethysGizmoOptions):
 
         self.height = height
         self.width = width
+
+        def check_bing_map(map_type):
+            if map_type.lower() == "bing":
+                deprecation_warning(
+                    version="5.0",
+                    feature="the Bing base map",
+                    message="The Bing Map service has been depricated in favor of Azure Maps service and will be "
+                    "retired on June 30, 2028. Please switch to Azure Maps at your erliest convenience. "
+                    f"For instructions on using Azure Maps, see "
+                    f"{DOCS_BASE_URL}/tethys_sdk/gizmos/map_view.html",
+                )
+
+        for layer_group in basemap:
+            if isinstance(layer_group, str):
+                check_bing_map(layer_group)
+            elif isinstance(layer_group, list):
+                for layer in layer_group:
+                    for map_type, _ in layer.items():
+                        check_bing_map(map_type)
+            else:  # dict
+                for map_type, _ in layer_group.items():
+                    check_bing_map(map_type)
+
         self.basemap = basemap
         self.view = view or {"center": [-100, 40], "zoom": 2}
         self.controls = controls or []

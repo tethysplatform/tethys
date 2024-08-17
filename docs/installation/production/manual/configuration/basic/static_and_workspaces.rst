@@ -11,7 +11,7 @@ Static and Workspaces Directories
 
 Static files include all files in the ``public`` or ``static`` directories of Tethys Portal and apps and examples include JavaScript, CSS, and images. As the name implies, static files are not dynamically generated and can be served directly by NGINX, which will be able to do so much more efficiently than the Daphne-Django server could. You will need to collect all of the static files into one directory for NGINX to be able to more easily host them. This can be done as follows:
 
-1. Get the value of the static directory from the `STATIC_ROOT <https://docs.djangoproject.com/en/3.0/ref/settings/#static-root>`_ setting:
+1. Get the value of the static directory from the `STATIC_ROOT <https://docs.djangoproject.com/en/5.0/ref/settings/#static-root>`_ setting:
 
     .. code-block::
 
@@ -72,20 +72,22 @@ The app workspaces directory is one location where all app workspaces are collec
 
         Replace ``<TETHYS_WORKSPACES_ROOT>`` with the value returned by the previous command (see step 2.1).
 
-3. Collect the app workspaces to the ``TETHYS_WORKSPACES_ROOT`` location:
-
-    .. code-block::
-
-        tethys manage collectworkspaces
-
 .. tip::
 
     The ``TETHYS_WORKSPACES_ROOT`` directory is one of the recommended directories to backup.
+
+.. warning::
+
+    The following step is deprecated in Tethys 4.3 and is not required when using the :ref:`tethys_paths_api`. It will no longer be available in Tethys 5.0.
+
+3. Collect the app workspaces to the ``TETHYS_WORKSPACES_ROOT`` location:
+
+    .. code-block::
+        tethys manage collectworkspaces
 
 .. tip::
 
     You can collect both the static files and the app workspaces with a single command:
 
     .. code-block::
-
             tethys manage collectall

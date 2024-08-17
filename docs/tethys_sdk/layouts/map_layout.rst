@@ -48,9 +48,7 @@ The following example demonstrates how to create a new ``MapLayout`` view:
         map_subtitle = 'Subtitle'
         basemaps = [
             'OpenStreetMap',
-            'ESRI',
-            'Stamen',
-            {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
+            'ESRI'
         ]
         default_map_extent = [-65.69, 23.81, -129.17, 49.38]  # CONUS bbox
         max_zoom = 16
@@ -696,7 +694,7 @@ Define the following permissions in the ``permissions()`` method of your app cla
     from tethys_sdk.permissions import Permission, PermissionGroup
 
 
-    class MyFirstApp(TethysAppBase):
+    class App(TethysAppBase):
 
         ...
 

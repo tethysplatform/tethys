@@ -9,20 +9,22 @@ on:
 
 env:
   CONDA_BUILD_PIN_LEVEL: minor
+  DOCKER_UPLOAD_URL: tethysplatform/tethys-core
 
 jobs:
   docker-build:
-    name: Docker Build (${{ matrix.platform }})
+    name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["3.2", "4.2", "5.0"]
     steps:
       # Checkout the source
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Parse version parts from tag
@@ -32,7 +34,7 @@ jobs:
       - name: Safe Tag
         id: safetag
         run: |
-          full_tag="${{ steps.version.outputs.full }}";
+          full_tag="${{ steps.version.outputs.full }}-py${{ matrix.python-version }}-dj${{ matrix.django-version }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
           echo "safetag=$safe_tag" >> $GITHUB_OUTPUT;
@@ -58,7 +60,7 @@ jobs:
           full_tag="${{ steps.version.outputs.full }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
-          docker build -t ${{ secrets.DOCKER_UPLOAD_URL }}:"${{ steps.safetag.outputs.safetag }}" .;
+          docker build -t ${{ env.DOCKER_UPLOAD_URL }}:"${{ steps.safetag.outputs.safetag }}" .;
       # Authenticate docker
       - name: Authenticate Docker
         run: |
@@ -67,13 +69,7 @@ jobs:
       - name: Upload Docker With Tag
         run: |
           echo "Pushing to docker registry";
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }};
-      - name: Upload Docker With Latest Tag
-        if: ${{ steps.version.outputs.prerelease == '' }}
-        run: |
-          echo "Updating latest on the docker registry";
-          docker tag ${{ secrets.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }} ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
-          docker push ${{ secrets.DOCKER_UPLOAD_URL }}:latest;
+          docker push ${{ env.DOCKER_UPLOAD_URL }}:${{ steps.safetag.outputs.safetag }};
 
   conda-build:
     name: Conda Build (${{ matrix.platform }})
@@ -82,11 +78,10 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.10]
-    steps:
       # Checkout the source
+    steps:
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       # Parse version parts from tag
@@ -120,7 +115,7 @@ jobs:
       - name: Setup Tethys
         run: |
           cd ..
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys -x
           . ~/miniconda/etc/profile.d/conda.sh
           conda activate tethys
           hash -r
@@ -128,9 +123,8 @@ jobs:
           conda update -q conda
       # Export Conda Build Path
       - name: Set Conda Build Path
-        uses: allenevans/set-env@v2.0.0
-        with:
-          CONDA_BLD_PATH: "/home/runner/conda-bld"
+        run: |
+          echo "CONDA_BLD_PATH=/home/runner/conda-bld" >> $GITHUB_ENV
       # Generate Conda Recipe With Constrained Dependencies
       - name: Generate Conda Recipe
         run: |

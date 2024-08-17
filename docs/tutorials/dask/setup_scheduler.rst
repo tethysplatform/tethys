@@ -97,7 +97,7 @@ Add the ``scheduler_settings()`` method to the app class. Return a single ``Sche
     from tethys_sdk.app_settings import SchedulerSetting
 
 
-    class DaskTutorial(TethysAppBase):
+    class App(TethysAppBase):
         """
         Tethys app class for Dask Tutorial.
         """

@@ -33,7 +33,7 @@ from importlib.machinery import SourceFileLoader
 from django.contrib.messages import constants as message_constants
 
 from tethys_apps.utilities import relative_to_tethys_home
-from tethys_cli.cli_colors import write_warning
+from tethys_utils import deprecation_warning
 from tethys_cli.gen_commands import generate_secret_key
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -119,7 +119,7 @@ DEFAULT_DB = DATABASES["default"]
 
 # ###########
 # backwards compatibility logic
-# TODO remove compatibility code with Tethys 5.0 (or 4.2?)
+# TODO remove compatibility code with Tethys 5.0
 warning_message = (
     "{intro}\n"
     "The default database engine is changing from postgresql to sqlite3.\n"
@@ -135,25 +135,29 @@ if bool(DEFAULT_DB):
             set(DEFAULT_DB.keys())
         ):
             DEFAULT_DB["ENGINE"] = "django.db.backends.postgresql"
-            write_warning(
-                warning_message.format(
-                    intro="WARNING!!!",
+            deprecation_warning(
+                version="5.0",
+                feature="Using postgresql as the default database engine",
+                message=warning_message.format(
+                    intro="",
                     properties='"ENGINE" property',
                     command_options="--set DATABASES.default.ENGINE django.db.backends.postgresql",
-                )
+                ),
             )
 else:
     # check if default local database exists
     db_dir = relative_to_tethys_home("psql")
     if db_dir.exists():
         DEFAULT_DB["DIR"] = "psql"
-        write_warning(
-            warning_message.format(
+        deprecation_warning(
+            version="5.0",
+            feature="Using postgresql as the default database engine",
+            message=warning_message.format(
                 intro="WARNING!!!\nIt appears that you have a local PostgreSQL database that was configured by Tethys.",
                 properties='"ENGINE" and "DIR" properties',
                 command_options="--set DATABASES.default.ENGINE django.db.backends.postgresql "
                 "--set DATABASES.default.DIR psql",
-            )
+            ),
         )
 
 # end compatibility code
@@ -319,6 +323,10 @@ RESOURCE_QUOTA_HANDLERS = portal_config_settings.pop(
 )
 RESOURCE_QUOTA_HANDLERS = tuple(
     RESOURCE_QUOTA_HANDLERS + portal_config_settings.pop("RESOURCE_QUOTA_HANDLERS", [])
+)
+
+SUPPRESS_QUOTA_WARNINGS = portal_config_settings.pop(
+    "SUPPRESS_QUOTA_WARNINGS", ["user_workspace_quota", "app_workspace_quota"]
 )
 
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
@@ -576,10 +584,6 @@ ASGI_APPLICATION = "tethys_portal.asgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Add any additional specified settings to module
-for setting, value in portal_config_settings.items():
-    setattr(this_module, setting, value)
-
 COOKIE_CONFIG = portal_config_settings.pop("COOKIE_CONFIG", {})
 for setting, value in COOKIE_CONFIG.items():
     setattr(this_module, setting, value)
@@ -615,3 +619,10 @@ for settings_module in ADDITIONAL_SETTINGS_FILES:
     for setting in all_settings:
         value = getattr(mod, setting)
         setattr(this_module, setting, value)
+
+# TODO backward compatibility setting. Remove in Tethys 5.0
+USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", True)
+
+# Add any additional specified settings to module
+for setting, value in portal_config_settings.items():
+    setattr(this_module, setting, value)
