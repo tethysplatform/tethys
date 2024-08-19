@@ -3,6 +3,10 @@ from reactpy import web
 from jinja2 import Template
 from re import findall
 from unittest.mock import Mock
+import logging
+
+reactpy_web_logger = logging.getLogger('reactpy.web.module')
+reactpy_web_logger.setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
@@ -79,8 +83,7 @@ class ComponentLibrary:
                 module = web.module_from_string(
                     name=self.EXPORT_NAME,
                     content=self.get_reactjs_module_wrapper_js(),
-                    resolve_exports=False,
-                    replace=True
+                    resolve_exports=False
                 )
                 setattr(self, attr, web.export(module, component))        
             return getattr(self, attr)
