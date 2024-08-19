@@ -11,7 +11,7 @@ This merge request addresses...
 -  
 
 ### Quality Checks
- - [] New code is 100% tested
- - [] Code has been formated
- - [] Code has been linted
- - [] Docstrings for new methods have been added
+ - [ ] New code is 100% tested
+ - [ ] Code has been formated
+ - [ ] Code has been linted
+ - [ ] Docstrings for new methods have been added
