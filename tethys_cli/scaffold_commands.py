@@ -443,26 +443,6 @@ def scaffold_command(args):
 
             write_pretty_output('Created: "{}"'.format(project_file_path), FG_WHITE)
     
-    if template_name == 'reactpy':
-        from .settings_commands import read_settings, write_settings
-        from argparse import Namespace
-        tethys_settings = read_settings()
-        if 'INSTALLED_APPS' not in tethys_settings:
-            tethys_settings['INSTALLED_APPS'] = []
-        if 'reactpy_django' not in tethys_settings['INSTALLED_APPS']:
-            tethys_settings['INSTALLED_APPS'].append('reactpy_django')
-            write_settings(tethys_settings)
-    
-    if template_name == 'reactpy':
-        from .settings_commands import read_settings, write_settings
-        from argparse import Namespace
-        tethys_settings = read_settings()
-        if 'INSTALLED_APPS' not in tethys_settings:
-            tethys_settings['INSTALLED_APPS'] = []
-        if 'reactpy_django' not in tethys_settings['INSTALLED_APPS']:
-            tethys_settings['INSTALLED_APPS'].append('reactpy_django')
-            write_settings(tethys_settings)
-
     write_pretty_output(
         'Successfully scaffolded new project "{}"'.format(project_name), FG_WHITE
     )
