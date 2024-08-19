@@ -1,5 +1,7 @@
+import inspect
 import logging
 import re
+from functools import wraps
 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -7,6 +9,8 @@ from tethys_compute.models import TethysJob, CondorWorkflow, DaskJob, DaskSchedu
 from tethys_gizmos.gizmo_options.jobs_table import JobsTable
 from tethys_sdk.gizmos import SelectInput
 from tethys_portal.optional_dependencies import optional_import
+from django.contrib.auth.decorators import login_required
+
 
 # optional imports
 server_document = optional_import("server_document", from_module="bokeh.embed")
@@ -14,10 +18,26 @@ server_document = optional_import("server_document", from_module="bokeh.embed")
 logger = logging.getLogger(f"tethys.{__name__}")
 
 
-def perform_action(request, job_id, action, success_message="", error_message=None):
+def async_login_required(func):
+    @wraps(func)
+    async def wrapper(request, *args, **kwargs):
+        redirect = login_required(lambda r: r)(request)
+        if redirect != request:
+            return redirect
+        return await func(request, *args, **kwargs)
+
+    return wrapper
+
+
+@async_login_required
+async def perform_action(
+    request, job_id, action, success_message="", error_message=None
+):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        getattr(job, action)()
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        result = getattr(job, action)()
+        if inspect.iscoroutine(result):
+            await result
         success = True
         message = success_message
     except Exception as e:
@@ -29,17 +49,20 @@ def perform_action(request, job_id, action, success_message="", error_message=No
     return JsonResponse({"success": success, "message": message})
 
 
-def resubmit(request, job_id):
-    return perform_action(
+async def resubmit(request, job_id):
+    return await perform_action(
         request, job_id, "resubmit", f"Successfully resubmitted job: {job_id}."
     )
 
 
-def delete(request, job_id):
+@async_login_required
+async def delete(request, job_id):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
         job.clean_on_delete = True
-        job.delete()
+        result = job.delete()
+        if inspect.iscoroutine(result):
+            await result
         success = True
         message = ""
     except Exception as e:
@@ -51,11 +74,14 @@ def delete(request, job_id):
     return JsonResponse({"success": success, "message": message})
 
 
-def show_log(request, job_id):
+@async_login_required
+async def show_log(request, job_id):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
         # Get the Job logs.
         data = job.get_logs()
+        if inspect.iscoroutine(data):
+            data = await data
 
         sub_job_options = [(k, k) for k in data.keys()]
         sub_job_select = SelectInput(
@@ -110,16 +136,20 @@ def show_log(request, job_id):
         )
 
 
-def get_log_content(request, job_id, key1, key2=None):
+@async_login_required
+async def get_log_content(request, job_id, key1, key2=None):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
         # Get the Job logs.
         data = job.get_logs()
+        if inspect.iscoroutine(data):
+            data = await data
         log_func = data[key1]
         if key2 is not None:
             log_func = log_func[key2]
         content = log_func() if callable(log_func) else log_func
-        content = content.replace("\n", "<br/>")
+        if inspect.iscoroutine(content):
+            content = await content
 
         return JsonResponse({"success": True, "content": content})
     except Exception as e:
@@ -140,11 +170,15 @@ def get_log_content(request, job_id, key1, key2=None):
         )
 
 
-def update_row(request, job_id):
+@async_login_required
+async def update_row(request, job_id):
     data = reconstruct_post_dict(request)
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        status = job.status
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        result = job.update_status()
+        if inspect.iscoroutine(result):
+            await result
+        status = job.cached_status
         status_msg = job.status_message
         statuses = None
         if status in ["Various", "Various-Complete"]:
@@ -223,11 +257,15 @@ def update_row(request, job_id):
     return JsonResponse({"success": success, "status": status, "html": html})
 
 
-def update_workflow_nodes_row(request, job_id):
+@async_login_required
+async def update_workflow_nodes_row(request, job_id):
     dag = {}
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        status = job.status
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        result = job.update_status()
+        if inspect.iscoroutine(result):
+            await result
+        status = job.cached_status
 
         # Hard code example for gizmo_showcase
         if job.label == "gizmo_showcase":
@@ -302,13 +340,17 @@ def update_workflow_nodes_row(request, job_id):
     return JsonResponse({"success": success, "status": status, "dag": dag})
 
 
-def bokeh_row(request, job_id, type="individual-graph"):
+@async_login_required
+async def bokeh_row(request, job_id, type="individual-graph"):
     """
     Returns an embeded bokeh document in json. Javascript can use this method to inject bokeh document to jobs table.
     """
     try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        status = job.status
+        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        result = job.update_status()
+        if inspect.iscoroutine(result):
+            await result
+        status = job.cached_status
 
         # Get dashboard link for a given job_id
         scheduler_id = job.scheduler_id

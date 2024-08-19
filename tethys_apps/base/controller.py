@@ -607,8 +607,8 @@ def handler(
                 "5.0",
                 'the "with_workspaces" argument to the "handler" decorator',
                 'The workspaces API has been replaced with the new Paths API. In place of the "with_workspaces" '
-                'argument please use the "with_paths" argument '
-                f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#consumer-decorator>).]n"
+                f'argument please use the "with_paths" argument on "{function.__module__}.{function.__name__}" '
+                f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#consumer-decorator>).\n"
                 f"For a full guide to transitioning to the Paths API see "
                 f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
             )

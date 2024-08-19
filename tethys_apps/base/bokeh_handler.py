@@ -8,9 +8,11 @@
 """
 
 # Native Imports
+import inspect
 from functools import wraps
 
 # Third Party Imports
+from channels.db import database_sync_to_async
 
 # Django Imports
 from django.http.request import HttpRequest
@@ -41,18 +43,38 @@ Document = optional_import("Document", from_module="bokeh.document")
 server_document = optional_import("server_document", from_module="bokeh.embed")
 
 
+def _add_request_to_doc(doc):
+    bokeh_request = doc.session_context.request
+    bokeh_request.pop("scheme")
+    django_request = HttpRequest()
+    for k, v in bokeh_request.items():
+        setattr(django_request, k, v)
+    doc.request = django_request
+
+
+def _add_paths_to_doc(doc):
+    app = _resolve_app_class(doc.request)
+    user = doc.request.user
+    doc.app_workspace = get_app_workspace(app)
+    doc.user_workspace = get_user_workspace(app, user)
+    doc.app_media_path = get_app_media(app)
+    doc.user_media_path = get_user_media(app, user)
+    doc.app_resources_path = get_app_resources(app)
+    doc.app_public_path = get_app_public(app)
+
+
 def with_request(handler):
     @wraps(handler)
     def wrapper(doc: Document):
-        bokeh_request = doc.session_context.request
-        bokeh_request.pop("scheme")
-        django_request = HttpRequest()
-        for k, v in bokeh_request.items():
-            setattr(django_request, k, v)
-        doc.request = django_request
+        _add_request_to_doc(doc)
         return handler(doc)
 
-    return wrapper
+    @wraps(handler)
+    async def async_wrapper(doc: Document):
+        _add_request_to_doc(doc)
+        return await handler(doc)
+
+    return async_wrapper if inspect.iscoroutinefunction(handler) else wrapper
 
 
 def with_workspaces(handler):
@@ -79,17 +101,16 @@ def with_paths(handler):
     @with_request
     @wraps(handler)
     def wrapper(doc: Document):
-        app = _resolve_app_class(doc.request)
-        user = doc.request.user
-        doc.app_workspace = get_app_workspace(app)
-        doc.user_workspace = get_user_workspace(app, user)
-        doc.app_media_path = get_app_media(app)
-        doc.user_media_path = get_user_media(app, user)
-        doc.app_resources_path = get_app_resources(app)
-        doc.app_public_path = get_app_public(app)
+        _add_paths_to_doc(doc)
         return handler(doc)
 
-    return wrapper
+    @with_request
+    @wraps(handler)
+    async def async_wrapper(doc: Document):
+        await database_sync_to_async(_add_paths_to_doc)(doc)
+        return await handler(doc)
+
+    return async_wrapper if inspect.iscoroutinefunction(handler) else wrapper
 
 
 def _get_bokeh_controller(template=None, app_package=None):
