@@ -44,6 +44,11 @@ server_document = optional_import("server_document", from_module="bokeh.embed")
 
 
 def _add_request_to_doc(doc):
+    """
+    Adds a Django request object to a Bokeh document
+    Args:
+        doc: Bokeh document that Django request object should be added to
+    """
     bokeh_request = doc.session_context.request
     bokeh_request.pop("scheme")
     django_request = HttpRequest()
@@ -53,6 +58,12 @@ def _add_request_to_doc(doc):
 
 
 def _add_paths_to_doc(doc):
+    """
+    Adds several Tethys Paths to a Bokeh document
+
+    Args:
+        doc: Bokeh document to add Tethys Paths to
+    """
     app = _resolve_app_class(doc.request)
     user = doc.request.user
     doc.app_workspace = get_app_workspace(app)
@@ -64,6 +75,15 @@ def _add_paths_to_doc(doc):
 
 
 def with_request(handler):
+    """
+    Decorator for Bokeh handlers that adds the Django request object to the Bokeh document object
+    Args:
+        handler: decorated handler function (that accepts a document object). May be sync or async.
+
+    Returns: wrapped handler function (either sync or async to match the decorated function).
+
+    """
+
     @wraps(handler)
     def wrapper(doc: Document):
         _add_request_to_doc(doc)
@@ -98,6 +118,15 @@ def with_workspaces(handler):
 
 
 def with_paths(handler):
+    """
+    Decorator for Bokeh handlers that adds Tethys paths to the Bokeh document object
+    Args:
+        handler: decorated handler function (that accepts a document object). May be sync or async.
+
+    Returns: wrapped handler function (either sync or async to match the decorated function).
+
+    """
+
     @with_request
     @wraps(handler)
     def wrapper(doc: Document):

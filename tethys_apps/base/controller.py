@@ -461,7 +461,7 @@ def handler(
 ):
     """
     Decorator to register a handler function and connect it with a controller function
-    (by automatically registering a UrlMap for it).
+    (by automatically registering a UrlMap for it). Handler function may be synchronous or asynchronous.
 
     Args:
         controller: reference to controller function or string with dot-notation path to controller function. This is only required if custom logic is needed in the controller. Otherwise use `template` or `app_package`.
@@ -479,7 +479,13 @@ def handler(
         from tethys_sdk.routing import handler
 
         @handler
-        def my_app_handler(document):
+        async def my_app_handler(document):
+            ...
+
+        ------------
+
+        @handler
+        def my_sync_app_handler(document):
             ...
 
         ------------
@@ -488,7 +494,7 @@ def handler(
             name='home',
             app_package='my_app',
         )
-        def my_app_handler(document):
+        async def my_app_handler(document):
             ...
 
         ------------
@@ -556,7 +562,7 @@ def handler(
         @handler(
             with_paths=True
         )
-        def my_app_handler(document):
+        async def my_app_handler(document):
             # attributes available when using "with_paths" argument
             request = document.request
             user_workspace = document.user_workspace
