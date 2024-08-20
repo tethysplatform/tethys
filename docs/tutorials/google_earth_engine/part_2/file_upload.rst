@@ -427,7 +427,6 @@ In this step you will add the logic to validate that the file contained in the Z
           - earthengine-api
           - oauth2client
           - geojson
-          - simplejson
           - pandas
           - pyshp
       pip:

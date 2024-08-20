@@ -31,7 +31,7 @@ Complete the `Python Installation - Colab Notebook guide <https://developers.goo
 
 2. Choose an example from the **Scripts** tab of the `Code Editor <https://code.earthengine.google.com/>`_ and convert it into Python in the Colab editor using the guidelines from the article above.
 
-5. Create a Google Cloud Account and New Projections
+5. Create a Google Cloud Account and New Project
 ====================================================
 If you plan to use Google Earth Engine in your Tethys App, you will need to create a Google Cloud Account and set up a new project. 
 Follow the instructions in the `Google Cloud Platform Quickstart <https://cloud.google.com/resource-manager/docs/creating-managing-projects>`_.

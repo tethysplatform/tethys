@@ -41,8 +41,7 @@ In order to limit these notifications to the home page, we will be extending the
         {% load tethys_gizmos %}
 
 
-    This code extends the default map layout template, while allowing us to make manual additions later. It also prepares the template for including 
-    custom Tethys Gizmos later.
+    This code extends the default map layout template, while allowing us to make manual additions later. It also prepares the template for including custom Tethys Gizmos later.
 
 2. Now add this line to your ``HomeMap`` controller class:
 
