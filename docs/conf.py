@@ -288,8 +288,8 @@ theme_options = ThemeOptions(
             link="https://github.com/tethysplatform/tethys",
         ),
     },
-    logo_dark="images/features/tethys-logo-75.png",  # todo: svg logo
-    logo_light="images/features/tethys_logo_inverse.png",  # todo: svg logo
+    logo_dark="images/features/tethys-on-blue.svg",  # todo: svg logo
+    logo_light="images/features/tethys-on-white.svg",  # todo: svg logo
     show_breadcrumbs=False,
     show_prev_next=True,
     show_scrolltop=True,
