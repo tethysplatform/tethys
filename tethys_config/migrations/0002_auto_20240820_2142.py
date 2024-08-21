@@ -13,14 +13,11 @@ def update_brand_image(apps, schema_editor):
     """
     Update the brand image setting
     """
+   
     Setting = apps.get_model("tethys_config", "Setting")
-    # Get the general settings category
-    general_category = Setting.objects.get(name="General Settings")
 
     # Get the brand image setting
-    brand_image_setting = Setting.objects.get(
-        category=general_category, name="Brand Image"
-    )
+    brand_image_setting = Setting.objects.get(name="Brand Image")
 
     # Update the brand image setting if it's the default
     if brand_image_setting.content == "/tethys_portal/images/tethys-logo-25.png":
