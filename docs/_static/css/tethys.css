@@ -58,11 +58,3 @@ section>section {
     background-color: #cfef90;
 }
 
-.logo-dark img {
-    width:100 !important;
-    height: auto;
-}
-
-.wy-nav-top .logo-text {
-    display: none;
-}
