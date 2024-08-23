@@ -266,7 +266,7 @@ if os.environ.get("READTHEDOCS", "") == "True":
 
 # html_title = f"{project} Documentation"
 html_title = ""
-# html_short_title = "Tethys Docs" 
+# html_short_title = "Tethys Docs"
 html_short_title = ""
 # html_logo = "images/features/tethys-logo-75.png"
 html_favicon = "images/default_favicon.ico"
@@ -290,8 +290,8 @@ theme_options = ThemeOptions(
             link="https://github.com/tethysplatform/tethys",
         ),
     },
-    logo_dark="images/features/tethys-on-blue.svg",  
-    logo_light="images/features/tethys-on-white.svg",  
+    logo_dark="images/features/tethys-on-blue.svg",
+    logo_light="images/features/tethys-on-white.svg",
     show_breadcrumbs=False,
     show_prev_next=True,
     show_scrolltop=True,
