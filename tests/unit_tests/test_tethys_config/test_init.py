@@ -116,7 +116,7 @@ class TestInit(unittest.TestCase):
         )
         mock_settings().setting_set.create.assert_any_call(
             name="Brand Image",
-            content="/tethys_portal/images/" "tethys-on-blue-icon-only.sv",
+            content="/tethys_portal/images/" "tethys-on-blue-icon-only.svg",
             date_modified=now,
         )
         mock_settings().setting_set.create.assert_any_call(
