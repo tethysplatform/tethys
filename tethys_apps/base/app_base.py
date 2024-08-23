@@ -58,8 +58,6 @@ class TethysBase(TethysBaseMixin):
     root_url = ""
     index = None
     controller_modules = []
-    default_layout = None
-    custom_css = []
 
     def __init__(self):
         self._url_patterns = None
@@ -108,10 +106,6 @@ class TethysBase(TethysBaseMixin):
     def id(cls):
         """Returns ID of Django database object."""
         return cls.db_object.id
-
-    @classproperty
-    def layout(cls):
-        return cls.default_layout
 
     @classmethod
     def _resolve_ref_function(cls, ref, ref_type):
@@ -593,6 +587,8 @@ class TethysAppBase(TethysBase):
     feedback_emails = []
     enabled = True
     show_in_apps_library = True
+    default_layout = None
+    nav_links = []
 
     def __str__(self):
         """
@@ -615,6 +611,26 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         return TethysApp
+    
+    @property
+    def navigation_links(self):
+        nav_links = self.nav_links
+        if self.nav_links == 'auto':
+            nav_links = []
+            for url_map in sorted(self.registered_url_maps, key=lambda x: x.index if x.index is not None else 999):
+                if url_map.index == -1: continue  # Do not render
+                nav_links.append(
+                    {
+                        'title': url_map.title, 
+                        'href': f'/apps/{self.root_url}/{url_map.name.replace('_', '-') + '/' if url_map.name != self.index else ""}'
+                    }
+                )
+            self.set_nav_links(nav_links)
+        return nav_links
+    
+    @classmethod
+    def set_nav_links(cls, nav_links):
+        cls.nav_links = nav_links
 
     def custom_settings(self):
         """

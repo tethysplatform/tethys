@@ -20,6 +20,9 @@
       <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
     {% endif %}
     <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
+    {% for css in custom_css %}
+      <link href="{{ css }}" rel="stylesheet" />
+    {% endfor %}
     <style>
       :root {
         --app-primary-color: {{ tethys_app.color }};
@@ -89,7 +92,7 @@
       {% include "analytical_body_top.html" %}
     {% endif %}
 
-    {% component "tethys_apps.base.controller.page_component_wrapper" layout=layout_context_arg page_module_path=page_module_path_context_arg %}
+    {% component "tethys_apps.base.page_handler.page_component_wrapper" app=app user=request.user layout=layout_func component=component_func %}
 
     {% if has_terms %}
       {% include "terms.html" %}
@@ -104,6 +107,10 @@
     {% if tethys_app.enable_feedback %}
       <script src="{% static 'tethys_apps/js/feedback.js' %}" type="text/javascript"></script>
     {% endif %}
+
+    {% for js in custom_js %}
+      <script src="{{ js }}" type="text/javascript"></script>
+    {% endfor %}
 
     {% if has_analytical %}
       {% include "analytical_body_bottom.html" %}

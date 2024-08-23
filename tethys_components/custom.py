@@ -42,7 +42,7 @@ def Panel(props, *children):
                 ),
                 name
             ),
-            html.button(
+            lib.html.button(
                 Props(
                     type="button",
                     class_name="btn-close",
