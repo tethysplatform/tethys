@@ -2,7 +2,7 @@
 Add a Home Page
 ***************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will create a home page for the Google Earth Engine app that you created in :ref:`google_earth_engine_part_1`. This page will contain introductory information about that app. This will involve moving the current "home page", which contains the map viewer, to a new endpoint. Then you will set up a new controller and template for the new home page. The following topics will be reviewed in this tutorial:
 
@@ -14,7 +14,7 @@ In this tutorial you will create a home page for the Google Earth Engine app tha
 * Linking to other pages and navigation
 * Placeholder content for development: lorem ipsum and images
 
-.. figure:: ./resources/home_page_solution.png
+.. figure:: ../../../images/tutorial/gee/home_page.png
     :width: 800px
     :align: center
 

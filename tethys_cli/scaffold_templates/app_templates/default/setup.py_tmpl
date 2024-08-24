@@ -10,8 +10,9 @@ release_package = f'{TethysAppBase.package_namespace}-{app_package}'
 dependencies = []
 
 # -- Get Resource File -- #
-resource_files = find_all_resource_files(app_package, TethysAppBase.package_namespace)
-
+resource_files = find_all_resource_files(
+    app_package, TethysAppBase.package_namespace
+)
 
 setup(
     name=release_package,
@@ -29,3 +30,4 @@ setup(
     zip_safe=False,
     install_requires=dependencies,
 )
+

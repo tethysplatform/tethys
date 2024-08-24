@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** June 2022
+**Last Updated:** July 2024
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
@@ -91,7 +91,7 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
         name = 'THREDDS Tutorial'
         index = 'thredds_tutorial:home'
-        icon = 'thredds_tutorial/images/unidata_logo.png'
+        icon = f'{package}/images/unidata_logo.png'
         package = 'thredds_tutorial'
         root_url = 'thredds-tutorial'
         color = '#008e8d'
@@ -110,19 +110,7 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
     To stop the development server press :kbd:`CTRL-C`.
 
-    If you get errors related to Tethys not being able to connect to the database, start the database by running:
-
-    .. code-block:: bash
-
-        tethys db start
-
-    You can also stop the Tethys database by running:
-
-    .. code-block:: bash
-
-        tethys db stop
-
-2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
+2. Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login. The default portal user is:
 
 * **username**: admin
 * **password**: pass

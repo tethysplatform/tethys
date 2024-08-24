@@ -2,7 +2,7 @@
 Data Prep
 *********
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will get you familiar with sample NextGen data and prepare it for use in your Tethys application.
 

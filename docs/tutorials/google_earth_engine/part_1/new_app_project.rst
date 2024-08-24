@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
@@ -11,7 +11,7 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 * Adding a Custom Icon
 * Customizing App Theme Color
 
-.. figure:: ./resources/new_app_project_solution.png
+.. figure:: ../../../images/tutorial/gee/scaffolded_app.png
     :width: 800px
     :align: center
 
@@ -121,17 +121,6 @@ Start up the development server to view the new app:
 
     To stop the development server press :kbd:`CTRL-C`.
 
-    If you get errors related to Tethys not being able to connect to the database, start the database by running:
-
-    .. code-block:: bash
-
-        tethys db start
-
-    You can also stop the Tethys database by running:
-
-    .. code-block:: bash
-
-        tethys db stop
 
 Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login. The default portal user is:
 

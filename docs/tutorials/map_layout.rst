@@ -4,7 +4,7 @@
 Map Layout
 **********
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 This tutorial demonstrates how to use Map Layout in a Tethys app within the context of visualizing the outputs of the "Next Generation Water Resources Modeling Framework" (NextGen) developed by the National Oceanic and Atmospheric Administration's Office of Water Prediction (NOAA-OWP).
 

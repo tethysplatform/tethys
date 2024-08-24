@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
@@ -109,24 +109,10 @@ Download this :download:`NOAA Digital Logo <./resources/noaa_digital_logo-2022.p
     tethys manage start
 
 .. tip::
-    
-    if using the ``django.db.backends.postgresql`` ``ENGINE``, the following will be useful.
 
     To stop the development server press :kbd:`CTRL-C`.
 
-    If you get errors related to Tethys not being able to connect to the database, start the database by running:
-
-    .. code-block:: bash
-
-        tethys db start
-
-    You can also stop the Tethys database by running:
-
-    .. code-block:: bash
-
-        tethys db stop
-
-1. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
+1. Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login. The default portal user is:
 
 * **username**: admin
 * **password**: pass

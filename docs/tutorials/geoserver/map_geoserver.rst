@@ -2,7 +2,7 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** June 2020
+**Last Updated:** July 2024
 
 1. Map Page Controller
 ======================
@@ -16,7 +16,7 @@ Add a new controller to the :file:`controller.py` module:
         """
         Controller for the map page
         """
-        geoserver_engine = app.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
+        geoserver_engine = App.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
 
         options = []
 
@@ -42,7 +42,7 @@ Add a new controller to the :file:`controller.py` module:
             geoserver_layer = MVLayer(
                 source='ImageWMS',
                 options={
-                    'url': 'http://localhost:8181/geoserver/wms',
+                    'url': geoserver_engine.get_wms_endpoint(),
                     'params': {'LAYERS': selected_layer},
                     'serverType': 'geoserver'
                 },
@@ -68,7 +68,8 @@ Add a new controller to the :file:`controller.py` module:
             width='100%',
             layers=map_layers,
             legend=True,
-            view=view_options
+            view=view_options,
+            basemap='OpenStreetMap'
         )
 
         context = {

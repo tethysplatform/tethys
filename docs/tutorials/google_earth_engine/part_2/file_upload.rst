@@ -2,7 +2,7 @@
 File Upload
 ***********
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded. The following topics will be reviewed in this tutorial:
 
@@ -13,7 +13,7 @@ In this tutorial you will add a file upload form to the Viewer page to allow use
 * Manipulating Shapefiles in Python with `pyshp <https://pypi.org/project/pyshp/>`_
 * Temp Files
 
-.. figure:: ./resources/file_upload_solution.png
+.. figure:: ../../../images/tutorial/gee/file_upload.png
     :width: 800px
     :align: center
 
@@ -408,7 +408,7 @@ In this step you will add the logic to validate that the file contained in the Z
 2. Add ``pyshp`` as a new dependency in the ``install.yml``:
 
 .. code-block:: yaml
-    :emphasize-lines: 16
+    :emphasize-lines: 20
 
     # This file should be committed to your app code.
     version: 1.0
@@ -427,6 +427,7 @@ In this step you will add the logic to validate that the file contained in the Z
           - earthengine-api
           - oauth2client
           - geojson
+          - pandas
           - pyshp
       pip:
 
@@ -595,13 +596,13 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
         return shapefile_path
 
-3. The ``controller`` decorator provides arguments for adding the user and app workspaces. Add the ``user_workspace`` argument and set it to ``True`` in the ``controller`` decorator for the ``viewer`` function. The decorator passes the user workspace object as an additional argument to the controller, so you will need to add an additional argument to accept the user workspace in :file:`controllers.py`:
+3. The ``controller`` decorator provides arguments for adding the user and app media directories. Add the ``user_media`` argument and set it to ``True`` in the ``controller`` decorator for the ``viewer`` function. The decorator passes the user media object as an additional argument to the controller, so you will need to add an additional argument to accept the user media in :file:`controllers.py`:
 
 .. code-block:: python
     :emphasize-lines: 1-2
 
-    @controller(user_workspace=True)
-    def viewer(request, user_workspace):
+    @controller(user_media=True, url='viewer')
+    def viewer(request, user_media):
         """
         Controller for the app viewer page.
         """
@@ -610,12 +611,12 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
     For more information about Tethys Workspaces, see :ref:`tethys_paths_api`.
 
-4. The ``viewer`` controller will need to be able to pass the ``user_workspace`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`helpers.py`:
+4. The ``viewer`` controller will need to be able to pass the ``user_media`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_media`` as an additional argument in :file:`helpers.py`:
 
 .. code-block:: python
     :emphasize-lines: 1
 
-    def handle_shapefile_upload(request, user_workspace):
+    def handle_shapefile_upload(request, user_media):
         """
         Uploads shapefile to Google Earth Engine as an Asset.
 
@@ -627,12 +628,12 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
             str: Error string if errors occurred.
         """
 
-5. Add logic to write the uploaded shapefile to the user workspace in ``handle_shapefile_upload`` in :file:`helpers.py`:
+5. Add logic to write the uploaded shapefile to the user media directory in ``handle_shapefile_upload`` in :file:`helpers.py`:
 
 .. code-block:: python
     :emphasize-lines: 45-49
 
-    def handle_shapefile_upload(request, user_workspace):
+    def handle_shapefile_upload(request, user_media):
         """
         Uploads shapefile to Google Earth Engine as an Asset.
 
@@ -676,16 +677,16 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
                     if shp_file.shapeType != shapefile.POLYGON:
                         return 'Only shapefiles containing Polygons are supported.'
 
-                    # Setup workspace directory for storing shapefile
-                    workspace_dir = prep_boundary_dir(user_workspace.path)
+                    # Setup user media directory for storing shapefile
+                    media_dir = prep_boundary_dir(user_media.path)
 
-                    # Write the shapefile to the workspace directory
-                    write_boundary_shapefile(shp_file, workspace_dir)
+                    # Write the shapefile to the media directory
+                    write_boundary_shapefile(shp_file, media_dir)
 
             except TypeError:
                 return 'Incomplete or corrupted shapefile provided.'
 
-6. Modify the ``handle_shapefile_upload`` call in the ``viewer`` controller in :file:`controllers.py` to pass the user workspace path:
+6. Modify the ``handle_shapefile_upload`` call in the ``viewer`` controller in :file:`controllers.py` to pass the user media path:
 
 .. code-block:: python
     :emphasize-lines: 4
@@ -693,7 +694,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
     # Handle Set Boundary Form
     set_boundary_error = ''
     if request.POST and request.FILES:
-        set_boundary_error = handle_shapefile_upload(request, user_workspace)
+        set_boundary_error = handle_shapefile_upload(request, user_media)
 
 7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the shapefile is saved to the active user's workspace directory with its sidecar files (e.g. :file:`workspaces/user_workspaces/admin/boundary/boundary.shp`).
 
@@ -714,7 +715,7 @@ As a final user experience improvement, issue a redirect response instead of the
     # Handle Set Boundary Form
     set_boundary_error = ''
     if request.POST and request.FILES:
-        set_boundary_error = handle_shapefile_upload(request, user_workspace)
+        set_boundary_error = handle_shapefile_upload(request, user_media)
 
         if not set_boundary_error:
             # Redirect back to this page to clear form

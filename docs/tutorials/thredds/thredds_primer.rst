@@ -4,7 +4,7 @@
 THREDDS Primer
 **************
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will be introduced to THREDDS using the Docker container that is included with Tethys Platform. This primer is adapted from the `THREDDS Data Server Documentation <https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html>`_. Topics covered include:
 
@@ -158,7 +158,7 @@ The TDS Configuration File (:file:`threddsConfig.xml`) is used to control the be
 5. NetCDF Data Exercise
 =======================
 
-1. Download this :download:`National Water Model Short Range Forecast <https://drive.google.com/open?id=1TIGAe-03ju_sOEpjTJMxvPUBXYpzWkjI>` data and extract it. The archive should contain the **first 3** of 18 NetCDF files each representing a 1-hour increment in an 18 hour forecast produced by the `National Water Model <https://water.noaa.gov/about/nwm>`_. Each file contains over 2.7 million forecast points where each point is associated a different stream reach on the `National Hydrogrophy Dataset <https://nhd.usgs.gov/>`_.
+1. Download this :download:`National Water Model Short Range Forecast <https://drive.google.com/file/d/1Mrv54RoIlesWILria8fpSTRwS6StPhgU>` data and extract it. The archive should contain the **first 3** of 18 NetCDF files each representing a 1-hour increment in an 18 hour forecast produced by the `National Water Model <https://water.noaa.gov/about/nwm>`_. Each file contains over 2.7 million forecast points where each point is associated a different stream reach on the `National Hydrogrophy Dataset <https://nhd.usgs.gov/>`_.
 
 2. Create a new :file:`nwm` directory in the :file:`public` directory of the TDS Content Directory (i.e.: :file:`<TDS_CONTENT_DIRECTORY>/public/nwm`).
 

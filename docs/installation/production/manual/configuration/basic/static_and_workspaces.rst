@@ -83,6 +83,7 @@ The app workspaces directory is one location where all app workspaces are collec
 3. Collect the app workspaces to the ``TETHYS_WORKSPACES_ROOT`` location:
 
     .. code-block::
+
         tethys manage collectworkspaces
 
 .. tip::
@@ -90,4 +91,5 @@ The app workspaces directory is one location where all app workspaces are collec
     You can collect both the static files and the app workspaces with a single command:
 
     .. code-block::
-            tethys manage collectall
+
+        tethys manage collectall

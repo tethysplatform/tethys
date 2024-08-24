@@ -4,19 +4,18 @@
 Intermediate Concepts
 *********************
 
-**Last Updated:** May 2022
+**Last Updated:** July 2024
 
 This tutorial introduces intermediate concepts for Tethys developers. The topics covered include:
 
 * HTML Forms and User Input
-* Handling Form Submissions in Controllers
-* Form Validation Pattern
 * Introduction to the Model
 * File IO and Workspaces
-* Intermediate Template Gizmos
-* Review of Model View Controller
-* Spatial Inputs in Forms
-* Rendering Spatial Data on the Map View Gizmo
+* Rendering Spatial Data on the Map Layout
+
+.. figure:: ../../images/tutorial/advanced/key-concepts-intermediate-screenshot.png
+    :width: 800px
+    :align: center
 
 0. Start From Beginner Solution (Optional)
 ==========================================
@@ -37,6 +36,7 @@ HTML forms are the primary mechanism for obtaining input from users of your app.
     a. Add a form to the Add Dam page by modifying the ``/templates/dam_inventory/add_dam.html`` template as follows:
 
     .. code-block:: html+django
+        :emphasize-lines: 6-12
 
         {% extends tethys_app.package|add:"/base.html" %}
         {% load tethys %}
@@ -64,7 +64,7 @@ HTML forms are the primary mechanism for obtaining input from users of your app.
 b. Define the options for the form gizmos in the controller and change the ``add_button`` gizmo to be a submit button for the form in the ``add_dam`` controller:
 
     .. code-block:: python
-        :emphasize-lines: 1, 10-38, 45-46, 56-59
+        :emphasize-lines: 1, 11-38, 45-46, 56-59
 
         from tethys_sdk.gizmos import TextInput, DatePicker, SelectInput
 
@@ -139,7 +139,7 @@ At this point the form will be functional, but the app is not doing anything wit
 a. Change the ``add_dam`` controller to handle the form data using the form validation pattern:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 11-53, 59-60, 68-69, 76-77, 87-88
+        :emphasize-lines: 1-2, 10-52, 58-59, 67-68, 75-76, 86-87
 
         from django.contrib import messages
 
@@ -190,7 +190,7 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
 
                 if not has_errors:
                     # Do stuff here
-                    return redirect(reverse('dam_inventory:home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -260,24 +260,24 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
 
     **Form Validation Pattern**: The example above implements a common pattern for handling and validating form input. Generally, the steps are:
 
-    1. **define a "value" variable for each input in the form and assign it the initial value for the input**
-    2. **define an "error" variable for each input to handle error messages and initially set them to the empty string**
-    3. **check to see if the form is submitted and if the form has been submitted:**
-        a. extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
-        b. validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
-        c. if there are no errors, save or process the data, and then redirect to a different page
-        d. if there are errors continue on and re-render the form with error messages
-    4. **define all gizmos and variables used to populate the form:**
-        a. pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
-        b. pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
-    5. **render the page, passing all gizmos to the template through the context**
+    1. **Define a "value" variable for each input in the form and assign it the initial value for the input**
+    2. **Define an "error" variable for each input to handle error messages and initially set them to the empty string**
+    3. **Check to see if the form is submitted and if the form has been submitted:**
+        a. Extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
+        b. Validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
+        c. If there are no errors, save or process the data, and then redirect to a different page
+        d. If there are errors continue on and re-render the form with error messages
+    4. **Define all gizmos and variables used to populate the form:**
+        a. Pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
+        b. Pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
+    5. **Render the page, passing all gizmos to the template through the context**
 
 3. Create the Model and File IO
 ===============================
 
-Now that we are able to get information about new dams to add to the dam inventory from the user, we need to persist the data to some sort of database. It's time to create the Model for the app.
+Now that we are able to get information about new dams to add to the dam inventory from the user, we need to save or persist the data so we can load it in future page loads. It's time to create the Model for the app.
 
-In this tutorial we will start with a file database model to illustrate how to work with files in Tethys apps. In the :doc:`./advanced` tutorial we will convert this file database model to an SQL database model. Here is an overview of the file-based model:
+In this tutorial we will start with a simple file database model to illustrate how to work with files in Tethys apps. In the :doc:`./advanced` tutorial we will convert this file database model to an SQL database model. Here is an overview of the file-based model:
 
 * One text file will be created per dam
 * The name of the file will be the id of the dam (e.g.: *a1e26591-d6bb-4194-b4a7-1222fe0195fd.json*)
@@ -298,22 +298,23 @@ In this tutorial we will start with a file database model to illustrate how to w
 
 .. tip::
 
-    For more information on file workspaces see the :doc:`../../tethys_sdk/workspaces`.
+    For more information on file workspaces see the :ref:`tethys_paths_api`.
 
 .. warning::
 
-    File database models can be problematic for web applications, especially in a production environment. We recommend using and SQL or other database that can handle concurrent requests and heavy traffic.
+    File database models can be problematic for web applications, especially in a production environment. We recommend using a SQL or other type of database that can handle concurrent requests and heavy traffic.
 
 a. Create a new file called ``model.py`` in the ``dam_inventory`` directory and add a new function called ``add_new_dam``:
 
     .. code-block:: python
 
+        import json
         import os
         import uuid
-        import json
+        from pathlib import Path
 
 
-        def add_new_dam(db_directory, name, owner, river, date_built):
+        def add_new_dam(db_directory: Path | str, name: str, owner: str, river: str, date_built: str):
             """
             Persist new dam.
             """
@@ -331,24 +332,22 @@ a. Create a new file called ``model.py`` in the ``dam_inventory`` directory and 
 
             # Write to file in {{db_directory}}/dams/{{uuid}}.json
             # Make dams dir if it doesn't exist
-            dams_dir = os.path.join(db_directory, 'dams')
-            if not os.path.exists(dams_dir):
-                os.mkdir(dams_dir)
+            dams_dir = Path(db_directory) / 'dams'
+            if not dams_dir.exists():
+                os.makedirs(dams_dir, exist_ok=True)
 
             # Name of the file is its id
             file_name = str(new_dam_id) + '.json'
-            file_path = os.path.join(dams_dir, file_name)
+            file_path = dams_dir / file_name
 
             # Write json
-            with open(file_path, 'w') as f:
+            with file_path.open('w') as f:
                 f.write(dam_json)
-
-
 
 b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function to persist the dam data:
 
     .. code-block:: python
-        :emphasize-lines: 1, 5-6, 49
+        :emphasize-lines: 1, 5-6, 49-55
 
         from .model import add_new_dam
 
@@ -398,8 +397,14 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
                     date_error = 'Date Built is required.'
 
                 if not has_errors:
-                    add_new_dam(db_directory=app_workspace.path, name=name, owner=owner, river=river, date_built=date_built)
-                    return redirect(reverse('dam_inventory:home'))
+                    add_new_dam(
+                        db_directory=app_workspace.path,
+                        name=name,
+                        owner=owner,
+                        river=river,
+                        date_built=date_built
+                    )
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -478,27 +483,22 @@ a. Open ``model.py`` and add a model method for listing the dams called ``get_al
 
     .. code-block:: python
 
-        def get_all_dams(db_directory):
+        def get_all_dams(db_directory: Path | str):
             """
             Get all persisted dams.
             """
             # Write to file in {{db_directory}}/dams/{{uuid}}.json
             # Make dams dir if it doesn't exist
-            dams_dir = os.path.join(db_directory, 'dams')
-            if not os.path.exists(dams_dir):
-                os.mkdir(dams_dir)
+            dams_dir = Path(db_directory) / 'dams'
+            if not dams_dir.exists():
+                os.makedirs(dams_dir, exist_ok=True)
 
             dams = []
 
-            # Open each file and convert contents to python objects
-            for dam_json in os.listdir(dams_dir):
-                # Make sure we are only looking at json files
-                if '.json' not in dam_json:
-                    continue
-
-                dam_json_path = os.path.join(dams_dir, dam_json)
-                with open(dam_json_path, 'r') as f:
-                    dam_dict = json.loads(f.readlines()[0])
+            # Open each json file and convert contents to python dictionaries
+            for dam_json in dams_dir.glob('*.json'):
+                with dam_json.open('r') as f:
+                    dam_dict = json.loads(f.read())
                     dams.append(dam_dict)
 
             return dams
@@ -558,19 +558,37 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
 
         The ``name`` argument can be used to set a custom name for the route that maps a URL to a controller as shown above. The default name is the same name as the controller function. This name is used to look up the URL of the controller using either the ``url`` tag in templates (see next step) or the ``reverse`` function in Python code.
 
-d. Open ``/templates/dam_inventory/base.html`` and add navigation links for the List View page:
+d. Open ``/templates/dam_inventory/base.html`` and add a header button and a navigation link for the Dams table view page:
+
+    .. code-block:: html+django
+        :emphasize-lines: 4, 8-10
+
+        {% block header_buttons %}
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          <div class="header-button glyphicon-button">
+            <a href="{{ home_url }}" title="Map"><i class="bi bi-map"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ list_dam_url }}" title="Dams"><i class="bi bi-list-ul"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ add_dam_url }}" title="Add Dam"><i class="bi bi-plus-circle"></i></a>
+          </div>
+        {% endblock %}
 
     .. code-block:: html+django
         :emphasize-lines: 4, 7
 
         {% block app_navigation_items %}
-        {% url tethys_app|url:'home' as home_url %}
-        {% url tethys_app|url:'add_dam' as add_dam_url %}
-        {% url tethys_app|url:'dams' as list_dam_url %}
-        <li class="nav-item title">Navigation</li>
-        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          <li class="nav-item title">Navigation</li>
+          <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Map</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
         {% endblock %}
 
 
@@ -611,9 +629,9 @@ a. Open ``/templates/dam_inventory/add_dam.html`` and add the ``location_input``
 b. Add the definition of the ``location_input`` gizmo and validation code to the ``add_dam`` controller in ``controllers.py``:
 
     .. code-block:: python
-        :emphasize-lines: 1, 15, 22, 32, 50-53, 97-116, 138-139
+        :emphasize-lines: 1, 15, 22, 32, 51-53, 58, 104-123, 145-146
 
-        from tethys_sdk.gizmos import MVDraw, MVView
+        from tethys_sdk.gizmos import MapView, MVDraw, MVView
 
         ...
 
@@ -668,8 +686,15 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
                     location_error = 'Location is required.'
 
                 if not has_errors:
-                    add_new_dam(db_directory=app_workspace.path, location=location, name=name, owner=owner, river=river, date_built=date_built)
-                    return redirect(reverse('dam_inventory:home'))
+                    add_new_dam(
+                        db_directory=app_workspace.path,
+                        location=location,
+                        name=name,
+                        owner=owner,
+                        river=river,
+                        date_built=date_built
+                    )
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -804,113 +829,158 @@ e. Create several new entries using the updated Add Dam form.
 6. Render Spatial Data on Map
 =============================
 
-Finally, we'll add logic to the home controller to display all of the dams in our dam inventory on the map.
+Finally, we'll add logic to the home ``HomeMap`` controller to display all of the dams in our dam inventory on the map.
 
-a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
+a. Modify the ``HomeMap`` controller in ``controllers.py`` to map the list of dams:
 
     .. code-block:: python
-        :emphasize-lines: 1, 5-6, 10-77, 82, 84
+        :emphasize-lines: 1, 8, 10-134
 
-        from tethys_sdk.gizmos import MVLayer
+        @controller(name="home", app_workspace=True)
+        class HomeMap(MapLayout):
+            app = App
+            base_template = f'{App.package}/base.html'
+            map_title = 'Dam Inventory'
+            map_subtitle = 'Tutorial'
+            basemaps = ['OpenStreetMap', 'ESRI']
+            show_properties_popup = True
 
-        ...
+            def compose_layers(self, request, map_view, app_workspace, *args, **kwargs):
+                # Get list of dams and create dams MVLayer:
+                dams = get_all_dams(app_workspace.path)
+                features = []
 
-        @controller(app_workspace=True)
-        def home(request, app_workspace):
-            """
-            Controller for the app home page.
-            """
-            # Get list of dams and create dams MVLayer:
-            dams = get_all_dams(app_workspace.path)
-            features = []
-            lat_list = []
-            lng_list = []
-
-            # Define GeoJSON Features
-            for dam in dams:
-                dam_location = dam.pop('location')
-                lat_list.append(dam_location['coordinates'][1])
-                lng_list.append(dam_location['coordinates'][0])
-
-                dam_feature = {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': dam_location['type'],
-                        'coordinates': dam_location['coordinates'],
+                # Define GeoJSON Features
+                for dam in dams:
+                    dam_location = dam.get('location')
+                    dam_feature = {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': dam_location['type'],
+                            'coordinates': dam_location['coordinates'],
+                        },
+                        'properties': {
+                            'id': dam['id'],
+                            'name': dam['name'],
+                            'owner': dam['owner'],
+                            'river': dam['river'],
+                            'date_built': dam['date_built']
+                        }
                     }
+
+                    features.append(dam_feature)
+
+                # Define GeoJSON FeatureCollection
+                dams_feature_collection = {
+                    'type': 'FeatureCollection',
+                    'crs': {
+                        'type': 'name',
+                        'properties': {
+                            'name': 'EPSG:4326'
+                        }
+                    },
+                    'features': features
                 }
 
-                features.append(dam_feature)
+                # Compute zoom extent for the dams layer
+                layer_extent = self.compute_dams_extent(dams)
 
-            # Define GeoJSON FeatureCollection
-            dams_feature_collection = {
-                'type': 'FeatureCollection',
-                'crs': {
-                    'type': 'name',
-                    'properties': {
-                        'name': 'EPSG:4326'
-                    }
-                },
-                'features': features
-            }
+                dam_layer = self.build_geojson_layer(
+                    geojson=dams_feature_collection,
+                    layer_name='dams',
+                    layer_title='Dams',
+                    layer_variable='dams',
+                    extent=layer_extent,
+                    visible=True,
+                    selectable=True,
+                    plottable=True,
+                )
 
-            style = {'ol.style.Style': {
-                'image': {'ol.style.Circle': {
-                    'radius': 10,
-                    'fill': {'ol.style.Fill': {
-                        'color':  '#d84e1f'
-                    }},
-                    'stroke': {'ol.style.Stroke': {
-                        'color': '#ffffff',
-                        'width': 1
-                    }}
-                }}
-            }}
+                layer_groups = [
+                    self.build_layer_group(
+                        id='all-layers',
+                        display_name='Layers',
+                        layer_control='checkbox',
+                        layers=[dam_layer]
+                    )
+                ]
 
-            # Create a Map View Layer
-            dams_layer = MVLayer(
-                source='GeoJSON',
-                options=dams_feature_collection,
-                legend_title='Dams',
-                layer_options={'style': style}
-            )
+                # Update the map view with the new extent
+                map_view.view = MVView(
+                    projection='EPSG:4326',
+                    extent=layer_extent,
+                    maxZoom=self.max_zoom,
+                    minZoom=self.min_zoom,
+                )
 
-            # Define view centered on dam locations
-            try:
-                view_center = [sum(lng_list) / float(len(lng_list)), sum(lat_list) / float(len(lat_list))]
-            except ZeroDivisionError:
-                view_center = [-98.6, 39.8]
+                return layer_groups
 
-            view_options = MVView(
-                projection='EPSG:4326',
-                center=view_center,
-                zoom=4.5,
-                maxZoom=18,
-                minZoom=2
-            )
+            def build_map_extent_and_view(self, request, app_workspace, *args, **kwargs):
+                """
+                Builds the default MVView and BBOX extent for the map.
 
-            dam_inventory_map = MapView(
-                height='100%',
-                width='100%',
-                layers=[dams_layer],
-                basemap=['OpenStreetMap'],
-                view=view_options
-            )
+                Returns:
+                    MVView, 4-list<float>: default view and extent of the project.
+                """
+                dams = get_all_dams(app_workspace.path)
+                extent = self.compute_dams_extent(dams)
 
-            add_dam_button = Button(
-                display_text='Add Dam',
-                name='add-dam-button',
-                icon='plus-square',
-                style='success',
-                href=App.reverse('add_dam')
-            )
+                # Construct the default view
+                view = MVView(
+                    projection="EPSG:4326",
+                    extent=extent,
+                    maxZoom=self.max_zoom,
+                    minZoom=self.min_zoom,
+                )
 
-            context = {
-                'dam_inventory_map': dam_inventory_map,
-                'add_dam_button': add_dam_button
-            }
+                return view, extent
 
-            return App.render(request, 'home.html', context)
+            def compute_dams_extent(self, dams):
+                """Compute the extent/bbox of the given dams."""
+                lat_list = []
+                lng_list = []
+
+                # Define GeoJSON Features
+                for dam in dams:
+                    dam_location = dam.get('location')
+                    lat_list.append(dam_location['coordinates'][1])
+                    lng_list.append(dam_location['coordinates'][0])
+
+                if len(lat_list) > 1:
+                    # Compute the bounding box of all the dams
+                    min_x = min(lng_list)
+                    min_y = min(lat_list)
+                    max_x = max(lng_list)
+                    max_y = max(lat_list)
+                    x_dist = max_x - min_x
+                    y_dist = max_y - min_y
+
+                    # Buffer the bounding box
+                    buffer_factor = 0.1
+                    x_buffer = x_dist * buffer_factor
+                    y_buffer = y_dist * buffer_factor
+                    min_xb = min_x - x_buffer
+                    min_yb = min_y - y_buffer
+                    max_xb = max_x + x_buffer
+                    max_yb = max_y + y_buffer
+
+                    # Bounding box for the view
+                    extent = [min_xb, min_yb, max_xb, max_yb]
+                else:
+                    extent = [-125.771484, 24.527135, -66.005859, 49.667628]  # CONUS
+
+                return extent
+
+    .. tip::
+
+        Here are some key points to note about the changes made to the ``HomeMap`` controller:
+
+        * The ``compose_layers`` method has been added to define layers that should be displayed on the map. The method builds a GeoJSON FeatureCollection from the list of dams and then creates a GeoJSON layer from the FeatureCollection.
+        * The ``build_map_extent_and_view`` method has been added to define the default view and zoom extent of the map. The method computes the bounding box of the dams and returns a view and extent for the map.
+        * The ``compute_dams_extent`` method has been added to compute the bounding box of the dams. The method calculates the bounding box of the dams and then buffers the bounding box to ensure that all the dams are visible on the map. It is used by both the ``compose_layers`` and ``build_map_extent_and_view`` methods.
+        * The ``show_properties_popup`` attribute has been set to ``True`` to enable the display of a popup with the properties of the dams when they are clicked on the map.
+  
+b. Save your changes to ``controllers.py`` and navigate to the home page to see the dams displayed on the map.
 
 7. Solution
 ===========

@@ -2,7 +2,7 @@
 Plot Time Series at Location
 ****************************
 
-**Last Updated:** August 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location and display it on a plot. Topics covered in this tutorial include:
 
@@ -126,22 +126,25 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
 
 In this step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
 
-1. The Plotly View gizmo requires the `plotly` Python package. Install `plotly` as follows running the following command in the terminal:
+1. The Plotly View gizmo requires the `plotly` Python package. We'll also need `geojson` to handle the geometry data. Install `plotly` as follows running the following command in the terminal:
 
 .. code-block::
 
     # with conda
     conda install plotly
+    conda install geojson
 
     # with pip
     pip install plotly
+    pip install geojson
 
-2. The app now depends on `plotly`, so add it to the `install.yml` file:
+2. The app now depends on `plotly` and `geojson`, so add them to the `install.yml` file:
 
 .. code-block:: yaml
 
     dependencies:
       - plotly
+      - goejson
 
 3. Create New Plot Controller
 =============================
@@ -356,7 +359,7 @@ In this step you will create a new controller that will query the dataset at the
                 end_time = datetime.fromtimestamp(e)
 
             # Retrieve the connection to the THREDDS server
-            catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+            catalog = App.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
 
             time_series = extract_time_series_at_location(
                 catalog=catalog,
@@ -632,9 +635,11 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         if (m_drawn_features) {
             m_drawn_features.clearLayers();
         }
+        
+        var proxyWMSURL = `getWMSImageFromServer?main_url=${encodeURIComponent(m_curr_wms_url)}`;
 
         // Layer
-        m_layer = L.tileLayer.wms(m_curr_wms_url, {
+        m_layer = L.tileLayer.wms(proxyWMSURL, {
             layers: m_curr_variable,
             format: 'image/png',
             transparent: true,
