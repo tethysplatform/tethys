@@ -2,7 +2,7 @@
 Setup Views
 ***********
 
-**Last Updated:** May 2022
+**Last Updated:** August 2024
 
 In this section, you will setup most of the views needed for this app. For a refresher on setting up url maps, controllers, and templates, see: :ref:`key_concepts_tutorial`.
 
@@ -109,7 +109,6 @@ Replacte the contents of :file:`controller.py` with the following:
                 condensed=False,
                 results_url=f'{App.package}:result',
                 refresh_interval=1000,
-                delete_btn=True,
                 show_detailed_status=True,
             )
 
@@ -348,13 +347,13 @@ Update the ``icon`` property of the :term:`app class` in :file:`app.py` to use t
 
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
-.. figure:: ../../images/tutorial/NewPostCreateViewsHome.png
+.. figure:: ../../images/tutorial/dask/blank_home.png
     :width: 900px
     :align: center
 
 In the lower right hand corner is the button to navigate to the jobs table. Click that to navigate to the just created jobs table which should looks like this:
 
-.. figure:: ../../images/tutorial/NewPostCreateViewsJobTable.png
+.. figure:: ../../images/tutorial/dask/blank_jobs_table.png
     :width: 900px
     :align: center
 

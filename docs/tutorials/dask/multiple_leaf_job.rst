@@ -2,7 +2,7 @@
 Multiple Leaf Job
 *****************
 
-**Last Updated:** May 2022
+**Last Updated:** August 2024
 
 This section will illustrate how to use the ``dask.distributed`` API with a dask job that ends in multiple leafs. The recommended approach is to create a new ``DaskJob`` for each leaf and track them as though they were separate jobs. A similar approach can be followed using the ``dask.delayed`` API.
 
@@ -49,7 +49,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Dask Delayed Job'
                 },
-                href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'delayed'})
+                href=App.reverse('run_job', kwargs={'job_type': 'delayed'})
             )
 
             dask_distributed_button = Button(
@@ -60,7 +60,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Dask Future Job'
                 },
-                href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'distributed'})
+                href=App.reverse('run_job', kwargs={'job_type': 'distributed'})
             )
 
             dask_multiple_leaf_button = Button(
@@ -71,7 +71,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Dask Multiple Leaf Jobs'
                 },
-                href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'multiple-leaf'})
+                href=App.reverse('run_job', kwargs={'job_type': 'multiple-leaf'})
             )
 
             jobs_button = Button(
@@ -129,7 +129,7 @@ Update the ``run_job`` controller to call the Multi Leaf Job:
                 try:
                     client = scheduler.client
                 except DaskJobException:
-                    return redirect(reverse('dask_tutorial:error_message'))
+                    return App.redirect(App.reverse('error_message'))
 
                 # Create future job instance
                 future = distributed_job(client)
@@ -149,7 +149,7 @@ Update the ``run_job`` controller to call the Multi Leaf Job:
                 try:
                     client = scheduler.client
                 except DaskJobException:
-                    return redirect(reverse('dask_tutorial:error_message'))
+                    return App.redirect(App.reverse('error_message'))
 
                 # Create future job instance
                 futures = multiple_leaf_job(client)
@@ -168,7 +168,7 @@ Update the ``run_job`` controller to call the Multi Leaf Job:
                     )
                     dask.execute(future)
 
-            return HttpResponseRedirect(reverse('dask_tutorial:jobs_table'))
+            return HttpResponseRedirect(App.reverse('jobs_table'))
 
 3. Setup HTML
 =============
@@ -193,13 +193,13 @@ Modify the ``app_content`` block in the :file:`home.html` so that it looks like 
 
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
-.. figure:: ../../images/tutorial/NewPostMultipleLeafHome.png
+.. figure:: ../../images/tutorial/dask/home_with_multiple_button.png
     :width: 900px
     :align: center
 
 Click on the ``Dask Multiple Leaf Jobs`` button to launch the new job type. You will see multiple jobs being tracked by the jobs table, one for each leaf:
 
-.. figure:: ../../images/tutorial/NewPostMultipleLeafJobsTable.png
+.. figure:: ../../images/tutorial/dask/jobs_table_with_multiple.png
     :width: 900px
     :align: center
 

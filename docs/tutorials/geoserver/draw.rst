@@ -2,7 +2,7 @@
 Spatial Input
 *************
 
-**Last Updated:** June 2020
+**Last Updated:** July 2024
 
 1. Spatial Input Controller
 ===========================
@@ -24,7 +24,8 @@ Add a new controller to the :file:`controller.py` module:
             height='450px',
             width='100%',
             layers=[],
-            draw=drawing_options
+            draw=drawing_options,
+            basemap='OpenStreetMap'
         )
 
         geometry = ''

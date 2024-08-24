@@ -2,7 +2,7 @@
 Add a REST API
 **************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add a REST API endpoint to the Earth Engine app. The REST API will provide a programmatic access point to the underlying ``get_time_series_from_image_collection`` method. This is the same method that is used retrieve the time series for the plot at an area of interest capability of the Viewer page. Topics covered in this tutorial include:
 
@@ -12,7 +12,7 @@ In this tutorial you will add a REST API endpoint to the Earth Engine app. The R
 * Controllers in Multiple Files
 * Developing REST APIs with `Postman <https://www.postman.com/>`_
 
-.. figure:: ./resources/rest_api_solution.png
+.. figure:: ../../../images/tutorial/gee/rest_api.png
     :width: 800px
     :align: center
 
@@ -64,7 +64,9 @@ Add ``djangorestframework`` to the ``install.yml`` file to ensure it is installe
             - earthengine-api
             - oauth2client
             - geojson
+            - pandas
             - pyshp
+            - simplejson
             - djangorestframework
         pip:
 
@@ -100,6 +102,8 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
     import logging
     from tethys_sdk.routing import controller
 
+    from ..app import App 
+
     log = logging.getLogger(f'tethys.apps.{__name__}')
 
 
@@ -130,9 +134,10 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
     from simplejson.errors import JSONDecodeError
 
     from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseRedirect
-    from django.shortcuts import render
     from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import SelectInput, DatePicker, Button, MapView, MVView, PlotlyView, MVDraw
+
+    from ..app import App
 
     from ..helpers import generate_figure, handle_shapefile_upload
     from ..gee.methods import get_image_collection_asset, get_time_series_from_image_collection, \
@@ -143,8 +148,8 @@ The :file:`controllers.py` file is beginning to get quite long. To make the cont
 
 .. code-block:: python
 
-    @controller(user_workspace=True, url='viewer')
-    def viewer(request, user_workspace):
+    @controller(user_media=True, url='viewer')
+    def viewer(request, user_media):
         """
         Controller for the app viewer page.
         """
@@ -194,7 +199,7 @@ REST endpoints are similar to normal controllers. The primary difference is that
     log = logging.getLogger(f'tethys.apps.{__name__}')
 
 
-    @controller(url='api/get-time-series')
+    @controller(url='api/get-time-series', login_required=False)
     @api_view(['GET', 'POST'])
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
@@ -248,7 +253,7 @@ In this step you will retrieve the API token for your user account and set authe
 
 4. In Postman, click on the Authorization tab, just under the URL field.
 
-5. Select "API Key" as the **TYPE** and enter the "Authorization" for the **Key** and "Token <your token>" for the value (replace ``<your token>`` with the token you copied).
+5. Select "API Key" as the **TYPE** and enter "Authorization" for the **Key** and "Token <your token>" for the value (replace ``<your token>`` with the token you copied).
 
 6. Press the **Send** button again. This time the request should be sent with the proper authorization token. You should see a response object with the "Hello, World!" message.
 
@@ -373,7 +378,7 @@ In this step you'll add the validation logic for the ``platform``, ``sensor``, `
         reducer = data.get('reducer', 'median')
         index = data.get('index', None)
         scale_str = data.get('scale', 250)
-        orient = data.get('orient', 'list')
+        orient = data.get('orient', 'dict')
         geometry_str = data.get('geometry', None)
 
         # validate given parameters

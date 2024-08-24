@@ -4,18 +4,19 @@
 Advanced Concepts
 *****************
 
-**Last Updated:** May 2022
+**Last Updated:** July 2024
 
 This tutorial introduces advanced concepts for Tethys developers. The topics covered include:
 
 * Tethys Services API
 * PersistentStores API
-* Gizmo JavaScript APIs
-* JavaScript and AJAX
 * Permissions API
 * Advanced HTML Forms - File Upload
 * Plotting Gizmos
 
+.. figure:: ../../images/tutorial/advanced/key-concepts-advanced-screenshot.png
+    :width: 800px
+    :align: center
 
 0. Start From Intermediate Solution (Optional)
 ==============================================
@@ -28,45 +29,107 @@ If you wish to use the intermediate solution as a starting point:
     cd tethysapp-dam_inventory
     git checkout -b intermediate-solution intermediate-|version|
 
-1. Persistent Store Database
+1. Install PostgreSQL with PostGIS
+==================================
+
+The peristent store API currently only works with the PostgreSQL databases. However, the default installation of Tethys Platform uses SQLite as the database backend. In this section you will reconfigure your Tethys installation to use a PostgreSQL database instead of SQLite. There are many ways to install PostgreSQL, but for this tutorial you will learn how to install PostgreSQL using Docker.
+
+a. Install PostgreSQL database with the PostGIS extension using Docker:
+
+    a. Install `Docker Desktop <https://www.docker.com/products/docker-desktop>`_ or `Docker Engine <https://docs.docker.com/engine/install/>`_.
+
+    b. Open a terminal and run the following command to create a new PostgreSQL with PostGIS Docker container:
+
+    .. code-block:: bash
+
+        docker run -d --name tethys_postgis -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 postgis/postgis
+
+    c. Verify in Docker desktop that you have a new container running with the name "tethys_postgis" on port ``5432`` (**5432**:5432).
+
+b. Add necessary Python dependencies:
+
+    To use the PostgreSQL database you need to install the ``psycopg2`` library. Install it using one of the following commands:
+
+    .. code-block:: bash
+
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge psycopg2
+
+            # pip
+            pip install psycopg2
+
+c. Configure Tethys to use PostgreSQL database:
+
+    a. Stop the Tethys development server if it is running by pressing :kbd:`CTRL-C` in the terminal.
+
+    b. Configure the Tethys Portal to use the new Docker database using the ``tethys settings`` command:
+
+    .. code-block:: bash
+
+        tethys settings --set DATABASES.default.ENGINE django.db.backends.postgresql --set DATABASES.default.NAME tethys_platform --set DATABASES.default.USER tethys_default --set DATABASES.default.PASSWORD pass --set DATABASES.default.HOST localhost --set DATABASES.default.PORT 5432
+
+    c. Run the ``tethys db configure`` command to prepare the database for use by the Tethys portal:
+
+    .. code-block:: bash
+
+        PGPASSWORD=mysecretpassword tethys db configure
+
+    The default password for the ``postgis/postgis`` container is "mysecretpassword". If you changed it, you will need to replace it in the command above.
+
+    d. Start Tethys the development server (``tethys manage start``) and verify that the app is still working.
+
+.. important::
+
+    You will now need to start the "tethys_postgis" container each time you want to start the Tethys development server. You can do this using the Docker Desktop application or by running the following command:
+
+    .. code-block:: bash
+
+        docker start tethys_postgis
+
+2. Persistent Store Database
 ============================
 
-In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
+    In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
 
-a. Add necessary dependencies:
+    a. Add necessary dependencies:
 
-Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+    Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
 
-.. code-block:: console
+    .. code-block:: bash
 
-        # conda: conda-forge channel strongly recommended
-        conda install -c conda-forge "sqlalchemy<2" psycopg2
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge "sqlalchemy<2" psycopg2
 
-        # pip
-        pip install "sqlalchemy<2" psycopg2
+            # pip
+            pip install "sqlalchemy<2" psycopg2
 
-Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
+    Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
 
-.. code-block:: yaml
+    .. code-block:: yaml
+        :emphasize-lines: 13, 15-16
 
-    # This file should be committed to your app code.
-    version: 1.0
-    # This should match the app - package name in your setup.py
-    name: dam_inventory
+        # This file should be committed to your app code.
+        version: 1.1
+        # This should be greater or equal to your tethys-platform in your environment
+        tethys_version: ">=4.0.0"
+        # This should match the app - package name in your setup.py
+        name: dam_inventory
 
-    requirements:
-      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-      skip: false
-      conda:
-        channels:
-          - conda-forge
-        packages:
-          - sqlalchemy<2
-          - psycopg2
+        requirements:
+        # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+        skip: false
+        conda:
+            channels:
+            - conda-forge
+            packages:
+            - sqlalchemy<2
+            - psycopg2
 
-      pip:
+        pip:
 
-    post:
+        npm:
+
+        post:
 
 
 b. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
@@ -163,7 +226,7 @@ d. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` wi
             )
 
             # Get connection/session to database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Add the new dam record to the session
@@ -179,7 +242,7 @@ d. Replace the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` wi
             Get all persisted dams.
             """
             # Get connection/session to database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Query for all dam records
@@ -234,48 +297,48 @@ e. Create a new function called ``init_primary_db`` at the bottom of ``model.py`
                 session.commit()
                 session.close()
 
-f. Refactor ``home`` controller in ``controllers.py`` to use the updated model methods:
+f. Refactor ``HomeMap`` controller in ``controllers.py`` to use the updated model methods:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 7, 13-14, 19-20, 23-27
+        :emphasize-lines: 1, 10, 12, 20-21, 24-28
 
-        @controller
-        def home(request):
-            """
-            Controller for the app home page.
-            """
-            # Get list of dams and create dams MVLayer:
-            dams = get_all_dams()
-            features = []
-            lat_list = []
-            lng_list = []
+        @controller(name="home")
+        class HomeMap(MapLayout):
+            app = App
+            base_template = f'{App.package}/base.html'
+            map_title = 'Dam Inventory'
+            map_subtitle = 'Tutorial'
+            basemaps = ['OpenStreetMap', 'ESRI']
+            show_properties_popup = True
 
-            for dam in dams:
-                lat_list.append(dam.latitude)
-                lng_list.append(dam.longitude)
+            def compose_layers(self, request, map_view, *args, **kwargs):
+                # Get list of dams and create dams MVLayer:
+                dams = get_all_dams()
+                features = []
 
-                dam_feature = {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'Point',
-                        'coordinates': [dam.longitude, dam.latitude],
-                    },
-                    'properties': {
-                        'id': dam.id,
-                        'name': dam.name,
-                        'owner': dam.owner,
-                        'river': dam.river,
-                        'date_built': dam.date_built
+                # Define GeoJSON Features
+                for dam in dams:
+                    dam_feature = {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': 'Point',
+                            'coordinates': [dam.longitude, dam.latitude],
+                        },
+                        'properties': {
+                            'id': dam.id,
+                            'name': dam.name,
+                            'owner': dam.owner,
+                            'river': dam.river,
+                            'date_built': dam.date_built
+                        }
                     }
-                }
-                features.append(dam_feature)
 
             ...
 
 g. Refactor the ``add_dam`` controller to use the updated model methods:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 52
+        :emphasize-lines: 1-2, 52-58
 
         @controller(url='dams/add')
         def add_dam(request):
@@ -328,7 +391,13 @@ g. Refactor the ``add_dam`` controller to use the updated model methods:
                     location_error = 'Location is required.'
 
                 if not has_errors:
-                    add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                    add_new_dam(
+                        location=location,
+                        name=name,
+                        owner=owner,
+                        river=river,
+                        date_built=date_built
+                    )
                     return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
@@ -358,7 +427,41 @@ h. Refactor the ``list_dams`` controller to use updated model methods:
 
             ...
 
-i. Add a **Persistent Store Service** to Tethys Portal:
+i. Remove references to workspace in ``build_map_extent_and_view`` method: 
+
+.. code-block:: python
+    :emphasize-lines: 1, 8
+
+    def build_map_extent_and_view(self, request, *args, **kwargs):
+        """
+        Builds the default MVView and BBOX extent for the map.
+
+        Returns:
+            MVView, 4-list<float>: default view and extent of the project.
+        """
+        dams = get_all_dams()
+        extent = self.compute_dams_extent(dams)
+
+        ...
+
+j. Refactor the ``compute_dams_extent`` method to use updated model methods:
+
+.. code-block:: python
+    :emphasize-lines: 8-9
+
+    def compute_dams_extent(self, dams):
+        """Compute the extent/bbox of the given dams."""
+        lat_list = []
+        lng_list = []
+
+        # Define GeoJSON Features
+        for dam in dams:
+            lat_list.append(dam.latitude)
+            lng_list.append(dam.longitude)
+        
+        ...
+
+k. Add a **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -374,10 +477,9 @@ i. Add a **Persistent Store Service** to Tethys Portal:
 
 .. important::
 
-    The username and password for the persistent store service must be a superuser to use spatial persistent stores.
-    Note that the default installation of Tethys Portal includes a superuser named "tethys_super", password: "pass".
+    The username and password for the persistent store service must be a user with permissions to create databases to use spatial persistent stores. The ``tethys db configure`` command creates a superuser named "tethys_super", password: "pass".
 
-j. Assign the new **Persistent Store Service** to the Dam Inventory App:
+l. Assign the new **Persistent Store Service** to the Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -391,13 +493,13 @@ j. Assign the new **Persistent Store Service** to the Dam Inventory App:
     :width: 100%
     :align: center
 
-k. Execute the **syncstores** command to create the tables in the Persistent Store database:
+m. Execute the **syncstores** command to create the tables in the Persistent Store database:
 
     .. code-block:: bash
 
         tethys syncstores dam_inventory
 
-2. Use Custom Settings
+3. Use Custom Settings
 ======================
 
 In the :doc:`./beginner` tutorial, we created a custom setting named `max_dams`. In this section, we'll show you how to use the custom setting in one of your controllers.
@@ -405,7 +507,7 @@ In the :doc:`./beginner` tutorial, we created a custom setting named `max_dams`.
 a. Modify the `add_dam` controller, such that it won't add a new dam if the `max_dams` limit has been reached:
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 57-69
+        :emphasize-lines: 1-2, 57-75
 
         from .model import Dam
         from .app import App
@@ -464,16 +566,22 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
 
                 if not has_errors:
                     # Get value of max_dams custom setting
-                    max_dams = app.get_custom_setting('max_dams')
+                    max_dams = App.get_custom_setting('max_dams')
 
                     # Query database for count of dams
-                    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                    Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
                     session = Session()
                     num_dams = session.query(Dam).count()
 
                     # Only add the dam if custom setting doesn't exist or we have not exceed max_dams
                     if not max_dams or num_dams < max_dams:
-                        add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                        add_new_dam(
+                            location=location,
+                            name=name,
+                            owner=owner,
+                            river=river,
+                            date_built=date_built
+                        )
                     else:
                         messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
 
@@ -488,143 +596,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
 
         For more information on app settings, see :doc:`../../tethys_sdk/app_settings`.
 
-
-3. Use JavaScript APIs
-======================
-
-JavaScript is the programming language that is used to program web browsers. You can use JavaScript in your Tethys apps to enrich the user experience and add dynamic effects. Many of the Tethys Gizmos include JavaScript APIs to allow you to access the underlying JavaScript objects and library to customize them. In this section, we'll use the JavaScript API of the Map View gizmo to add pop-ups to the map whenever a user clicks on one of the dams.
-
-a. Modify the MVLayer in the ``home`` controller to make the layer selectable:
-
-    .. code-block:: python
-        :emphasize-lines: 8
-
-        ...
-
-        dams_layer = MVLayer(
-            source='GeoJSON',
-            options=dams_feature_collection,
-            legend_title='Dams',
-            layer_options={'style': style},
-            feature_selection=True
-        )
-
-        ...
-
-
-
-b. Create a new file called ``/public/js/map.js`` and add the following contents:
-
-    .. code-block:: javascript
-
-        $(function() {
-            // Create new Overlay with the #popup element
-            var popup = new ol.Overlay({
-                element: document.getElementById('popup')
-            });
-
-            // Get the Open Layers map object from the Tethys MapView
-            var map = TETHYS_MAP_VIEW.getMap();
-
-            // Get the Select Interaction from the Tethys MapView
-            var select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
-
-            // Add the popup overlay to the map
-            map.addOverlay(popup);
-
-            // When selected, call function to display properties
-            select_interaction.getFeatures().on('change:length', function(e)
-            {
-                var popup_element = popup.getElement();
-
-                if (e.target.getArray().length > 0)
-                {
-                    // this means there is at least 1 feature selected
-                    var selected_feature = e.target.item(0); // 1st feature in Collection
-
-                    // Get coordinates of the point to set position of the popup
-                    var coordinates = selected_feature.getGeometry().getCoordinates();
-
-                    var popup_content = '<div class="dam-popup">' +
-                                            '<h5>' + selected_feature.get('name') + '</h5>' +
-                                            '<h6>Owner:</h6>' +
-                                            '<span>' + selected_feature.get('owner') + '</span>' +
-                                            '<h6>River:</h6>' +
-                                            '<span>' + selected_feature.get('river') + '</span>' +
-                                            '<h6>Date Built:</h6>' +
-                                            '<span>' + selected_feature.get('date_built') + '</span>' +
-                                        '</div>';
-
-                    // Clean up last popup and reinitialize
-                    $(popup_element).popover('dispose');
-
-                    // Delay arbitrarily to wait for previous popover to
-                    // be deleted before showing new popover.
-                    setTimeout(function() {
-                        popup.setPosition(coordinates);
-
-                        $(popup_element).popover({
-                            'placement': 'top',
-                            'animation': true,
-                            'html': true,
-                            'content': popup_content
-                        });
-
-                        $(popup_element).popover('show');
-                    }, 500);
-                } else {
-                    // remove pop up when selecting nothing on the map
-                    $(popup_element).popover('dispose');
-                }
-            });
-        });
-
-
-c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the ``app_content`` area of the page with an id ``popup``, and load the ``map.js`` script to the bottom of the page:
-
-    .. code-block:: html+django
-
-        {% extends tethys_app.package|add:"base.html" %}
-        {% load static tethys %}
-
-        {% block styles %}
-            {{ block.super }}
-            <link href="{% static tethys_app|public:'css/map.css' %}" rel="stylesheet"/>
-        {% endblock %}
-
-        {% block app_content %}
-            {% gizmo dam_inventory_map %}
-            <div id="popup"></div>
-        {% endblock %}
-
-        {% block app_actions %}
-            {% gizmo add_dam_button %}
-        {% endblock %}
-
-        {% block scripts %}
-            {{ block.super }}
-            <script src="{% static tethys_app|public:'js/map.js' %}" type="text/javascript"></script>
-        {% endblock %}
-
-
-d. Open ``public/css/map.css`` and add the following contents:
-
-    .. code-block:: css
-        :emphasize-lines: 1-3
-
-        .popover {
-            width: 240px;
-        }
-
-        #inner-app-content {
-            padding: 0;
-        }
-
-        #app-content, #inner-app-content, #map_view_outer_container {
-            height: 100%;
-        }
-
-4. App Permissions
+5. App Permissions
 ==================
 
 By default, any user logged into the app can access any part of it. You may want to restrict access to certain areas of the app to privileged users. This can be done using the :doc:`../../tethys_sdk/permissions`. Let's modify the app so that only admin users of the app can add dams to the app.
@@ -664,6 +636,7 @@ a. Define permissions for the app by adding the ``permissions`` method to the ap
 b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``permissions_required`` argument of the ``controller`` decorator:
 
     .. code-block:: python
+        :emphasize-lines: 1
 
         @controller(url='dams/add', permission_required='add_dams')
         def add_dam(request):
@@ -675,24 +648,32 @@ b. Protect the Add Dam view with the ``add_dams`` permission by setting the ``pe
 c. Add a context variable called ``can_add_dams`` to the context of each controller with the value of the return value of the ``has_permission`` function:
 
     .. code-block:: python
-        :emphasize-lines: 1, 12, 27, 42
+        :emphasize-lines: 1, 14-22, 36, 51
 
         from tethys_sdk.permissions import has_permission
-        from .app import App
 
-        @controller
-        def home(request):
-            """
-            Controller for the app home page.
-            """
+        ...
+
+        @controller(name="home")
+        class HomeMap(MapLayout):
+            app = App
+            base_template = f'{App.package}/base.html'
+            map_title = 'Dam Inventory'
+            map_subtitle = 'Tutorial'
+            basemaps = ['OpenStreetMap', 'ESRI']
+            show_properties_popup = True
+
+            def get_context(self, request, context, *args, **kwargs):
+                # Add custom context variables
+                context.update({
+                    'can_add_dams': has_permission(request, 'add_dams'),
+                })
+
+                # Call the MapLayout get_context method to initialize the map view
+                context = super().get_context(request, context, *args, **kwargs)
+                return context
+
             ...
-
-            context = {
-                ...
-                'can_add_dams': has_permission(request, 'add_dams')
-            }
-
-            return App.render(request, 'home.html', context)
 
 
         @controller(url='dams/add', permission_required='add_dams')
@@ -723,35 +704,44 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
             }
             return App.render(request, 'list_dams.html', context)
 
-d. Use the ``can_add_dams`` variable to determine whether to show or hide the navigation link to the Add Dam View in ``base.html``:
+d. Use the ``can_add_dams`` variable to determine whether to show or hide the header button and navigation link to the Add Dam View in ``base.html``:
+
+    .. code-block:: html+django
+        :emphasize-lines: 11, 15
+
+        {% block header_buttons %}
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          <div class="header-button glyphicon-button">
+            <a href="{{ home_url }}" title="Map"><i class="bi bi-map"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ list_dam_url }}" title="Dams"><i class="bi bi-list-ul"></i></a>
+          </div>
+          {% if can_add_dams %}
+          <div class="header-button glyphicon-button">
+            <a href="{{ add_dam_url }}" title="Add Dam"><i class="bi bi-plus-circle"></i></a>
+          </div>
+          {% endif %}
+        {% endblock %}
 
     .. code-block:: html+django
         :emphasize-lines: 8, 10
 
         {% block app_navigation_items %}
-        {% url tethys_app|url:'home' as home_url %}
-        {% url tethys_app|url:'add_dam' as add_dam_url %}
-        {% url tethys_app|url:'dams' as list_dam_url %}
-        <li class="nav-item title">Navigation</li>
-        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
-        {% if can_add_dams %}
-        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
-        {% endif %}
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          <li class="nav-item title">Navigation</li>
+          <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
+          {% if can_add_dams %}
+          <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
+          {% endif %}
         {% endblock %}
 
-e. Use the ``can_add_dams`` variable to determine whether to show or hide the "Add Dam" button in ``home.html``:
-
-    .. code-block:: html+django
-        :emphasize-lines: 2, 4
-
-        {% block app_actions %}
-        {% if can_add_dams %}
-            {% gizmo add_dam_button %}
-        {% endif %}
-        {% endblock %}
-
-f. The ``admin`` user of Tethys is a superuser and has all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
+e. The ``admin`` user of Tethys is a superuser and has all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -766,13 +756,13 @@ f. The ``admin`` user of Tethys is a superuser and has all permissions. To test 
     k. Enter "diviewer" as the username and enter a password. Take note of the password for later. **DO NOT add "diviewer" user to any groups.**
     l. Press the **Save** button.
 
-g. Log in with each user account. If the permission has been applied correctly, "diviewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "diadmin" should be able to add dams.
+f. Log in with each user account. If the permission has been applied correctly, "diviewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "diadmin" should be able to add dams.
 
 .. tip::
 
     For more details on Permissions, see: :doc:`../../tethys_sdk/permissions`.
 
-5. Persistent Store Related Tables
+6. Persistent Store Related Tables
 ==================================
 
 Add Flood Hydrograph table
@@ -833,7 +823,7 @@ b. Execute **syncstores** command again to add the new tables to the database:
         tethys syncstores dam_inventory
 
 
-6. File Upload
+7. File Upload
 ==============
 
 CSV File Upload
@@ -863,7 +853,7 @@ a. New Model function
                         continue
 
                 if len(hydro_points) > 0:
-                    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                    Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
                     session = Session()
 
                     # Get dam object
@@ -1018,22 +1008,47 @@ c. New Controller
 
             return App.render(request, 'assign_hydrograph.html', context)
 
-d. Update navigation
+d. Update header buttons and navigation
 
     .. code-block:: html+django
+        :emphasize-lines: 5, 16-18
+
+        {% block header_buttons %}
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
+          <div class="header-button glyphicon-button">
+            <a href="{{ home_url }}" title="Map"><i class="bi bi-map"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ list_dam_url }}" title="Dams"><i class="bi bi-list-ul"></i></a>
+          </div>
+          {% if can_add_dams %}
+          <div class="header-button glyphicon-button">
+            <a href="{{ add_dam_url }}" title="Add Dam"><i class="bi bi-plus-circle"></i></a>
+          </div>
+          <div class="header-button glyphicon-button">
+            <a href="{{ assign_hydrograph_url }}" title="Assign Hydrograph"><i class="bi bi-graph-up"></i></a>
+          </div>
+          {% endif %}
+        {% endblock %}
+
+    .. code-block:: html+django
+        :emphasize-lines: 5, 11
 
         {% block app_navigation_items %}
-        {% url tethys_app|url:'home' as home_url %}
-        {% url tethys_app|url:'add_dam' as add_dam_url %}
-        {% url tethys_app|url:'dams' as list_dam_url %}
-        {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
-        <li class="nav-item title">Navigation</li>
-        <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
-        {% if can_add_dams %}
-        <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == assign_hydrograph_url %} active{% endif %}" href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
-        {% endif %}
+          {% url tethys_app|url:'home' as home_url %}
+          {% url tethys_app|url:'add_dam' as add_dam_url %}
+          {% url tethys_app|url:'dams' as list_dam_url %}
+          {% url tethys_app|url:'assign_hydrograph' as assign_hydrograph_url %}
+          <li class="nav-item title">Navigation</li>
+          <li class="nav-item"><a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == list_dam_url %} active{% endif %}" href="{{ list_dam_url }}">Dams</a></li>
+          {% if can_add_dams %}
+          <li class="nav-item"><a class="nav-link{% if request.path == add_dam_url %} active{% endif %}" href="{{ add_dam_url }}">Add Dam</a></li>
+          <li class="nav-item"><a class="nav-link{% if request.path == assign_hydrograph_url %} active{% endif %}" href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
+          {% endif %}
         {% endblock %}
 
 .. _sample_hydrographs:
@@ -1042,12 +1057,53 @@ e. Test upload with these files:
 
     :download:`Sample Hydrograph CSVs <./hydrographs.zip>`
 
-7. URL Variables and Plotting
+8. URL Variables and Plotting
 =============================
 
 Create a new page with hydrograph plotted for selected Dam
 
-a. Create Template ``hydrograph.html``
+a. Add necessary dependencies:
+
+    In order to plot the hydrograph, you will need to install the ``plotly`` library. Install this library using one of the following commands:
+
+    .. code-block:: bash
+
+            # conda: conda-forge channel strongly recommended
+            conda install -c conda-forge plotly
+
+            # pip
+            pip install plotly
+
+    Now add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
+
+    .. code-block:: yaml
+        :emphasize-lines: 17
+
+        # This file should be committed to your app code.
+        version: 1.1
+        # This should be greater or equal to your tethys-platform in your environment
+        tethys_version: ">=4.0.0"
+        # This should match the app - package name in your setup.py
+        name: dam_inventory
+
+        requirements:
+        # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+        skip: false
+        conda:
+            channels:
+            - conda-forge
+            packages:
+            - sqlalchemy<2
+            - psycopg2
+            - plotly
+
+        pip:
+
+        npm:
+
+        post:
+
+b. Create Template ``hydrograph.html``
 
     .. code-block:: html+django
 
@@ -1063,18 +1119,15 @@ a. Create Template ``hydrograph.html``
         {% gizmo hydrograph_plot %}
         {% endblock %}
 
-b. Create ``helpers.py``
+c. Create ``helpers.py``
 
     .. code-block:: python
-
-        from plotly import graph_objs as go
-        from tethys_gizmos.gizmo_options import PlotlyView
 
         from .app import App
         from .model import Hydrograph
 
 
-        def create_hydrograph(hydrograph_id, height='520px', width='100%'):
+        def create_hydrograph(hydrograph_id):
             """
             Generates a plotly view of a hydrograph.
             """
@@ -1090,27 +1143,27 @@ b. Create ``helpers.py``
                 flow.append(hydro_point.flow)
 
             # Build up Plotly plot
-            hydrograph_go = go.Scatter(
-                x=time,
-                y=flow,
-                name='Hydrograph for {0}'.format(dam.name),
-                line={'color': '#0080ff', 'width': 4, 'shape': 'spline'},
-            )
-            data = [hydrograph_go]
+            data =[
+                dict(
+                    x=time,
+                    y=flow,
+                    name=f'Hydrograph for {dam.name}',
+                    line={'color': '#0080ff', 'width': 4, 'shape': 'spline'},
+                )
+            ]
             layout = {
-                'title': 'Hydrograph for {0}'.format(dam.name),
+                'title': f'Hydrograph for {dam.name}',
                 'xaxis': {'title': 'Time (hr)'},
                 'yaxis': {'title': 'Flow (cfs)'},
             }
-            figure = {'data': data, 'layout': layout}
-            hydrograph_plot = PlotlyView(figure, height=height, width=width)
             session.close()
-            return hydrograph_plot
+            return data, layout
 
-c. Create Controller
+d. Create Controller
 
     .. code-block:: python
 
+        from tethys_sdk.gizmos import PlotlyView
         from .helpers import create_hydrograph
 
         ...
@@ -1120,8 +1173,9 @@ c. Create Controller
             """
             Controller for the Hydrograph Page.
             """
-            hydrograph_plot = create_hydrograph(hydrograph_id)
-
+            data, layout = create_hydrograph(hydrograph_id)
+            figure = {'data': data, 'layout': layout}
+            hydrograph_plot = PlotlyView(figure, height="500px", width="100%")
             context = {
                 'hydrograph_plot': hydrograph_plot,
                 'can_add_dams': has_permission(request, 'add_dams')
@@ -1132,7 +1186,7 @@ c. Create Controller
 
     For more information about plotting in Tethys apps, see :doc:`../../tethys_sdk/gizmos/plotly_view`, :doc:`../../tethys_sdk/gizmos/bokeh_view`, and :doc:`../../tethys_sdk/gizmos/plot_view`.
 
-d. Add ``get_hydrograph`` helper function to ``model.py``
+e. Add ``get_hydrograph`` helper function to ``model.py``
 
     .. code-block:: python
 
@@ -1140,7 +1194,7 @@ d. Add ``get_hydrograph`` helper function to ``model.py``
             """
             Get hydrograph id from dam id.
             """
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Query if hydrograph exists for dam
@@ -1152,9 +1206,10 @@ d. Add ``get_hydrograph`` helper function to ``model.py``
             else:
                 return None
 
-e. Modify ``list_dams`` controller (and add needed imports):
+f. Modify ``list_dams`` controller (and add needed imports):
 
     .. code-block:: python
+        :emphasize-lines: 14-20, 16, 26, 31
 
         from django.utils.html import format_html
         from .model import get_hydrograph
@@ -1200,161 +1255,57 @@ e. Modify ``list_dams`` controller (and add needed imports):
 
             return App.render(request, 'list_dams.html', context)
 
-f. Test by going to the Dams page and clicking on the new ``Hydrograph Plot`` button in the table for a dam that has already been assigned a hydrograph.
+g. Test by going to the Dams page and clicking on the new ``Hydrograph Plot`` button in the table for a dam that has already been assigned a hydrograph.
 
-8. Dynamic Hydrograph Plot in Pop-Ups
+9. Dynamic Hydrograph Plot in Pop-Ups
 =====================================
 
-Add Hydrographs to pop-ups if they exist.
+Add Hydrographs plot button to map pop-ups.
 
-a. Add Plotly Gizmo dependency to ``home.html``:
-
-    .. code-block:: html+django
-        :emphasize-lines: 4-6
-
-        {% extends tethys_app.package|add:"/base.html" %}
-        {% load static tethys %}
-
-        {% block import_gizmos %}
-            {% import_gizmo_dependency plotly_view %}
-        {% endblock %}
-
-        ...
-
-b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
-
-    .. code-block:: html+django
-
-        {% load tethys %}
-
-        {% if hydrograph_plot %}
-            {% gizmo hydrograph_plot %}
-        {% endif %}
-
-c. Create an AJAX controller ``hydrograph_ajax``
+a. Update the ``HomeMap`` controller to include the hydrograph plot button in the pop-up:
 
     .. code-block:: python
+        :emphasize-lines: 9, 13-35
 
-        @controller(url='hydrographs/{dam_id}/ajax')
-        def hydrograph_ajax(request, dam_id):
-            """
-            Controller for the Hydrograph Page.
-            """
-            # Get dams from database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
-            session = Session()
-            dam = session.query(Dam).get(int(dam_id))
+        @controller(name="home")
+        class HomeMap(MapLayout):
+            app = App
+            base_template = f'{App.package}/base.html'
+            map_title = 'Dam Inventory'
+            map_subtitle = 'Tutorial'
+            basemaps = ['OpenStreetMap', 'ESRI']
+            show_properties_popup = True
+            plot_slide_sheet = True
 
-            if dam.hydrograph:
-                hydrograph_plot = create_hydrograph(dam.hydrograph.id, height='300px')
-            else:
-                hydrograph_plot = None
+            ...
 
-            context = {
-                'hydrograph_plot': hydrograph_plot,
-            }
+            def get_plot_for_layer_feature(self, request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs):
+                """
+                Retrieves plot data for given feature on given layer.
 
-            session.close()
-            return App.render(request, 'hydrograph_ajax.html', context)
+                Args:
+                    layer_name (str): Name/id of layer.
+                    feature_id (str): ID of feature.
+                    layer_data (dict): The MVLayer.data dictionary.
+                    feature_props (dict): The properties of the selected feature.
 
-d. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
+                Returns:
+                    str, list<dict>, dict: plot title, data series, and layout options, respectively.
+                """
+                Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                session = Session()
+                dam = session.query(Dam).get(int(feature_id))
 
-    .. code-block:: javascript
-        :emphasize-lines: 37, 57-58
-
-        $(function() {
-            // Create new Overlay with the #popup element
-            var popup = new ol.Overlay({
-                element: document.getElementById('popup')
-            });
-
-            // Get the Open Layers map object from the Tethys MapView
-            var map = TETHYS_MAP_VIEW.getMap();
-
-            // Get the Select Interaction from the Tethys MapView
-            var select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
-
-            // Add the popup overlay to the map
-            map.addOverlay(popup);
-
-            // When selected, call function to display properties
-            select_interaction.getFeatures().on('change:length', function(e)
-            {
-                var popup_element = popup.getElement();
-
-                if (e.target.getArray().length > 0)
-                {
-                    // this means there is at least 1 feature selected
-                    var selected_feature = e.target.item(0); // 1st feature in Collection
-
-                    // Get coordinates of the point to set position of the popup
-                    var coordinates = selected_feature.getGeometry().getCoordinates();
-
-                    var popup_content = '<div class="dam-popup">' +
-                                            '<h5>' + selected_feature.get('name') + '</h5>' +
-                                            '<h6>Owner:</h6>' +
-                                            '<span>' + selected_feature.get('owner') + '</span>' +
-                                            '<h6>River:</h6>' +
-                                            '<span>' + selected_feature.get('river') + '</span>' +
-                                            '<h6>Date Built:</h6>' +
-                                            '<span>' + selected_feature.get('date_built') + '</span>' +
-                                            '<div id="plot-content"></div>' +
-                                        '</div>';
-
-                    // Clean up last popup and reinitialize
-                    $(popup_element).popover('dispose');
-
-                    // Delay arbitrarily to wait for previous popover to
-                    // be deleted before showing new popover.
-                    setTimeout(function() {
-                        popup.setPosition(coordinates);
-
-                        $(popup_element).popover({
-                            'placement': 'top',
-                            'animation': true,
-                            'html': true,
-                            'content': popup_content
-                        });
-
-                        $(popup_element).popover('show');
-
-                        // Load hydrograph dynamically
-                        $('#plot-content').load('/apps/dam-inventory/hydrographs/' + selected_feature.get('id') + '/ajax/');
-                    }, 500);
-
-                } else {
-                    // remove pop up when selecting nothing on the map
-                    $(popup_element).popover('dispose');
-                }
-            });
-        });
+                if dam.hydrograph:
+                    data, layout = create_hydrograph(dam.hydrograph.id)
+                else:
+                    data, layout = [], {}
+                session.close()
+                return f'Hydrograph for {dam.name}', data, layout
 
 
-f. Update ``map.css``:
-
-    .. code-block:: css
-        :emphasize-lines: 1-5
-
-        .popover-body {
-            width: 400px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .popover {
-            max-width: none;
-        }
-
-        #inner-app-content {
-            padding: 0;
-        }
-
-        #app-content, #inner-app-content, #map_view_outer_container {
-            height: 100%;
-        }
-
-9. Solution
-===========
+10. Solution
+============
 
 This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 

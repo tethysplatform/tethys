@@ -4,7 +4,7 @@
 Google Earth Engine Service Account
 ***********************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 Up to this point, you've been using your personal Google account to authenticate with Google Earth Engine (see: :ref:`gee_authentication_step`). However, when you run an app that uses Google Earth Engine in a production environment, you will not want it to be using your personal credentials. Instead you will use a `service account <https://developers.google.com/earth-engine/service_account>`_, which is an account associated with an application instead of a user.
 
@@ -51,7 +51,7 @@ After you have setup your service account, you will need to create a key that th
 
 7. Select JSON and press **CREATE**.
 
-8. Locate the file that was downloaded an place it in a secure location.
+8. Locate the file that was downloaded and place it in a secure location.
 
 .. note::
 
