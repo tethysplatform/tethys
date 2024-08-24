@@ -4,7 +4,7 @@
 Setup Scheduler
 ***************
 
-**Last Updated:** May 2022
+**Last Updated:** August 2024
 
 1. Start Scheduler
 ==================
@@ -68,7 +68,9 @@ Scroll down to the **TETHYS COMPUTE** section and select **Dask Schedulers** to 
 6. Add a New Dask Scheduler
 ===========================
 
-Select the **Add Dask Scheduler** button. Fill out the following form to create a new scheduler. Use the name ``dask_localhost`` for this tutorial. For host and port see the scheduler terminal. Use the ``scheduler at`` value (e.g.: 192.168.1.17:8786) for the **Host** field. Use the ``bokeh at`` port with the scheduler at host (e.g.: 192.168.1.17:8787) for **Dashboard** field, using the same host as the scheduler. Select ``Save`` once done.
+Select the **Add Dask Scheduler** button. Fill out the following form to create a new scheduler. Use the name ``dask_localhost`` for this tutorial. 
+For host and port see the scheduler terminal. Use the ``scheduler at`` value (e.g.: 192.168.1.17:8786) for the **Host** field. Set **Timeout** to 60. Use the ``bokeh at``
+port with the scheduler at host (e.g.: 192.168.1.17:8787) for the **Dashboard** field, using the same host as the scheduler. Select ``Save`` once done.
 
 .. figure:: ../../images/tethys_compute/tethys_compute_dask_scheduler.png
     :width: 900px

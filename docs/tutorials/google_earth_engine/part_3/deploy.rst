@@ -2,7 +2,7 @@
 Deploy App to Production Server
 *******************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will learn how to install the Google Earth Tethys app in a production environment. If you don't have access to a machine with a production installation of Tethys Platform, we recommend you create a new Virtual Machine and install Tethys on it. Refer to :ref:`production_installation`.
 
@@ -11,11 +11,11 @@ Topics covered in this tutorial include:
 * Installing Apps in Production
 * Cloning from GitHub
 
-.. figure:: ./resources/deploy_solution.png
+.. figure:: ../../../images/tutorial/gee/deploy_app.png
     :width: 800px
     :align: center
 
-1. Copy Key Google Earth Engine to Server
+1. Copy Google Earth Engine Key to Server
 =========================================
 
 You will need to copy the Google Earth Engine service account key file you created earlier to the server (see: :ref:`service_account_key`). If you have SSH access to the machine, this is most easily done using `scp <https://linux.die.net/man/1/scp>`_:

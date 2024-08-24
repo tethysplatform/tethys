@@ -4,7 +4,7 @@
 Prepare App for Publishing and Deploy
 *************************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will prepare the app for publishing and deployment. The app source code will be published to `GitHub <https://github.com/>`_ under an `open source license <https://opensource.org/licenses>`_. Among other things, this will allow you to track future changes to the app and it will allow others to view the code and modify it for their own use. Having the app code published on GitHub will also make it easier to download when installing the app on a production server.
 
@@ -96,7 +96,28 @@ Although using the :file:`gee/params.py` file to store our service account crede
 
     from . import params as gee_account
 
-4. **Delete** :file:`gee/params.py`.
+4. Use the private key path custom setting in ``get_asset_dir_for_user`` in :file:`gee/methods.py` by replacing the ``private_key`` variable with the following:
+
+.. code-block:: python
+    :emphasize-lines: 12
+
+    def get_asset_dir_for_user(user):
+        """
+        Get a unique asset directory for given user.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+
+        Returns:
+            str: asset directory path for given user.
+        """
+        # Retreieve project ID from private key file
+        with open(private_key_path, 'r') as f:
+            private_key = json.load(f)
+
+        ...
+
+5. **Delete** :file:`gee/params.py`.
 
 2. Set Service Account Settings for the App
 ===========================================

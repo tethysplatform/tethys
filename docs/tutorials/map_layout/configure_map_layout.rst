@@ -2,7 +2,7 @@
 Configure Map Layout
 ********************
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will configure your Tethys app with the Map Layout. This feature of Tethys was designed to further streamline the creation of web applications that use common web mapping tools, such as a web map and its commonly expected functionality, such as feature display and interaction via clicking and plotting. To learn more about the MapLayout see :ref:`map_layout`.
 

@@ -4,7 +4,7 @@
 Bokeh Integration Concepts
 **************************
 
-**Last Updated:** November 2019
+**Last Updated:** July 2024
 
 This tutorial introduces ``Bokeh Server`` integration concepts for Tethys developers. Two ``bokeh`` handlers will be created to demonstrate how to link Bokeh plots or widgets to Python functions in the brackground using both a plain Bokeh approach as well as a ``Param`` approach. The topics covered include:
 
@@ -33,7 +33,7 @@ To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``
 .. code-block:: bash
 
     # conda: conda-forge channel strongly recommended for bokeh (the erdc/label/dev channel is currently needed for bokeh-django)
-    conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django
+    conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django bokeh_sampledata
 
     # pip
     pip install bokeh bokeh-django
@@ -56,6 +56,7 @@ To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``
         packages:
           - bokeh
           - bokeh_django
+          - bokeh_sampledata
 
       pip:
 
@@ -94,7 +95,7 @@ Let's use Bokeh's sea temperature sample data to create a time series plot and l
 
 This simple handler contains the logic for a time series plot of the sea surface temperature sample data provided by ``Bokeh``. The ``handler`` decorator marks this function as a handler. It auto generates a default ``controller function`` that is linked to the handler. A default template can also be used, but we specified a custom template using the ``template`` argument to the ``handler`` decorator. The ``handler`` decorator also sets up the routing. By default the route name and the URL are derived from the ``handler function`` name (in this case ``home``). For more information about the ``handler`` decorator and additional arguments that can be passed see :ref:`handler-decorator`. Since this default controller is sufficient, we don't need to create a custom controller and can just delete the ``controller.py`` file.
 
-2. Delete the ``controller.py`` file.
+2. Delete the ``controllers.py`` file.
 
 3. Clear the default ``home.html`` template and add the following code to it.
 
@@ -125,7 +126,7 @@ This is a simple Bokeh plot. We will now add the rest of the logic to make it an
 
     ...
 
-    def home_handler(document):
+    def home(document):
         df = sea_surface_temperature.copy()
         source = ColumnDataSource(data=df)
 
@@ -185,6 +186,7 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
         packages:
           - bokeh
           - bokeh_django
+          - bokeh_sampledata
           - panel
           - param
 
@@ -201,8 +203,6 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
     import panel as pn
     import numpy as np
     from bokeh.plotting import figure
-
-    ...
 
 
     class Shape(param.Parameterized):
@@ -307,9 +307,9 @@ Note that in this case we are not using a custom template, but we add the ``app_
     {% block app_navigation_items %}
       {% url tethys_app|url:'home' as home_url %}
       {% url tethys_app|url:'shapes' as shapes_url %}
-      <li class="title">Examples</li>
-      <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Sea Surface</a></li>
-      <li class="{% if request.path == shapes_url %}active{% endif %}"><a href="{{ shapes_url }}">Shapes</a></li>
+      <li class="nav-item title">Examples</li>
+      <li class="nav-item"><a class="nav-link {% if request.path == home_url %}active{% endif %}" href="{{ home_url }}">Sea Surface</a></li>
+      <li class="nav-item"><a class="nav-link {% if request.path == shapes_url %}active{% endif %}" href="{{ shapes_url }}">Shapes</a></li>
     {% endblock %}
 
 If you start tethys and go to the shapes endpoint of this app you should see something like this:

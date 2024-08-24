@@ -2,7 +2,7 @@
 Additional Exercises
 ********************
 
-**Last Updated:** June 2022
+**Last Updated:** July 2024
 
 Now that you have completed the THREDDS tutorial, try one of the following exercises on your own to improve the usability of the app:
 
@@ -31,8 +31,10 @@ The current implementation uses hard-coded values for the color scale range of t
 
     update_layer = function() {
         ...
+        var proxyWMSURL = `getWMSImageFromServer?main_url=${encodeURIComponent(m_curr_wms_url)}`;
+
         // Layer
-        m_layer = L.tileLayer.wms(m_curr_wms_url, {
+        m_layer = L.tileLayer.wms(proxyWMSURL, {
             layers: m_curr_variable,
             format: 'image/png',
             transparent: true,

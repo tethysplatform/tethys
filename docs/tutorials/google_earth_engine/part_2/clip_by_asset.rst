@@ -2,14 +2,14 @@
 Clip by Asset
 *************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will use the shapefile uploaded using the file upload form to clip the dataset imagery. This will be done by uploading the shapefile to Google Earth Engine as an asset. Then the map will be reconfigured to check for the asset and clip the imagery if it exists. It will also use the bounding box of the asset to set the default map extent. The following topics will be reviewed in this tutorial:
 
 * `Google Earth Engine Assets <https://developers.google.com/earth-engine/asset_manager>`_
 * Clipping Google Earth Engine Imagery
 
-.. figure:: ./resources/clip_by_asset_solution.png
+.. figure:: ../../../images/tutorial/gee/clip_by_asset.png
     :width: 800px
     :align: center
 
@@ -58,7 +58,7 @@ In this step you will stub out a new GEE method called ``upload_shapefile_to_gee
 .. code-block:: python
     :emphasize-lines: 51-52, 57-60
 
-    def handle_shapefile_upload(request, user_workspace):
+    def handle_shapefile_upload(request, user_media):
         """
         Uploads shapefile to Google Earth Engine as an Asset.
 
@@ -102,11 +102,11 @@ In this step you will stub out a new GEE method called ``upload_shapefile_to_gee
                     if shp_file.shapeType != shapefile.POLYGON:
                         return 'Only shapefiles containing Polygons are supported.'
 
-                    # Setup workspace directory for storing shapefile
-                    workspace_dir = prep_boundary_dir(user_workspace.path)
+                    # Setup user media directory for storing shapefile
+                    media_dir = prep_boundary_dir(user_media.path)
 
-                    # Write the shapefile to the workspace directory
-                    write_boundary_shapefile(shp_file, workspace_dir)
+                    # Write the shapefile to the media directory
+                    write_boundary_shapefile(shp_file, media_dir)
 
                     # Upload shapefile as Asset in GEE
                     upload_shapefile_to_gee(request.user, shp_file)
@@ -204,6 +204,7 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
 .. code-block:: python
 
     import os
+    import json
 
 .. code-block:: python
 
@@ -220,13 +221,13 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
         asset_roots = ee.batch.data.getAssetRoots()
 
         if len(asset_roots) < 1:
-            # Initialize the asset root directory if one doesn't exist already
+            # Initialize the asset root directory if one doesn't exist already 
             ee.batch.data.createAssetHome('users/earth_engine_app')
-
+        
         asset_root_dir = asset_roots[0]['id']
         earth_engine_root_dir = os.path.join(asset_root_dir, 'earth_engine_app')
         user_root_dir = os.path.join(earth_engine_root_dir, user.username)
-
+        
         # Create earth engine directory, will raise exception if it already exists
         try:
             ee.batch.data.createAsset({
@@ -303,6 +304,7 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
 
         # Get unique folder for each user to story boundary asset
         user_boundary_asset_path = get_user_boundary_path(user)
+        print(user_boundary_asset_path)
 
         # Export ee.Feature to ee.Asset
         task = ee.batch.Export.table.toAsset(
@@ -370,7 +372,7 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
             ee.batch.data.deleteAsset(user_boundary_asset_path)
         except EEException as e:
             # Nothing to delete, so pass
-            if 'Asset not found' not in str(e):
+            if 'Asset not found' not in str(e) and 'does not exist' not in str(e):
                 log.exception('Encountered an unhandled EEException.')
                 raise e
 
@@ -516,7 +518,7 @@ In this step you will modify the ``get_image_collection_asset`` method to attemp
 
         return JsonResponse(response_data)
 
-4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and load a dataset of your choice. Verify that the imagery has been clipped to the United States. You'll need to manually pan and zoom to the U.S. to see the imagery.
+4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and wait a moment before loading a dataset of your choice. Verify that the imagery has been clipped to the United States. You'll need to manually pan and zoom to the U.S. to see the imagery.
 
 5. Use Boundary Asset for Map Extents
 =====================================

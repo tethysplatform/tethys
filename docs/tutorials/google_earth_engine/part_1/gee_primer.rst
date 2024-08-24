@@ -2,9 +2,9 @@
 Part 1 Primer: Google Earth Engine for Tethys Developers
 ********************************************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
-This tutorial provides links to Google Earth Engine tutorials and resources that can be used to learn what you need to know for this Tethys tutorial. This is by no means exhaustive and we encourage you familiarize yourself with everything Google Earth Engine has to offer by visiting their documentation: `<https://developers.google.com/earth-engine/>`_. You will need an active `Google Earth Engine account <https://signup.earthengine.google.com>`_ to complete this tutorial.
+This tutorial provides links to Google Earth Engine tutorials and resources that can be used to learn what you need to know for this Tethys tutorial. This is by no means exhaustive and we encourage you to familiarize yourself with everything Google Earth Engine has to offer by visiting their documentation: `<https://developers.google.com/earth-engine/>`_. You will need an active `Google Earth Engine account <https://signup.earthengine.google.com>`_ to complete this tutorial.
 
 1. What is Google Earth Engine?
 ===============================
@@ -31,7 +31,12 @@ Complete the `Python Installation - Colab Notebook guide <https://developers.goo
 
 2. Choose an example from the **Scripts** tab of the `Code Editor <https://code.earthengine.google.com/>`_ and convert it into Python in the Colab editor using the guidelines from the article above.
 
-5. Create a Google Earth Engine Conda Environment
+5. Create a Google Cloud Account and New Project
+====================================================
+If you plan to use Google Earth Engine in your Tethys App, you will need to create a Google Cloud Account and set up a new project. 
+Follow the instructions in the `Google Cloud Platform Quickstart <https://cloud.google.com/resource-manager/docs/creating-managing-projects>`_.
+
+6. Create a Google Earth Engine Conda Environment
 =================================================
 
 Create a new Conda environment with Google Earth Engine installed:
@@ -44,7 +49,7 @@ Create a new Conda environment with Google Earth Engine installed:
 
 .. _authenticate_gee_locally:
 
-6. Authenticate with Google Earth Engine
+7. Authenticate with Google Earth Engine
 ========================================
 
 Before you can use Google Earth Engine in your Tethys Development or in a Jupyter Notebook, you'll need to do a **one-time** authentication using the command line tool:
@@ -57,13 +62,17 @@ Before you can use Google Earth Engine in your Tethys Development or in a Jupyte
 
     The Google Earth Engine command line tool is installed when you install the conda package.
 
-A URL will be provided that generates an authorization code upon agreement. Copy the authorization code and enter it as command line input. This will save a token to a credentials file in the following location:
+A URL will be provided in the terminal. Open the URL in a browser and follow the instructions to authenticate with your Google Earth Engine account.
+
+Next, you'll need to set your project ID for the Google Earth Engine Python API moving forward:
+
+Run the following command and replace ``<project_id>`` with your Google Cloud Project ID:
 
 .. code-block:: bash
 
-    ls $HOME/.config/earthengine/credentials
+    earthengine set_project <project_id>
 
-7. Review GEE Key Concepts
+8. Review GEE Key Concepts
 ==========================
 
 * `Client vs. Server <https://developers.google.com/earth-engine/client_server>`_
