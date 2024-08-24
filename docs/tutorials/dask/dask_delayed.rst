@@ -2,7 +2,7 @@
 Dask Delayed
 ************
 
-**Last Updated:** May 2022
+**Last Updated:** August 2024
 
 The ``DaskJob`` can be used with either the ``dask.delayed`` or ``dask.distributed`` APIs. The next three sections will illustrate how to use each Dask API with TethysJobs. This section will illustrate how to use the ``dask.delayed`` API with ``DaskJob`` in Tethys.
 
@@ -45,7 +45,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Dask Delayed Job'
                 },
-                href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'delayed'})
+                href=App.reverse('run_job', kwargs={'job_type': 'delayed'})
             )
 
             jobs_button = Button(
@@ -77,10 +77,10 @@ Add the ``run_job`` controller to the :file:`controller.py` module as well:
             Controller for the app home page.
             """
             # Get scheduler from dask_primary setting.
-            scheduler = app.get_scheduler(name='dask_primary')
+            scheduler = App.get_scheduler(name='dask_primary')
 
             if job_type.lower() == 'delayed':
-                from tethysapp.dask_tutorial.job_functions import delayed_job
+                from .job_functions import delayed_job
 
                 # Create dask delayed object
                 delayed = delayed_job()
@@ -94,7 +94,7 @@ Add the ``run_job`` controller to the :file:`controller.py` module as well:
                 # Execute future
                 dask.execute(delayed)
 
-            return HttpResponseRedirect(reverse('dask_tutorial:jobs_table'))
+            return HttpResponseRedirect(App.reverse('jobs_table'))
 
 .. note::
 
@@ -117,13 +117,13 @@ Add the ``app_content`` block to the :file:`home.html` so that it looks like the
 
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
-.. figure:: ../../images/tutorial/NewPostDaskDelayedHome.png
+.. figure:: ../../images/tutorial/dask/home_with_delayed_button.png
     :width: 900px
     :align: center
 
 Click on the ``Dask Delayed Job`` button to launch the new job type. It will submit the job and redirect to the jobs table page:
 
-.. figure:: ../../images/tutorial/NewPostDaskDelayedJobsTable.png
+.. figure:: ../../images/tutorial/dask/jobs_table_with_delayed.png
     :width: 900px
     :align: center
 

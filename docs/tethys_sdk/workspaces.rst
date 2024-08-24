@@ -160,10 +160,12 @@ In the rare cases where you need to use a workspace where it is not convenient o
 .. _workspace_get_app_workspace_func:
 
 .. automethod:: tethys_apps.base.paths.get_app_workspace
+    :no-index:
 
 .. _workspace_get_user_workspace_func:
 
 .. automethod:: tethys_apps.base.paths.get_user_workspace
+    :no-index:
 
 
 Working with Workspaces

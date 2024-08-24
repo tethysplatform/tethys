@@ -2,7 +2,7 @@
 Configure Map Layout Data Plotting
 **********************************
 
-**Last Updated:** May 2023
+**Last Updated:** July 2024
 
 In this tutorial you will configure data plotting for your Tethys Map Layout that will allow users to click on features on your map and plot data associated with them.
 

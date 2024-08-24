@@ -2,7 +2,7 @@
 Dask Distributed
 ****************
 
-**Last Updated:** May 2022
+**Last Updated:** August 2024
 
 This section will illustrate how to use the ``dask.distributed`` API with ``DaskJob`` in Tethys. This example also illustrates how to use a custom process results function.
 
@@ -46,7 +46,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Dask Delayed Job'
                 },
-                href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'delayed'})
+                href=App.reverse('run_job', kwargs={'job_type': 'delayed'})
             )
 
             dask_distributed_button = Button(
@@ -57,7 +57,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
                     'data-bs-placement': 'top',
                     'title': 'Dask Future Job'
                 },
-                href=reverse('dask_tutorial:run_job', kwargs={'job_type': 'distributed'})
+                href=App.reverse('run_job', kwargs={'job_type': 'distributed'})
             )
 
             jobs_button = Button(
@@ -114,7 +114,7 @@ Additionally update the ``run_job`` controller in :file:`controller.py` to look 
                 try:
                     client = scheduler.client
                 except DaskJobException:
-                    return redirect(reverse('dask_tutorial:error_message'))
+                    return App.redirect(App.reverse('error_message'))
 
                 # Create future job instance
                 future = distributed_job(client)
@@ -127,7 +127,7 @@ Additionally update the ``run_job`` controller in :file:`controller.py` to look 
                 dask.process_results_function = convert_to_dollar_sign
                 dask.execute(future)
 
-            return HttpResponseRedirect(reverse('dask_tutorial:jobs_table'))
+            return HttpResponseRedirect(App.reverse('jobs_table'))
 
 3. Setup HTML
 =============
@@ -149,13 +149,13 @@ Modify the ``app_content`` block in the :file:`home.html` so that it looks like 
 
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
-.. figure:: ../../images/tutorial/NewPostDaskDistributedHome.png
+.. figure:: ../../images/tutorial/dask/home_with_distributed_button.png
     :width: 900px
     :align: center
 
 Click on the ``Dask Distributed Job`` button to launch the new job type. It will submit the job and redirect to the jobs table page:
 
-.. figure:: ../../images/tutorial/NewPostDaskDistributedJobsTable.png
+.. figure:: ../../images/tutorial/dask/jobs_table_with_distributed.png
     :width: 900px
     :align: center
 

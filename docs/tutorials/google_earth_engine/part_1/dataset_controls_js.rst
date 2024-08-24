@@ -2,7 +2,7 @@
 Add JavaScript for Dynamic Control Behavior
 *******************************************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will add dynamic behavior to the dataset controls created in the previous step using JavaScript. The following topics will be reviewed in this tutorial:
 
@@ -10,7 +10,8 @@ In this tutorial you will add dynamic behavior to the dataset controls created i
 * JavaScript Closure Module Method
 * Using JavaScript with Tethys Gizmos
 
-.. figure:: ./resources/dataset_controls_js_solution.png
+.. figure:: ../../../images/tutorial/gee/dataset_controls_js.png
+
     :width: 800px
     :align: center
 
