@@ -4,7 +4,7 @@
 Production Installation Guide
 *****************************
 
-**Last Updated:** November 2021
+**Last Updated:** August 2024
 
 A **production installation**, sometimes called **deployment**, is an installation of Tethys Platform that is configured to for being hosted on a live server. This guide provides an explanation of the difference between Production and Development installations and provides several methods for installing Tethys Platform in production.
 
@@ -13,14 +13,14 @@ Production vs. Development
 
 Here are the primary differences between the :ref:`development installation <development_installation>` you have been using to develop your apps  and a production installation:
 
-* **Production Grade Servers**: The development server (``tethys manage start``) is not efficient nor capable of handling the traffic a production website receives, so a combination of the `NGINX <https://nginx.org/en/>`_ and `Daphne <https://github.com/django/daphne>`_ servers are used for production installations.
+* **Production Grade Servers**: The development server (``tethys manage start``) is not efficient nor capable of handling the traffic a production website receives. A combination of the either the `NGINX <https://nginx.org/en/>`_ or `Apache <https://httpd.apache.org/>`_ web server and `Daphne <https://github.com/django/daphne>`_ ASGI server are used for production installations.
 * **Database Engine**: The default database engine used in development is SQLite. SQLite may not be a good fit for use in your production site (see `Appropriate Uses For SQLite <https://www.sqlite.org/whentouse.html>`_). Consider using an alternative database backend such as PostgreSQL.
 * **Changes Are Not Automatically Loaded**: When changes are made to a production installation, such as installing new apps or changing settings, the Daphne server must be restarted manually to load them. It does not restart automatically like the development server.
 * **Debug Disabled**: `Debug <https://docs.djangoproject.com/en/5.0/ref/settings/#debug>`_ mode is turned off to prevent sensitive information from being leaked through the detailed error messages produced by debug mode.
 * **Secure Credentials**: The internet is a hostile place, so secure passwords and unique usernames are used for all admin and database accounts, instead of the default usernames and passwords used for development.
-* **Static Files Collected**: The files in the :file:`public` and :file:`static` directories of apps are collected to one location to be served more efficiently by NGINX.
+* **Static Files Collected**: The files in the :file:`public` and :file:`static` directories of apps are collected to one location to be served more efficiently by NGINX or Apache.
 * **Workspaces Collected**: The files in the app workspaces are collected to one location so they can be more easily backed up.
-* **Permissions**: NGINX must be given permission to access the static files and workspaces to be able to serve them.
+* **Permissions**: NGINX or Apache must be given permission to access the static files and workspaces to be able to serve them.
 
 Production Installation Methods
 ===============================
@@ -39,20 +39,6 @@ If you have not performed a manual installation before, we recommend going throu
     :maxdepth: 1
 
     production/manual
-
-Cloud Virtual Machine Images
-----------------------------
-
-This method involves creating a new virtual machine on a commercial cloud service using a virtual machine image that has Tethys Platform installed already and configured for production use. The advantage of this approach is that you can get a running Tethys Platform production installation up and running in only a few minutes. There are a few  configuration steps that need to be performed after installation such as changing the default passwords, but other than that it is ready for installing your apps. They primary disadvantage is that the VM images are not produced for every version of Tethys Platform, so you will need to update Tethys to get the latest version.
-
-We currently have images for the following commercial cloud providers:
-
-* :ref:`Microsoft Azure <azure_vm_overview>`
-
-.. toctree::
-    :maxdepth: 1
-
-    production/cloud
 
 
 Docker Deployment
