@@ -4,7 +4,7 @@
 Install System Dependencies
 ***************************
 
-**Last Updated:** September 2022
+**Last Updated:** August 2024
 
 This guide describes how to install the necessary system dependencies. You will need ``sudo`` or root access on the server to complete these steps.
 
@@ -62,26 +62,26 @@ PostgreSQL
 
         .. code-block:: bash
 
-            sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+            sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 
         .. code-block:: bash
 
             sudo dnf -qy module disable postgresql
-            sudo dnf -y install postgresql12 postgresql12-server
+            sudo dnf -y install postgresql16 postgresql16-server
 
         Initialize the database:
 
         .. code-block:: bash
 
             # Initialize the database
-            sudo /usr/pgsql-12/bin/postgresql-12-setup initdb
+            sudo /usr/pgsql-16/bin/postgresql-16-setup initdb
 
         Start PostgreSQL and enable it so it starts up automatically when the server restarts:
 
         .. code-block:: bash
 
-            sudo systemctl start postgresql-12
-            sudo systemctl enable postgresql-12
+            sudo systemctl start postgresql-16
+            sudo systemctl enable postgresql-16
             
 .. note::
 
@@ -100,7 +100,7 @@ PostgreSQL
 
         .. code-block:: bash
 
-            sudo systemctl status postgresql-12
+            sudo systemctl status postgresql-16
 
 .. note::
 
@@ -123,45 +123,65 @@ Set ``postgres`` Password
 
 2. On CentOS it is also necessary to enable password authentication for local connections. This is done in the :file:`pg_hba.conf` file as follows:
 
+    **Ubuntu**:
+
+    .. code-block:: bash
+
+        sudo vim /etc/postgresql/16/main/pg_hba.conf
+
     **CentOS**:
 
         .. code-block:: bash
 
-            sudo vim /var/lib/pgsql/12/data/pg_hba.conf
+            sudo vim /var/lib/pgsql/16/data/pg_hba.conf
+
+    **Both**:
 
         Change:
 
         .. code-block:: bash
+            :emphasize-lines: 2
 
             # "local" is for Unix domain socket connections only
             local   all             all                                     peer
             # IPv4 local connections:
-            host    all             all             127.0.0.1/32            ident
+            host    all             all             127.0.0.1/32            scram-sha-256
             # IPv6 local connections:
-            host    all             all             ::1/128                 ident
+            host    all             all             ::1/128                 scram-sha-256
 
         To:
 
-        .. code-block::
+        .. code-block:: bash
+            :emphasize-lines: 2
 
             # "local" is for Unix domain socket connections only
-            local   all             all                                     md5
+            local   all             all                                     scram-sha-256
             # IPv4 local connections:
-            host    all             all             127.0.0.1/32            md5
+            host    all             all             127.0.0.1/32            scram-sha-256
             # IPv6 local connections:
-            host    all             all             ::1/128                 md5
+            host    all             all             ::1/128                 scram-sha-256
 
-        Then restart PostgreSQL:
+    **Ubuntu**:
+
+    Then restart PostgreSQL:
 
         .. code-block::
 
-            sudo systemctl restart postgresql-12
+            sudo systemctl restart postgresql
+
+    **CentOS**:
+
+    Then restart PostgreSQL:
+
+        .. code-block::
+
+            sudo systemctl restart postgresql-16
 
 3. Verify that password authentication is working by opening a connection to the database using the commandline client ``psql``:
 
     .. code-block::
 
-        PGPASSWORD=<POSTGRES_PASSWORD> psql -U postgres
+        PGPASSWORD=<POSTGRES_PASSWORD> psql -U postgres -h localhost
 
     To quit ``psql`` type ``\q`` and press ``Enter``.
 
@@ -187,19 +207,33 @@ PostGIS Extension (Optional)
 
         .. code-block:: bash
 
-            sudo apt install -y postgis postgresql-12-postgis-3
+            sudo apt install -y postgis postgresql-16-postgis-3
 
     **CentOS**:
 
         .. code-block:: bash
 
-            sudo yum install -y epel-release
-            sudo dnf config-manager --set-enabled PowerTools
-            sudo yum install -y postgis30_12
+            # Install EPEL repo RPM:
+            dnf -y install epel-release
+
+            # Enable PowerTools repo (required for some of the dependencies):
+            dnf -y config-manager --set-enabled PowerTools
+
+            # you might need to do this instead for the Rockys
+            dnf config-manager --enable crb
+
+            # for Rocky 8 and above might need to do this as well
+            crb enable
+
+            # Now, you can finally install PostGIS
+            # Select the right PostGIS and PostgreSQL versions
+            dnf -y install postgis34_16
+
+            systemctl restart postgresql-16
 
     .. note::
 
-        These instructions are based on `How To Install PostGIS on Ubuntu 20.04/18.04 | Debian 10 <https://computingforgeeks.com/how-to-install-postgis-on-ubuntu-debian/>`_ and `How To Install PostGIS on CentOS 8 <https://computingforgeeks.com/how-to-install-postgis-on-centos-8-linux/>`_.
+        These instructions are based on `Users Wiki: Ubuntu Install Guide <https://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS3UbuntuPGSQLApt>`_ and `Installing on Red Hat / Centos / Scientific Linux <https://postgis.net/documentation/getting_started/install_red_hat/>`_.
 
 
 NGINX
@@ -219,8 +253,8 @@ NGINX
 
         .. code-block:: bash
 
-            sudo systemctl stop nginx  # Will manage w/ supervisor
-            sudo systemctl disable nginx  # Will manage w/ supervisor
+            sudo systemctl stop nginx
+            sudo systemctl disable nginx
 
     
     **CentOS**:
