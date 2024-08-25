@@ -121,63 +121,7 @@ Set ``postgres`` Password
 
         Replace ``<POSTGRES_PASSWORD>`` with the password you created during the :ref:`production_preparation` step.
 
-2. On CentOS it is also necessary to enable password authentication for local connections. This is done in the :file:`pg_hba.conf` file as follows:
-
-    **Ubuntu**:
-
-    .. code-block:: bash
-
-        sudo vim /etc/postgresql/16/main/pg_hba.conf
-
-    **CentOS**:
-
-        .. code-block:: bash
-
-            sudo vim /var/lib/pgsql/16/data/pg_hba.conf
-
-    **Both**:
-
-        Change:
-
-        .. code-block:: bash
-            :emphasize-lines: 2
-
-            # "local" is for Unix domain socket connections only
-            local   all             all                                     peer
-            # IPv4 local connections:
-            host    all             all             127.0.0.1/32            scram-sha-256
-            # IPv6 local connections:
-            host    all             all             ::1/128                 scram-sha-256
-
-        To:
-
-        .. code-block:: bash
-            :emphasize-lines: 2
-
-            # "local" is for Unix domain socket connections only
-            local   all             all                                     scram-sha-256
-            # IPv4 local connections:
-            host    all             all             127.0.0.1/32            scram-sha-256
-            # IPv6 local connections:
-            host    all             all             ::1/128                 scram-sha-256
-
-    **Ubuntu**:
-
-    Then restart PostgreSQL:
-
-        .. code-block::
-
-            sudo systemctl restart postgresql
-
-    **CentOS**:
-
-    Then restart PostgreSQL:
-
-        .. code-block::
-
-            sudo systemctl restart postgresql-16
-
-3. Verify that password authentication is working by opening a connection to the database using the commandline client ``psql``:
+2. Verify that password authentication is working by opening a connection to the database using the commandline client ``psql``:
 
     .. code-block::
 
