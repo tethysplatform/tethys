@@ -390,6 +390,10 @@ def controller(
             handler_type=_handler_type,
             app_workspace=app_workspace,
             user_workspace=user_workspace,
+            user_media=user_media,
+            app_media=app_media,
+            app_public=app_public,
+            app_resources=app_resources
         )
 
         if inspect.isclass(function_or_class):
@@ -637,7 +641,12 @@ def _get_url_map_kwargs_list(
     handler_type: str = None,
     app_workspace=False,
     user_workspace=False,
+    user_media=False,
+    app_media=False,
+    app_public=False,
+    app_resources=False,
 ):
+    #breakpoint()
     final_urls = []
     if url is not None:
         final_urls = url if isinstance(url, dict) else _listify(url)
@@ -666,9 +675,15 @@ def _get_url_map_kwargs_list(
                     inspect.signature(function_or_class).parameters
                 )
 
+            #breakpoint()
             for condition in [
                 app_workspace,
                 user_workspace,
+                user_media,
+                app_media,
+                app_public,
+                app_resources
+
             ]:  # note order of list is important
                 if condition:
                     arg = list(parameters.keys())[1]
@@ -709,6 +724,7 @@ def _get_url_map_kwargs_list(
 
 
 def _process_url_kwargs(controller, url_map_kwargs_list):
+    #breakpoint()
     for url_map_kwargs in url_map_kwargs_list:
         url_map_kwargs["controller"] = controller
         app_controllers_list.append(url_map_kwargs)
@@ -785,6 +801,7 @@ def register_controllers(
     for module in all_modules:
         importlib.reload(module)  # load again to register controllers
 
+    #breakpoint()
     names = dict()
     for kwargs in app_controllers_list:
         name = kwargs["name"]
@@ -814,7 +831,8 @@ def register_controllers(
                 f'The app with root_url "{root_url}" specifies an index of "{index}", '
                 f"but there are no controllers registered with that name."
             )
-
+        
+    #breakpoint()
     UrlMap = url_map_maker(root_url)
     url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
 
