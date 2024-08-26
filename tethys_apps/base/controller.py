@@ -646,7 +646,6 @@ def _get_url_map_kwargs_list(
     app_public=False,
     app_resources=False,
 ):
-    #breakpoint()
     final_urls = []
     if url is not None:
         final_urls = url if isinstance(url, dict) else _listify(url)
@@ -675,7 +674,6 @@ def _get_url_map_kwargs_list(
                     inspect.signature(function_or_class).parameters
                 )
 
-            #breakpoint()
             for condition in [
                 app_workspace,
                 user_workspace,
@@ -724,7 +722,6 @@ def _get_url_map_kwargs_list(
 
 
 def _process_url_kwargs(controller, url_map_kwargs_list):
-    #breakpoint()
     for url_map_kwargs in url_map_kwargs_list:
         url_map_kwargs["controller"] = controller
         app_controllers_list.append(url_map_kwargs)
@@ -801,7 +798,6 @@ def register_controllers(
     for module in all_modules:
         importlib.reload(module)  # load again to register controllers
 
-    #breakpoint()
     names = dict()
     for kwargs in app_controllers_list:
         name = kwargs["name"]
@@ -831,8 +827,7 @@ def register_controllers(
                 f'The app with root_url "{root_url}" specifies an index of "{index}", '
                 f"but there are no controllers registered with that name."
             )
-        
-    #breakpoint()
+
     UrlMap = url_map_maker(root_url)
     url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
 
