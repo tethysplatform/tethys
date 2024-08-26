@@ -393,7 +393,7 @@ def controller(
             user_media=user_media,
             app_media=app_media,
             app_public=app_public,
-            app_resources=app_resources
+            app_resources=app_resources,
         )
 
         if inspect.isclass(function_or_class):
@@ -680,8 +680,7 @@ def _get_url_map_kwargs_list(
                 user_media,
                 app_media,
                 app_public,
-                app_resources
-
+                app_resources,
             ]:  # note order of list is important
                 if condition:
                     arg = list(parameters.keys())[1]
