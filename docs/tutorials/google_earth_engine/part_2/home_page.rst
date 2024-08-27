@@ -265,7 +265,7 @@ In this step we'll add a the title and some filler content to the About panel of
 6. Create Resources Panel Content
 =================================
 
-In this step we'll add the content to the Resources panel of the home page. The Resouces panel needs to contain a list of links to external resources related to our app.
+In this step we'll add the content to the Resources panel of the home page. The Resources panel needs to contain a list of links to external resources related to our app.
 
 1. Add the title, "Resources", to the ``<div>`` element with id ``resources-container``. Again, use the ``info-title`` class on the title element.
 

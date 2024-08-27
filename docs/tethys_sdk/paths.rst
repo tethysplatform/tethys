@@ -60,7 +60,7 @@ The method for obtaining Tethys paths in controllers is to use the following arg
 * ``app_media``
 * ``user_media``
 * ``app_public``
-* ``app_resouces``
+* ``app_resources``
 
 When you specify the argument in the ``controller`` decorator you must also specify the argument in the controller function itself as this is how the path will be passed to the controller function:
 
