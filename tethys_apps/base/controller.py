@@ -390,6 +390,10 @@ def controller(
             handler_type=_handler_type,
             app_workspace=app_workspace,
             user_workspace=user_workspace,
+            user_media=user_media,
+            app_media=app_media,
+            app_public=app_public,
+            app_resources=app_resources,
         )
 
         if inspect.isclass(function_or_class):
@@ -637,6 +641,10 @@ def _get_url_map_kwargs_list(
     handler_type: str = None,
     app_workspace=False,
     user_workspace=False,
+    user_media=False,
+    app_media=False,
+    app_public=False,
+    app_resources=False,
 ):
     final_urls = []
     if url is not None:
@@ -669,6 +677,10 @@ def _get_url_map_kwargs_list(
             for condition in [
                 app_workspace,
                 user_workspace,
+                user_media,
+                app_media,
+                app_public,
+                app_resources,
             ]:  # note order of list is important
                 if condition:
                     arg = list(parameters.keys())[1]
