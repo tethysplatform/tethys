@@ -353,6 +353,7 @@ def create_tethys_db(
         password: password for `username` account
         superuser_name: superuser account name for Tethys Portal database
         superuser_password: password for `superuser_name` account
+        exit_creation_on_error: If True then exit if either child process returns and error code
         **kwargs: processed key word arguments from commandline
 
     Returns: error code
