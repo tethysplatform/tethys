@@ -208,6 +208,7 @@ class TestCommandTests(unittest.TestCase):
         kwargs.pop("db_name")
         kwargs["username"] = self.options["superuser_name"]
         kwargs["password"] = self.options["superuser_password"]
+        kwargs["exit_on_error"] = False
         self.assertEqual(call_args[0], mock.call(is_superuser=True, **kwargs))
 
     def test_db_command_create_db_user(self):
@@ -262,8 +263,8 @@ class TestCommandTests(unittest.TestCase):
         )
         self.mock_run_process.assert_called_with(
             args,
-            'Creating Tethys database user "foo"...',
-            'Failed to create default database for database user "foo"',
+            'Creating Tethys database table "db_name" for user "foo"...',
+            'Failed to create Tethys database table "db_name" for user "foo"',
             **kwargs,
         )
 

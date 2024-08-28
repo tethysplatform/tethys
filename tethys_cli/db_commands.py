@@ -272,9 +272,6 @@ def create_db_user(
     Returns: error code
 
     """
-    msg = f'Creating Tethys database user "{username}"...'
-    err_msg = f'Failed to create Tethys database user for "{username}"'
-
     db_name = db_name or username
 
     if is_superuser:
@@ -306,7 +303,10 @@ def create_db_user(
         "--command",
         create_user_command,
     ]
+    msg = f'Creating Tethys database user "{username}"...'
+    err_msg = f'Failed to create Tethys database user "{username}"'
     result_1 = _run_process(args, msg, err_msg, **kwargs)
+
     args = [
         "createdb",
         "-h",
@@ -323,8 +323,12 @@ def create_db_user(
         username,
         db_name,
     ]
-    err_msg = f'Failed to create default database for database user "{username}"'
+    msg = f'Creating Tethys database table "{db_name}" for user "{username}"...'
+    err_msg = (
+        f'Failed to create Tethys database table "{db_name}" for user "{username}"'
+    )
     result_2 = _run_process(args, msg, err_msg, **kwargs)
+
     return result_1 or result_2
 
 
@@ -362,6 +366,7 @@ def create_tethys_db(
             username=superuser_name,
             password=superuser_password,
             is_superuser=True,
+            exit_on_error=False,
             **kwargs,
         )
     # Create Tethys db user next
