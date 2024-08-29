@@ -856,8 +856,8 @@ def install_command(args):
             for post in install_options["post"]:
                 command = file_path.resolve().parent / post
                 # Attempting to run processes.
-                if command.name.endswith('.py'):
-                    command = f'{sys.executable} {command}'
+                if command.name.endswith(".py"):
+                    command = f"{sys.executable} {command}"
                 process = Popen(str(command), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))

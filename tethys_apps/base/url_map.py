@@ -28,7 +28,7 @@ class UrlMapBase:
         handler=None,
         handler_type=None,
         title=None,
-        index=None
+        index=None,
     ):
         """
         Constructor

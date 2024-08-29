@@ -805,7 +805,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         result = get_destination_path(mock_args)
         mock_isdir.assert_called()
         mock_check_file.assert_called_once()
-        self.assertEqual(result, os.path.join(TETHYS_SRC, "tethys_portal", "static", "package.json"))
+        self.assertEqual(
+            result, os.path.join(TETHYS_SRC, "tethys_portal", "static", "package.json")
+        )
 
     @mock.patch("tethys_cli.gen_commands.GEN_COMMANDS")
     @mock.patch("tethys_cli.gen_commands.write_path_to_console")

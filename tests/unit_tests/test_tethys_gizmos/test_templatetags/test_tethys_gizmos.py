@@ -243,7 +243,9 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
         result.render(context)
 
         # Check Result
-        mock_gt.assert_called_with(os.path.join("tethys_gizmos", "templates", "gizmos", "test_gizmo.html"))
+        mock_gt.assert_called_with(
+            os.path.join("tethys_gizmos", "templates", "gizmos", "test_gizmo.html")
+        )
 
         # We need to delete this extension path map to avoid template not exist error on the
         # previous test

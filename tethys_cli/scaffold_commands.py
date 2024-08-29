@@ -34,7 +34,11 @@ def add_scaffold_parser(subparsers):
         "letters, numbers, and underscores allowed.",
     )
     scaffold_parser.add_argument(
-        "-t", "--template", dest="template", help="Name of template to use.", choices=os.listdir(APP_PATH)
+        "-t",
+        "--template",
+        dest="template",
+        help="Name of template to use.",
+        choices=os.listdir(APP_PATH),
     )
     scaffold_parser.add_argument(
         "-e", "--extension", dest="extension", action="store_true"

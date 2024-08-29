@@ -4,7 +4,7 @@ from tethys_apps.utilities import get_active_app
 from tethys_components.utils import get_layout_component
 from tethys_portal.optional_dependencies import has_module
 
-if has_module('reactpy'):
+if has_module("reactpy"):
     from reactpy import component
 else:
     component = lambda x: x  # noqa: E731
@@ -17,24 +17,24 @@ def global_page_controller(
     component_source_code,
     title=None,
     custom_css=None,
-    custom_js=None
+    custom_js=None,
 ):
     app = get_active_app(request=request, get_class=True)
     layout_func = get_layout_component(app, layout)
-    ComponentLibrary.refresh(new_identifier=component_func.__name__.replace('_', '-'))
+    ComponentLibrary.refresh(new_identifier=component_func.__name__.replace("_", "-"))
     ComponentLibrary.load_dependencies_from_source_code(component_source_code)
 
     context = {
-        'app': app,
-        'layout_func': lambda: layout_func,
-        'component_func': lambda: component_func,
-        'reactjs_version': ComponentLibrary.REACTJS_VERSION,
-        'title': title,
-        'custom_css': custom_css or [],
-        'custom_js': custom_js or [],
+        "app": app,
+        "layout_func": lambda: layout_func,
+        "component_func": lambda: component_func,
+        "reactjs_version": ComponentLibrary.REACTJS_VERSION,
+        "title": title,
+        "custom_css": custom_css or [],
+        "custom_js": custom_js or [],
     }
 
-    return render(request, 'tethys_apps/reactpy_base.html', context)
+    return render(request, "tethys_apps/reactpy_base.html", context)
 
 
 @component
@@ -53,12 +53,7 @@ def page_component_wrapper(app, user, layout, component):
     """
     if layout is not None:
         return layout(
-            {
-                'app': app,
-                'user': user,
-                'nav-links': app.navigation_links
-            },
-            component()
+            {"app": app, "user": user, "nav-links": app.navigation_links}, component()
         )
     else:
         return component()

@@ -37,7 +37,9 @@ from ..utilities import get_all_submodules, update_decorated_websocket_consumer_
 from typing import Union, Any
 from collections.abc import Callable
 
-global_page_controller = optional_import("global_page_controller", from_module="tethys_apps.base.page_handler")
+global_page_controller = optional_import(
+    "global_page_controller", from_module="tethys_apps.base.page_handler"
+)
 
 app_controllers_list = list()
 
@@ -472,7 +474,7 @@ def page(
     title=None,
     index=None,
     custom_css=None,
-    custom_js=None
+    custom_js=None,
 ) -> Callable:
     """
     Decorator to register a function as a Page in the ReactPy paradigm
@@ -510,7 +512,7 @@ def page(
             protocol="http",
             regex=regex,
             title=title,
-            index=index
+            index=index,
         )
 
         def controller_wrapper(request):
@@ -540,9 +542,9 @@ def page(
                 layout=layout,
                 component_func=component_function,
                 component_source_code=component_source_code,
-                title=url_map_kwargs_list[0]['title'],
+                title=url_map_kwargs_list[0]["title"],
                 custom_css=custom_css,
-                custom_js=custom_js
+                custom_js=custom_js,
             )
 
         _process_url_kwargs(controller_wrapper, url_map_kwargs_list)
@@ -817,7 +819,7 @@ def _get_url_map_kwargs_list(
         }
 
     if not title:
-        title = url_name.replace('_', ' ').title()
+        title = url_name.replace("_", " ").title()
 
     return [
         dict(
@@ -829,7 +831,7 @@ def _get_url_map_kwargs_list(
             handler=handler,
             handler_type=handler_type,
             title=title,
-            index=index
+            index=index,
         )
         for url_name, final_url in final_urls.items()
     ]

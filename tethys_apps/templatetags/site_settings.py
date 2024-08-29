@@ -22,7 +22,11 @@ def load_custom_css(var):
     ) or static_finder.find(var)
 
     if is_file:
-        return '<link href="' + os.path.join(os.sep, "static", var) + '" rel="stylesheet" />'
+        return (
+            '<link href="'
+            + os.path.join(os.sep, "static", var)
+            + '" rel="stylesheet" />'
+        )
 
     else:
         for path in settings.STATICFILES_DIRS:

@@ -27,7 +27,16 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if os.path.join(os.sep, "tethysapp", "test_app", "templates") in r:
                 test_app = True
-            if os.path.join(os.sep, "tethysext-test_extension", "tethysext", "test_extension", "templates") in r:
+            if (
+                os.path.join(
+                    os.sep,
+                    "tethysext-test_extension",
+                    "tethysext",
+                    "test_extension",
+                    "templates",
+                )
+                in r
+            ):
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -45,11 +54,20 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         test_ext = False
 
         for r in result:
-            if "test_app" in r and os.path.join(os.sep, "tethysapp", "test_app", "templates") in r[1]:
+            if (
+                "test_app" in r
+                and os.path.join(os.sep, "tethysapp", "test_app", "templates") in r[1]
+            ):
                 test_app = True
             if (
                 "test_extension" in r
-                and os.path.join(os.sep, "tethysext-test_extension", "tethysext", "test_extension", "templates")
+                and os.path.join(
+                    os.sep,
+                    "tethysext-test_extension",
+                    "tethysext",
+                    "test_extension",
+                    "templates",
+                )
                 in r[1]
             ):
                 test_ext = True
@@ -76,7 +94,16 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if os.path.join(os.sep, "tethysapp", "test_app", "templates") in r:
                 test_app = True
-            if os.path.join(os.sep, "tethysext-test_extension", "tethysext", "test_extension", "templates") in r:
+            if (
+                os.path.join(
+                    os.sep,
+                    "tethysext-test_extension",
+                    "tethysext",
+                    "test_extension",
+                    "templates",
+                )
+                in r
+            ):
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -118,7 +145,16 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if os.path.join(os.sep, "tethysapp", "test_app", "public") in r:
                 test_app = True
-            if os.path.join(os.sep, "tethysext-test_extension", "tethysext", "test_extension", "public") in r:
+            if (
+                os.path.join(
+                    os.sep,
+                    "tethysext-test_extension",
+                    "tethysext",
+                    "test_extension",
+                    "public",
+                )
+                in r
+            ):
                 test_ext = True
 
         self.assertTrue(test_app)

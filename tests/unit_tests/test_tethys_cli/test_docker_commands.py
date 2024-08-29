@@ -363,7 +363,9 @@ class TestDockerCommands(unittest.TestCase):
             "c",  # Would you like to specify number of Processors (c) OR set limits (e)
             "y",  # Bind the GeoServer data directory to the host?
         ]
-        mock_dir_input.side_effect = [gettempdir()]  # Specify location to bind data directory
+        mock_dir_input.side_effect = [
+            gettempdir()
+        ]  # Specify location to bind data directory
 
         expected_options = dict(
             environment=dict(
@@ -633,7 +635,9 @@ class TestDockerCommands(unittest.TestCase):
             "y",  # Bind the THREDDS data directory to the host?
         ]
 
-        mock_dir_input.side_effect = [gettempdir()]  # Specify location to bind data directory
+        mock_dir_input.side_effect = [
+            gettempdir()
+        ]  # Specify location to bind data directory
 
         expected_options = dict(
             environment=dict(
@@ -1244,7 +1248,7 @@ class TestDockerCommands(unittest.TestCase):
         )
         self.assertEqual(c, valid_path)
 
-        mock_pretty_output.assert_called_with(f'OSError(): {invalid_path}')
+        mock_pretty_output.assert_called_with(f"OSError(): {invalid_path}")
         input_call_args = self.mock_input.call_args_list
         self.assertEqual(2, len(input_call_args))
         self.assertEqual(f"prompt [{gettempdir()}]: ", input_call_args[0][0][0])

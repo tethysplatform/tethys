@@ -65,7 +65,10 @@ class TestTethysTemplateLoader(unittest.TestCase):
         for origin in tethys_template_loader.get_template_sources(
             expected_template_name
         ):
-            self.assertEqual(os.path.join(os.path.abspath(os.sep), "foo", "template1", "foo"), origin.name)
+            self.assertEqual(
+                os.path.join(os.path.abspath(os.sep), "foo", "template1", "foo"),
+                origin.name,
+            )
             self.assertEqual("foo", origin.template_name)
             self.assertTrue(isinstance(origin.loader, TethysTemplateLoader))
 
@@ -76,13 +79,21 @@ class TestTethysTemplateLoader(unittest.TestCase):
         from django.core.exceptions import SuspiciousFileOperation
 
         tethys_template_loader = TethysTemplateLoader(self.mock_engine)
-        mock_gdt.return_value = [os.path.join("foo", "template1"), os.path.join("foo", "template2")]
-        mock_safe_join.side_effect = [SuspiciousFileOperation, os.path.join(os.sep, "foo", "template2", "foo")]
+        mock_gdt.return_value = [
+            os.path.join("foo", "template1"),
+            os.path.join("foo", "template2"),
+        ]
+        mock_safe_join.side_effect = [
+            SuspiciousFileOperation,
+            os.path.join(os.sep, "foo", "template2", "foo"),
+        ]
         expected_template_name = "foo"
 
         for origin in tethys_template_loader.get_template_sources(
             expected_template_name
         ):
-            self.assertEqual(os.path.join(os.sep, "foo", "template2", "foo"), origin.name)
+            self.assertEqual(
+                os.path.join(os.sep, "foo", "template2", "foo"), origin.name
+            )
             self.assertEqual("foo", origin.template_name)
             self.assertTrue(isinstance(origin.loader, TethysTemplateLoader))

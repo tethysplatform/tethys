@@ -1547,15 +1547,15 @@ class TestTethysAppBase(unittest.TestCase):
 
     def test_navigation_links_not_auto(self):
         app = tethys_app_base.TethysAppBase()
-        app.nav_links = ['test', '1', '2', '3']
+        app.nav_links = ["test", "1", "2", "3"]
         links = app.navigation_links
         self.assertListEqual(links, app.nav_links)
 
     def test_navigation_links_auto_excluded_page(self):
         app = tethys_app_base.TethysAppBase()
-        app.nav_links = 'auto'
-        app.index = 'home'
-        app.root_url = 'test-app'
+        app.nav_links = "auto"
+        app.index = "home"
+        app.root_url = "test-app"
 
         app._registered_url_maps = [
             Namespace(name="exclude_page", title="Exclude Page", index=-1),
@@ -1567,22 +1567,13 @@ class TestTethysAppBase(unittest.TestCase):
 
         links = app.navigation_links
 
-        self.assertListEqual(links, [
-            {
-                'title': 'Home',
-                'href': '/apps/test-app/'
-            },
-            {
-                'title': 'Second Page',
-                'href': '/apps/test-app/second-page/'
-            },
-            {
-                'title': 'Third Page',
-                'href': '/apps/test-app/third-page/'
-            },
-            {
-                'title': 'Last Page',
-                'href': '/apps/test-app/last-page/'
-            },
-        ])
+        self.assertListEqual(
+            links,
+            [
+                {"title": "Home", "href": "/apps/test-app/"},
+                {"title": "Second Page", "href": "/apps/test-app/second-page/"},
+                {"title": "Third Page", "href": "/apps/test-app/third-page/"},
+                {"title": "Last Page", "href": "/apps/test-app/last-page/"},
+            ],
+        )
         self.assertEqual(links, app.nav_links)

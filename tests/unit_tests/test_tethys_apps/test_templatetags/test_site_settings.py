@@ -17,8 +17,13 @@ class TestSiteSettings(unittest.TestCase):
         mock_isfile.return_value = True
         mock_settings.STATIC_ROOT = "test_base_path"
 
-        ret = ss.load_custom_css(os.path.join(os.sep, "test.css"))  # test slash stripping
-        self.assertEqual(ret, f'<link href="{os.path.join(os.sep, "static", "test.css")}" rel="stylesheet" />')
+        ret = ss.load_custom_css(
+            os.path.join(os.sep, "test.css")
+        )  # test slash stripping
+        self.assertEqual(
+            ret,
+            f'<link href="{os.path.join(os.sep, "static", "test.css")}" rel="stylesheet" />',
+        )
 
     @mock.patch("tethys_apps.templatetags.site_settings.settings")
     @mock.patch("tethys_apps.templatetags.site_settings.os.path.isfile")
@@ -28,7 +33,10 @@ class TestSiteSettings(unittest.TestCase):
         mock_settings.STATICFILES_DIRS = ["test_base_path2"]
 
         ret = ss.load_custom_css("test.css")
-        self.assertEqual(ret, f'<link href="{os.path.join(os.sep, "static", "test.css")}" rel="stylesheet" />')
+        self.assertEqual(
+            ret,
+            f'<link href="{os.path.join(os.sep, "static", "test.css")}" rel="stylesheet" />',
+        )
 
     @mock.patch("tethys_apps.templatetags.site_settings.settings")
     @mock.patch("tethys_apps.templatetags.site_settings.os.path.isfile")

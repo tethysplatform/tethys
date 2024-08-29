@@ -1851,7 +1851,8 @@ class TestInstallCommands(TestCase):
 
         self.assertEqual(1, len(mock_download.mock_calls))
         self.assertEqual(
-            {"cwd": os.path.join("tethysapp", "test_app", "public")}, mock_download.mock_calls[0][2]
+            {"cwd": os.path.join("tethysapp", "test_app", "public")},
+            mock_download.mock_calls[0][2],
         )
 
         mock_exit.assert_called_with(0)

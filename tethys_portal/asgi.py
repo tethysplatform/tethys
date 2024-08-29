@@ -13,11 +13,12 @@ from tethys_portal.optional_dependencies import has_module
 
 def build_application(asgi_app):
     from tethys_apps.urls import app_websocket_urls, http_handler_patterns
+
     if has_module("reactpy_django"):
         from reactpy_django import REACTPY_WEBSOCKET_ROUTE
         from reactpy_django.utils import register_component
 
-        register_component('tethys_apps.base.page_handler.page_component_wrapper')
+        register_component("tethys_apps.base.page_handler.page_component_wrapper")
         app_websocket_urls.append(REACTPY_WEBSOCKET_ROUTE)
 
     application = ProtocolTypeRouter(

@@ -164,7 +164,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -206,15 +210,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
@@ -305,7 +309,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -347,15 +355,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
@@ -405,7 +413,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -452,15 +464,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
@@ -551,7 +563,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -598,15 +614,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
@@ -659,7 +675,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -715,15 +735,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.proper_name_validator")
@@ -870,7 +890,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -934,15 +958,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
@@ -994,7 +1018,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_os_walk.return_value = [
             (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs_tmpl")),
+            (
+                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
+                (),
+                ("spam", "eggs_tmpl"),
+            ),
         ]
 
         mock_makedirs.return_value = True
@@ -1044,15 +1072,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
-            mock_log_call_args[6][0][0]
+            mock_log_call_args[6][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
-            mock_log_call_args[7][0][0]
+            mock_log_call_args[7][0][0],
         )
         self.assertEqual(
             f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0]
+            mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")

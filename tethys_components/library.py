@@ -7,12 +7,13 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from pathlib import Path
 from jinja2 import Template
 from re import findall
 import logging
 
-logging.getLogger('reactpy.web.module').setLevel(logging.WARN)
+logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
@@ -21,36 +22,41 @@ class ComponentLibrary:
     """
     Class for providing access to registered ReactPy/ReactJS components
     """
-    EXPORT_NAME = 'main'
-    REACTJS_VERSION = '18.2.0'
+
+    EXPORT_NAME = "main"
+    REACTJS_VERSION = "18.2.0"
     REACTJS_DEPENDENCIES = [
-        f'react@{REACTJS_VERSION}',
-        f'react-dom@{REACTJS_VERSION}',
-        f'react-is@{REACTJS_VERSION}',
-        '@restart/ui@1.6.8'
+        f"react@{REACTJS_VERSION}",
+        f"react-dom@{REACTJS_VERSION}",
+        f"react-is@{REACTJS_VERSION}",
+        "@restart/ui@1.6.8",
     ]
     PACKAGE_BY_ACCESSOR = {
-        'bs': 'react-bootstrap@2.10.2',
-        'pm': 'pigeon-maps@0.21.6',
-        'rc': 'recharts@2.12.7',
-        'ag': 'ag-grid-react@32.0.2',
-        'rp': 'react-player@2.16.0',
+        "bs": "react-bootstrap@2.10.2",
+        "pm": "pigeon-maps@0.21.6",
+        "rc": "recharts@2.12.7",
+        "ag": "ag-grid-react@32.0.2",
+        "rp": "react-player@2.16.0",
         # 'mui': '@mui/material@5.16.7',  # This should work once esm releases their next version
-        'chakra': '@chakra-ui/react@2.8.2',
-        'icons': 'react-bootstrap-icons@1.11.4',
-        'html': None,  # Managed internally
-        'tethys': None,  # Managed internally,
-        'hooks': None,  # Managed internally
+        "chakra": "@chakra-ui/react@2.8.2",
+        "icons": "react-bootstrap-icons@1.11.4",
+        "html": None,  # Managed internally
+        "tethys": None,  # Managed internally,
+        "hooks": None,  # Managed internally
     }
-    DEFAULTS = ['rp']
+    DEFAULTS = ["rp"]
     STYLE_DEPS = {
-        'ag': [
-            'https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-grid.css',
-            'https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-theme-material.css'
+        "ag": [
+            "https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-grid.css",
+            "https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-theme-material.css",
         ],
-        'bs': ['https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css']
+        "bs": [
+            "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        ],
     }
-    INTERNALLY_MANAGED_PACKAGES = [key for key, val in PACKAGE_BY_ACCESSOR.items() if val is None]
+    INTERNALLY_MANAGED_PACKAGES = [
+        key for key, val in PACKAGE_BY_ACCESSOR.items() if val is None
+    ]
     ACCESOR_BY_PACKAGE = {val: key for key, val in PACKAGE_BY_ACCESSOR.items()}
     _ALLOW_LOADING = False
     components_by_package = {}
@@ -71,18 +77,23 @@ class ComponentLibrary:
         """
         if attr in self.PACKAGE_BY_ACCESSOR:
             # First time accessing "X" library via lib.X (e.g. lib.bs)
-            if attr == 'tethys':
+            if attr == "tethys":
                 from tethys_components import custom
+
                 lib = custom
-            elif attr == 'html':
+            elif attr == "html":
                 from reactpy import html
+
                 lib = html
-            elif attr == 'hooks':
+            elif attr == "hooks":
                 from tethys_components import hooks
+
                 lib = hooks
             else:
                 if attr not in self.package_handles:
-                    self.package_handles[attr] = ComponentLibrary(self.package, parent_package=attr)
+                    self.package_handles[attr] = ComponentLibrary(
+                        self.package, parent_package=attr
+                    )
                     if attr in self.STYLE_DEPS:
                         self.styles.extend(self.STYLE_DEPS[attr])
                 lib = self.package_handles[attr]
@@ -97,10 +108,11 @@ class ComponentLibrary:
                     self.defaults.append(component)
                 self.components_by_package[package_name].append(component)
                 from reactpy import web
+
                 module = web.module_from_string(
                     name=self.EXPORT_NAME,
                     content=self.get_reactjs_module_wrapper_js(),
-                    resolve_exports=False
+                    resolve_exports=False,
                 )
                 setattr(self, attr, web.export(module, component))
             return getattr(self, attr)
@@ -142,16 +154,22 @@ class ComponentLibrary:
         as documented here:
         https://reactpy.dev/docs/guides/escape-hatches/javascript-components.html#custom-javascript-components
         """
-        template_fpath = TETHYS_COMPONENTS_ROOT_DPATH / 'resources' / 'reactjs_module_wrapper_template.js'
+        template_fpath = (
+            TETHYS_COMPONENTS_ROOT_DPATH
+            / "resources"
+            / "reactjs_module_wrapper_template.js"
+        )
         with open(template_fpath) as f:
             template = Template(f.read())
 
-        content = template.render({
-            'components_by_package': cls.components_by_package,
-            'dependencies': cls.REACTJS_DEPENDENCIES,
-            'named_defaults': cls.defaults,
-            'style_deps': cls.styles
-        })
+        content = template.render(
+            {
+                "components_by_package": cls.components_by_package,
+                "dependencies": cls.REACTJS_DEPENDENCIES,
+                "named_defaults": cls.defaults,
+                "style_deps": cls.styles,
+            }
+        )
 
         return content
 
@@ -198,7 +216,9 @@ class ComponentLibrary:
         """
         if accessor in cls.PACKAGE_BY_ACCESSOR:
             if cls.PACKAGE_BY_ACCESSOR[accessor] != package:
-                raise ValueError(f"Accessor {accessor} already exists on the component library. Please choose a new accessor.")
+                raise ValueError(
+                    f"Accessor {accessor} already exists on the component library. Please choose a new accessor."
+                )
             else:
                 return
         cls.PACKAGE_BY_ACCESSOR[accessor] = package
@@ -230,9 +250,9 @@ class ComponentLibrary:
             source_code(str): The string representation of the python code to be analyzed for
                 calls to the component library (i.e. "lib.X.Y")
         """
-        matches = findall('lib\\.([^\\(]*)\\(', source_code)
+        matches = findall("lib\\.([^\\(]*)\\(", source_code)
         for match in matches:
-            package_name, component_name = match.split('.')
+            package_name, component_name = match.split(".")
             if package_name in self.INTERNALLY_MANAGED_PACKAGES:
                 continue
             package = getattr(self, package_name)

@@ -236,7 +236,7 @@ default_installed_apps = [
     "tethys_sdk",
     "tethys_services",
     "tethys_quotas",
-    "guardian"
+    "guardian",
 ]
 
 for module in [
