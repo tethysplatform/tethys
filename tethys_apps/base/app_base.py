@@ -620,12 +620,15 @@ class TethysAppBase(TethysBase):
                 self.registered_url_maps,
                 key=lambda x: x.index if x.index is not None else 999,
             ):
+                href = f"/apps/{self.root_url}/"
+                if url_map.name != self.index:
+                    href += url_map.name.replace("_", "-") + "/"
                 if url_map.index == -1:
                     continue  # Do not render
                 nav_links.append(
                     {
                         "title": url_map.title,
-                        "href": f'/apps/{self.root_url}/{(url_map.name.replace('_', '-') + '/') if url_map.name != self.index else ""}',
+                        "href": href,
                     }
                 )
             self.nav_links = nav_links  # Caches results of "auto"
