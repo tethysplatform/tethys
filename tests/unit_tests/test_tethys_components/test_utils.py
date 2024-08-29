@@ -14,7 +14,8 @@ TEST_APP_DIR = (
 class TestComponentUtils(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.loop = asyncio.get_event_loop()
+        cls.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(cls.loop)
         cls.user = User.objects.create_user(
             username="john", email="john@gmail.com", password="pass"
         )
