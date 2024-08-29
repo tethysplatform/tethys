@@ -34,14 +34,15 @@ class TestComponentUtils(TestCase):
         workspace = self.run_coroutine(utils.get_workspace, "test_app", user=None)
         self.assertIsInstance(workspace, TethysWorkspace)
         self.assertEqual(
-            workspace.path, str(TEST_APP_DIR / "workspaces" / "app_workspace").lower()
+            workspace.path.lower(),
+            str(TEST_APP_DIR / "workspaces" / "app_workspace").lower(),
         )
 
     def test_get_workspace_for_user(self):
         workspace = self.run_coroutine(utils.get_workspace, "test_app", user=self.user)
         self.assertIsInstance(workspace, TethysWorkspace)
         self.assertEqual(
-            workspace.path,
+            workspace.path.lower(),
             str(TEST_APP_DIR / "workspaces" / "user_workspaces" / "john").lower(),
         )
 
