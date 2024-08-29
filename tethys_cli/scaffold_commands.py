@@ -442,7 +442,7 @@ def scaffold_command(args):
                 shutil.copy(template_file_path, project_file_path)
 
             write_pretty_output('Created: "{}"'.format(project_file_path), FG_WHITE)
-    
+
     write_pretty_output(
         'Successfully scaffolded new project "{}"'.format(project_name), FG_WHITE
     )

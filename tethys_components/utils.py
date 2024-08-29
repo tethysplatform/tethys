@@ -2,6 +2,7 @@ import inspect
 import os
 from channels.db import database_sync_to_async
 
+
 async def get_workspace(app_package, user):
     from tethys_apps.harvester import SingletonHarvester
     for app_s in SingletonHarvester().apps:
@@ -12,6 +13,7 @@ async def get_workspace(app_package, user):
                 workspace = await database_sync_to_async(app_s.get_app_workspace)()
             return workspace
 
+
 def use_workspace(user=None):
     from reactpy_django.hooks import use_query
     calling_fpath = inspect.stack()[1][0].f_code.co_filename
@@ -21,10 +23,11 @@ def use_workspace(user=None):
 
     return workspace_query.data
 
-def delayed_execute(seconds, callable, args=[]):
+
+def delayed_execute(seconds, callable, args=None):
     from threading import Timer
-    
-    t = Timer(seconds, callable, args)
+
+    t = Timer(seconds, callable, args or [])
     t.start()
 
 
@@ -41,6 +44,7 @@ class Props(dict):
                 new_kwargs[k] = v
             setattr(self, k, v)
         super(Props, self).__init__(**new_kwargs)
+
 
 def get_layout_component(app, layout):
     if callable(layout) or layout is None:

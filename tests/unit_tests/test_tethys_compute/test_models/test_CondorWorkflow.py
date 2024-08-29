@@ -177,9 +177,9 @@ class CondorWorkflowTest(TethysTestCase):
                 "error": "test_name.dag.lib.err",
             },
             "test_job1": {
-                "log": "test_job1/logs/*.log",
-                "error": "test_job1/logs/*.err",
-                "output": "test_job1/logs/*.out",
+                "log": os.path.join("test_job1", "logs", "*.log"),
+                "error": os.path.join("test_job1", "logs", "*.err"),
+                "output": os.path.join("test_job1", "logs", "*.out"),
             },
         }
         # Execute

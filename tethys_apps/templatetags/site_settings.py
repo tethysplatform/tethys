@@ -14,15 +14,15 @@ register = template.Library()
 @register.filter
 @stringfilter
 def load_custom_css(var):
-    if var.startswith("/"):
-        var = var.lstrip("/")
+    if var.startswith(os.sep):
+        var = var.lstrip(os.sep)
 
     is_file = os.path.isfile(
         os.path.join(settings.STATIC_ROOT, var)
     ) or static_finder.find(var)
 
     if is_file:
-        return '<link href="' + os.path.join("/static", var) + '" rel="stylesheet" />'
+        return '<link href="' + os.path.join(os.sep, "static", var) + '" rel="stylesheet" />'
 
     else:
         for path in settings.STATICFILES_DIRS:
@@ -30,7 +30,7 @@ def load_custom_css(var):
             if is_file:
                 return (
                     '<link href="'
-                    + os.path.join("/static", var)
+                    + os.path.join(os.sep, "static", var)
                     + '" rel="stylesheet" />'
                 )
 

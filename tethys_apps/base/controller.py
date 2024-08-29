@@ -444,6 +444,7 @@ def controller(
 
     return wrapped if function_or_class is None else wrapped(function_or_class)
 
+
 def page(
     component_function: Callable = None,
     /,
@@ -470,8 +471,8 @@ def page(
     layout="default",
     title=None,
     index=None,
-    custom_css=[],
-    custom_js=[]
+    custom_css=None,
+    custom_js=None
 ) -> Callable:
     """
     Decorator to register a function as a Page in the ReactPy paradigm
@@ -535,12 +536,12 @@ def page(
                     redirect_field_name=redirect_field_name, login_url=login_url
                 )(controller)
             return controller(
-                request, 
-                layout=layout, 
-                component_func=component_function, 
-                component_source_code=component_source_code, 
-                title=url_map_kwargs_list[0]['title'], 
-                custom_css=custom_css, 
+                request,
+                layout=layout,
+                component_func=component_function,
+                component_source_code=component_source_code,
+                title=url_map_kwargs_list[0]['title'],
+                custom_css=custom_css,
                 custom_js=custom_js
             )
 
@@ -548,6 +549,7 @@ def page(
         return component_function
 
     return wrapped if component_function is None else wrapped(component_function)
+
 
 controller_decorator = controller
 
@@ -734,6 +736,7 @@ def handler(
 
     return wrapped if function is None else wrapped(function)
 
+
 def _get_url_map_kwargs_list(
     function_or_class: Union[
         Callable[[HttpRequest, ...], Any], TethysController
@@ -812,7 +815,7 @@ def _get_url_map_kwargs_list(
             f"{url_name}_{i}" if i else url_name: final_url
             for i, final_url in enumerate(final_urls)
         }
-    
+
     if not title:
         title = url_name.replace('_', ' ').title()
 

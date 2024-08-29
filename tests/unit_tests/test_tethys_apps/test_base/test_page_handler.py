@@ -4,6 +4,7 @@ from importlib import reload
 from tethys_apps.base import page_handler
 import tethys_apps.base.controller as tethys_controller
 
+
 class TestPageHandler(TestCase):
     @mock.patch("tethys_apps.base.page_handler.render")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibrary")
@@ -28,7 +29,7 @@ class TestPageHandler(TestCase):
 
         # EXECUTE FUNCTION
         response = page_handler.global_page_controller(
-            request=request, 
+            request=request,
             layout=layout,
             component_func=component_func,
             component_source_code=component_source_code,
@@ -55,7 +56,7 @@ class TestPageHandler(TestCase):
         self.assertEqual(render_context['custom_css'], custom_css)
         self.assertEqual(render_context['custom_js'], custom_js)
         self.assertEqual(response, expected_return_value)
-    
+
     def test_has_reactpy(self):
         mock_has_module = mock.patch('tethys_portal.optional_dependencies.has_module')
         mock_has_module.return_value = True
@@ -81,9 +82,9 @@ class TestPageHandler(TestCase):
         component = mock.MagicMock()
         component_return_val = "rendered_component"
         component.return_value = component_return_val
-        
+
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
-        
+
         self.assertEqual(return_value, component_return_val)
 
     def test_page_component_wrapper__layout_not_none(
@@ -99,9 +100,9 @@ class TestPageHandler(TestCase):
         component = mock.MagicMock()
         component_return_val = "rendered_component"
         component.return_value = component_return_val
-        
+
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
-        
+
         self.assertEqual(return_value, layout_return_val)
         layout.assert_called_once_with({'app': app, 'user': user, 'nav-links': app.navigation_links}, component_return_val)
 
@@ -113,13 +114,13 @@ class TestPageHandler(TestCase):
     @mock.patch('tethys_apps.base.controller.login_required_decorator')
     @mock.patch('tethys_apps.base.controller._get_url_map_kwargs_list')
     def test_page_with_permissions(
-        self, 
+        self,
         mock_get_url_map_kwargs_list,
         mock_login_required_decorator,
         mock_ensure_oauth2,
         mock_enforce_quota,
         mock_permission_required,
-        mock_global_page_component, 
+        mock_global_page_component,
         mock_process_kwargs
     ):
         layout = "MyLayout"
@@ -127,7 +128,7 @@ class TestPageHandler(TestCase):
         index = 0
         custom_css = ['custom.css']
         custom_js = ['custom.js']
-        function = lambda x: x
+        my_function = lambda x: x  # noqa E731
         return_value = tethys_controller.page(
             permissions_required=['test_permission'],
             enforce_quotas=['test_quota'],
@@ -137,7 +138,7 @@ class TestPageHandler(TestCase):
             index=index,
             custom_css=custom_css,
             custom_js=custom_js
-        )(function)
+        )(my_function)
         self.assertTrue(callable(return_value))
         mock_request = mock.MagicMock()
         mock_process_kwargs.assert_called_once()
@@ -152,7 +153,7 @@ class TestPageHandler(TestCase):
         mock_ensure_oauth2.assert_called_once()
         self.assertEqual(mock_login_required_decorator.call_count, 2)
         mock_get_url_map_kwargs_list.assert_called_once_with(
-            function_or_class=function,
+            function_or_class=my_function,
             name=None,
             url=None,
             protocol="http",
@@ -165,13 +166,13 @@ class TestPageHandler(TestCase):
     @mock.patch('tethys_apps.base.controller.global_page_controller')
     @mock.patch('tethys_apps.base.controller._get_url_map_kwargs_list')
     def test_page_with_defaults(
-        self, 
+        self,
         mock_get_url_map_kwargs_list,
-        mock_global_page_component, 
+        mock_global_page_component,
         mock_process_kwargs
     ):
-        function = lambda x: x
-        return_value = tethys_controller.page()(function)
+        my_function = lambda x: x  # noqa: E731
+        return_value = tethys_controller.page()(my_function)
         self.assertTrue(callable(return_value))
         mock_request = mock.MagicMock()
         mock_process_kwargs.assert_called_once()
@@ -180,17 +181,17 @@ class TestPageHandler(TestCase):
         self.assertEqual(
             process_kwargs_args[0](mock_request),
             mock_global_page_component(
-                mock_request, 
-                layout="default", 
-                component_func=function, 
-                component_source_code="lambda x: x", 
-                title=mock_get_url_map_kwargs_list[0]['title'], 
-                custom_css=[], 
+                mock_request,
+                layout="default",
+                component_func=my_function,
+                component_source_code="lambda x: x",
+                title=mock_get_url_map_kwargs_list[0]['title'],
+                custom_css=[],
                 custom_js=[]
             )
         )
         mock_get_url_map_kwargs_list.assert_called_once_with(
-            function_or_class=function,
+            function_or_class=my_function,
             name=None,
             url=None,
             protocol="http",
@@ -198,17 +199,17 @@ class TestPageHandler(TestCase):
             title=None,
             index=None
         )
-    
+
     @mock.patch('tethys_apps.base.controller._process_url_kwargs')
     @mock.patch('tethys_apps.base.controller.global_page_controller')
     @mock.patch('tethys_apps.base.controller._get_url_map_kwargs_list')
     def test_page_with_handler(
-        self, 
+        self,
         mock_get_url_map_kwargs_list,
-        mock_global_page_component, 
+        mock_global_page_component,
         mock_process_kwargs
     ):
-        component_function = lambda x: x
+        component_function = lambda x: x  # noqa: E731
         handler_function = mock.MagicMock()
         return_value = tethys_controller.page(handler=handler_function)(component_function)
         self.assertTrue(callable(return_value))
@@ -220,12 +221,12 @@ class TestPageHandler(TestCase):
         self.assertEqual(
             process_kwargs_args[0](mock_request),
             handler_function(
-                mock_request, 
-                layout="default", 
-                component_func=component_function, 
-                component_source_code="lambda x: x", 
-                title=mock_get_url_map_kwargs_list[0]['title'], 
-                custom_css=[], 
+                mock_request,
+                layout="default",
+                component_func=component_function,
+                component_source_code="lambda x: x",
+                title=mock_get_url_map_kwargs_list[0]['title'],
+                custom_css=[],
                 custom_js=[]
             )
         )

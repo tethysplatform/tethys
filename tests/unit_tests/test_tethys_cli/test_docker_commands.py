@@ -1,6 +1,8 @@
 import unittest
 from unittest import mock
 import tethys_cli.docker_commands as cli_docker_commands
+import os.path
+from tempfile import gettempdir
 
 
 class TestDockerCommands(unittest.TestCase):
@@ -361,7 +363,7 @@ class TestDockerCommands(unittest.TestCase):
             "c",  # Would you like to specify number of Processors (c) OR set limits (e)
             "y",  # Bind the GeoServer data directory to the host?
         ]
-        mock_dir_input.side_effect = ["/tmp"]  # Specify location to bind data directory
+        mock_dir_input.side_effect = [gettempdir()]  # Specify location to bind data directory
 
         expected_options = dict(
             environment=dict(
@@ -631,7 +633,7 @@ class TestDockerCommands(unittest.TestCase):
             "y",  # Bind the THREDDS data directory to the host?
         ]
 
-        mock_dir_input.side_effect = ["/tmp"]  # Specify location to bind data directory
+        mock_dir_input.side_effect = [gettempdir()]  # Specify location to bind data directory
 
         expected_options = dict(
             environment=dict(
@@ -1203,26 +1205,26 @@ class TestDockerCommands(unittest.TestCase):
         self.mock_input.side_effect = [""]
 
         c = cli_docker_commands.UserInputHelper.get_valid_directory_input(
-            prompt="prompt", default="/tmp"
+            prompt="prompt", default=gettempdir()
         )
-        self.assertEqual(c, "/tmp")
-        self.mock_input.assert_called_with("prompt [/tmp]: ")
+        self.assertEqual(c, gettempdir())
+        self.mock_input.assert_called_with(f"prompt [{gettempdir()}]: ")
 
     @mock.patch("tethys_cli.docker_commands.os.makedirs")
     @mock.patch("tethys_cli.docker_commands.os.path.isdir")
     def test_uih_get_valid_directory_input_makedirs(
         self, mock_os_path_isdir, mock_os_makedirs
     ):
-        value = "/non/existing/path"
-        self.mock_input.side_effect = [value[1:]]
+        value = os.path.join(os.path.abspath(os.sep), "non", "existing", "path")
+        self.mock_input.side_effect = [os.path.join("non", "existing", "path")]
         mock_os_path_isdir.return_value = False
 
         c = cli_docker_commands.UserInputHelper.get_valid_directory_input(
-            prompt="prompt", default="/tmp"
+            prompt="prompt", default=gettempdir()
         )
         self.assertEqual(c, value)
 
-        self.mock_input.assert_called_with("prompt [/tmp]: ")
+        self.mock_input.assert_called_with(f"prompt [{gettempdir()}]: ")
         mock_os_path_isdir.assert_called_with(value)
         mock_os_makedirs.assert_called_with(value)
 
@@ -1232,20 +1234,22 @@ class TestDockerCommands(unittest.TestCase):
     def test_uih_get_valid_directory_input_oserror(
         self, mock_os_path_isdir, mock_os_makedirs, mock_pretty_output
     ):
+        invalid_path = os.path.join(os.path.abspath(os.sep), "invalid", "path")
+        valid_path = os.path.join(os.path.abspath(os.sep), "foo", "tmp")
         mock_os_path_isdir.side_effect = [False, True]
         mock_os_makedirs.side_effect = OSError
-        self.mock_input.side_effect = ["/invalid/path", "/foo/tmp"]
+        self.mock_input.side_effect = [invalid_path, valid_path]
         c = cli_docker_commands.UserInputHelper.get_valid_directory_input(
-            prompt="prompt", default="/tmp"
+            prompt="prompt", default=gettempdir()
         )
-        self.assertEqual(c, "/foo/tmp")
+        self.assertEqual(c, valid_path)
 
-        mock_pretty_output.assert_called_with("OSError(): /invalid/path")
+        mock_pretty_output.assert_called_with(f'OSError(): {invalid_path}')
         input_call_args = self.mock_input.call_args_list
         self.assertEqual(2, len(input_call_args))
-        self.assertEqual("prompt [/tmp]: ", input_call_args[0][0][0])
+        self.assertEqual(f"prompt [{gettempdir()}]: ", input_call_args[0][0][0])
         self.assertEqual(
-            "Please provide a valid directory\nprompt [/tmp]: ",
+            f"Please provide a valid directory\nprompt [{gettempdir()}]: ",
             input_call_args[1][0][0],
         )
 

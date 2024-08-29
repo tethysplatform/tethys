@@ -878,7 +878,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Services Configuration Completed.", po_call_args[4][0][0])
         self.assertIn("Skipping syncstores.", po_call_args[5][0][0])
         self.assertIn("Running post installation tasks...", po_call_args[6][0][0])
-        self.assertIn("Post Script Result: b'test\\n'", po_call_args[7][0][0])
+        self.assertIn("Post Script Result: b'test", po_call_args[7][0][0])
         mock_exit.assert_called_with(0)
 
     @mock.patch("tethys_cli.install_commands.run_services")
@@ -1851,7 +1851,7 @@ class TestInstallCommands(TestCase):
 
         self.assertEqual(1, len(mock_download.mock_calls))
         self.assertEqual(
-            {"cwd": "tethysapp/test_app/public"}, mock_download.mock_calls[0][2]
+            {"cwd": os.path.join("tethysapp", "test_app", "public")}, mock_download.mock_calls[0][2]
         )
 
         mock_exit.assert_called_with(0)

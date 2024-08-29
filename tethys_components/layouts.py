@@ -2,6 +2,7 @@ from reactpy import component, html
 from tethys_components.utils import Props
 from tethys_components.custom import HeaderWithNavBar
 
+
 @component
 def NavHeader(props, *children):
     app = props.get('app')

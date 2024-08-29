@@ -16,6 +16,7 @@ logging.getLogger('reactpy.web.module').setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
+
 class ComponentLibrary:
     """
     Class for providing access to registered ReactPy/ReactJS components
@@ -44,7 +45,7 @@ class ComponentLibrary:
     DEFAULTS = ['rp']
     STYLE_DEPS = {
         'ag': [
-            'https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-grid.css', 
+            'https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-grid.css',
             'https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-theme-material.css'
         ],
         'bs': ['https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css']
@@ -56,11 +57,11 @@ class ComponentLibrary:
     package_handles = {}
     styles = []
     defaults = []
-    
+
     def __init__(self, package=None, parent_package=None):
         self.package = package
         self.parent_package = parent_package
-    
+
     def __getattr__(self, attr):
         """
         All instance attributes except package and parent_package are created on the fly the first time.
@@ -101,17 +102,17 @@ class ComponentLibrary:
                     content=self.get_reactjs_module_wrapper_js(),
                     resolve_exports=False
                 )
-                setattr(self, attr, web.export(module, component))        
+                setattr(self, attr, web.export(module, component))
             return getattr(self, attr)
         else:
             raise AttributeError(f"Invalid component library package: {attr}")
-    
+
     @classmethod
     def refresh(cls, new_identifier=None):
         """
         Refreshes the library as if no components were ever loaded.
-        This ensures a clean slate for each page, meaning that the javascript file 
-        produced and grabbed by the browser (via the ReactPy Django Client) only 
+        This ensures a clean slate for each page, meaning that the javascript file
+        produced and grabbed by the browser (via the ReactPy Django Client) only
         contains the JavaScript that is relevant for the page being rendered.
         This is necessary since the Library is treated as a Singleton - which is
         necessary to be able to import the lib from anywhere and use it, but not
@@ -132,14 +133,13 @@ class ComponentLibrary:
         if new_identifier:
             cls.EXPORT_NAME = new_identifier
 
-
     @classmethod
     def get_reactjs_module_wrapper_js(cls):
         """
         Creates the JavaScript file that imports all of the ReactJS components.
 
         The content of this JavaScript file was adapted from the pattern established by ReactPy,
-        as documented here: 
+        as documented here:
         https://reactpy.dev/docs/guides/escape-hatches/javascript-components.html#custom-javascript-components
         """
         template_fpath = TETHYS_COMPONENTS_ROOT_DPATH / 'resources' / 'reactjs_module_wrapper_template.js'
@@ -154,16 +154,16 @@ class ComponentLibrary:
         })
 
         return content
-    
+
     @classmethod
-    def register(cls, package, accessor, styles=[], use_default=False):
+    def register(cls, package, accessor, styles=None, use_default=False):
         """
         Registers a new package to be used by the ComponentLibrary
 
         Args:
-            package(str): The name of the package to register. The version is optional, and if included 
+            package(str): The name of the package to register. The version is optional, and if included
                 should be of the format "@X.Y.Z". The package must be found at https://esm.sh, and can
-                be verified there by checking https://esm.sh/<package_name> 
+                be verified there by checking https://esm.sh/<package_name>
                 (i.e. https://esm.sh/reactive-button@1.3.15)
             accessor(str): The name that will be used to access the package on the ComponentLibrary
                 (i.e. the "X" in lib.X.ComponentName)
@@ -173,18 +173,18 @@ class ComponentLibrary:
 
         Example:
             from tethys_sdk.components import lib
-            
+
             lib.register('reactive-button@1.3.15', 'rb', use_default=True)
 
             # lib.rb.ReactiveButton can now be used in the code below
-            
+
             @page
             def test_reactive_button():
                 state, set_state = hooks.use_state('idle');
-                
+
                 def on_click_handler(event=None):
                     set_state('loading')
-                
+
                 return lib.rb.ReactiveButton(
                     Props(
                         buttonState=state,
@@ -208,11 +208,11 @@ class ComponentLibrary:
             cls.DEFAULTS.append(accessor)
 
     def load_dependencies_from_source_code(self, source_code):
-        """ 
+        """
         Pre-loads dependencies, rather than doing so on-the-fly
-        
+
         This is necessary since loading on the fly does not work
-        for nested custom lib components being rendered for the first time after the initial 
+        for nested custom lib components being rendered for the first time after the initial
         load. I spent hours trying to solve the problem of getting the ReactPy-Django Client
         to re-fetch the Javascript containing the updated dependnecies, but I couldn't solve
         it. This was the Plan B - and possibly the better plan since it doesn't require a change
@@ -221,9 +221,9 @@ class ComponentLibrary:
         Significant shortcoming: If someone has a custom component that itself has newly referenced
         library packages nested in conditional logic, these will not be picked up with this method.
         To solve this, we'd need to write a function crawler of sorts that is able to traverse the
-        entire 
+        entire
 
-        Like the "refresh" function above, this is only called in on single place: 
+        Like the "refresh" function above, this is only called in on single place:
         tethys_apps/base/page_handler.py in the global_page_controller
 
         Args:
@@ -233,7 +233,8 @@ class ComponentLibrary:
         matches = findall('lib\\.([^\\(]*)\\(', source_code)
         for match in matches:
             package_name, component_name = match.split('.')
-            if package_name in self.INTERNALLY_MANAGED_PACKAGES: continue
+            if package_name in self.INTERNALLY_MANAGED_PACKAGES:
+                continue
             package = getattr(self, package_name)
             getattr(package, component_name)
 

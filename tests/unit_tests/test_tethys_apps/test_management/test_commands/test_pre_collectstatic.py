@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+import os.path
 
 from tethys_apps.management.commands import pre_collectstatic
 
@@ -62,13 +63,13 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_print,
     ):
         options = {"link": False}  # Don't create symbolic link (copy instead)
-        static_root_dir = "/foo/static/root"
-        app_source_dir = "/foo/sources/foo_app"
-        ext_source_dir = "/foo/sources/foo_ext"
-        app_public_dir = app_source_dir + "/public"
-        ext_public_dir = ext_source_dir + "/public"
-        app_static_dir = app_source_dir + "/static"
-        ext_static_dir = ext_source_dir + "/static"
+        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
+        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
+        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
+        app_public_dir = os.path.join(app_source_dir, "public")
+        ext_public_dir = os.path.join(ext_source_dir, "public")
+        app_static_dir = os.path.join(app_source_dir, "static")
+        ext_static_dir = os.path.join(ext_source_dir, "static")
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
@@ -153,13 +154,13 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_print,
     ):
         options = {"link": False}  # Don't create symbolic link (copy instead)
-        static_root_dir = "/foo/static/root"
-        app_source_dir = "/foo/sources/foo_app"
-        ext_source_dir = "/foo/sources/foo_ext"
-        app_public_dir = app_source_dir + "/public"
-        ext_public_dir = ext_source_dir + "/public"
-        app_static_root_dir = static_root_dir + "/foo_app"
-        ext_static_root_dir = static_root_dir + "/foo_ext"
+        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
+        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
+        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
+        app_public_dir = os.path.join(app_source_dir, "public")
+        ext_public_dir = os.path.join(ext_source_dir, "public")
+        app_static_root_dir = os.path.join(static_root_dir, "foo_app")
+        ext_static_root_dir = os.path.join(static_root_dir, "foo_ext")
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
@@ -238,13 +239,13 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_print,
     ):
         options = {"link": False}  # Don't create symbolic link (copy instead)
-        static_root_dir = "/foo/static/root"
-        app_source_dir = "/foo/sources/foo_app"
-        app_public_dir = app_source_dir + "/public"
-        ext_source_dir = "/foo/sources/foo_ext"
-        ext_public_dir = ext_source_dir + "/public"
-        app_static_root_dir = static_root_dir + "/foo_app"
-        ext_static_root_dir = static_root_dir + "/foo_ext"
+        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
+        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
+        app_public_dir = os.path.join(app_source_dir, "public")
+        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
+        ext_public_dir = os.path.join(ext_source_dir, "public")
+        app_static_root_dir = os.path.join(static_root_dir, "foo_app")
+        ext_static_root_dir = os.path.join(static_root_dir, "foo_ext")
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
@@ -322,15 +323,15 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_print,
     ):
         options = {"link": True}  # Create symbolic link (instead of copy)
-        static_root_dir = "/foo/static/root"
-        app_source_dir = "/foo/sources/foo_app"
-        ext_source_dir = "/foo/sources/foo_ext"
-        app_static_root_dir = static_root_dir + "/foo_app"
-        ext_static_root_dir = static_root_dir + "/foo_ext"
-        app_public_dir = app_source_dir + "/public"
-        ext_public_dir = ext_source_dir + "/public"
-        app_static_dir = app_source_dir + "/static"
-        ext_static_dir = ext_source_dir + "/static"
+        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
+        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
+        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
+        app_static_root_dir = os.path.join(static_root_dir, "foo_app")
+        ext_static_root_dir = os.path.join(static_root_dir, "foo_ext")
+        app_public_dir = os.path.join(app_source_dir, "public")
+        ext_public_dir = os.path.join(ext_source_dir, "public")
+        app_static_dir = os.path.join(app_source_dir, "static")
+        ext_static_dir = os.path.join(ext_source_dir, "static")
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {

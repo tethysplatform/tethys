@@ -4,6 +4,7 @@ from tethys_portal.settings import STATIC_URL
 from .utils import Props
 from .library import Library as lib
 
+
 @component
 def Panel(props, *children):
     show = props.pop('show', False)
@@ -16,13 +17,13 @@ def Panel(props, *children):
         style['height'] = extent
     else:
         style['width'] = extent
-    
+
     def handle_close(event):
         set_show(False)
 
     return lib.html.div(
         Props(
-            role="dialog", 
+            role="dialog",
             aria_modal="true",
             class_name=f"offcanvas offcanvas-{position}{' show' if show else ''}",
             tabindex="-1",
@@ -57,6 +58,7 @@ def Panel(props, *children):
         )
     )
 
+
 # @component  NOTE: Breaks if @component decorator applied
 def HeaderButton(props, *children):
     href = props.get('href')
@@ -66,8 +68,8 @@ def HeaderButton(props, *children):
 
     return lib.bs.Button(
             Props(
-                href=href, 
-                variant="light", 
+                href=href,
+                variant="light",
                 size="sm",
                 class_name=f"{class_name} styled-header-button",
                 style=Props(
@@ -77,7 +79,8 @@ def HeaderButton(props, *children):
                 ) | style | (Props(border_radius="50%") if shape == 'circle' else {})
             ) | props,
             *children
-        )    
+        )
+
 
 # @component  NOTE: Breaks if @component decorator applied
 def NavIcon(src, background_color):
@@ -93,6 +96,7 @@ def NavIcon(src, background_color):
             }
         )
     )
+
 
 @component
 def NavMenu(props, *children):
@@ -112,8 +116,10 @@ def NavMenu(props, *children):
         )
     )
 
+
 def get_db_object(app):
     return app.db_object
+
 
 @component
 def HeaderWithNavBar(app, user, nav_links):
@@ -123,7 +129,7 @@ def HeaderWithNavBar(app, user, nav_links):
 
     return lib.bs.Navbar(
         Props(
-            fixed="top", 
+            fixed="top",
             class_name="shadow",
             expand=False,
             variant="dark",
@@ -155,7 +161,7 @@ def HeaderWithNavBar(app, user, nav_links):
                     Props(
                         id="btn-app-settings",
                         href=f'/admin/tethys_apps/tethysapp/{app_id}/change/',
-                        tooltipPlacement="bottom", 
+                        tooltipPlacement="bottom",
                         tooltipText="Settings",
                         class_name="me-2"
                     ),
@@ -190,14 +196,14 @@ def HeaderWithNavBar(app, user, nav_links):
                 lib.bs.OffcanvasBody(
                     lib.bs.Nav(
                         {
-                            "variant": "pills", 
+                            "variant": "pills",
                             "defaultActiveKey": f"/apps/{app.root_url}",
                             "class_name": "flex-column"
                         },
                         [
                             lib.bs.NavLink(
                                 Props(
-                                    href=link["href"], 
+                                    href=link["href"],
                                     key=f'link-{index}',
                                     active=location.pathname == link["href"],
                                     style=Props(padding_left="10pt")

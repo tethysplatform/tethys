@@ -76,6 +76,7 @@ class TestUrls(TethysTestCase):
         reload(urls)
         mock_include.assert_any_call("reactpy_django.http.urls")
 
+
 # probably need to test for extensions manually
 @override_settings(MULTIPLE_APP_MODE=True)
 @override_settings(PREFIX_URL="test/prefix")

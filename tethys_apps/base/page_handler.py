@@ -5,18 +5,19 @@ from tethys_components.utils import get_layout_component
 from tethys_portal.optional_dependencies import has_module
 
 if has_module('reactpy'):
-   from reactpy import component 
+    from reactpy import component
 else:
-    component = lambda x: x # pragma: no cover
+    component = lambda x: x  # noqa: E731
+
 
 def global_page_controller(
-        request, 
-        layout, 
-        component_func, 
-        component_source_code, 
-        title=None, 
-        custom_css=[], 
-        custom_js=[]
+    request,
+    layout,
+    component_func,
+    component_source_code,
+    title=None,
+    custom_css=None,
+    custom_js=None
 ):
     app = get_active_app(request=request, get_class=True)
     layout_func = get_layout_component(app, layout)
@@ -29,11 +30,12 @@ def global_page_controller(
         'component_func': lambda: component_func,
         'reactjs_version': ComponentLibrary.REACTJS_VERSION,
         'title': title,
-        'custom_css': custom_css,
-        'custom_js': custom_js,
+        'custom_css': custom_css or [],
+        'custom_js': custom_js or [],
     }
 
     return render(request, 'tethys_apps/reactpy_base.html', context)
+
 
 @component
 def page_component_wrapper(app, user, layout, component):

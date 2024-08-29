@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+import os.path
 
 from tethys_apps.management.commands import collectworkspaces
 
@@ -61,8 +62,8 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_shutil_move,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = "/foo/workspace"
-        mock_get_apps.return_value = {"foo_app": "/foo/testing/tests/foo_app"}
+        mock_settings.TETHYS_WORKSPACES_ROOT = os.path.join(os.sep, "foo", "workspace")
+        mock_get_apps.return_value = {"foo_app": os.path.join(os.sep, "foo", "testing", "tests", "foo_app")}
         mock_os_path_isdir.return_value = False
 
         cmd = collectworkspaces.Command()
@@ -71,13 +72,14 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_get_apps.assert_called_once()
         mock_os_path_isdir.assert_called()
         mock_os_makedirs.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces", exist_ok=True
+            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"), exist_ok=True
         )
         mock_shutil_move.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces", "/foo/workspace/foo_app"
+            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"),
+            os.path.join(os.sep, "foo", "workspace", "foo_app")
         )
 
-        msg_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        msg_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
 
         msg_warning = 'WARNING: The workspace_path for app "foo_app" is not a directory. Making workspace directory...'
 
@@ -102,8 +104,8 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_os_path_islink,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = "/foo/workspace"
-        mock_get_apps.return_value = {"foo_app": "/foo/testing/tests/foo_app"}
+        mock_settings.TETHYS_WORKSPACES_ROOT = os.path.join(os.sep, "foo", "workspace")
+        mock_get_apps.return_value = {"foo_app": os.path.join(os.sep, "foo", "testing", "tests", "foo_app")}
         mock_os_path_isdir.return_value = True
         mock_os_path_islink.return_value = True
 
@@ -112,12 +114,12 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
 
         mock_get_apps.assert_called_once()
         mock_os_path_isdir.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces"
+            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
         )
         mock_os_path_islink.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces"
+            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
         )
-        msg_in = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        msg_in = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
         mock_print.assert_called_with(msg_in)
 
     @mock.patch("tethys_apps.management.commands.collectworkspaces.print")
@@ -141,8 +143,8 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_os_symlink,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = "/foo/workspace"
-        mock_get_apps.return_value = {"foo_app": "/foo/testing/tests/foo_app"}
+        mock_settings.TETHYS_WORKSPACES_ROOT = os.path.join(os.sep, "foo", "workspace")
+        mock_get_apps.return_value = {"foo_app": os.path.join(os.sep, "foo", "testing", "tests", "foo_app")}
         mock_os_path_isdir.side_effect = [True, True]
         mock_os_path_islink.return_value = False
         mock_os_path_exists.return_value = False
@@ -153,16 +155,16 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         cmd.handle(force=True)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_any_call("/foo/testing/tests/foo_app/workspaces")
-        mock_os_path_isdir.assert_called_with("/foo/workspace/foo_app")
+        mock_os_path_isdir.assert_any_call(os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"))
+        mock_os_path_isdir.assert_called_with(os.path.join(os.sep, "foo", "workspace", "foo_app"))
         mock_os_path_islink.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces"
+            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
         )
-        mock_os_path_exists.assert_called_once_with("/foo/workspace/foo_app")
+        mock_os_path_exists.assert_called_once_with(os.path.join(os.sep, "foo", "workspace", "foo_app"))
         mock_shutil_move.assert_called_once_with(
-            "/foo/testing/tests/foo_app/workspaces", "/foo/workspace/foo_app"
+            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"), os.path.join(os.sep, "foo", "workspace", "foo_app")
         )
-        msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        msg_first_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
         msg_second_info = (
             'INFO: Successfully linked "workspaces" directory to '
             'TETHYS_WORKSPACES_ROOT for app "foo_app".'
@@ -198,10 +200,10 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_print,
     ):
         app_name = "foo_app"
-        app_path = f"/foo/testing/tests/{app_name}"
-        app_ws_path = f"{app_path}/workspaces"
-        tethys_workspaces_root = "/foo/workspace"
-        app_workspaces_root = f"{tethys_workspaces_root}/{app_name}"
+        app_path = os.path.join(os.sep, "foo", "testing", "tests", app_name)
+        app_ws_path = os.path.join(app_path, "workspaces")
+        tethys_workspaces_root = os.path.join(os.sep, "foo", "workspace")
+        app_workspaces_root = os.path.join(tethys_workspaces_root, app_name)
         mock_settings.TETHYS_WORKSPACES_ROOT = tethys_workspaces_root
         mock_get_apps.return_value = {app_name: app_path}
         mock_os_path_isdir.side_effect = [True, True]
@@ -222,7 +224,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_shutil_move.assert_not_called()
         mock_shutil_rmtree.assert_called_once_with(app_ws_path, ignore_errors=True)
 
-        msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        msg_first_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
 
         msg_warning = (
             'WARNING: Workspace directory for app "foo_app" already exists in the '
@@ -268,10 +270,10 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_print,
     ):
         app_name = "foo_app"
-        app_path = f"/foo/testing/tests/{app_name}"
-        app_ws_path = f"{app_path}/workspaces"
-        tethys_workspaces_root = "/foo/workspace"
-        app_workspaces_root = f"{tethys_workspaces_root}/{app_name}"
+        app_path = os.path.join(os.sep, "foo", "testing", "tests", app_name)
+        app_ws_path = os.path.join(app_path, "workspaces")
+        tethys_workspaces_root = os.path.join(os.sep, "foo", "workspace")
+        app_workspaces_root = os.path.join(tethys_workspaces_root, app_name)
         mock_settings.TETHYS_WORKSPACES_ROOT = tethys_workspaces_root
         mock_get_apps.return_value = {app_name: app_path}
         mock_os_path_isdir.side_effect = [True, True]
@@ -296,7 +298,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         )
         mock_os_remove.assert_called_once_with(app_workspaces_root)
 
-        msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        msg_first_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
 
         msg_second_info = (
             'INFO: Successfully linked "workspaces" directory to '

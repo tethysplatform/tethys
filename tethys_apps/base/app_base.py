@@ -610,17 +610,18 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         return TethysApp
-    
+
     @property
     def navigation_links(self):
         nav_links = self.nav_links
         if nav_links == 'auto':
             nav_links = []
             for url_map in sorted(self.registered_url_maps, key=lambda x: x.index if x.index is not None else 999):
-                if url_map.index == -1: continue  # Do not render
+                if url_map.index == -1:
+                    continue  # Do not render
                 nav_links.append(
                     {
-                        'title': url_map.title, 
+                        'title': url_map.title,
                         'href': f'/apps/{self.root_url}/{(url_map.name.replace('_', '-') + '/') if url_map.name != self.index else ""}'
                     }
                 )

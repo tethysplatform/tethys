@@ -1550,7 +1550,7 @@ class TestTethysAppBase(unittest.TestCase):
         app.nav_links = ['test', '1', '2', '3']
         links = app.navigation_links
         self.assertListEqual(links, app.nav_links)
-    
+
     def test_navigation_links_auto_excluded_page(self):
         app = tethys_app_base.TethysAppBase()
         app.nav_links = 'auto'
@@ -1564,7 +1564,7 @@ class TestTethysAppBase(unittest.TestCase):
             Namespace(name="second_page", title="Second Page", index=1),
             Namespace(name="home", title="Home", index=0),
         ]
-        
+
         links = app.navigation_links
 
         self.assertListEqual(links, [

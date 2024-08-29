@@ -4,6 +4,7 @@ from pathlib import Path
 THIS_DIR = Path(__file__).parent
 RESOURCES_DIR = THIS_DIR / 'test_resources'
 
+
 class TestComponentLibrary(TestCase):
     def test_standard_library_workflow(self):
         from tethys_components.library import Library as lib, ComponentLibrary
@@ -37,7 +38,7 @@ class TestComponentLibrary(TestCase):
         mock_func.assert_called_once()
         self.assertEqual(button_component, mock_import().web.export())
         mock.patch.stopall()
-        
+
         # CREATE JAVASCRIPT WRAPPER FOR LIBRARY
         ComponentLibrary.get_reactjs_module_wrapper_js = orig_func
         content = lib.get_reactjs_module_wrapper_js()
