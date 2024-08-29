@@ -11,6 +11,15 @@ cd docs
 conda env create -f docs_environment.yml
 ```
 
+## Initialize git lfs
+
+Use Git LFS to download the images:
+
+```
+git lfs install
+git lfs pull
+```
+
 ## Build Docs
 
 Activate the conda environment and build the documentation using these commands:

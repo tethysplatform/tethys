@@ -2,7 +2,7 @@
 Upload Shapefile
 ****************
 
-**Last Updated:** May 2020
+**Last Updated:** July 2024
 
 1. Add Form to Home Page
 ========================
@@ -24,7 +24,6 @@ Replace the contents of the existing :file:`home.html` template with:
         <input name="submit" type="submit" class="btn btn-secondary">
       </form>
     {% endblock %}
-
 
 2. Handle File Upload in Home Controller
 ========================================
@@ -61,8 +60,11 @@ Replace the contents of :file:`controllers.py` module with the following:
             workspaces = response['result']
 
             if WORKSPACE not in workspaces:
-                geoserver_engine.create_workspace(workspace_id=WORKSPACE, uri=GEOSERVER_URI)
-
+                from urllib.parse import urlparse
+                parsed = urlparse(geoserver_engine.public_endpoint)
+                uri = f'{parsed.scheme}://{parsed.netloc}/{WORKSPACE}'
+                geoserver_engine.create_workspace(workspace_id=WORKSPACE, uri=uri)
+                
         # Case where the form has been submitted
         if request.POST and 'submit' in request.POST:
             # Verify files are included with the form

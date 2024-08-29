@@ -271,7 +271,6 @@ class TethysBase(TethysBaseMixin):
         from .controller import register_controllers
 
         index = self.index if set_index else None
-
         controller_modules = [
             f"{self.package_namespace}.{self.package}.{module_name}"
             for module_name in set(DEFAULT_CONTROLLER_MODULES + self.controller_modules)
