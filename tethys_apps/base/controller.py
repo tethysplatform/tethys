@@ -15,6 +15,7 @@ from django.views.generic import View
 from django.http import HttpRequest
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
+from tethys_portal.optional_dependencies import optional_import
 from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
@@ -22,7 +23,6 @@ from tethys_utils import deprecation_warning, DOCS_BASE_URL
 from . import url_map_maker
 from .app_base import DEFAULT_CONTROLLER_MODULES
 
-from .page_handler import _global_page_component_controller
 from .bokeh_handler import (
     _get_bokeh_controller,
     with_workspaces as with_workspaces_decorator,
@@ -36,6 +36,8 @@ from ..utilities import get_all_submodules, update_decorated_websocket_consumer_
 # imports for type hinting
 from typing import Union, Any
 from collections.abc import Callable
+
+global_page_controller = optional_import("global_page_controller", from_module="tethys_apps.base.page_handler")
 
 app_controllers_list = list()
 
@@ -507,7 +509,7 @@ def page(
         )
 
         def controller_wrapper(request):
-            controller = handler or _global_page_component_controller
+            controller = handler or global_page_controller
             if permissions_required:
                 controller = permission_required(
                     *permissions_required,

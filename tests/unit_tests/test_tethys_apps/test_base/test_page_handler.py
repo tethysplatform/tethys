@@ -1,27 +1,15 @@
-import unittest
-from unittest import mock
+from unittest import TestCase, mock
+from importlib import reload
 
 from tethys_apps.base import page_handler
-from importlib import reload
 import tethys_apps.base.controller as tethys_controller
 
-class TestPageHandler(unittest.TestCase):
-    def setUp(self) -> None:
-        # Do cleanup first so it is ready if an exception is raised
-        def kill_patches():  # Create a cleanup callback that undoes our patches
-            mock.patch.stopall()  # Stops all patches started with start()
-            reload(page_handler)  # Reload our UUT module which restores the original decorator
-        self.addCleanup(kill_patches)  # We want to make sure this is run so we do this in addCleanup instead of tearDown
-        
-        # Now patch the decorator where the decorator is being imported from
-        mock.patch('reactpy.component', lambda x: x).start()  # The lambda makes our decorator into a pass-thru. Also, don't forget to call start()          
-        reload(page_handler)
-
+class TestPageHandler(TestCase):
     @mock.patch("tethys_apps.base.page_handler.render")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibrary")
     @mock.patch("tethys_apps.base.page_handler.get_active_app")
     @mock.patch("tethys_apps.base.page_handler.get_layout_component")
-    def test_global_page_component_controller(self, mock_get_layout, mock_get_app, mock_lib, mock_render):
+    def test_global_page_controller(self, mock_get_layout, mock_get_app, mock_lib, mock_render):
         # FUNCTION ARGS
         request = mock.MagicMock()
         layout = 'test_layout'
@@ -39,7 +27,7 @@ class TestPageHandler(unittest.TestCase):
         mock_get_layout.return_value = "my_layout_func"
 
         # EXECUTE FUNCTION
-        response = page_handler._global_page_component_controller(
+        response = page_handler.global_page_controller(
             request=request, 
             layout=layout,
             component_func=component_func,
@@ -67,6 +55,21 @@ class TestPageHandler(unittest.TestCase):
         self.assertEqual(render_context['custom_css'], custom_css)
         self.assertEqual(render_context['custom_js'], custom_js)
         self.assertEqual(response, expected_return_value)
+    
+    def test_has_reactpy(self):
+        mock_has_module = mock.patch('tethys_portal.optional_dependencies.has_module')
+        mock_has_module.return_value = True
+        mock_has_module.start()
+        try:
+            import reactpy
+            reload(page_handler)
+            self.assertEqual(page_handler.component, reactpy.component)
+        except ModuleNotFoundError as e:
+            self.assertRaises(ModuleNotFoundError, reload, page_handler)
+            self.assertTrue('reactpy' in str(e))
+
+        mock.patch.stopall()
+        reload(page_handler)
 
     def test_page_component_wrapper__layout_none(
         self
@@ -103,7 +106,7 @@ class TestPageHandler(unittest.TestCase):
         layout.assert_called_once_with({'app': app, 'user': user, 'nav-links': app.navigation_links}, component_return_val)
 
     @mock.patch('tethys_apps.base.controller._process_url_kwargs')
-    @mock.patch('tethys_apps.base.controller._global_page_component_controller')
+    @mock.patch('tethys_apps.base.controller.global_page_controller')
     @mock.patch('tethys_apps.base.controller.permission_required')
     @mock.patch('tethys_apps.base.controller.enforce_quota')
     @mock.patch('tethys_apps.base.controller.ensure_oauth2')
@@ -159,7 +162,7 @@ class TestPageHandler(unittest.TestCase):
         )
 
     @mock.patch('tethys_apps.base.controller._process_url_kwargs')
-    @mock.patch('tethys_apps.base.controller._global_page_component_controller')
+    @mock.patch('tethys_apps.base.controller.global_page_controller')
     @mock.patch('tethys_apps.base.controller._get_url_map_kwargs_list')
     def test_page_with_defaults(
         self, 
@@ -197,7 +200,7 @@ class TestPageHandler(unittest.TestCase):
         )
     
     @mock.patch('tethys_apps.base.controller._process_url_kwargs')
-    @mock.patch('tethys_apps.base.controller._global_page_component_controller')
+    @mock.patch('tethys_apps.base.controller.global_page_controller')
     @mock.patch('tethys_apps.base.controller._get_url_map_kwargs_list')
     def test_page_with_handler(
         self, 

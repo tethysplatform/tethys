@@ -1,5 +1,3 @@
-import random
-
 from reactpy import component
 from reactpy_django.hooks import use_location, use_query
 from tethys_portal.settings import STATIC_URL

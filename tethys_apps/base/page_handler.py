@@ -1,10 +1,15 @@
 from django.shortcuts import render
 from tethys_components.library import Library as ComponentLibrary
-from reactpy import component
 from tethys_apps.utilities import get_active_app
-from tethys_components.layouts import get_layout_component
+from tethys_components.utils import get_layout_component
+from tethys_portal.optional_dependencies import has_module
 
-def _global_page_component_controller(
+if has_module('reactpy'):
+   from reactpy import component 
+else:
+    component = lambda x: x # pragma: no cover
+
+def global_page_controller(
         request, 
         layout, 
         component_func, 

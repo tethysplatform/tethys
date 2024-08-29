@@ -6,6 +6,7 @@ from pathlib import Path
 from subprocess import call, Popen, PIPE, STDOUT
 from argparse import Namespace
 from collections.abc import Mapping
+import sys
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
@@ -769,14 +770,6 @@ def install_command(args):
                 if validate_schema("pip", requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(["pip", "install", *requirements_config["pip"]])
-                    if 'reactpy-django' in requirements_config["pip"]:
-                        from .settings_commands import read_settings, write_settings
-                        tethys_settings = read_settings()
-                        if 'INSTALLED_APPS' not in tethys_settings:
-                            tethys_settings['INSTALLED_APPS'] = []
-                        if 'reactpy_django' not in tethys_settings['INSTALLED_APPS']:
-                            tethys_settings['INSTALLED_APPS'].append('reactpy_django')
-                            write_settings(tethys_settings)
                 try:
                     public_resources_dir = [
                         *Path().glob(str(Path("tethysapp", "*", "public"))),
@@ -861,9 +854,11 @@ def install_command(args):
         if validate_schema("post", install_options):
             write_msg("Running post installation tasks...")
             for post in install_options["post"]:
-                path_to_post = file_path.resolve().parent / post
+                command = file_path.resolve().parent / post
                 # Attempting to run processes.
-                process = Popen(str(path_to_post), shell=True, stdout=PIPE)
+                if command.name.endswith('.py'):
+                    command = f'{sys.executable} {command}'
+                process = Popen(str(command), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
     successful_exit(app_name)

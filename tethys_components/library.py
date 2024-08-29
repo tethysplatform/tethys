@@ -7,15 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-
 from pathlib import Path
-from reactpy import web
 from jinja2 import Template
 from re import findall
 import logging
 
-reactpy_web_logger = logging.getLogger('reactpy.web.module')
-reactpy_web_logger.setLevel(logging.WARN)
+logging.getLogger('reactpy.web.module').setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
@@ -98,6 +95,7 @@ class ComponentLibrary:
                 if self.parent_package in self.DEFAULTS:
                     self.defaults.append(component)
                 self.components_by_package[package_name].append(component)
+                from reactpy import web
                 module = web.module_from_string(
                     name=self.EXPORT_NAME,
                     content=self.get_reactjs_module_wrapper_js(),
@@ -121,7 +119,7 @@ class ComponentLibrary:
         dependencies).
 
         This function, though a public method of the class, is only called in one single
-        place: tethys_apps/base/page_handler.py in the _global_page_component_controller
+        place: tethys_apps/base/page_handler.py in the global_page_controller
 
         Args:
             new_identifier(str): The name that will be used for the JavaScript file
@@ -226,7 +224,7 @@ class ComponentLibrary:
         entire 
 
         Like the "refresh" function above, this is only called in on single place: 
-        tethys_apps/base/page_handler.py in the _global_page_component_controller
+        tethys_apps/base/page_handler.py in the global_page_controller
 
         Args:
             source_code(str): The string representation of the python code to be analyzed for

@@ -1,6 +1,7 @@
 import unittest
 from unittest import mock
 from pathlib import Path
+import os.path
 
 from tethys_cli.gen_commands import (
     get_environment_value,
@@ -264,7 +265,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
-        mock_args.directory = "/foo/temp"
+        mock_args.directory = os.path.join(os.path.abspath(os.sep), "foo", "temp")
         mock_os_path_isfile.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
         mock_os_path_isdir.side_effect = [
@@ -296,7 +297,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
-        mock_args.directory = "/foo/temp"
+        mock_args.directory = os.path.join(os.path.abspath(os.sep), "foo", "temp")
         mock_os_path_isfile.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
         mock_os_path_isdir.side_effect = [
@@ -804,7 +805,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         result = get_destination_path(mock_args)
         mock_isdir.assert_called()
         mock_check_file.assert_called_once()
-        self.assertEqual(result, f"{TETHYS_SRC}/tethys_portal/static/package.json")
+        self.assertEqual(result, os.path.join(TETHYS_SRC, "tethys_portal", "static", "package.json"))
 
     @mock.patch("tethys_cli.gen_commands.GEN_COMMANDS")
     @mock.patch("tethys_cli.gen_commands.write_path_to_console")

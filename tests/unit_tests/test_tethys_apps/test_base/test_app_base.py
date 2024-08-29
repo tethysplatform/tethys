@@ -6,6 +6,7 @@ import uuid
 from django.db.utils import ProgrammingError
 from django.test import RequestFactory, override_settings
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from argparse import Namespace
 
 from tethys_apps.exceptions import (
     TethysAppSettingDoesNotExist,
@@ -1543,3 +1544,45 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check tethys log error
         mock_log.error.assert_called()
+
+    def test_navigation_links_not_auto(self):
+        app = tethys_app_base.TethysAppBase()
+        app.nav_links = ['test', '1', '2', '3']
+        links = app.navigation_links
+        self.assertListEqual(links, app.nav_links)
+    
+    def test_navigation_links_auto_excluded_page(self):
+        app = tethys_app_base.TethysAppBase()
+        app.nav_links = 'auto'
+        app.index = 'home'
+        app.root_url = 'test-app'
+
+        app._registered_url_maps = [
+            Namespace(name="exclude_page", title="Exclude Page", index=-1),
+            Namespace(name="last_page", title="Last Page", index=3),
+            Namespace(name="third_page", title="Third Page", index=2),
+            Namespace(name="second_page", title="Second Page", index=1),
+            Namespace(name="home", title="Home", index=0),
+        ]
+        
+        links = app.navigation_links
+
+        self.assertListEqual(links, [
+            {
+                'title': 'Home',
+                'href': '/apps/test-app/'
+            },
+            {
+                'title': 'Second Page',
+                'href': '/apps/test-app/second-page/'
+            },
+            {
+                'title': 'Third Page',
+                'href': '/apps/test-app/third-page/'
+            },
+            {
+                'title': 'Last Page',
+                'href': '/apps/test-app/last-page/'
+            },
+        ])
+        self.assertEqual(links, app.nav_links)
