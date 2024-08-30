@@ -34,6 +34,12 @@ def add_scaffold_parser(subparsers):
         "letters, numbers, and underscores allowed.",
     )
     scaffold_parser.add_argument(
+        "prefix",
+        nargs="?",
+        default=os.getcwd(),
+        help="The absolute path to the directory within which the new app should be scaffolded.",
+    )
+    scaffold_parser.add_argument(
         "-t", "--template", dest="template", help="Name of template to use."
     )
     scaffold_parser.add_argument(
@@ -53,14 +59,8 @@ def add_scaffold_parser(subparsers):
         action="store_true",
         help="Attempt to overwrite project automatically if it already exists.",
     )
-    scaffold_parser.add_argument(
-        "-p",
-        "--prefix",
-        dest="prefix",
-        help="The absolute path to the directory within which the new app should be scaffolded.",
-    )
     scaffold_parser.set_defaults(
-        func=scaffold_command, template="default", extension=False, prefix=os.getcwd()
+        func=scaffold_command, template="default", extension=False
     )
 
 
@@ -247,9 +247,10 @@ def scaffold_command(args):
     default_proper_name = " ".join(title_case_project_name)
     class_name = "".join(title_case_project_name)
     default_theme_color = get_random_color()
+    project_root = os.path.join(args.prefix, project_dir)
 
     write_pretty_output(
-        'Creating new Tethys project named "{0}".'.format(project_dir), FG_WHITE
+        'Creating new Tethys project at "{0}".'.format(project_root), FG_WHITE
     )
 
     # Get metadata from user
@@ -376,10 +377,9 @@ def scaffold_command(args):
 
     log.debug("Template context: {}".format(context))
 
-    # Create root directory
-    project_root = os.path.join(args.prefix, project_dir)
     log.debug("Project root path: {}".format(project_root))
 
+    # Create root directory
     if os.path.isdir(project_root):
         if not args.overwrite:
             valid = False

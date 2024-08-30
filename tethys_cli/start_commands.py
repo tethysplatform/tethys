@@ -1,17 +1,12 @@
 import os
 import webbrowser
 from argparse import Namespace
-from tethys_apps.utilities import (
-    get_installed_tethys_items,
-    get_tethys_home_dir,
-    relative_to_tethys_home,
-)
+from tethys_apps.utilities import get_installed_tethys_items
 from tethys_cli.cli_helpers import get_manage_path, run_process, setup_django
 from tethys_cli.db_commands import configure_tethys_db, process_args
 from tethys_cli.gen_commands import (
     get_destination_path,
     generate_command,
-    generate_secret_key,
     GEN_PORTAL_OPTION,
 )
 from tethys_cli.scaffold_commands import scaffold_command, APP_PREFIX
@@ -21,12 +16,7 @@ from tethys_cli.settings_commands import settings_command
 
 def add_start_parser(subparsers):
     # Setup list command
-    start_parser = subparsers.add_parser(
-        "start",
-        help="Start the tethys server. "
-        "If being done for the first time, this will also generate a portal config file, "
-        "configure the database, and prompt to scaffold an app as well.",
-    )
+    start_parser = subparsers.add_parser("start", help="Start the tethys server.")
     start_parser.add_argument(
         "-p",
         "--port",
@@ -60,7 +50,8 @@ def start_command(args):
 
 def quickstart_command(args):
     """
-    "Start the tethys server. If being done for the first time, this will also generate a portal config file, configure the database, and prompt to scaffold an app as well."
+    This command installs tethys, generates a portal config file, configures the database,
+    scaffolds and installs a Hello World app and starts up the server.
     """
     portal_config_args = Namespace(
         type=GEN_PORTAL_OPTION,
@@ -98,10 +89,9 @@ def quickstart_command(args):
             template="default",
             use_defaults=True,
             overwrite=False,
-            prefix=f"{get_tethys_home_dir()}/apps",
         )
         scaffold_command(app_scaffold_args)
-        os.chdir(relative_to_tethys_home(f"apps/{APP_PREFIX}-hello_world", as_str=True))
+        os.chdir(f"{APP_PREFIX}-hello_world")
         app_install_args = Namespace(
             develop=True,
             file=None,
@@ -114,7 +104,7 @@ def quickstart_command(args):
             quiet=True,
             no_sync_stores=False,
         )
-        install_command(app_install_args, do_exit=False)
+        install_command(app_install_args)
 
         update_settings_args = Namespace(
             set_kwargs=[
