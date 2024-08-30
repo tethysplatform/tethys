@@ -317,7 +317,7 @@ class TestCommandTests(unittest.TestCase):
         create_db_user(is_superuser=True, **self.options)
         call_args = self.mock_run_process.call_args_list
         command = (
-            f"CREATE USER {self.options['username']} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD "
+            f"CREATE USER {self.options['username']} WITH CREATEDB NOCREATEROLE PASSWORD "
             f"'{self.options['password']}';"
         )
         command = (
