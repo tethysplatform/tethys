@@ -2,7 +2,7 @@
 Quotas Concepts
 ***************
 
-**Last Updated:** May 2022
+**Last Updated:** July 2024
 
 This tutorial introduces Tethys Quotas API concepts for Tethys developers. The topics covered include:
 

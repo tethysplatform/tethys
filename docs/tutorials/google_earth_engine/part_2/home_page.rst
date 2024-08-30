@@ -2,7 +2,7 @@
 Add a Home Page
 ***************
 
-**Last Updated:** January 2023
+**Last Updated:** July 2024
 
 In this tutorial you will create a home page for the Google Earth Engine app that you created in :ref:`google_earth_engine_part_1`. This page will contain introductory information about that app. This will involve moving the current "home page", which contains the map viewer, to a new endpoint. Then you will set up a new controller and template for the new home page. The following topics will be reviewed in this tutorial:
 
@@ -14,7 +14,7 @@ In this tutorial you will create a home page for the Google Earth Engine app tha
 * Linking to other pages and navigation
 * Placeholder content for development: lorem ipsum and images
 
-.. figure:: ./resources/home_page_solution.png
+.. figure:: ../../../images/tutorial/gee/home_page.png
     :width: 800px
     :align: center
 
@@ -265,7 +265,7 @@ In this step we'll add a the title and some filler content to the About panel of
 6. Create Resources Panel Content
 =================================
 
-In this step we'll add the content to the Resources panel of the home page. The Resouces panel needs to contain a list of links to external resources related to our app.
+In this step we'll add the content to the Resources panel of the home page. The Resources panel needs to contain a list of links to external resources related to our app.
 
 1. Add the title, "Resources", to the ``<div>`` element with id ``resources-container``. Again, use the ``info-title`` class on the title element.
 

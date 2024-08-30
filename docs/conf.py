@@ -22,6 +22,7 @@ import django
 from django.conf import settings
 from setuptools_scm import get_version
 from sphinxawesome_theme import ThemeOptions, LinkIcon
+from sphinxawesome_theme.postprocess import Icons
 
 # Mock Dependencies
 # NOTE: No obvious way to automatically anticipate all the sub modules without
@@ -123,12 +124,18 @@ installed_apps = [
     "tethys_layouts",
 ]
 
-settings.configure(
-    INSTALLED_APPS=installed_apps,
-    DEBUG=True,
-    SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs",
-)
-django.setup()
+try:
+    settings.configure(
+        INSTALLED_APPS=installed_apps,
+        DEBUG=True,
+        SECRET_KEY="QNT5VImbg7PktTYfyXZWGwfKqOe1G3CanQWfG0zsE5HZxwHdQs",
+    )
+    django.setup()
+except RuntimeError as e:
+    # Ignore error if settings are already configured
+    # This can occur when using sphinx-autobuild
+    if "settings already configured" in str(e).lower():
+        pass
 
 # Sphinx extensions
 extensions = [
@@ -257,8 +264,10 @@ if os.environ.get("READTHEDOCS", "") == "True":
         html_context = {}
     html_context["READTHEDOCS"] = True
 
-html_title = f"{project} Documentation"
-html_short_title = "Tethys Docs"
+# html_title = f"{project} Documentation"
+html_title = ""
+# html_short_title = "Tethys Docs"
+html_short_title = ""
 # html_logo = "images/features/tethys-logo-75.png"
 html_favicon = "images/default_favicon.ico"
 html_static_path = ["_static"]
@@ -281,8 +290,8 @@ theme_options = ThemeOptions(
             link="https://github.com/tethysplatform/tethys",
         ),
     },
-    logo_dark="images/features/tethys-logo-75.png",  # todo: svg logo
-    logo_light="images/features/tethys_logo_inverse.png",  # todo: svg logo
+    logo_dark="images/features/tethys-on-blue.svg",
+    logo_light="images/features/tethys-on-white.svg",
     show_breadcrumbs=False,
     show_prev_next=True,
     show_scrolltop=True,
@@ -292,10 +301,4 @@ html_theme_options = asdict(theme_options)
 html_collapsible_definitions = True
 
 # Link icon for header links instead of pharagraph icons that are the default
-html_permalinks_icon = (
-    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
-    '<path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 '
-    "5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 "
-    '0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z">'
-    "</path></svg>"
-)
+html_permalinks_icon = Icons.permalinks_icon
