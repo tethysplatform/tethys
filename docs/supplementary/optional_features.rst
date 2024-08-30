@@ -104,6 +104,8 @@ Enables a Tethys Portal to be a provider of OAuth2 authentication.
 **dependencies**
     - ``django-oauth-toolkit``
 
+See :ref:`oauth2_provider_settings`
+
 Portal Enhancements
 ===================
 
