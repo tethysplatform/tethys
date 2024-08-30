@@ -30,6 +30,9 @@ class TethysJob(models.Model):
 
     class Meta:
         verbose_name = "Job"
+        permissions = [
+            ("jobs_table_actions", "Can access job's table endpoints for all jobs."),
+        ]
 
     objects = InheritanceManager()
 

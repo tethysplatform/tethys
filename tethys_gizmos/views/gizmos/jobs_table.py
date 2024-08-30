@@ -33,6 +33,8 @@ def async_login_required(func):
 
 @database_sync_to_async
 def get_job(job_id, user):
+    if user.is_staff or user.has_perm("tethys_compute.jobs_table_actions"):
+        return TethysJob.objects.get_subclass(id=job_id)
     return TethysJob.objects.get_subclass(id=job_id, user=user)
 
 

@@ -12,6 +12,7 @@ from tethys_compute.models import (
     CondorWorkflowJobNode,
     DaskJob,
 )
+from django.contrib.auth.models import Permission
 from tethys_gizmos.views.gizmos.jobs_table import bokeh_row
 
 
@@ -34,7 +35,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         mock_tj.return_value = mock.MagicMock(
             execute=mock_async_func, safe_close=mock_async_func
         )
-        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        request = mock.MagicMock(
+            user=mock.MagicMock(is_authenticated=True, is_staff=False)
+        )
 
         result = await gizmo_jobs_table.perform_action(
             request=request, job_id="1", action="execute"
@@ -48,7 +51,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         mock_job = mock.MagicMock()
         mock_job.execute.side_effect = Exception("error")
         mock_tj.return_value = mock_job
-        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        request = mock.MagicMock(
+            user=mock.MagicMock(is_authenticated=True, is_staff=False)
+        )
 
         await gizmo_jobs_table.perform_action(
             request=request, job_id="1", action="execute"
@@ -73,7 +78,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         mock_tj.return_value = mock.MagicMock(
             stop=mock.MagicMock(),
         )
-        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        request = mock.MagicMock(
+            user=mock.MagicMock(is_authenticated=True, is_staff=False)
+        )
 
         result = await gizmo_jobs_table.perform_action(
             request=request, job_id="1", action="terminate"
@@ -87,7 +94,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         mock_job = mock.MagicMock()
         mock_job.terminate.side_effect = Exception("error")
         mock_tj.return_value = mock_job
-        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        request = mock.MagicMock(
+            user=mock.MagicMock(is_authenticated=True, is_staff=False)
+        )
 
         await gizmo_jobs_table.perform_action(
             request=request, job_id="1", action="terminate"
@@ -97,23 +106,28 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             'The following error occurred when running "terminate" on job 1: error'
         )
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_delete(self, mock_tj):
         mock_tj.return_value = mock.MagicMock(
             delete=mock_async_func, safe_close=mock_async_func
         )
-        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        request = mock.MagicMock(
+            user=mock.MagicMock(is_authenticated=True, is_staff=False)
+        )
 
         result = await gizmo_jobs_table.delete(request=request, job_id="1")
 
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_delete_exception(self, mock_tj, mock_log):
-        tj = mock_tj.objects.get_subclass()
-        tj.delete.side_effect = Exception("error")
-        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+        mock_job = mock.MagicMock()
+        mock_job.delete.side_effect = Exception("error")
+        mock_tj.return_value = mock_job
+        request = mock.MagicMock(
+            user=mock.MagicMock(is_authenticated=True, is_staff=False)
+        )
 
         await gizmo_jobs_table.delete(request=request, job_id="1")
 
@@ -231,7 +245,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         request = RequestFactory().post(
             "/jobs", {"column_fields": self.column_names, "row": rows}
         )
-        request.user = mock.MagicMock(is_authenticated=True)
+        request.user = mock.MagicMock(is_authenticated=True, is_staff=False)
         result = await gizmo_jobs_table.update_row(request, job_id="1")
 
         # Check Result
@@ -255,7 +269,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         request = RequestFactory().post(
             "/jobs", {"column_fields": self.column_names, "row": rows}
         )
-        request.user = mock.MagicMock(is_authenticated=True)
+        request.user = mock.MagicMock(is_authenticated=True, is_staff=False)
         result = await gizmo_jobs_table.update_row(request, job_id="1")
 
         # Check Result
@@ -279,7 +293,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         request = RequestFactory().post(
             "/jobs", {"column_fields": self.column_names, "row": rows}
         )
-        request.user = mock.MagicMock(is_authenticated=True)
+        request.user = mock.MagicMock(is_authenticated=True, is_staff=False)
         result = await gizmo_jobs_table.update_row(request, job_id="1")
 
         # Check Result
@@ -349,7 +363,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         request = RequestFactory().post(
             "/jobs", {"column_fields": self.column_names, "row": rows}
         )
-        request.user = mock.MagicMock(is_authenticated=True)
+        request.user = mock.MagicMock(is_authenticated=True, is_staff=False)
         result = await gizmo_jobs_table.update_row(request, job_id="1")
 
         # Check Result
@@ -373,7 +387,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         request = RequestFactory().post(
             "/jobs", {"column_fields": self.column_names, "row": rows}
         )
-        request.user = mock.MagicMock(is_authenticated=True)
+        request.user = mock.MagicMock(is_authenticated=True, is_staff=False)
         result = await gizmo_jobs_table.update_row(request, job_id="1")
 
         # Check Result
@@ -621,3 +635,26 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             "The following error occurred when getting Dask scheduler"
             " for job test_id: test_error_message"
         )
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    async def test_get_job(self, mock_tj):
+        mock_user = mock.MagicMock(is_staff=False)
+        mock_user.has_perm.return_value = False
+        await gizmo_jobs_table.get_job("job_id", mock_user)
+        mock_tj.assert_called_with(id="job_id", user=mock_user)
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    async def test_get_job_staff(self, mock_tj):
+        mock_user = mock.MagicMock(is_staff=True)
+        await gizmo_jobs_table.get_job("job_id", mock_user)
+        mock_tj.assert_called_with(id="job_id")
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    async def test_get_job_has_permission(self, mock_tj):
+        mock_user = mock.MagicMock(is_staff=False)
+        mock_user.has_perm.return_value = True
+        await gizmo_jobs_table.get_job("job_id", mock_user)
+        mock_tj.assert_called_with(id="job_id")
+
+    def test_permission_exists(self):
+        Permission.objects.get(codename="jobs_table_actions")
