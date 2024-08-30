@@ -275,7 +275,9 @@ def create_db_user(
     db_name = db_name or username
 
     if is_superuser:
-        create_user_command = f"CREATE USER {username} WITH CREATEDB NOCREATEROLE PASSWORD '{password}';"
+        create_user_command = (
+            f"CREATE USER {username} WITH CREATEDB NOCREATEROLE PASSWORD '{password}';"
+        )
     else:
         create_user_command = f"CREATE USER {username} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password}';"
 
