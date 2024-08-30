@@ -29,9 +29,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
     def tearDown(self):
         pass
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_execute(self, mock_tj):
-        mock_tj.return_value = mock.MagicMock(execute=mock_async_func)
+        mock_tj.return_value = mock.MagicMock(
+            execute=mock_async_func, safe_close=mock_async_func
+        )
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         result = await gizmo_jobs_table.perform_action(
@@ -41,10 +43,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_execute_exception(self, mock_tj, mock_log):
-        tj = mock_tj.objects.get_subclass()
-        tj.execute.side_effect = Exception("error")
+        mock_job = mock.MagicMock()
+        mock_job.execute.side_effect = Exception("error")
+        mock_tj.return_value = mock_job
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         await gizmo_jobs_table.perform_action(
@@ -65,10 +68,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
 
         self.assertIsInstance(redirect, django.http.HttpResponseRedirect)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_terminate(self, mock_tj):
-        tj = mock_tj.objects.get_subclass()
-        tj.stop.return_value = mock.MagicMock()
+        mock_tj.return_value = mock.MagicMock(
+            stop=mock.MagicMock(),
+        )
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         result = await gizmo_jobs_table.perform_action(
@@ -78,10 +82,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_terminate_exception(self, mock_tj, mock_log):
-        tj = mock_tj.objects.get_subclass()
-        tj.terminate.side_effect = Exception("error")
+        mock_job = mock.MagicMock()
+        mock_job.terminate.side_effect = Exception("error")
+        mock_tj.return_value = mock_job
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         await gizmo_jobs_table.perform_action(
@@ -94,7 +99,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
     async def test_delete(self, mock_tj):
-        mock_tj.return_value = mock.MagicMock(delete=mock_async_func)
+        mock_tj.return_value = mock.MagicMock(
+            delete=mock_async_func, safe_close=mock_async_func
+        )
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         result = await gizmo_jobs_table.delete(request=request, job_id="1")
@@ -114,10 +121,8 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             "The following error occurred when deleting job 1: error"
         )
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
-    async def test_resubmit(self, mock_tj):
-        tj = mock_tj()
-        tj.resubmit.return_value = mock.MagicMock()
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_resubmit(self, _):
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         result = await gizmo_jobs_table.resubmit(request=request, job_id="1")
@@ -125,10 +130,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_resubmit_exception(self, mock_tj, mock_log):
-        tj = mock_tj.objects.get_subclass()
-        tj.resubmit.side_effect = Exception("error")
+        mock_job = mock.MagicMock()
+        mock_job.resubmit.side_effect = Exception("error")
+        mock_tj.return_value = mock_job
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         await gizmo_jobs_table.resubmit(request=request, job_id="1")
@@ -137,13 +143,14 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             'The following error occurred when running "resubmit" on job 1: error'
         )
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_show_log(self, mock_tj):
         mock_tj.return_value = mock.MagicMock(
             get_logs=partial(
                 mock_async_func,
                 {"log": {"sub_log_1": mock.MagicMock(), "sub_log_2": "log content"}},
-            )
+            ),
+            safe_close=mock_async_func,
         )
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
@@ -151,10 +158,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_show_log_exception(self, mock_tj, mock_log):
-        tj = mock_tj.objects.get_subclass()
-        tj.get_logs.side_effect = Exception("error")
+        mock_job = mock.MagicMock()
+        mock_job.get_logs.side_effect = Exception("error")
+        mock_tj.return_value = mock_job
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         await gizmo_jobs_table.show_log(request=request, job_id="1")
@@ -165,10 +173,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             "error",
         )
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_get_log_content(self, mock_tj):
         mock_tj.return_value = mock.MagicMock(
-            get_logs=partial(mock_async_func, {"log": "log content"})
+            get_logs=partial(mock_async_func, {"log": "log content"}),
+            safe_close=mock_async_func,
         )
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
@@ -177,13 +186,16 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(200, result.status_code)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_get_log_content_key2(self, mock_tj):
-        tj = mock_tj.objects.get_subclass()
         log_func = partial(mock_async_func, "log content")
-        tj.get_logs.return_value = {
-            "log": {"sub_log_1": log_func, "sub_log_2": "log content"}
-        }
+        mock_tj.return_value = mock.MagicMock(
+            get_logs=partial(
+                mock_async_func,
+                {"log": {"sub_log_1": log_func, "sub_log_2": "log content"}},
+            ),
+            safe_close=mock_async_func,
+        )
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         result = await gizmo_jobs_table.get_log_content(
@@ -192,10 +204,11 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_get_log_content_exception(self, mock_tj, mock_log):
-        tj = mock_tj.objects.get_subclass()
-        tj.get_logs.side_effect = Exception("error")
+        mock_job = mock.MagicMock()
+        mock_job.get_logs.side_effect = Exception("error")
+        mock_tj.return_value = mock_job
         request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
 
         await gizmo_jobs_table.get_log_content(request=request, job_id="1", key1="log")
@@ -280,7 +293,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_update_row(self, mock_tj, mock_rts):
         # Another Case where job.label is not gizmo_showcase
         mock_rts.return_value = '{"job_statuses":[]}'
@@ -291,6 +304,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             statuses={"Completed": 1, "Running": 1},
             num_jobs=2,
             update_status=mock_async_func,
+            safe_close=mock_async_func,
         )
         rows = [("1", "30")]
         actions = dict()
@@ -397,7 +411,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         result = gizmo_jobs_table._parse_value("Test")
         self.assertEqual("Test", result)
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_update_workflow_nodes_row(self, mock_tj):
         mock_job_a = mock.MagicMock(spec=Node, cluster_id=1, status="Completed")
         mock_job_a.name = "a-job"
@@ -417,12 +431,13 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             spec=Workflow, node_set=[mock_node_a, mock_node_b]
         )
 
-        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
+        mock_tj.return_value = mock.MagicMock(
             spec=CondorWorkflow,
             cached_status="Various",
             label="test_label",
             condor_object=mock_condor_object,
             update_status=mock_async_func,
+            safe_close=mock_async_func,
         )
 
         request = RequestFactory().post("/jobs")
@@ -452,9 +467,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             data["dag"],
         )
 
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_update_workflow_nodes_row_showcase(self, mock_tj):
-        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
+        mock_tj.return_value = mock.MagicMock(
             spec=CondorWorkflow,
             cached_status="Various",
             label="gizmo_showcase",
@@ -514,9 +529,9 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         )
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_update_workflow_nodes_row_exception(self, mock_tj, mock_log):
-        mock_tj.objects.get_subclass.side_effect = Exception
+        mock_tj.side_effect = Exception
 
         request = RequestFactory().post("/jobs")
         request.user = mock.MagicMock(is_authenticated=True)
@@ -533,12 +548,13 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.server_document")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.DaskScheduler")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_bokeh_row(self, mock_tj, mock_scheduler, mock_bokeh, mock_render):
         mock_tj.return_value = mock.MagicMock(
             cached_status="test_status",
             scheduler_id="test_scheduler_id",
             update_status=mock_async_func,
+            safe_close=mock_async_func,
         )
 
         mock_dask_scheduler = mock.MagicMock()
@@ -559,14 +575,12 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.server_document")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.DaskScheduler")
-    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.TethysJob")
-    async def test_bokeh_row_error(
-        self, mock_tethys, mock_scheduler, mock_bokeh, mock_log
-    ):
-        mock_job = mock.MagicMock()
-        mock_job.status = "test_status"
-        mock_job.scheduler_id = "test_scheduler_id"
-        mock_tethys.objects.get_subclass.return_value = mock_job
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_bokeh_row_error(self, mock_tj, mock_scheduler, mock_bokeh, mock_log):
+        mock_tj.return_value = mock.MagicMock(
+            status="test_status",
+            scheduler_id="test_scheduler_id",
+        )
 
         mock_dask_scheduler = mock.MagicMock()
         mock_dask_scheduler.name = "test_name"
@@ -584,4 +598,26 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         mock_log.error.assert_called_with(
             "The following error occurred when getting bokeh chart from scheduler"
             " test_name for job test_id: test_error_message"
+        )
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_dask_scheduler")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_bokeh_row_scheduler_error(self, mock_tj, mock_scheduler, mock_log):
+        mock_tj.return_value = mock.MagicMock(
+            status="test_status",
+            scheduler_id="test_scheduler_id",
+        )
+
+        request = mock.MagicMock()
+
+        mock_scheduler.side_effect = Exception("test_error_message")
+
+        # Excute
+
+        await bokeh_row(request, job_id="test_id")
+
+        mock_log.error.assert_called_with(
+            "The following error occurred when getting Dask scheduler"
+            " for job test_id: test_error_message"
         )

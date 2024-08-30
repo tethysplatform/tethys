@@ -302,3 +302,9 @@ class TethysJob(models.Model):
         Resumes a job that has been paused
         """
         raise NotImplementedError()
+
+    async def safe_close(self):
+        """
+        Override to close any asynchronous connections before object destruction
+        """
+        pass

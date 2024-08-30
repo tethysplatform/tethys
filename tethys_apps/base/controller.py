@@ -400,7 +400,7 @@ def controller(
             if protocol == "websocket":
                 controller = function_or_class.as_asgi()
             else:
-                controller = function_or_class.as_controller(**kwargs)
+                controller = function_or_class.as_view(**kwargs)
         else:
             controller = function_or_class
 

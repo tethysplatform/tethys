@@ -11,6 +11,8 @@ from tethys_sdk.gizmos import SelectInput
 from tethys_portal.optional_dependencies import optional_import
 from django.contrib.auth.decorators import login_required
 
+from channels.db import database_sync_to_async
+
 
 # optional imports
 server_document = optional_import("server_document", from_module="bokeh.embed")
@@ -29,15 +31,26 @@ def async_login_required(func):
     return wrapper
 
 
+@database_sync_to_async
+def get_job(job_id, user):
+    return TethysJob.objects.get_subclass(id=job_id, user=user)
+
+
+@database_sync_to_async
+def get_dask_scheduler(scheduler_id):
+    return DaskScheduler.objects.get(id=scheduler_id)
+
+
 @async_login_required
 async def perform_action(
     request, job_id, action, success_message="", error_message=None
 ):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         result = getattr(job, action)()
         if inspect.iscoroutine(result):
             await result
+            await job.safe_close()
         success = True
         message = success_message
     except Exception as e:
@@ -58,11 +71,12 @@ async def resubmit(request, job_id):
 @async_login_required
 async def delete(request, job_id):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         job.clean_on_delete = True
         result = job.delete()
         if inspect.iscoroutine(result):
             await result
+            await job.safe_close()
         success = True
         message = ""
     except Exception as e:
@@ -77,11 +91,12 @@ async def delete(request, job_id):
 @async_login_required
 async def show_log(request, job_id):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         # Get the Job logs.
         data = job.get_logs()
         if inspect.iscoroutine(data):
             data = await data
+            await job.safe_close()
 
         sub_job_options = [(k, k) for k in data.keys()]
         sub_job_select = SelectInput(
@@ -139,17 +154,23 @@ async def show_log(request, job_id):
 @async_login_required
 async def get_log_content(request, job_id, key1, key2=None):
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         # Get the Job logs.
         data = job.get_logs()
+        needs_safe_close = False
         if inspect.iscoroutine(data):
             data = await data
+            needs_safe_close = True
         log_func = data[key1]
         if key2 is not None:
             log_func = log_func[key2]
         content = log_func() if callable(log_func) else log_func
         if inspect.iscoroutine(content):
             content = await content
+            needs_safe_close = True
+
+        if needs_safe_close:
+            await job.safe_close()
 
         return JsonResponse({"success": True, "content": content})
     except Exception as e:
@@ -166,7 +187,7 @@ async def get_log_content(request, job_id, key1, key2=None):
             {
                 "success": False,
                 "error_message": f"ERROR: An error occurred while retrieving log content for: {key1} {key2}",
-            }
+            },
         )
 
 
@@ -174,10 +195,11 @@ async def get_log_content(request, job_id, key1, key2=None):
 async def update_row(request, job_id):
     data = reconstruct_post_dict(request)
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         result = job.update_status()
         if inspect.iscoroutine(result):
             await result
+            await job.safe_close()
         status = job.cached_status
         status_msg = job.status_message
         statuses = None
@@ -261,10 +283,11 @@ async def update_row(request, job_id):
 async def update_workflow_nodes_row(request, job_id):
     dag = {}
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         result = job.update_status()
         if inspect.iscoroutine(result):
             await result
+            await job.safe_close()
         status = job.cached_status
 
         # Hard code example for gizmo_showcase
@@ -346,15 +369,23 @@ async def bokeh_row(request, job_id, type="individual-graph"):
     Returns an embeded bokeh document in json. Javascript can use this method to inject bokeh document to jobs table.
     """
     try:
-        job = TethysJob.objects.get_subclass(id=job_id, user=request.user)
+        job = await get_job(job_id, request.user)
         result = job.update_status()
         if inspect.iscoroutine(result):
             await result
+            await job.safe_close()
         status = job.cached_status
 
         # Get dashboard link for a given job_id
         scheduler_id = job.scheduler_id
-        dask_scheduler = DaskScheduler.objects.get(id=scheduler_id)
+        dask_scheduler = await get_dask_scheduler(scheduler_id)
+    except Exception as e:
+        logger.error(
+            "The following error occurred when getting Dask "
+            "scheduler for job {}: {}".format(job_id, str(e))
+        )
+        return
+    try:
         base_link = dask_scheduler.dashboard
 
         # Append http if not exists
