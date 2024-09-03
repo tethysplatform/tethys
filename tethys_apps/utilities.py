@@ -141,10 +141,14 @@ def get_active_app(request=None, url=None, get_class=False):
             the_url = url
         else:
             return None
+        
+        apps_root = "apps"
+        if the_url.endswith(f"/{apps_root}"):
+            the_url += "/"
 
         url_parts = the_url.split("/")
         app = None
-        apps_root = "apps"
+        
         if apps_root in url_parts:
             # The app root_url is the path item following (+1) the apps_root item
             app_root_url_index = url_parts.index(apps_root) + 1
