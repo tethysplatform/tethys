@@ -272,9 +272,6 @@ def create_db_user(
     Returns: error code
 
     """
-    msg = f'Creating Tethys database user "{username}"...'
-    err_msg = f'Failed to create Tethys database user for "{username}"'
-
     db_name = db_name or username
 
     if is_superuser:
@@ -306,7 +303,10 @@ def create_db_user(
         "--command",
         create_user_command,
     ]
+    msg = f'Creating Tethys database user "{username}"...'
+    err_msg = f'Failed to create Tethys database user "{username}"'
     result_1 = _run_process(args, msg, err_msg, **kwargs)
+
     args = [
         "createdb",
         "-h",
@@ -323,8 +323,12 @@ def create_db_user(
         username,
         db_name,
     ]
-    err_msg = f'Failed to create default database for database user "{username}"'
+    msg = f'Creating Tethys database table "{db_name}" for user "{username}"...'
+    err_msg = (
+        f'Failed to create Tethys database table "{db_name}" for user "{username}"'
+    )
     result_2 = _run_process(args, msg, err_msg, **kwargs)
+
     return result_1 or result_2
 
 
@@ -336,6 +340,7 @@ def create_tethys_db(
     password=None,
     superuser_name=None,
     superuser_password=None,
+    exit_creation_on_error=True,
     **kwargs,
 ):
     """Create default user and superuser and associated databases for Tethys Portal
@@ -348,11 +353,13 @@ def create_tethys_db(
         password: password for `username` account
         superuser_name: superuser account name for Tethys Portal database
         superuser_password: password for `superuser_name` account
+        exit_creation_on_error: If True then exit if either child process returns and error code
         **kwargs: processed key word arguments from commandline
 
     Returns: error code
 
     """
+    kwargs.pop("exit_on_error", None)
     result_1 = None
     # Create superusers first, so that if there are conflicts in the names, the user created will be a superuser
     if superuser_name is not None and superuser_password is not None:
@@ -362,6 +369,7 @@ def create_tethys_db(
             username=superuser_name,
             password=superuser_password,
             is_superuser=True,
+            exit_on_error=False,
             **kwargs,
         )
     # Create Tethys db user next
@@ -371,9 +379,18 @@ def create_tethys_db(
         username=username,
         password=password,
         db_name=db_name,
+        exit_on_error=False,
         **kwargs,
     )
-    return result_1 or result_2
+
+    err_code = result_1 or result_2
+    if err_code:
+        err_msg = "Failed to setup user/superuser users/tables"
+        write_error(err_msg)
+        if exit_creation_on_error:
+            exit(err_code)
+
+    return err_code
 
 
 def migrate_tethys_db(db_alias=None, **kwargs):
@@ -472,7 +489,8 @@ def configure_tethys_db(**kwargs):
         _prompt_if_error(init_db_server, **kwargs)
         _prompt_if_error(start_db_server, **kwargs)
     if "postgresql" in kwargs.get("db_engine"):
-        _prompt_if_error(create_tethys_db, **kwargs)
+        creation_kwargs = kwargs | {"exit_creation_on_error": False}
+        _prompt_if_error(create_tethys_db, **creation_kwargs)
     if "sqlite" in kwargs.get("db_engine"):
         # Make sure the parent directory for the database exists
         db_path = Path(kwargs["db_name"])
