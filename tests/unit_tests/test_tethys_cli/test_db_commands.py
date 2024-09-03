@@ -197,13 +197,59 @@ class TestCommandTests(unittest.TestCase):
             **kwargs,
         )
 
+    @mock.patch("tethys_cli.db_commands.write_error")
     @mock.patch("tethys_cli.db_commands.create_db_user")
-    def test_db_command_create(self, mock_create_db_user):
+    def test_db_command_create_error_code_without_exit(
+        self, mock_create_db_user, mock_write_error
+    ):
         mock_args = mock.MagicMock()
         mock_args.command = "create"
+        self.options["exit_creation_on_error"] = False
+        mock_create_db_user.return_value = 1
         db_command(mock_args)
         call_args = mock_create_db_user.call_args_list
         kwargs = self._get_kwargs(remove=["superuser_name", "superuser_password"])
+        kwargs["exit_on_error"] = False
+        kwargs.pop("exit_creation_on_error")
+        self.assertEqual(call_args[1], mock.call(**kwargs))
+        kwargs.pop("db_name")
+        kwargs["username"] = self.options["superuser_name"]
+        kwargs["password"] = self.options["superuser_password"]
+        self.assertEqual(call_args[0], mock.call(is_superuser=True, **kwargs))
+        err_msg = "Failed to setup user/superuser users/tables"
+        mock_write_error.assert_called_with(err_msg)
+
+    @mock.patch("tethys_cli.db_commands.write_error")
+    @mock.patch("tethys_cli.db_commands.create_db_user")
+    def test_db_command_create_error_code_with_exit(
+        self, mock_create_db_user, mock_write_error
+    ):
+        mock_args = mock.MagicMock()
+        mock_args.command = "create"
+        self.options["exit_creation_on_error"] = True
+        mock_create_db_user.return_value = 1
+        self.assertRaises(SystemExit, db_command, mock_args)
+        call_args = mock_create_db_user.call_args_list
+        kwargs = self._get_kwargs(remove=["superuser_name", "superuser_password"])
+        kwargs["exit_on_error"] = False
+        kwargs.pop("exit_creation_on_error")
+        self.assertEqual(call_args[1], mock.call(**kwargs))
+        kwargs.pop("db_name")
+        kwargs["username"] = self.options["superuser_name"]
+        kwargs["password"] = self.options["superuser_password"]
+        self.assertEqual(call_args[0], mock.call(is_superuser=True, **kwargs))
+        err_msg = "Failed to setup user/superuser users/tables"
+        mock_write_error.assert_called_with(err_msg)
+
+    @mock.patch("tethys_cli.db_commands.create_db_user")
+    def test_db_command_create_no_error_codes(self, mock_create_db_user):
+        mock_args = mock.MagicMock()
+        mock_args.command = "create"
+        mock_create_db_user.return_value = None
+        db_command(mock_args)
+        call_args = mock_create_db_user.call_args_list
+        kwargs = self._get_kwargs(remove=["superuser_name", "superuser_password"])
+        kwargs["exit_on_error"] = False
         self.assertEqual(call_args[1], mock.call(**kwargs))
         kwargs.pop("db_name")
         kwargs["username"] = self.options["superuser_name"]
@@ -262,8 +308,8 @@ class TestCommandTests(unittest.TestCase):
         )
         self.mock_run_process.assert_called_with(
             args,
-            'Creating Tethys database user "foo"...',
-            'Failed to create default database for database user "foo"',
+            'Creating Tethys database table "db_name" for user "foo"...',
+            'Failed to create Tethys database table "db_name" for user "foo"',
             **kwargs,
         )
 
@@ -404,10 +450,11 @@ class TestCommandTests(unittest.TestCase):
         mock_args.command = "configure"
         db_command(mock_args)
         kwargs = self._get_kwargs()
+        creation_kwargs = kwargs | {"exit_creation_on_error": False}
         calls = [
             mock.call(init_db_server, **kwargs),
             mock.call(start_db_server, **kwargs),
-            mock.call(create_tethys_db, **kwargs),
+            mock.call(create_tethys_db, **creation_kwargs),
         ]
         mock_prompt_err.assert_has_calls(calls)
         mock_migrate.assert_called_with(**self.options)
