@@ -12,6 +12,7 @@ from tethys_cli.gen_commands import (
 from tethys_cli.scaffold_commands import scaffold_command, APP_PREFIX
 from tethys_cli.install_commands import install_command
 from tethys_cli.settings_commands import settings_command
+from tethys_cli.cli_colors import write_warning
 
 
 def add_start_parser(subparsers):
@@ -60,8 +61,13 @@ def quickstart_command(args):
         tethys_portal_settings={},
     )
     portal_config_path = get_destination_path(portal_config_args, check_existence=False)
-    if not os.path.exists(portal_config_path):
-        generate_command(portal_config_args)
+    if os.path.exists(portal_config_path):
+        write_warning(
+            'An existing portal configuration was already found. Please use "tethys start" instead to start your server.'
+        )
+        exit(1)
+
+    generate_command(portal_config_args)
 
     db_config_args = Namespace(
         command="configure",

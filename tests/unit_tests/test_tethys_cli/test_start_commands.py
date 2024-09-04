@@ -85,4 +85,30 @@ class TestStartCommands(unittest.TestCase):
         mock_install_command.assert_called_once_with("app_install_args")
         mock_settings_command.assert_called_once_with("update_settings_args")
         mock_webbrowser.open.assert_called_once_with("http://127.0.0.1:8000/")
-        start_command.assert_called_once_with("start_args")
+        mock_start_command.assert_called_once_with("start_args")
+
+    @mock.patch("tethys_cli.start_commands.write_warning")
+    @mock.patch("tethys_cli.start_commands.exit")
+    @mock.patch("tethys_cli.start_commands.os")
+    @mock.patch("tethys_cli.start_commands.get_destination_path")
+    @mock.patch("tethys_cli.start_commands.Namespace")
+    def test_quickstart_command_portal_config_exists(
+        self,
+        mock_namespace,
+        mock_get_destination_path,
+        mock_os,
+        mock_exit,
+        mock_write_warning,
+    ):
+        mock_get_destination_path.return_value = "path/to/portal_config.yml"
+        mock_os.path.exists.return_value = True
+        mock_namespace.side_effect = ["portal_config_args"]
+        mock_exit.side_effect = SystemExit
+        args = Namespace()
+
+        self.assertRaises(SystemExit, quickstart_command, args)
+
+        mock_get_destination_path.assert_called_once_with(
+            "portal_config_args", check_existence=False
+        )
+        mock_write_warning.assert_called_once()

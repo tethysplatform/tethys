@@ -860,7 +860,7 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
-    write_success(f"Successfully installed dependencies for {app_name}.")
+    write_success(f"Successfully installed {app_name}.")
 
 
 def validate_schema(check_str, check_list):
