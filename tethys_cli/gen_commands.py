@@ -528,7 +528,7 @@ def gen_requirements_txt(args):
     return context
 
 
-def get_destination_path(args):
+def get_destination_path(args, check_existence=True):
     # Determine destination file name (defaults to type)
     destination_file = FILE_NAMES[args.type]
 
@@ -560,7 +560,8 @@ def get_destination_path(args):
 
     destination_path = os.path.join(destination_dir, destination_file)
 
-    check_for_existing_file(destination_path, destination_file, args.overwrite)
+    if check_existence:
+        check_for_existing_file(destination_path, destination_file, args.overwrite)
 
     return destination_path
 
