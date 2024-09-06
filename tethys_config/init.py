@@ -116,7 +116,7 @@ def setting_defaults(category):
 
         category.setting_set.create(
             name="Brand Image",
-            content="/tethys_portal/images/tethys-logo-25.png",
+            content="/tethys_portal/images/tethys-on-blue-icon-only.svg",
             date_modified=now,
         )
 
