@@ -30,6 +30,9 @@ class TethysJob(models.Model):
 
     class Meta:
         verbose_name = "Job"
+        permissions = [
+            ("jobs_table_actions", "Can access job's table endpoints for all jobs."),
+        ]
 
     objects = InheritanceManager()
 
@@ -302,3 +305,9 @@ class TethysJob(models.Model):
         Resumes a job that has been paused
         """
         raise NotImplementedError()
+
+    async def safe_close(self):
+        """
+        Override to close any asynchronous connections before object destruction
+        """
+        pass
