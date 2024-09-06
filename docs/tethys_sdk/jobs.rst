@@ -71,7 +71,6 @@ You can now use the job manager to create a new job, or retrieve an existing job
 Creating and Executing a Job
 ----------------------------
 To create a new job call the ``create_job`` method on the job manager. The required arguments are:
-
     * ``name``: A unique string identifying the job
     * ``user``: A user object, usually from the request argument: `request.user`
     * ``job_type``: A string specifying on of the supported job types (see `Job Types`_)
@@ -119,13 +118,11 @@ Common Attributes
 Job attributes can be passed into the `create_job` method of the job manager or they can be specified after the job is instantiated. All jobs have a common set of attributes. Each job type may have additional attributes specific that are to that job type.
 
 The following attributes can be defined for *all* job types:
-
     * ``name`` (string, required): a unique identifier for the job. This should not be confused with the job template name. The template name identifies a template from which jobs can be created and is set when the template is created. The job ``name`` attribute is defined when the job is created (see `Creating and Executing a Job`_).
     * ``description`` (string): a short description of the job.
     * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job.
     * ``extended_properties`` (dict): a dictionary of additional properties that can be used to create custom job attributes.
-    * ``status`` (string): a string representing the state of the job. Possible statuses are:
-
+    * ``status`` (string): a string representing the state of the job. When accessed the status will be updated if necessary. Possible statuses are:
         - 'Pending'
         - 'Submitted'
         - 'Running'
@@ -138,10 +135,12 @@ The following attributes can be defined for *all* job types:
         - 'Other'\**
 
         \*used for job types with multiple sub-jobs (e.g. CondorWorkflow).
+
         \**When  a custom job status is set the official status is 'Other', but the custom status is stored as an extended property of the job.
 
-All job types also have the following **read-only** attributes:
+    * ``cached_status`` (string): Same as the ``status`` attribute, except that the status is not actively updated. Rather the last known status is returned.
 
+All job types also have the following **read-only** attributes:
     * ``user`` (User): the user who created the job.
     * ``label`` (string): the package name of the Tethys App used to created the job.
     * ``creation_time`` (datetime): the time the job was created.
@@ -152,8 +151,7 @@ All job types also have the following **read-only** attributes:
 Job Types
 ---------
 
-The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. When creating a new job you must specify its type by passing in the `job_type` argument. Supported values for `job_type` are:
-
+The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. When creating a new job you must specify its type by passing in the ``job_type`` argument. Supported values for ``job_type`` are:
     * 'BASIC'
     * 'CONDOR' or 'CONDORJOB'
     * 'CONDORWORKFLOW'
@@ -193,7 +191,7 @@ Two methods are provided to retrieve jobs: ``list_jobs`` and ``get_job``. Jobs a
 
 Jobs Table Gizmo
 ----------------
-The Jobs Table Gizmo facilitates job management through the web interface and is designed to be used in conjunction with the Job Manager. It can be configured to list any of the properties of the jobs, and will automatically update the job status. It also can provide a list of actions that can be done on the a job. In addition to several build-in actions (including run, delete, viewing job results, etc.), developers can also create custom actions to include in the actions dropdown list. The following code sample shows how to use the job manager to populate the jobs table:
+The Jobs Table Gizmo facilitates job management through the web interface and is designed to be used in conjunction with the Job Manager. It can be configured to list any of the properties of the jobs, and will automatically update the job status. It also can provide a list of actions that can be done on the a job. In addition to several build-in actions (including run, delete, viewing job results, etc.), developers can also create custom actions to include in the actions dropdown list. Note that while none of the built-in actions are asynchronous on any of the built-in `Job Types`_, the Jobs Table supports both synchronous and asynchronous actions. Custom actions or the built-in actions of custom job types may be asynchronous. The following code sample shows how to use the job manager to populate the jobs table:
 
 ::
 
