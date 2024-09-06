@@ -4,9 +4,19 @@
 Getting Started
 ***************
 
-**Last Updated:** May 2023
+**Last Updated:** September 2024
 
-This section describes how to get Tethys Platform up and running as a fresh installation for app development. If you are upgrading an existing installation then refer to the :ref:`update_tethys` docs. If you are deploying a production instance of Tethys Portal refer to the :ref:`production_installation` docs. If you want to contribute to the Tethys Platform source code itself then refer to the :ref:`developer_installation` docs.
+This section describes how to get Tethys Platform up and running as a fresh installation for app development.
+
+.. note::
+    
+    For the simplest and most streamlined instructions, see :ref:`quickstart`.
+    
+    For upgrading an existing installation, see :ref:`update_tethys`. 
+    
+    For deploying a production instance of Tethys Portal, see :ref:`production_installation`.
+    
+    To contribute to the Tethys Platform source code itself, see :ref:`developer_installation`.
 
 Prerequisites
 -------------

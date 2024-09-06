@@ -2,6 +2,7 @@ import sys
 import unittest
 from unittest import mock
 from io import StringIO
+import os
 
 from tethys_cli import tethys_command
 
@@ -73,7 +74,24 @@ class TethysCommandTests(unittest.TestCase):
         mock_scaffold_command.assert_called()
         call_args = mock_scaffold_command.call_args_list
         self.assertEqual("foo", call_args[0][0][0].name)
+        self.assertEqual(os.getcwd(), call_args[0][0][0].prefix)
         self.assertEqual("default", call_args[0][0][0].template)
+        self.assertFalse(call_args[0][0][0].overwrite)
+        self.assertFalse(call_args[0][0][0].extension)
+        self.assertFalse(call_args[0][0][0].use_defaults)
+
+    @mock.patch("tethys_cli.scaffold_commands.scaffold_command")
+    def test_scaffold_subcommand_with_prefix(self, mock_scaffold_command):
+        testargs = ["tethys", "scaffold", "foo", "my/custom/path"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            tethys_command()
+
+        mock_scaffold_command.assert_called()
+        call_args = mock_scaffold_command.call_args_list
+        self.assertEqual("foo", call_args[0][0][0].name)
+        self.assertEqual("default", call_args[0][0][0].template)
+        self.assertEqual("my/custom/path", call_args[0][0][0].prefix)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].extension)
         self.assertFalse(call_args[0][0][0].use_defaults)
@@ -1480,3 +1498,55 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn("--defaults", mock_stdout.getvalue())
         self.assertIn("--containers", mock_stdout.getvalue())
         self.assertIn("--boot2docker", mock_stdout.getvalue())
+
+    @mock.patch("tethys_cli.start_commands.start_command")
+    def test_start_command(self, mock_start_command):
+        testargs = ["tethys", "start"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            tethys_command()
+
+        mock_start_command.assert_called()
+        call_args = mock_start_command.call_args_list
+        self.assertEqual(None, call_args[0][0][0].port)
+        self.assertEqual(mock_start_command, call_args[0][0][0].func)
+
+    @mock.patch("sys.stdout", new_callable=StringIO)
+    @mock.patch("tethys_cli.argparse._sys.exit")
+    @mock.patch("tethys_cli.start_commands.start_command")
+    def test_start_command_help(self, mock_start_command, mock_exit, mock_stdout):
+        mock_exit.side_effect = SystemExit
+        testargs = ["tethys", "start", "-h"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        mock_start_command.assert_not_called()
+        mock_exit.assert_called_with(0)
+
+        self.assertIn("--help", mock_stdout.getvalue())
+        self.assertIn("--port", mock_stdout.getvalue())
+
+    @mock.patch("tethys_cli.start_commands.quickstart_command")
+    def test_quickstart_command(self, mock_quickstart_command):
+        testargs = ["tethys", "quickstart"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            tethys_command()
+
+        mock_quickstart_command.assert_called()
+        call_args = mock_quickstart_command.call_args_list
+        self.assertEqual(mock_quickstart_command, call_args[0][0][0].func)
+
+    @mock.patch("sys.stdout", new_callable=StringIO)
+    @mock.patch("tethys_cli.argparse._sys.exit")
+    @mock.patch("tethys_cli.start_commands.quickstart_command")
+    def test_quickstart_command_help(self, mock_quickstart_command, mock_exit, _):
+        mock_exit.side_effect = SystemExit
+        testargs = ["tethys", "quickstart", "-h"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        mock_quickstart_command.assert_not_called()
+        mock_exit.assert_called_with(0)
