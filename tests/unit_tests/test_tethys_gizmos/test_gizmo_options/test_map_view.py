@@ -10,10 +10,33 @@ class TestMapView(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_MapView(self):
+    @mock.patch("tethys_gizmos.gizmo_options.map_view.deprecation_warning")
+    def test_MapView(self, mock_deprecation):
         height = "500px"
         width = "90%"
-        basemap = "Aerial"
+        basemap = [
+            "Aerial",
+            "OpenStreetMap",
+            "CartoDB",
+            [
+                {"CartoDB": {"style": "dark"}},
+                {
+                    "CartoDB": {
+                        "style": "light",
+                        "labels": False,
+                        "control_label": "CartoDB-light-no-labels",
+                    }
+                },
+            ],
+            {
+                "XYZ": {
+                    "url": "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png",
+                    "control_label": "Wikimedia",
+                }
+            },
+            "ESRI",
+            "BING",
+        ]
         controls = ["ZoomSlider", "Rotate", "FullScreen", "ScaleLine"]
 
         result = gizmo_map_view.MapView(
@@ -23,13 +46,14 @@ class TestMapView(unittest.TestCase):
         # Check Result
         self.assertIn(height, result["height"])
         self.assertIn(width, result["width"])
-        self.assertIn(basemap, result["basemap"])
+        self.assertListEqual(basemap, result["basemap"])
         self.assertEqual(controls, result["controls"])
 
         self.assertIn(".js", gizmo_map_view.MapView.get_vendor_js()[0])
         self.assertIn(".js", gizmo_map_view.MapView.get_gizmo_js()[0])
         self.assertIn(".css", gizmo_map_view.MapView.get_vendor_css()[0])
         self.assertIn(".css", gizmo_map_view.MapView.get_gizmo_css()[0])
+        mock_deprecation.assert_called_once()
 
     def test_MVView(self):
         projection = "EPSG:4326"

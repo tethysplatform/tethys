@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from pytz import timezone as pytz_timezone
 from django.utils import timezone as django_timezone
-from unittest import mock
+from unittest import mock, IsolatedAsyncioTestCase
 
 
 def test_function():
@@ -409,3 +409,10 @@ class TethysJobTest(TethysTestCase):
         ret = sorted((self.tethysjob, self.tethysjob_execute_time))
         expected_value = [self.tethysjob, self.tethysjob_execute_time]
         self.assertListEqual(ret, expected_value)
+
+
+class AsyncTethysJobTest(IsolatedAsyncioTestCase):
+    async def test_safe_close(self):
+        job = TethysJob()
+        ret = await job.safe_close()
+        self.assertIsNone(ret)

@@ -131,7 +131,7 @@ function update_log_content(event, use_cache=true){
 
   if(use_cache && content != null){
     $("#jobs_table_logs_overlay").addClass('d-none');
-    $('#modal-dialog-jobs-table-log-content').html(content);
+    $('#modal-dialog-jobs-table-log-content').html(`<pre>${content}</pre>`);
   }
   else{
     $('#modal-dialog-jobs-table-log-content').html('');
@@ -142,11 +142,12 @@ function update_log_content(event, use_cache=true){
     }).done(function(json){
     $("#jobs_table_logs_overlay").addClass('d-none');
       if(json.success){
-        $('#modal-dialog-jobs-table-log-content').html(json.content);
+        content = json.content;
+        $('#modal-dialog-jobs-table-log-content').html(`<pre>${content}</pre>`);
         if (key2 === undefined){
-          log_contents[key1] = json.content;
+          log_contents[key1] = content;
         }else{
-          log_contents[key1][key2] = json.content;
+          log_contents[key1][key2] = content;
         }
       }
       else{

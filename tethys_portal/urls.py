@@ -254,9 +254,12 @@ if has_module(psa_views):
         )
     )
 if has_module("oauth2_provider"):
+    url_namespace = settings.OAUTH2_PROVIDER_URL_NAMESPACE
+    if not url_namespace.endswith("/"):
+        url_namespace += "/"
     urlpatterns.append(
         re_path(
-            "oauth2-provider/",
+            url_namespace,
             include("oauth2_provider.urls", namespace="oauth2_provider"),
         )
     )

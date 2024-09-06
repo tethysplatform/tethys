@@ -179,7 +179,7 @@ CAPTCHA_CONFIG
 
 .. important::
 
-    These Captcha feature requires either the ``django-simple-captcha`` library or the ``django-recaptcha2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install one of these libraries using conda or pip as follows:
+    The Captcha feature requires either the ``django-simple-captcha`` library or the ``django-recaptcha2`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install one of these libraries using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -284,6 +284,36 @@ SOCIAL_AUTH_ONELOGIN_OIDC_SECRET                       Secret for authenticating
 SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN                    Your OneLogin Subdomain. See :ref:`social_auth_onelogin` SSO Setup.
 SOCIAL_AUTH_ONELOGIN_OIDC_TOKEN_ENDPOINT_AUTH_METHOD   The authentication method to use when requesting tokens from the token endpoint. See :ref:`social_auth_onelogin` SSO Setup.
 ====================================================== ================================================================================
+
+.. _oauth2_provider_settings:
+
+OAUTH2_PROVIDER
++++++++++++++++
+
+.. important::
+
+    The OAuth2 Provider feature requires the ``django-oauth-toolkit`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install one of these libraries using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-oauth-toolkit
+
+        # pip
+        pip install django-oauth-toolkit
+
+.. note::
+
+    The ``OAUTH2_PROVIDER`` heading can be listed under the ``OAUTH_CONFIG`` heading or it can be it's own heading.
+
+====================================================== ================================================================================
+Setting                                                Description
+====================================================== ================================================================================
+URL_NAMESPACE                                          The URL prefix to use to register the ``oauth2_provider`` urls. Default is ``o`` which produces URL endpoints like `<http://127.0.0.1:8000/o/applications/register/>`_.
+====================================================== ================================================================================
+
+For additional ``OAUTH2_PROVIDER`` refer to the `Django OAuth Toolkit documentation <https://django-oauth-toolkit.readthedocs.io/en/stable/settings.html>`_.
+
 
 MFA_CONFIG
 ++++++++++
