@@ -24,6 +24,7 @@ from tethys_cli.scheduler_commands import add_scheduler_parser
 from tethys_cli.services_commands import add_services_parser
 from tethys_cli.settings_commands import add_settings_parser
 from tethys_cli.site_commands import add_site_parser
+from tethys_cli.start_commands import add_start_parser, add_quickstart_parser
 from tethys_cli.syncstores_command import add_syncstores_parser
 from tethys_cli.test_command import add_test_parser
 from tethys_cli.install_commands import add_install_parser
@@ -56,6 +57,8 @@ def tethys_command_parser():
     add_settings_parser(subparsers)
     add_site_parser(subparsers)
     add_syncstores_parser(subparsers)
+    add_start_parser(subparsers)
+    add_quickstart_parser(subparsers)
     add_test_parser(subparsers)
     add_proxyapps_parser(subparsers)
     return parser
