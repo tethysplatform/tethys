@@ -800,7 +800,8 @@ def install_command(args):
 
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:
-        successful_exit(app_name, "installed dependencies for")
+        write_success(f"Successfully installed dependencies for {app_name}.")
+        return
 
     # Install Python Package
     write_msg("Running application install....")
@@ -816,7 +817,8 @@ def install_command(args):
         call(cmd, stdout=FNULL, stderr=STDOUT)
 
     if args.no_db_sync:
-        successful_exit(app_name)
+        write_success(f"Successfully installed {app_name}.")
+        return
 
     call(["tethys", "db", "sync"])
 
@@ -861,7 +863,7 @@ def install_command(args):
                 process = Popen(str(command), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
-    successful_exit(app_name)
+    write_success(f"Successfully installed {app_name}.")
 
 
 def validate_schema(check_str, check_list):
@@ -870,11 +872,6 @@ def validate_schema(check_str, check_list):
         and check_list[check_str]
         and len(check_list[check_str]) > 0
     )
-
-
-def successful_exit(app_name, action="installed"):
-    write_success(f"Successfully {action} {app_name}.")
-    exit(0)
 
 
 def assign_json_value(value):

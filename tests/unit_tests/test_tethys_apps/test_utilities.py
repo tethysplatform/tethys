@@ -205,6 +205,15 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(mock_app.objects.get(), result)
 
     @override_settings(MULTIPLE_APP_MODE=True)
+    def test_get_active_app_no_app(self):
+        # check apps with /
+        result = utilities.get_active_app(url="/apps/")
+        self.assertEqual(None, result)
+        # check apps without /
+        result = utilities.get_active_app(url="/apps")
+        self.assertEqual(None, result)
+
+    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_get_active_app_class(self, mock_app, mock_harvester):

@@ -404,7 +404,7 @@ def controller(
             if protocol == "websocket":
                 controller = function_or_class.as_asgi()
             else:
-                controller = function_or_class.as_controller(**kwargs)
+                controller = function_or_class.as_view(**kwargs)
         else:
             controller = function_or_class
 
@@ -571,7 +571,7 @@ def handler(
 ):
     """
     Decorator to register a handler function and connect it with a controller function
-    (by automatically registering a UrlMap for it).
+    (by automatically registering a UrlMap for it). Handler function may be synchronous or asynchronous.
 
     Args:
         controller: reference to controller function or string with dot-notation path to controller function. This is only required if custom logic is needed in the controller. Otherwise use `template` or `app_package`.
@@ -589,7 +589,13 @@ def handler(
         from tethys_sdk.routing import handler
 
         @handler
-        def my_app_handler(document):
+        async def my_app_handler(document):
+            ...
+
+        ------------
+
+        @handler
+        def my_sync_app_handler(document):
             ...
 
         ------------
@@ -598,7 +604,7 @@ def handler(
             name='home',
             app_package='my_app',
         )
-        def my_app_handler(document):
+        async def my_app_handler(document):
             ...
 
         ------------
@@ -666,7 +672,7 @@ def handler(
         @handler(
             with_paths=True
         )
-        def my_app_handler(document):
+        async def my_app_handler(document):
             # attributes available when using "with_paths" argument
             request = document.request
             user_workspace = document.user_workspace
@@ -717,8 +723,8 @@ def handler(
                 "5.0",
                 'the "with_workspaces" argument to the "handler" decorator',
                 'The workspaces API has been replaced with the new Paths API. In place of the "with_workspaces" '
-                'argument please use the "with_paths" argument '
-                f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#consumer-decorator>).]n"
+                f'argument please use the "with_paths" argument on "{function.__module__}.{function.__name__}" '
+                f"(see {DOCS_BASE_URL}tethys_sdk/paths.html#consumer-decorator>).\n"
                 f"For a full guide to transitioning to the Paths API see "
                 f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
             )

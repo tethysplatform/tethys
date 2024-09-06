@@ -507,6 +507,10 @@ OAUTH_CONFIG = portal_config_settings.pop("OAUTH_CONFIG", {})
 for setting, value in OAUTH_CONFIG.items():
     setattr(this_module, setting, value)
 
+OAUTH2_PROVIDER_URL_NAMESPACE = OAUTH_CONFIG.get(
+    "OAUTH2_PROVIDER", portal_config_settings.get("OAUTH2_PROVIDER", {})
+).pop("URL_NAMESPACE", "o")
+
 # MFA Settings
 # See: https://github.com/mkalioby/django-mfa2
 # Methods that shouldn't be allowed for the user, U2F, FIDO2, TOTP, Trusted_Devices, Email

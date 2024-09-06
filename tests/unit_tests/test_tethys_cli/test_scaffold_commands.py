@@ -150,6 +150,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project_name"
         mock_args.use_defaults = True
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -189,7 +190,7 @@ class TestScaffoldCommands(unittest.TestCase):
         po_call_args = mock_pretty_output.call_args_list
 
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[0][0][0],
         )
         self.assertIn("Created:", po_call_args[1][0][0])
@@ -296,6 +297,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project_name"
         mock_args.use_defaults = True
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -334,7 +336,7 @@ class TestScaffoldCommands(unittest.TestCase):
         po_call_args = mock_pretty_output.call_args_list
 
         self.assertEqual(
-            'Creating new Tethys project named "tethysapp-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysapp-project_name".',
             po_call_args[0][0][0],
         )
         self.assertIn("Created:", po_call_args[1][0][0])
@@ -399,6 +401,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "PROJECT_NAME"
         mock_args.use_defaults = True
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -443,7 +446,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -550,6 +553,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = True
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -593,7 +597,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -662,6 +666,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = False
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -709,7 +714,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -783,6 +788,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = False
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -828,7 +834,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
@@ -876,6 +882,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = False
         mock_args.overwrite = True
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -931,7 +938,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Invalid response: foo", po_call_args[2][0][0])
@@ -1004,6 +1011,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = True
         mock_args.overwrite = False
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1051,7 +1059,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -1118,6 +1126,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = True
         mock_args.overwrite = False
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1163,7 +1172,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
@@ -1211,6 +1220,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = True
         mock_args.overwrite = False
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1256,7 +1266,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
@@ -1304,6 +1314,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_args.name = "project-name"
         mock_args.use_defaults = True
         mock_args.overwrite = False
+        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1351,7 +1362,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            'Creating new Tethys project named "tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
             po_call_args[1][0][0],
         )
         self.assertIn("Error: Unable to overwrite", po_call_args[2][0][0])
