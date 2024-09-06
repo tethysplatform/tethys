@@ -122,6 +122,12 @@ settings:
   #    SOCIAL_AUTH_ARCGIS_PORTAL_SECRET: ''
   #    SOCIAL_AUTH_ARCGIS_PORTAL_URL: ''
 
+  #    OAUTH2_PROVIDER:
+  #        URL_NAMESPACE: o
+  #        SCOPES:
+  #          read: Read scope
+
+
   #  ANALYTICS_CONFIG:
   #    CLICKMAP_TRACKER_ID: False
   #    CLICKY_SITE_ID: False

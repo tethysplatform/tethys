@@ -58,8 +58,8 @@ class CustomJobAction:
 
     Attributes:
         label (str, required): The display name of the action that will show in the actions dropdown.
-        callback_or_url (str or callable, required if ``modal_url`` is not supplied): The name on a callable attribute
-            on the ``job_type`` object or a callable that accepts a ``TethysJob`` as an argument.
+        callback_or_url (str or callable, required if ``modal_url`` is not supplied): The name of a callable attribute
+            on the ``job_type`` object or a callable that accepts a ``TethysJob`` as an argument (may be asynchronous).
             Or it can be the name of a URL that the custom action option will link to.
         enabled_callback (callable): A callable that accepts a ``job_type`` object as an argument and returns True
             if the action should be enabled or False if it should be disabled.
