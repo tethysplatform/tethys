@@ -180,8 +180,8 @@ PostGIS Extension (Optional)
         These instructions are based on `Users Wiki: Ubuntu Install Guide <https://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS3UbuntuPGSQLApt>`_ and `Installing on Red Hat / Centos / Scientific Linux <https://postgis.net/documentation/getting_started/install_red_hat/>`_.
 
 
-NGINX
-=====
+NGINX (Recommended)
+===================
 
 `NGINX <https://www.nginx.com/resources/wiki/>`_ (pronounced "N-gin-X") is a free and open-source HTTP server and reverse proxy. It is known for its high performance, stability, rich feature set, simple configuration, and low resource consumption. NGINX is used in combination with Daphne as an HTTP server to host Tethys Portal in production.
 
@@ -210,6 +210,11 @@ NGINX
     .. note::
 
         These instructions are based on `How To Install Nginx on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04>`_ and `How to Install Nginx on CentOS 8 <https://linuxize.com/post/how-to-install-nginx-on-centos-8/>`_.
+
+Apache (Optional)
+=================
+
+TODO: Add apache installation instructions
 
 Supervisor
 ==========

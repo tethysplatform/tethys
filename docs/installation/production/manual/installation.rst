@@ -4,7 +4,7 @@
 Install Tethys Platform
 ***********************
 
-**Last Updated:** September 2022
+**Last Updated:** August 2024
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. Currently production installation of Tethys is only supported on Linux. Some parts of these instructions are optimized for Ubuntu, though installation on other Linux distributions will be similar.
 
