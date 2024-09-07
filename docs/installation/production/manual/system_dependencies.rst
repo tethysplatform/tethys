@@ -254,7 +254,30 @@ NGINX (Recommended)
 Apache (Optional)
 =================
 
-TODO: Add apache installation instructions
+`Apache <https://httpd.apache.org/>`_ is a free and open-source cross-platform web server software. If you prefer to use Apache instead of NGINX, you can install it as follows:
+
+    **Ubuntu**:
+
+        .. code-block:: bash
+
+            sudo apt install -y apache2
+
+        Disable and stop Apache because it will be managed with Supervisor
+
+        .. code-block:: bash
+
+            sudo systemctl stop apache2
+            sudo systemctl disable apache2
+
+    **Rocky Linux**:
+
+        .. code-block:: bash
+
+            sudo dnf install -y httpd
+
+    .. note::
+
+        These instructions are based on `How To Install the Apache Web Server on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-20-04>`_ and `How to install Apache on Rocky Linux 9 <https://www.linuxteck.com/how-to-install-apache-on-rocky-linux/>`_.
 
 Supervisor
 ==========
