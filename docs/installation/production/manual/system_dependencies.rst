@@ -249,7 +249,7 @@ NGINX (Recommended)
 
     .. note::
 
-        These instructions are based on `How To Install Nginx on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04>`_ and `How to Install Nginx on Rocky Linux 8 <https://linuxize.com/post/how-to-install-nginx-on-centos-8/>`_.
+        These instructions are based on `How To Install Nginx on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04>`_ and `How To Install Nginx on Rocky Linux 9 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-rocky-linux-9>`_.
 
 Apache (Optional)
 =================
@@ -275,11 +275,12 @@ Supervisor
 
         .. code-block:: bash
 
+            # If you haven't already, install the EPEL repository
             sudo dnf install -y epel-release
 
         .. code-block:: bash
 
-            sudo dnf update
+            # Install supervisor
             sudo dnf install -y supervisor
 
         Start Supervisor and enable it so it starts up automatically when the server restarts:
@@ -299,7 +300,7 @@ Supervisor
 
     .. note::
 
-        These instructions are based on `Installing Supervisor <http://supervisord.org/installing.html>`_, `Install EPEL <https://fedoraproject.org/wiki/EPEL>`_, and `Installing Supervisor on Rocky Linux 7 <https://cloudwafer.com/blog/how-to-install-and-configure-supervisor-on-centos-7/>`_.
+        These instructions are based on `Installing Supervisor <http://supervisord.org/installing.html>`_, `Install EPEL <https://fedoraproject.org/wiki/EPEL>`_, and `How to install Supervisor on RHEL/CentOS/AlmaLinux/RockyLinux <https://www.hostround.com/one/knowledgebase/100/How-to-install-Supervisor-on-RHELorCentOSorAlmaLinuxorRockyLinux.html>`_.
 
 
 Postfix (Optional)
