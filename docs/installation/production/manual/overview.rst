@@ -4,7 +4,7 @@
 Overview
 ********
 
-**Last Updated:** August 2024
+**Last Updated:** September 2024
 
 Introduction
 ============
@@ -25,7 +25,7 @@ System requirements for your Tethys Portal will largely depend on the apps that 
 Operating System
 ================
 
-This guide provides instructions for installing Tethys Portal for production on Ubuntu 24.04 and CentOS Stream 9 servers. Installation instructions on other Linux distributions will be similar.
+This guide provides instructions for installing Tethys Portal for production on Ubuntu 24.04 and Rocky Linux 9 servers. Installation instructions on other Linux distributions will be similar.
 
 Production Server
 =================
@@ -98,7 +98,7 @@ Most system configuration files are located in :file:`/etc` including the config
 * :file:`/etc/supervisor/conf.d/nginx_supervisord.conf`
 * :file:`/etc/nginx/sites-enabled/tethys_nginx.conf`
 
-**CentOS**:
+**Rocky Linux**:
 
 * :file:`/etc/supervisord.d/asgi_supervisord.conf`
 * :file:`/etc/supervisord.d/nginx_supervisord.conf`
@@ -137,6 +137,6 @@ The data files *and* configuration files for a system-installed PostgreSQL are l
 
 * :file:`/var/lib/postgresql/<version>/main`
 
-**CentOS**:
+**Rocky Linux**:
 
 * :file:`/var/lib/pgsql/<version>/data`
