@@ -197,27 +197,27 @@ PostGIS Extension (Optional)
 
         .. code-block:: bash
 
+            # Install the Postgresql repository
+            sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
             # Install EPEL repo RPM:
-            dnf -y install epel-release
+            sudo dnf -y install epel-release
 
-            # Enable PowerTools repo (required for some of the dependencies):
-            dnf -y config-manager --set-enabled PowerTools
+            # Enable additional repositories to resolve dependencies
+            sudo dnf config-manager --enable crb
 
-            # you might need to do this instead for the Rockys
-            dnf config-manager --enable crb
+            # Disable default PostgreSQL AppStream repository.
+            sudo dnf -qy module disable postgresql
 
-            # for Rocky 8 and above might need to do this as well
-            crb enable
-
-            # Now, you can finally install PostGIS
             # Select the right PostGIS and PostgreSQL versions
-            dnf -y install postgis34_16
+            sudo yum -y install postgis32_13
 
-            systemctl restart postgresql-16
+            # Restart postgresql
+            systemctl restart postgresql
 
     .. note::
 
-        These instructions are based on `Users Wiki: Ubuntu Install Guide <https://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS3UbuntuPGSQLApt>`_ and `Installing on Red Hat / Centos / Scientific Linux <https://postgis.net/documentation/getting_started/install_red_hat/>`_.
+        These instructions are based on `Users Wiki: Ubuntu Install Guide <https://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS3UbuntuPGSQLApt>`_ and `Install PostGIS on Rocky Linux 8|CentOS 8|AlmaLinux 8 <https://computingpost.medium.com/install-postgis-on-rocky-linux-8-centos-8-almalinux-8-fa384a6ee920>`_.
 
 
 NGINX (Recommended)
