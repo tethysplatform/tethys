@@ -93,6 +93,7 @@ def quickstart_command(args):
             name="hello_world",
             extension=False,
             template="default",
+            prefix=os.getcwd(),
             use_defaults=True,
             overwrite=False,
         )
