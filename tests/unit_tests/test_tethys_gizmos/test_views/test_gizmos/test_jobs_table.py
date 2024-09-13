@@ -188,7 +188,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         )
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
-    async def test_get_log_content(self, mock_tj):
+    async def test_get_log_content_async(self, mock_tj):
         mock_tj.return_value = mock.MagicMock(
             get_logs=partial(mock_async_func, {"log": "log content"}),
             safe_close=mock_async_func,
@@ -201,8 +201,39 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, result.status_code)
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
-    async def test_get_log_content_key2(self, mock_tj):
+    async def test_get_log_content(self, mock_tj):
+        mock_tj.return_value = mock.MagicMock(
+            get_logs=lambda: {"log": "log content"},
+        )
+        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+
+        result = await gizmo_jobs_table.get_log_content(
+            request=request, job_id="1", key1="log"
+        )
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_get_log_content_key2_async(self, mock_tj):
         log_func = partial(mock_async_func, "log content")
+        mock_tj.return_value = mock.MagicMock(
+            get_logs=partial(
+                mock_async_func,
+                {"log": {"sub_log_1": log_func, "sub_log_2": "log content"}},
+            ),
+            safe_close=mock_async_func,
+        )
+        request = mock.MagicMock(user=mock.MagicMock(is_authenticated=True))
+
+        result = await gizmo_jobs_table.get_log_content(
+            request=request, job_id="1", key1="log", key2="sub_log_1"
+        )
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_get_log_content_key2(self, mock_tj):
+        def log_func():
+            return "log content"
+
         mock_tj.return_value = mock.MagicMock(
             get_logs=partial(
                 mock_async_func,
