@@ -142,7 +142,7 @@ async def delete(request, job_id):
     try:
         job = await get_job(job_id, request.user)
         job.clean_on_delete = True
-        await do_job_action(job, 'delete')
+        await do_job_action(job, "delete")
         success = True
         message = ""
     except Exception as e:
@@ -159,7 +159,7 @@ async def show_log(request, job_id):
     try:
         job = await get_job(job_id, request.user)
         # Get the Job logs.
-        data = await do_job_action(job, 'get_logs')
+        data = await do_job_action(job, "get_logs")
 
         sub_job_options = [(k, k) for k in data.keys()]
         sub_job_select = SelectInput(
@@ -245,7 +245,7 @@ async def update_row(request, job_id):
     data = reconstruct_post_dict(request)
     try:
         job = await get_job(job_id, request.user)
-        await do_job_action(job, 'update_status')
+        await do_job_action(job, "update_status")
         status = job.cached_status
         status_msg = job.status_message
         statuses = None
@@ -286,7 +286,9 @@ async def update_row(request, job_id):
             if status == "Results-Ready":
                 status = "Running"
 
-        row = JobsTable.get_row(job, data["column_fields"], data.get("actions"), delay_loading_status=True)
+        row = JobsTable.get_row(
+            job, data["column_fields"], data.get("actions"), delay_loading_status=True
+        )
         data.update(
             {
                 "job": job,
@@ -325,7 +327,7 @@ async def update_workflow_nodes_row(request, job_id):
     dag = {}
     try:
         job = await get_job(job_id, request.user)
-        await do_job_action(job, 'update_status')
+        await do_job_action(job, "update_status")
         status = job.cached_status
 
         # Hard code example for gizmo_showcase
@@ -394,7 +396,7 @@ async def bokeh_row(request, job_id, type="individual-graph"):
     """
     try:
         job = await get_job(job_id, request.user)
-        await do_job_action(job, 'update_status')
+        await do_job_action(job, "update_status")
         status = job.cached_status
 
         # Get dashboard link for a given job_id
