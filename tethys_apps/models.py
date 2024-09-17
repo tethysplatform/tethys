@@ -1174,11 +1174,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     'spatial extension on persistent store database "{1}": must be a '
                     "superuser.".format(url.username, self.name)
                 )
-            finally:
-                new_db_connection.close()
 
             enable_postgis_raster_statement = "CREATE EXTENSION IF NOT EXISTS postgis_raster"
-
+            
             # Execute postgis raster statement
             try:
                 new_db_connection.execute(enable_postgis_raster_statement)
