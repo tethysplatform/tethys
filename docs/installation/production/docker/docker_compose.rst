@@ -71,7 +71,6 @@ Use the following instructions to create a Docker Compose file for the custom Te
 Docker allows directories from the host machine to be mounted into the containers. This is most often used to provide easy access to container data, configuration files, and logs.
 
 a. Create the following directories in :file:`tethys_portal_docker` directory:
-
     .. code-block:: bash
 
         mkdir -p data/db
@@ -84,7 +83,6 @@ a. Create the following directories in :file:`tethys_portal_docker` directory:
         mkdir -p logs/thredds/tomcat
 
 b. Download the default :file:`tomcat-users.xml` file from the `Unidata/thredds-docker GitHub repository <https://github.com/Unidata/thredds-docker>`_:
-
     * :download:`tomcat-users.xml <https://raw.githubusercontent.com/Unidata/thredds-docker/master/files/tomcat-users.xml>`
 
     .. note::
@@ -169,7 +167,6 @@ Add the following definition for the ``db`` service in the :file:`docker-compose
 * `ports`_: Ports to expose on the container (``<host>:<container>``).
 * `env_file`_: A file containing the environment variables to create for the container. Environment variables often contain sensitive information that should not be committed with the :file:`docker-compose.yml`. The :file:`db.env` file will be created in Step 7.
 * `volumes`_: Mount directories from the host into the container or create Docker-managed named volumes. Volumes allow you to preserve data that would otherwise be lost when the container is removed. The syntax shown here is: ``<host_dir>:<container_dir>``.
-
     * ``./data/db:/var/lib/postgresql/data``: The primary data directory for PostgreSQL database. This directory contains the data and configuration files for the database.
 
 4. Define THREDDS Service
@@ -184,7 +181,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
 .. code-block:: yaml
 
     thredds:
-      image: unidata/thredds-docker:latest
+      image: unidata/thredds-docker:5.5
       restart: always
       networks:
         - "internal"
@@ -207,7 +204,6 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
 * `ports`_: Ports to expose on the container (``<host>:<container>``).
 * `env_file`_: A file containing the environment variables to create for the container. Environment variables often contain sensitive information that should not be committed with the :file:`docker-compose.yml`. The :file:`thredds.env` file will be created in Step 7.
 * `volumes`_: Mount directories from the host into the container or create Docker-managed named volumes. Volumes allow you to preserve data that would otherwise be lost when the container is removed. The syntax shown here is: ``<host_dir>:<container_dir>``.
-
     * ``./data/thredds/:/usr/local/tomcat/content/thredds``: Main content directory for THREDDS. This directory will contain the data and XML configuration files for THREDDS.
     * ``./logs/thredds/tomcat/:/usr/local/tomcat/logs/``: Logs for Tomcat, the server running THREDDS.
     * ``./logs/thredds/thredds/:/usr/local/tomcat/content/thredds/logs/``: Logs for THREDDS.
@@ -278,7 +274,6 @@ Add the following definition for the ``web`` service in the :file:`docker-compos
 * `ports`_: Ports to expose on the container (``<host>:<container>``).
 * `env_file`_: A file containing the environment variables to create for the container. Environment variables often contain sensitive information that should not be committed with the :file:`docker-compose.yml`. The :file:`web.env` file will be created in Step 7.
 * `volumes`_: Mount directories from the host into the container or create Docker-managed named volumes. Volumes allow you to preserve data that would otherwise be lost when the container is removed. The syntax shown here is: ``<host_dir>:<container_dir>``.
-
     * ``./data/tethys:/var/lib/tethys_persist``: Main content directory for Tethys Platform. This directory contains the app workspaces, static files, and configuration files including the :file:`portal_config.yml`.
     * ``./log/tethys:/var/log/tethys``: Logs for Tethys.
 
@@ -290,19 +285,16 @@ Each of the Docker containers can be configured through the environment variable
 With that said, certain environment variables need to be defined for the custom Tethys Portal Compose recipe to work. This is often the case, so another pattern that is used is to provide default ``.env`` files that users can copy and modify. The default ``.env`` files are committed to the repository and the copies with sensitive information are not. In this step you will create the default ``.env`` files referenced in the `env_file`_ sections of the :file:`docker-compose.yml`.
 
 a. Create a new :file:`env` directory in the :file:`tethys_portal_docker` directory for storing the ``.env`` files:
-
     .. code-block:: bash
 
         mkdir env
 
 b. Create three new empty files in the :file:`env` directory with the same names as those referenced in the `env_file`_ sections of the :file:`docker-compose.yml`:
-
     .. code-block:: bash
 
         touch env/db.env env/thredds.env env/web.env
 
 c. Add the following contents to each ``.env`` file:
-
     **db.env**
 
     .. code-block:: docker
@@ -356,6 +348,8 @@ c. Add the following contents to each ``.env`` file:
     **web.env**
 
     .. code-block:: docker
+
+        TERM=xterm
 
         # Domain name of server should be first in the list if multiple entries added
         ALLOWED_HOSTS="\"[localhost]\""
@@ -463,14 +457,12 @@ Update the contents of the README with instructions for using the repository and
 The contents of the :file:`data`, :file:`logs`, and :file:`keys` directories should not be committed into the Git repository because they contain large amounts of instance-specific data and sensitive information.
 
 a. Create a :file:`.gitignore` file:
-
     .. code-block:: bash
 
         touch .gitignore
 
 
 b. Add the following contents to the :file:`.gitignore` file to omit the contents of these directories from being tracked:
-
     .. code-block:: text
 
         data/
@@ -478,7 +470,6 @@ b. Add the following contents to the :file:`.gitignore` file to omit the content
         logs/
 
 c. Stage changes and commit the changes as follows:
-
     .. code-block:: bash
 
         git add .
