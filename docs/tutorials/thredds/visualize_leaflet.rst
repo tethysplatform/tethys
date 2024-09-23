@@ -437,7 +437,32 @@ At this point the select controls are empty and don't do anything. In this step,
 
 3. Verify that ``home`` controller is using the new ``parse_dataset`` function to find THREDDS datasets. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. After the home page loads, inspect the log messages in the terminal where Tethys is running. The ``pprint`` calls in our controller should print the object being returned from the ``parse_dataset`` function in the terminal. It should also populate the options for the **Dataset** control.
 
-4. Create Endpoint for Getting Available WMS Layers
+
+4. Install Chardet
+==================
+
+In the next step you will create a function to retrieve metadata from the THREDDS server. This will require using the `chardet` library to determine the encoding of the response.
+
+1. Install `chardet` as follows running the following command in the terminal:
+
+.. code-block::
+
+    # with conda
+    conda install chardet
+
+    # with pip
+    pip install chardet
+
+2. The app now depends on `chardet`, so add it to the `install.yml` file:
+
+.. code-block:: yaml
+
+    dependencies:
+      ...
+      - chardet
+
+
+5. Create Endpoint for Getting Available WMS Layers
 ===================================================
 
 Each time a new dataset is selected, the options in the variable and style controls need to be updated to match the variables and styles of the new dataset. This information can be found by querying the WMS endpoint of the dataset provided by THREDDS. Querying the WMS endpoint is most easily accomplished by using the `OWSLib <https://geopython.github.io/OWSLib/>`_ Python library. In this step you will implement a new controller that will use OWSLib to retrieve the information and call it using ``fetch`` anytime a new dataset is selected.
@@ -548,7 +573,7 @@ Each time a new dataset is selected, the options in the variable and style contr
 
         return JsonResponse(json_response)
 
-5. Stub Out the Variable and Style Control JavaScript Methods
+6. Stub Out the Variable and Style Control JavaScript Methods
 =============================================================
 
 In this step you will use the new ``get-wms-layers`` endpoint to get a list of layers and their attributes (e.g. styles) to update the variable and style controls.
@@ -609,7 +634,7 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
         init_controls();
     });
 
-6. Implement Variable and Style Control Methods
+7. Implement Variable and Style Control Methods
 ===============================================
 
 In this step you will implement the dataset controll JavaScript methods in :file:`public/js/leaflet_map.js`.
@@ -711,7 +736,7 @@ Here is a brief explanation of each method that will be implemented in this step
 
 4. Verify that the **Variable** and **Style** controls are updated properly when the dataset changes. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Use the **Dataset** control to select a new dataset and verify that the **Variable** and **Style** options update accordingly. Inspect the terminal where Tethys is running to see the output from the print statement we added for debugging in Step 4.
 
-7. Add Time-Dimension Plugin to Leaflet Map
+8. Add Time-Dimension Plugin to Leaflet Map
 ===========================================
 
 Many of the datasets hosted on THREDDS servers have time as a dimension. In this step you will add the Time-Dimension plugin to the Leaflet map so that it can visualize data with the time dimension. The plugin adds a time slider control to the map and provides a way to load and visualize WMS layers with a time dimension.
@@ -760,7 +785,7 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
 
 3. Verify that the Time-Dimension control is enabled. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. There should now be a time slider control at the bottom of the map.
 
-8. Add Selected Dataset Layer to Map
+9. Add Selected Dataset Layer to Map
 ====================================
 
 In this step, you'll create the ``update_layer`` method that will add the THREDDS dataset WMS layer to the Leaflet map.
@@ -873,8 +898,8 @@ This controller will act as a proxy to the WMS service. It will take a URL and a
 
 7. Verify that the layers show up on the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
 
-9. Implement Legend for Layers
-==============================
+10. Implement Legend for Layers
+===============================
 
 The THREDDS implementation of the WMS standard includes support for the ``GetLayerGraphic`` request. In this step you'll use this request to generate a legend image for the layer and style selected.
 
@@ -954,7 +979,7 @@ The THREDDS implementation of the WMS standard includes support for the ``GetLay
 
 6. Verify that the legend has been added to the app. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. The legend should appear under the Query controls in the navigation window on the left. Change the style and verify that the legend updates accordingly.
 
-10. Implement a Map Loading Indicator
+11. Implement a Map Loading Indicator
 =====================================
 
 Depending on the speed of the THREDDS server and the user's internet connection, loading the layers on the map may take some time. In this step you'll add a loading indicator so that the user knows when the app is working on loading layers.
@@ -1123,7 +1148,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
           });
     };
 
-11. Clean Up
+12. Clean Up
 ============
 
 During development it is common to use print statements. Rather than delete these when you are done, turn them into log statements so that you can use them for debugging in the future.
@@ -1230,7 +1255,7 @@ During development it is common to use print statements. Rather than delete thes
 
     Logging excessively can impact the performance of your app. Use ``info``, ``error``, and ``warning`` to log minimal, summary information that is useful for monitoring normal operation of the app. Use ``debug`` to log more detailed information to help you assess bugs or other issues with your app without needing to modify the code. In production, the Tethys Portal can be configured to log at different levels of detail using these classifications. See: `Python Logging HOWTO <https://docs.python.org/3.7/howto/logging.html>`_ and :ref:`tethys_configuration`.
 
-12. Test and Verify
+13. Test and Verify
 ===================
 
 Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Verify the following:
@@ -1241,7 +1266,7 @@ Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and 
 4. The map should feature an animation slider. If the dataset selected has time varying data, the slider should display a time step. Otherwise it will say "Time not available".
 5. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
 
-13. Solution
+14. Solution
 ============
 
 This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/thredds-service-solution-3.0>`_ or clone it as follows:
