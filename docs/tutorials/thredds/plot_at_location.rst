@@ -124,7 +124,7 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
 2. Install Plotly
 =================
 
-In this step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
+In the next step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
 
 1. The Plotly View gizmo requires the `plotly` Python package. We'll also need `geojson` to handle the geometry data. Install `plotly` as follows running the following command in the terminal:
 
@@ -143,6 +143,7 @@ In this step you will create a new controller that will query the dataset at the
 .. code-block:: yaml
 
     dependencies:
+      ...
       - plotly
       - goejson
 

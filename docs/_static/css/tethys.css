@@ -58,3 +58,7 @@ section>section {
     background-color: #cfef90;
 }
 
+pre {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}

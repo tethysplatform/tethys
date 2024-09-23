@@ -58,7 +58,7 @@ We currently have images for the following commercial cloud providers:
 Docker Deployment
 -----------------
 
-This method involves using Docker to package and automate the deployment of a Tethys Portal with that has your apps pre-installed. The advantage of this approach is that the process of installing Tethys Platform and your apps is automated in the Docker image. The other major advantage is portability, the Docker image can be deployed to any Linux server with Docker installed. The disadvantage is that there is a learning curve to get started using Docker for the first time. However, the investment of learning Docker is very much worth your time as most modern web applications are deployed using Docker or a similar container technology.
+This method involves using Docker to package and automate the deployment of a Tethys Portal that has your apps pre-installed. The advantage of this approach is that the process of installing Tethys Platform and your apps is automated in the Docker image. The other major advantage is portability, the Docker image can be deployed to any Linux server with Docker installed. The disadvantage is that there is a learning curve to get started using Docker for the first time. However, the investment of learning Docker is very much worth your time as most modern web applications are deployed using Docker or a similar container technology.
 
 .. toctree::
     :maxdepth: 1
