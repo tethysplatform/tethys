@@ -1167,19 +1167,41 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     "superuser.".format(url.username, self.name)
                 )
 
-            enable_postgis_raster_statement = "CREATE EXTENSION IF NOT EXISTS postgis_raster"
+
             
-            # Execute postgis raster statement
             try:
-                new_db_connection.execute(enable_postgis_raster_statement)
+                # Get the POSTGIS version
+                check_postgis_version = "SELECT PostGIS_Version();"
+                ret = new_db_connection.execute(check_postgis_version)
+                postgis_version = None
+                for r in ret:
+                    # Example version string: "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"
+                    try:
+                        postgis_version = float(r.postgis_version.split(" ")[0])
+                    except Exception:
+                        log.warning(f'Could not parse PostGIS version from "{r.postgis_version}"')
+                        continue
+
+                # Execute postgis raster statement for verions 3.0 and above
+                if postgis_version is not None and postgis_version >= 3.0:
+                    log.info(
+                        'Enabling PostGIS Raster on database "{0}" for app "{1}"...'.format(
+                            self.name,
+                            self.tethys_app.package,
+                        )
+                    )
+                    enable_postgis_raster_statement = "CREATE EXTENSION IF NOT EXISTS postgis_raster"
+                    new_db_connection.execute(enable_postgis_raster_statement)
+
             except sqlalchemy.exc.ProgrammingError:
                 raise PersistentStorePermissionError(
                     'Database user "{0}" has insufficient permissions to enable '
                     'spatial extension on persistent store database "{1}": must be a '
                     "superuser.".format(url.username, self.name)
                 )
-            finally:
-                new_db_connection.close()
+
+            # Close connection
+            new_db_connection.close()
 
         # -------------------------------------------------------------------------------------------------------------#
         # 4. Run initialization function
