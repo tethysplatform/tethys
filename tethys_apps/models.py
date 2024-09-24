@@ -1167,8 +1167,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     "superuser.".format(url.username, self.name)
                 )
 
-
-            
             try:
                 # Get the POSTGIS version
                 check_postgis_version = "SELECT PostGIS_Version();"
@@ -1178,6 +1176,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     # Example version string: "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"
                     try:
                         postgis_version = float(r.postgis_version.split(" ")[0])
+                        log.info(f'Detected PostGIS version {postgis_version}')
+                        break
                     except Exception:
                         log.warning(f'Could not parse PostGIS version from "{r.postgis_version}"')
                         continue
