@@ -536,7 +536,9 @@ class JobsTable(TethysGizmoOptions):
         for action, properties in job_actions.items():
             properties["enabled"] = getattr(
                 job, CustomJobAction.get_enabled_callback_name(action), lambda js: True
-            )(job.cached_status)  # use cached status in case job_status is None
+            )(
+                job.cached_status
+            )  # use cached status in case job_status is None
 
         return JobsTableRow(row_values, job_status=job_status, actions=job_actions)
 

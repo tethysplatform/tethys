@@ -116,7 +116,9 @@ class TethysJob(models.Model):
         Args:
             status (str): The name of the status to classify
         """
-        cls._add_custom_status(status, (cls.PRE_RUNNING_STATUSES, cls.NON_TERMINAL_STATUSES))
+        cls._add_custom_status(
+            status, (cls.PRE_RUNNING_STATUSES, cls.NON_TERMINAL_STATUSES)
+        )
 
     @classmethod
     def add_custom_running_status(cls, status):
@@ -127,7 +129,10 @@ class TethysJob(models.Model):
         Args:
             status (str): The name of the status to classify
         """
-        cls._add_custom_status(status, (cls.RUNNING_STATUSES, cls.ACTIVE_STATUSES, cls.NON_TERMINAL_STATUSES))
+        cls._add_custom_status(
+            status,
+            (cls.RUNNING_STATUSES, cls.ACTIVE_STATUSES, cls.NON_TERMINAL_STATUSES),
+        )
 
     @classmethod
     def add_custom_active_status(cls, status):
@@ -237,9 +242,10 @@ class TethysJob(models.Model):
 
         """
         old_status = self._status
-        update_needed = (
-                old_status in self.NON_TERMINAL_STATUS_CODES or
-                (old_status == "OTH" and self.extended_properties[self.OTHER_STATUS_KEY] in self.NON_TERMINAL_STATUSES)
+        update_needed = old_status in self.NON_TERMINAL_STATUS_CODES or (
+            old_status == "OTH"
+            and self.extended_properties[self.OTHER_STATUS_KEY]
+            in self.NON_TERMINAL_STATUSES
         )
 
         # Set status from status given

@@ -56,26 +56,26 @@ class TethysJobTest(TethysTestCase):
         self.assertEqual("TethysJob", ret)
 
     def test_add_custom_pre_running_status(self):
-        custom_status = 'test-pre-running'
+        custom_status = "test-pre-running"
         TethysJob.add_custom_pre_running_status(custom_status)
         self.assertIn(custom_status, TethysJob.PRE_RUNNING_STATUSES)
         self.assertIn(custom_status, TethysJob.NON_TERMINAL_STATUSES)
 
     def test_add_custom_running_status(self):
-        custom_status = 'test-running'
+        custom_status = "test-running"
         TethysJob.add_custom_running_status(custom_status)
         self.assertIn(custom_status, TethysJob.RUNNING_STATUSES)
         self.assertIn(custom_status, TethysJob.ACTIVE_STATUSES)
         self.assertIn(custom_status, TethysJob.NON_TERMINAL_STATUSES)
 
     def test_add_custom_active_status(self):
-        custom_status = 'test-active'
+        custom_status = "test-active"
         TethysJob.add_custom_active_status(custom_status)
         self.assertIn(custom_status, TethysJob.ACTIVE_STATUSES)
         self.assertIn(custom_status, TethysJob.NON_TERMINAL_STATUSES)
 
     def test_add_custom_terminal_status(self):
-        custom_status = 'test-terminal'
+        custom_status = "test-terminal"
         TethysJob.add_custom_terminal_status(custom_status)
         self.assertIn(custom_status, TethysJob.TERMINAL_STATUSES)
 
