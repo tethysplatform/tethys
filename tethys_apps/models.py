@@ -1155,22 +1155,12 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 )
             )
 
-            enable_postgis_statement = "CREATE EXTENSION IF NOT EXISTS postgis"
-
             # Execute postgis statement
             try:
-                new_db_connection.execute(enable_postgis_statement)
-            except sqlalchemy.exc.ProgrammingError:
-                raise PersistentStorePermissionError(
-                    'Database user "{0}" has insufficient permissions to enable '
-                    'spatial extension on persistent store database "{1}": must be a '
-                    "superuser.".format(url.username, self.name)
-                )
+                new_db_connection.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
 
-            try:
                 # Get the POSTGIS version
-                check_postgis_version = "SELECT PostGIS_Version();"
-                ret = new_db_connection.execute(check_postgis_version)
+                ret = new_db_connection.execute("SELECT PostGIS_Version();")
                 postgis_version = None
                 for r in ret:
                     # Example version string: "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"
@@ -1192,10 +1182,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                             self.tethys_app.package,
                         )
                     )
-                    enable_postgis_raster_statement = (
-                        "CREATE EXTENSION IF NOT EXISTS postgis_raster"
+                    new_db_connection.execute(
+                        "CREATE EXTENSION IF NOT EXISTS postgis_raster;"
                     )
-                    new_db_connection.execute(enable_postgis_raster_statement)
 
             except sqlalchemy.exc.ProgrammingError:
                 raise PersistentStorePermissionError(
