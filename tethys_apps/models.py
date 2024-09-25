@@ -1176,10 +1176,12 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     # Example version string: "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"
                     try:
                         postgis_version = float(r.postgis_version.split(" ")[0])
-                        log.info(f'Detected PostGIS version {postgis_version}')
+                        log.info(f"Detected PostGIS version {postgis_version}")
                         break
                     except Exception:
-                        log.warning(f'Could not parse PostGIS version from "{r.postgis_version}"')
+                        log.warning(
+                            f'Could not parse PostGIS version from "{r.postgis_version}"'
+                        )
                         continue
 
                 # Execute postgis raster statement for verions 3.0 and above
@@ -1190,7 +1192,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                             self.tethys_app.package,
                         )
                     )
-                    enable_postgis_raster_statement = "CREATE EXTENSION IF NOT EXISTS postgis_raster"
+                    enable_postgis_raster_statement = (
+                        "CREATE EXTENSION IF NOT EXISTS postgis_raster"
+                    )
                     new_db_connection.execute(enable_postgis_raster_statement)
 
             except sqlalchemy.exc.ProgrammingError:
