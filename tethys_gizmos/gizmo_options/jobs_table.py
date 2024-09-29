@@ -315,6 +315,7 @@ class JobsTable(TethysGizmoOptions):
 
         self.show_status = show_status
         self.show_actions = show_actions
+        self.active_statuses = TethysJob.ACTIVE_STATUSES
         self.hover = hover
         self.striped = striped
         self.bordered = bordered
@@ -387,7 +388,7 @@ class JobsTable(TethysGizmoOptions):
                 label="Terminate",
                 callback_or_url="stop",
                 enabled_callback=lambda job, job_status: job_status
-                in TethysJob.ACTIVE_STATUSES,
+                in self.active_statuses,
                 confirmation_message="Are you sure you want to terminate this job?",
                 show_overlay=True,
             ),
@@ -395,7 +396,7 @@ class JobsTable(TethysGizmoOptions):
                 label="Delete",
                 callback_or_url="delete",
                 enabled_callback=lambda job, job_status: job_status
-                not in TethysJob.ACTIVE_STATUSES,
+                not in self.active_statuses,
                 confirmation_message="Are you sure you want to permanently delete this job?",
                 show_overlay=True,
             ),
@@ -535,7 +536,9 @@ class JobsTable(TethysGizmoOptions):
         for action, properties in job_actions.items():
             properties["enabled"] = getattr(
                 job, CustomJobAction.get_enabled_callback_name(action), lambda js: True
-            )(job_status)
+            )(
+                job.cached_status
+            )  # use cached status in case job_status is None
 
         return JobsTableRow(row_values, job_status=job_status, actions=job_actions)
 
