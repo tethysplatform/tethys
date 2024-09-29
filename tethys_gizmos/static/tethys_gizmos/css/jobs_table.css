@@ -212,6 +212,10 @@ p.loading-error {
 }
 
 /* Status indicator */
+td.job-status > div{
+    min-width: 100px;
+}
+
 .status-indicator{
     border-radius: 50%;
     height: 14px;
