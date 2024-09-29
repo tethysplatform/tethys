@@ -2,7 +2,7 @@
 <div class="app-card-container position-relative" data-tags="{{ app|get_tag_class }}">
     {% if not unconfigured %}
     <a class="app-link-wrapper rounded d-block mt-4 {% if not app.show_in_apps_library or not app.enabled %} veiled{% endif %}"
-       title="{% if not app.show_in_apps_library %}Hidden{% elif not app.enabled %}Disabled{% else %}{{ app.name }}{% endif %}"
+       title="{% if not app.show_in_apps_library %}Hidden{% elif not app.enabled %}Disabled{% elif app.description %}{{ app.description }}{% else %}{{ app.name }}{% endif %}"
        href="{% if app.proxied %}{{ app.url }}{% if app.back_url %}?back={{ app.back_url }}{% endif %}{% else %}{% url app.index_url %}{% endif %}"
        {% if app.proxied and app.open_in_new_tab %}target="_blank"{% endif %}
     >
@@ -20,7 +20,7 @@
                         <i class="bi bi-box-arrow-up-right"></i>
                     </div>
                 {% endif %}
-                <h5 class="card-title app-title mt-2 mb-0">{{ app.name }}</h5>
+                <h5 class="card-title app-title mt-2 mb-0" title="{{ app.name }}">{{ app.name }}</h5>
             </div>
         </div>
     </a>
