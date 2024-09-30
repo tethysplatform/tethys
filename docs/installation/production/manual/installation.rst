@@ -81,6 +81,7 @@ Beginning with Tethys v5.0 or if you are using ``micro-tethys-platform`` many fe
 
         dependencies:
         - tethys-platform
+        - django=<DJANGO_VERSION>
         - django-session-security
         - django-axes
         - django-gravatar2
