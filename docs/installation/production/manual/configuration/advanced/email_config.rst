@@ -66,7 +66,7 @@ Setup Your Own Email Server
 
 Alternatively, you can try setting up your own email server using Postfix. We don't recommend this, however, because you will then need to make sure you are meeting any government regulations and obtain a certificate signed by a third-party for your emails to have a chance of making it to the user's inbox.
 
-These instructions are for Ubuntu and CentOS systems. For other Linux distributions refer to the `Postfix Documentation <http://www.postfix.org/>`_ or search for a guide for installing on your distribution.
+These instructions are for Ubuntu and Rocky Linux systems. For other Linux distributions refer to the `Postfix Documentation <http://www.postfix.org/>`_ or search for a guide for installing on your distribution.
 
 1. Install Postfix:
 -------------------
@@ -88,7 +88,7 @@ These instructions are for Ubuntu and CentOS systems. For other Linux distributi
 
             When installed with apt on Ubuntu, Postfix is started automatically and enabled to start when the server reboots.
 
-    **CentOS**:
+    **Rocky Linux**:
 
         Install the application as follows:
 

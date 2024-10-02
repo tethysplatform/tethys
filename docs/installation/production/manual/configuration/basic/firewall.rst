@@ -4,9 +4,9 @@
 Firewall Configuration
 **********************
 
-**Last Updated:** September 2022
+**Last Updated:** October 2024
 
-If a firewall is enabled on the server on which you are installing Tethys Portal, you may need to configure it to allow connections through the HTTP port(s). This part of the production installation guide will provide instructions for how this is to be done on the default firewall applications installed on Ubuntu (`UWF <https://help.ubuntu.com/community/UFW>`_) and CentOS (`firewalld <https://firewalld.org/documentation/>`_ servers.
+If a firewall is enabled on the server on which you are installing Tethys Portal, you may need to configure it to allow connections through the HTTP port(s). This part of the production installation guide will provide instructions for how this is to be done on the default firewall applications installed on Ubuntu (`UWF <https://help.ubuntu.com/community/UFW>`_) and Rocky Linux (`firewalld <https://firewalld.org/documentation/>`_ servers.
 
 Configure Firewall Without SSL (HTTP)
 =====================================
@@ -27,10 +27,25 @@ Run the following commands to open the HTTP port (80):
 
             sudo ufw allow 'Nginx HTTP'
 
-    **CentOS**:
-    
+    **Rocky Linux**:
+
+        Install firewalld if not already installed:
+
         .. code-block:: bash
-        
+
+            sudo dnf install firewalld -y
+
+        Enable and start firewald:
+
+        .. code-block:: bash
+
+            sudo systemctl enable firewalld
+            sudo systemctl start firewalld
+
+        Open the HTTP port (80):
+
+        .. code-block:: bash
+
             sudo firewall-cmd --permanent --zone=public --add-service=http
             sudo firewall-cmd --reload
 
@@ -53,7 +68,22 @@ Run the following commands to open the HTTPS port (443):
 
             sudo ufw allow 'Nginx HTTPS'
 
-    **CentOS**:
+    **Rocky Linux**:
+
+        Install firewalld if not already installed:
+
+        .. code-block:: bash
+
+            sudo dnf install firewalld -y
+
+        Enable and start firewald:
+
+        .. code-block:: bash
+
+            sudo systemctl enable firewalld
+            sudo systemctl start firewalld
+
+        Open the HTTPS port (443):
 
         .. code-block:: bash
 
@@ -79,7 +109,22 @@ Run the following commands to open the HTTPS port (443) and HTTP port (80):
 
             sudo ufw allow 'Nginx Full'
 
-    **CentOS**:
+    **Rocky Linux**:
+
+        Install firewalld if not already installed:
+
+        .. code-block:: bash
+
+            sudo dnf install firewalld -y
+
+        Enable and start firewald:
+
+        .. code-block:: bash
+
+            sudo systemctl enable firewalld
+            sudo systemctl start firewalld
+
+        Open the HTTP port (80) and HTTPS port (443):
 
         .. code-block:: bash
 

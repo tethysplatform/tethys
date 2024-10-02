@@ -143,7 +143,7 @@ Also verify that these files are correctly linked to the appropriate directory i
 
         ls -l /etc/supervisor/conf.d/
 
-**CentOS**:
+**Rocky Linux**:
 
     .. code-block:: bash
 
@@ -166,7 +166,7 @@ Also verify that this file is correctly linked to the appropriate directory in :
 
         ls -l /etc/nginx/sites-enabled/
 
-**CentOS**:
+**Rocky Linux**:
 
     .. code-block:: bash
 
