@@ -1,3 +1,4 @@
+import os
 import json
 from pathlib import Path
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -243,10 +244,11 @@ def app_settings_set_command(args):
     try:
         value_json = "{}"
         if setting.type_custom_setting == "JSON":
-            try_path = Path(actual_value)
-            if try_path.exists():
-                write_warning("File found, extracting JSON data")
-                value_json = json.loads(try_path.read_text())
+            if os.path.exists(actual_value):
+                with open(actual_value) as json_file:
+                    write_warning("File found, extracting JSON data")
+                    value_json = json.load(json_file)
+
                 setting.value = value_json
             else:
                 try:

@@ -102,7 +102,7 @@ class CondorJobTest(TethysTestCase):
         if not self.workspace_dir.exists():
             self.workspace_dir.mkdir(parents=True)
             file_path = self.workspace_dir / "test_file.txt"
-            file_path.write_text("")
+            file_path.touch()
 
         self.condorjob.delete()
 
