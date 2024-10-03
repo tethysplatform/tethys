@@ -6,9 +6,8 @@ from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_job import CondorPyJob
 from django.contrib.auth.models import User
 from unittest import mock
-import os
+from pathlib import Path
 import shutil
-import os.path
 
 
 class CondorJobTest(TethysTestCase):
@@ -23,8 +22,7 @@ class CondorJobTest(TethysTestCase):
         )
         self.scheduler.save()
 
-        path = os.path.dirname(__file__)
-        self.workspace_dir = os.path.join(path, "workspace")
+        self.workspace_dir = Path(__file__).parent / "workspace"
 
         self.condorjob = CondorJob(
             name="test condorbase",
@@ -33,7 +31,7 @@ class CondorJobTest(TethysTestCase):
             label="test_label",
             cluster_id="1",
             remote_id="test_machine",
-            workspace=self.workspace_dir,
+            workspace=str(self.workspace_dir),
             scheduler=self.scheduler,
             condorpyjob_id="99",
             _attributes={"foo": "bar"},
@@ -48,8 +46,8 @@ class CondorJobTest(TethysTestCase):
         if self.condorjob.condorbase_ptr_id is not None:
             self.condorjob.delete()
 
-        if os.path.exists(self.workspace_dir):
-            shutil.rmtree(self.workspace_dir)
+        if self.workspace_dir.exists():
+            shutil.rmtree(str(self.workspace_dir))
 
     def test_type(self):
         ret = self.condorjob.type
@@ -101,10 +99,10 @@ class CondorJobTest(TethysTestCase):
 
     @mock.patch("tethys_compute.models.condor.condor_job.CondorBase.condor_object")
     def test_condor_job_pre_delete(self, mock_co):
-        if not os.path.exists(self.workspace_dir):
-            os.makedirs(self.workspace_dir)
-            file_path = os.path.join(self.workspace_dir, "test_file.txt")
-            open(file_path, "a").close()
+        if not self.workspace_dir.exists():
+            self.workspace_dir.mkdir(parents=True)
+            file_path = self.workspace_dir / "test_file.txt"
+            file_path.write_text("")
 
         self.condorjob.delete()
 
@@ -112,7 +110,7 @@ class CondorJobTest(TethysTestCase):
         mock_co.close_remote.assert_called()
 
         # Check if file has been removed
-        self.assertFalse(os.path.isfile(file_path))
+        self.assertFalse(file_path.is_file())
 
     @mock.patch("tethys_compute.models.condor.condor_job.log")
     @mock.patch("tethys_compute.models.condor.condor_job.CondorBase.condor_object")

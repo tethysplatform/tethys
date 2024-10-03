@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-import os.path
+from pathlib import Path
 
 from tethys_apps.management.commands import pre_collectstatic
 
@@ -47,8 +47,8 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.print")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.copytree")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.remove")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.unlink")
     @mock.patch(
         "tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_items"
     )
@@ -57,29 +57,25 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_items,
-        mock_os_remove,
-        mock_os_path_isdir,
+        mock_unlink,
+        mock_is_dir,
         mock_shutil_copytree,
         mock_print,
     ):
         options = {"link": False}  # Don't create symbolic link (copy instead)
-        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
-        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
-        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
-        app_public_dir = os.path.join(app_source_dir, "public")
-        ext_public_dir = os.path.join(ext_source_dir, "public")
-        app_static_dir = os.path.join(app_source_dir, "static")
-        ext_static_dir = os.path.join(ext_source_dir, "static")
+        static_root_dir = Path("/") / "foo" / "static" / "root"
+        app_source_dir = Path("/") / "foo" / "sources" / "foo_app"
+        ext_source_dir = Path("/") / "foo" / "sources" / "foo_ext"
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
             "foo_app": app_source_dir,
             "foo_ext": ext_source_dir,
         }
-        mock_os_remove.return_value = (
-            True  # Successfully remove old link or dir with os.remove
+        mock_unlink.return_value = (
+            True  # Successfully remove old link or dir with.Path.unlink
         )
-        mock_os_path_isdir.side_effect = (
+        mock_is_dir.side_effect = (
             False,
             False,
             False,
@@ -93,13 +89,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_items.assert_called_with(apps=True, extensions=True)
 
         # Verify check for public dir was performed for app and extension
-        mock_os_path_isdir.assert_any_call(app_public_dir)
-        mock_os_path_isdir.assert_any_call(ext_public_dir)
-        mock_os_path_isdir.assert_any_call(app_static_dir)
-        mock_os_path_isdir.assert_any_call(ext_static_dir)
+        self.assertEqual(mock_is_dir.call_count, 4)
 
         # Verify attempt to remove old dirs/links
-        mock_os_remove.assert_not_called()
+        mock_unlink.assert_not_called()
 
         # Verify attempt to copy public dir to static root location
         mock_shutil_copytree.assert_not_called()
@@ -136,9 +129,9 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.print")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.copytree")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.rmtree")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.remove")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.unlink")
     @mock.patch(
         "tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_items"
     )
@@ -147,29 +140,29 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_items,
-        mock_os_remove,
+        mock_unlink,
         mock_shutil_rmtree,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_shutil_copytree,
         mock_print,
     ):
         options = {"link": False}  # Don't create symbolic link (copy instead)
-        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
-        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
-        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
-        app_public_dir = os.path.join(app_source_dir, "public")
-        ext_public_dir = os.path.join(ext_source_dir, "public")
-        app_static_root_dir = os.path.join(static_root_dir, "foo_app")
-        ext_static_root_dir = os.path.join(static_root_dir, "foo_ext")
+        static_root_dir = Path("/") / "foo" / "static" / "root"
+        app_source_dir = Path("/") / "foo" / "sources" / "foo_app"
+        ext_source_dir = Path("/") / "foo" / "sources" / "foo_ext"
+        app_public_dir = Path(app_source_dir) / "public"
+        ext_public_dir = Path(ext_source_dir) / "public"
+        app_static_root_dir = Path(static_root_dir) / "foo_app"
+        ext_static_root_dir = Path(static_root_dir) / "foo_ext"
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
             "foo_app": app_source_dir,
             "foo_ext": ext_source_dir,
         }
-        mock_os_remove.side_effect = OSError  # remove fails
+        mock_unlink.side_effect = OSError  # remove fails
         mock_shutil_rmtree.side_effect = OSError  # rmtree fails
-        mock_os_path_isdir.side_effect = (True, True)  # "public" dir found
+        mock_is_dir.side_effect = (True, True)  # "public" dir found
 
         cmd = pre_collectstatic.Command()
         cmd.handle(**options)
@@ -178,12 +171,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_items.assert_called_with(apps=True, extensions=True)
 
         # Verify check for public dir was performed for app and extension
-        mock_os_path_isdir.assert_any_call(app_public_dir)
-        mock_os_path_isdir.assert_any_call(ext_public_dir)
+        self.assertEqual(mock_is_dir.call_count, 2)
 
         # Verify attempt to remove old dirs/links
-        mock_os_remove.assert_any_call(app_static_root_dir)
-        mock_os_remove.assert_any_call(ext_static_root_dir)
+        self.assertEqual(mock_unlink.call_count, 2)
         mock_shutil_rmtree.assert_any_call(app_static_root_dir)
         mock_shutil_rmtree.assert_any_call(ext_static_root_dir)
 
@@ -223,8 +214,8 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.print")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.copytree")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.remove")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.unlink")
     @mock.patch(
         "tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_items"
     )
@@ -233,29 +224,29 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_items,
-        mock_os_remove,
-        mock_os_path_isdir,
+        mock_unlink,
+        mock_is_dir,
         mock_shutil_copytree,
         mock_print,
     ):
         options = {"link": False}  # Don't create symbolic link (copy instead)
-        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
-        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
-        app_public_dir = os.path.join(app_source_dir, "public")
-        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
-        ext_public_dir = os.path.join(ext_source_dir, "public")
-        app_static_root_dir = os.path.join(static_root_dir, "foo_app")
-        ext_static_root_dir = os.path.join(static_root_dir, "foo_ext")
+        static_root_dir = Path("/") / "foo" / "static" / "root"
+        app_source_dir = Path("/") / "foo" / "sources" / "foo_app"
+        app_public_dir = Path(app_source_dir) / "public"
+        ext_source_dir = Path("/") / "foo" / "sources" / "foo_ext"
+        ext_public_dir = Path(ext_source_dir) / "public"
+        app_static_root_dir = Path(static_root_dir) / "foo_app"
+        ext_static_root_dir = Path(static_root_dir) / "foo_ext"
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
             "foo_app": app_source_dir,
             "foo_ext": ext_source_dir,
         }
-        mock_os_remove.return_value = (
-            True  # Successfully remove old link or dir with os.remove
+        mock_unlink.return_value = (
+            True  # Successfully remove old link or dir with.Path.unlink
         )
-        mock_os_path_isdir.side_effect = (True, True)  # "public" test path exists
+        mock_is_dir.side_effect = (True, True)  # "public" test path exists
 
         cmd = pre_collectstatic.Command()
         cmd.handle(**options)
@@ -264,12 +255,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_items.assert_called_with(apps=True, extensions=True)
 
         # Verify check for public dir was performed for app and extension
-        mock_os_path_isdir.assert_any_call(app_public_dir)
-        mock_os_path_isdir.assert_any_call(ext_public_dir)
+        self.assertEqual(mock_is_dir.call_count, 2)
 
         # Verify attempt to remove old dirs/links
-        mock_os_remove.assert_any_call(app_static_root_dir)
-        mock_os_remove.assert_any_call(ext_static_root_dir)
+        self.assertEqual(mock_unlink.call_count, 2)
 
         # Verify attempt to copy public dir to static root location
         mock_shutil_copytree.assert_any_call(app_public_dir, app_static_root_dir)
@@ -306,9 +295,9 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
             self.assertNotEqual(info_not_in_second, print_args[i][0][0])
 
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.print")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.symlink")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.remove")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.symlink_to")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.unlink")
     @mock.patch(
         "tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_items"
     )
@@ -317,31 +306,27 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_items,
-        mock_os_remove,
-        mock_os_path_isdir,
-        mock_os_symlink,
+        mock_unlink,
+        mock_is_dir,
+        mock_symlink_to,
         mock_print,
     ):
         options = {"link": True}  # Create symbolic link (instead of copy)
-        static_root_dir = os.path.join(os.sep, "foo", "static", "root")
-        app_source_dir = os.path.join(os.sep, "foo", "sources", "foo_app")
-        ext_source_dir = os.path.join(os.sep, "foo", "sources", "foo_ext")
-        app_static_root_dir = os.path.join(static_root_dir, "foo_app")
-        ext_static_root_dir = os.path.join(static_root_dir, "foo_ext")
-        app_public_dir = os.path.join(app_source_dir, "public")
-        ext_public_dir = os.path.join(ext_source_dir, "public")
-        app_static_dir = os.path.join(app_source_dir, "static")
-        ext_static_dir = os.path.join(ext_source_dir, "static")
+        static_root_dir = Path("/") / "foo" / "static" / "root"
+        app_source_dir = Path("/") / "foo" / "sources" / "foo_app"
+        ext_source_dir = Path("/") / "foo" / "sources" / "foo_ext"
+        app_static_root_dir = Path(static_root_dir) / "foo_app"
+        ext_static_root_dir = Path(static_root_dir) / "foo_ext"
 
         mock_settings.STATIC_ROOT = static_root_dir
         mock_get_items.return_value = {
             "foo_app": app_source_dir,
             "foo_ext": ext_source_dir,
         }
-        mock_os_remove.return_value = (
-            True  # Successfully remove old link or dir with os.remove
+        mock_unlink.return_value = (
+            True  # Successfully remove old link or dir with.Path.unlink
         )
-        mock_os_path_isdir.side_effect = (
+        mock_is_dir.side_effect = (
             False,
             True,
             False,
@@ -355,18 +340,15 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_items.assert_called_with(apps=True, extensions=True)
 
         # Verify check for public dir was performed for app and extension
-        mock_os_path_isdir.assert_any_call(app_public_dir)
-        mock_os_path_isdir.assert_any_call(ext_public_dir)
-        mock_os_path_isdir.assert_any_call(app_static_dir)
-        mock_os_path_isdir.assert_any_call(ext_static_dir)
+        self.assertEqual(mock_is_dir.call_count, 4)
 
         # Verify attempt to remove old dirs/links
-        mock_os_remove.assert_any_call(app_static_root_dir)
-        mock_os_remove.assert_any_call(ext_static_root_dir)
+        self.assertEqual(mock_unlink.call_count, 2)
 
         # Verify attempt to copy public dir to static root location
-        mock_os_symlink.assert_any_call(app_static_dir, app_static_root_dir)
-        mock_os_symlink.assert_any_call(ext_static_dir, ext_static_root_dir)
+        self.assertEqual(mock_symlink_to.call_count, 2)
+        mock_symlink_to.assert_any_call(app_static_root_dir)
+        mock_symlink_to.assert_any_call(ext_static_root_dir)
 
         # Verify messages
         print_args = mock_print.call_args_list

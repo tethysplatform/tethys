@@ -1,21 +1,19 @@
-import os
+from pathlib import Path
 import unittest
 from tethys_apps.static_finders import TethysStaticFinder
 
 
 class TestTethysStaticFinder(unittest.TestCase):
     def setUp(self):
-        self.src_dir = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        )
-        self.root = os.path.join(
-            self.src_dir,
-            "tests",
-            "apps",
-            "tethysapp-test_app",
-            "tethysapp",
-            "test_app",
-            "public",
+        self.src_dir = Path(__file__).parents[3]
+        self.root = (
+            self.src_dir
+            / "tests"
+            / "apps"
+            / "tethysapp-test_app"
+            / "tethysapp"
+            / "test_app"
+            / "public"
         )
 
     def tearDown(self):
@@ -26,47 +24,45 @@ class TestTethysStaticFinder(unittest.TestCase):
 
     def test_find(self):
         tethys_static_finder = TethysStaticFinder()
-        path = os.path.join("test_app", "css", "main.css")
+        path = Path("test_app") / "css" / "main.css"
         ret = tethys_static_finder.find(path)
-        self.assertEqual(
-            os.path.join(self.root.lower(), "css", "main.css"), ret.lower()
-        )
+        self.assertEqual(str(self.root / "css" / "main.css").lower(), ret.lower())
 
     def test_find_all(self):
         tethys_static_finder = TethysStaticFinder()
-        path = os.path.join("test_app", "css", "main.css")
+        path = Path("test_app") / "css" / "main.css"
         ret = tethys_static_finder.find(path, all=True)
         self.assertIn(
-            os.path.join(self.root.lower(), "css", "main.css"),
+            str(self.root / "css" / "main.css").lower(),
             list(map(lambda x: x.lower(), ret)),
         )
 
     def test_find_location_with_no_prefix(self):
         prefix = None
-        path = os.path.join("css", "main.css")
+        path = Path("css") / "main.css"
 
         tethys_static_finder = TethysStaticFinder()
-        ret = tethys_static_finder.find_location(self.root, path, prefix)
+        ret = tethys_static_finder.find_location(str(self.root), path, prefix)
 
-        self.assertEqual(os.path.join(self.root, path), ret)
+        self.assertEqual(str(self.root / path), ret)
 
     def test_find_location_with_prefix_not_in_path(self):
         prefix = "tethys_app"
-        path = os.path.join("css", "main.css")
+        path = Path("css") / "main.css"
 
         tethys_static_finder = TethysStaticFinder()
-        ret = tethys_static_finder.find_location(self.root, path, prefix)
+        ret = tethys_static_finder.find_location(str(self.root), path, prefix)
 
         self.assertIsNone(ret)
 
     def test_find_location_with_prefix_in_path(self):
         prefix = "tethys_app"
-        path = os.path.join("tethys_app", "css", "main.css")
+        path = Path("tethys_app") / "css" / "main.css"
 
         tethys_static_finder = TethysStaticFinder()
-        ret = tethys_static_finder.find_location(self.root, path, prefix)
+        ret = tethys_static_finder.find_location(str(self.root), path, prefix)
 
-        self.assertEqual(os.path.join(self.root, "css", "main.css"), ret)
+        self.assertEqual(str(self.root / "css" / "main.css"), ret)
 
     def test_list(self):
         tethys_static_finder = TethysStaticFinder()
@@ -76,6 +72,6 @@ class TestTethysStaticFinder(unittest.TestCase):
             if "test_app" in storage.location:
                 expected_app_paths.append(path)
 
-        self.assertIn(os.path.join("js", "main.js"), expected_app_paths)
-        self.assertIn(os.path.join("images", "icon.gif"), expected_app_paths)
-        self.assertIn(os.path.join("css", "main.css"), expected_app_paths)
+        self.assertIn(str(Path("js") / "main.js"), expected_app_paths)
+        self.assertIn(str(Path("images") / "icon.gif"), expected_app_paths)
+        self.assertIn(str(Path("css") / "main.css"), expected_app_paths)

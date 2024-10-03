@@ -1,8 +1,8 @@
-import os
 import re
 import logging
 import random
 import shutil
+from pathlib import Path
 
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
@@ -15,11 +15,9 @@ SCAFFOLD_TEMPLATES_DIR = "scaffold_templates"
 EXTENSION_TEMPLATES_DIR = "extension_templates"
 APP_TEMPLATES_DIR = "app_templates"
 TEMPLATE_SUFFIX = "_tmpl"
-APP_PATH = os.path.join(
-    os.path.dirname(__file__), SCAFFOLD_TEMPLATES_DIR, APP_TEMPLATES_DIR
-)
-EXTENSION_PATH = os.path.join(
-    os.path.dirname(__file__), SCAFFOLD_TEMPLATES_DIR, EXTENSION_TEMPLATES_DIR
+APP_PATH = Path(__file__).parent / SCAFFOLD_TEMPLATES_DIR / APP_TEMPLATES_DIR
+EXTENSION_PATH = (
+    Path(__file__).parent / SCAFFOLD_TEMPLATES_DIR / EXTENSION_TEMPLATES_DIR
 )
 
 
@@ -36,7 +34,7 @@ def add_scaffold_parser(subparsers):
     scaffold_parser.add_argument(
         "prefix",
         nargs="?",
-        default=os.getcwd(),
+        default=str(Path.cwd()),
         help="The absolute path to the directory within which the new app should be scaffolded.",
     )
     scaffold_parser.add_argument(
@@ -44,7 +42,7 @@ def add_scaffold_parser(subparsers):
         "--template",
         dest="template",
         help="Name of template to use.",
-        choices=os.listdir(APP_PATH),
+        choices=[p.name for p in APP_PATH.iterdir()],
     )
     scaffold_parser.add_argument(
         "-e", "--extension", dest="extension", action="store_true"
@@ -185,15 +183,15 @@ def scaffold_command(args):
     if args.extension:
         is_extension = True
         template_name = args.template
-        template_root = os.path.join(EXTENSION_PATH, args.template)
+        template_root = EXTENSION_PATH / args.template
     else:
         template_name = args.template
-        template_root = os.path.join(APP_PATH, args.template)
+        template_root = APP_PATH / args.template
 
     log.debug("Template root directory: {}".format(template_root))
 
     # Validate template
-    if not os.path.isdir(template_root):
+    if not template_root.is_dir():
         write_pretty_output(
             'Error: "{}" is not a valid template.'.format(template_name), FG_WHITE
         )
@@ -251,11 +249,9 @@ def scaffold_command(args):
     default_proper_name = " ".join(title_case_project_name)
     class_name = "".join(title_case_project_name)
     default_theme_color = get_random_color()
-    project_root = os.path.join(args.prefix, project_dir)
+    project_root = Path(args.prefix) / project_dir
 
-    write_pretty_output(
-        'Creating new Tethys project at "{0}".'.format(project_root), FG_WHITE
-    )
+    write_pretty_output(f'Creating new Tethys project at "{project_root}".', FG_WHITE)
 
     # Get metadata from user
     if not is_extension:
@@ -379,12 +375,12 @@ def scaffold_command(args):
 
             context[item["name"]] = response
 
-    log.debug("Template context: {}".format(context))
+    log.debug(f"Template context: {context}")
 
-    log.debug("Project root path: {}".format(project_root))
+    log.debug(f"Project root path: {project_root}")
 
     # Create root directory
-    if os.path.isdir(project_root):
+    if project_root.is_dir():
         if not args.overwrite:
             valid = False
             negative_choices = ["n", "no", ""]
@@ -396,10 +392,7 @@ def scaffold_command(args):
                 try:
                     response = (
                         input(
-                            'Directory "{}" already exists. '
-                            "Would you like to overwrite it? [Y/n]: ".format(
-                                project_root
-                            )
+                            f'Directory "{project_root}" already exists. Would you like to overwrite it? [Y/n]: '
                         )
                         or default
                     )
@@ -415,44 +408,45 @@ def scaffold_command(args):
                 exit(0)
 
         try:
-            shutil.rmtree(project_root)
+            shutil.rmtree(str(project_root))
         except OSError:
             write_pretty_output(
-                'Error: Unable to overwrite "{}". '
-                "Please remove the directory and try again.".format(project_root),
+                f'Error: Unable to overwrite "{project_root}". Please remove the directory and try again.',
                 FG_YELLOW,
             )
             exit(1)
 
     # Walk the template directory, creating the templates and directories in the new project as we go
-    for curr_template_root, _, template_files in os.walk(template_root):
-        curr_project_root = curr_template_root.replace(template_root, project_root)
+    for curr_template_root, _, template_files in template_root.walk():
+        curr_project_root = str(curr_template_root).replace(
+            str(template_root), str(project_root)
+        )
         curr_project_root = render_path(curr_project_root, context)
+        curr_project_root = Path(curr_project_root)
 
         # Create Root Directory
-        os.makedirs(curr_project_root)
-        write_pretty_output('Created: "{}"'.format(curr_project_root), FG_WHITE)
+        curr_project_root.mkdir(parents=True)
+        write_pretty_output(f'Created: "{curr_project_root}"', FG_WHITE)
 
         # Create Files
         for template_file in template_files:
             needs_rendering = template_file.endswith(TEMPLATE_SUFFIX)
-            template_file_path = os.path.join(curr_template_root, template_file)
+            template_file_path = curr_template_root / template_file
             project_file = template_file.replace(TEMPLATE_SUFFIX, "")
-            project_file_path = os.path.join(curr_project_root, project_file)
+            project_file_path = curr_project_root / project_file
 
             # Load the template
-            log.debug('Loading template: "{}"'.format(template_file_path))
+            log.debug(f'Loading template: "{template_file_path}"')
 
             if needs_rendering:
-                with open(template_file_path, "r") as tf:
-                    template = Template(tf.read())
-                    with open(project_file_path, "w") as pf:
-                        pf.write(template.render(context))
+                project_file_path.write_text(
+                    Template(template_file_path.read_text()).render(context)
+                )
             else:
-                shutil.copy(template_file_path, project_file_path)
+                shutil.copy(str(template_file_path), str(project_file_path))
 
-            write_pretty_output('Created: "{}"'.format(project_file_path), FG_WHITE)
+            write_pretty_output(f'Created: "{project_file_path}"', FG_WHITE)
 
     write_pretty_output(
-        'Successfully scaffolded new project "{}"'.format(project_name), FG_WHITE
+        f'Successfully scaffolded new project "{project_name}"', FG_WHITE
     )

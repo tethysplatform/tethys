@@ -1,4 +1,5 @@
-import os
+from pathlib import Path
+from os import devnull, environ
 import webbrowser
 import subprocess
 from tethys_cli.manage_commands import get_manage_path, run_process
@@ -6,7 +7,7 @@ from tethys_cli.cli_colors import write_warning, write_error
 from tethys_apps.utilities import get_tethys_src_dir
 
 TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
-FNULL = open(os.devnull, "w")
+FNULL = open(devnull, "w")
 
 
 def add_test_parser(subparsers):
@@ -55,12 +56,12 @@ def check_and_install_prereqs(tests_path):
             raise ImportError
     except ImportError:
         write_warning("Test App not found. Installing.....")
-        setup_path = os.path.join(tests_path, "apps", "tethysapp-test_app")
+        setup_path = tests_path / "apps" / "tethysapp-test_app"
         subprocess.call(
             ["pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
-            cwd=setup_path,
+            cwd=str(setup_path),
         )
 
     try:
@@ -70,12 +71,12 @@ def check_and_install_prereqs(tests_path):
             raise ImportError
     except ImportError:
         write_warning("Test Extension not found. Installing.....")
-        setup_path = os.path.join(tests_path, "extensions", "tethysext-test_extension")
+        setup_path = Path(tests_path) / "extensions" / "tethysext-test_extension"
         subprocess.call(
             ["pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
-            cwd=setup_path,
+            cwd=str(setup_path),
         )
 
 
@@ -83,7 +84,7 @@ def test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, "tests")
+    tests_path = Path(TETHYS_SRC_DIRECTORY) / "tests"
 
     try:
         check_and_install_prereqs(tests_path)
@@ -102,7 +103,7 @@ def test_command(args):
     extension_package_tag = "tethysext."
 
     if args.coverage or args.coverage_html:
-        os.environ["TETHYS_TEST_DIR"] = tests_path
+        environ["TETHYS_TEST_DIR"] = str(tests_path)
         if args.file and app_package_tag in args.file:
             app_package_parts = args.file.split(app_package_tag)
             app_name = app_package_parts[1].split(".")[0]
@@ -120,19 +121,19 @@ def test_command(args):
                 core_extension_package, extension_package
             )
         else:
-            config_opt = "--rcfile={0}".format(os.path.join(tests_path, "coverage.cfg"))
+            config_opt = "--rcfile={0}".format(tests_path / "coverage.cfg")
         primary_process = ["coverage", "run", config_opt, manage_path, "test"]
 
     if args.file:
-        if os.path.isfile(args.file):
-            path, file_name = os.path.split(args.file)
-            primary_process.extend([path, "--pattern", file_name])
+        fpath = Path(args.file)
+        if fpath.is_file():
+            primary_process.extend([str(fpath.parent), "--pattern", str(fpath.name)])
         else:
             primary_process.append(args.file)
     elif args.unit:
-        primary_process.append(os.path.join(tests_path, "unit_tests"))
+        primary_process.append(str(tests_path / "unit_tests"))
     elif args.gui:
-        primary_process.append(os.path.join(tests_path, "gui_tests"))
+        primary_process.append(str(tests_path / "gui_tests"))
 
     if args.verbosity:
         primary_process.extend(["-v", args.verbosity])
@@ -158,7 +159,7 @@ def test_command(args):
                 [
                     "coverage",
                     "html",
-                    "--directory={0}".format(os.path.join(tests_path, report_dirname)),
+                    "--directory={0}".format(tests_path / report_dirname),
                 ]
             )
         else:
@@ -166,14 +167,12 @@ def test_command(args):
 
         try:
             status = run_process(
-                ["open", os.path.join(tests_path, report_dirname, index_fname)]
+                ["open", str(tests_path / report_dirname / index_fname)]
             )
             if status != 0:
                 raise Exception
         except Exception:
-            webbrowser.open_new_tab(
-                os.path.join(tests_path, report_dirname, index_fname)
-            )
+            webbrowser.open_new_tab(str(tests_path / report_dirname / index_fname))
 
     # Removing Test App
     try:

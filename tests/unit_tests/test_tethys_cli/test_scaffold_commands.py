@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-import os
+from pathlib import Path
 
 from tethys_cli.scaffold_commands import (
     proper_name_validator,
@@ -19,15 +19,13 @@ class TestScaffoldCommands(unittest.TestCase):
         self.extension_template_dir = "extension_templates"
         self.app_template_dir = "app_templates"
         self.template_suffix = "_tmpl"
-        self.app_path = os.path.join(
-            os.path.dirname(__file__),
-            self.scaffold_templates_dir,
-            self.app_template_dir,
+        self.app_path = str(
+            Path(__file__).parent / self.scaffold_templates_dir / self.app_template_dir
         )
-        self.extension_path = os.path.join(
-            os.path.dirname(__file__),
-            self.scaffold_templates_dir,
-            self.extension_template_dir,
+        self.extension_path = str(
+            Path(__file__).parent
+            / self.scaffold_templates_dir
+            / self.extension_template_dir
         )
 
     def tearDown(self):
@@ -121,22 +119,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -159,20 +159,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         scaffold_command(args=mock_args)
 
@@ -185,12 +181,12 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[0][0][0],
         )
         self.assertIn("Created:", po_call_args[1][0][0])
@@ -210,24 +206,24 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     def test_scaffold_command_with_not_valid_template(
-        self, mock_os_path_isdir, mock_pretty_output, mock_logger, mock_exit
+        self, mock_is_dir, mock_pretty_output, mock_logger, mock_exit
     ):
         # mock the input args
         mock_args = mock.MagicMock()
@@ -244,7 +240,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
 
-        mock_os_path_isdir.return_value = False
+        mock_is_dir.return_value = False
 
         mock_exit.side_effect = SystemExit
 
@@ -268,22 +264,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_extension(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -305,20 +303,16 @@ class TestScaffoldCommands(unittest.TestCase):
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
 
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         scaffold_command(args=mock_args)
 
@@ -331,12 +325,12 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysapp-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysapp-project_name"}".',
             po_call_args[0][0][0],
         )
         self.assertIn("Created:", po_call_args[1][0][0])
@@ -356,15 +350,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
@@ -372,22 +366,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_uppercase_project_name(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -410,20 +406,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         scaffold_command(args=mock_args)
 
@@ -436,7 +428,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -446,7 +438,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -466,24 +458,24 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     def test_scaffold_command_with_wrong_project_name(
-        self, mock_os_path_isdir, mock_pretty_output, mock_logger, mock_exit
+        self, mock_is_dir, mock_pretty_output, mock_logger, mock_exit
     ):
         # mock the input args
         mock_args = mock.MagicMock()
@@ -500,7 +492,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
 
-        mock_os_path_isdir.return_value = True
+        mock_is_dir.return_value = True
 
         mock_exit.side_effect = SystemExit
 
@@ -524,22 +516,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_project_warning(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -561,20 +555,16 @@ class TestScaffoldCommands(unittest.TestCase):
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
 
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         scaffold_command(args=mock_args)
 
@@ -587,7 +577,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -597,7 +587,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -617,15 +607,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
@@ -635,22 +625,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_defaults(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -674,20 +666,16 @@ class TestScaffoldCommands(unittest.TestCase):
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
 
-        mock_os_path_isdir.return_value = [True, False]
+        mock_is_dir.return_value = [True, False]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_input.side_effect = ["test1", "test2", "test3", "test4", "test5"]
         mock_proper_name_validator.return_value = True, "foo"
@@ -703,8 +691,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        # mock the create root directory
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -714,7 +701,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -739,15 +726,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("test5", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
@@ -756,12 +743,12 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     @mock.patch("tethys_cli.scaffold_commands.exit")
     def test_scaffold_command_with_no_defaults_input_exception(
@@ -769,11 +756,11 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_exit,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -797,16 +784,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, False]
+        mock_is_dir.return_value = [True, False]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs")),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_exit.side_effect = SystemExit
 
@@ -824,7 +811,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_not_called()
 
         # mock the create root directory
-        mock_makedirs.assert_not_called()
+        mock_mkdir.assert_not_called()
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -834,7 +821,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
@@ -851,22 +838,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_defaults_invalid_response(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -891,20 +880,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, False]
+        mock_is_dir.return_value = [True, False]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_input.side_effect = [
             "test1",
@@ -927,8 +912,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        # mock the create root directory
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -938,7 +922,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Invalid response: foo", po_call_args[2][0][0])
@@ -964,15 +948,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("test5", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
@@ -981,22 +965,24 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_overwrite(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        ___,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -1020,20 +1006,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (
-                os.path.join(os.path.abspath(os.sep), "foo", "bar"),
-                (),
-                ("spam", "eggs_tmpl"),
-            ),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_input.side_effect = ["y"]
 
@@ -1049,7 +1031,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_called()
 
         # mock the create root directory
-        mock_makedirs.assert_called_with(mock_render_path.return_value)
+        self.assertEqual(mock_mkdir.call_count, 2)
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -1059,7 +1041,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Created:", po_call_args[2][0][0])
@@ -1079,15 +1061,15 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "baz")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
             mock_log_call_args[6][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "spam")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
             mock_log_call_args[7][0][0],
         )
         self.assertEqual(
-            f'Loading template: "{os.path.join(os.path.abspath(os.sep), "foo", "bar", "eggs_tmpl")}"',
+            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
             mock_log_call_args[8][0][0],
         )
 
@@ -1096,22 +1078,22 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_overwrite_keyboard_interrupt(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -1135,16 +1117,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs")),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_exit.side_effect = SystemExit
 
@@ -1162,7 +1144,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_not_called()
 
         # mock the create root directory
-        mock_makedirs.assert_not_called()
+        mock_mkdir.assert_not_called()
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -1172,7 +1154,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
@@ -1190,22 +1172,22 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_overwrite_cancel(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -1229,16 +1211,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs")),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_exit.side_effect = SystemExit
 
@@ -1256,7 +1238,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_not_called()
 
         # mock the create root directory
-        mock_makedirs.assert_not_called()
+        mock_mkdir.assert_not_called()
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -1266,7 +1248,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
@@ -1284,22 +1266,22 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
     @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.os.path.isdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.os.walk")
-    @mock.patch("tethys_cli.scaffold_commands.os.makedirs")
-    @mock.patch("tethys_cli.scaffold_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
     def test_scaffold_command_with_no_overwrite_os_error(
         self,
         _,
         __,
-        mock_makedirs,
-        mock_os_walk,
+        mock_mkdir,
+        mock_path_walk,
         mock_render_path,
         mock_rmt,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_pretty_output,
         mock_random_color,
         mock_logger,
@@ -1323,16 +1305,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_logger.return_value = mock_log
 
         # mocking the validate template call return value
-        mock_os_path_isdir.return_value = [True, True]
+        mock_is_dir.return_value = [True, True]
 
         mock_render_path.return_value = ""
 
-        mock_os_walk.return_value = [
-            (os.path.join(os.path.abspath(os.sep), "foo"), ("bar",), ("baz",)),
-            (os.path.join(os.path.abspath(os.sep), "foo", "bar"), (), ("spam", "eggs")),
+        mock_path_walk.return_value = [
+            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
+            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
 
-        mock_makedirs.return_value = True
+        mock_mkdir.return_value = True
 
         mock_exit.side_effect = SystemExit
 
@@ -1352,7 +1334,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_not_called()
 
         # mock the create root directory
-        mock_makedirs.assert_not_called()
+        mock_mkdir.assert_not_called()
 
         po_call_args = mock_pretty_output.call_args_list
 
@@ -1362,7 +1344,7 @@ class TestScaffoldCommands(unittest.TestCase):
             po_call_args[0][0][0],
         )
         self.assertEqual(
-            f'Creating new Tethys project at "cwd{os.sep}tethysext-project_name".',
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
             po_call_args[1][0][0],
         )
         self.assertIn("Error: Unable to overwrite", po_call_args[2][0][0])

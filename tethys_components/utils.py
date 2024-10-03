@@ -1,5 +1,5 @@
 import inspect
-import os
+from pathlib import Path
 from channels.db import database_sync_to_async
 
 
@@ -18,8 +18,12 @@ async def get_workspace(app_package, user):
 def use_workspace(user=None):
     from reactpy_django.hooks import use_query
 
-    calling_fpath = inspect.stack()[1][0].f_code.co_filename
-    app_package = calling_fpath.split(f"{os.sep}tethysapp{os.sep}")[1].split(os.sep)[0]
+    calling_fpath = Path(inspect.stack()[1][0].f_code.co_filename)
+    app_package = [
+        p.name
+        for p in [calling_fpath] + list(calling_fpath.parents)
+        if p.parent.name == "tethysapp"
+    ][0]
 
     workspace_query = use_query(
         get_workspace, {"app_package": app_package, "user": user}, postprocessor=None

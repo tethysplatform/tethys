@@ -1,5 +1,5 @@
 import unittest
-import os
+from pathlib import Path
 from unittest import mock
 from guardian.shortcuts import assign_perm
 from tethys_sdk.testing import TethysTestCase
@@ -25,15 +25,15 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         test_ext = False
 
         for r in result:
-            if os.path.join(os.sep, "tethysapp", "test_app", "templates") in r:
+            if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
             if (
-                os.path.join(
-                    os.sep,
-                    "tethysext-test_extension",
-                    "tethysext",
-                    "test_extension",
-                    "templates",
+                str(
+                    Path("/")
+                    / "tethysext-test_extension"
+                    / "tethysext"
+                    / "test_extension"
+                    / "templates"
                 )
                 in r
             ):
@@ -56,17 +56,17 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if (
                 "test_app" in r
-                and os.path.join(os.sep, "tethysapp", "test_app", "templates") in r[1]
+                and str(Path("/") / "tethysapp" / "test_app" / "templates") in r[1]
             ):
                 test_app = True
             if (
                 "test_extension" in r
-                and os.path.join(
-                    os.sep,
-                    "tethysext-test_extension",
-                    "tethysext",
-                    "test_extension",
-                    "templates",
+                and str(
+                    Path("/")
+                    / "tethysext-test_extension"
+                    / "tethysext"
+                    / "test_extension"
+                    / "templates"
                 )
                 in r[1]
             ):
@@ -92,15 +92,15 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         test_ext = False
 
         for r in result:
-            if os.path.join(os.sep, "tethysapp", "test_app", "templates") in r:
+            if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
             if (
-                os.path.join(
-                    os.sep,
-                    "tethysext-test_extension",
-                    "tethysext",
-                    "test_extension",
-                    "templates",
+                str(
+                    Path("/")
+                    / "tethysext-test_extension"
+                    / "tethysext"
+                    / "test_extension"
+                    / "templates"
                 )
                 in r
             ):
@@ -143,15 +143,15 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         test_ext = False
 
         for r in result:
-            if os.path.join(os.sep, "tethysapp", "test_app", "public") in r:
+            if str(Path("/") / "tethysapp" / "test_app" / "public") in r:
                 test_app = True
             if (
-                os.path.join(
-                    os.sep,
-                    "tethysext-test_extension",
-                    "tethysext",
-                    "test_extension",
-                    "public",
+                str(
+                    Path("/")
+                    / "tethysext-test_extension"
+                    / "tethysext"
+                    / "test_extension"
+                    / "public"
                 )
                 in r
             ):
@@ -714,108 +714,97 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         )
         self.assertIn("does not exist.", po_call_args[0][0][0])
 
-    @mock.patch("tethys_apps.utilities.os")
+    @mock.patch("tethys_apps.utilities.environ")
+    @mock.patch("tethys_apps.utilities.Path.home")
     def test_get_tethys_home_dir__default_env_name__tethys_home_not_defined(
-        self, mock_os
+        self, mock_home, mock_environ
     ):
         env_tethys_home = None
         conda_default_env = "tethys"  # Default Tethys environment name
         expand_user_path = "/home/tethys"
 
-        mock_os.environ.get.side_effect = [
+        mock_environ.get.side_effect = [
             env_tethys_home,
             conda_default_env,
         ]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
-        mock_os.path.expanduser.return_value = expand_user_path
-        mock_os.path.join.return_value = f"{expand_user_path}/.tethys"
+        mock_home.return_value = Path(expand_user_path)
 
         ret = utilities.get_tethys_home_dir()
 
-        mock_os.environ.get.assert_any_call("TETHYS_HOME")
-        mock_os.environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_os.path.join.assert_called_with(expand_user_path, ".tethys")
+        self.assertEqual(mock_environ.get.call_count, 2)
+        mock_environ.get.assert_any_call("TETHYS_HOME")
+        mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
 
         # Returns default tethys home environment
-        self.assertEqual(f"{expand_user_path}/.tethys", ret)
+        self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
 
-    @mock.patch("tethys_apps.utilities.os")
+    @mock.patch("tethys_apps.utilities.environ")
+    @mock.patch("tethys_apps.utilities.Path.home")
     def test_get_tethys_home_dir__non_default_env_name__tethys_home_not_defined(
-        self, mock_os
+        self, mock_home, mock_environ
     ):
         env_tethys_home = None
         conda_default_env = "foo"  # Non-default Tethys environment name
         expand_user_path = "/home/tethys"
-        default_tethys_home = f"{expand_user_path}/.tethys"
 
-        mock_os.environ.get.side_effect = [
+        mock_environ.get.side_effect = [
             env_tethys_home,
             conda_default_env,
         ]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
-        mock_os.path.expanduser.return_value = expand_user_path
-        mock_os.path.join.side_effect = [
-            default_tethys_home,
-            f"{default_tethys_home}/{conda_default_env}",
-        ]
+        mock_home.return_value = Path(expand_user_path)
 
         ret = utilities.get_tethys_home_dir()
 
-        mock_os.environ.get.assert_any_call("TETHYS_HOME")
-        mock_os.environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        os_join_call_args = mock_os.path.join.call_args_list
-        self.assertEqual([os_join_call_args[0][0]], [(expand_user_path, ".tethys")])
-        self.assertEqual(
-            [os_join_call_args[1][0]], [(default_tethys_home, conda_default_env)]
-        )
-        mock_os.path.join.assert_called_with(default_tethys_home, conda_default_env)
+        mock_environ.get.assert_any_call("TETHYS_HOME")
+        mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
 
         # Returns joined path of default tethys home path and environment name
-        self.assertEqual(f"{default_tethys_home}/{conda_default_env}", ret)
+        self.assertEqual(
+            str(Path(expand_user_path) / ".tethys" / conda_default_env), ret
+        )
 
-    @mock.patch("tethys_apps.utilities.os")
-    def test_get_tethys_home_dir__tethys_home_defined(self, mock_os):
+    @mock.patch("tethys_apps.utilities.environ")
+    @mock.patch("tethys_apps.utilities.Path.home")
+    def test_get_tethys_home_dir__tethys_home_defined(self, mock_home, mock_environ):
         env_tethys_home = "/foo/.bar"
         conda_default_env = "foo"
-        mock_os.environ.get.side_effect = [
+        mock_environ.get.side_effect = [
             env_tethys_home,
             conda_default_env,
         ]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
 
         ret = utilities.get_tethys_home_dir()
 
-        mock_os.environ.get.assert_called_once_with("TETHYS_HOME")
-        mock_os.path.expanduser.assert_not_called()
+        mock_environ.get.assert_called_once_with("TETHYS_HOME")
+        mock_home.assert_not_called()
 
         # Returns path defined by TETHYS_HOME environment variable
         self.assertEqual(env_tethys_home, ret)
 
     @mock.patch("tethys_apps.utilities.tethys_log")
-    @mock.patch("tethys_apps.utilities.os")
-    def test_get_tethys_home_dir__exception(self, mock_os, mock_tethys_log):
+    @mock.patch("tethys_apps.utilities.environ")
+    @mock.patch("tethys_apps.utilities.Path.home")
+    def test_get_tethys_home_dir__exception(
+        self, mock_home, mock_environ, mock_tethys_log
+    ):
         env_tethys_home = None
-        conda_default_env = "foo"  # Non-default Tethys environment name
         expand_user_path = "/home/tethys"
-        default_tethys_home = f"{expand_user_path}/.tethys"
 
-        mock_os.environ.get.side_effect = [
+        mock_environ.get.side_effect = [
             env_tethys_home,
-            conda_default_env,
+            Exception,
         ]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
-        mock_os.path.expanduser.return_value = expand_user_path
-        mock_os.path.join.side_effect = [default_tethys_home, Exception]
+        mock_home.return_value = Path(expand_user_path)
 
         ret = utilities.get_tethys_home_dir()
 
-        mock_os.environ.get.assert_any_call("TETHYS_HOME")
-        mock_os.environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        os_join_call_args = mock_os.path.join.call_args_list
-        self.assertEqual([os_join_call_args[0][0]], [(expand_user_path, ".tethys")])
-        self.assertEqual(
-            [os_join_call_args[1][0]], [(default_tethys_home, conda_default_env)]
-        )
+        self.assertEqual(mock_environ.get.call_count, 2)
+        mock_environ.get.assert_any_call("TETHYS_HOME")
+        mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
         mock_tethys_log.warning.assert_called()
 
         # Returns default tethys home environment path
-        self.assertEqual(default_tethys_home, ret)
+        self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     def test_get_app_class(self, mock_harvester):
@@ -955,16 +944,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
 
     @mock.patch("tethys_apps.utilities.yaml.dump")
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
-    @mock.patch(
-        "tethys_apps.utilities.Path.open",
-        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+    @mock.patch.object(
+        Path, "open", new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}')
     )
-    @mock.patch("tethys_apps.utilities.Path.exists")
+    @mock.patch("tethys_apps.utilities.Path.exists", return_value=True)
     def test_delete_secrets(
-        self, mock_path_exists, mock_open_file, mock_yaml_safe_load, mock_yaml_dumps
+        self, mock_exists, mock_open_file, mock_yaml_safe_load, mock_yaml_dumps
     ):
         app_target_name = "test_app"
-        mock_path_exists.return_value = True
         before_content = {
             "secrets": {
                 app_target_name: {
@@ -992,16 +979,14 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
 
     @mock.patch("tethys_apps.utilities.yaml.dump")
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
-    @mock.patch(
-        "tethys_apps.utilities.Path.open",
-        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+    @mock.patch.object(
+        Path, "open", new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}')
     )
-    @mock.patch("tethys_apps.utilities.Path.exists")
+    @mock.patch("tethys_apps.utilities.Path.exists", return_value=True)
     def test_delete_secrets_without_app_in_secrets_yml(
-        self, mock_path_exists, mock_open_file, mock_yaml_safe_load, mock_yaml_dumps
+        self, mock_path, mock_open_file, mock_yaml_safe_load, mock_yaml_dumps
     ):
         app_target_name = "test_app"
-        mock_path_exists.return_value = True
         before_content = {"secrets": {"version": "1.0"}}
 
         after_content = {"secrets": {app_target_name: {}, "version": "1.0"}}
@@ -1025,14 +1010,13 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         return_val = utilities.get_secret_custom_settings(app_target_name)
         self.assertEqual(return_val, None)
 
-    @mock.patch("tethys_apps.utilities.os.path.exists")
-    @mock.patch("tethys_apps.utilities.yaml.safe_load")
     @mock.patch(
-        "tethys_apps.utilities.open",
-        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+        "tethys_apps.utilities.Path.read_text", return_value='{"secrets": "{}"}'
     )
+    @mock.patch("tethys_apps.utilities.Path.exists")
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
     def test_secrets_signed_unsigned_value_with_secrets(
-        self, mock_open_file, mock_yaml_safe_load, mock_file_exists
+        self, mock_yaml_safe_load, mock_path_exists, _
     ):
         app_target_name = "test_app"
 
@@ -1048,7 +1032,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         }
         mock_yaml_safe_load.return_value = before_content
 
-        mock_file_exists.side_effect = [True, True, False, False]
+        mock_path_exists.side_effect = [True, True, False, False]
 
         signer = Signer(salt="my_first_fake_string")
         mock_val = "SECRETXX1Y"

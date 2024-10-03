@@ -7,7 +7,6 @@
 ********************************************************************************
 """
 
-import os
 from abc import abstractmethod
 from pathlib import Path
 from functools import partial
@@ -175,7 +174,7 @@ class CondorBase(TethysJob):
         Get logs contents for condor job.
         """
         log_files = self._log_files()
-        log_path = os.path.join(self.workspace, self.remote_id)
+        log_path = Path(self.workspace) / self.remote_id
         log_contents = self._get_lazy_log_content(log_files, self.read_file, log_path)
         # Check to see if local log files exist. If not get log contents from remote.
         logs_exist = self._check_local_logs_exist(log_contents)
@@ -217,5 +216,5 @@ class CondorBase(TethysJob):
         log_exists = list()
         for func in log_funcs:
             filename = func.args[0]
-            log_exists.append(os.path.exists(filename))
+            log_exists.append(Path(filename).exists())
         return any(log_exists)

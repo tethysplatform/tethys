@@ -8,9 +8,9 @@
 ********************************************************************************
 """
 
-import os
 import json
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 import getpass
 from tethys_cli.cli_colors import write_pretty_output, write_error, write_warning
@@ -482,7 +482,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
 
             if mount_data_dir.lower() == "y":
                 tethys_home = get_tethys_home_dir()
-                default_mount_location = os.path.join(tethys_home, "geoserver", "data")
+                default_mount_location = str(Path(tethys_home) / "geoserver" / "data")
                 gs_data_volume = "/var/geoserver/data"
                 mount_location = UserInputHelper.get_valid_directory_input(
                     prompt="Specify location to bind data directory",
@@ -643,7 +643,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
 
             if mount_data_dir.lower() == "y":
                 tethys_home = get_tethys_home_dir()
-                default_mount_location = os.path.join(tethys_home, "thredds")
+                default_mount_location = str(Path(tethys_home) / "thredds")
                 thredds_data_volume = "/usr/local/tomcat/content/thredds"
                 mount_location = UserInputHelper.get_valid_directory_input(
                     prompt="Specify location to bind the THREDDS data directory",
@@ -985,23 +985,23 @@ class UserInputHelper:
         pre_prompt = ""
         prompt = "{} [{}]: ".format(prompt, default)
         while True:
-            value = input("{}{}".format(pre_prompt, prompt)) or str(default)
+            raw_value = input("{}{}".format(pre_prompt, prompt)) or str(default)
+            path = Path(raw_value)
 
-            if os.path.abspath(__file__).startswith(os.path.abspath(os.sep)):
-                if len(value) > 0 and not value.startswith(os.path.abspath(os.sep)):
-                    value = os.path.join(os.path.abspath(os.sep), value)
+            if len(raw_value) > 0 and not path.is_absolute():
+                path = path.absolute()
 
-            if not os.path.isdir(value):
+            if not path.is_dir():
                 try:
-                    os.makedirs(value)
+                    path.mkdir(parents=True)
                 except OSError as e:
-                    write_pretty_output("{0}: {1}".format(repr(e), value))
+                    write_pretty_output("{0}: {1}".format(repr(e), path))
                     pre_prompt = "Please provide a valid directory\n"
                     continue
 
             break
 
-        return value
+        return str(path)
 
 
 def log_pull_stream(stream):

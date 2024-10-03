@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-import os.path
+from pathlib import Path
 
 from tethys_apps.management.commands import collectworkspaces
 
@@ -47,8 +47,8 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
 
     @mock.patch("tethys_apps.management.commands.collectworkspaces.print")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.move")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.makedirs")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.mkdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
     @mock.patch(
         "tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items"
     )
@@ -57,32 +57,29 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_apps,
-        mock_os_path_isdir,
-        mock_os_makedirs,
+        mock_is_dir,
+        mock_mkdir,
         mock_shutil_move,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = os.path.join(os.sep, "foo", "workspace")
+        mock_settings.TETHYS_WORKSPACES_ROOT = Path.home() / "foo" / "workspace"
         mock_get_apps.return_value = {
-            "foo_app": os.path.join(os.sep, "foo", "testing", "tests", "foo_app")
+            "foo_app": Path.home() / "foo" / "testing" / "tests" / "foo_app"
         }
-        mock_os_path_isdir.return_value = False
+        mock_is_dir.return_value = False
 
         cmd = collectworkspaces.Command()
         cmd.handle(force=False)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_called()
-        mock_os_makedirs.assert_called_once_with(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"),
-            exist_ok=True,
-        )
+        mock_is_dir.assert_called()
+        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
         mock_shutil_move.assert_called_once_with(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"),
-            os.path.join(os.sep, "foo", "workspace", "foo_app"),
+            Path.home() / "foo" / "testing" / "tests" / "foo_app" / "workspaces",
+            Path.home() / "foo" / "workspace" / "foo_app",
         )
 
-        msg_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
+        msg_info = f'INFO: Moving workspace directories of apps to "{Path.home() / "foo" / "workspace"}" and linking back.'
 
         msg_warning = 'WARNING: The workspace_path for app "foo_app" is not a directory. Making workspace directory...'
 
@@ -93,8 +90,8 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self.assertEqual(msg_warning, print_call_args[1][0][0])
 
     @mock.patch("tethys_apps.management.commands.collectworkspaces.print")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.islink")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
     @mock.patch(
         "tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items"
     )
@@ -103,36 +100,32 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_apps,
-        mock_os_path_isdir,
-        mock_os_path_islink,
+        mock_is_dir,
+        mock_is_symlink,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = os.path.join(os.sep, "foo", "workspace")
+        mock_settings.TETHYS_WORKSPACES_ROOT = Path.home() / "foo" / "workspace"
         mock_get_apps.return_value = {
-            "foo_app": os.path.join(os.sep, "foo", "testing", "tests", "foo_app")
+            "foo_app": Path.home() / "foo" / "testing" / "tests" / "foo_app"
         }
-        mock_os_path_isdir.return_value = True
-        mock_os_path_islink.return_value = True
+        mock_is_dir.return_value = True
+        mock_is_symlink.return_value = True
 
         cmd = collectworkspaces.Command()
         cmd.handle(force=False)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_called_once_with(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
-        )
-        mock_os_path_islink.assert_called_once_with(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
-        )
-        msg_in = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
+        mock_is_dir.assert_called_once()
+        mock_is_symlink.assert_called_once()
+        msg_in = f'INFO: Moving workspace directories of apps to "{Path.home() / "foo" / "workspace"}" and linking back.'
         mock_print.assert_called_with(msg_in)
 
     @mock.patch("tethys_apps.management.commands.collectworkspaces.print")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.symlink_to")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.move")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.exists")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.islink")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.exists")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
     @mock.patch(
         "tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items"
     )
@@ -141,44 +134,35 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_apps,
-        mock_os_path_isdir,
-        mock_os_path_islink,
-        mock_os_path_exists,
+        mock_is_dir,
+        mock_is_symlink,
+        mock_path_exists,
         mock_shutil_move,
-        mock_os_symlink,
+        mock_symlink_to,
         mock_print,
     ):
-        mock_settings.TETHYS_WORKSPACES_ROOT = os.path.join(os.sep, "foo", "workspace")
+        mock_settings.TETHYS_WORKSPACES_ROOT = Path.home() / "foo" / "workspace"
         mock_get_apps.return_value = {
-            "foo_app": os.path.join(os.sep, "foo", "testing", "tests", "foo_app")
+            "foo_app": Path.home() / "foo" / "testing" / "tests" / "foo_app"
         }
-        mock_os_path_isdir.side_effect = [True, True]
-        mock_os_path_islink.return_value = False
-        mock_os_path_exists.return_value = False
+        mock_is_dir.side_effect = [True, True]
+        mock_is_symlink.return_value = False
+        mock_path_exists.return_value = False
         mock_shutil_move.return_value = True
-        mock_os_symlink.return_value = True
+        mock_symlink_to.return_value = True
 
         cmd = collectworkspaces.Command()
         cmd.handle(force=True)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_any_call(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
-        )
-        mock_os_path_isdir.assert_called_with(
-            os.path.join(os.sep, "foo", "workspace", "foo_app")
-        )
-        mock_os_path_islink.assert_called_once_with(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces")
-        )
-        mock_os_path_exists.assert_called_once_with(
-            os.path.join(os.sep, "foo", "workspace", "foo_app")
-        )
+        self.assertEqual(mock_is_dir.call_count, 2)
+        mock_is_symlink.assert_called_once()
+        mock_path_exists.assert_called_once()
         mock_shutil_move.assert_called_once_with(
-            os.path.join(os.sep, "foo", "testing", "tests", "foo_app", "workspaces"),
-            os.path.join(os.sep, "foo", "workspace", "foo_app"),
+            Path.home() / "foo" / "testing" / "tests" / "foo_app" / "workspaces",
+            Path.home() / "foo" / "workspace" / "foo_app",
         )
-        msg_first_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
+        msg_first_info = f'INFO: Moving workspace directories of apps to "{Path.home() / "foo" / "workspace"}" and linking back.'
         msg_second_info = (
             'INFO: Successfully linked "workspaces" directory to '
             'TETHYS_WORKSPACES_ROOT for app "foo_app".'
@@ -192,11 +176,11 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
 
     @mock.patch("tethys_apps.management.commands.collectworkspaces.print")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.rmtree")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.symlink_to")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.move")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.exists")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.islink")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.exists")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
     @mock.patch(
         "tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items"
     )
@@ -205,40 +189,38 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_apps,
-        mock_os_path_isdir,
-        mock_os_path_islink,
-        mock_os_path_exists,
+        mock_is_dir,
+        mock_is_symlink,
+        mock_path_exists,
         mock_shutil_move,
-        mock_os_symlink,
+        mock_symlink_to,
         mock_shutil_rmtree,
         mock_print,
     ):
         app_name = "foo_app"
-        app_path = os.path.join(os.sep, "foo", "testing", "tests", app_name)
-        app_ws_path = os.path.join(app_path, "workspaces")
-        tethys_workspaces_root = os.path.join(os.sep, "foo", "workspace")
-        app_workspaces_root = os.path.join(tethys_workspaces_root, app_name)
+        app_path = Path.home() / "foo" / "testing" / "tests" / app_name
+        app_ws_path = app_path / "workspaces"
+        tethys_workspaces_root = Path.home() / "foo" / "workspace"
         mock_settings.TETHYS_WORKSPACES_ROOT = tethys_workspaces_root
         mock_get_apps.return_value = {app_name: app_path}
-        mock_os_path_isdir.side_effect = [True, True]
-        mock_os_path_islink.return_value = False
-        mock_os_path_exists.return_value = True
+        mock_is_dir.side_effect = [True, True]
+        mock_is_symlink.return_value = False
+        mock_path_exists.return_value = True
         mock_shutil_move.return_value = True
-        mock_os_symlink.return_value = True
+        mock_symlink_to.return_value = True
         mock_shutil_rmtree.return_value = True
 
         cmd = collectworkspaces.Command()
         cmd.handle(force=False)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_any_call(app_ws_path)
-        mock_os_path_isdir.assert_called_with(app_workspaces_root)
-        mock_os_path_islink.assert_called_once_with(app_ws_path)
-        mock_os_path_exists.assert_called_once_with(app_workspaces_root)
+        self.assertEqual(mock_is_dir.call_count, 2)
+        mock_is_symlink.assert_called_once()
+        mock_path_exists.assert_called_once()
         mock_shutil_move.assert_not_called()
         mock_shutil_rmtree.assert_called_once_with(app_ws_path, ignore_errors=True)
 
-        msg_first_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
+        msg_first_info = f'INFO: Moving workspace directories of apps to "{Path.home() / "foo" / "workspace"}" and linking back.'
 
         msg_warning = (
             'WARNING: Workspace directory for app "foo_app" already exists in the '
@@ -259,13 +241,13 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self.assertEqual(msg_second_info, print_call_args[2][0][0])
 
     @mock.patch("tethys_apps.management.commands.collectworkspaces.print")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.remove")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.unlink")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.rmtree")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.symlink_to")
     @mock.patch("tethys_apps.management.commands.pre_collectstatic.shutil.move")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.exists")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.islink")
-    @mock.patch("tethys_apps.management.commands.pre_collectstatic.os.path.isdir")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.exists")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_symlink")
+    @mock.patch("tethys_apps.management.commands.pre_collectstatic.Path.is_dir")
     @mock.patch(
         "tethys_apps.management.commands.collectworkspaces.get_installed_tethys_items"
     )
@@ -274,45 +256,44 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self,
         mock_settings,
         mock_get_apps,
-        mock_os_path_isdir,
-        mock_os_path_islink,
-        mock_os_path_exists,
+        mock_is_dir,
+        mock_is_symlink,
+        mock_path_exists,
         mock_shutil_move,
-        mock_os_symlink,
+        mock_symlink_to,
         mock_shutil_rmtree,
-        mock_os_remove,
+        mock_unlink,
         mock_print,
     ):
         app_name = "foo_app"
-        app_path = os.path.join(os.sep, "foo", "testing", "tests", app_name)
-        app_ws_path = os.path.join(app_path, "workspaces")
-        tethys_workspaces_root = os.path.join(os.sep, "foo", "workspace")
-        app_workspaces_root = os.path.join(tethys_workspaces_root, app_name)
+        app_path = Path.home() / "foo" / "testing" / "tests" / app_name
+        app_ws_path = app_path / "workspaces"
+        tethys_workspaces_root = Path.home() / "foo" / "workspace"
+        app_workspaces_root = tethys_workspaces_root / app_name
         mock_settings.TETHYS_WORKSPACES_ROOT = tethys_workspaces_root
         mock_get_apps.return_value = {app_name: app_path}
-        mock_os_path_isdir.side_effect = [True, True]
-        mock_os_path_islink.return_value = False
-        mock_os_path_exists.return_value = True
+        mock_is_dir.side_effect = [True, True]
+        mock_is_symlink.return_value = False
+        mock_path_exists.return_value = True
         mock_shutil_move.return_value = True
-        mock_os_symlink.return_value = True
+        mock_symlink_to.return_value = True
         mock_shutil_rmtree.return_value = True
-        mock_os_remove.side_effect = OSError
+        mock_unlink.side_effect = OSError
 
         cmd = collectworkspaces.Command()
         cmd.handle(force=True)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_any_call(app_ws_path)
-        mock_os_path_isdir.assert_called_with(app_workspaces_root)
-        mock_os_path_islink.assert_called_once_with(app_ws_path)
-        mock_os_path_exists.assert_called_once_with(app_workspaces_root)
+        self.assertEqual(mock_is_dir.call_count, 2)
+        mock_is_symlink.assert_called_once()
+        mock_path_exists.assert_called_once()
         mock_shutil_move.assert_called_once_with(app_ws_path, app_workspaces_root)
         mock_shutil_rmtree.assert_called_once_with(
             app_workspaces_root, ignore_errors=True
         )
-        mock_os_remove.assert_called_once_with(app_workspaces_root)
+        mock_unlink.assert_called_once()
 
-        msg_first_info = f'INFO: Moving workspace directories of apps to "{os.path.join(os.sep, "foo", "workspace")}" and linking back.'
+        msg_first_info = f'INFO: Moving workspace directories of apps to "{Path.home() / "foo" / "workspace"}" and linking back.'
 
         msg_second_info = (
             'INFO: Successfully linked "workspaces" directory to '

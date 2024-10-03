@@ -1,6 +1,5 @@
-import os
+from os import devnull, chdir
 from pathlib import Path
-
 from django.db import transaction
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -9,7 +8,7 @@ from conda.cli.python_api import Commands
 from tethys_cli import install_commands
 
 
-FNULL = open(os.devnull, "w")
+FNULL = open(devnull, "w")
 
 
 class TestServiceInstallHelpers(TestCase):
@@ -388,21 +387,14 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.find_and_link")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.install_commands.json.loads")
-    @mock.patch("tethys_cli.install_commands.json.load")
-    @mock.patch(
-        "tethys_cli.install_commands.open",
-        new_callable=lambda: mock.mock_open(read_data='{"fake_json": "{}"}'),
-    )
-    @mock.patch("tethys_cli.install_commands.os.path.isfile")
+    @mock.patch("tethys_cli.install_commands.Path")
     @mock.patch("tethys_apps.models.CustomSettingBase")
     @mock.patch("tethys_apps.models.TethysApp")
     def test_configure_services_from_file(
         self,
         mock_TethysApp,
         mock_CustomSetting,
-        mock_isfile,
-        mock_open,
-        mock_json_load,
+        mock_path,
         mock_json_loads,
         mock_pretty_output,
         mock_find_and_link,
@@ -555,17 +547,14 @@ class TestInstallServicesCommands(TestCase):
             mock_json_custom_setting_invalid_value,
             mock_secret_custom_setting,
         ]
-
-        # mock_open.side_effect = (mock_open.return_value, FileNotFoundError, TypeError)
-        mock_open.side_effect = mock_open.return_value
-
-        mock_isfile.side_effect = (True, False, False)
+        mock_path().is_file.side_effect = [True, False, False]
+        mock_path().read_text.return_value = '{"fake_json": "{}"}'
 
         mock_json_loads.side_effect = [
+            ['{"fake_json": "{}"}'],
             json_custom_setting_wrong_path_value,
             ValueError,
         ]
-        mock_json_load.side_effect = ['{"fake_json": "{}"}']
 
         # This persistent setting exists and is listed in the file
         mock_persistent_database_setting = mock.MagicMock()
@@ -771,18 +760,18 @@ class TestInstallCommands(TestCase):
         self.root_app_path = self.src_dir / "apps" / "tethysapp-test_app"
         self.app_model = TethysApp(name="test_app", package="test_app")
         self.app_model.save()
-        self.cwd = os.getcwd()
-        os.chdir(self.root_app_path)
+        self.cwd = str(Path.cwd())
+        chdir(self.root_app_path)
 
     def tearDown(self):
         self.app_model.delete()
-        os.chdir(self.cwd)
+        chdir(self.cwd)
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("builtins.input", side_effect=["x", "n"])
     @mock.patch("tethys_cli.install_commands.call")
     def test_install_file_not_generate(self, mock_call, _, mock_pretty_output):
-        os.chdir("..")  # move to a different directory that doesn't have an install.yml
+        chdir("..")  # move to a different directory that doesn't have an install.yml
         args = mock.MagicMock(
             file=None,
             quiet=False,
@@ -807,7 +796,7 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.install_commands.exit")
     def test_install_file_generate(self, mock_exit, mock_call, _, __):
-        os.chdir("..")  # move to a different directory that doesn't have an install.yml
+        chdir("..")  # move to a different directory that doesn't have an install.yml
         args = mock.MagicMock(
             file=None,
             quiet=False,
@@ -1122,7 +1111,7 @@ class TestInstallCommands(TestCase):
     def test_conda_and_pip_package_install_only_dependencies(
         self, mock_pretty_output, mock_conda_run, mock_call, _
     ):
-        os.chdir("..")
+        chdir("..")
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
             file=file_path,
@@ -1526,7 +1515,7 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.json.loads")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch(
-        "tethys_cli.install_commands.open",
+        "tethys_cli.install_commands.Path.open",
         new_callable=lambda: mock.mock_open(read_data='{"fake_json": "{}"}'),
     )
     def test_interactive_custom_setting_set_json_with_path(
@@ -1556,11 +1545,10 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.json.loads")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch(
-        "tethys_cli.install_commands.open",
-        new_callable=lambda: mock.mock_open(read_data='{"fake_json": "{}"}'),
+        "tethys_cli.install_commands.Path.read_text", return_value='{"fake_json": "{}"}'
     )
     def test_interactive_custom_setting_set_json_with_not_found_path(
-        self, mock_path_open, mock_pretty_output, mock_json_loads, mock_gas, _
+        self, mock_read_text, mock_pretty_output, mock_json_loads, mock_gas, _
     ):
         mock_cs = mock.MagicMock()
         mock_cs.name = "mock_cs"
@@ -1584,12 +1572,8 @@ class TestInstallCommands(TestCase):
     )
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    @mock.patch(
-        "tethys_cli.install_commands.open",
-        new_callable=lambda: mock.mock_open(read_data='{"fake_json": "{}"}'),
-    )
     def test_interactive_custom_setting_set_json_without_path(
-        self, mock_path_open, mock_pretty_output, mock_gas, _
+        self, mock_pretty_output, mock_gas, _
     ):
         mock_cs = mock.MagicMock()
         mock_cs.name = "mock_cs"
@@ -1617,12 +1601,8 @@ class TestInstallCommands(TestCase):
     )
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    @mock.patch(
-        "tethys_cli.install_commands.open",
-        new_callable=lambda: mock.mock_open(read_data='{"fake_json": "{}"}'),
-    )
     def test_interactive_custom_setting_set_json_without_path_error(
-        self, mock_path_open, mock_pretty_output, mock_gas, _
+        self, mock_pretty_output, mock_gas, _
     ):
         mock_cs = mock.MagicMock()
         mock_cs.name = "mock_cs"
@@ -1835,7 +1815,7 @@ class TestInstallCommands(TestCase):
 
         self.assertEqual(1, len(mock_download.mock_calls))
         self.assertEqual(
-            {"cwd": os.path.join("tethysapp", "test_app", "public")},
+            {"cwd": str(Path("tethysapp/test_app/public"))},
             mock_download.mock_calls[0][2],
         )
 

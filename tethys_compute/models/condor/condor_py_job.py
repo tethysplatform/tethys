@@ -8,7 +8,7 @@
 """
 
 from tethys_portal.optional_dependencies import optional_import
-import os
+from pathlib import Path
 
 from django.db import models
 
@@ -105,7 +105,7 @@ class CondorPyJob(models.Model):
 
     @property
     def initial_dir(self):
-        return os.path.join(self.workspace, self.condorpy_job.initial_dir)
+        return str(Path(self.workspace) / self.condorpy_job.initial_dir)
 
     def get_attribute(self, attribute):
         return self.condorpy_job.get(attribute)

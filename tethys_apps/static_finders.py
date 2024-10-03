@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 
-import os
+from pathlib import Path
 from collections import OrderedDict as SortedDict
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
@@ -58,12 +58,12 @@ class TethysStaticFinder(BaseFinder):
         absolute path (or ``None`` if no match).
         """
         if prefix:
-            prefix = "%s%s" % (prefix, os.sep)
-            if not path.startswith(prefix):
+            prefix = Path(f"{prefix}/")
+            if not Path(path).is_relative_to(prefix):
                 return None
-            path = path[len(prefix) :]
-        path = safe_join(root, path)
-        if os.path.exists(path):
+            path = path.relative_to(prefix)
+        path = safe_join(str(root), str(path))
+        if Path(path).exists():
             return path
 
     def list(self, ignore_patterns):

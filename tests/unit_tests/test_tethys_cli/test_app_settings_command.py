@@ -588,11 +588,10 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
         mock_exit.assert_called_with(1)
 
     @mock.patch(
-        "tethys_cli.app_settings_commands.open",
-        new_callable=mock.mock_open,
-        read_data='{"key_test":"value_test"}',
+        "tethys_cli.app_settings_commands.Path.read_text",
+        return_value='{"key_test":"value_test"}',
     )
-    @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.Path.exists")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
@@ -754,12 +753,8 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
 
         mock_exit.assert_called_with(1)
 
-    @mock.patch(
-        "tethys_cli.app_settings_commands.open",
-        new_callable=mock.mock_open,
-        read_data="2",
-    )
-    @mock.patch("tethys_cli.app_settings_commands.os.path.exists")
+    @mock.patch("tethys_cli.app_settings_commands.Path.open", return_value="2")
+    @mock.patch("tethys_cli.app_settings_commands.Path.exists")
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.cli_colors.pretty_output")

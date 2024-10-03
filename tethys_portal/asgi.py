@@ -3,7 +3,7 @@ ASGI entrypoint. Configures Django and then runs the application
 defined in the ASGI_APPLICATION setting.
 """
 
-import os
+from os import environ
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
@@ -37,7 +37,7 @@ def build_application(asgi_app):
     return application
 
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
+environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 # This needs to be called before any model imports
 asgi_app = get_asgi_application()

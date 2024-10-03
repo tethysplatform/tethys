@@ -1,7 +1,6 @@
 import unittest
 from unittest import mock
 from tethys_apps.templatetags import site_settings as ss
-import os
 
 
 class TestSiteSettings(unittest.TestCase):
@@ -12,21 +11,19 @@ class TestSiteSettings(unittest.TestCase):
         pass
 
     @mock.patch("tethys_apps.templatetags.site_settings.settings")
-    @mock.patch("tethys_apps.templatetags.site_settings.os.path.isfile")
+    @mock.patch("tethys_apps.templatetags.site_settings.Path.is_file")
     def test_get_css_in_static_root(self, mock_isfile, mock_settings):
         mock_isfile.return_value = True
         mock_settings.STATIC_ROOT = "test_base_path"
 
-        ret = ss.load_custom_css(
-            os.path.join(os.sep, "test.css")
-        )  # test slash stripping
+        ret = ss.load_custom_css("/test.css")  # test slash stripping
         self.assertEqual(
             ret,
-            f'<link href="{os.path.join(os.sep, "static", "test.css")}" rel="stylesheet" />',
+            '<link href="/static/test.css" rel="stylesheet" />',
         )
 
     @mock.patch("tethys_apps.templatetags.site_settings.settings")
-    @mock.patch("tethys_apps.templatetags.site_settings.os.path.isfile")
+    @mock.patch("tethys_apps.templatetags.site_settings.Path.is_file")
     def test_get_css_in_staticfiles_dirs(self, mock_isfile, mock_settings):
         mock_isfile.side_effect = [False, True]
         mock_settings.STATIC_ROOT = "test_base_path1"
@@ -35,11 +32,11 @@ class TestSiteSettings(unittest.TestCase):
         ret = ss.load_custom_css("test.css")
         self.assertEqual(
             ret,
-            f'<link href="{os.path.join(os.sep, "static", "test.css")}" rel="stylesheet" />',
+            '<link href="/static/test.css" rel="stylesheet" />',
         )
 
     @mock.patch("tethys_apps.templatetags.site_settings.settings")
-    @mock.patch("tethys_apps.templatetags.site_settings.os.path.isfile")
+    @mock.patch("tethys_apps.templatetags.site_settings.Path.is_file")
     def test_get_css_is_code(self, mock_isfile, mock_settings):
         mock_isfile.return_value = False
         mock_settings.STATIC_ROOT = "test_base_path1"

@@ -8,10 +8,10 @@
 ********************************************************************************
 """
 
-import os
 import site
 import subprocess
 import warnings
+from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
@@ -76,7 +76,7 @@ class Command(BaseCommand):
         if not module_found and not db_found:
             warnings.warn(
                 f'WARNING: {verbose_name} with name "{item_name}" cannot be uninstalled, '
-                f"because it is not installed or not an {verbose_name}.",
+                f"because it is not installed or not a {verbose_name}.",
                 stacklevel=2,
             )
             exit(0)
@@ -144,12 +144,9 @@ class Command(BaseCommand):
         # Remove the namespace package file if applicable.
         for site_package in site.getsitepackages():
             try:
-                os.remove(
-                    os.path.join(
-                        site_package,
-                        f'{PREFIX}-{item_name.replace("_", "-")}-nspkg.pth',
-                    )
-                )
+                Path(
+                    f'{site_package}/{PREFIX}-{item_name.replace("_", "-")}-nspkg.pth'
+                ).unlink()
             except Exception:
                 continue
         delete_secrets(item_name)

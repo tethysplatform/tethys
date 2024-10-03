@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 import tethys_cli.docker_commands as cli_docker_commands
-import os.path
+from pathlib import Path
 from tempfile import gettempdir
 
 
@@ -1203,9 +1203,9 @@ class TestDockerCommands(unittest.TestCase):
             "Please provide a valid option\nprompt [A/b]: ", input_call_args[3][0][0]
         )
 
-    @mock.patch("tethys_cli.docker_commands.os.path.isdir")
-    def test_uih_get_valid_directory_input_default(self, mock_os_path_isdir):
-        mock_os_path_isdir.return_value = True
+    @mock.patch("tethys_cli.docker_commands.Path.is_dir")
+    def test_uih_get_valid_directory_input_default(self, mock_is_dir):
+        mock_is_dir.return_value = True
         self.mock_input.side_effect = [""]
 
         c = cli_docker_commands.UserInputHelper.get_valid_directory_input(
@@ -1214,34 +1214,38 @@ class TestDockerCommands(unittest.TestCase):
         self.assertEqual(c, gettempdir())
         self.mock_input.assert_called_with(f"prompt [{gettempdir()}]: ")
 
-    @mock.patch("tethys_cli.docker_commands.os.makedirs")
-    @mock.patch("tethys_cli.docker_commands.os.path.isdir")
-    def test_uih_get_valid_directory_input_makedirs(
-        self, mock_os_path_isdir, mock_os_makedirs
-    ):
-        value = os.path.join(os.path.abspath(os.sep), "non", "existing", "path")
-        self.mock_input.side_effect = [os.path.join("non", "existing", "path")]
-        mock_os_path_isdir.return_value = False
+    @mock.patch("tethys_cli.docker_commands.Path.mkdir")
+    @mock.patch("tethys_cli.docker_commands.Path.is_dir")
+    def test_uih_get_valid_directory_input_makedirs(self, mock_is_dir, mock_mkdir):
+        value = str(Path("/").absolute() / "non" / "existing" / "path")
+        self.mock_input.side_effect = [str(Path("non") / "existing" / "path")]
+        mock_is_dir.return_value = False
 
+        absolute_return_value = Path("/").absolute() / "non" / "existing" / "path"
+        mock_absolute_path = mock.patch(
+            "tethys_cli.docker_commands.Path.absolute"
+        ).start()
+        mock_absolute_path.return_value = absolute_return_value
         c = cli_docker_commands.UserInputHelper.get_valid_directory_input(
             prompt="prompt", default=gettempdir()
         )
+        mock.patch.stopall()
         self.assertEqual(c, value)
 
         self.mock_input.assert_called_with(f"prompt [{gettempdir()}]: ")
-        mock_os_path_isdir.assert_called_with(value)
-        mock_os_makedirs.assert_called_with(value)
+        mock_is_dir.assert_called_once()
+        mock_mkdir.assert_called_once()
 
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
-    @mock.patch("tethys_cli.docker_commands.os.makedirs")
-    @mock.patch("tethys_cli.docker_commands.os.path.isdir")
+    @mock.patch("tethys_cli.docker_commands.Path.mkdir")
+    @mock.patch("tethys_cli.docker_commands.Path.is_dir")
     def test_uih_get_valid_directory_input_oserror(
-        self, mock_os_path_isdir, mock_os_makedirs, mock_pretty_output
+        self, mock_is_dir, mock_mkdir, mock_pretty_output
     ):
-        invalid_path = os.path.join(os.path.abspath(os.sep), "invalid", "path")
-        valid_path = os.path.join(os.path.abspath(os.sep), "foo", "tmp")
-        mock_os_path_isdir.side_effect = [False, True]
-        mock_os_makedirs.side_effect = OSError
+        invalid_path = str(Path("/").absolute() / "invalid" / "path")
+        valid_path = str(Path("/").absolute() / "foo" / "tmp")
+        mock_is_dir.side_effect = [False, True]
+        mock_mkdir.side_effect = OSError
         self.mock_input.side_effect = [invalid_path, valid_path]
         c = cli_docker_commands.UserInputHelper.get_valid_directory_input(
             prompt="prompt", default=gettempdir()

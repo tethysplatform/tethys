@@ -2,7 +2,7 @@ import sys
 import unittest
 from unittest import mock
 from io import StringIO
-import os
+from pathlib import Path
 
 from tethys_cli import tethys_command
 
@@ -74,7 +74,7 @@ class TethysCommandTests(unittest.TestCase):
         mock_scaffold_command.assert_called()
         call_args = mock_scaffold_command.call_args_list
         self.assertEqual("foo", call_args[0][0][0].name)
-        self.assertEqual(os.getcwd(), call_args[0][0][0].prefix)
+        self.assertEqual(str(Path.cwd()), call_args[0][0][0].prefix)
         self.assertEqual("default", call_args[0][0][0].template)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].extension)

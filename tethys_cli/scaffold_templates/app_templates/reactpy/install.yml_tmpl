@@ -14,6 +14,3 @@ requirements:
 
   pip:
     - reactpy-django
-
-post:
-  - ./post_install.py

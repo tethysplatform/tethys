@@ -72,19 +72,24 @@ class TestPageHandler(TestCase):
         self.assertEqual(render_context["custom_js"], custom_js)
         self.assertEqual(response, expected_return_value)
 
-    def test_has_reactpy(self):
+
+class TestPageComponentWrapper(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
         mock_has_module = mock.patch("tethys_portal.optional_dependencies.has_module")
         mock_has_module.return_value = True
         mock_has_module.start()
-        try:
-            import reactpy
+        # mock.patch("builtins.__import__").start()
+        import sys
 
-            reload(page_handler)
-            self.assertEqual(page_handler.component, reactpy.component)
-        except ModuleNotFoundError as e:
-            self.assertRaises(ModuleNotFoundError, reload, page_handler)
-            self.assertTrue("reactpy" in str(e))
+        mock_reactpy = mock.MagicMock()
+        sys.modules["reactpy"] = mock_reactpy
+        mock_reactpy.component = lambda x: x
+        reload(page_handler)
 
+    @classmethod
+    def tearDownClass(cls):
         mock.patch.stopall()
         reload(page_handler)
 
@@ -121,6 +126,8 @@ class TestPageHandler(TestCase):
             component_return_val,
         )
 
+
+class TestPage(TestCase):
     @mock.patch("tethys_apps.base.controller._process_url_kwargs")
     @mock.patch("tethys_apps.base.controller.global_page_controller")
     @mock.patch("tethys_apps.base.controller.permission_required")
@@ -144,6 +151,7 @@ class TestPageHandler(TestCase):
         custom_css = ["custom.css"]
         custom_js = ["custom.js"]
         my_function = lambda x: x  # noqa E731
+
         return_value = tethys_controller.page(
             permissions_required=["test_permission"],
             enforce_quotas=["test_quota"],
@@ -154,6 +162,7 @@ class TestPageHandler(TestCase):
             custom_css=custom_css,
             custom_js=custom_js,
         )(my_function)
+
         self.assertTrue(callable(return_value))
         mock_request = mock.MagicMock()
         mock_process_kwargs.assert_called_once()

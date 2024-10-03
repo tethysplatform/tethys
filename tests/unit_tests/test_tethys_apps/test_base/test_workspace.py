@@ -1,7 +1,7 @@
 import unittest
 import tethys_apps.base.workspace as base_workspace
-import os
 import shutil
+from pathlib import Path
 from unittest import mock
 from ... import UserFactory
 from django.http import HttpRequest
@@ -42,72 +42,72 @@ class TethysAppChild(tethys_app_base.TethysAppBase):
 
 class TestUrlMap(unittest.TestCase):
     def setUp(self):
-        self.root = os.path.abspath(os.path.dirname(__file__))
-        self.test_root = os.path.join(self.root, "test_workspace")
-        self.test_root_a = os.path.join(self.test_root, "test_workspace_a")
-        self.test_root2 = os.path.join(self.root, "test_workspace2")
+        self.root = Path(__file__).parent.absolute()
+        self.test_root = self.root / "test_workspace"
+        self.test_root_a = self.test_root / "test_workspace_a"
+        self.test_root2 = self.root / "test_workspace2"
         self.app = tethys_app_base.TethysAppBase()
         self.user = UserFactory()
 
     def tearDown(self):
-        if os.path.isdir(self.test_root):
+        if self.test_root.is_dir():
             shutil.rmtree(self.test_root)
-        if os.path.isdir(self.test_root2):
+        if self.test_root2.is_dir():
             shutil.rmtree(self.test_root2)
 
     def test_TethysWorkspace(self):
         # Test Create new workspace folder test_workspace
-        result = base_workspace.TethysWorkspace(path=self.test_root)
+        result = base_workspace.TethysWorkspace(path=str(self.test_root))
         workspace = '<TethysWorkspace path="{0}">'.format(self.test_root)
 
         # Create new folder inside test_workspace
-        base_workspace.TethysWorkspace(path=self.test_root_a)
+        base_workspace.TethysWorkspace(path=str(self.test_root_a))
 
         # Create new folder test_workspace2
-        base_workspace.TethysWorkspace(path=self.test_root2)
+        base_workspace.TethysWorkspace(path=str(self.test_root2))
 
         self.assertEqual(result.__repr__(), workspace)
-        self.assertEqual(result.path, self.test_root)
+        self.assertEqual(result.path, str(self.test_root))
 
         # Create Files
         file_list = ["test1.txt", "test2.txt"]
         for file_name in file_list:
             # Create file
-            open(os.path.join(self.test_root, file_name), "a").close()
+            (self.test_root / file_name).write_text("")
 
         # Test files with full path
-        result = base_workspace.TethysWorkspace(path=self.test_root).files(
+        result = base_workspace.TethysWorkspace(path=str(self.test_root)).files(
             full_path=True
         )
         for file_name in file_list:
-            self.assertIn(os.path.join(self.test_root, file_name), result)
+            self.assertIn(str(self.test_root / file_name), result)
 
         # Test files without full path
-        result = base_workspace.TethysWorkspace(path=self.test_root).files()
+        result = base_workspace.TethysWorkspace(path=str(self.test_root)).files()
         for file_name in file_list:
             self.assertIn(file_name, result)
 
         # Test Directories with full path
-        result = base_workspace.TethysWorkspace(path=self.root).directories(
+        result = base_workspace.TethysWorkspace(path=str(self.root)).directories(
             full_path=True
         )
-        self.assertIn(self.test_root, result)
-        self.assertIn(self.test_root2, result)
+        self.assertIn(str(self.test_root), result)
+        self.assertIn(str(self.test_root2), result)
 
         # Test Directories without full path
-        result = base_workspace.TethysWorkspace(path=self.root).directories()
+        result = base_workspace.TethysWorkspace(path=str(self.root)).directories()
         self.assertIn("test_workspace", result)
         self.assertIn("test_workspace2", result)
         self.assertNotIn(self.test_root, result)
         self.assertNotIn(self.test_root2, result)
 
         # Write to file
-        f = open(os.path.join(self.test_root, "test2.txt"), "w")
-        f.write("Hello World")
-        f.close()
+        (self.test_root / "test2.txt").write_text("Hello World")
 
         # Test size greater than zero
-        workspace_size = base_workspace.TethysWorkspace(path=self.test_root).get_size()
+        workspace_size = base_workspace.TethysWorkspace(
+            path=str(self.test_root)
+        ).get_size()
         self.assertTrue(workspace_size > 0)
 
         # Test get size unit conversion
@@ -117,64 +117,62 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(workspace_size / 1024, workspace_size_kb)
 
         # Test Remove file
-        base_workspace.TethysWorkspace(path=self.test_root).remove("test2.txt")
+        base_workspace.TethysWorkspace(path=str(self.test_root)).remove("test2.txt")
 
         # Verify that the file has been remove
-        self.assertFalse(os.path.isfile(os.path.join(self.test_root, "test2.txt")))
+        self.assertFalse((self.test_root / "test2.txt").is_file())
 
         # Test Remove Directory
-        base_workspace.TethysWorkspace(path=self.root).remove(self.test_root2)
+        base_workspace.TethysWorkspace(path=str(self.root)).remove(str(self.test_root2))
 
         # Verify that the Directory has been remove
-        self.assertFalse(os.path.isdir(self.test_root2))
+        self.assertFalse(self.test_root2.is_dir())
 
         # Test Clear
-        base_workspace.TethysWorkspace(path=self.test_root).clear()
+        base_workspace.TethysWorkspace(path=str(self.test_root)).clear()
 
         # Test size equal to zero
-        workspace_size = base_workspace.TethysWorkspace(path=self.test_root).get_size()
+        workspace_size = base_workspace.TethysWorkspace(
+            path=str(self.test_root)
+        ).get_size()
         self.assertTrue(workspace_size == 0)
 
         # Verify that the Directory has been remove
-        self.assertFalse(os.path.isdir(self.test_root_a))
+        self.assertFalse(self.test_root_a.is_dir())
 
         # Verify that the File has been remove
-        self.assertFalse(os.path.isfile(os.path.join(self.test_root, "test1.txt")))
+        self.assertFalse((self.test_root / "test1.txt").is_file())
 
         # Test don't allow overwriting the path property
-        workspace = base_workspace.TethysWorkspace(path=self.test_root)
+        workspace = base_workspace.TethysWorkspace(path=str(self.test_root))
         workspace.path = "foo"
-        self.assertEqual(self.test_root, workspace.path)
+        self.assertEqual(str(self.test_root), workspace.path)
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     def test__get_user_workspace_user(self, mock_tws):
         ret = _get_user_workspace(self.app, self.user)
-        expected_path = os.path.join(
-            "workspaces", "user_workspaces", self.user.username
-        )
+        expected_path = Path("workspaces") / "user_workspaces" / self.user.username
         rts_call_args = mock_tws.call_args_list
         self.assertEqual(ret, mock_tws())
-        self.assertIn(expected_path, rts_call_args[0][0][0])
+        self.assertIn(str(expected_path), rts_call_args[0][0][0])
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     def test__get_user_workspace_http(self, mock_tws):
         request = HttpRequest()
         request.user = self.user
         ret = _get_user_workspace(self.app, request)
-        expected_path = os.path.join(
-            "workspaces", "user_workspaces", self.user.username
-        )
+        expected_path = Path("workspaces") / "user_workspaces" / self.user.username
         rts_call_args = mock_tws.call_args_list
         self.assertEqual(ret, mock_tws())
-        self.assertIn(expected_path, rts_call_args[0][0][0])
+        self.assertIn(str(expected_path), rts_call_args[0][0][0])
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     def test__get_user_workspace_none(self, mock_tws):
         ret = _get_user_workspace(self.app, None)
-        expected_path = os.path.join("workspaces", "user_workspaces", "anonymous_user")
+        expected_path = Path("workspaces") / "user_workspaces" / "anonymous_user"
         rts_call_args = mock_tws.call_args_list
         self.assertEqual(ret, mock_tws())
-        self.assertIn(expected_path, rts_call_args[0][0][0])
+        self.assertIn(str(expected_path), rts_call_args[0][0][0])
 
     def test__get_user_workspace_error(self):
         with self.assertRaises(ValueError) as context:
@@ -285,9 +283,9 @@ class TestUrlMap(unittest.TestCase):
     def test__get_app_workspace(self, mock_tws):
         ret = _get_app_workspace(self.app)
         self.assertEqual(ret, mock_tws())
-        expected_path = os.path.join("workspaces", "app_workspace")
+        expected_path = Path("workspaces") / "app_workspace"
         rts_call_args = mock_tws.call_args_list
-        self.assertIn(expected_path, rts_call_args[0][0][0])
+        self.assertIn(str(expected_path), rts_call_args[0][0][0])
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.utilities.get_active_app")

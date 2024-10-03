@@ -1,7 +1,6 @@
 import unittest
 from unittest import mock
 from pathlib import Path
-import os.path
 
 from tethys_cli.gen_commands import (
     get_environment_value,
@@ -65,20 +64,20 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.get_settings_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_apache_option(
-        self, mock_os_path_isfile, mock_file, mock_settings, mock_write_info
+        self, mock_is_file, mock_file, mock_settings, mock_write_info
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_APACHE_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_settings.assert_any_call("MEDIA_ROOT")
         mock_settings.assert_any_call("STATIC_ROOT")
@@ -87,20 +86,20 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.get_settings_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_nginx_option(
-        self, mock_os_path_isfile, mock_file, mock_settings, mock_write_info
+        self, mock_is_file, mock_file, mock_settings, mock_write_info
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_NGINX_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_settings.assert_any_call("TETHYS_WORKSPACES_ROOT")
         mock_settings.assert_called_with("MEDIA_ROOT")
@@ -108,53 +107,53 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_write_info.assert_called_once()
 
     @mock.patch("tethys_cli.gen_commands.write_info")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_nginx_service(
-        self, mock_os_path_isfile, mock_file, mock_write_info
+        self, mock_is_file, mock_file, mock_write_info
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_NGINX_SERVICE_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
 
         mock_write_info.assert_called_once()
 
     @mock.patch("tethys_cli.gen_commands.write_info")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_apache_service(
-        self, mock_os_path_isfile, mock_file, mock_write_info
+        self, mock_is_file, mock_file, mock_write_info
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_APACHE_SERVICE_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
 
         mock_write_info.assert_called_once()
 
-    @mock.patch("tethys_cli.gen_commands.os.path.isdir")
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir")
     @mock.patch("tethys_cli.gen_commands.write_info")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
-    @mock.patch("tethys_cli.gen_commands.os.makedirs")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
+    @mock.patch("tethys_cli.gen_commands.Path.mkdir")
     def test_generate_command_portal_yaml__tethys_home_not_exists(
-        self, mock_makedirs, mock_os_path_isfile, mock_file, mock_write_info, mock_isdir
+        self, mock_mkdir, mock_is_file, mock_file, mock_write_info, mock_isdir
     ):
         mock_args = mock.MagicMock(
             type=GEN_PORTAL_OPTION, directory=None, spec=["overwrite", "server_port"]
         )
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_isdir.side_effect = [
             False,
             True,
@@ -162,43 +161,43 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
 
         # Verify it makes the Tethys Home directory
-        mock_makedirs.assert_called()
+        mock_mkdir.assert_called()
         rts_call_args = mock_write_info.call_args_list[0]
         self.assertIn("A Tethys Portal configuration file", rts_call_args.args[0])
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.render_template")
-    @mock.patch("tethys_cli.gen_commands.os.path.exists")
+    @mock.patch("tethys_cli.gen_commands.Path.exists")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_service_option_nginx_conf(
         self,
-        mock_os_path_isfile,
+        mock_is_file,
         mock_file,
         mock_env,
-        mock_os_path_exists,
+        mock_path_exists,
         mock_render_template,
         mock_write_info,
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
-        mock_os_path_exists.return_value = True
+        mock_path_exists.return_value = True
         mock_file.return_value = mock.mock_open(read_data="user foo_user").return_value
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with("CONDA_PREFIX")
-        mock_os_path_exists.assert_any_call("/etc/nginx/nginx.conf")
+        mock_path_exists.assert_called_once()
         context = mock_render_template.call_args.args[1]
         self.assertEqual("foo_user", context["nginx_user"])
 
@@ -206,20 +205,20 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_service_option(
-        self, mock_os_path_isfile, mock_file, mock_env, mock_write_info
+        self, mock_is_file, mock_file, mock_env, mock_write_info
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called()
+        mock_is_file.assert_called()
         mock_file.assert_called()
         mock_env.assert_called_with("CONDA_PREFIX")
 
@@ -227,11 +226,11 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_service_option_distro(
         self,
-        mock_os_path_isfile,
+        mock_is_file,
         mock_file,
         mock_env,
         mock_write_info,
@@ -239,68 +238,68 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with("CONDA_PREFIX")
 
         mock_write_info.assert_called()
 
     @mock.patch("tethys_cli.gen_commands.write_info")
-    @mock.patch("tethys_cli.gen_commands.os.path.isdir")
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_settings_option_directory(
         self,
-        mock_os_path_isfile,
+        mock_is_file,
         mock_file,
         mock_env,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_write_info,
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
-        mock_args.directory = os.path.join(os.path.abspath(os.sep), "foo", "temp")
-        mock_os_path_isfile.return_value = False
+        mock_args.directory = str(Path("/").absolute() / "foo" / "temp")
+        mock_is_file.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
-        mock_os_path_isdir.side_effect = [
+        mock_is_dir.side_effect = [
             True,
             True,
         ]  # TETHYS_HOME exists, computed directory exists
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
-        mock_os_path_isdir.assert_called_with(mock_args.directory)
+        self.assertEqual(mock_is_dir.call_count, 2)
         mock_env.assert_called_with("CONDA_PREFIX")
 
         mock_write_info.assert_called()
 
     @mock.patch("tethys_cli.gen_commands.write_error")
     @mock.patch("tethys_cli.gen_commands.exit")
-    @mock.patch("tethys_cli.gen_commands.os.path.isdir")
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_settings_option_bad_directory(
         self,
-        mock_os_path_isfile,
+        mock_is_file,
         mock_env,
-        mock_os_path_isdir,
+        mock_is_dir,
         mock_exit,
         mock_write_error,
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
-        mock_args.directory = os.path.join(os.path.abspath(os.sep), "foo", "temp")
-        mock_os_path_isfile.return_value = False
+        mock_args.directory = str(Path("/").absolute() / "foo" / "temp")
+        mock_is_file.return_value = False
         mock_env.side_effect = ["/foo/conda", "conda_env"]
-        mock_os_path_isdir.side_effect = [
+        mock_is_dir.side_effect = [
             True,
             False,
         ]  # TETHYS_HOME exists, computed directory exists
@@ -310,8 +309,8 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         self.assertRaises(SystemExit, generate_command, args=mock_args)
 
-        mock_os_path_isfile.assert_not_called()
-        mock_os_path_isdir.assert_any_call(mock_args.directory)
+        mock_is_file.assert_not_called()
+        self.assertEqual(mock_is_dir.call_count, 2)
 
         # Check if print is called correctly
         rts_call_args = mock_write_error.call_args
@@ -325,10 +324,10 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.gen_commands.exit")
     @mock.patch("tethys_cli.gen_commands.input")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_settings_pre_existing_input_exit(
         self,
-        mock_os_path_isfile,
+        mock_is_file,
         mock_env,
         mock_input,
         mock_exit,
@@ -339,7 +338,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_args.overwrite = False
-        mock_os_path_isfile.return_value = True
+        mock_is_file.return_value = True
         mock_env.side_effect = ["/foo/conda", "conda_env"]
         mock_input.side_effect = ["foo", "no"]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -348,7 +347,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         self.assertRaises(SystemExit, generate_command, args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
 
         # Check if print is called correctly
         rts_call_args = mock_write_warning.call_args
@@ -359,107 +358,104 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.get_environment_value")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_asgi_settings_pre_existing_overwrite(
-        self, mock_os_path_isfile, mock_file, mock_env, mock_write_info
+        self, mock_is_file, mock_file, mock_env, mock_write_info
     ):
         mock_args = mock.MagicMock(conda_prefix=False)
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_args.overwrite = True
-        mock_os_path_isfile.return_value = True
+        mock_is_file.return_value = True
         mock_env.side_effect = ["/foo/conda", "conda_env"]
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with("CONDA_PREFIX")
 
         mock_write_info.assert_called()
 
     @mock.patch("tethys_cli.gen_commands.write_info")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     def test_generate_command_services_option(
-        self, mock_os_path_isfile, mock_file, mock_write_info
+        self, mock_is_file, mock_file, mock_write_info
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_SERVICES_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
 
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     @mock.patch("tethys_cli.gen_commands.write_info")
     def test_generate_command_install_option(
-        self, mock_write_info, mock_os_path_isfile, mock_file
+        self, mock_write_info, mock_is_file, mock_file
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_INSTALL_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
 
         generate_command(args=mock_args)
 
         rts_call_args = mock_write_info.call_args_list[0]
         self.assertIn("Please review the generated install.yml", rts_call_args.args[0])
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
 
     @mock.patch("tethys_cli.gen_commands.run")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     @mock.patch("tethys_cli.gen_commands.write_warning")
     @mock.patch("tethys_cli.gen_commands.write_info")
     def test_generate_requirements_option(
-        self, mock_write_info, mock_write_warn, mock_os_path_isfile, mock_file, mock_run
+        self, mock_write_info, mock_write_warn, mock_is_file, mock_file, mock_run
     ):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_REQUIREMENTS_OPTION
         mock_args.directory = None
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
 
         generate_command(args=mock_args)
 
         mock_write_warn.assert_called_once()
         mock_write_info.assert_called_once()
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_run.assert_called_once()
 
-    @mock.patch("tethys_cli.gen_commands.os.path.join")
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.Template")
     @mock.patch("tethys_cli.gen_commands.yaml.safe_load")
     @mock.patch("tethys_cli.gen_commands.run_command")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
     @mock.patch("tethys_cli.gen_commands.print")
     def test_generate_command_metayaml(
         self,
         mock_print,
-        mock_os_path_isfile,
+        mock_is_file,
         mock_file,
         mock_run_command,
         mock_load,
         mock_Template,
         _,
-        mock_os_path_join,
     ):
         mock_args = mock.MagicMock(micro=False)
         mock_args.type = GEN_META_YAML_OPTION
         mock_args.directory = None
         mock_args.pin_level = "minor"
-        mock_os_path_isfile.return_value = False
-        mock_os_path_join.return_value = f"{TETHYS_SRC}/conda.recipe"
+        mock_is_file.return_value = False
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -486,12 +482,11 @@ class CLIGenCommandsTest(unittest.TestCase):
         }
         self.assertDictEqual(expected_context, render_context)
         mock_file.assert_called()
-        mock_os_path_join.assert_called()
 
     @mock.patch("tethys_cli.gen_commands.write_info")
     @mock.patch("tethys_cli.gen_commands.derive_version_from_conda_environment")
     @mock.patch("tethys_cli.gen_commands.yaml.safe_load")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
     def test_gen_meta_yaml_overriding_dependencies(
         self, _, mock_load, mock_dvfce, mock_write_info
     ):
@@ -796,7 +791,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_error.assert_called_once()
 
     @mock.patch("tethys_cli.gen_commands.check_for_existing_file")
-    @mock.patch("tethys_cli.gen_commands.os.path.isdir", return_value=True)
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir", return_value=True)
     def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
         mock_args = mock.MagicMock(
             type=GEN_PACKAGE_JSON_OPTION,
@@ -806,7 +801,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_isdir.assert_called()
         mock_check_file.assert_called_once()
         self.assertEqual(
-            result, os.path.join(TETHYS_SRC, "tethys_portal", "static", "package.json")
+            result, str(Path(TETHYS_SRC) / "tethys_portal" / "static" / "package.json")
         )
 
     @mock.patch("tethys_cli.gen_commands.GEN_COMMANDS")
@@ -832,18 +827,18 @@ class CLIGenCommandsTest(unittest.TestCase):
             template_path = template_dir / file_name
             self.assertTrue(template_path.exists())
 
-    @mock.patch("tethys_cli.gen_commands.os.path.isdir")
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir")
     @mock.patch("tethys_cli.gen_commands.write_info")
-    @mock.patch("tethys_cli.gen_commands.open", new_callable=mock.mock_open)
-    @mock.patch("tethys_cli.gen_commands.os.path.isfile")
-    @mock.patch("tethys_cli.gen_commands.os.makedirs")
+    @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
+    @mock.patch("tethys_cli.gen_commands.Path.is_file")
+    @mock.patch("tethys_cli.gen_commands.Path.mkdir")
     def test_generate_command_secrets_yaml_tethys_home_not_exists(
-        self, mock_makedirs, mock_os_path_isfile, mock_file, mock_write_info, mock_isdir
+        self, mock_mkdir, mock_is_file, mock_file, mock_write_info, mock_isdir
     ):
         mock_args = mock.MagicMock(
             type=GEN_SECRETS_OPTION, directory=None, spec=["overwrite"]
         )
-        mock_os_path_isfile.return_value = False
+        mock_is_file.return_value = False
         mock_isdir.side_effect = [
             False,
             True,
@@ -851,10 +846,10 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         generate_command(args=mock_args)
 
-        mock_os_path_isfile.assert_called_once()
+        mock_is_file.assert_called_once()
         mock_file.assert_called()
 
         # Verify it makes the Tethys Home directory
-        mock_makedirs.assert_called()
+        mock_mkdir.assert_called()
         rts_call_args = mock_write_info.call_args_list[0]
         self.assertIn("A Tethys Secrets file", rts_call_args.args[0])

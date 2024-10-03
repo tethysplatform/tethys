@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 THIS_DIR = Path(__file__).parent
 TEST_APP_DIR = (
-    THIS_DIR.parent.parent / "apps" / "tethysapp-test_app" / "tethysapp" / "test_app"
+    THIS_DIR.parents[1] / "apps" / "tethysapp-test_app" / "tethysapp" / "test_app"
 )
 
 
@@ -71,7 +71,7 @@ class TestComponentUtils(TestCase):
         mock_import = mock.patch("builtins.__import__").start()
 
         def test_func(arg1):
-            print(arg1)
+            pass
 
         utils.delayed_execute(10, test_func, ["Hello"])
         mock_import().Timer.assert_called_once_with(10, test_func, ["Hello"])
