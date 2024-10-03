@@ -73,7 +73,7 @@ class TestUrlMap(unittest.TestCase):
         file_list = ["test1.txt", "test2.txt"]
         for file_name in file_list:
             # Create file
-            (self.test_root / file_name).touch("")
+            (self.test_root / file_name).touch()
 
         # Test files with full path
         result = base_workspace.TethysWorkspace(path=str(self.test_root)).files(
