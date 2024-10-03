@@ -4,7 +4,7 @@
 Jobs API
 ********
 
-**Last Updated:** July 2022
+**Last Updated:** September 2024
 
 The Jobs API provides a way for your app to run asynchronous tasks (meaning that after starting a task you don't have to wait for it to finish before moving on). As an example, you may need to run a simulation that takes a long time (potentially hours or days) to complete. Using the Jobs API you can create a job that will submit the simulation run, and then leave it to run while your app moves on and does other stuff. You can check the job's status at any time, and when the job is done the Jobs API will help retrieve the results.
 
@@ -56,13 +56,13 @@ Using the Job Manager in your App
 ---------------------------------
 To use the Job Manager in your app you first need to import the TethysAppBase subclass from the app.py module:
 
-::
+.. code-block:: python
 
     from .app import App
 
 You can then get the job manager by calling the method ``get_job_manager`` on the app.
 
-::
+.. code-block:: python
 
     job_manager = App.get_job_manager()
 
@@ -77,7 +77,7 @@ To create a new job call the ``create_job`` method on the job manager. The requi
 
 Any other job attributes can also be passed in as `kwargs`.
 
-::
+.. code-block:: python
 
     # create a new job from the job manager
     job = job_manager.create_job(
@@ -123,20 +123,21 @@ The following attributes can be defined for *all* job types:
     * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job.
     * ``extended_properties`` (dict): a dictionary of additional properties that can be used to create custom job attributes.
     * ``status`` (string): a string representing the state of the job. When accessed the status will be updated if necessary. Possible statuses are:
-        - 'Pending'
-        - 'Submitted'
-        - 'Running'
-        - 'Results-Ready'
-        - 'Complete'
-        - 'Error'
-        - 'Aborted'
-        - 'Various'\*
-        - 'Various-Complete'\*
-        - 'Other'\**
+        - Pending
+        - Submitted
+        - Running
+        - Paused
+        - Results-Ready
+        - Complete
+        - Error
+        - Aborted
+        - Various\*
+        - Various-Complete\*
+        - Other\**
 
         \*used for job types with multiple sub-jobs (e.g. CondorWorkflow).
 
-        \**When  a custom job status is set the official status is 'Other', but the custom status is stored as an extended property of the job.
+        \**When  a custom job status is set the official status is 'Other', but the custom status is stored as an extended property of the job. See `Custom Statuses`_
 
     * ``cached_status`` (string): Same as the ``status`` attribute, except that the status is not actively updated. Rather the last known status is returned.
 
@@ -152,10 +153,10 @@ Job Types
 ---------
 
 The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. When creating a new job you must specify its type by passing in the ``job_type`` argument. Supported values for ``job_type`` are:
-    * 'BASIC'
-    * 'CONDOR' or 'CONDORJOB'
-    * 'CONDORWORKFLOW'
-    * 'DASK'
+    * "BASIC"
+    * "CONDOR" or "CONDORJOB"
+    * "CONDORWORKFLOW"
+    * "DASK"
 
 For detailed documentation on each of the job types see:
 
@@ -172,7 +173,7 @@ Retrieving Jobs
 ---------------
 Two methods are provided to retrieve jobs: ``list_jobs`` and ``get_job``. Jobs are automatically filtered by app. An optional ``user`` parameter can be passed in to these methods to further filter jobs by the user.
 
-::
+.. code-block:: python
 
     # get list of all jobs created in your app
     job_manager.list_jobs()
@@ -193,7 +194,7 @@ Jobs Table Gizmo
 ----------------
 The Jobs Table Gizmo facilitates job management through the web interface and is designed to be used in conjunction with the Job Manager. It can be configured to list any of the properties of the jobs, and will automatically update the job status. It also can provide a list of actions that can be done on the a job. In addition to several build-in actions (including run, delete, viewing job results, etc.), developers can also create custom actions to include in the actions dropdown list. Note that while none of the built-in actions are asynchronous on any of the built-in `Job Types`_, the Jobs Table supports both synchronous and asynchronous actions. Custom actions or the built-in actions of custom job types may be asynchronous. The following code sample shows how to use the job manager to populate the jobs table:
 
-::
+.. code-block:: python
 
     job_manager = App.get_job_manager()
 
@@ -217,27 +218,64 @@ Job Status Callback
 -------------------
 Each job has a callback URL that will update the job's status. The URL is of the form:
 
-::
+.. code-block::
 
     http://<host>/update-job-status/<job_id>/
 
 For example, a URL may look something like this:
 
-::
+.. code-block::
 
     http://example.com/update-job-status/27/
 
 The output would look something like this:
-::
+
+.. code-block:: python
 
     {"success": true}
 
 This URL can be retrieved from the job manager with the ``get_job_status_callback_url`` method, which requires a `request` object and the id of the job.
 
-::
+.. code-block:: python
 
     job_manager = App.get_job_manager()
     callback_url = job_manager.get_job_status_callback_url(request, job_id)
+
+Custom Statuses
+---------------
+Custom statuses can be given to jobs simply by assigning the ``status`` attribute:
+
+.. code-block:: python
+
+    my_job.status = "Custom Status"
+
+However, note that the ``TethysJob.update_status`` method will only check for updated statuses of jobs where the current status is one of the ``TethysJob.NON_TERMINAL_STATUSES``. The default ``TethysJob.NON_TERMINAL_STATUSES`` are:
+    - Pending
+    - Submitted
+    - Running
+    - Various
+    - Paused
+
+Also note that the `Jobs Table Gizmo`_ will only actively poll the status of jobs that have one of the ``TethysJob.ACTIVE_STATUSES``. The default ``TethysJob.ACTIVE_STATUSES`` are:
+    - Submitted
+    - Running
+    - Various
+
+If you would like to classify a custom status to take advantage of these features then there are several methods on the ``TethysJob`` class to add custom statuses to various categories. For example:
+
+.. code-block:: python
+
+    TethysJob.add_custom_active_status("Custom Status")
+
+This will ensure that the jobs table will continue to poll the server to update the status and that the ``TethysJob.update_status`` method will check if the status has changed. See the details of these methods below in the API documentation for `Tethys Job`_:
+    - ``add_custom_pre_running_status``
+    - ``add_custom_running_status``
+    - ``add_custom_active_status``
+    - ``add_custom_terminal_status``
+
+.. note::
+
+    When adding a custom status to the ``TethysJob.NON_TERMINAL_STATUSES`` the status will be updated when the ``TethysJob.update_status`` method is called. This is the intended behavior, however, it may be necessary to modify the ``TethysJob.update_status`` method to add additional logic that preserves the desired custom status. This is most easily done by subclassing the ``TethysJob`` class (or one of it's subclasses).
 
 API Documentation
 =================

@@ -58,10 +58,10 @@ class TethysJob(models.Model):
     RUNNING_STATUSES = DISPLAY_STATUSES[2:4]
     ACTIVE_STATUSES = DISPLAY_STATUSES[1:5]
     NON_TERMINAL_STATUSES = DISPLAY_STATUSES[0:5]
-    TERMINAL_STATUSES = DISPLAY_STATUSES[5:]
+    TERMINAL_STATUSES = DISPLAY_STATUSES[5:-1]
 
     NON_TERMINAL_STATUS_CODES = VALID_STATUSES[0:5]
-    TERMINAL_STATUS_CODES = VALID_STATUSES[5:]
+    TERMINAL_STATUS_CODES = VALID_STATUSES[5:-1]
 
     OTHER_STATUS_KEY = "__other_status__"
 
@@ -91,6 +91,70 @@ class TethysJob(models.Model):
         Returns the name of Tethys Job type.
         """
         return self.__class__.__name__
+
+    @classmethod
+    def _add_custom_status(cls, status, status_categories):
+        """
+        Adds a custom status to all ``status_categories`` lists if they are not already in the list.
+
+        Args:
+            status (str): Name of the custom status to add
+            status_categories (list of lists): a list of the status category lists defined on this class:
+                (i.e. ``PRE_RUNNING_STATUSES``, ``RUNNING_STATUSES``, ``ACTIVE_STATUSES``,
+                 ``NON_TERMINAL_STATUSES``, ``TERMINAL_STATUSES``)
+        """
+        for status_list in status_categories:
+            if status not in status_list:
+                status_list.append(status)
+
+    @classmethod
+    def add_custom_pre_running_status(cls, status):
+        """
+        Classify a custom status as a "Pre-Running" Status.
+        The status will be added to ``PRE_RUNNING_STATUSES`` and ``NON_TERMINAL_STATUSES``.
+
+        Args:
+            status (str): The name of the status to classify
+        """
+        cls._add_custom_status(
+            status, (cls.PRE_RUNNING_STATUSES, cls.NON_TERMINAL_STATUSES)
+        )
+
+    @classmethod
+    def add_custom_running_status(cls, status):
+        """
+        Classify a custom status as a "Running" Status.
+        The status will be added to ``RUNNING_STATUSES``, ``ACTIVE_STATUSES``, and ``NON_TERMINAL_STATUSES``.
+
+        Args:
+            status (str): The name of the status to classify
+        """
+        cls._add_custom_status(
+            status,
+            (cls.RUNNING_STATUSES, cls.ACTIVE_STATUSES, cls.NON_TERMINAL_STATUSES),
+        )
+
+    @classmethod
+    def add_custom_active_status(cls, status):
+        """
+        Classify a custom status as an "Active" Status.
+        The status will be added to ``ACTIVE_STATUSES`` and ``NON_TERMINAL_STATUSES``.
+
+        Args:
+            status (str): The name of the status to classify
+        """
+        cls._add_custom_status(status, (cls.ACTIVE_STATUSES, cls.NON_TERMINAL_STATUSES))
+
+    @classmethod
+    def add_custom_terminal_status(cls, status):
+        """
+        Classify a custom status as a "Terminal" Status.
+        The status will be added to ``TERMINAL_STATUSES``.
+
+        Args:
+            status (str): The name of the status to classify
+        """
+        cls._add_custom_status(status, (cls.TERMINAL_STATUSES,))
 
     @property
     def update_status_interval(self):
@@ -178,7 +242,12 @@ class TethysJob(models.Model):
 
         """
         old_status = self._status
-        update_needed = old_status in self.NON_TERMINAL_STATUS_CODES
+        update_needed = old_status in self.NON_TERMINAL_STATUS_CODES or (
+            old_status == "OTH"
+            and self.extended_properties[self.OTHER_STATUS_KEY]
+            in self.NON_TERMINAL_STATUSES
+        )
+
         # Set status from status given
         if status:
             if status not in self.VALID_STATUSES:

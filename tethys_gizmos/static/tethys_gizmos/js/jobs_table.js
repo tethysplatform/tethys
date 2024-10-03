@@ -294,6 +294,7 @@ function update_row(table_elem){
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
     var update_url = base_ajax_url + job_id + '/update-row';
+    var active_statuses = $(table).data('active-statuses');
 
     var data = {
         column_fields: column_fields,
@@ -314,7 +315,7 @@ function update_row(table_elem){
                 status = json.status;
             }
 
-            if(status == 'Running' || status == 'Submitted' || status == 'Various') {
+            if(active_statuses.includes(status)) {
                 active_counter++;
                 setTimeout(function(){
                     update_row(table_elem);
@@ -386,6 +387,7 @@ function update_workflow_nodes_row(table_elem){
     var target_selector = "#" + $(table_elem).attr('id') + " td .workflow-nodes-graph";
     var error_selector = target_selector + ' .loading-error';
     var update_url = base_ajax_url + job_id + '/update-workflow-nodes-row';
+    var active_statuses = $(table_elem).data('active-statuses');
 
     $.ajax({
         method: 'POST',
@@ -401,7 +403,7 @@ function update_workflow_nodes_row(table_elem){
 
             // Update again?
             status = json.status;
-            if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+            if(active_statuses.includes(status)){
                 setTimeout(function(){
                     update_workflow_nodes_row(table_elem);
                 }, refresh_interval);

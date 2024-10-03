@@ -20,7 +20,7 @@ Please ensure you have the following prerequisites before continuing:
 Project Setup
 =============
 
-Before you can start creating the :file:`Dockerfile` there is some setup that needs to be completed. This includes creating a folder to house all of the artifacts that you will use for the Docker build and acquiring the source code for the apps that will be installed in the Tethys Portal. It will also include setting up a Git repository. An important part of creating Docker projects is knowing how to properly version it version control software, so this tutorial will instruct you which files to commit. Follow these instructions to set up the Docker project.
+Before you can start creating the :file:`Dockerfile` there is some setup that needs to be completed. This includes creating a folder to house all of the artifacts that you will use for the Docker build and acquiring the source code for the apps that will be installed in the Tethys Portal. It will also include setting up a Git repository. An important part of creating Docker projects is knowing how to properly version it with version control software, so this tutorial will instruct you which files to commit. Follow these instructions to set up the Docker project.
 
 1. Create New Directory
 -----------------------
@@ -224,7 +224,7 @@ d. Add the following lines to the Dockefile to add the images to the container i
 
 The `RUN <https://docs.docker.com/engine/reference/builder/#run>`_ instruction can be used to run any command during the build. For long commands, the ``\`` (backslash) character can be used to continue a ``RUN`` instruction on the next line for easier readability.
 
-For this image we need to run the ``tethys install`` command for each of our apps. The trickiest part about doing this in a Docker build is activating the ``tethys`` environment, which must be done for each ``RUN`` call. Add the following lines to the :file:`Dockerfile`:
+For this image we need to run the ``tethys install`` command for each of our apps. The trickiest part about doing this in a Docker build is activating the ``tethys`` environment, which must be done before installing the apps. Add the following lines to the :file:`Dockerfile`:
 
 .. code-block:: dockerfile
 
