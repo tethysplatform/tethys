@@ -21,9 +21,13 @@ The quickest way to get started with Tethys Platform is via ``conda`` (`Minicond
 
 .. code-block:: bash
 
-    conda create -n tethys -c conda-forge micro-tethys-platform
+    conda create -n tethys -c conda-forge tethys-platform
     conda activate tethys
     tethys quickstart
+
+.. tip::
+
+    For more details on the installation process see :ref:`development_installation`.
     
 Your browser will automatically open to http://127.0.0.1:8000/. 
 
