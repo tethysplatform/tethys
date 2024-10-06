@@ -1,3 +1,13 @@
+"""
+********************************************************************************
+* Name: jobs_table.py
+* Author: Scott Christensen
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 import inspect
 import logging
 import re
@@ -5,14 +15,14 @@ from functools import wraps
 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from tethys_compute.models import TethysJob, CondorWorkflow, DaskJob, DaskScheduler
+from django.contrib.auth.decorators import login_required
+from channels.db import database_sync_to_async
+
+from tethys_compute.models import CondorWorkflow, DaskJob, DaskScheduler
 from tethys_gizmos.gizmo_options.jobs_table import JobsTable
 from tethys_sdk.gizmos import SelectInput
 from tethys_portal.optional_dependencies import optional_import
-from django.contrib.auth.decorators import login_required
-
-from channels.db import database_sync_to_async
-
+from tethys_compute.views import get_job, do_job_action
 
 # optional imports
 server_document = optional_import("server_document", from_module="bokeh.embed")
@@ -29,23 +39,6 @@ def async_login_required(func):
         return await func(request, *args, **kwargs)
 
     return wrapper
-
-
-@database_sync_to_async
-def get_job(job_id, user):
-    if user.is_staff or user.has_perm("tethys_compute.jobs_table_actions"):
-        return TethysJob.objects.get_subclass(id=job_id)
-    return TethysJob.objects.get_subclass(id=job_id, user=user)
-
-
-async def do_job_action(job, action):
-    func = getattr(job, action)
-    if inspect.iscoroutinefunction(func):
-        ret = await func()
-        await job.safe_close()
-    else:
-        ret = await database_sync_to_async(func)()
-    return ret
 
 
 async def _get_log_content(job, key1, key2):
