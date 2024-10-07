@@ -49,19 +49,25 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_compute.views.update_status.create_task")
     @mock.patch("tethys_compute.views.update_status.logger")
     @mock.patch("tethys_compute.views.update_status.JsonResponse")
-    async def test_update_job_status_with_delay(self, mock_json_response, mock_log, mock_ct):
+    async def test_update_job_status_with_delay(
+        self, mock_json_response, mock_log, mock_ct
+    ):
         mock_request = mock.MagicMock(GET={"delay": "1"})
         mock_job_id = mock.MagicMock()
 
         await tethys_compute_update_status.update_job_status(mock_request, mock_job_id)
         mock_json_response.assert_called_once_with({"success": "scheduled"})
         mock_log.debug.assert_called_once()
-        mock_ct.assert_called_with(tethys_compute_update_status._update_job_status, mock_job_id, delay=1)
+        mock_ct.assert_called_with(
+            tethys_compute_update_status._update_job_status, mock_job_id, delay=1
+        )
 
     @mock.patch("tethys_compute.views.update_status.create_task")
     @mock.patch("tethys_compute.views.update_status.logger")
     @mock.patch("tethys_compute.views.update_status.JsonResponse")
-    async def test_update_job_status_with_delay_exception(self, mock_json_response, mock_log, mock_ct):
+    async def test_update_job_status_with_delay_exception(
+        self, mock_json_response, mock_log, mock_ct
+    ):
         mock_request = mock.MagicMock(GET={"delay": "1"})
         mock_job_id = mock.MagicMock()
         mock_ct.side_effect = Exception
@@ -73,7 +79,9 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_compute.views.update_status.logger")
     @mock.patch("tethys_compute.views.update_status.JsonResponse")
     @mock.patch("tethys_compute.views.update_status.TethysJob")
-    async def test_update_job_statusException(self, mock_tethysjob, mock_json_response, mock_log):
+    async def test_update_job_statusException(
+        self, mock_tethysjob, mock_json_response, mock_log
+    ):
         mock_request = mock.MagicMock(GET={})
         mock_job_id = mock.MagicMock()
         mock_tethysjob.objects.get_subclass.side_effect = Exception
