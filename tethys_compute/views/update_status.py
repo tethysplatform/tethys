@@ -51,7 +51,6 @@ async def _update_job_status(job_id):
         logger.warning(
             f"The following exception occurred while updating the status of job_id={job_id}: {e}"
         )
-        logger.exception(e)
         return False
 
 
@@ -69,7 +68,9 @@ async def update_job_status(request, job_id):
             create_task(_update_job_status, job_id, delay=delay)
             result = "scheduled"
         except Exception as e:
-            logger.exception(e)
+            logger.warning(
+                f"The following exception occurred while scheduling the status update of job_id={job_id}: {e}"
+            )
             result = False
     else:
         result = await _update_job_status(job_id)
