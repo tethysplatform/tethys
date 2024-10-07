@@ -1,6 +1,6 @@
-import os
 import sys
 import subprocess
+from os import devnull
 from pathlib import Path
 from functools import wraps
 
@@ -41,19 +41,19 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    manage_path = os.path.join(get_tethys_src_dir(), "tethys_portal", "manage.py")
+    manage_path = f"{get_tethys_src_dir()}/tethys_portal/manage.py"
 
     # Check for path option
     if hasattr(args, "manage"):
         manage_path = args.manage or manage_path
 
     # Throw error if path is not valid
-    if not os.path.isfile(manage_path):
+    if not Path(manage_path).is_file():
         with pretty_output(FG_RED) as p:
             p.write('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
         exit(1)
 
-    return manage_path
+    return str(manage_path)
 
 
 def run_process(process):
@@ -72,7 +72,7 @@ def supress_stdout(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
         stdout = sys.stdout
-        sys.stdout = open(os.devnull, "w")
+        sys.stdout = open(devnull, "w")
         result = func(*args, **kwargs)
         sys.stdout = stdout
         return result
