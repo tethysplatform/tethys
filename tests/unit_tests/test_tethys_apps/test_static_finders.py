@@ -25,44 +25,48 @@ class TestTethysStaticFinder(unittest.TestCase):
     def test_find(self):
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
-        ret = tethys_static_finder.find(path)
-        self.assertEqual(str(self.root / "css" / "main.css").lower(), ret.lower())
+        path_ret = tethys_static_finder.find(path)
+        self.assertEqual(self.root / "css" / "main.css", path_ret)
+        str_ret = tethys_static_finder.find(str(path))
+        self.assertEqual(self.root / "css" / "main.css", str_ret)
 
     def test_find_all(self):
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
-        ret = tethys_static_finder.find(path, all=True)
-        self.assertIn(
-            str(self.root / "css" / "main.css").lower(),
-            list(map(lambda x: x.lower(), ret)),
-        )
+        path_ret = tethys_static_finder.find(path, all=True)
+        self.assertIn(self.root / "css" / "main.css", path_ret)
+        str_ret = tethys_static_finder.find(str(path), all=True)
+        self.assertIn(self.root / "css" / "main.css", str_ret)
 
     def test_find_location_with_no_prefix(self):
         prefix = None
         path = Path("css") / "main.css"
 
         tethys_static_finder = TethysStaticFinder()
-        ret = tethys_static_finder.find_location(str(self.root), path, prefix)
-
-        self.assertEqual(str(self.root / path), ret)
+        path_ret = tethys_static_finder.find_location(self.root, path, prefix)
+        self.assertEqual(self.root / path, path_ret)
+        str_ret = tethys_static_finder.find_location(str(self.root), path, prefix)
+        self.assertEqual(self.root / path, str_ret)
 
     def test_find_location_with_prefix_not_in_path(self):
         prefix = "tethys_app"
         path = Path("css") / "main.css"
 
         tethys_static_finder = TethysStaticFinder()
-        ret = tethys_static_finder.find_location(str(self.root), path, prefix)
-
-        self.assertIsNone(ret)
+        path_ret = tethys_static_finder.find_location(self.root, path, prefix)
+        self.assertIsNone(path_ret)
+        str_ret = tethys_static_finder.find_location(str(self.root), path, prefix)
+        self.assertIsNone(str_ret)
 
     def test_find_location_with_prefix_in_path(self):
         prefix = "tethys_app"
         path = Path("tethys_app") / "css" / "main.css"
 
         tethys_static_finder = TethysStaticFinder()
-        ret = tethys_static_finder.find_location(str(self.root), path, prefix)
-
-        self.assertEqual(str(self.root / "css" / "main.css"), ret)
+        path_ret = tethys_static_finder.find_location(self.root, path, prefix)
+        self.assertEqual(self.root / "css" / "main.css", path_ret)
+        str_ret = tethys_static_finder.find_location(str(self.root), path, prefix)
+        self.assertEqual(self.root / "css" / "main.css", str_ret)
 
     def test_list(self):
         tethys_static_finder = TethysStaticFinder()

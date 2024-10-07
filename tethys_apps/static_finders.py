@@ -23,7 +23,7 @@ class TethysStaticFinder(BaseFinder):
     This finder search for static files in a directory called 'public' or 'static'.
     """
 
-    def __init__(self, apps=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         # List of locations with static files
         self.locations = get_directories_in_tethys(
             ("static", "public"), with_app_name=True
@@ -57,13 +57,14 @@ class TethysStaticFinder(BaseFinder):
         Finds a requested static file in a location, returning the found
         absolute path (or ``None`` if no match).
         """
+        path = Path(path)
         if prefix:
             prefix = Path(f"{prefix}/")
-            if not Path(path).is_relative_to(prefix):
+            if not path.is_relative_to(prefix):
                 return None
             path = path.relative_to(prefix)
-        path = safe_join(str(root), str(path))
-        if Path(path).exists():
+        path = Path(safe_join(str(root), str(path)))
+        if path.exists():
             return path
 
     def list(self, ignore_patterns):
