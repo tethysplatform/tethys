@@ -7,8 +7,6 @@ from tethys_apps.views import (
     handoff_capabilities,
     handoff,
     send_beta_feedback_email,
-    update_job_status,
-    update_dask_job_status,
 )
 
 
@@ -291,55 +289,3 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_json_response.assert_called_once_with(
             {"success": False, "error": "Failed to send email: foo_error"}
         )
-
-    @mock.patch("tethys_apps.views.JsonResponse")
-    @mock.patch("tethys_apps.views.TethysJob")
-    def test_update_job_status(self, mock_tethysjob, mock_json_response):
-        mock_request = mock.MagicMock()
-        mock_job_id = mock.MagicMock()
-        mock_job1 = mock.MagicMock()
-        mock_job1.status = True
-        mock_tethysjob.objects.get_subclass.return_value = mock_job1
-
-        update_job_status(mock_request, mock_job_id)
-        mock_tethysjob.objects.get_subclass.assert_called_once_with(id=mock_job_id)
-        mock_json_response.assert_called_once_with({"success": True})
-
-    @mock.patch("tethys_apps.views.JsonResponse")
-    @mock.patch("tethys_apps.views.TethysJob")
-    def test_update_job_statusException(self, mock_tethysjob, mock_json_response):
-        mock_request = mock.MagicMock()
-        mock_job_id = mock.MagicMock()
-        mock_tethysjob.objects.get_subclass.side_effect = Exception
-
-        update_job_status(mock_request, mock_job_id)
-        mock_tethysjob.objects.get_subclass.assert_called_once_with(id=mock_job_id)
-        mock_json_response.assert_called_once_with({"success": False})
-
-    @mock.patch("tethys_apps.views.JsonResponse")
-    @mock.patch("tethys_apps.views.DaskJob")
-    def test_update_dask_job_status(self, mock_daskjob, mock_json_response):
-        mock_request = mock.MagicMock()
-        mock_job_key = mock.MagicMock()
-        mock_job1 = mock.MagicMock()
-        mock_job1.status = True
-        mock_job2 = mock.MagicMock()
-        mock_daskjob.objects.filter.return_value = [mock_job1, mock_job2]
-
-        # Call the method
-        update_dask_job_status(mock_request, mock_job_key)
-
-        # check results
-        mock_daskjob.objects.filter.assert_called_once_with(key=mock_job_key)
-        mock_json_response.assert_called_once_with({"success": True})
-
-    @mock.patch("tethys_apps.views.JsonResponse")
-    @mock.patch("tethys_apps.views.DaskJob")
-    def test_update_dask_job_statusException(self, mock_daskjob, mock_json_response):
-        mock_request = mock.MagicMock()
-        mock_job_key = mock.MagicMock()
-        mock_daskjob.objects.filter.side_effect = Exception
-
-        update_dask_job_status(mock_request, mock_job_key)
-        mock_daskjob.objects.filter.assert_called_once_with(key=mock_job_key)
-        mock_json_response.assert_called_once_with({"success": False})

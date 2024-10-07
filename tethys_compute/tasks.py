@@ -30,10 +30,8 @@ async def _run_after_delay(func, /, *args, delay, periodic, count, **kwargs):
         if asyncio.iscoroutine(result):
             await result
     except Exception as e:
-        logger.info(e)
-        logger.exception(e)
+        logger.info(f'The following error occurred while running the task "{func}": {e}')
     if periodic and (count is None or count > 0):
-
         if isinstance(count, int):
             count -= 1
         asyncio.create_task(
@@ -41,8 +39,3 @@ async def _run_after_delay(func, /, *args, delay, periodic, count, **kwargs):
                 func, *args, delay=delay, periodic=periodic, count=count, **kwargs
             )
         )
-
-
-async def _await_after_delay(coro, delay):
-    await asyncio.sleep(delay)
-    await coro
