@@ -30,7 +30,9 @@ async def _run_after_delay(func, /, *args, delay, periodic, count, **kwargs):
         if asyncio.iscoroutine(result):
             await result
     except Exception as e:
-        logger.info(f'The following error occurred while running the task "{func}": {e}')
+        logger.info(
+            f'The following error occurred while running the task "{func}": {e}'
+        )
     if periodic and (count is None or count > 0):
         if isinstance(count, int):
             count -= 1
