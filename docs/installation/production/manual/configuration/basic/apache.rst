@@ -6,7 +6,7 @@ Apache Configuration
 
 **Last Updated:** October 2024
 
-`Apache <https://httpd.apache.org/docs/2.4/>`_ is used as the primary HTTP server for a Tethys Portal deployment. It is used to handle all incoming HTTP traffic and directs it to the Daphne/Django server. It also hosts the static files needed by the apps and Tethys Portal. In this section of the production installation guide, you will generate the Apache configuration files.
+`Apache <https://httpd.apache.org/docs/2.4/>`_ can be used as the primary HTTP server for a Tethys Portal deployment. It is used to handle all incoming HTTP traffic and directs it to the Daphne/Django server. It also hosts the static files needed by the apps and Tethys Portal. In this section of the production installation guide, you will generate the Apache configuration files.
 
 .. note::
 
@@ -41,15 +41,14 @@ Review the contents of the Apache configuration file:
 
     In particular, verify the following:
 
-        * The ``server_name`` parameter is set to your server's public domain name (e.g. my.example.com).
+        * The ``ServerName`` parameter is set to your server's public domain name (e.g. my.example.com).
         * The ``/static`` location matches the location of your ``STATIC_ROOT`` directory.
-        * The ``/workspace`` location matches the location of your ``TETHYS_WORKSPACES_ROOT`` directory.
         * The ``/media`` location matches the location of your ``MEDIA_ROOT`` directory.
 
 3. Link the Tethys Apache Configuration
 =======================================
 
-Create a symbolic link from the ``tethys_apache.conf`` file to the Apache configuration directory (:file:`/etc/apache`):
+Create a symbolic link from the ``tethys_apache.conf`` file to the Apache configuration directory (:file:`/etc/apache` or :file:`etc/httpd`):
 
     **Ubuntu**:
     
@@ -61,7 +60,7 @@ Create a symbolic link from the ``tethys_apache.conf`` file to the Apache config
     
         .. code-block:: bash
         
-            sudo ln -s <TETHYS_HOME>/tethys_apache.conf /etc/apache/conf.d/tethys_apache.conf
+            sudo ln -s <TETHYS_HOME>/tethys_apache.conf /etc/httpd/conf.d/tethys_apache.conf
 
     .. tip::
 
@@ -83,9 +82,17 @@ For Ubuntu systems, remove the default Apache configuration file so Apache will 
 
 Get the name of the ``apache`` user for use in later parts of the installation guide:
 
-    .. code-block:: bash
+    **Ubuntu**:
 
-        grep 'user .*;' /etc/apache/apache.conf | awk '{print $2}' | awk -F';' '{print $1}'
+        .. code-block:: bash
+
+            grep 'User .*' /etc/apache/apache.conf | awk '{print $2}' | awk -F';' '{print $1}'
+
+    **Rocky Linux**:
+
+        .. code-block:: bash
+
+            grep 'User .*' /etc/httpd/conf/httpd.conf | awk '{print $2}' | awk -F';' '{print $1}'
 
     Note this user and use it in the following steps where you see ``<APACHE_USER>``.
 
