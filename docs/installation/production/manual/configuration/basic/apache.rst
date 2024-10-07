@@ -12,9 +12,6 @@ Apache Configuration
 
     Skip this section if you are using NGINX as your primary HTTP server. See :ref:`production_nginx_config` for NGINX configuration.
 
-.. TODO::
-
-    REVISE THESE DIRECTIONS FOR APACHE (THIS IS JUST A COPY OF NGINX WITH APACHE REPLACED)
 
 1. Generate the Apache Configuration
 ====================================
