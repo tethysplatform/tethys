@@ -23,6 +23,16 @@ logger = logging.getLogger(f"tethys.{__name__}")
 
 @database_sync_to_async
 def get_job(job_id, user=None):
+    """
+    Helper method to query a `TethysJob` object safely from an asynchronous context.
+
+    Args:
+        job_id: database ID of a `TethysJob`
+        user: django user object. If `None` then permission are not checked. Default=None
+
+    Returns: `TethysJob` object
+
+    """
     if (
         user is None
         or user.is_staff
@@ -33,6 +43,17 @@ def get_job(job_id, user=None):
 
 
 async def do_job_action(job, action):
+    """
+    Helper function to call job actions from an asynchronous context.
+    Handles both sync methods and coroutine job actions.
+
+    Args:
+        job: `TethysJob` object
+        action (str): name of method to call (without arguments) on the  `job`
+
+    Returns: return value of `action`
+
+    """
     func = getattr(job, action)
     if asyncio.iscoroutinefunction(func):
         ret = await func()
@@ -43,6 +64,15 @@ async def do_job_action(job, action):
 
 
 async def _update_job_status(job_id):
+    """
+    Helper method to update a jobs status as a task (with delayed execution).
+
+    Args:
+        job_id: database ID for a `TethysJob`
+
+    Returns: `True` if status was successfully updated, `False` otherwise.
+
+    """
     try:
         job = await get_job(job_id)
         await do_job_action(job, "update_status")
