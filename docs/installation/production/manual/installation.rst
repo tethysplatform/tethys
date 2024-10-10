@@ -4,7 +4,7 @@
 Install Tethys Platform
 ***********************
 
-**Last Updated:** September 2022
+**Last Updated:** September 2024
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. Currently production installation of Tethys is only supported on Linux. Some parts of these instructions are optimized for Ubuntu, though installation on other Linux distributions will be similar.
 
@@ -28,7 +28,13 @@ Install Tethys Platform
 
     .. code-block:: bash
 
-        conda create -n tethys -c conda-forge tethys-platform
+        conda create -n tethys -c conda-forge tethys-platform django=<DJANGO_VESION>
+
+.. important::
+
+    **Django Version**
+
+    As of Tethys 3.4 and above, the version of Django is no longer pinned in the ``tethys-platform`` package. You will need to specify the version of Django that you want to use when creating the environment. This is especially important for production installations, as only the LTS versions of Django recieve bug and security fixes. We recommend using the current Django LTS version for production installations (see: `How to get Django - Supported Versions <https://www.djangoproject.com/download/>`_. Failing to provide the Django version will result in installing the latest version of Django which may not be the LTS version.
 
 2. Activate the ``tethys`` conda environment after it is created:
 
@@ -75,6 +81,7 @@ Beginning with Tethys v5.0 or if you are using ``micro-tethys-platform`` many fe
 
         dependencies:
         - tethys-platform
+        - django=<DJANGO_VERSION>
         - django-session-security
         - django-axes
         - django-gravatar2

@@ -4,7 +4,7 @@
 File Permissions
 ****************
 
-**Last Updated:** September 2022
+**Last Updated:** October 2024
 
 As NGINX is acting as the primary HTTP process, many of the files will need to be accessible by the NGINX user account. There are additional permissions that need to be granted if `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ is active on your server. This part of the production installation guide will show you how to manage the file permissions for your server.
 
@@ -15,19 +15,20 @@ Change the owner of the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` directori
 
     .. code-block:: bash
 
-        sudo chown -R <NGINX_USER>: <STATIC_ROOT>
-        sudo chown -R <NGINX_USER>: <TETHYS_WORKSPACES_ROOT>
+        sudo chown -R <NGINX_USER|APACHE_USER>: <STATIC_ROOT>
+        sudo chown -R <NGINX_USER|APACHE_USER>: <TETHYS_WORKSPACES_ROOT>
+        sudo chown -R <NGINX_USER|APACHE_USER>: <MEDIA_ROOT>
 
     .. note::
 
-        Replace ``<NGINX_USER>`` with the user noted in the :ref:`production_nginx_config` step. Replace ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` with the paths to the directories you set up in the :ref:`production_static_workspaces_dirs` step.
+        Replace ``<NGINX_USER|APACHE_USER>`` with the user noted in the :ref:`production_nginx_config` step. Replace ``<STATIC_ROOT>``, ``<TETHYS_WORKSPACES_ROOT>``, and ``<MEDIA_ROOT>`` with the paths to the directories you set up in the :ref:`production_static_workspaces_dirs` step.
 
 .. _setup_file_permissions_shortcuts:
 
 2. Setup Shortcuts for Changing Permissions (Optional)
 ======================================================
 
-You will often need to change the ownership of the ``TETHYS_HOME``, ``STATIC_ROOT``, and ``TETHYS_WORKSPACES_ROOT`` to your user and then back to the ``nginx`` user again. This needs to be done whenever you are making changes to files in one of these directories. For example, whenever you run ``tethys manage collectstatic``, you will need to change the ownership of these directories to your user to allow the command to copy files into those directories. Then you will need to change it back to the ``nginx`` user to allow the server to have access to these files to serve them.
+You will often need to change the ownership of the ``TETHYS_HOME``, ``STATIC_ROOT``, ``MEDIA_ROOT``, and ``TETHYS_WORKSPACES_ROOT`` to your user and then back to the ``nginx`` user again. This needs to be done whenever you are making changes to files in one of these directories. For example, whenever you run ``tethys manage collectstatic``, you will need to change the ownership of these directories to your user to allow the command to copy files into those directories. Then you will need to change it back to the ``nginx`` user to allow the server to have access to these files to serve them.
 
 For convenience, you may consider setting up these or similar aliases in the activate script of your environment:
 
@@ -89,15 +90,15 @@ For convenience, you may consider setting up these or similar aliases in the act
 
 .. _selinux_configuration:
 
-3. Security-Enhanced Linux File Permissions (CentOS, May not Apply)
+3. Security-Enhanced Linux File Permissions (Rocky Linux, May not Apply)
 ===================================================================
 
-If you are installing Tethys Portal on a CentOS or RedHat system that has `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ enabled and set to enforcing mode, you may need to perform additional setup to allow the server processes to access files.
+If you are installing Tethys Portal on a Rocky Linux or RedHat system that has `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ enabled and set to enforcing mode, you may need to perform additional setup to allow the server processes to access files.
 
 SELinux adds additional layers of security that define access controls for applications, processes, and files on a system. To learn more about SELinux see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `What is SELinux <https://www.redhat.com/en/topics/linux/what-is-selinux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos/SELinux>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_.
 
 .. note::
 
-    If you are using CentOS for your deployment, it does not necessarily mean that you are using it with SELinux enforcing. You can check the ``SELINUX`` variable in :file:`/etc/selinux/config` to see if SELinux is being enforced. Alternatively, you can check using the ``getenforce`` command.
+    If you are using Rocky Linux for your deployment, it does not necessarily mean that you are using it with SELinux enforcing. You can check the ``SELINUX`` variable in :file:`/etc/selinux/config` to see if SELinux is being enforced. Alternatively, you can check using the ``getenforce`` command.
 
 For an example of SELinux configuration, see: :ref:`production_selinux_config`.

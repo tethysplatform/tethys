@@ -40,7 +40,7 @@ You can backup this data using one of PostgreSQL's utilities like `pg_dump <http
     
         /var/lib/postgresql/<version>/main
 
-**CentOS**:
+**Rocky Linux**:
 
     .. code-block:: bash
     
