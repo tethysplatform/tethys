@@ -16,6 +16,10 @@ conda env create -f docs_environment.yml
 Use Git LFS to download the images:
 
 ```
+# Install git-lfs (see: https://git-lfs.com/)
+apt install git-lfs
+
+# In the Tethys repository
 git lfs install
 git lfs pull
 ```
