@@ -4,7 +4,7 @@
 Supervisor & Daphne Configuration
 *********************************
 
-**Last Updated:** September 2022
+**Last Updated:** October 2024
 
 `Supervisor <http://supervisord.org/>`_ is used to manage the NGINX and Daphne processes. As an ASGI server, Daphne is able to be run with multiple worker processes. It would be cumbersome to manage them individually. Using Supervisor, you will be able to use one command to start, stop, or restart the NGINX process and all of the Daphne processes.
 
@@ -52,7 +52,7 @@ One configuration file will be needed for NGINX and another for Daphne. Use the 
 3. Create Run Directory
 =======================
 
-Verify that the directory where the ASGI process files will be created exists. You noted this directory when verifying the :file:`asgi_supervisor.conf` file in the previous step. For example, if the path in :file:`asgi_supervisor.conf` was defined as :file:`/run/asgi/tethys_asgi%(process_num)d.sock`, then you would need to ensure that the :file:`/run/asgi` directory exists and is owned by the ``NGINX_USER``.
+Verify that the directory where the ASGI process files will be created exists. You noted this directory when verifying the :file:`asgi_supervisor.conf` file in the previous step. For example, if the path in :file:`asgi_supervisor.conf` was defined as :file:`/run/asgi/tethys_asgi%(process_num)d.sock`, then you would need to ensure that the :file:`/run/asgi` directory exists and is owned by the ``NGINX_USER`` or ``APACHE_USER``.
 
 .. note::
 
@@ -70,7 +70,7 @@ Create a symbolic links from the two configuration files generated in the previo
             sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
             sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisor/conf.d/nginx_supervisord.conf
 
-    **CentOS**:
+    **Rocky Linux**:
 
         .. code-block:: bash
 
@@ -81,12 +81,12 @@ Create a symbolic links from the two configuration files generated in the previo
 
         Replace ``<TETHYS_HOME>`` with the path to the Tethys home directory as noted in :ref:`production_portal_config` section.
 
-5. Modify :file:`supervisord.conf` (CentOS Only)
+5. Modify :file:`supervisord.conf` (Rocky Linux Only)
 ================================================
 
-For CentOS systems, modify :file:`supervisord.conf` to recognize our configuration files:
+For Rocky Linux systems, modify :file:`supervisord.conf` to recognize our configuration files:
 
-    **CentOS**:
+    **Rocky Linux**:
 
         .. code-block:: bash
 
@@ -108,11 +108,11 @@ Create the log file in the location where supervisor expects it to be (see last 
 
     .. code-block:: bash
 
-        sudo chown -R <NGINX_USER> /var/log/tethys
+        sudo chown -R <NGINX_USER|APACHE_USER> /var/log/tethys
 
     .. tip::
 
-        Replace ``<NGINX_USER>`` with the name of the user noted in the :ref:`production_nginx_config`.
+        Replace ``<NGINX_USERR|APACHE_USER>`` with the name of the user noted in the :ref:`production_nginx_config` or :ref:`production_apache_config`.
 
 7. Reload the Configuration
 ===========================

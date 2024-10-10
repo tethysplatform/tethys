@@ -4,13 +4,39 @@
 Portal Configuration
 ********************
 
-**Last Updated:** September 2022
+**Last Updated:** September 2024
 
 The :file:`portal_config.yml` is the primary configuration file for Tethys Portal. As of version 3.0, you should not edit the :file:`settings.py` file directly. Instead add any Django settings that you need to the ``settings`` section of the :file:`portal_config.yml`. This can be done by manually editing the file, or you can use the ``tethys settings`` command to add settings to it.
 
 This part of the installation guide will show you how to create the :file:`portal_config.yml` and highlights a few of the settings that you should configure when setting up Tethys Portal for production. The following sections of the production installation guide will walk you through other important settings as well.
 
-1. Generate Tethys Configuration
+1. Prepare the ``TETHYS_HOME`` Directory
+========================================
+
+The ``TETHYS_HOME`` directory is the directory where the :file:`portal_config.yml` file is generated. This directory is also used to store other configuration files and logs for Tethys Portal. The default location of the ``TETHYS_HOME`` directory is :file:`~/.tethys/` or :file:`/home/<username>/.tethys/` if your environment is named Tethys, otherwise it is :file:`~/.tethys/<env_name>/`.
+
+In a production environment, it is better to define the location of ``TETHYS_HOME`` to be outside of a user's home directory. The ``TETHYS_HOME`` directory should be on a disk with plenty of space and should be backed up regularly.
+
+1. Decide where to store the ``TETHYS_HOME`` directory and create that directory:
+
+    .. code-block:: bash
+
+        sudo mkdir -p <TETHYS_HOME>
+        sudo chown -R $USER <TETHYS_HOME>
+
+2. Create a new ``tethys.sh`` script in ``/etc/profile.d`` to set the ``TETHYS_HOME`` environment variable for all users:
+
+    .. code-block:: bash
+
+        sudo touch /etc/profile.d/tethys.sh
+        sudo chmod +x /etc/profile.d/tethys.sh
+        sudo echo "export TETHYS_HOME=<TETHYS_HOME>" > /etc/profile.d/tethys.sh
+
+.. note::
+
+    Replace ``<TETHYS_HOME>`` with the path to the directory where you would like to store the Tethys configuration files.
+
+2. Generate Tethys Configuration
 ================================
 
 Generate the portal configuration file with the following command:
@@ -23,19 +49,10 @@ Generate the portal configuration file with the following command:
 
         This file is generated in your ``TETHYS_HOME`` directory. It can be edited directly or using the ``tethys settings`` command. See: :ref:`tethys_configuration` and :ref:`tethys_settings_cmd`.
 
-2. Note the Location of ``TETHYS_HOME``
-=======================================
-
-The directory where the :file:`portal_config.yml` is generated is the ``TETHYS_HOME`` directory for your installation.
-
-The default location of ``TETHYS_HOME`` is :file:`~/.tethys/` or :file:`/home/<username>/.tethys/` if your environment is named Tethys, otherwise it is :file:`~/.tethys/<env_name>/`.
-
-**Note this location and use it anywhere you see** ``<TETHYS_HOME>``.
-
 3. Set Required Production Settings
 ===================================
 
-The following settings should be changed for a production installation of Tethys Portal.
+The following settings should be set for a production installation of Tethys Portal.
 
 ALLOWED_HOSTS
 -------------

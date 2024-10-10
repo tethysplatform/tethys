@@ -662,7 +662,7 @@ OneLogin
 
   .. code-block:: bash
 
-      conda create --experimental-solver libmamba -n tethys -c tethysplatform -c conda-forge tethys-platform social-auth-core=4.0.2
+      conda create --experimental-solver libmamba -n tethys -c tethysplatform -c conda-forge tethys-platform django=<DJANGO_VERSION> social-auth-core=4.0.2
 
 1. Create an OneLogin Developer Account
 

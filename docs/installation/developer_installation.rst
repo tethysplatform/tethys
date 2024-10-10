@@ -24,7 +24,7 @@ For systems with `wget` (most Linux distributions):
       wget :install_tethys:`sh`
       bash install_tethys.sh -b |branch|
 
-For Systems with `curl` (e.g. Mac OSX and CentOS):
+For Systems with `curl` (e.g. Mac OSX and Rocky Linux):
 
 .. parsed-literal::
 

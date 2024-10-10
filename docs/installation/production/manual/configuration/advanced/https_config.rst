@@ -58,7 +58,7 @@ Certbot
 
         cat /etc/nginx/sites-enabled/tethys_nginx.conf
 
-    **CentOS**:
+    **Rocky Linux**:
 
     .. code-block::
 

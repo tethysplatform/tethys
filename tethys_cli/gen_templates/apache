@@ -12,8 +12,13 @@ Listen {% if ip_address %}{{ ip_address }}:{%- endif %}{{ server_port }}{% if ss
 
     ProxyPass /static !
     Alias /static {{ static_root }}
+    ProxyPass /media !
+    Alias /media {{ media_root }}
 
     <Directory {{ static_root }}>
+        Require all granted
+    </Directory>
+    <Directory {{ media_root }}>
         Require all granted
     </Directory>
     {% for directive in additional_directives %}
