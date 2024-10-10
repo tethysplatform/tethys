@@ -4,7 +4,7 @@
 Static and Workspaces Directories
 *********************************
 
-**Last Updated:** September 2022
+**Last Updated:** October 2024
 
 1. Create Static Directory
 ==========================
@@ -93,3 +93,38 @@ The app workspaces directory is one location where all app workspaces are collec
     .. code-block::
 
         tethys manage collectall
+
+
+3. Create App Media Directory
+=============================
+
+The app media directory is a location where apps can store files uploaded by users to make them publicly accesible. Setup the app media directory as follows:
+
+1. Get the value of the static directory from the ``MEDIA_ROOT`` setting:
+
+    .. code-block::
+
+        tethys settings --get MEDIA_ROOT
+
+    .. tip::
+
+        You may set the ``MEDIA_ROOT`` variable to point at whichever directory you would like as follows:
+
+        .. code-block::
+
+            tethys settings --set MEDIA_ROOT /my/custom/static/directory
+
+2. Create the media directory if it does not already exist
+
+    .. code-block::
+
+        sudo mkdir -p <MEDIA_ROOT>
+        sudo chown -R $USER <MEDIA_ROOT>
+
+   .. note::
+
+        Replace ``<MEDIA_ROOT>`` with the value returned by the previous command (see step 2.1).
+
+.. tip::
+
+    The ``MEDIA_ROOT`` directory is one of the recommended directories to backup.

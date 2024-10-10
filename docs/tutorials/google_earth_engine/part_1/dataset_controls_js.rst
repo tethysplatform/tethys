@@ -11,7 +11,6 @@ In this tutorial you will add dynamic behavior to the dataset controls created i
 * Using JavaScript with Tethys Gizmos
 
 .. figure:: ../../../images/tutorial/gee/dataset_controls_js.png
-
     :width: 800px
     :align: center
 

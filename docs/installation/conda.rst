@@ -4,7 +4,7 @@
 Conda and Tethys Platform
 *************************
 
-**Last Updated:** May 2023
+**Last Updated:** September 2024
 
 This guide provides tips for using `Conda <https://docs.conda.io/en/latest/>`_ effectively in your Tethys environment.
 
@@ -59,13 +59,20 @@ To install Tethys Platform using the ``libmamba`` solver, run the command with t
 
 .. code-block:: bash
 
-    conda create --solver libmamba -n tethys -c tethysplatform -c conda-forge tethys-platform
+    conda create --solver libmamba -n tethys -c tethysplatform -c conda-forge tethys-platform django=<DJANGO_VERSION>
 
 Alternatively, if you set ``libmamba`` to be the default solver in step 2, run the install command as usual and ``libmamba`` will be used automatically:
 
 .. code-block:: bash
 
-    conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
+    conda create -n tethys -c tethysplatform -c conda-forge tethys-platform django=<DJANGO_VERSION>
+
+
+.. important::
+
+    **Django Version**
+
+    As of Tethys 3.4 and above, the version of Django is no longer pinned in the ``tethys-platform`` package. You will need to specify the version of Django that you want to use when creating the environment. This is especially important for production installations, as only the LTS versions of Django recieve bug and security fixes. For development installations, we recommend using the same version of Django that you plan to use in production. For production installations, we recommend using the current LTS version of Django (see: `How to get Django - Supported Versions <https://www.djangoproject.com/download/>`_. Failing to provide the Django version will result in installing the latest version of Django which may not be the LTS version.
 
 Install Packages
 ----------------
