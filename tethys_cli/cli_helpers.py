@@ -41,7 +41,7 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    manage_path = f"{get_tethys_src_dir()}/tethys_portal/manage.py"
+    manage_path = Path(get_tethys_src_dir()) / "tethys_portal" / "manage.py"
 
     # Check for path option
     if hasattr(args, "manage"):
