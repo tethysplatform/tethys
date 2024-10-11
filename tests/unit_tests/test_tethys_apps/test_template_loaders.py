@@ -66,7 +66,7 @@ class TestTethysTemplateLoader(unittest.TestCase):
             expected_template_name
         ):
             self.assertEqual(
-                str(Path(Path.home() / "foo" / "template1" / "foo")),
+                str(Path.home() / "foo" / "template1" / "foo"),
                 origin.name,
             )
             self.assertEqual("foo", origin.template_name)
