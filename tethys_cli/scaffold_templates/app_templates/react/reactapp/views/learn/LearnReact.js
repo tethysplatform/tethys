@@ -2,6 +2,8 @@ import styled, { keyframes } from 'styled-components';
 import Color from 'color';
 import { useMemo } from 'react';
 
+import React from 'react';
+
 import logo from 'assets/reactLogo.svg';
 
 const rotate = keyframes`

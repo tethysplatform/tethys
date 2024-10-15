@@ -1,4 +1,14 @@
+// Mock ResizeObserver
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+global.ResizeObserver = ResizeObserver;
+
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 
 import Home from 'views/home/Home';
 

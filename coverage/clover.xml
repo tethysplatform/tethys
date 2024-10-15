@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1729019784328" clover="3.2.0">
+  <project timestamp="1729019784328" name="All files">
+    <metrics statements="37" coveredstatements="33" conditionals="4" coveredconditionals="1" methods="5" coveredmethods="4" elements="46" coveredelements="38" complexity="0" loc="37" ncloc="37" packages="2" files="2" classes="2"/>
+    <package name="home">
+      <metrics statements="29" coveredstatements="25" conditionals="4" coveredconditionals="1" methods="3" coveredmethods="2"/>
+      <file name="Home.js" path="/home/jakeymac/pose tethys js testing files/tethys/tethys_cli/scaffold_templates/app_templates/react/reactapp/views/home/Home.js">
+        <metrics statements="29" coveredstatements="25" conditionals="4" coveredconditionals="1" methods="3" coveredmethods="2"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="26" count="4" type="stmt"/>
+        <line num="28" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+        <line num="44" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="67" count="2" type="stmt"/>
+        <line num="82" count="2" type="stmt"/>
+        <line num="95" count="2" type="stmt"/>
+        <line num="96" count="2" type="stmt"/>
+        <line num="99" count="2" type="stmt"/>
+        <line num="104" count="2" type="stmt"/>
+        <line num="107" count="2" type="stmt"/>
+        <line num="108" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="109" count="0" type="stmt"/>
+        <line num="110" count="0" type="stmt"/>
+        <line num="113" count="2" type="stmt"/>
+        <line num="116" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="learn">
+      <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="LearnReact.js" path="/home/jakeymac/pose tethys js testing files/tethys/tethys_cli/scaffold_templates/app_templates/react/reactapp/views/learn/LearnReact.js">
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

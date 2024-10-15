@@ -14,6 +14,7 @@ import { fromLonLat } from 'ol/proj';
 import { useEffect, useRef, useState } from 'react';
 
 import 'ol/ol.css';
+import React from 'react';
 
 function Home() {
   const [map, setMap] = useState(null);
