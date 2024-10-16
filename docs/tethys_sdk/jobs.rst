@@ -228,9 +228,9 @@ For example, a URL may look something like this:
 
     http://example.com/update-job-status/27/
 
-The output would look something like this:
+The response would look something like this:
 
-.. code-block:: python
+.. code-block:: javascript
 
     {"success": true}
 
@@ -240,6 +240,26 @@ This URL can be retrieved from the job manager with the ``get_job_status_callbac
 
     job_manager = App.get_job_manager()
     callback_url = job_manager.get_job_status_callback_url(request, job_id)
+
+The callback URL can be used to update the jobs status after a specified delay by passing the ``delay`` query parameter:
+
+.. code-block::
+
+    http://<host>/update-job-status/<job_id>/?delay=<delay_in_seconds>
+
+For example, to schedule a job update in 30 seconds:
+
+.. code-block::
+
+    http://<host>/update-job-status/27/?delay=30
+
+In this case the response would look like this:
+
+.. code-block:: javascript
+
+    {"success": "scheduled"}
+
+This delay can be useful so the job itself can hit the endpoint just before completing to trigger the Tethys Portal to check its status after it has time to complete and exit. This will allow the portal to register that the job has completed and start any data transfer that is triggered upon job completion.
 
 Custom Statuses
 ---------------

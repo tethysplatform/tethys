@@ -151,14 +151,17 @@ class TestUrls(TethysTestCase):
         url = reverse("update_job_status", kwargs={"job_id": "JI001"})
         resolver = resolve(url)
         self.assertEqual("/update-job-status/JI001/", url)
-        self.assertEqual("tethys_apps.views.update_job_status", resolver._func_path)
+        self.assertEqual(
+            "tethys_compute.views.update_status.update_job_status", resolver._func_path
+        )
 
     def test_urlpatterns_update_dask_job_status(self):
         url = reverse("update_dask_job_status", kwargs={"key": "123456789"})
         resolver = resolve(url)
         self.assertEqual("/update-dask-job-status/123456789/", url)
         self.assertEqual(
-            "tethys_apps.views.update_dask_job_status", resolver._func_path
+            "tethys_compute.views.update_status.update_dask_job_status",
+            resolver._func_path,
         )
 
     @override_settings(REGISTER_CONTROLLER="test")
@@ -362,14 +365,17 @@ class TestUrlsWithPrefix(TethysTestCase):
         url = reverse("update_job_status", kwargs={"job_id": "JI001"})
         resolver = resolve(url)
         self.assertEqual("/test/prefix/update-job-status/JI001/", url)
-        self.assertEqual("tethys_apps.views.update_job_status", resolver._func_path)
+        self.assertEqual(
+            "tethys_compute.views.update_status.update_job_status", resolver._func_path
+        )
 
     def test_urlpatterns_update_dask_job_status(self):
         url = reverse("update_dask_job_status", kwargs={"key": "123456789"})
         resolver = resolve(url)
         self.assertEqual("/test/prefix/update-dask-job-status/123456789/", url)
         self.assertEqual(
-            "tethys_apps.views.update_dask_job_status", resolver._func_path
+            "tethys_compute.views.update_status.update_dask_job_status",
+            resolver._func_path,
         )
 
     @override_settings(REGISTER_CONTROLLER="test")
