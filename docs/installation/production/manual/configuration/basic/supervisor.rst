@@ -82,7 +82,7 @@ Create a symbolic links from the two configuration files generated in the previo
         Replace ``<TETHYS_HOME>`` with the path to the Tethys home directory as noted in :ref:`production_portal_config` section.
 
 5. Modify :file:`supervisord.conf` (Rocky Linux Only)
-================================================
+=====================================================
 
 For Rocky Linux systems, modify :file:`supervisord.conf` to recognize our configuration files:
 

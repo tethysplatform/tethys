@@ -9,19 +9,19 @@
 """
 
 import logging
+
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
-from tethys_compute.models import TethysJob, DaskJob
-from tethys_config.models import get_custom_template
 
+from tethys_config.models import get_custom_template
 from .base.app_base import TethysAppBase
 from .models import TethysApp
 from .utilities import get_active_app, user_can_access_app
 from .models import ProxyApp
 from .decorators import login_required
 
-log = logging.getLogger("tethys." + __name__)
+logger = logging.getLogger("tethys." + __name__)
 
 
 @login_required()
@@ -149,44 +149,4 @@ def send_beta_feedback_email(request):
         return JsonResponse(json)
 
     json = {"success": True, "result": "Emails sent to specified developers"}
-    return JsonResponse(json)
-
-
-def update_job_status(request, job_id):
-    """
-    Callback endpoint for jobs to update status.
-    """
-    try:
-        job = TethysJob.objects.get_subclass(id=job_id)
-        job.status
-        json = {"success": True}
-    except Exception:
-        json = {"success": False}
-
-    return JsonResponse(json)
-
-
-def update_dask_job_status(request, key):
-    """
-    Callback endpoint for dask jobs to update status.
-    """
-    params = request.GET
-    status = params.get("status", None)
-    log.debug(
-        "Recieved update status for DaskJob<key: {} status: {}>".format(key, status)
-    )
-
-    try:
-        job = DaskJob.objects.filter(key=key)[0]
-        job_status = job.DASK_TO_STATUS_TYPES[status]
-        log.debug(
-            'Mapped dask status "{}" to tethys job status: "{}"'.format(
-                status, job_status
-            )
-        )
-        job.status = job_status
-        json = {"success": True}
-    except Exception:
-        json = {"success": False}
-
     return JsonResponse(json)
