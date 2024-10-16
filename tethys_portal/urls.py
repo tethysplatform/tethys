@@ -37,7 +37,7 @@ from tethys_portal.views import (
 )
 from tethys_portal.optional_dependencies import has_module
 from tethys_apps import views as tethys_apps_views
-from tethys_compute.views import dask_dashboard as tethys_dask_views
+from tethys_compute import views as tethys_compute_views
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 # ensure at least staff users logged in before accessing admin login page
@@ -71,7 +71,7 @@ admin_url_list.insert(
     0,
     re_path(
         r"^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$",
-        tethys_dask_views.dask_dashboard,
+        tethys_compute_views.dask_dashboard,
         name="dask_dashboard",
     ),
 )
@@ -212,12 +212,12 @@ urlpatterns.extend(
         ),
         re_path(
             r"^update-job-status/(?P<job_id>[\w-]+)/$",
-            tethys_apps_views.update_job_status,
+            tethys_compute_views.update_job_status,
             name="update_job_status",
         ),
         re_path(
             r"^update-dask-job-status/(?P<key>[\w-]+)/$",
-            tethys_apps_views.update_dask_job_status,
+            tethys_compute_views.update_dask_job_status,
             name="update_dask_job_status",
         ),
         re_path(r"^api/", include((api_urls, "api"), namespace="api")),
