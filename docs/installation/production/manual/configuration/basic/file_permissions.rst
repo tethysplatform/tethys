@@ -91,7 +91,7 @@ For convenience, you may consider setting up these or similar aliases in the act
 .. _selinux_configuration:
 
 3. Security-Enhanced Linux File Permissions (Rocky Linux, May not Apply)
-===================================================================
+========================================================================
 
 If you are installing Tethys Portal on a Rocky Linux or RedHat system that has `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ enabled and set to enforcing mode, you may need to perform additional setup to allow the server processes to access files.
 
