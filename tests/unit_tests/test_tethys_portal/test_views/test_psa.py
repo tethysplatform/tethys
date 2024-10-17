@@ -17,8 +17,8 @@ from .mock_decorator import mock_decorator
 mock.patch("django.views.decorators.cache.never_cache", lambda x: x).start()
 mock.patch("social_django.utils.psa", side_effect=mock_decorator).start()
 
-if 'tethys_portal.views.psa' in sys.modules:
-    del sys.modules['tethys_portal.views.psa']
+if "tethys_portal.views.psa" in sys.modules:
+    del sys.modules["tethys_portal.views.psa"]
 
 from tethys_portal.views.psa import tenant, auth, complete  # noqa: E402
 

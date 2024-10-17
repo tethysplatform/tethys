@@ -18,6 +18,7 @@ async def get_workspace(app_package, user):
 
 def use_workspace(user=None):
     from reactpy_django.hooks import use_memo
+
     app_package = None
 
     for item in inspect.stack():

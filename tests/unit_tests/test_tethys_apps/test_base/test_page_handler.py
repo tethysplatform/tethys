@@ -62,7 +62,7 @@ class TestPageHandler(TestCase):
                 "title",
                 "custom_css",
                 "custom_js",
-                "extras"
+                "extras",
             ],
         )
         self.assertEqual(render_context["app"], "app object")
@@ -105,7 +105,7 @@ class TestPageComponentWrapper(TestCase):
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
         self.assertEqual(return_value, component_return_val)
-    
+
     def test_page_component_wrapper__layout_none_with_extras(self):
         # FUNCTION ARGS
         app = mock.MagicMock()
@@ -116,7 +116,9 @@ class TestPageComponentWrapper(TestCase):
         component_return_val = "rendered_component"
         component.return_value = component_return_val
 
-        return_value = page_handler.page_component_wrapper(app, user, layout, component, extras)
+        return_value = page_handler.page_component_wrapper(
+            app, user, layout, component, extras
+        )
 
         self.assertEqual(return_value, component_return_val)
         component.assert_called_once_with(extra1="val1", extra2=2)
@@ -140,7 +142,7 @@ class TestPageComponentWrapper(TestCase):
             {"app": app, "user": user, "nav-links": app.navigation_links},
             component_return_val,
         )
-    
+
     def test_page_component_wrapper__layout_not_none_with_extras(self):
         # FUNCTION ARGS
         app = mock.MagicMock()
@@ -154,7 +156,9 @@ class TestPageComponentWrapper(TestCase):
         component_return_val = "rendered_component"
         component.return_value = component_return_val
 
-        return_value = page_handler.page_component_wrapper(app, user, layout, component, extras)
+        return_value = page_handler.page_component_wrapper(
+            app, user, layout, component, extras
+        )
 
         self.assertEqual(return_value, layout_return_val)
         layout.assert_called_once_with(
