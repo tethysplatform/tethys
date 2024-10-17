@@ -1,3 +1,4 @@
+import asyncio
 import inspect
 from pathlib import Path
 from channels.db import database_sync_to_async
@@ -16,20 +17,24 @@ async def get_workspace(app_package, user):
 
 
 def use_workspace(user=None):
-    from reactpy_django.hooks import use_query
+    from reactpy_django.hooks import use_memo
+    app_package = None
 
-    calling_fpath = Path(inspect.stack()[1][0].f_code.co_filename)
-    app_package = [
-        p.name
-        for p in [calling_fpath] + list(calling_fpath.parents)
-        if p.parent.name == "tethysapp"
-    ][0]
+    for item in inspect.stack():
+        try:
+            calling_fpath = Path(item[0].f_code.co_filename)
+            app_package = [
+                p.name
+                for p in [calling_fpath] + list(calling_fpath.parents)
+                if p.parent.name == "tethysapp"
+            ][0]
+            break
+        except IndexError:
+            pass
 
-    workspace_query = use_query(
-        get_workspace, {"app_package": app_package, "user": user}, postprocessor=None
-    )
+    workspace = use_memo(lambda: asyncio.run(get_workspace(app_package, user)))
 
-    return workspace_query.data
+    return workspace
 
 
 def delayed_execute(seconds, callable, args=None):

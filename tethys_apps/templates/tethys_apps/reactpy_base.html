@@ -92,7 +92,7 @@
       {% include "analytical_body_top.html" %}
     {% endif %}
 
-    {% component "tethys_apps.base.page_handler.page_component_wrapper" app=app user=request.user layout=layout_func component=component_func %}
+    {% component "tethys_apps.base.page_handler.page_component_wrapper" app=app user=request.user layout=layout_func component=component_func extras=extras %}
 
     {% if has_terms %}
       {% include "terms.html" %}

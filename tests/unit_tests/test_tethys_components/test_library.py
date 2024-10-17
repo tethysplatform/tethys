@@ -70,7 +70,7 @@ class TestComponentLibrary(TestCase):
         )
         self.assertIn("does_not_exist", lib.STYLE_DEPS)
         self.assertListEqual(lib.STYLE_DEPS["does_not_exist"], ["my_style.css"])
-        self.assertListEqual(lib.DEFAULTS, ["rp", "does_not_exist"])
+        self.assertListEqual(lib.DEFAULTS, ["rp", "mapgl", "does_not_exist"])
 
         # REGISTER AGAIN EXACTLY
         lib.register(

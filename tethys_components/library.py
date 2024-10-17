@@ -35,8 +35,10 @@ class ComponentLibrary:
         "bs": "react-bootstrap@2.10.2",
         "pm": "pigeon-maps@0.21.6",
         "rc": "recharts@2.12.7",
-        "ag": "ag-grid-react@32.0.2",
+        "ag": "ag-grid-react@32.2.0",
         "rp": "react-player@2.16.0",
+        "lo": "react-loading-overlay-ts@2.0.2",
+        "mapgl": "react-map-gl@7.1.7/maplibre",
         # 'mui': '@mui/material@5.16.7',  # This should work once esm releases their next version
         "chakra": "@chakra-ui/react@2.8.2",
         "icons": "react-bootstrap-icons@1.11.4",
@@ -44,15 +46,16 @@ class ComponentLibrary:
         "tethys": None,  # Managed internally,
         "hooks": None,  # Managed internally
     }
-    DEFAULTS = ["rp"]
+    DEFAULTS = ["rp", "mapgl"]
     STYLE_DEPS = {
         "ag": [
-            "https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-grid.css",
-            "https://unpkg.com/@ag-grid-community/styles@32.0.2/ag-theme-material.css",
+            "https://unpkg.com/@ag-grid-community/styles@32.2.0/ag-grid.css",
+            "https://unpkg.com/@ag-grid-community/styles@32.2.0/ag-theme-quartz.css",
         ],
         "bs": [
             "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         ],
+        "mapgl": ["https://unpkg.com/maplibre-gl@4.7.0/dist/maplibre-gl.css"],
     }
     INTERNALLY_MANAGED_PACKAGES = [
         key for key, val in PACKAGE_BY_ACCESSOR.items() if val is None

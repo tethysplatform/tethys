@@ -1,5 +1,4 @@
 from reactpy import component
-from reactpy_django.hooks import use_location, use_query
 from tethys_portal.settings import STATIC_URL
 from .utils import Props
 from .library import Library as lib
@@ -89,7 +88,7 @@ def NavIcon(src, background_color):
 
 @component
 def NavMenu(props, *children):
-    nav_title = props.pop("nav-title")
+    nav_title = props.pop("nav-title", "Navigation")
 
     return lib.html.div(
         lib.bs.Offcanvas(
@@ -108,9 +107,9 @@ def get_db_object(app):
 
 @component
 def HeaderWithNavBar(app, user, nav_links):
-    app_db_query = use_query(get_db_object, {"app": app})
+    app_db_query = lib.hooks.use_query(get_db_object, {"app": app})
     app_id = app_db_query.data.id if app_db_query.data else 999
-    location = use_location()
+    location = lib.hooks.use_location()
 
     return lib.bs.Navbar(
         Props(

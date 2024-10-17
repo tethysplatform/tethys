@@ -511,7 +511,7 @@ def page(
             index=index,
         )
 
-        def controller_wrapper(request):
+        def controller_wrapper(request, **kwargs):
             controller = handler or global_page_controller
             if permissions_required:
                 controller = permission_required(
@@ -541,6 +541,7 @@ def page(
                 title=url_map_kwargs_list[0]["title"],
                 custom_css=custom_css,
                 custom_js=custom_js,
+                **kwargs,
             )
 
         _process_url_kwargs(controller_wrapper, url_map_kwargs_list)

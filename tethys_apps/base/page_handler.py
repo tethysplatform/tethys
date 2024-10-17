@@ -13,6 +13,7 @@ def global_page_controller(
     title=None,
     custom_css=None,
     custom_js=None,
+    **kwargs
 ):
     app = get_active_app(request=request, get_class=True)
     layout_func = get_layout_component(app, layout)
@@ -27,6 +28,7 @@ def global_page_controller(
         "title": title,
         "custom_css": custom_css or [],
         "custom_js": custom_js or [],
+        "extras": kwargs,
     }
 
     return render(request, "tethys_apps/reactpy_base.html", context)
@@ -36,7 +38,7 @@ if has_module("reactpy"):
     from reactpy import component
 
     @component
-    def page_component_wrapper(app, user, layout, component):
+    def page_component_wrapper(app, user, layout, component, extras=None):
         """
         ReactPy Component that wraps every custom user page
 
@@ -52,7 +54,7 @@ if has_module("reactpy"):
         if layout is not None:
             return layout(
                 {"app": app, "user": user, "nav-links": app.navigation_links},
-                component(),
+                component(**extras) if extras else component(),
             )
         else:
-            return component()
+            return component(**extras) if extras else component()

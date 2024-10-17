@@ -1,3 +1,4 @@
+import sys
 from unittest import TestCase, mock
 from importlib import reload
 
@@ -61,6 +62,7 @@ class TestPageHandler(TestCase):
                 "title",
                 "custom_css",
                 "custom_js",
+                "extras"
             ],
         )
         self.assertEqual(render_context["app"], "app object")
@@ -80,9 +82,6 @@ class TestPageComponentWrapper(TestCase):
         mock_has_module = mock.patch("tethys_portal.optional_dependencies.has_module")
         mock_has_module.return_value = True
         mock_has_module.start()
-        # mock.patch("builtins.__import__").start()
-        import sys
-
         mock_reactpy = mock.MagicMock()
         sys.modules["reactpy"] = mock_reactpy
         mock_reactpy.component = lambda x: x
@@ -91,6 +90,7 @@ class TestPageComponentWrapper(TestCase):
     @classmethod
     def tearDownClass(cls):
         mock.patch.stopall()
+        del sys.modules["reactpy"]
         reload(page_handler)
 
     def test_page_component_wrapper__layout_none(self):
@@ -105,11 +105,26 @@ class TestPageComponentWrapper(TestCase):
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
         self.assertEqual(return_value, component_return_val)
+    
+    def test_page_component_wrapper__layout_none_with_extras(self):
+        # FUNCTION ARGS
+        app = mock.MagicMock()
+        user = mock.MagicMock()
+        layout = None
+        extras = {"extra1": "val1", "extra2": 2}
+        component = mock.MagicMock()
+        component_return_val = "rendered_component"
+        component.return_value = component_return_val
+
+        return_value = page_handler.page_component_wrapper(app, user, layout, component, extras)
+
+        self.assertEqual(return_value, component_return_val)
+        component.assert_called_once_with(extra1="val1", extra2=2)
 
     def test_page_component_wrapper__layout_not_none(self):
         # FUNCTION ARGS
         app = mock.MagicMock()
-        app.restered_url_maps = []
+        app.registered_url_maps = []
         user = mock.MagicMock()
         layout = mock.MagicMock()
         layout_return_val = "returned_layout"
@@ -125,6 +140,28 @@ class TestPageComponentWrapper(TestCase):
             {"app": app, "user": user, "nav-links": app.navigation_links},
             component_return_val,
         )
+    
+    def test_page_component_wrapper__layout_not_none_with_extras(self):
+        # FUNCTION ARGS
+        app = mock.MagicMock()
+        app.registered_url_maps = []
+        user = mock.MagicMock()
+        layout = mock.MagicMock()
+        layout_return_val = "returned_layout"
+        layout.return_value = layout_return_val
+        extras = {"extra1": "val1", "extra2": 2}
+        component = mock.MagicMock()
+        component_return_val = "rendered_component"
+        component.return_value = component_return_val
+
+        return_value = page_handler.page_component_wrapper(app, user, layout, component, extras)
+
+        self.assertEqual(return_value, layout_return_val)
+        layout.assert_called_once_with(
+            {"app": app, "user": user, "nav-links": app.navigation_links},
+            component_return_val,
+        )
+        component.assert_called_once_with(extra1="val1", extra2=2)
 
 
 class TestPage(TestCase):

@@ -50,20 +50,21 @@ class TestComponentUtils(TestCase):
     def test_use_workspace(self, mock_inspect):
         mock_import = mock.patch("builtins.__import__").start()
         try:
-            mock_inspect.stack().__getitem__().__getitem__().f_code.co_filename = str(
+            mock_stack_item_1 = mock.MagicMock()
+            mock_stack_item_1.__getitem__().f_code.co_filename = "throws_exception"
+            mock_stack_item_2 = mock.MagicMock()
+            mock_stack_item_2.__getitem__().f_code.co_filename = str(
                 TEST_APP_DIR
             )
+            mock_inspect.stack.return_value = [mock_stack_item_1, mock_stack_item_2]
             workspace = utils.use_workspace("john")
             self.assertEqual(
                 mock_import.call_args_list[-1][0][0], "reactpy_django.hooks"
             )
-            self.assertEqual(mock_import.call_args_list[-1][0][3][0], "use_query")
-            mock_import().use_query.assert_called_once_with(
-                utils.get_workspace,
-                {"app_package": "test_app", "user": "john"},
-                postprocessor=None,
-            )
-            self.assertEqual(workspace, mock_import().use_query().data)
+            self.assertEqual(mock_import.call_args_list[-1][0][3][0], "use_memo")
+            mock_import().use_memo.assert_called_once()
+            self.assertIn('<function use_workspace.<locals>.<lambda> at', str(mock_import().use_memo.call_args_list[0]))
+            self.assertEqual(workspace, mock_import().use_memo())
         finally:
             mock.patch.stopall()
 
