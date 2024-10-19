@@ -1,3 +1,4 @@
+from pathlib import Path
 import unittest
 from unittest import mock
 import errno
@@ -21,7 +22,7 @@ class TestTethysTemplateLoader(unittest.TestCase):
             mock_file.return_value,
         )
         mock_file.side_effect = handlers
-        origin = mock.MagicMock(name="test_app/css/main.css")
+        origin = mock.MagicMock(name=str(Path("test_app") / "css" / "main.css"))
 
         tethys_template_loader = TethysTemplateLoader(self.mock_engine)
 
@@ -33,7 +34,7 @@ class TestTethysTemplateLoader(unittest.TestCase):
     @mock.patch("tethys_apps.template_loaders.BaseLoader")
     def test_get_contents_io_error(self, _, mock_file):
         mock_file.side_effect = IOError
-        origin = mock.MagicMock(name="test_app/css/main.css")
+        origin = mock.MagicMock(name=str(Path("test_app") / "css" / "main.css"))
 
         tethys_template_loader = TethysTemplateLoader(self.mock_engine)
 
@@ -45,7 +46,7 @@ class TestTethysTemplateLoader(unittest.TestCase):
     )
     @mock.patch("tethys_apps.template_loaders.BaseLoader")
     def test_get_contents_template_does_not_exist(self, _, mock_file):
-        origin = mock.MagicMock(name="test_app/css/main.css")
+        origin = mock.MagicMock(name=str(Path("test_app") / "css" / "main.css"))
 
         tethys_template_loader = TethysTemplateLoader(self.mock_engine)
 
@@ -58,13 +59,16 @@ class TestTethysTemplateLoader(unittest.TestCase):
     @mock.patch("tethys_apps.template_loaders.get_directories_in_tethys")
     def test_get_template_sources(self, mock_gdt, _):
         tethys_template_loader = TethysTemplateLoader(self.mock_engine)
-        mock_gdt.return_value = ["/foo/template1"]
+        mock_gdt.return_value = [str(Path.home() / "foo" / "template1")]
         expected_template_name = "foo"
 
         for origin in tethys_template_loader.get_template_sources(
             expected_template_name
         ):
-            self.assertEqual("/foo/template1/foo", origin.name)
+            self.assertEqual(
+                str(Path.home() / "foo" / "template1" / "foo"),
+                origin.name,
+            )
             self.assertEqual("foo", origin.template_name)
             self.assertTrue(isinstance(origin.loader, TethysTemplateLoader))
 
@@ -75,13 +79,21 @@ class TestTethysTemplateLoader(unittest.TestCase):
         from django.core.exceptions import SuspiciousFileOperation
 
         tethys_template_loader = TethysTemplateLoader(self.mock_engine)
-        mock_gdt.return_value = ["/foo/template1", "/foo/template2"]
-        mock_safe_join.side_effect = [SuspiciousFileOperation, "/foo/template2/foo"]
+        mock_gdt.return_value = [
+            str(Path("foo") / "template1"),
+            str(Path("foo") / "template2"),
+        ]
+        mock_safe_join.side_effect = [
+            SuspiciousFileOperation,
+            str(Path.home() / "foo" / "template2" / "foo"),
+        ]
         expected_template_name = "foo"
 
         for origin in tethys_template_loader.get_template_sources(
             expected_template_name
         ):
-            self.assertEqual("/foo/template2/foo", origin.name)
+            self.assertEqual(
+                str(Path.home() / "foo" / "template2" / "foo"), origin.name
+            )
             self.assertEqual("foo", origin.template_name)
             self.assertTrue(isinstance(origin.loader, TethysTemplateLoader))

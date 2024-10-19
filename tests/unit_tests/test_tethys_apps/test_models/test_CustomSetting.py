@@ -153,10 +153,9 @@ class CustomSettingTests(TethysTestCase):
         self.assertEqual(json.dumps(dict_example), ret.value)
 
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
-    @mock.patch("tethys_apps.utilities.os.path.exists")
+    @mock.patch("tethys_apps.utilities.Path.exists")
     @mock.patch(
-        "tethys_apps.utilities.open",
-        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+        "tethys_apps.utilities.Path.read_text", return_value='{"secrets": "{}"}'
     )
     def test_clean_secret_validation_with_complete_secrets_yml(
         self, mock_open_file, mock_path_exists, mock_yaml_safe_load
@@ -187,10 +186,9 @@ class CustomSettingTests(TethysTestCase):
         self.assertEqual(custom_secret_setting.get_value(), "SECRE:TXX1Y")
 
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
-    @mock.patch("tethys_apps.utilities.os.path.exists")
+    @mock.patch("tethys_apps.utilities.Path.exists")
     @mock.patch(
-        "tethys_apps.utilities.open",
-        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+        "tethys_apps.utilities.Path.read_text", return_value='{"secrets": "{}"}'
     )
     def test_clean_secret_validation_with_incomplete_secrets_yml(
         self, mock_open_file, mock_path_exists, mock_yaml_safe_load
@@ -358,7 +356,8 @@ class CustomSettingTests(TethysTestCase):
         ret_string = json.dumps(ret)
         self.assertEqual('{"Test": "JSON test String"}', ret_string)
 
-    def test_get_value_secret_custom_setting_without_setttings_file(self):
+    @mock.patch("tethys_apps.utilities.yaml.safe_load")
+    def test_get_value_secret_custom_setting_without_setttings_file(self, _):
         custom_setting = self.test_app.settings_set.select_subclasses().get(
             name="Secret_Test2_without_required"
         )
@@ -374,10 +373,9 @@ class CustomSettingTests(TethysTestCase):
         self.assertEqual("Mysecrertxxxx23526236sddgsdgsgsuiLSD", ret)
 
     @mock.patch("tethys_apps.utilities.yaml.safe_load")
-    @mock.patch("tethys_apps.utilities.os.path.exists")
+    @mock.patch("tethys_apps.utilities.Path.exists")
     @mock.patch(
-        "tethys_apps.utilities.open",
-        new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
+        "tethys_apps.utilities.Path.read_text", return_value='{"secrets": "{}"}'
     )
     def test_clean_secret_validation_with_complete_secrets_yml_and_error(
         self, mock_open_file, mock_path_exists, mock_yaml_safe_load

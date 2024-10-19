@@ -11,6 +11,7 @@
 from tethys_apps.base.controller import (
     TethysController,
     controller,
+    page,
     consumer,
     handler,
     register_controllers,

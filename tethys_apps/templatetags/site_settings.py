@@ -2,7 +2,7 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from django.conf import settings
 
-import os
+from pathlib import Path
 
 from ..static_finders import TethysStaticFinder
 
@@ -17,21 +17,12 @@ def load_custom_css(var):
     if var.startswith("/"):
         var = var.lstrip("/")
 
-    is_file = os.path.isfile(
-        os.path.join(settings.STATIC_ROOT, var)
-    ) or static_finder.find(var)
-
-    if is_file:
-        return '<link href="' + os.path.join("/static", var) + '" rel="stylesheet" />'
+    if (Path(settings.STATIC_ROOT) / var).is_file() or static_finder.find(var):
+        return f'<link href="/static/{var}" rel="stylesheet" />'
 
     else:
         for path in settings.STATICFILES_DIRS:
-            is_file = os.path.isfile(os.path.join(path, var))
-            if is_file:
-                return (
-                    '<link href="'
-                    + os.path.join("/static", var)
-                    + '" rel="stylesheet" />'
-                )
+            if (Path(path) / var).is_file():
+                return f'<link href="/static/{var}" rel="stylesheet" />'
 
     return "<style>" + var + "</style>"
