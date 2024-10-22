@@ -41,8 +41,8 @@ class UrlMapBase:
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
           handler (str): Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
           handler_type (str): Tethys supported handler type. 'bokeh' is the only handler type currently supported.
-          title (str): The title to be used both in built-in Navigation components and in the browser tab
-          index (int): Used to determine the render order of nav items in built-in Navigation components. Defaults to the unpredictable processing order of the @page decorated functions. Set to -1 to remove from built-in Navigation components.
+          title (str): The title to be used both in navigation and in the browser tab.
+          index (int): Used to determine the render order of nav items in navigation. Defaults to the unpredictable processing order of decorated functions. Set to -1 to remove from navigation.
         """  # noqa: E501
         # Validate
         if regex and (
