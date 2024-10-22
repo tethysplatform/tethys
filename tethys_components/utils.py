@@ -38,10 +38,10 @@ def use_workspace(user=None):
     return workspace
 
 
-def delayed_execute(seconds, callable, args=None):
+def delayed_execute(callable, delay_seconds, args=None):
     from threading import Timer
 
-    t = Timer(seconds, callable, args or [])
+    t = Timer(delay_seconds, callable, args or [])
     t.start()
 
 
