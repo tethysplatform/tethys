@@ -297,43 +297,19 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         list_apps = {"test_app": "tethysapp.test_app"}
+        exceptions = [ProgrammingError, SqliteProgrammingError]
 
-        mock_permissions.side_effect = ProgrammingError
+        for exception in exceptions:
+            with self.subTest(exception=exception):
+                mock_permissions.side_effect = exception
 
-        shv = SingletonHarvester()
-        shv._harvest_app_instances(list_apps)
+                shv = SingletonHarvester()
+                shv._harvest_app_instances(list_apps)
 
-        mock_logwarning.assert_called()
-        mock_permissions.assert_called()
-        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
-        self.assertIn("test_app", mock_stdout.getvalue())
-
-    @mock.patch("sys.stdout", new_callable=io.StringIO)
-    @mock.patch("tethys_apps.harvester.tethys_log.warning")
-    @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
-    def test_harvest_app_instances_sqlite_programming_error(
-        self, mock_permissions, mock_logwarning, mock_stdout
-    ):
-        """
-        Test for SingletonHarvester._harvest_app_instances
-        For the app permissions exception (ProgrammingError)
-        With an exception mocked up for register_app_permissions
-        :param mock_permissions:  mock for throwing a ProgrammingError exception
-        :param mock_logerror:  mock for the tethys_log error
-        :param mock_stdout:  mock for the text output
-        :return:
-        """
-        list_apps = {"test_app": "tethysapp.test_app"}
-
-        mock_permissions.side_effect = SqliteProgrammingError
-
-        shv = SingletonHarvester()
-        shv._harvest_app_instances(list_apps)
-
-        mock_logwarning.assert_called()
-        mock_permissions.assert_called()
-        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
-        self.assertIn("test_app", mock_stdout.getvalue())
+                mock_logwarning.assert_called()
+                mock_permissions.assert_called()
+                self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+                self.assertIn("test_app", mock_stdout.getvalue())
 
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
