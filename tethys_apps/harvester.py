@@ -11,7 +11,7 @@
 import inspect
 import logging
 import pkgutil
-
+from sqlite3 import ProgrammingError as SqliteProgrammingError
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
@@ -322,6 +322,11 @@ class SingletonHarvester:
                                 tethys_log.warning(
                                     "Unable to register app permissions. django_content_type "
                                     "table does not exist"
+                                )
+                            except SqliteProgrammingError:
+                                tethys_log.warning(
+                                    "Unable to register app permissions. django_content_type "
+                                    "table does not exist in sqlite3"
                                 )
                             except ObjectDoesNotExist as e:
                                 tethys_log.warning(e)

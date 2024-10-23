@@ -4,6 +4,7 @@ from unittest import mock
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import ProgrammingError
+from sqlite3 import ProgrammingError as SqliteProgrammingError
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.base.testing.environment import set_testing_environment
 
@@ -296,16 +297,19 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         list_apps = {"test_app": "tethysapp.test_app"}
+        exceptions = [ProgrammingError, SqliteProgrammingError]
 
-        mock_permissions.side_effect = ProgrammingError
+        for exception in exceptions:
+            with self.subTest(exception=exception):
+                mock_permissions.side_effect = exception
 
-        shv = SingletonHarvester()
-        shv._harvest_app_instances(list_apps)
+                shv = SingletonHarvester()
+                shv._harvest_app_instances(list_apps)
 
-        mock_logwarning.assert_called()
-        mock_permissions.assert_called()
-        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
-        self.assertIn("test_app", mock_stdout.getvalue())
+                mock_logwarning.assert_called()
+                mock_permissions.assert_called()
+                self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+                self.assertIn("test_app", mock_stdout.getvalue())
 
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
