@@ -7,6 +7,7 @@ from django.template import base
 from django.template import TemplateSyntaxError
 from django.template import Context
 from importlib import reload
+from pathlib import Path
 
 
 class TestGizmo(TethysGizmoOptions):
@@ -25,7 +26,7 @@ class TestGizmo(TethysGizmoOptions):
 
     @staticmethod
     def get_gizmo_js():
-        return ("tethys_gizmos/js/tethys_map_view.js",)
+        return (str(Path("tethys_gizmos/js/tethys_map_view.js")),)
 
     @staticmethod
     def get_vendor_css():
@@ -35,7 +36,7 @@ class TestGizmo(TethysGizmoOptions):
 
     @staticmethod
     def get_gizmo_css():
-        return ("tethys_gizmos/css/tethys_map_view.min.css",)
+        return (str(Path("tethys_gizmos/css/tethys_map_view.min.css")),)
 
     @staticmethod
     def get_gizmo_modals():
@@ -242,7 +243,9 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
         result.render(context)
 
         # Check Result
-        mock_gt.assert_called_with("tethys_gizmos/templates/gizmos/test_gizmo.html")
+        mock_gt.assert_called_with(
+            str(Path("tethys_gizmos/templates/gizmos/test_gizmo.html"))
+        )
 
         # We need to delete this extension path map to avoid template not exist error on the
         # previous test

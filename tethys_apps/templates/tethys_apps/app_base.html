@@ -85,8 +85,10 @@
     {% endcomment %}
 
     {% block styles %}
-      {{ tethys.bootstrap.link_tag|safe }}
-      {{ tethys.bootstrap_icons.link_tag|safe }}
+      {% block bootstrap_styles %}
+        {{ tethys.bootstrap.link_tag|safe }}
+        {{ tethys.bootstrap_icons.link_tag|safe }}
+      {% endblock %}
       {% block app_base_styles %}
         <link href="{% static 'tethys_apps/css/app_base.min.css' %}" rel="stylesheet" />
       {% endblock %}

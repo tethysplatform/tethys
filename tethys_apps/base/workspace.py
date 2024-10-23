@@ -8,10 +8,10 @@
 ********************************************************************************
 """
 
-import os
 import sys
 import shutil
 import logging
+from pathlib import Path
 from django.utils.functional import wraps
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
@@ -33,12 +33,13 @@ class TethysWorkspace:
         """
         Constructor
         """
+        _path = Path(path)
         # Create the path if it doesn't already exist
-        if not os.path.exists(path):
-            os.makedirs(path)
+        if not _path.exists():
+            _path.mkdir(parents=True)
 
         # Validate that the path is a directory
-        self._path = path
+        self._path = _path
 
     def __repr__(self):
         """
@@ -48,7 +49,7 @@ class TethysWorkspace:
 
     @property
     def path(self):
-        return self._path
+        return str(self._path)
 
     @path.setter
     def path(self, value):
@@ -79,17 +80,9 @@ class TethysWorkspace:
 
         """
         if full_path:
-            files = [
-                os.path.join(self._path, f)
-                for f in os.listdir(self._path)
-                if os.path.isfile(os.path.join(self._path, f))
-            ]
+            files = [str(p) for p in self._path.iterdir() if p.is_file()]
         else:
-            files = [
-                f
-                for f in os.listdir(self._path)
-                if os.path.isfile(os.path.join(self._path, f))
-            ]
+            files = [str(p.name) for p in self._path.iterdir() if p.is_file()]
         return files
 
     def directories(self, full_path=False):
@@ -114,17 +107,9 @@ class TethysWorkspace:
 
         """
         if full_path:
-            directories = [
-                os.path.join(self._path, d)
-                for d in os.listdir(self._path)
-                if os.path.isdir(os.path.join(self._path, d))
-            ]
+            directories = [str(p) for p in self._path.iterdir() if p.is_dir()]
         else:
-            directories = [
-                d
-                for d in os.listdir(self._path)
-                if os.path.isdir(os.path.join(self._path, d))
-            ]
+            directories = [str(p.name) for p in self._path.iterdir() if p.is_dir()]
         return directories
 
     def clear(self, exclude=None, exclude_files=False, exclude_directories=False):
@@ -156,26 +141,15 @@ class TethysWorkspace:
         if exclude is None:
             exclude = list()
 
-        files = [
-            f
-            for f in os.listdir(self._path)
-            if os.path.isfile(os.path.join(self._path, f))
-        ]
-        directories = [
-            d
-            for d in os.listdir(self._path)
-            if os.path.isdir(os.path.join(self._path, d))
-        ]
-
         if not exclude_files:
-            for file in files:
-                fullpath = os.path.join(self._path, file)
+            for file in self.files():
+                fullpath = self._path / file
                 if file not in exclude and fullpath not in exclude:
-                    os.remove(fullpath)
+                    fullpath.unlink()
 
         if not exclude_directories:
-            for directory in directories:
-                fullpath = os.path.join(self._path, directory)
+            for directory in self.directories():
+                fullpath = self._path / directory
                 if directory not in exclude and fullpath not in exclude:
                     shutil.rmtree(fullpath)
 
@@ -210,18 +184,20 @@ class TethysWorkspace:
             .replace("~\\", "")
         )
 
-        if self._path not in full_path:
-            full_path = os.path.join(self._path, full_path)
+        if self.path not in full_path:
+            full_path = self._path / full_path
+        else:
+            full_path = Path(full_path)
 
-        if os.path.isdir(full_path):
+        if full_path.is_dir():
             shutil.rmtree(full_path)
-        elif os.path.isfile(full_path):
-            os.remove(full_path)
+        elif full_path.is_file():
+            full_path.unlink()
 
     def get_size(self, units="b"):
         total_size = 0
         for file in self.files(True):
-            total_size += os.path.getsize(file)
+            total_size += Path(file).stat().st_size
 
         if units.lower() == "b":
             conversion_factor = 1
@@ -262,11 +238,11 @@ def _get_user_workspace(app_class, user_or_request):
             "Invalid type for argument 'user': must be either an User or HttpRequest object."
         )
 
-    project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
-    workspace_directory = os.path.join(
-        project_directory, "workspaces", "user_workspaces", username
+    project_directory = Path(sys.modules[app_class.__module__].__file__).parent
+    workspace_directory = (
+        project_directory / "workspaces" / "user_workspaces" / username
     )
-    return TethysWorkspace(workspace_directory)
+    return TethysWorkspace(str(workspace_directory))
 
 
 def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorkspace:
@@ -286,7 +262,6 @@ def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorks
 
     ::
 
-        import os
         from tethys_sdk.workspaces import get_user_workspace
         from .app import App
 
@@ -391,9 +366,9 @@ def _get_app_workspace(app_class):
     Returns:
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
     """
-    project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
-    workspace_directory = os.path.join(project_directory, "workspaces", "app_workspace")
-    return TethysWorkspace(workspace_directory)
+    project_directory = Path(sys.modules[app_class.__module__].__file__).parent
+    workspace_directory = project_directory / "workspaces" / "app_workspace"
+    return TethysWorkspace(str(workspace_directory))
 
 
 def get_app_workspace_old(app_or_request) -> TethysWorkspace:
@@ -414,7 +389,6 @@ def get_app_workspace_old(app_or_request) -> TethysWorkspace:
 
     ::
 
-        import os
         from tethys_sdk.workspaces import get_app_workspace
         from .app import App
 

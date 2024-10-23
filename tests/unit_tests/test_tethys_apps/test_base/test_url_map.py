@@ -93,7 +93,7 @@ class TestUrlMap(unittest.TestCase):
             "<UrlMap: name=foo_name,"
             " url=^example/resource/(?P<variable_name>[0-9A-Za-z-_.]+)/$,"
             " controller=foo_app.controllers.foo, protocol=http,"
-            " handler=None, handler_type=None>"
+            " handler=None, handler_type=None, title=None, index=None>"
         )
         result = self.bound_UrlMap(
             name=self.name, url=url, controller=self.controller

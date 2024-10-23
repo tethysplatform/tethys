@@ -5,14 +5,12 @@ from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflow
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
 from unittest import mock
-import os
-import os.path
+from pathlib import Path
 
 
 class CondorPyWorkflowJobNodeTest(TethysTestCase):
     def set_up(self):
-        path = os.path.dirname(__file__)
-        self.workspace_dir = os.path.join(path, "workspace")
+        self.workspace_dir = Path(__file__).parent / "workspace"
 
         self.user = User.objects.create_user("tethys_super", "user@example.com", "pass")
 
@@ -20,7 +18,7 @@ class CondorPyWorkflowJobNodeTest(TethysTestCase):
             _max_jobs={"foo": 10},
             _config="test_config",
             name="foo{id}",
-            workspace=self.workspace_dir,
+            workspace=str(self.workspace_dir),
             user=self.user,
         )
         self.condorworkflow.save()
