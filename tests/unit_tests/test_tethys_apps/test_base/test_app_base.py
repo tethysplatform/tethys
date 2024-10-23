@@ -6,6 +6,7 @@ import uuid
 from django.db.utils import ProgrammingError
 from django.test import RequestFactory, override_settings
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from argparse import Namespace
 
 from tethys_apps.exceptions import (
     TethysAppSettingDoesNotExist,
@@ -1557,11 +1558,11 @@ class TestTethysAppBase(unittest.TestCase):
         app.root_url = "test-app"
 
         app._registered_url_maps = [
-            mock.MagicMock(name="exclude_page", title="Exclude Page", index=-1),
-            mock.MagicMock(name="last_page", title="Last Page", index=3),
-            mock.MagicMock(name="third_page", title="Third Page", index=2),
-            mock.MagicMock(name="second_page", title="Second Page", index=1),
-            mock.MagicMock(name="home", title="Home", index=0),
+            Namespace(name="exclude_page", title="Exclude Page", index=-1),
+            Namespace(name="last_page", title="Last Page", index=3),
+            Namespace(name="third_page", title="Third Page", index=2),
+            Namespace(name="second_page", title="Second Page", index=1),
+            Namespace(name="home", title="Home", index=0),
         ]
 
         links = app.navigation_links

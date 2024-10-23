@@ -107,4 +107,5 @@ dependencies:
 
   # reactpy dependencies
   - pip:
+    - reactpy
     - reactpy-django
