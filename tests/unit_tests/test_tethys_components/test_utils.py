@@ -76,7 +76,7 @@ class TestComponentUtils(TestCase):
             pass
 
         utils.delayed_execute(test_func, 10, ["Hello"])
-        mock_import().Timer.assert_called_once_with(test_func, 10, ["Hello"])
+        mock_import().Timer.assert_called_once_with(10, test_func, ["Hello"])
         mock_import().Timer().start.assert_called_once()
         mock.patch.stopall()
 
