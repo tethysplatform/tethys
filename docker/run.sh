@@ -64,17 +64,16 @@ if [[ $test = false ]]; then
   export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
 
   # Apply States
+  if [[ $skip_db_setup != true ]]; then
+    echo_status "Checking if DB is ready"
+    if [[ $db_engine == "django.db.backends.postgresql" ]]; then
+        # Create Salt Config for PostgreSQL
+        echo "postgres.host: '${TETHYS_DB_HOST}'" >> /etc/salt/minion
+        echo "postgres.port: '${TETHYS_DB_PORT}'" >> /etc/salt/minion
+        echo "postgres.user: '${TETHYS_DB_USERNAME}'" >> /etc/salt/minion
+        echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion
+        echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion
 
-  if [[ $db_engine == "django.db.backends.postgresql" ]]; then
-      # Create Salt Config for PostgreSQL
-      echo "postgres.host: '${TETHYS_DB_HOST}'" >> /etc/salt/minion
-      echo "postgres.port: '${TETHYS_DB_PORT}'" >> /etc/salt/minion
-      echo "postgres.user: '${TETHYS_DB_USERNAME}'" >> /etc/salt/minion
-      echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion
-      echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion
-
-      if [[ $skip_db_setup != true ]]; then
-        echo_status "Checking if DB is ready"
         db_check_count=0
 
         until ${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin/pg_isready -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -U postgres; do
@@ -86,12 +85,14 @@ if [[ $test = false ]]; then
           db_check_count=`expr $db_check_count + 1`
           sleep 5
         done
-      else
-        # Database setup should be skipped
-        echo "Skipping database setup: check SKIP_DB_SETUP environment variable."
-  fi
+      
+
+    else
+      echo_status "Using SQLite3 as the database"
+    fi
   else
-    echo_status "Using SQLite3 as the database"
+    # Database setup should be skipped
+    echo "Skipping database setup: check SKIP_DB_SETUP environment variable."
   fi
 fi
 
