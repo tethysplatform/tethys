@@ -82,7 +82,8 @@ ENABLE_OPEN_SIGNUP = TETHYS_PORTAL_CONFIG.pop("ENABLE_OPEN_SIGNUP", False)
 # Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
 ENABLE_OPEN_PORTAL = TETHYS_PORTAL_CONFIG.pop("ENABLE_OPEN_PORTAL", False)
 
-# Set to True to allow restricted app access. This mode removes access to apps for nonadmins unless given explicit permission
+# Set to True to allow restricted app access. This mode removes access to apps for nonadmins unless given explicit permission.
+# A list can also be provided to restrict specific applications unless users are given explicit permission
 ENABLE_RESTRICTED_APP_ACCESS = TETHYS_PORTAL_CONFIG.pop(
     "ENABLE_RESTRICTED_APP_ACCESS", False
 )
