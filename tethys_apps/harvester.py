@@ -16,9 +16,6 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 from tethys_apps.base.testing.environment import is_testing_environment
-from tethys_portal.optional_dependencies import has_module
-
-
 
 tethys_log = logging.getLogger("tethys." + __name__)
 
@@ -64,13 +61,9 @@ class SingletonHarvester:
         except Exception:
             """DO NOTHING"""
 
-    def harvest_apps(self, tenant_schema=None):
+    def harvest_apps(self):
         """
-        Searches the apps package for apps, optionally filtered by schema.
-        
-        Args:
-            tenant_schema (str): Only load apps for this tenant schema
-        
+        Searches the apps package for apps
         """
         # Notify user harvesting is taking place
 
@@ -84,53 +77,12 @@ class SingletonHarvester:
             for _, modname, ispkg in pkgutil.iter_modules(tethysapp.__path__):
                 if ispkg:
                     tethys_apps[modname] = "tethysapp.{}".format(modname)
-                    
-            # Filter apps by tenant if django-tenants is available and tenant is specified
-            if has_module("django_tenants") and tenant_schema:
-                tethys_apps = self._filter_apps_by_tenant(tethys_apps, tenant_schema)
 
             # Harvest App Instances
             self._harvest_app_instances(tethys_apps)
 
         except Exception:
             """DO NOTHING"""
-            
-    def _filter_apps_by_tenant(self, available_apps, tenant_schema):
-        """
-        Filter apps based on tenant schema.
-        
-        Args:
-            available_apps (dict): Dictionary of available app packages
-            tenant_schema (str): Tenant schema name
-            
-        Returns:
-            dict: Filtered apps for the tenant
-        """
-        try:
-            from tethys_tenants.models import Tenant
-            from tethys_tenants.models import App as TenantApp
-            
-            # Get the current tenant
-            tenant = Tenant.objects.get(schema_name=tenant_schema)
-
-            # Get enabled apps for this tenant
-            tenant_apps = TenantApp.objects.filter(
-                client=tenant, 
-                enabled=True
-            ).values_list('app_package', flat=True)
-            
-            # Filter available apps to only include tenant-specific apps
-            filtered_apps = {}
-            for app_name, app_package in available_apps.items():
-                if app_package in tenant_apps:
-                    filtered_apps[app_name] = app_package
-            
-            return filtered_apps
-            
-        except Exception as e:
-            tethys_log.warning(f"Error filtering apps by tenant: {e}")
-            # Return all apps if filtering fails
-            return available_apps
 
     def get_url_patterns(self, url_namespaces=None):
         """
