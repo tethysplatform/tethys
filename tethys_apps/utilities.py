@@ -585,6 +585,7 @@ def get_service_model_from_type(service_type):
 
 def user_can_access_app(user, app):
     from django.conf import settings
+
     RESTRICTED_APP_ACCESS = getattr(settings, "ENABLE_RESTRICTED_APP_ACCESS", False)
 
     if getattr(settings, "ENABLE_OPEN_PORTAL", False):
