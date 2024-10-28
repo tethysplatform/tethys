@@ -289,7 +289,7 @@ if has_module("django_tenants"):
             "django.contrib.sessions",
             "django.contrib.messages",
             "django.contrib.staticfiles",
-            "tethys_tenants",
+            "tethys_tenants.tenant_models",
         ],
     )
 
