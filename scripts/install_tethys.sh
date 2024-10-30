@@ -367,9 +367,10 @@ then
     then
         # create conda env and install Tethys
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
-        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
+        sudo sed "s/python>=.*/python=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml" > "${TETHYS_SRC}/temp_environment.yml"
+        sudo sed -i "s/django>=.*/django=${DJANGO_VERSION}/" "${TETHYS_SRC}/temp_environment.yml"
+        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/temp_environment.yml"
         conda activate ${CONDA_ENV_NAME}
-        conda install -c conda-forge django=${DJANGO_VERSION} python=${PYTHON_VERSION}
         pip install -e ${TETHYS_SRC}
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
