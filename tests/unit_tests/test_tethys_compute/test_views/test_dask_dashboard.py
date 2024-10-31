@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from tethys_compute.views.dask_dashboard import dask_dashboard
+from tethys_compute.views.dask_dashboard_view import dask_dashboard
 
 
 class TestDaskDashBoard(unittest.TestCase):
@@ -10,8 +10,8 @@ class TestDaskDashBoard(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_status_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"
@@ -32,8 +32,8 @@ class TestDaskDashBoard(unittest.TestCase):
             rts_call_args[0][0][2]["status_link"],
         )
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_workers_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"
@@ -54,8 +54,8 @@ class TestDaskDashBoard(unittest.TestCase):
             rts_call_args[0][0][2]["workers_link"],
         )
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_tasks_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"
@@ -76,8 +76,8 @@ class TestDaskDashBoard(unittest.TestCase):
             rts_call_args[0][0][2]["tasks_link"],
         )
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_profile_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"
@@ -98,8 +98,8 @@ class TestDaskDashBoard(unittest.TestCase):
             rts_call_args[0][0][2]["profile_link"],
         )
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_graph_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"
@@ -120,8 +120,8 @@ class TestDaskDashBoard(unittest.TestCase):
             rts_call_args[0][0][2]["graph_link"],
         )
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_system_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"
@@ -142,8 +142,8 @@ class TestDaskDashBoard(unittest.TestCase):
             rts_call_args[0][0][2]["systems_link"],
         )
 
-    @mock.patch("tethys_compute.views.dask_dashboard.render")
-    @mock.patch("tethys_compute.views.dask_dashboard.DaskScheduler")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.render")
+    @mock.patch("tethys_compute.views.dask_dashboard_view.DaskScheduler")
     def test_dask_groups_link(self, mock_dask_scheduler, mock_render):
         mock_dask_object = mock.MagicMock()
         mock_dask_object.name = "test_name"

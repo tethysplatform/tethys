@@ -107,7 +107,7 @@ class DataTableView(TethysGizmoOptions):
     """  # noqa: E501
 
     # UNSUPPORTED_EXTENSIONS = ('autoFill', 'select', 'keyTable', 'rowReorder')
-    # SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns',
+    # SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fixedColumns',
     #                         'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
     version = vendor_static_dependencies["datatables"].version
