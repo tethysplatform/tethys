@@ -11,6 +11,7 @@
 import shutil
 import logging
 from pathlib import Path
+from os import walk
 
 from django.conf import settings
 from django.utils.functional import wraps
@@ -85,7 +86,7 @@ class TethysPath:
             tethys_path.files(names_only=True)
 
         """
-        path, dirs, files = next(self.path.walk())
+        path, dirs, files = next(walk(self.path))
         if names_only:
             return files
         return [self.path / f for f in files]
@@ -111,7 +112,7 @@ class TethysPath:
             tethys_path.directories(names_only=True)
 
         """
-        path, dirs, files = next(self.path.walk())
+        path, dirs, files = next(walk(self.path))
         if names_only:
             return dirs
         return [self.path / d for d in dirs]

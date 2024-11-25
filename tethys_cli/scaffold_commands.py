@@ -3,6 +3,7 @@ import logging
 import random
 import shutil
 from pathlib import Path
+from os import walk
 
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
@@ -417,7 +418,7 @@ def scaffold_command(args):
             exit(1)
 
     # Walk the template directory, creating the templates and directories in the new project as we go
-    for curr_template_root, _, template_files in template_root.walk():
+    for curr_template_root, _, template_files in walk(template_root):
         curr_project_root = str(curr_template_root).replace(
             str(template_root), str(project_root)
         )
