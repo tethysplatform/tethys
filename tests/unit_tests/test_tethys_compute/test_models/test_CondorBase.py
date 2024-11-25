@@ -286,9 +286,9 @@ class CondorBaseTest(TethysTestCase):
         self.assertEqual(expected, logs)
 
     @mock.patch(
-        "tethys_compute.models.condor.condor_base.os.path.exists", return_value=True
+        "tethys_compute.models.condor.condor_base.Path.exists", return_value=True
     )
-    def test_check_local_logs_exist(self, mock_path_exists):
+    def test_check_local_logs_exist(self, _):
         mock_partial = mock.MagicMock(args=("file_path",))
         logs_file_contents = {
             "workspace": mock_partial,

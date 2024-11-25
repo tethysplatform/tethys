@@ -1,11 +1,12 @@
 import yaml
 import json
-import os
 import getpass
+from os import devnull
 from pathlib import Path
 from subprocess import call, Popen, PIPE, STDOUT
 from argparse import Namespace
 from collections.abc import Mapping
+import sys
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
@@ -30,7 +31,7 @@ conda_run, Commands = optional_import(
     ("run_command", "Commands"), from_module="conda.cli.python_api"
 )
 
-FNULL = open(os.devnull, "w")
+FNULL = open(devnull, "w")
 
 
 def add_install_parser(subparsers):
@@ -391,8 +392,7 @@ def run_interactive_services(app_name):
                                 "Please provide a file containing a Json (e.g: /home/user/myjsonfile.json): "
                             )
                             try:
-                                with open(json_path) as json_file:
-                                    value = json.load(json_file)
+                                value = json.loads(Path(json_path).read_text())
                             except FileNotFoundError:
                                 write_warning("The current file path was not found")
                         else:
@@ -696,7 +696,7 @@ def install_command(args):
     """
     app_name = None
     skip_config = False
-    file_path = Path("./install.yml") if args.file is None else Path(args.file)
+    file_path = Path("./install.yml" if args.file is None else args.file)
 
     # Check for install.yml file
     if not file_path.exists():
@@ -857,6 +857,8 @@ def install_command(args):
             for post in install_options["post"]:
                 path_to_post = file_path.resolve().parent / post
                 # Attempting to run processes.
+                if path_to_post.name.endswith(".py"):
+                    path_to_post = f"{sys.executable} {path_to_post}"
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
@@ -875,10 +877,10 @@ def assign_json_value(value):
     # Check if the value is a file path
     if isinstance(value, str):
         try:
-            if os.path.isfile(value):
-                with open(value) as file:
-                    json_data = json.load(file)
-                    return json_data
+            try_path = Path(value)
+            if try_path.is_file():
+                json_data = json.loads(try_path.read_text())
+                return json_data
             else:
                 # Check if the value is a valid JSON string
                 json_data = json.loads(value)

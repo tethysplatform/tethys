@@ -6,9 +6,8 @@ from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
 from django.utils import timezone as tz
 from unittest import mock
-import os
 import shutil
-import os.path
+from pathlib import Path
 
 
 class CondorWorkflowTest(TethysTestCase):
@@ -19,12 +18,10 @@ class CondorWorkflowTest(TethysTestCase):
     mock_condor_workflow._execute.return_value = "out", "err"
 
     def set_up(self):
-        test_models_dir = os.path.dirname(__file__)
-        self.workspace_dir = os.path.join(test_models_dir, "workspace")
+        test_models_dir = Path(__file__).parent
+        self.workspace_dir = test_models_dir / "workspace"
         self.user = User.objects.create_user("tethys_super", "user@example.com", "pass")
-
-        files_dir = os.path.join(os.path.dirname(test_models_dir), "files")
-        self.private_key = os.path.join(files_dir, "keys", "testkey")
+        self.private_key = test_models_dir.parent / "files" / "keys" / "testkey"
         self.private_key_pass = "password"
 
         self.scheduler = CondorScheduler(
@@ -32,7 +29,7 @@ class CondorWorkflowTest(TethysTestCase):
             host="localhost",
             username="tethys_super",
             password="pass",
-            private_key_path=self.private_key,
+            private_key_path=str(self.private_key),
             private_key_pass=self.private_key_pass,
         )
         self.scheduler.save()
@@ -41,7 +38,7 @@ class CondorWorkflowTest(TethysTestCase):
             _max_jobs={"foo": 10},
             _config="test_config",
             name="test name",
-            workspace=self.workspace_dir,
+            workspace=str(self.workspace_dir),
             user=self.user,
             scheduler=self.scheduler,
         )
@@ -88,8 +85,8 @@ class CondorWorkflowTest(TethysTestCase):
         if self.condorworkflow.condorbase_ptr_id == self.condorbase_id:
             self.condorworkflow.delete()
 
-        if os.path.exists(self.workspace_dir):
-            shutil.rmtree(self.workspace_dir)
+        if self.workspace_dir.exists():
+            shutil.rmtree(str(self.workspace_dir))
 
     def test_type(self):
         ret = self.condorworkflow.type
@@ -177,9 +174,9 @@ class CondorWorkflowTest(TethysTestCase):
                 "error": "test_name.dag.lib.err",
             },
             "test_job1": {
-                "log": "test_job1/logs/*.log",
-                "error": "test_job1/logs/*.err",
-                "output": "test_job1/logs/*.out",
+                "log": str(Path("test_job1/logs/*.log")),
+                "error": str(Path("test_job1/logs/*.err")),
+                "output": str(Path("test_job1/logs/*.out")),
             },
         }
         # Execute
@@ -201,10 +198,10 @@ class CondorWorkflowTest(TethysTestCase):
         "tethys_compute.models.condor.condor_workflow.CondorWorkflow.condor_object"
     )
     def test_condor_job_pre_delete(self, mock_co):
-        if not os.path.exists(self.workspace_dir):
-            os.makedirs(self.workspace_dir)
-            file_path = os.path.join(self.workspace_dir, "test_file.txt")
-            open(file_path, "a").close()
+        if not self.workspace_dir.exists():
+            self.workspace_dir.mkdir(parents=True)
+            file_path = self.workspace_dir / "test_file.txt"
+            file_path.touch()
 
         self.condorworkflow.delete()
 
@@ -212,7 +209,7 @@ class CondorWorkflowTest(TethysTestCase):
         mock_co.close_remote.assert_called()
 
         # Check if file has been removed
-        self.assertFalse(os.path.isfile(file_path))
+        self.assertFalse(file_path.is_file())
 
     @mock.patch("tethys_compute.models.condor.condor_workflow.log")
     @mock.patch(

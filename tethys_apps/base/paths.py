@@ -8,10 +8,10 @@
 ********************************************************************************
 """
 
-import os
 import shutil
 import logging
 from pathlib import Path
+from os import walk
 
 from django.conf import settings
 from django.utils.functional import wraps
@@ -86,7 +86,7 @@ class TethysPath:
             tethys_path.files(names_only=True)
 
         """
-        path, dirs, files = next(os.walk(self.path))
+        path, dirs, files = next(walk(self.path))
         if names_only:
             return files
         return [self.path / f for f in files]
@@ -112,7 +112,7 @@ class TethysPath:
             tethys_path.directories(names_only=True)
 
         """
-        path, dirs, files = next(os.walk(self.path))
+        path, dirs, files = next(walk(self.path))
         if names_only:
             return dirs
         return [self.path / d for d in dirs]
@@ -208,7 +208,7 @@ class TethysPath:
         """
         total_size = 0
         for file in self.files():
-            total_size += os.path.getsize(file)
+            total_size += file.stat().st_size
 
         if units.lower() == "b":
             conversion_factor = 1
@@ -381,7 +381,6 @@ def get_user_workspace(
 
     .. code-block:: python
 
-        import os
         from tethys_sdk.workspaces import get_user_workspace
         from .app import App
 

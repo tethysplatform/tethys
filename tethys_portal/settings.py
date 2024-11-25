@@ -21,11 +21,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
-import os
 import sys
 import yaml
 import logging
 import datetime as dt
+from os import getenv
 from pathlib import Path
 from importlib import import_module
 from importlib.machinery import SourceFileLoader
@@ -202,7 +202,7 @@ LOGGERS.setdefault(
     "django",
     {
         "handlers": ["console_simple"],
-        "level": os.getenv("DJANGO_LOG_LEVEL", "WARNING"),
+        "level": getenv("DJANGO_LOG_LEVEL", "WARNING"),
     },
 )
 LOGGERS.setdefault(
@@ -222,6 +222,7 @@ LOGGERS.setdefault(
 
 default_installed_apps = [
     "channels",
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -255,6 +256,7 @@ for module in [
     "django_recaptcha",
     "social_django",
     "termsandconditions",
+    "reactpy_django",
 ]:
     if has_module(module):
         default_installed_apps.append(module)
@@ -329,6 +331,8 @@ RESOURCE_QUOTA_HANDLERS = tuple(
 SUPPRESS_QUOTA_WARNINGS = portal_config_settings.pop(
     "SUPPRESS_QUOTA_WARNINGS", ["user_workspace_quota", "app_workspace_quota"]
 )
+
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),

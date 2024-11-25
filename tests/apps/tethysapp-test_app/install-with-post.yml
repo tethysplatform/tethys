@@ -11,4 +11,4 @@ requirements:
       - geojson
       - shapely
 post:
-  - ./test.sh
+  - ./test.py

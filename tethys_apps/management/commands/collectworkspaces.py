@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 
-import os
+from pathlib import Path
 import shutil
 
 from django.core.management.base import BaseCommand
@@ -62,18 +62,18 @@ class Command(BaseCommand):
 
         for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
-            app_ws_path = os.path.join(path, "workspaces")
-            tethys_ws_root_path = os.path.join(workspaces_root, app)
+            app_ws_path = Path(path) / "workspaces"
+            tethys_ws_root_path = Path(workspaces_root) / app
 
             # Only perform if workspaces_path is a directory
-            if not os.path.isdir(app_ws_path):
+            if not app_ws_path.is_dir():
                 print(
                     f'WARNING: The workspace_path for app "{app}" is not a directory. Making workspace directory...'
                 )
-                os.makedirs(app_ws_path, exist_ok=True)
+                app_ws_path.mkdir(parents=True, exist_ok=True)
 
-            if not os.path.islink(app_ws_path):
-                if not os.path.exists(tethys_ws_root_path):
+            if not app_ws_path.is_symlink():
+                if not tethys_ws_root_path.exists():
                     # Move the directory to workspace root path
                     shutil.move(app_ws_path, tethys_ws_root_path)
                 else:
@@ -81,7 +81,7 @@ class Command(BaseCommand):
                         # Clear out old symbolic links/directories in workspace root if necessary
                         try:
                             # Remove link
-                            os.remove(tethys_ws_root_path)
+                            tethys_ws_root_path.unlink()
                         except OSError:
                             shutil.rmtree(tethys_ws_root_path, ignore_errors=True)
 
@@ -96,8 +96,8 @@ class Command(BaseCommand):
                         shutil.rmtree(app_ws_path, ignore_errors=True)
 
                 # Create appropriate symbolic link
-                if os.path.isdir(tethys_ws_root_path):
-                    os.symlink(tethys_ws_root_path, app_ws_path)
+                if tethys_ws_root_path.is_dir():
+                    tethys_ws_root_path.symlink_to(app_ws_path)
                     print(
                         'INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app '
                         '"{0}".'.format(app)

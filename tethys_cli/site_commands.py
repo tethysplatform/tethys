@@ -302,18 +302,19 @@ def gen_site_content(args):
     if args.from_file:
         portal_yaml = Path(get_tethys_home_dir()) / "portal_config.yml"
         if portal_yaml.exists():
-            with portal_yaml.open() as f:
-                site_settings = yaml.safe_load(f).get("site_settings", {})
-                for category in SITE_SETTING_CATEGORIES:
-                    category_settings = site_settings.pop(category, {})
-                    update_site_settings_content(
-                        category_settings, warn_if_setting_not_found=True
-                    )
-                for category in site_settings:
-                    write_warning(
-                        f"WARNING: the portal_config.yml file contains an invalid category in site_settings."
-                        f'"{category}" is not one of {SITE_SETTING_CATEGORIES}.'
-                    )
+            site_settings = yaml.safe_load(portal_yaml.read_text()).get(
+                "site_settings", {}
+            )
+            for category in SITE_SETTING_CATEGORIES:
+                category_settings = site_settings.pop(category, {})
+                update_site_settings_content(
+                    category_settings, warn_if_setting_not_found=True
+                )
+            for category in site_settings:
+                write_warning(
+                    f"WARNING: the portal_config.yml file contains an invalid category in site_settings."
+                    f'"{category}" is not one of {SITE_SETTING_CATEGORIES}.'
+                )
         else:
             valid_inputs = ("y", "n", "yes", "no")
             no_inputs = ("n", "no")
