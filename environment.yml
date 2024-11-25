@@ -104,8 +104,3 @@ dependencies:
   - factory_boy
   - flake8
   - flake8-bugbear
-
-  # reactpy dependencies
-  - pip:
-    - reactpy
-    - reactpy-django
