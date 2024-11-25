@@ -21,7 +21,8 @@ dependencies:
 
   # core dependencies
   - django>=3.2,<6
-  - channels["daphne"]
+  - channels
+  - daphne
   - setuptools_scm
   - pip
   - requests # required by lots of things
