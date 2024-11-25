@@ -1558,10 +1558,26 @@ class TestTethysAppBase(unittest.TestCase):
         app.root_url = "test-app"
 
         app._registered_url_maps = [
-            UrlMapBase(name="exclude_page", url="", controller=None, title="Exclude Page", index=-1),
-            UrlMapBase(name="last_page", url="", controller=None, title="Last Page", index=3),
-            UrlMapBase(name="third_page", url="", controller=None, title="Third Page", index=2),
-            UrlMapBase(name="second_page", url="", controller=None, title="Second Page", index=1),
+            UrlMapBase(
+                name="exclude_page",
+                url="",
+                controller=None,
+                title="Exclude Page",
+                index=-1,
+            ),
+            UrlMapBase(
+                name="last_page", url="", controller=None, title="Last Page", index=3
+            ),
+            UrlMapBase(
+                name="third_page", url="", controller=None, title="Third Page", index=2
+            ),
+            UrlMapBase(
+                name="second_page",
+                url="",
+                controller=None,
+                title="Second Page",
+                index=1,
+            ),
             UrlMapBase(name="home", url="", controller=None, title="Home", index=0),
         ]
 
