@@ -38,14 +38,16 @@ class TestStartCommands(unittest.TestCase):
     @mock.patch("tethys_cli.start_commands.configure_tethys_db")
     @mock.patch("tethys_cli.start_commands.process_args")
     @mock.patch("tethys_cli.start_commands.generate_command")
-    @mock.patch("tethys_cli.start_commands.os")
+    @mock.patch("tethys_cli.start_commands.Path.exists")
+    @mock.patch("tethys_cli.start_commands.chdir")
     @mock.patch("tethys_cli.start_commands.get_destination_path")
     @mock.patch("tethys_cli.start_commands.Namespace")
     def test_quickstart_command_completely_fresh(
         self,
         mock_namespace,
         mock_get_destination_path,
-        mock_os,
+        mock_chdir,
+        mock_path_exists,
         mock_generate_command,
         mock_process_args,
         mock_configure_tethys_db,
@@ -58,7 +60,7 @@ class TestStartCommands(unittest.TestCase):
         mock_start_command,
     ):
         mock_get_destination_path.return_value = "path/to/portal_config.yml"
-        mock_os.path.exists.side_effect = [False, False]
+        mock_path_exists.side_effect = [False, False]
         mock_namespace.side_effect = [
             "portal_config_args",
             "db_config_args",
@@ -81,7 +83,7 @@ class TestStartCommands(unittest.TestCase):
         mock_setup_django.assert_called_once()
         mock_get_installed_tethys_items.assert_called_once_with(apps=True)
         mock_scaffold_command.assert_called_once_with("app_scaffold_args")
-        mock_os.chdir.assert_called_once_with("tethysapp-hello_world")
+        mock_chdir.assert_called_once_with("tethysapp-hello_world")
         mock_install_command.assert_called_once_with("app_install_args")
         mock_settings_command.assert_called_once_with("update_settings_args")
         mock_webbrowser.open.assert_called_once_with("http://127.0.0.1:8000/")
@@ -89,19 +91,19 @@ class TestStartCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.start_commands.write_warning")
     @mock.patch("tethys_cli.start_commands.exit")
-    @mock.patch("tethys_cli.start_commands.os")
+    @mock.patch("tethys_cli.start_commands.Path.exists")
     @mock.patch("tethys_cli.start_commands.get_destination_path")
     @mock.patch("tethys_cli.start_commands.Namespace")
     def test_quickstart_command_portal_config_exists(
         self,
         mock_namespace,
         mock_get_destination_path,
-        mock_os,
+        mock_path_exists,
         mock_exit,
         mock_write_warning,
     ):
         mock_get_destination_path.return_value = "path/to/portal_config.yml"
-        mock_os.path.exists.return_value = True
+        mock_path_exists.return_value = True
         mock_namespace.side_effect = ["portal_config_args"]
         mock_exit.side_effect = SystemExit
         args = Namespace()
