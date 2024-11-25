@@ -6,13 +6,13 @@ import uuid
 from django.db.utils import ProgrammingError
 from django.test import RequestFactory, override_settings
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from argparse import Namespace
 
 from tethys_apps.exceptions import (
     TethysAppSettingDoesNotExist,
     TethysAppSettingNotAssigned,
 )
 import tethys_apps.base.app_base as tethys_app_base
+from tethys_apps.base.url_map import UrlMapBase
 from tethys_apps.base.paths import TethysPath
 from tethys_apps.base.permissions import Permission, PermissionGroup
 from ... import UserFactory
@@ -1558,11 +1558,11 @@ class TestTethysAppBase(unittest.TestCase):
         app.root_url = "test-app"
 
         app._registered_url_maps = [
-            Namespace(name="exclude_page", title="Exclude Page", index=-1),
-            Namespace(name="last_page", title="Last Page", index=3),
-            Namespace(name="third_page", title="Third Page", index=2),
-            Namespace(name="second_page", title="Second Page", index=1),
-            Namespace(name="home", title="Home", index=0),
+            UrlMapBase(name="exclude_page", url="", controller=None, title="Exclude Page", index=-1),
+            UrlMapBase(name="last_page", url="", controller=None, title="Last Page", index=3),
+            UrlMapBase(name="third_page", url="", controller=None, title="Third Page", index=2),
+            UrlMapBase(name="second_page", url="", controller=None, title="Second Page", index=1),
+            UrlMapBase(name="home", url="", controller=None, title="Home", index=0),
         ]
 
         links = app.navigation_links
