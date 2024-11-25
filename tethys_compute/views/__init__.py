@@ -9,7 +9,7 @@
 """
 
 # flake8: noqa
-from .dask_dashboard import dask_dashboard
+from .dask_dashboard_view import dask_dashboard
 from .update_status import (
     get_job,
     do_job_action,

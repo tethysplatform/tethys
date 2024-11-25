@@ -884,16 +884,36 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         result1 = utilities.user_can_access_app(user, app)
         self.assertFalse(result1)
 
+        # test restricted access with restricted apps list
+        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = [app.package]
+        result2 = utilities.user_can_access_app(user, app)
+        self.assertFalse(result2)
+
+        # test restricted access with no restricted apps list
+        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = []
+        result3 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result3)
+
+        # test restricted access with restricted apps list of a different app
+        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = ["some_other_app"]
+        result4 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result4)
+
         # test with permission
         assign_perm(f"{app.package}:access_app", user, app)
 
-        result2 = utilities.user_can_access_app(user, app)
-        self.assertTrue(result2)
+        result5 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result5)
 
         # test open portal mode case
         mock_settings.ENABLE_OPEN_PORTAL = True
-        result3 = utilities.user_can_access_app(user, app)
-        self.assertTrue(result3)
+        result6 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result6)
+
+        # test restricted access with restricted apps list
+        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = [app.package]
+        result7 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result7)
 
     def test_get_installed_tethys_items_apps(self):
         # Get list of apps installed in the tethysapp directory
