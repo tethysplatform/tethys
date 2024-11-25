@@ -1,6 +1,6 @@
-import os
 import json
 import asyncio
+from os import environ
 
 from tethys_sdk.testing import TethysTestCase
 from channels.testing import WebsocketCommunicator
@@ -15,7 +15,7 @@ class TestConsumer(TethysTestCase):
         asyncio.set_event_loop(event_loop)
 
         async def run_test():
-            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
+            environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
             settings.CHANNEL_LAYERS = {}
 
             communicator = WebsocketCommunicator(

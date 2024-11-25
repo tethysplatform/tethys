@@ -2,7 +2,7 @@ import sys
 import unittest
 from unittest import mock
 from io import StringIO
-import os
+from pathlib import Path
 
 from tethys_cli import tethys_command
 
@@ -74,7 +74,7 @@ class TethysCommandTests(unittest.TestCase):
         mock_scaffold_command.assert_called()
         call_args = mock_scaffold_command.call_args_list
         self.assertEqual("foo", call_args[0][0][0].name)
-        self.assertEqual(os.getcwd(), call_args[0][0][0].prefix)
+        self.assertEqual(str(Path.cwd()), call_args[0][0][0].prefix)
         self.assertEqual("default", call_args[0][0][0].template)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].extension)
@@ -98,7 +98,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.scaffold_commands.scaffold_command")
     def test_scaffold_subcommand_with_options(self, mock_scaffold_command):
-        testargs = ["tethys", "scaffold", "foo", "-e", "-t", "my_template", "-o", "-d"]
+        testargs = ["tethys", "scaffold", "foo", "-e", "-t", "default", "-o", "-d"]
 
         with mock.patch.object(sys, "argv", testargs):
             tethys_command()
@@ -106,7 +106,7 @@ class TethysCommandTests(unittest.TestCase):
         mock_scaffold_command.assert_called()
         call_args = mock_scaffold_command.call_args_list
         self.assertEqual("foo", call_args[0][0][0].name)
-        self.assertEqual("my_template", call_args[0][0][0].template)
+        self.assertEqual("default", call_args[0][0][0].template)
         self.assertTrue(call_args[0][0][0].overwrite)
         self.assertTrue(call_args[0][0][0].extension)
         self.assertTrue(call_args[0][0][0].use_defaults)
@@ -119,7 +119,7 @@ class TethysCommandTests(unittest.TestCase):
             "foo",
             "--extension",
             "--template",
-            "my_template",
+            "default",
             "--overwrite",
             "--defaults",
         ]
@@ -130,7 +130,7 @@ class TethysCommandTests(unittest.TestCase):
         mock_scaffold_command.assert_called()
         call_args = mock_scaffold_command.call_args_list
         self.assertEqual("foo", call_args[0][0][0].name)
-        self.assertEqual("my_template", call_args[0][0][0].template)
+        self.assertEqual("default", call_args[0][0][0].template)
         self.assertTrue(call_args[0][0][0].overwrite)
         self.assertTrue(call_args[0][0][0].extension)
         self.assertTrue(call_args[0][0][0].use_defaults)

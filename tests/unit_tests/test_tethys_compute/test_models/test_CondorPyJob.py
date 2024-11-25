@@ -6,6 +6,7 @@ from condorpy import Templates
 from django.contrib.auth.models import User
 from condorpy import Job
 from unittest import mock
+from pathlib import Path
 
 
 class CondorPyJobTest(TethysTestCase):
@@ -128,7 +129,7 @@ class CondorPyJobTest(TethysTestCase):
         ret = self.condorjob.initial_dir
 
         # Check result
-        self.assertEqual("test_workspace/.", ret)
+        self.assertEqual(str(Path("test_workspace") / "."), ret)
 
     def test_set_and_get_attribute(self):
         self.condorjob.set_attribute("test", "value")

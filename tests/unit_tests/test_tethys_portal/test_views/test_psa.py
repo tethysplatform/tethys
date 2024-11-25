@@ -1,4 +1,5 @@
 import unittest
+import sys
 from unittest import mock
 
 from django.http import HttpResponseBadRequest
@@ -15,6 +16,9 @@ from .mock_decorator import mock_decorator
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch("django.views.decorators.cache.never_cache", lambda x: x).start()
 mock.patch("social_django.utils.psa", side_effect=mock_decorator).start()
+
+if "tethys_portal.views.psa" in sys.modules:
+    del sys.modules["tethys_portal.views.psa"]
 
 from tethys_portal.views.psa import tenant, auth, complete  # noqa: E402
 

@@ -1,4 +1,5 @@
-import os
+from os import chdir
+from pathlib import Path
 import webbrowser
 from argparse import Namespace
 from tethys_apps.utilities import get_installed_tethys_items
@@ -61,7 +62,7 @@ def quickstart_command(args):
         tethys_portal_settings={},
     )
     portal_config_path = get_destination_path(portal_config_args, check_existence=False)
-    if os.path.exists(portal_config_path):
+    if Path(portal_config_path).exists():
         write_warning(
             'An existing portal configuration was already found. Please use "tethys start" instead to start your server.'
         )
@@ -82,7 +83,7 @@ def quickstart_command(args):
         no_confirmation=False,
     )
     db_config_options = process_args(db_config_args)
-    if not os.path.exists(db_config_options["db_name"]):
+    if not Path(db_config_options["db_name"]).exists():
         configure_tethys_db(**db_config_options)
 
     setup_django()
@@ -93,11 +94,12 @@ def quickstart_command(args):
             name="hello_world",
             extension=False,
             template="default",
+            prefix=str(Path.cwd()),
             use_defaults=True,
             overwrite=False,
         )
         scaffold_command(app_scaffold_args)
-        os.chdir(f"{APP_PREFIX}-hello_world")
+        chdir(f"{APP_PREFIX}-hello_world")
         app_install_args = Namespace(
             develop=True,
             file=None,

@@ -1,0 +1,4 @@
+{{proper_name}}
+{{'=' * proper_name|length}}
+
+{{description}}

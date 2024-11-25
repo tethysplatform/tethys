@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import unittest
 from unittest import mock
 from django.db.utils import ProgrammingError
@@ -47,8 +47,8 @@ class TestTethysAppAdmin(unittest.TestCase):
     def setUp(self):
         from tethys_apps.models import TethysApp
 
-        self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        self.root_app_path = os.path.join(self.src_dir, "apps", "tethysapp-test_app")
+        self.src_dir = Path(__file__).parents[1]
+        self.root_app_path = self.src_dir / "apps" / "tethysapp-test_app"
         self.app_model = TethysApp(name="admin_test_app", package="admin_test_app")
         self.app_model.save()
         self.proxy_app_model = ProxyApp(
