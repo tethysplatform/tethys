@@ -9,9 +9,9 @@
 """
 
 import json
-import os
 import string
 import random
+from os import environ
 from datetime import datetime
 from pathlib import Path
 from subprocess import call, run
@@ -41,7 +41,7 @@ run_command, Commands = optional_import(
     ("run_command", "Commands"), from_module="conda.cli.python_api"
 )
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
+environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 GEN_APACHE_OPTION = "apache"
 GEN_APACHE_SERVICE_OPTION = "apache_service"
@@ -213,7 +213,7 @@ def add_gen_parser(subparsers):
 
 
 def get_environment_value(value_name):
-    value = os.environ.get(value_name)
+    value = environ.get(value_name)
     if value is not None:
         return value
     else:
@@ -281,8 +281,8 @@ def gen_apache_service(args):
 def gen_asgi_service(args):
     nginx_user = ""
     nginx_conf_path = "/etc/nginx/nginx.conf"
-    if os.path.exists(nginx_conf_path):
-        with open(nginx_conf_path, "r") as nginx_conf:
+    if Path(nginx_conf_path).exists():
+        with Path(nginx_conf_path).open() as nginx_conf:
             for line in nginx_conf.readlines():
                 tokens = line.split()
                 if len(tokens) > 0 and tokens[0] == "user":
@@ -435,8 +435,8 @@ def derive_version_from_conda_environment(dep_str, level="none"):
 def gen_meta_yaml(args):
     filename = "micro_environment.yml" if args.micro else "environment.yml"
     package_name = "micro-tethys-platform" if args.micro else "tethys-platform"
-    environment_file_path = os.path.join(TETHYS_SRC, filename)
-    with open(environment_file_path, "r") as env_file:
+    environment_file_path = Path(TETHYS_SRC) / filename
+    with Path(environment_file_path).open() as env_file:
         environment = yaml.safe_load(env_file)
 
     dependencies = environment.get("dependencies", [])
@@ -533,42 +533,42 @@ def get_destination_path(args, check_existence=True):
     destination_file = FILE_NAMES[args.type]
 
     # Default destination path is the tethys_portal source dir
-    destination_dir = TETHYS_HOME
+    destination_dir = Path(TETHYS_HOME)
 
     # Make the Tethys Home directory if it doesn't exist yet.
-    if not os.path.isdir(destination_dir):
-        os.makedirs(destination_dir, exist_ok=True)
+    if not destination_dir.is_dir():
+        destination_dir.mkdir(parents=True, exist_ok=True)
 
     if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
-        destination_dir = os.getcwd()
+        destination_dir = Path.cwd()
 
     elif args.type == GEN_META_YAML_OPTION:
-        destination_dir = os.path.join(TETHYS_SRC, "conda.recipe")
+        destination_dir = Path(TETHYS_SRC) / "conda.recipe"
 
     elif args.type == GEN_PACKAGE_JSON_OPTION:
-        destination_dir = os.path.join(TETHYS_SRC, "tethys_portal", "static")
+        destination_dir = Path(TETHYS_SRC) / "tethys_portal" / "static"
 
     elif args.type == GEN_REQUIREMENTS_OPTION:
-        destination_dir = TETHYS_SRC
+        destination_dir = Path(TETHYS_SRC)
 
     if args.directory:
-        destination_dir = os.path.abspath(args.directory)
+        destination_dir = Path(args.directory).absolute()
 
-    if not os.path.isdir(destination_dir):
+    if not destination_dir.is_dir():
         write_error('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
         exit(1)
 
-    destination_path = os.path.join(destination_dir, destination_file)
+    destination_path = destination_dir / destination_file
 
     if check_existence:
         check_for_existing_file(destination_path, destination_file, args.overwrite)
 
-    return destination_path
+    return str(destination_path)
 
 
 def check_for_existing_file(destination_path, destination_file, overwrite):
     # Check for pre-existing file
-    if os.path.isfile(destination_path):
+    if destination_path.is_file():
         valid_inputs = ("y", "n", "yes", "no")
         no_inputs = ("n", "no")
 
@@ -590,17 +590,14 @@ def check_for_existing_file(destination_path, destination_file, overwrite):
 
 def render_template(file_type, context, destination_path):
     # Determine template path
-    gen_templates_dir = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "gen_templates"
-    )
-    template_path = os.path.join(gen_templates_dir, file_type)
+    gen_templates_dir = Path(__file__).parent.absolute() / "gen_templates"
+    template_path = gen_templates_dir / file_type
 
     # Parse template
-    template = Template(open(template_path).read())
+    template = Template(template_path.read_text())
     # Render template and write to file
     if template:
-        with open(destination_path, "w") as f:
-            f.write(template.render(context))
+        Path(destination_path).write_text(template.render(context))
 
 
 def write_path_to_console(file_path):

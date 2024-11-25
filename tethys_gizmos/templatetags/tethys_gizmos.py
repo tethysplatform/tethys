@@ -8,11 +8,11 @@
 ********************************************************************************
 """
 
-import os
 import json
 import time
 import inspect
 from datetime import datetime
+from pathlib import Path
 from django.conf import settings
 from django import template
 from django.template.loader import get_template
@@ -59,8 +59,8 @@ for _, extension_module in extension_modules.items():
             ):
                 GIZMO_NAME_MAP[cls.gizmo_name] = cls
                 gizmo_module_path = gizmo_module.__path__[0]
-                EXTENSION_PATH_MAP[cls.gizmo_name] = os.path.abspath(
-                    os.path.dirname(gizmo_module_path)
+                EXTENSION_PATH_MAP[cls.gizmo_name] = str(
+                    Path(gizmo_module_path).parent.absolute()
                 )
     except ImportError:
         # TODO: Add Log?
@@ -255,15 +255,15 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
             # Derive path to gizmo template
             if self.gizmo_name not in EXTENSION_PATH_MAP:
                 # Determine path to gizmo template
-                gizmo_templates_root = os.path.join("tethys_gizmos", "gizmos")
+                gizmo_templates_root = str(Path("tethys_gizmos/gizmos"))
 
             else:
-                gizmo_templates_root = os.path.join(
-                    EXTENSION_PATH_MAP[self.gizmo_name], "templates", "gizmos"
+                gizmo_templates_root = str(
+                    Path(EXTENSION_PATH_MAP[self.gizmo_name]) / "templates" / "gizmos"
                 )
 
             gizmo_file_name = "{0}.html".format(self.gizmo_name)
-            template_name = os.path.join(gizmo_templates_root, gizmo_file_name)
+            template_name = str(Path(gizmo_templates_root) / gizmo_file_name)
 
             # reset gizmo_name in case Node is rendered with different options
             self._load_gizmo_name(None)

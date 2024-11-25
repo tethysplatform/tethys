@@ -163,8 +163,8 @@ vendor_static_dependencies = {
     ),
     "bootstrap_icons": JsDelivrStaticDependency(
         npm_name="bootstrap-icons",
-        version="1.7.1",
-        css_path="font/bootstrap-icons.css",
+        version="1.11.3",
+        css_path="font/bootstrap-icons.min.css",
         # SRI for version 1.7.1 (version 1.8.0 is out)
         css_integrity="sha256-vjH7VdGY8KK8lp5whX56uTiObc5vJsK+qFps2Cfq5mY=",
     ),

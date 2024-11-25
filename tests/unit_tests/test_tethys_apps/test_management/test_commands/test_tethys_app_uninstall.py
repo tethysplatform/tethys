@@ -57,8 +57,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch(
         "tethys_apps.management.commands.tethys_app_uninstall.Permission.objects"
     )
-    @mock.patch("tethys_apps.management.commands.tethys_app_uninstall.os.path.join")
-    @mock.patch("tethys_apps.management.commands.tethys_app_uninstall.os.remove")
+    @mock.patch("tethys_apps.management.commands.tethys_app_uninstall.Path.unlink")
     @mock.patch("tethys_apps.management.commands.tethys_app_uninstall.subprocess.Popen")
     @mock.patch("warnings.warn")
     @mock.patch("sys.stdout", new_callable=StringIO)
@@ -77,8 +76,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_stdout,
         mock_warnings,
         mock_popen,
-        mock_os_remove,
-        mock_join,
+        mock_unlink,
         mock_permissions,
         mock_groups,
         _,
@@ -91,8 +89,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_installed_items.return_value = {"foo_app": "/foo/foo_app"}
         mock_input.side_effect = ["yes"]
         mock_popen.side_effect = KeyboardInterrupt
-        mock_os_remove.side_effect = [True, Exception]
-        mock_join.return_value = "/foo/tethysapp-foo-app-nspkg.pth"
+        mock_unlink.side_effect = [True, Exception]
         mock_permission = mock.MagicMock(delete=mock.MagicMock())
         mock_permissions.filter().filter().all.return_value = [mock_permission]
         mock_group = mock.MagicMock(delete=mock.MagicMock())
@@ -115,7 +112,6 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_popen.assert_called_once_with(
             ["pip", "uninstall", "-y", "tethysapp-foo_app"], stderr=-2, stdout=-1
         )
-        mock_join.assert_called()
 
     @mock.patch("warnings.warn")
     @mock.patch("tethys_apps.management.commands.tethys_app_uninstall.exit")

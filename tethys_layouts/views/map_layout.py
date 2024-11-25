@@ -13,7 +13,7 @@ import collections
 from io import BytesIO
 import json
 import logging
-import os
+from pathlib import Path
 import requests
 import tempfile
 import uuid
@@ -832,7 +832,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             shp_base = layer_id + "_" + json_type
-            shp_file = os.path.join(tmpdir, shp_base)
+            shp_file = str(Path(tmpdir) / shp_base)
 
             with shapefile.Writer(shp_file, shape_types[json_type]) as shpfile_obj:
                 shpfile_obj.autoBalance = 1

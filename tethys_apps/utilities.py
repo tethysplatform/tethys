@@ -10,7 +10,7 @@
 
 import importlib
 import logging
-import os
+from os import environ
 from pathlib import Path
 
 import pkgutil
@@ -41,8 +41,8 @@ def get_tethys_src_dir():
     Returns:
         str: path to TETHYS_SRC.
     """
-    default = os.path.dirname(os.path.dirname(__file__))
-    return os.environ.get("TETHYS_SRC", default)
+    default = Path(__file__).parents[1]
+    return environ.get("TETHYS_SRC", str(default))
 
 
 def get_tethys_home_dir():
@@ -52,26 +52,26 @@ def get_tethys_home_dir():
     Returns:
         str: path to TETHYS_HOME.
     """
-    env_tethys_home = os.environ.get("TETHYS_HOME")
+    env_tethys_home = environ.get("TETHYS_HOME")
 
     # Return environment value if set
     if env_tethys_home:
         return env_tethys_home
 
     # Initialize to default TETHYS_HOME
-    tethys_home = os.path.join(os.path.expanduser("~"), ".tethys")
+    tethys_home = Path.home() / ".tethys"
 
     try:
-        conda_env_name = os.environ.get("CONDA_DEFAULT_ENV")
+        conda_env_name = environ.get("CONDA_DEFAULT_ENV")
         if conda_env_name != "tethys":
-            tethys_home = os.path.join(tethys_home, conda_env_name)
+            tethys_home = tethys_home / conda_env_name
     except Exception:
         tethys_log.warning(
             f"Running Tethys outside of active Conda environment detected. Using default "
             f'TETHYS_HOME "{tethys_home}". Set TETHYS_HOME environment to override.'
         )
 
-    return tethys_home
+    return str(tethys_home)
 
 
 def relative_to_tethys_home(path, as_str=False):
@@ -115,14 +115,14 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     for potential_dir in potential_dirs:
         for directory_name in directory_names:
             # Only check directories
-            if os.path.isdir(potential_dir):
+            if Path(potential_dir).is_dir():
                 match_dir = safe_join(potential_dir, directory_name)
 
-                if match_dir not in match_dirs and os.path.isdir(match_dir):
+                if match_dir not in match_dirs and Path(match_dir).is_dir():
                     if not with_app_name:
                         match_dirs.append(match_dir)
                     else:
-                        match_dirs.append((os.path.basename(potential_dir), match_dir))
+                        match_dirs.append((Path(potential_dir).name, match_dir))
 
     return match_dirs
 
@@ -701,31 +701,29 @@ def delete_secrets(app_name):
 def secrets_signed_unsigned_value(name, value, tethys_app_package_name, is_signing):
     return_string = ""
     TETHYS_HOME = get_tethys_home_dir()
+    secrets_path = Path(TETHYS_HOME) / "secrets.yml"
     signer = Signer()
     try:
-        if not os.path.exists(os.path.join(TETHYS_HOME, "secrets.yml")):
+        if not secrets_path.exists():
             return_string = sign_and_unsign_secret_string(signer, value, is_signing)
         else:
-            with open(os.path.join(TETHYS_HOME, "secrets.yml")) as secrets_yaml:
-                secret_app_settings = (
-                    yaml.safe_load(secrets_yaml).get("secrets", {}) or {}
-                )
-                if bool(secret_app_settings):
-                    if tethys_app_package_name in secret_app_settings:
-                        if (
-                            "custom_settings_salt_strings"
-                            in secret_app_settings[tethys_app_package_name]
-                        ):
-                            app_specific_settings = secret_app_settings[
-                                tethys_app_package_name
-                            ]["custom_settings_salt_strings"]
-                            if name in app_specific_settings:
-                                app_custom_setting_salt_string = app_specific_settings[
-                                    name
-                                ]
-                                if app_custom_setting_salt_string != "":
-                                    signer = Signer(salt=app_custom_setting_salt_string)
-                return_string = sign_and_unsign_secret_string(signer, value, is_signing)
+            secret_app_settings = (yaml.safe_load(secrets_path.read_text()) or {}).get(
+                "secrets", {}
+            )
+            if bool(secret_app_settings):
+                if tethys_app_package_name in secret_app_settings:
+                    if (
+                        "custom_settings_salt_strings"
+                        in secret_app_settings[tethys_app_package_name]
+                    ):
+                        app_specific_settings = secret_app_settings[
+                            tethys_app_package_name
+                        ]["custom_settings_salt_strings"]
+                        if name in app_specific_settings:
+                            app_custom_setting_salt_string = app_specific_settings[name]
+                            if app_custom_setting_salt_string != "":
+                                signer = Signer(salt=app_custom_setting_salt_string)
+            return_string = sign_and_unsign_secret_string(signer, value, is_signing)
     except signing.BadSignature:
         raise TethysAppSettingNotAssigned(
             f"The salt string for the setting {name} has been changed or lost, please enter the secret custom settings in the application settings again."

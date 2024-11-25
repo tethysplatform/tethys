@@ -1,5 +1,5 @@
 import unittest
-import os
+from pathlib import Path
 from unittest import mock
 
 from tethys_cli.site_commands import (
@@ -11,8 +11,7 @@ from tethys_cli.site_commands import (
 
 class CLISiteCommandsTest(unittest.TestCase):
     def setUp(self):
-        self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        self.root_app_path = os.path.join(self.src_dir, "apps", "tethysapp-test_app")
+        self.root_app_path = Path(__file__).parents[2] / "apps" / "tethysapp-test_app"
 
     def tearDown(self):
         pass
@@ -65,11 +64,11 @@ class CLISiteCommandsTest(unittest.TestCase):
     def test_gen_site_content_with_yaml(
         self, mock_setup_django, mock_path, mock_update_settings
     ):
-        file_path = os.path.join(self.root_app_path, "test-portal_config.yml")
+        file_path = self.root_app_path / "test-portal_config.yml"
         mock_file_path = mock.MagicMock()
         mock_path.return_value = mock_file_path
         mock_file_path.__truediv__().exists.return_value = True
-        mock_file_path.__truediv__().open.return_value = open(file_path)
+        mock_file_path.__truediv__().read_text.return_value = file_path.read_text()
 
         mock_args = mock.MagicMock(from_file=True, restore_defaults=False)
 

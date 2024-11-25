@@ -15,6 +15,7 @@ from django.views.generic import View
 from django.http import HttpRequest
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
+from tethys_apps.base.page_handler import global_page_controller
 from tethys_cli.cli_colors import write_warning
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
@@ -35,7 +36,6 @@ from ..utilities import get_all_submodules, update_decorated_websocket_consumer_
 # imports for type hinting
 from typing import Union, Any
 from collections.abc import Callable
-
 
 app_controllers_list = list()
 
@@ -443,6 +443,113 @@ def controller(
     return wrapped if function_or_class is None else wrapped(function_or_class)
 
 
+def page(
+    component_function: Callable = None,
+    /,
+    *,
+    # UrlMap Overrides
+    name: str = None,
+    url: Union[str, list, tuple, dict, None] = None,
+    regex: Union[str, list, tuple] = None,
+    handler: Union[str, Callable] = None,
+    # login_required kwargs
+    login_required: bool = True,
+    redirect_field_name: str = REDIRECT_FIELD_NAME,
+    login_url: str = None,
+    # ensure_oauth2 kwarg
+    ensure_oauth2_provider: str = None,
+    # enforce_quota kwargs
+    enforce_quotas: Union[str, list, tuple, None] = None,
+    # permission_required kwargs
+    permissions_required: Union[str, list, tuple] = None,
+    permissions_use_or: bool = False,
+    permissions_message: str = None,
+    permissions_raise_exception: bool = False,
+    # additional kwargs to pass to TethysController.as_controller
+    layout="default",
+    title=None,
+    index=None,
+    custom_css=None,
+    custom_js=None,
+) -> Callable:
+    """
+    Decorator to register a function as a Page in the ReactPy paradigm
+    (by automatically registering a UrlMap for it).
+
+    Args:
+        name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the function being decorated.
+        url: URL pattern to map the endpoint for the controller or consumer. If a `list` then a separate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name` _1, `name` _2 ... `name` _n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
+        regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
+        handler: Dot-notation path a handler function that will process the actual request. This is for an escape-hatch pattern to get back to Django templating.
+        login_required: If user is required to be logged in to access the controller. Default is `True`.
+        redirect_field_name: URL query string parameter for the redirect path. Default is "next".
+        login_url: URL to send users to in order to authenticate.
+        ensure_oauth2_provider: An OAuth2 provider name to ensure is authenticated to access the controller.
+        enforce_quotas: The name(s) of quotas to enforce on the controller.
+        permissions_required: The name(s) of permissions that a user is required to have to access the controller.
+        permissions_use_or: When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
+        permissions_message: Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
+        permissions_raise_exception: Raise 403 error if True. Defaults to False.
+        layout: Layout within which the page content will be wrapped
+        title: Title of page as used in both the built-in Navigation component and the browser tab
+        index: Index of the page as used to determine the display order in the built-in Navigation component. Defaults to top-to-bottom as written in code. Pass -1 to remove from built-in Navigation component.
+        custom_css: A list of URLs to additional css files that should be rendered with the page. These will be rendered in the order provided.
+        custom_js: A list of URLs to additional js files that should be rendered with the page. These will be rendered in the order provided.
+    """  # noqa: E501
+    permissions_required = _listify(permissions_required)
+    enforce_quota_codenames = _listify(enforce_quotas)
+
+    def wrapped(component_function):
+        component_source_code = inspect.getsource(component_function)
+        url_map_kwargs_list = _get_url_map_kwargs_list(
+            function_or_class=component_function,
+            name=name,
+            url=url,
+            protocol="http",
+            regex=regex,
+            title=title,
+            index=index,
+        )
+
+        def controller_wrapper(request, **kwargs):
+            controller = handler or global_page_controller
+            if permissions_required:
+                controller = permission_required(
+                    *permissions_required,
+                    use_or=permissions_use_or,
+                    message=permissions_message,
+                    raise_exception=permissions_raise_exception,
+                )(controller)
+
+            for codename in enforce_quota_codenames:
+                controller = enforce_quota(codename)(controller)
+
+            if ensure_oauth2_provider:
+                # this needs to come before login_required
+                controller = ensure_oauth2(ensure_oauth2_provider)(controller)
+
+            if login_required:
+                # this should be at the end, so it's the first to be evaluated
+                controller = login_required_decorator(
+                    redirect_field_name=redirect_field_name, login_url=login_url
+                )(controller)
+            return controller(
+                request,
+                layout=layout,
+                component_func=component_function,
+                component_source_code=component_source_code,
+                title=url_map_kwargs_list[0]["title"],
+                custom_css=custom_css,
+                custom_js=custom_js,
+                **kwargs,
+            )
+
+        _process_url_kwargs(controller_wrapper, url_map_kwargs_list)
+        return component_function
+
+    return wrapped if component_function is None else wrapped(component_function)
+
+
 controller_decorator = controller
 
 
@@ -651,6 +758,8 @@ def _get_url_map_kwargs_list(
     app_media=False,
     app_public=False,
     app_resources=False,
+    title=None,
+    index=None,
 ):
     final_urls = []
     if url is not None:
@@ -712,6 +821,9 @@ def _get_url_map_kwargs_list(
             for i, final_url in enumerate(final_urls)
         }
 
+    if not title:
+        title = url_name.replace("_", " ").title()
+
     return [
         dict(
             name=url_name,
@@ -721,6 +833,8 @@ def _get_url_map_kwargs_list(
             regex=regex,
             handler=handler,
             handler_type=handler_type,
+            title=title,
+            index=index,
         )
         for url_name, final_url in final_urls.items()
     ]

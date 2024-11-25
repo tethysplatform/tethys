@@ -67,6 +67,16 @@ class TestUrls(TethysTestCase):
             "tethysext.test_extension.controllers.home", resolver._func_path
         )
 
+    @mock.patch("django.urls.include")
+    @mock.patch("tethys_portal.optional_dependencies.has_module")
+    def test_reactpy_urls(self, mock_has_module, mock_include):
+        mock_has_module.return_value = True
+        from tethys_portal import urls
+        from importlib import reload
+
+        reload(urls)
+        mock_include.assert_any_call("reactpy_django.http.urls")
+
 
 # probably need to test for extensions manually
 @override_settings(MULTIPLE_APP_MODE=True)
