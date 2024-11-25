@@ -386,6 +386,15 @@ if has_module("social_django"):
         ]
     )
 
+CONTEXT_PROCESSORS = portal_config_settings.pop(
+    "CONTEXT_PROCESSORS_OVERRIDE",
+    default_context_processors,
+)
+
+CONTEXT_PROCESSORS = tuple(
+    CONTEXT_PROCESSORS + portal_config_settings.pop("CONTEXT_PROCESSORS", [])
+)
+
 # Templates
 
 ADDITIONAL_TEMPLATE_DIRS = [
@@ -401,7 +410,7 @@ TEMPLATES = [
             BASE_DIR / "templates",
         ],
         "OPTIONS": {
-            "context_processors": default_context_processors,
+            "context_processors": CONTEXT_PROCESSORS,
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
                 "django.template.loaders.app_directories.Loader",
