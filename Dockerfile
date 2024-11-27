@@ -183,6 +183,7 @@ RUN groupadd www \
 ADD --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
 ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
 ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
+ADD --chown=www:www tethys_components ${TETHYS_HOME}/tethys/tethys_components/
 ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
 ADD --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
 ADD --chown=www:www tethys_layouts ${TETHYS_HOME}/tethys/tethys_layouts/
