@@ -1312,6 +1312,12 @@ add_drag_box_interaction = function() {
 
     // Call draw end callback
     draw_end_callback(feature);
+
+    m_select_interaction.getFeatures().push(feature);
+    m_select_interaction.dispatchEvent({
+      type: 'select',
+      selected: [feature]
+    });
   });
 
   m_map.addInteraction(m_drag_box_interaction);
@@ -1340,9 +1346,7 @@ add_snap_interaction = function() {
 
 add_modify_interaction = function() {
   // Modify interaction works in conjunction with a selection interaction
-  var selected_features;
-
-  selected_features = null;
+  var selected_features = null;
 
   // Create select interaction
   m_modify_select_interaction = new ol.interaction.Select({
