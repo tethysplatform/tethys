@@ -3,6 +3,7 @@ changelog:
     - title: Features
       labels:
         - major feature
+        - minor feature
     - title: Experimental Features
       labels:
         - experimental
