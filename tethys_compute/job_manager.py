@@ -12,6 +12,7 @@ import logging
 
 
 from django.urls import reverse
+from guardian.utils import get_anonymous_user
 
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.basic_job import BasicJob
@@ -68,6 +69,8 @@ class JobManager:
         # Allow the job class to be passed in as job_type.
         if isinstance(job_type, str):
             job_type = JOB_TYPES[job_type]
+        if user.is_anonymous:
+            user = get_anonymous_user()
         user_workspace = get_user_workspace(self.app, user)
         kwrgs = dict(
             name=name, user=user, label=self.label, workspace=user_workspace.path
