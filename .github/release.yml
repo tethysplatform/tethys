@@ -2,8 +2,8 @@ changelog:
   categories:
     - title: Features
       labels:
-        - major features
-        - minor features
+        - "major features"
+        - "minor features"
     - title: Experimental Features
       labels:
         - experimental
