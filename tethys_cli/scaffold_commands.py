@@ -418,7 +418,7 @@ def scaffold_command(args):
             exit(1)
 
     # Walk the template directory, creating the templates and directories in the new project as we go
-    for curr_template_root, _, template_files in walk(template_root):
+    for curr_template_root, _, template_files in template_root.walk():
         curr_project_root = str(curr_template_root).replace(
             str(template_root), str(project_root)
         )

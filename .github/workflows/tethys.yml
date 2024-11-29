@@ -56,7 +56,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12"]
         django-version: ["3.2", "4.2", "5.1"]
     steps:
       # Checkout the source
@@ -99,7 +99,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12"]
         django-version: ["3.2", "4.2", "5.1"]
     steps:
       # Checkout the source
@@ -139,7 +139,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12"]
         django-version: ["3.2", "4.2", "5.1"]
     services:
       tethys-postgis:
