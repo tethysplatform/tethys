@@ -122,7 +122,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -133,7 +133,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -163,7 +163,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -267,7 +267,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -278,7 +278,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -307,7 +307,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -369,7 +369,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -380,7 +380,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -410,7 +410,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -519,7 +519,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -530,7 +530,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -559,7 +559,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -628,7 +628,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -639,7 +639,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -670,7 +670,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -746,7 +746,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
@@ -757,7 +757,7 @@ class TestScaffoldCommands(unittest.TestCase):
         _,
         __,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -788,7 +788,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
@@ -841,7 +841,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -852,7 +852,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -884,7 +884,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -968,7 +968,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
@@ -979,7 +979,7 @@ class TestScaffoldCommands(unittest.TestCase):
         __,
         ___,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -1010,7 +1010,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
         ]
@@ -1081,7 +1081,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
@@ -1090,7 +1090,7 @@ class TestScaffoldCommands(unittest.TestCase):
         _,
         __,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -1121,7 +1121,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
@@ -1175,7 +1175,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
@@ -1184,7 +1184,7 @@ class TestScaffoldCommands(unittest.TestCase):
         _,
         __,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -1215,7 +1215,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
@@ -1269,7 +1269,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
     @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.Path.walk")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
     @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
     @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
     @mock.patch("tethys_cli.scaffold_commands.Template")
@@ -1278,7 +1278,7 @@ class TestScaffoldCommands(unittest.TestCase):
         _,
         __,
         mock_mkdir,
-        mock_path_walk,
+        mock_os_walk,
         mock_render_path,
         mock_rmt,
         mock_is_dir,
@@ -1309,7 +1309,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.return_value = ""
 
-        mock_path_walk.return_value = [
+        mock_os_walk.return_value = [
             (Path("/").absolute() / "foo", ("bar",), ("baz",)),
             (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
         ]
