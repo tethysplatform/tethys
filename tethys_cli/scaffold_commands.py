@@ -3,7 +3,6 @@ import logging
 import random
 import shutil
 from pathlib import Path
-from os import walk
 
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
