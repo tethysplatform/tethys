@@ -106,7 +106,7 @@ sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
 # patcher.start()
 
 # Fixes django settings module problem
-sys.path.insert(0, Path("..").absolute().resolve())
+sys.path.insert(0, str(Path("..").absolute().resolve()))
 
 installed_apps = [
     "django.contrib.admin",
