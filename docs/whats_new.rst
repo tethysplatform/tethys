@@ -4,95 +4,50 @@
 What's New
 **********
 
-**Last Updated:** November 2023
+**Last Updated:** November 2024
 
 Refer to this article for information about each new release of Tethys Platform.
 
 Release |version|
 ==================
 
-Python 3.12
------------
+Major Features
+--------------
 
-* Verified Tethys Platform works using Python 3.12
+Django 4/5 Support
+..................
 
-Conda Forge Package
--------------------
-
-* Tethys Platform is now fully packaged on conda-forge!
+* Tethys Platform 4.3 is compatible with Django versions 3.2 - 5.x. It is now recommended to explicitly specify the version of Django that you want when you create your tethys environment.
 
 See: :ref:`development_installation`
 
-Optional Dependencies and Micro Tethys
---------------------------------------
+New Logo
+........
 
-* Made many of the dependencies of ``tethys-platform`` optional and released new ``micro-tethys-platform`` conda package on the ``tethysplatform`` channel with minimal dependencies
-* Updated docs to reflect what features are now optional and what dependencies are needed to support those features
+* The new logo design that is on the `Tethys Platform <https://www.tethysplatform.org/>`_ website is now in the default configuration of the Tethys Portal.
 
-.. note::
+Single App Mode
+...............
 
-    The ``tethys-platform`` conda package for version 4.2 will still install all of the optional dependencies for backwards compatibility. Starting with Tethys version 5.0 the ``tethys-platform`` package will only have required dependencies. The ``micro-tethys-platform`` package, available on the ``tethysplatform`` channel, will install only the required dependencies allowing for a smaller Tethys environment.
+* Tethys can now be used to deploy just a single app by setting the new `MULTIPLE_APP_MODE` setting to `False`.
 
-See: :ref:`optional_features`, :ref:`development_installation`
+See: :ref:`tethys_portal_config_settings`
 
-Map Layout
-----------
+Paths API
+.........
 
-* Add labeling support for geojson features in MapLayout and MapView Gizmo.
+* The new Paths API replaces the Workspaces API (which will still be supported until version 5.0) and provides access to the new Media directories and the App Resources directory. It also makes better use of the Python `pathlib` library.
 
-See: `label_options` in :ref:`map_layout`
+See: :ref:`tethys_paths_api`
 
-Admin Pages
------------
+Async Support for the Jobs Table Gizmo
+......................................
 
-* Added ability to have an icon on proxy app cards in the apps library to distinguish from native apps
-
-See: :ref:`portal_admin_proxy_apps`
-
-Settings
---------
-
-* Added new ``PREFIX_URL`` to enable modifying all portal URLs with a prefix
-* Added new settings ``ADDITIONAL_URLPATTERNS`` and ``ADDITIONAL_TEMPLATE_DIRS`` to allow more flexibility for supporting Django plugins
-* Replaced deprecated setting ``AXES_ONLY_USER_FAILURES`` with recommended setting ``AXES_LOCKOUT_PARAMETERS``
-
-See: :ref:`tethys_configuration`
-
-OAuth2 Provider
----------------
-
-* Added support for the Django OAuth Toolkit plugin to allow a Tethys portal to be an OAuth provider.
-
-See: :ref:`optional_features`
-
-Tethys CLI
-----------
-
-* Added a ``--urls`` option to the ``tethys list`` command to list the ``UrlMaps`` for apps.
-
-See: :ref:`tethys_list_cmd`
-
-Bokeh
------
-
-* Added support for Bokeh version 3
-
-Jobs Table Gizmo
-----------------
-
-* Added a ``cached_status`` property to Tethys Jobs and optimized how the ``JobsTable`` gizmo loads statuses
-* Added ability to sort jobs in the ``JobsTable`` gizmo and specify sorting key
+* Jobs Table actions callbacks are now asynchronous enabling them to run without blocking the webserver. Custom actions can also be `async`.
 
 See: :ref:`jobs-table`
 
-Bug Fixes
----------
-
-* Fixed issue with the TethysJob update-status callback endpoint not updating job status
-* Fixed issue with assigning Custom JSON setting error when installing from file
-* Fixed `Issue 985  Remove References to UrlMaps in Gizmo Docs <https://github.com/tethysplatform/tethys/issues/985>`_
-* Fixed `Issue 881 The OneLoginOIDC Oauth backend is not compatible with the latest version of social-auth-core <https://github.com/tethysplatform/tethys/issues/881>`_
-* Fixed `Issue 976 Invalid Links for Map View Controls <https://github.com/tethysplatform/tethys/issues/976>`_
+For a full list of changes in version 4.3 refer to `<https://github.com/tethysplatform/tethys/releases/tag/4.3.0>`_
 
 Prior Release Notes
 ===================
