@@ -164,8 +164,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -308,8 +308,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -411,8 +411,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -560,8 +560,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -671,8 +671,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -789,8 +789,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs")),
         ]
 
         mock_mkdir.return_value = True
@@ -885,8 +885,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -1011,8 +1011,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs_tmpl")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
         ]
 
         mock_mkdir.return_value = True
@@ -1122,8 +1122,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs")),
         ]
 
         mock_mkdir.return_value = True
@@ -1216,8 +1216,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs")),
         ]
 
         mock_mkdir.return_value = True
@@ -1310,8 +1310,8 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.return_value = ""
 
         mock_os_walk.return_value = [
-            (Path("/").absolute() / "foo", ("bar",), ("baz",)),
-            (Path("/").absolute() / "foo" / "bar", (), ("spam", "eggs")),
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs")),
         ]
 
         mock_mkdir.return_value = True
