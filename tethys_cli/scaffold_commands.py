@@ -2,8 +2,8 @@ import re
 import logging
 import random
 import shutil
-from pathlib import Path
 from os import walk
+from pathlib import Path
 
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
@@ -424,6 +424,7 @@ def scaffold_command(args):
         )
         curr_project_root = render_path(curr_project_root, context)
         curr_project_root = Path(curr_project_root)
+        curr_template_root = Path(curr_template_root)
 
         # Create Root Directory
         curr_project_root.mkdir(parents=True)
