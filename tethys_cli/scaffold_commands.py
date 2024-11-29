@@ -424,6 +424,7 @@ def scaffold_command(args):
         )
         curr_project_root = render_path(curr_project_root, context)
         curr_project_root = Path(curr_project_root)
+        curr_template_root = Path(curr_template_root)
 
         # Create Root Directory
         curr_project_root.mkdir(parents=True)
