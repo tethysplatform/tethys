@@ -263,20 +263,20 @@ class TestController(unittest.TestCase):
     def test__get_url_map_kwargs_list_url_dict(self):
         result = tethys_controller._get_url_map_kwargs_list(
             url={
-                'test': 'test/url/',
-                'another_test': 'test/{another}/url/',
+                "test": "test/url/",
+                "another_test": "test/{another}/url/",
             }
         )
-        self.assertEqual(result[0]['title'], 'Test')
-        self.assertEqual(result[1]['title'], 'Another Test')
+        self.assertEqual(result[0]["title"], "Test")
+        self.assertEqual(result[1]["title"], "Another Test")
 
     def test__get_url_map_kwargs_list_url_list(self):
         result = tethys_controller._get_url_map_kwargs_list(
-            name='test',
+            name="test",
             url=[
-                'test/url/',
-                'test/{another}/url/',
-            ]
+                "test/url/",
+                "test/{another}/url/",
+            ],
         )
-        self.assertEqual(result[0]['title'], 'Test')
-        self.assertEqual(result[1]['title'], 'Test 1')
+        self.assertEqual(result[0]["title"], "Test")
+        self.assertEqual(result[1]["title"], "Test 1")
