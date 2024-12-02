@@ -821,9 +821,6 @@ def _get_url_map_kwargs_list(
             for i, final_url in enumerate(final_urls)
         }
 
-    if not title:
-        title = url_name.replace("_", " ").title()
-
     return [
         dict(
             name=url_name,
@@ -833,7 +830,7 @@ def _get_url_map_kwargs_list(
             regex=regex,
             handler=handler,
             handler_type=handler_type,
-            title=title,
+            title=title or url_name.replace("_", " ").title(),
             index=index,
         )
         for url_name, final_url in final_urls.items()
@@ -950,7 +947,7 @@ def register_controllers(
     UrlMap = url_map_maker(root_url)
     url_maps = [UrlMap(**kwargs) for name, kwargs in names.items()]
 
-    # Add a catch all endpoint for any URL following the app's root URL and map it to the named controller
+    # Add a catch-all endpoint for any URL following the app's root URL and map it to the named controller
     if catch_all and catch_all in names:
         url_maps.append(
             UrlMap(
