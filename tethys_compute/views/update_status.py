@@ -34,7 +34,7 @@ def get_job(job_id, user=None):
     Returns: `TethysJob` object
 
     """
-    if user.is_anonymous:
+    if user is not None and user.is_anonymous:
         user = get_anonymous_user()
     if (
         user is None
