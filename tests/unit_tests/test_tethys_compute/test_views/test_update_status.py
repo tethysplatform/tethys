@@ -14,23 +14,35 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
 
     @mock.patch("tethys_compute.views.update_status.TethysJob.objects.get_subclass")
     async def test_get_job(self, mock_tj):
-        mock_user = mock.MagicMock(is_staff=False)
+        mock_user = mock.MagicMock(is_staff=False, is_anonymous=False)
         mock_user.has_perm.return_value = False
         await tethys_compute_update_status.get_job("job_id", mock_user)
         mock_tj.assert_called_with(id="job_id", user=mock_user)
 
     @mock.patch("tethys_compute.views.update_status.TethysJob.objects.get_subclass")
     async def test_get_job_staff(self, mock_tj):
-        mock_user = mock.MagicMock(is_staff=True)
+        mock_user = mock.MagicMock(is_staff=True, is_anonymous=False)
         await tethys_compute_update_status.get_job("job_id", mock_user)
         mock_tj.assert_called_with(id="job_id")
 
     @mock.patch("tethys_compute.views.update_status.TethysJob.objects.get_subclass")
     async def test_get_job_has_permission(self, mock_tj):
-        mock_user = mock.MagicMock(is_staff=False)
+        mock_user = mock.MagicMock(is_staff=False, is_anonymous=False)
         mock_user.has_perm.return_value = True
         await tethys_compute_update_status.get_job("job_id", mock_user)
         mock_tj.assert_called_with(id="job_id")
+
+    @mock.patch("tethys_compute.views.update_status.get_anonymous_user")
+    @mock.patch("tethys_compute.views.update_status.TethysJob.objects.get_subclass")
+    async def test_get_job_anonymous_user(self, mock_tj, mock_get_anonymous_user):
+        mock_user = mock.MagicMock(is_staff=False, is_anonymous=True)
+        mock_user.has_perm.return_value = False
+        mock_anonymous_user = mock.MagicMock(is_staff=False)
+        mock_anonymous_user.has_perm.return_value = False
+        mock_get_anonymous_user.return_value = mock_anonymous_user
+        await tethys_compute_update_status.get_job("job_id", mock_user)
+        mock_get_anonymous_user.assert_called_once()
+        mock_tj.assert_called_with(id="job_id", user=mock_anonymous_user)
 
     @mock.patch("tethys_compute.views.update_status.logger")
     @mock.patch("tethys_compute.views.update_status.JsonResponse")
