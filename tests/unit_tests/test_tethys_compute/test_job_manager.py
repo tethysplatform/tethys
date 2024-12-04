@@ -102,6 +102,32 @@ class TestJobManager(unittest.TestCase):
             workspace="test_user_workspace",
         )
 
+    @mock.patch("tethys_compute.job_manager.isinstance")
+    @mock.patch("tethys_compute.job_manager.get_anonymous_user")
+    @mock.patch("tethys_compute.job_manager.get_user_workspace")
+    @mock.patch("tethys_compute.job_manager.CondorJob")
+    def test_JobManager_create_job_anonymous_user(self, mock_cj, mock_guw, mock_get_anonymous_user, mock_isinstance):
+        mock_app = mock.MagicMock()
+        mock_app.package = "test_label"
+        mock_guw().path = "test_user_workspace"
+        mock_user = mock.MagicMock(is_staff=False, is_anonymous=True)
+        mock_user.has_perm.return_value = False
+        mock_anonymous_user = mock.MagicMock(is_staff=False)
+        mock_anonymous_user.has_perm.return_value = False
+        mock_get_anonymous_user.return_value = mock_anonymous_user
+        mock_isinstance.return_value = True
+
+        # Execute
+        ret_jm = JobManager(mock_app)
+        with mock.patch.dict(JOB_TYPES, {"CONDOR": mock_cj}):
+            ret_jm.create_job(name="test_name", user=mock_user, job_type="CONDOR")
+        mock_cj.assert_called_with(
+            label="test_label",
+            name="test_name",
+            user=mock_anonymous_user,
+            workspace="test_user_workspace",
+        )
+
     def test_JobManager_list_job_with_user(self):
         mgr = JobManager(self.app_model)
         ret = mgr.list_jobs(user=self.user_model)
