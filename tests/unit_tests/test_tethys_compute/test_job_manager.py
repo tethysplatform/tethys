@@ -106,7 +106,9 @@ class TestJobManager(unittest.TestCase):
     @mock.patch("tethys_compute.job_manager.get_anonymous_user")
     @mock.patch("tethys_compute.job_manager.get_user_workspace")
     @mock.patch("tethys_compute.job_manager.CondorJob")
-    def test_JobManager_create_job_anonymous_user(self, mock_cj, mock_guw, mock_get_anonymous_user, mock_isinstance):
+    def test_JobManager_create_job_anonymous_user(
+        self, mock_cj, mock_guw, mock_get_anonymous_user, mock_isinstance
+    ):
         mock_app = mock.MagicMock()
         mock_app.package = "test_label"
         mock_guw().path = "test_user_workspace"
