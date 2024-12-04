@@ -111,6 +111,7 @@ def quickstart_command(args):
             services_file=None,
             quiet=True,
             no_sync_stores=False,
+            update_installed=False,
         )
         install_command(app_install_args)
 
