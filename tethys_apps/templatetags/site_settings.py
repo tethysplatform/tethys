@@ -1,8 +1,8 @@
+from pathlib import Path
+
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.conf import settings
-
-from pathlib import Path
 
 from ..static_finders import TethysStaticFinder
 
@@ -14,6 +14,14 @@ register = template.Library()
 @register.filter
 @stringfilter
 def load_custom_css(var):
+    """Load Custom Styles defined in Tethys Portal -> Site Settings
+
+    Args:
+        var: a filename of CSS to load or CSS text to embed into the page
+
+    Returns: a string of HTML that either embeds CSS text or points to a file
+
+    """
     if var.startswith("/"):
         var = var.lstrip("/")
 
