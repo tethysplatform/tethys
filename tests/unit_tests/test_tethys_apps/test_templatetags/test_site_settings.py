@@ -44,3 +44,19 @@ class TestSiteSettings(unittest.TestCase):
 
         ret = ss.load_custom_css("test.css")
         self.assertEqual(ret, "<style>test.css</style>")
+
+    def test_long_css_text(self):
+        long_css_text = """
+            .site-header { margin: 0 50px 0 0; background-color: red; }
+            .site-header .navbar-brand { 
+                background-color: darkred; 
+                color: black; 
+                font-style: italic;
+                font-variant: small-caps;
+                font-family: cursive;
+                font-size: 24px;
+            }
+        """
+
+        ret = ss.load_custom_css(long_css_text)
+        self.assertEqual(ret, f"<style>{long_css_text}</style>")
