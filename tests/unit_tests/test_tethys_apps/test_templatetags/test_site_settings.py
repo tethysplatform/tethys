@@ -48,9 +48,9 @@ class TestSiteSettings(unittest.TestCase):
     def test_long_css_text(self):
         long_css_text = """
             .site-header { margin: 0 50px 0 0; background-color: red; }
-            .site-header .navbar-brand { 
-                background-color: darkred; 
-                color: black; 
+            .site-header .navbar-brand {
+                background-color: darkred;
+                color: black;
                 font-style: italic;
                 font-variant: small-caps;
                 font-family: cursive;
