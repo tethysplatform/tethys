@@ -17,12 +17,14 @@ def load_custom_css(var):
     if var.startswith("/"):
         var = var.lstrip("/")
 
-    if (Path(settings.STATIC_ROOT) / var).is_file() or static_finder.find(var):
-        return f'<link href="/static/{var}" rel="stylesheet" />'
+    try:
+        if (Path(settings.STATIC_ROOT) / var).is_file() or static_finder.find(var):
+            return f'<link href="/static/{var}" rel="stylesheet" />'
 
-    else:
         for path in settings.STATICFILES_DIRS:
             if (Path(path) / var).is_file():
                 return f'<link href="/static/{var}" rel="stylesheet" />'
+    except OSError:
+        pass
 
     return "<style>" + var + "</style>"
