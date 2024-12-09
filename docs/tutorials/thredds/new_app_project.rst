@@ -90,7 +90,7 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
         """
 
         name = 'THREDDS Tutorial'
-        index = 'thredds_tutorial:home'
+        index = 'home'
         icon = f'{package}/images/unidata_logo.png'
         package = 'thredds_tutorial'
         root_url = 'thredds-tutorial'
