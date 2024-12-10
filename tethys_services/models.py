@@ -168,8 +168,9 @@ class SpatialDatasetService(models.Model):
     if has_module(VALID_SPATIAL_ENGINES):
         GEOSERVER = VALID_SPATIAL_ENGINES["geoserver"]
     THREDDS = "thredds-engine"
+    PYGEOAPI = "pygeoapi-engine"
 
-    ENGINE_CHOICES = ((GEOSERVER, "GeoServer"), (THREDDS, "THREDDS"))
+    ENGINE_CHOICES = ((GEOSERVER, "GeoServer"), (THREDDS, "THREDDS"), (PYGEOAPI, "PyGeoAPI"))
 
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=GEOSERVER)
@@ -221,6 +222,9 @@ class SpatialDatasetService(models.Model):
             if not catalog_endpoint.endswith(".xml"):
                 catalog_endpoint = catalog_endpoint.rstrip("/") + "/catalog.xml"
             engine = TDSCatalog(str(catalog_endpoint))
+
+        elif self.engine == self.PYGEOAPI:
+            pass
 
         return engine
 
