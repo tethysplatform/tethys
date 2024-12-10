@@ -167,7 +167,8 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
 
 4. Include the new stylesheet and JavaScript modules in :file:`templates/thredds_tutorial/home.html`:
 
-.. code-block:: html+django
+.. code-block:: html+django 
+    :emphasize-lines: 2, 8, 18-21
 
     {% extends tethys_app.package|add:"/base.html" %}
     {% load static tethys %}
