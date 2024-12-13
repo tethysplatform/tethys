@@ -39,7 +39,7 @@ Example
         """
 
         name = 'My First App'
-        index = 'my_first_app:home'
+        index = 'home'
         icon = 'my_first_app/images/icon.gif'
         package = 'my_first_app'
         root_url = 'my-first-app'
