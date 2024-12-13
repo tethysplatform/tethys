@@ -638,7 +638,7 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
 7. Implement Variable and Style Control Methods
 ===============================================
 
-In this step you will implement the dataset controll JavaScript methods in :file:`public/js/leaflet_map.js`.
+In this step you will implement the dataset control JavaScript methods in :file:`public/js/leaflet_map.js`.
 
 Here is a brief explanation of each method that will be implemented in this step:
 
@@ -1171,7 +1171,7 @@ During development it is common to use print statements. Rather than delete thes
         """
         Controller for the app home page.
         """
-        catalog = app.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
+        catalog = App.get_spatial_dataset_service(App.THREDDS_SERVICE_NAME, as_engine=True)
 
         # Retrieve dataset options from the THREDDS service
         log.info('Retrieving Datasets...')
