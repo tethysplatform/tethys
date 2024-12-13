@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:bullseye
+FROM mambaorg/micromamba:bookworm
 ###################
 # BUILD ARGUMENTS #
 ###################
@@ -120,11 +120,12 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 
 # Install APT packages
 RUN rm -rf /var/lib/apt/lists/*\
+  && apt-get clean \
   && apt-get update \
   && apt-get -y install curl \
-  && mkdir /etc/apt/keyrings \
-  && curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | tee /etc/apt/keyrings/salt-archive-keyring-2023.pgp \
-  && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.pgp arch=amd64] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" | tee /etc/apt/sources.list.d/salt.list \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | tee /etc/apt/keyrings/salt-archive-keyring.pgp \
+  && curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.sources | tee /etc/apt/sources.list.d/salt.sources \
   && apt-get update \
   && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
   && rm -rf /var/lib/apt/lists/*
