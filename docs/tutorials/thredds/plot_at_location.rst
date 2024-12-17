@@ -145,7 +145,7 @@ In the next step you will create a new controller that will query the dataset at
     dependencies:
       ...
       - plotly
-      - goejson
+      - geojson
 
 3. Create New Plot Controller
 =============================
