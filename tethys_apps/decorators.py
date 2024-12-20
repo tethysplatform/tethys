@@ -23,6 +23,17 @@ from tethys_portal.views import error as tethys_portal_error
 from .base import has_permission
 
 
+def async_login_required(func):
+    @wraps(func)
+    async def wrapper(request, *args, **kwargs):
+        redirect = login_required(lambda r: r)(request)
+        if redirect != request:
+            return redirect
+        return await func(request, *args, **kwargs)
+
+    return wrapper
+
+
 def login_required(
     function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None
 ):

@@ -11,13 +11,12 @@
 import inspect
 import logging
 import re
-from functools import wraps
 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from django.contrib.auth.decorators import login_required
 from channels.db import database_sync_to_async
 
+from tethys_apps.decorators import async_login_required
 from tethys_compute.models import CondorWorkflow, DaskJob, DaskScheduler
 from tethys_gizmos.gizmo_options.jobs_table import JobsTable
 from tethys_sdk.gizmos import SelectInput
@@ -28,17 +27,6 @@ from tethys_compute.views import get_job, do_job_action
 server_document = optional_import("server_document", from_module="bokeh.embed")
 
 logger = logging.getLogger(f"tethys.{__name__}")
-
-
-def async_login_required(func):
-    @wraps(func)
-    async def wrapper(request, *args, **kwargs):
-        redirect = login_required(lambda r: r)(request)
-        if redirect != request:
-            return redirect
-        return await func(request, *args, **kwargs)
-
-    return wrapper
 
 
 async def _get_log_content(job, key1, key2):
