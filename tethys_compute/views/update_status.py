@@ -12,6 +12,7 @@ import asyncio
 import logging
 
 from django.http import JsonResponse
+from guardian.utils import get_anonymous_user
 from channels.db import database_sync_to_async
 
 from tethys_compute.models import TethysJob, DaskJob
@@ -33,6 +34,8 @@ def get_job(job_id, user=None):
     Returns: `TethysJob` object
 
     """
+    if user is not None and user.is_anonymous:
+        user = get_anonymous_user()
     if (
         user is None
         or user.is_staff
