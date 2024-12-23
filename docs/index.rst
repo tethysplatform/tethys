@@ -95,7 +95,7 @@ This material is based upon work supported by the National Science Foundation un
    :maxdepth: 1
    :hidden:
 
-   tethys_development
+   contribute
 
 .. toctree::
    :maxdepth: 3
