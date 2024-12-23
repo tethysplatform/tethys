@@ -17,7 +17,7 @@ The steps within this section are what is executed behind the scenes when using 
     
     For deploying a production instance of Tethys Portal, see :ref:`production_installation`.
     
-    To contribute to the Tethys Platform source code itself, see :ref:`developer_installation`.
+    To contribute to the Tethys Platform source code itself, see :ref:`setup_dev_environment`.
 
 Prerequisites
 -------------
@@ -69,6 +69,8 @@ First create a :ref:`virtual_environment` with the tool of your choice and then 
         .. code-block:: bash
 
             pip install tethys-platform django=<DJANGO_VERSION>
+
+Alternatively, to install from source refer to the :ref:`setup_dev_environment` docs
 
 .. important::
 
@@ -152,6 +154,6 @@ Related Docs
     installation/showcase_apps
     installation/update
     installation/production
-    installation/developer_installation
+    contribute/dev_environment
     installation/using_docker
     installation/web_admin_setup
