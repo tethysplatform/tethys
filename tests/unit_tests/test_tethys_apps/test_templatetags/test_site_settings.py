@@ -42,8 +42,8 @@ class TestSiteSettings(unittest.TestCase):
         mock_settings.STATIC_ROOT = "test_base_path1"
         mock_settings.STATICFILES_DIRS = ["test_base_path2"]
 
-        ret = ss.load_custom_css("test.css")
-        self.assertEqual(ret, "<style>test.css</style>")
+        ret = ss.load_custom_css(".navbar-brand { background-color: darkred; }")
+        self.assertEqual(ret, "<style>.navbar-brand { background-color: darkred; }</style>")
 
     def test_long_css_text(self):
         long_css_text = """
