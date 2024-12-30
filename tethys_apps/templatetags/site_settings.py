@@ -39,7 +39,7 @@ def load_custom_css(var):
         for path in settings.STATICFILES_DIRS:
             if (Path(path) / var).is_file():
                 return f'<link href="/static/{var}" rel="stylesheet" />'
-    # If the string is too long for a file path, which could happen if it is CSS, 
+    # If the string is too long for a file path, which could happen if it is CSS,
     # an OSError will be raised during the file path checks. This could also happen
     # if a lengthy file path is given or is otherwise invalid.
     except OSError as e:
