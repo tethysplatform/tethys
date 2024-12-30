@@ -47,6 +47,7 @@ def load_custom_css(var):
     else:
         oserror_exception = ""
 
+    # Verify the string is CSS and log warning if it is not
     common_css_chars = "{};,"
     if not any(c in var for c in common_css_chars):
         # This appears to be a filename and not a CSS string
