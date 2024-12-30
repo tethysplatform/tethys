@@ -40,7 +40,6 @@ def load_custom_css(var):
                 return f'<link href="/static/{var}" rel="stylesheet" />'
     except OSError as e:
         oserror_exception = ": " + str(e)
-        pass
     else:
         oserror_exception = ""
 
