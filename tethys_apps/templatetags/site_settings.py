@@ -32,6 +32,7 @@ def load_custom_css(var):
         var = var.lstrip("/")
 
     try:
+        # Check if var is a path to a file, if so return a link tag to the file
         if (Path(settings.STATIC_ROOT) / var).is_file() or static_finder.find(var):
             return f'<link href="/static/{var}" rel="stylesheet" />'
 
