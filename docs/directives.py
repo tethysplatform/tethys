@@ -1,17 +1,32 @@
 from docutils import nodes
-from docutils.parsers.rst import Directive
+from docutils.parsers.rst import Directive, directives
 from sphinx.util.nodes import make_refnode
 from sphinx import addnodes
 
 class RecipeGallery(Directive):
+
+    option_spec = {
+        "layout": directives.unchanged,
+    }
+
     has_content = True
     
     def run(self):
+        layout = self.options.get("layout", "multi-row")
+
+        print("Testing layout... ", layout)
+
+        if layout not in ["carousel", "multi-row"]:
+            raise self.error(f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'.")
+
         gallery_node = nodes.container()
-        gallery_node['classes'].append('recipe-gallery')
+        gallery_node['classes'].append(f'{layout}')
 
         env = self.state.document.settings.env
         builder = env.app.builder
+
+        recipe_count = len(self.content)
+        print("Testing recipe count... ", recipe_count)
 
         for line in self.content:
             parts = line.split('"')
@@ -23,7 +38,7 @@ class RecipeGallery(Directive):
             link, image_path = first_part.split(" ")
             title = parts[1].strip()
 
-            entry_node = nodes.container(classes=['recipe-entry'])
+            entry_node = nodes.container(classes=['recipe-card'])
 
             tags = parts[2].strip().strip("[]").split(",")
             tags_string = " ".join(tag.strip() for tag in tags)
@@ -54,6 +69,14 @@ class RecipeGallery(Directive):
 
             gallery_node += entry_node
 
-        return [gallery_node]
+        container_node = nodes.container(classes=['recipe-gallery', f'{layout}'])
+        if layout == "carousel" and recipe_count > 4: 
+            container_node += nodes.raw('', '<button class="carousel-button-left">←</button>', format='html')
+            container_node += gallery_node
+            container_node += nodes.raw('', '<button class="carousel-button-right">→</button>', format='html')
+        else:
+            container_node += gallery_node
+
+        return [container_node]
     
     
