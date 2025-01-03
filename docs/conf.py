@@ -280,7 +280,9 @@ html_favicon = "images/default_favicon.ico"
 html_static_path = ["_static"]
 html_css_files = [
     "css/tethys.css",
+    "css/recipe_gallery.css"
 ]
+html_js_files = ['js/recipe_gallery.js']
 
 html_theme = "sphinxawesome_theme"
 theme_options = ThemeOptions(

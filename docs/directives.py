@@ -71,9 +71,13 @@ class RecipeGallery(Directive):
 
         container_node = nodes.container(classes=['recipe-gallery', f'{layout}'])
         if layout == "carousel" and recipe_count > 4: 
-            container_node += nodes.raw('', '<button class="carousel-button-left">←</button>', format='html')
+            left_button_container_node = nodes.container(classes=['carousel-button-left-container'])
+            left_button_container_node += nodes.raw('', '<button class="carousel-button-left hidden">←</button>', format='html')
+            container_node += left_button_container_node
             container_node += gallery_node
-            container_node += nodes.raw('', '<button class="carousel-button-right">→</button>', format='html')
+            right_button_container_node = nodes.container(classes=['carousel-button-right-container'])
+            right_button_container_node += nodes.raw('', '<button class="carousel-button-right">→</button>', format='html')
+            container_node += right_button_container_node
         else:
             container_node += gallery_node
 
