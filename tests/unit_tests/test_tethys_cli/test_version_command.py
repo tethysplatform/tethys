@@ -23,10 +23,10 @@ class VersionCommandTests(unittest.TestCase):
             func=vc.version_command
         )
 
-    @mock.patch("builtins.print")
+    @mock.patch("tethys_cli.version_command.print")
     def test_version_command(self, mock_print):
-        import tethys_portal
-
+        from tethys_portal import __version__
+        __version__ = "1.2.3"
         mock_args = mock.MagicMock()
         vc.version_command(mock_args)
-        mock_print.assert_called_with(tethys_portal.__version__)
+        mock_print.assert_called_with("1.2.3")
