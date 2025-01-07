@@ -27,7 +27,6 @@ class VersionCommandTests(unittest.TestCase):
     def test_version_command(self, mock_print):
         from tethys_portal import __version__
 
-        __version__ = "1.2.3"  # noqa: F811, F841
         mock_args = mock.MagicMock()
         vc.version_command(mock_args)
-        mock_print.assert_called_with("1.2.3")
+        mock_print.assert_called_with(__version__)
