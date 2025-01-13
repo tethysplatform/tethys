@@ -43,7 +43,7 @@ def load_custom_css(var):
     # an OSError will be raised during the file path checks. This could also happen
     # if a lengthy file path is given or is otherwise invalid.
     except OSError as e:
-        oserror_exception = ": " + str(e)
+        oserror_exception = str(e)
     else:
         oserror_exception = ""
 
@@ -52,7 +52,7 @@ def load_custom_css(var):
     if not any(c in var for c in common_css_chars):
         # This appears to be a filename and not a CSS string
         log.warning(
-            "Could not load file '%s' for custom styles%s", var, oserror_exception
+            f"Could not load file '{var}' for custom styles: {oserror_exception}"
         )
         return ""
 
