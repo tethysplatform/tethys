@@ -85,7 +85,7 @@ To minimize the amount of code that is duplicated, you will create a new :file:`
 .. code-block:: html+django
 
     {% block header_buttons %}
-      {% include tethys_app.package|add:"header_buttons.html" %}
+      {% include tethys_app.package|add:"/header_buttons.html" %}
     {% endblock %}
 
 3. The Home button is included in :file:`header_buttons.html` and provided by :file:`base.html`, so it will be removed from :file:`viewer.html`. Delete the ``header_buttons`` block in :file:`templates/earth_engine/viewer.html`:
