@@ -11,11 +11,11 @@
     gap: 10px;
     justify-content: flex-start;
     width: calc(100%-8px);
-    justify-content: flex-start;
 }
 
 .carousel .recipe-card {
     flex: 0 0 calc(17.5% - 10px);
+    max-width: calc(17.5% - 10px);
 }
 
 .multi-row .recipe-card {
@@ -30,7 +30,7 @@
     margin-top: 10px;
     box-sizing: border-box;    
     height: auto;
-    border: 1px solid black;
+    border: 2px solid #e5e7eb;
     border-radius: 5px;
 }
 
@@ -65,7 +65,7 @@
     transition: transform 0.5s ease;
     padding: 0 !important;
     overflow: hidden;
-    white-space: nowrap;
+    white-space: normal;
     position: relative;
     gap: 10px;
 }
