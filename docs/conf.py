@@ -282,7 +282,9 @@ html_css_files = [
     "css/tethys.css",
     "css/recipe_gallery.css"
 ]
-html_js_files = ['js/recipe_gallery.js']
+html_js_files = [
+    'js/recipe_gallery.js'
+]
 
 html_theme = "sphinxawesome_theme"
 theme_options = ThemeOptions(

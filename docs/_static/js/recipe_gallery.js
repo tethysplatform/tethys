@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(currentPageIndex, maxPageIndex);
             cards.forEach(function(card) {
                 card.style.transform = `translateX(${currentPageIndex * -containerWidth}px)`;
-
             });
             if (currentPageIndex === 0) {
                 leftButton.classList.add("hidden");
@@ -40,4 +39,20 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
     });
+
+    const searchBar = document.querySelector("#recipe-tag-search-bar");
+    if (searchBar) {
+        searchBar.addEventListener("input", () => {
+            const searchValue = searchBar.value.toLowerCase();
+            const cards = document.querySelectorAll(".recipe-card");
+            cards.forEach(card => {
+                const tags = card.querySelector(".recipe-tags").textContent.toLowerCase();
+                if (tags.includes(searchValue)) {
+                    card.classList.remove("hidden");
+                } else {
+                    card.classList.add("hidden");
+                }
+            });
+        });
+    }
 });

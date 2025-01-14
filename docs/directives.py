@@ -14,26 +14,23 @@ class RecipeGallery(Directive):
     def run(self):
         layout = self.options.get("layout", "multi-row")
 
-        print("Testing layout... ", layout)
-
         if layout not in ["carousel", "multi-row"]:
             raise self.error(f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'.")
 
         gallery_node = nodes.container()
         gallery_node['classes'].append(f'{layout}')
-
+            
         env = self.state.document.settings.env
         builder = env.app.builder
 
         recipe_count = len(self.content)
-        print("Testing recipe count... ", recipe_count)
+
+        recipe_card_nodes = []
 
         for line in self.content:
             parts = line.split('"')
-            print("Testing parts... ", parts)
             if len(parts) < 3:
                 raise self.error(f"Invalid syntax: {line}")
-
             first_part = parts[0].strip()
             link, image_path = first_part.split(" ")
             title = parts[1].strip()
@@ -43,21 +40,20 @@ class RecipeGallery(Directive):
             tags = parts[2].strip().strip("[]").split(",")
             tags_string = " ".join(tag.strip() for tag in tags)
 
-            print("Testing tags: ", tags_string)
-
-            print(f"Testing for toctree now... Link: {link}, Title: {title}")
-
             if link:
                 try:
                     resolved_link = builder.get_relative_uri(env.docname, link)
-                    print(f"Resolved link: {resolved_link}")
                 except Exception as e:
                     print(f"Could not resolve link {link}: {e}")
                     resolved_link = link 
 
+                image_container = nodes.container(classes=['recipe-image-container'])
                 ref_node = nodes.reference(refuri=resolved_link)
-                ref_node += nodes.image(uri=image_path, alt=title)
-                entry_node += ref_node
+                image_node = nodes.image(uri=image_path, alt="Image Not Found")
+                
+                ref_node += image_node
+                image_container += ref_node
+                entry_node += image_container
 
             else:
                 entry_node += nodes.image(uri=image_path, alt=title)
@@ -66,21 +62,22 @@ class RecipeGallery(Directive):
             tags_node = nodes.paragraph(text=tags_string)
             tags_node['classes'].append('recipe-tags')
             entry_node += tags_node
+            recipe_card_nodes.append(entry_node)
 
-            gallery_node += entry_node
-
-        container_node = nodes.container(classes=['recipe-gallery', f'{layout}'])
         if layout == "carousel" and recipe_count > 4: 
             left_button_container_node = nodes.container(classes=['carousel-button-left-container'])
             left_button_container_node += nodes.raw('', '<button class="carousel-button-left hidden">←</button>', format='html')
-            container_node += left_button_container_node
-            container_node += gallery_node
+            gallery_node += left_button_container_node
+            print("Reached the add nodes area...")
+            for node in recipe_card_nodes:
+                gallery_node += node
             right_button_container_node = nodes.container(classes=['carousel-button-right-container'])
             right_button_container_node += nodes.raw('', '<button class="carousel-button-right">→</button>', format='html')
-            container_node += right_button_container_node
+            gallery_node += right_button_container_node
         else:
-            container_node += gallery_node
-
-        return [container_node]
+            for node in recipe_card_nodes:
+                gallery_node += node
+                
+        return [gallery_node]
     
     
