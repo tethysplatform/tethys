@@ -1,43 +1,45 @@
 /* Recipe Gallery */
 
-/* TESTING DELETE THIS */
+.hidden {
+    display: none;
+}
+
+/* TODO TESTING  DELETE THIS */
 #recipe-tag-search-bar {
     border: 1px solid black;
 }
 
 /* Shared styles for both styles of recipe gallery */
+.recipe-gallery-container {
+    height: auto;
+    padding: 0 !important;
+    position: relative;
+    overflow: hidden;
+}
+
 .recipe-gallery {
     display: flex;
     gap: 10px;
-    justify-content: flex-start;
-    width: calc(100%-8px);
-}
-
-.carousel .recipe-card {
-    flex: 0 0 calc(17.5% - 10px);
-    max-width: calc(17.5% - 10px);
-}
-
-.multi-row .recipe-card {
-    flex: 0 0 calc(25% - 10px);
 }
 
 .recipe-card {
     padding: 5px !important;
     text-align: center;
-    margin-right: 10px;
-    margin-left: 0px;
+    /* margin-right: 10px; */
+    margin-right: 0;
+    margin-left: 0;
     margin-top: 10px;
     box-sizing: border-box;    
     height: auto;
     border: 2px solid #e5e7eb;
     border-radius: 5px;
+    gap: 10px;
 }
 
 .recipe-image-container {
     width: 85%;
     aspect-ratio: 1 / 1;
-    padding: 5% !important;
+    padding: 2% !important;
 }
 
  .recipe-link {
@@ -58,50 +60,61 @@
 }
 
 /* Recipe Gallery with carousel layout */
+
 .carousel {
-    width: calc(100% - 10px);
+    width: 100%;
     box-sizing: border-box;
-    display: flex;
     transition: transform 0.5s ease;
     padding: 0 !important;
-    overflow: hidden;
     white-space: normal;
     position: relative;
-    gap: 10px;
+    margin: 0 !important;
+    border: 1px solid red;
+    
 }
 
 .carousel-button-left-container, .carousel-button-right-container {
-    width: calc(15% - 10px) !important;
+    width: calc(10% - 10px) !important;
     align-items: center;
     justify-content: center;
-    height: 200px;
-    /* transform: translateY(60px); */
+    height: calc(100% - 10px); /* Account for margin-top of recipe cards so the buttons line up with height */
     position: absolute;
-    z-index: 10;
+    z-index: 1000;
     padding: 0 !important;
+    margin: 0 !important;
+    margin-top: 10px !important; /* Account for margin-top of recipe cards */
+    top: 0;
 }
 
-/* .carousel-button-left-container {
-    left: calc(1% - 20px);
-} */
+.carousel-button-left-container {
+    left: 0;
+}
 
-/* .carousel-button-right-container {
-    right: calc(1% - 20px); 
-} */
+.carousel-button-right-container {
+    right: 0;
+}
 
 /* TODO add hover color change for the carousel buttons */
 .carousel-button-left, .carousel-button-right {
     height: 100%;
-    margin-top: 10px;
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.carousel .recipe-card {
+    /* flex: 0 0 20%; */
+    flex: 0 0 calc(20% - 5px);
+    border: 2px solid #1a3e86;
 }
 
 /* Recipe Gallery with multi-row layout */
 .multi-row {
     width: 100%;
-    display: flex;
-    
     justify-items: start;
     padding: 0 !important;
     flex-wrap: wrap;
+}
+
+.multi-row .recipe-card {
+    flex: 0 0 calc(25% - 10px);
 }

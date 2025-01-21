@@ -16,9 +16,14 @@ class RecipeGallery(Directive):
 
         if layout not in ["carousel", "multi-row"]:
             raise self.error(f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'.")
+        gallery_container_node = nodes.container()
+        gallery_container_node['classes'].append('recipe-gallery-container')
+        if layout == "carousel":
+            gallery_container_node['classes'].append('carousel-container')
 
         gallery_node = nodes.container()
         gallery_node['classes'].append(f'{layout}')
+        gallery_node['classes'].append('recipe-gallery')
             
         env = self.state.document.settings.env
         builder = env.app.builder
@@ -66,18 +71,24 @@ class RecipeGallery(Directive):
 
         if layout == "carousel" and recipe_count > 4: 
             left_button_container_node = nodes.container(classes=['carousel-button-left-container'])
-            left_button_container_node += nodes.raw('', '<button class="carousel-button-left hidden">←</button>', format='html')
-            gallery_node += left_button_container_node
+            left_button_container_node += nodes.raw('', '<button class="carousel-button-left">←</button>', format='html')
+            gallery_container_node += left_button_container_node
+
             print("Reached the add nodes area...")
             for node in recipe_card_nodes:
                 gallery_node += node
+            gallery_container_node += gallery_node
+
             right_button_container_node = nodes.container(classes=['carousel-button-right-container'])
             right_button_container_node += nodes.raw('', '<button class="carousel-button-right">→</button>', format='html')
-            gallery_node += right_button_container_node
+            gallery_container_node += right_button_container_node
+            return [gallery_container_node]
         else:
             for node in recipe_card_nodes:
                 gallery_node += node
+            gallery_container_node += gallery_node
+
                 
-        return [gallery_node]
+        return [gallery_container_node]
     
     
