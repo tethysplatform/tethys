@@ -24,6 +24,7 @@ Prerequisites
 
 Be sure that the system you are using meets the minimum :ref:`system_reqs`.
 
+.. _getting_started_install_tethys:
 
 1. Install the ``tethys-platform`` package
 ------------------------------------------
