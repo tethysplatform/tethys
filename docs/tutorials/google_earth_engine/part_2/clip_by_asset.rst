@@ -272,7 +272,7 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
 3. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to call the new ``get_user_boundary_path`` function and then export the ``ee.FeatureCollection`` to an asset at that path: (no try/except)
 
 .. code-block:: python
-    :emphasize-lines: 29-39
+    :emphasize-lines: 29-40
 
     def upload_shapefile_to_gee(user, shp_file):
         """
@@ -314,6 +314,10 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
         )
 
         task.start()
+
+.. tip:: 
+
+    You may need to manually add these empty folders to your assets. In the Google Earth Engine code editor, navigate to the **Assets** tab in the top-left pane of the code editor and create a new folder named  **users**, then another named **earth_engine_app**. Then, simply drag the **earth_engine_app** folder into the **users** folder. 
 
 4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the path returned from ``get_user_boundary_path`` is printed to the terminal where Tethys is running.
 
