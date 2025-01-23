@@ -199,12 +199,31 @@ The first step to uploading the shapefile as an asset is to convert it to an ``e
 
 Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can be exported as a Google Earth Engine table asset (see:  `Importing Table Data - Uploading a Shapefile <https://developers.google.com/earth-engine/importing>`_). Remember that ``ee`` objects are server objects, which means the features are already on the server. Exporting the ``ee.FeatureCollection`` as an asset persists it to storage in the GEE cloud infrastructure so that you can use it again later without needing to upload it again. Similar to when the shapefile was written to the user's workspace, several helper functions will also be created to manage the folder where the asset will be written.
 
-1. The ``get_asset_dir_for_user`` will create a folder for the user and return the path. function Create a new ``get_asset_dir_for_user`` function in :file:`gee/methods.py` with the following contents:
+1. The ``get_asset_dir_for_user`` function will create a folder for the user and return the path. It will make use of the ``get_earth_engine_credentials_path`` function to find the credentials file with information on your Earth Engine account and project. 
+Create two new functions: ``get_earth_engine_credentials_path``, and  ``get_asset_dir_for_user``, both in :file:`gee/methods.py` with the following contents:
 
 .. code-block:: python
 
     import os
+    import platform
     import json
+
+.. code-block:: python
+
+    def get_earth_engine_credentials_path():
+        """Returns the full path to the Earth Engine credentials file.
+        
+        Compatible with both Linux/MacOS and Windows.
+        """
+        if platform.system() in ["Linux", "Darwin"]:
+            return os.path.expanduser("~/.config/earthengine/credentials")
+
+        elif platform.system() == "Windows":
+            user_profile = os.environ["USERPROFILE"]
+            return os.path.join(user_profile, ".config", "earthengine", "credentials")
+
+        else:
+            raise OSError("Unsupported operating system.")
 
 .. code-block:: python
 
@@ -219,15 +238,33 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
             str: asset directory path for given user.
         """
         asset_roots = ee.batch.data.getAssetRoots()
-
         if len(asset_roots) < 1:
-            # Initialize the asset root directory if one doesn't exist already 
-            ee.batch.data.createAssetHome('users/earth_engine_app')
-        
+            # Find the Earth Engine credentials file path
+            credentials_path = get_earth_engine_credentials_path()
+            try:
+                with open(credentials_path) as f:
+                    credentials = json.load(f)
+                    # Get the project ID from the credentials
+                    project_id = credentials.get("project", None)
+                    if not project_id:
+                        raise ValueError('Project ID not found in credentials.')
+            except FileNotFoundError:
+                raise ValueError('Credentials file not found.')
+            
+            asset_path = f"projects/{project_id}/assets/tethys"
+            # Create the asset directory
+            ee.batch.data.createAsset({
+                'type': 'Folder',
+                'name': asset_path
+            })
+
+            asset_roots = ee.batch.data.getAssetRoots()
+
+        # Prepare asset directory paths
         asset_root_dir = asset_roots[0]['id']
-        earth_engine_root_dir = os.path.join(asset_root_dir, 'earth_engine_app')
-        user_root_dir = os.path.join(earth_engine_root_dir, user.username)
-        
+        earth_engine_root_dir = asset_root_dir + "/earth_engine_app"
+        user_root_dir = earth_engine_root_dir + f"/{user.username}"
+
         # Create earth engine directory, will raise exception if it already exists
         try:
             ee.batch.data.createAsset({
@@ -266,7 +303,7 @@ Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can
             str: the unique path for the user boundary asset.
         """
         user_asset_dir = get_asset_dir_for_user(user)
-        user_boundary_asset_path = os.path.join(user_asset_dir, 'boundary')
+        user_boundary_asset_path = user_asset_dir + '/boundary'
         return user_boundary_asset_path
 
 3. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to call the new ``get_user_boundary_path`` function and then export the ``ee.FeatureCollection`` to an asset at that path: (no try/except)
