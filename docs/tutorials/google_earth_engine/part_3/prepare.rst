@@ -96,10 +96,10 @@ Although using the :file:`gee/params.py` file to store our service account crede
 
     from . import params as gee_account
 
-4. Use the private key path custom setting in ``get_asset_dir_for_user`` in :file:`gee/methods.py` by replacing the ``private_key`` variable with the following:
+4. Use the private key path custom setting in ``get_asset_dir_for_user`` in :file:`gee/methods.py` with the following:
 
 .. code-block:: python
-    :emphasize-lines: 12
+    :emphasize-lines: 13-17
 
     def get_asset_dir_for_user(user):
         """
@@ -111,11 +111,19 @@ Although using the :file:`gee/params.py` file to store our service account crede
         Returns:
             str: asset directory path for given user.
         """
+        asset_roots = ee.batch.data.getAssetRoots()
+        
         # Retreieve project ID from private key file
-        with open(private_key_path, 'r') as f:
-            private_key = json.load(f)
+        if len(asset_roots) < 1:
+            with open(private_key_path) as f:
+                private_key_contents = json.load(f)
+                project_id = private_key_contents.get("project", None)
+            
+        asset_path = f"projects/{project_id}/assets/tethys"
 
         ...
+
+You can also delete the ``get_earth_engine_credentials_path`` function from :file:`gee/methods.py` as it is no longer needed.
 
 5. **Delete** :file:`gee/params.py`.
 
