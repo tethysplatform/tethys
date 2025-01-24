@@ -69,26 +69,17 @@ class RecipeGallery(Directive):
             entry_node += tags_node
             recipe_card_nodes.append(entry_node)
 
+        for node in recipe_card_nodes:
+            gallery_node += node
+        gallery_container_node += gallery_node
+
         if layout == "carousel" and recipe_count > 4: 
             left_button_container_node = nodes.container(classes=['carousel-button-left-container'])
-            left_button_container_node += nodes.raw('', '<button class="carousel-button-left">←</button>', format='html')
+            left_button_container_node += nodes.raw('', '<button class="carousel-button-left"><i class="fas fa-arrow-left fa-lg"></i></button>', format='html')
             gallery_container_node += left_button_container_node
-
-            print("Reached the add nodes area...")
-            for node in recipe_card_nodes:
-                gallery_node += node
-            gallery_container_node += gallery_node
-
             right_button_container_node = nodes.container(classes=['carousel-button-right-container'])
-            right_button_container_node += nodes.raw('', '<button class="carousel-button-right">→</button>', format='html')
+            right_button_container_node += nodes.raw('', '<button class="carousel-button-right"><i class="fas fa-arrow-right fa-lg"></i></button>', format='html')
             gallery_container_node += right_button_container_node
             return [gallery_container_node]
-        else:
-            for node in recipe_card_nodes:
-                gallery_node += node
-            gallery_container_node += gallery_node
-
-                
+          
         return [gallery_container_node]
-    
-    

@@ -19,21 +19,18 @@
 
 .recipe-gallery {
     display: flex;
-    gap: 10px;
 }
 
 .recipe-card {
     padding: 5px !important;
     text-align: center;
-    /* margin-right: 10px; */
-    margin-right: 0;
+    margin-right: 10px;
     margin-left: 0;
     margin-top: 10px;
     box-sizing: border-box;    
     height: auto;
     border: 2px solid #e5e7eb;
     border-radius: 5px;
-    gap: 10px;
 }
 
 .recipe-image-container {
@@ -60,17 +57,14 @@
 }
 
 /* Recipe Gallery with carousel layout */
-
 .carousel {
     width: 100%;
     box-sizing: border-box;
     transition: transform 0.5s ease;
-    padding: 0 !important;
+    padding: 0 10% !important;
     white-space: normal;
     position: relative;
     margin: 0 !important;
-    border: 1px solid red;
-    
 }
 
 .carousel-button-left-container, .carousel-button-right-container {
@@ -94,17 +88,32 @@
     right: 0;
 }
 
-/* TODO add hover color change for the carousel buttons */
+.carousel-button-left-container:hover .carousel-button-left, .carousel-button-right-container:hover .carousel-button-right {
+    opacity: 1;
+    visibility: visible;
+}
+
 .carousel-button-left, .carousel-button-right {
     height: 100%;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.650);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    color: white;
+}
+
+.carousel-button-left {
+    padding-left: 35%;
+}
+
+.carousel-button-right {
+    padding-right: 35%;
 }
 
 .carousel .recipe-card {
     /* flex: 0 0 20%; */
-    flex: 0 0 calc(20% - 5px);
-    border: 2px solid #1a3e86;
+    flex: 0 0 calc((100% - (3 * 10px)) /4);
 }
 
 /* Recipe Gallery with multi-row layout */

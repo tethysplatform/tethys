@@ -280,8 +280,10 @@ html_favicon = "images/default_favicon.ico"
 html_static_path = ["_static"]
 html_css_files = [
     "css/tethys.css",
-    "css/recipe_gallery.css"
+    "css/recipe_gallery.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css", # Font Awesome for arrow icons in recipe carousel
 ]
+
 html_js_files = [
     'js/recipe_gallery.js'
 ]

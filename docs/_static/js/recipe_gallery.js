@@ -1,39 +1,85 @@
 function prepareCarousel(carouselContainer) {
+    let leftButton = carouselContainer.querySelector(".carousel-button-left");
+    let rightButton = carouselContainer.querySelector(".carousel-button-right");
+
     let carousel = carouselContainer.querySelector(".carousel");
-    let cards = carousel.querySelectorAll(".recipe-card");
-    let cardTransformations = Array.from(cards).map(() => 0);
+    // TODO Get all the cards in the carousel that are visible
+    let cards = Array.from(carousel.querySelectorAll(".recipe-card"));
 
+    let cardWidth = cards[0].getBoundingClientRect().width;
+    let cardMargin = parseInt(getComputedStyle(cards[0]).marginRight);
+
+    let extraCardsInLastSlide = cards.length % 4;
     
-    let containerWidth = carouselContainer.getBoundingClientRect().width;
-    let cardWidth = containerWidth * 0.20 - 10;
-    let buttonWidth = containerWidth * 0.10 - 10;
-    
-    const setInitialPosition = () => {
-        carousel.style.transform = `translateX(${buttonWidth}px)`;
-    };
+    let currentIndex = 5;
+    let maxIndex = cards.length + 5;
 
-    const leftButton = carouselContainer.querySelector(".carousel-button-left");
-    const rightButton = carouselContainer.querySelector(".carousel-button-right");
+    if (cards.length > 4) {
+        // Clone the first and last 5 cards to the opposite end of the carousel to create the illusion of infinite scrolling
+        let lastSlideClones = cards.slice(-5).map(card => card.cloneNode(true));
+        let firstSlideClones = cards.slice(0, 4).map(card =>card.cloneNode(true));
 
-    setInitialPosition();
-    leftButton.classList.add("hidden");
+        lastSlideClones.forEach(clone => carousel.insertBefore(clone, cards[0]));
+        firstSlideClones.forEach(clone => carousel.appendChild(clone));
+        
+        setInitialPosition();
 
-    let currentIndex = 0;
-    let maxIndex = Math.ceil(cards.length / 4) - 1;
-    let cardsInLastSlide = cards.length % 4;
+        leftButton.addEventListener("click", () => {
+            updateCarousel(-4);
+        });
+        
+        rightButton.addEventListener("click", () => {
+            updateCarousel(4);
+    });
+    }
     
     function updateCarousel(offset) {
-
-        carousel.style.transform = `translateX(${offset * (cardWidth * 4)}px)`;
+        let remainingCards = maxIndex - (currentIndex + offset);
+        
+        if (offset > 0 && remainingCards <= 4 && remainingCards > 0 && currentIndex < maxIndex) {
+            currentIndex += remainingCards
+        } else if (offset < 0 && currentIndex + offset < 5 && currentIndex > 5) {
+            currentIndex = 5;
+        } else {
+            currentIndex += offset;
+        }
+        console.log("Post, Current index: ", currentIndex);
+        let shift = -currentIndex * (cardWidth + cardMargin);
+        carousel.style.transform = `translateX(${shift}px)`;
+        checkBounds();
     }
 
-    leftButton.addEventListener("click", () => {
-        updateCarousel(1);
-    });
+    function checkBounds() {
+        // Check if carousel is at either end of the slides, and if so, reset the position to the 
+        // opposite end seamlessly without any transition to perform illusion of infinite scrolling
+        if (currentIndex >= cards.length + 5) {
+            setTimeout(() => {
+                carousel.style.transition = "none"; 
+                currentIndex = 5; //Reset to first slide
+                let shift = -currentIndex * (cardWidth + cardMargin);
+                carousel.style.transform = `translateX(${shift}px)`;
+                
+                setTimeout(() => carousel.style.transition = "transform 0.5s ease", 50); // Re-enable transition
+            }, 500);
+        } else if (currentIndex < 5) {
+            setTimeout(() => {
+                console.log("Pre, Current index: ", currentIndex);
+                carousel.style.transition = "none";
+                currentIndex = cards.length + 1; // Reset to last slide
+                let shift = -currentIndex * (cardWidth + cardMargin);
+                carousel.style.transform = `translateX(${shift}px)`;
+                console.log("Post, Current index: ", currentIndex);
+                setTimeout(() => carousel.style.transition = "transform 0.5s ease-in-out", 50); // Re-enable transition
+            }, 500);
+        }
+    }
     
-    rightButton.addEventListener("click", () => {
-        updateCarousel(-1);
-    });
+    function setInitialPosition() {
+        carousel.style.transition = "none"; // Disable transition to avoid animation on initial load
+        let shift = -currentIndex * (cardWidth + cardMargin);
+        carousel.style.transform = `translateX(${shift}px)`;
+        setTimeout(() => carousel.style.transition = "transform 0.5s ease-in-out", 50); // Re-enable transition
+    }   
 }
 
 document.addEventListener("DOMContentLoaded", () => {
