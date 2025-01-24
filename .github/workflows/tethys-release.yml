@@ -60,7 +60,7 @@ jobs:
           full_tag="${{ steps.version.outputs.full }}";
           # no "+" characters allowed in Docker tags
           safe_tag="${full_tag//+/-}";
-          docker build -t ${{ env.DOCKER_UPLOAD_URL }}:"${{ steps.safetag.outputs.safetag }}" .;
+          docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ env.DOCKER_UPLOAD_URL }}:"${{ steps.safetag.outputs.safetag }}" .;
       # Authenticate docker
       - name: Authenticate Docker
         run: |
