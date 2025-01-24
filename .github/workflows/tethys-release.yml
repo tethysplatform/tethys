@@ -155,7 +155,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate conda-build;
           echo "Publishing to release channel...";
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/tethys-platform*.* --force;
       - name: Upload to Conda Dev Channel
         if: ${{ steps.version.outputs.prerelease != '' }}
         run: |
@@ -163,7 +163,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate conda-build;
           echo "Publishing to dev channel...";
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.* --force;
 
       # BUILD micro-tethys-platform
 
@@ -194,7 +194,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate conda-build;
           echo "Publishing to release channel...";
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
       - name: Upload to Conda Dev Channel - micro
         if: ${{ steps.version.outputs.prerelease != '' }}
         run: |
@@ -202,4 +202,4 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           conda activate conda-build;
           echo "Publishing to dev channel...";
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
