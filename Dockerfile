@@ -8,6 +8,8 @@ ARG DJANGO_VERSION=4.2.*
 ARG DJANGO_CHANNELS_VERSION
 ARG DAPHNE_VERSION
 
+RUN echo "Build Options: Python ${PYTHON_VERSION}, Django ${DJANGO_VERSION}, Daphne ${DAPHNE_VERSION}, Django Channels ${DJANGO_CHANNELS_VERSION}, Micro Tethys ${MICRO_TETHYS}"
+
 ###############
 # ENVIRONMENT #
 ###############
