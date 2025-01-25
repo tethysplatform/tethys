@@ -752,20 +752,32 @@ def install_command(args):
                         )
                     else:
                         write_warning(
-                            "Conda is not installed. Attempting to install conda packages with pip..."
+                            "Conda is not installed..."
                         )
-                        try:
-                            call(
-                                [
-                                    "pip",
-                                    "install",
-                                    *requirements_config["conda"]["packages"],
-                                ]
-                            )
-                        except Exception as e:
-                            write_error(
-                                f"Installing conda packages with pip failed with the following exception: {e}"
-                            )
+                        proceed = input(
+                            "Attempt to install conda packages with pip and continue the installation process: [y/n]"
+                        )
+                        while proceed not in ["y", "n", "Y", "N"]:
+                            proceed = input('Please enter either "y" or "n": ')
+
+                        if proceed in ["y", "n", "Y", "N"]:
+                            if proceed in ["y", "Y"]:
+                                try:
+                                    call(
+                                        [
+                                            "pip",
+                                            "install",
+                                            *requirements_config["conda"]["packages"],
+                                        ]
+                                    )
+                                except Exception as e:
+                                    write_error(
+                                        f"Installing conda packages with pip failed with the following exception: {e}"
+                                    )
+                            else:
+                                write_msg("\nInstall Command cancelled.")
+                                exit(0)
+                                
                 if validate_schema("pip", requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(["pip", "install", *requirements_config["pip"]])
