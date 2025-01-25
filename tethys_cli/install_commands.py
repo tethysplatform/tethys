@@ -777,7 +777,7 @@ def install_command(args):
                             else:
                                 write_msg("\nInstall Command cancelled.")
                                 exit(0)
-                                
+
                 if validate_schema("pip", requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(["pip", "install", *requirements_config["pip"]])
