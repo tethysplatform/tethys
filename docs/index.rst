@@ -79,6 +79,7 @@ App Development
 
    tutorials
    dev_guides
+   recipes
 
 Deployment
 ==========

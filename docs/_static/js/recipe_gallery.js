@@ -93,10 +93,10 @@ function prepareCarousel(carouselContainer) {
 
     function checkBounds() {
         // Check if carousel is at either end of the slides, and if so, reset the position to the 
-        // opposite end seamlessly without any transition to perform illusion of infinite scrolling
+        // opposite end seamlessly without any transition to create an illusion of infinite scrolling
         let numOfCards = getNumOfCards();
-        let isAtLastSlide = currentIndex >= numOfCards + 5;
-        let isAtFirstSlide = currentIndex < 5;
+        let isAtFirstSlide = currentIndex >= numOfCards + 5;
+        let isAtLastSlide = currentIndex < 5;
 
         if (isAtLastSlide || isAtFirstSlide) {
             setTimeout(() => {
