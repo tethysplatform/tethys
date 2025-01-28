@@ -23,7 +23,7 @@ class RecipeGallery(Directive):
         gallery_node = nodes.container()
         gallery_node['classes'].append(f'{layout}')
         gallery_node['classes'].append('recipe-gallery')
-  
+
         env = self.state.document.settings.env
         builder = env.app.builder
 
@@ -82,4 +82,3 @@ class RecipeGallery(Directive):
             return [gallery_container_node]
 
         return [gallery_container_node]
-    
