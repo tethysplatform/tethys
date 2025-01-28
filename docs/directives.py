@@ -14,15 +14,17 @@ class RecipeGallery(Directive):
         layout = self.options.get("layout", "multi-row")
 
         if layout not in ["carousel", "multi-row"]:
-            raise self.error(f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'.")
+            raise self.error(
+                f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'."
+            )
         gallery_container_node = nodes.container()
-        gallery_container_node['classes'].append('recipe-gallery-container')
+        gallery_container_node["classes"].append("recipe-gallery-container")
         if layout == "carousel":
-            gallery_container_node['classes'].append('carousel-container')
+            gallery_container_node["classes"].append("carousel-container")
 
         gallery_node = nodes.container()
-        gallery_node['classes'].append(f'{layout}')
-        gallery_node['classes'].append('recipe-gallery')
+        gallery_node["classes"].append(f"{layout}")
+        gallery_node["classes"].append("recipe-gallery")
 
         env = self.state.document.settings.env
         builder = env.app.builder
@@ -39,7 +41,7 @@ class RecipeGallery(Directive):
             link, image_path = first_part.split(" ")
             title = parts[1].strip()
 
-            entry_node = nodes.container(classes=['recipe-card'])
+            entry_node = nodes.container(classes=["recipe-card"])
 
             tags = parts[2].strip().strip("[]").split(",")
             tags_string = " ".join(tag.strip() for tag in tags)
@@ -51,7 +53,7 @@ class RecipeGallery(Directive):
                     print(f"Could not resolve link {link}: {e}")
                     resolved_link = link
 
-                image_container = nodes.container(classes=['recipe-image-container'])
+                image_container = nodes.container(classes=["recipe-image-container"])
                 ref_node = nodes.reference(refuri=resolved_link)
                 image_node = nodes.image(uri=image_path, alt="Image Not Found")
 
@@ -64,7 +66,7 @@ class RecipeGallery(Directive):
 
             entry_node += nodes.strong(text=title)
             tags_node = nodes.paragraph(text=tags_string)
-            tags_node['classes'].append('recipe-tags')
+            tags_node["classes"].append("recipe-tags")
             entry_node += tags_node
             recipe_card_nodes.append(entry_node)
 
@@ -73,11 +75,23 @@ class RecipeGallery(Directive):
         gallery_container_node += gallery_node
 
         if layout == "carousel" and recipe_count > 4:
-            left_button_container_node = nodes.container(classes=['carousel-button-left-container'])
-            left_button_container_node += nodes.raw('', '<button class="carousel-button-left"><i class="fas fa-arrow-left fa-lg"></i></button>', format='html')
+            left_button_container_node = nodes.container(
+                classes=["carousel-button-left-container"]
+            )
+            left_button_container_node += nodes.raw(
+                "",
+                '<button class="carousel-button-left"><i class="fas fa-arrow-left fa-lg"></i></button>',
+                format="html",
+            )
             gallery_container_node += left_button_container_node
-            right_button_container_node = nodes.container(classes=['carousel-button-right-container'])
-            right_button_container_node += nodes.raw('', '<button class="carousel-button-right"><i class="fas fa-arrow-right fa-lg"></i></button>', format='html')
+            right_button_container_node = nodes.container(
+                classes=["carousel-button-right-container"]
+            )
+            right_button_container_node += nodes.raw(
+                "",
+                '<button class="carousel-button-right"><i class="fas fa-arrow-right fa-lg"></i></button>',
+                format="html",
+            )
             gallery_container_node += right_button_container_node
             return [gallery_container_node]
 

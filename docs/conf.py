@@ -24,7 +24,7 @@ from setuptools_scm import get_version
 from sphinxawesome_theme import ThemeOptions, LinkIcon
 from sphinxawesome_theme.postprocess import Icons
 
-from docs.directives import RecipeGallery
+from directives import RecipeGallery
 
 # Add the current directory to sys.path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -282,9 +282,7 @@ html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",  # Font Awesome for arrow icons in recipe carousels
 ]
 
-html_js_files = [
-    'js/recipe_gallery.js'
-]
+html_js_files = ["js/recipe_gallery.js"]
 
 html_theme = "sphinxawesome_theme"
 theme_options = ThemeOptions(
