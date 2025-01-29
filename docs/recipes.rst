@@ -21,10 +21,10 @@ multi-row
     recipes/first_recipe images/recipes/geojson_layer.png "GeoJSON Layer Recipe" [geojson, layer, map, map_layout]
     recipes/first_recipe images/recipes/map_layout.png "Map Layout Recipe" [map, layout, map_layout]
     recipes/first_recipe images/recipes/plot_points.png "Plot Points Data Recipe" [plot, points, map, map_layout, graph, data]
-    recipe/first_recipe images/recipes/popup.png "Popup Recipe" [popup, map, map_layout]
-    recipe/first_recipe images/recipes/spatial_data.png "Spatial Data Recipe" [spatial, data, map, map_layout]
-    recipe/first_recipe images/recipes/vector_layer.png "Vector Layer Recipe" [vector, layer, map, map_layout]
-    recipe/first_recipe images/recipes/wms_layer.png "WMS Layer Recipe" [wms, layer, map, map_layout]
+    recipes/first_recipe images/recipes/popup.png "Popup Recipe" [popup, map, map_layout]
+    recipes/first_recipe images/recipes/spatial_data.png "Spatial Data Recipe" [spatial, data, map, map_layout]
+    recipes/first_recipe images/recipes/vector_layer.png "Vector Layer Recipe" [vector, layer, map, map_layout]
+    recipes/first_recipe images/recipes/wms_layer.png "WMS Layer Recipe" [wms, layer, map, map_layout]
 
 Carousel 
 -------- 
@@ -38,8 +38,8 @@ Carousel
     recipes/first_recipe images/recipes/geojson_layer.png "GeoJSON Layer Recipe" [geojson, layer, map, map_layout]
     recipes/first_recipe images/recipes/map_layout.png "Map Layout Recipe" [map, layout, map_layout]
     recipes/first_recipe images/recipes/plot_points.png "Plot Points Data Recipe" [plot, points, map, map_layout, graph, data]
-    recipe/first_recipe images/recipes/popup.png "Popup Recipe" [popup, map, map_layout]
-    recipe/first_recipe images/recipes/spatial_data.png "Spatial Data Recipe" [spatial, data, map, map_layout]
-    recipe/first_recipe images/recipes/vector_layer.png "Vector Layer Recipe" [vector, layer, map, map_layout]
-    recipe/first_recipe images/recipes/wms_layer.png "WMS Layer Recipe" [wms, layer, map, map_layout]
+    recipes/first_recipe images/recipes/popup.png "Popup Recipe" [popup, map, map_layout]
+    recipes/first_recipe images/recipes/spatial_data.png "Spatial Data Recipe" [spatial, data, map, map_layout]
+    recipes/first_recipe images/recipes/vector_layer.png "Vector Layer Recipe" [vector, layer, map, map_layout]
+    recipes/first_recipe images/recipes/wms_layer.png "WMS Layer Recipe" [wms, layer, map, map_layout]
     

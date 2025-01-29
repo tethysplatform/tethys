@@ -27,19 +27,23 @@ class RecipeGallery(Directive):
         gallery_node["classes"].append("recipe-gallery")
 
         env = self.state.document.settings.env
-        builder = env.app.builder
+        app = env.app
+
+       
 
         recipe_count = len(self.content)
 
         recipe_card_nodes = []
 
         for line in self.content:
-            parts = line.split('"')
-            if len(parts) < 3:
+            parts = line.split()
+            if len(parts) < 2:
                 raise self.error(f"Invalid syntax: {line}")
-            first_part = parts[0].strip()
-            link, image_path = first_part.split(" ")
-            title = parts[1].strip()
+            link = parts[0]
+            image_path = parts[1]
+            tags = parts[2:] if len(parts) > 2 else []
+
+            title = self.get_document_title(env, link)
 
             entry_node = nodes.container(classes=["recipe-card"])
 
@@ -48,7 +52,7 @@ class RecipeGallery(Directive):
 
             if link:
                 try:
-                    resolved_link = builder.get_relative_uri(env.docname, link)
+                    resolved_link = app.builder.get_relative_uri(env.docname, link)
                 except Exception as e:
                     print(f"Could not resolve link {link}: {e}")
                     resolved_link = link
@@ -96,3 +100,17 @@ class RecipeGallery(Directive):
             return [gallery_container_node]
 
         return [gallery_container_node]
+
+    def get_document_title(self, env, docname):
+        """ Get the title of a document by its filename 
+        
+        Args:
+            env: The Sphinx environment
+            docname: The name of the document
+            
+        Returns:
+            str: The title of the document or the docname if the title is not found
+        """
+        if docname not in env.titles:
+            return docname
+        return env.titles[docname].astext()
