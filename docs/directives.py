@@ -29,8 +29,6 @@ class RecipeGallery(Directive):
         env = self.state.document.settings.env
         app = env.app
 
-       
-
         recipe_count = len(self.content)
 
         recipe_card_nodes = []
@@ -102,12 +100,12 @@ class RecipeGallery(Directive):
         return [gallery_container_node]
 
     def get_document_title(self, env, docname):
-        """ Get the title of a document by its filename 
-        
+        """Get the title of a document by its filename
+
         Args:
             env: The Sphinx environment
             docname: The name of the document
-            
+
         Returns:
             str: The title of the document or the docname if the title is not found
         """
