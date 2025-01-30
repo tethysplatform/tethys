@@ -39,14 +39,14 @@ class RecipeGallery(Directive):
                 raise self.error(f"Invalid syntax: {line}")
             link = parts[0]
             image_path = parts[1]
-            tags = parts[2:] if len(parts) > 2 else []
+
+            link, image_path, *tags = parts
+            tags_string = " ".join(tag.strip("[],") for tag in tags)
+            print("Tags string: ", tags_string)
 
             title = self.get_document_title(env, link)
 
             entry_node = nodes.container(classes=["recipe-card"])
-
-            tags = parts[2].strip().strip("[]").split(",")
-            tags_string = " ".join(tag.strip() for tag in tags)
 
             if link:
                 try:
