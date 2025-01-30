@@ -111,13 +111,18 @@ Although using the :file:`gee/params.py` file to store our service account crede
         Returns:
             str: asset directory path for given user.
         """
-        asset_roots = ee.batch.data.getAssetRoots()
-        
-        # Retreieve project ID from private key file
-        if len(asset_roots) < 1:
-            with open(private_key_path) as f:
-                private_key_contents = json.load(f)
-                project_id = private_key_contents.get("project", None)
+        with open(private_key_path) as f:
+        private_key_contents = json.load(f)
+        project_id = private_key_contents.get("project_id", None)
+
+        asset_roots = ee.data.listAssets({'parent': f'projects/{project_id}/assets'}).get('assets', [])
+        if len(asset_roots) == 0:
+            asset_path = f'projects/{project_id}/assets/tethys'
+            ee.batch.data.createAsset({
+                'type': 'Folder',
+                'name': asset_path
+            })
+            asset_roots = ee.data.listAssets({'parent': f'projects/{project_id}/assets'}).get('assets', [])
             
         asset_path = f"projects/{project_id}/assets/tethys"
 

@@ -121,7 +121,7 @@ You'll also need to update the `get_asset_dir_for_user` function in the `methods
         """
         if gee_account.service_account and credentials:
             service_account_project_id = credentials._project_id
-            asset_roots = ee.data.listAssets({'parent': f'projects/{service_account_project_id}/assets/'})['assets']
+            asset_roots = ee.data.listAssets({'parent': f'projects/{service_account_project_id}/assets'}).get('assets', [])
             if len(asset_roots) == 0:
                 asset_path = f"projects/{service_account_project_id}/assets/tethys"
                 ee.batch.data.createAsset({
@@ -129,7 +129,7 @@ You'll also need to update the `get_asset_dir_for_user` function in the `methods
                     'name': asset_path
                 })
 
-                asset_roots = ee.data.listAssets({'parent': f'projects/{service_account_project_id}/assets/'})['assets']
+                asset_roots = ee.data.listAssets({'parent': f'projects/{service_account_project_id}/assets/'}).get('assets', [])
 
         else:
             raise NameError("""Variable service_account_project_id was not assigned. 
