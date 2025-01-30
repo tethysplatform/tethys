@@ -15,7 +15,7 @@ class RecipeGallery(Directive):
             raise self.error(
                 f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'."
             )
-        
+
         # Create a container node to hold the gallery
         gallery_container_node = nodes.container()
         gallery_container_node["classes"].append("recipe-gallery-container")
@@ -32,7 +32,7 @@ class RecipeGallery(Directive):
         # Get the Sphinx environment and app
         env = self.state.document.settings.env
         app = env.app
-        
+
         recipe_count = len(self.content)
 
         # List to hold all the recipe card nodes to be added to the gallery node
@@ -64,7 +64,7 @@ class RecipeGallery(Directive):
             ref_node = nodes.reference(refuri=link)
             image_node = nodes.image(uri=image_path, alt="Image Not Found")
 
-            # Add the image to the reference node and the reference node to the 
+            # Add the image to the reference node and the reference node to the
             # image container, then add the image container to the recipe card node
             ref_node += image_node
             image_container += ref_node
