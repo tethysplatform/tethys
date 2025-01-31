@@ -113,7 +113,7 @@
 
 .carousel .recipe-card {
     /* flex: 0 0 20%; */
-    flex: 0 0 calc((100% - (3 * 10px)) /4);
+    flex: 0 0 calc((100% - (2 * 10px)) /3);
 }
 
 /* Recipe Gallery with multi-row layout */

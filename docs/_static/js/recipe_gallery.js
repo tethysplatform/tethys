@@ -14,7 +14,7 @@ function prepareCarousel(carouselContainer) {
 
     function getMaxIndex() {
         // Function to get the maximum index of the carousel accounting for the cloned cards at the beginning
-        return getCards().length + 5;
+        return getCards().length + 4;
     }
 
     let cards = getCards();
@@ -26,24 +26,24 @@ function prepareCarousel(carouselContainer) {
     if(getNumOfCards() > 0) {
         cardWidth = cards[0].getBoundingClientRect().width;
         cardMargin = parseInt(getComputedStyle(cards[0]).marginRight);
-        extraCardsInLastSlide = getNumOfCards() % 4;
+        extraCardsInLastSlide = getNumOfCards() % 3;
     }
     
     // Set the initial index to 5 to account for cloned cards at the beginning
-    let currentIndex = 5;
+    let currentIndex = 4;
 
     // Only show and prepare buttons if there are more than 4 cards
-    if (getNumOfCards() > 4) {
+    if (getNumOfCards() > 3) {
         leftButton.classList.remove("hidden");
         rightButton.classList.remove("hidden");
 
         // Clone the first and last 5 cards to the opposite end of the carousel to create the illusion of infinite scrolling
-        let lastSlideClones = cards.slice(-5).map(card => { 
+        let lastSlideClones = cards.slice(-4).map(card => { 
             let clone = card.cloneNode(true);
             clone.classList.add("cloned");
             return clone;
         });
-        let firstSlideClones = cards.slice(0, 4).map(card => {
+        let firstSlideClones = cards.slice(0, 3).map(card => {
             let clone = card.cloneNode(true);
             clone.classList.add("cloned");
             return clone;
@@ -54,11 +54,11 @@ function prepareCarousel(carouselContainer) {
         setInitialPosition();
 
         leftButton.addEventListener("click", () => {
-            updateCarousel(-4);
+            updateCarousel(-3);
         });
         
         rightButton.addEventListener("click", () => {
-            updateCarousel(4);
+            updateCarousel(3);
         }); 
     } else {
         leftButton.classList.add("hidden");
@@ -77,11 +77,11 @@ function prepareCarousel(carouselContainer) {
         let remainingCards = maxIndex - (currentIndex + offset);
         
         // Check if there is less than 4 cards remaining in the carousel, and if so, move that many remaining cards to the right.
-        if (offset > 0 && remainingCards <= 4 && remainingCards > 0 && currentIndex < maxIndex) {
+        if (offset > 0 && remainingCards <= 3 && remainingCards > 0 && currentIndex < maxIndex) {
             currentIndex += remainingCards
         // Check if returning to the first slide with less than 4 cards to reach the beginning of the carousel, if so, move that many cards to the left.
-        } else if (offset < 0 && currentIndex + offset < 5 && currentIndex > 5) {
-            currentIndex = 5;
+        } else if (offset < 0 && currentIndex + offset < 4 && currentIndex > 4) {
+            currentIndex = 4;
         } else {
             currentIndex += offset;
         }
@@ -95,14 +95,14 @@ function prepareCarousel(carouselContainer) {
         // Check if carousel is at either end of the slides, and if so, reset the position to the 
         // opposite end seamlessly without any transition to create an illusion of infinite scrolling
         let numOfCards = getNumOfCards();
-        let isAtFirstSlide = currentIndex >= numOfCards + 5;
-        let isAtLastSlide = currentIndex < 5;
+        let isAtFirstSlide = currentIndex >= numOfCards + 4;
+        let isAtLastSlide = currentIndex < 4;
 
         if (isAtLastSlide || isAtFirstSlide) {
             setTimeout(() => {
                 carousel.style.transition = "none"; // Disable transition
                 if (isAtFirstSlide) {
-                    currentIndex = 5;
+                    currentIndex = 4;
                 }
                 if (isAtLastSlide) {
                     currentIndex = numOfCards + 1;
