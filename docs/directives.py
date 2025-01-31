@@ -2,6 +2,7 @@ from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
 
+
 class RecipeGallery(Directive):
     has_content = True
     option_spec = {
@@ -120,9 +121,8 @@ class RecipeGallery(Directive):
             return docname
         return env.titles[docname].astext()
 
+
 def setup(app: Sphinx):
     """Add the recipe-gallery directive to Sphinx"""
     app.add_directive("recipe-gallery", RecipeGallery)
-    return {"version": "0.1",
-            "parallel_read_safe": True,
-            "parallel_write_safe": True}
+    return {"version": "0.1", "parallel_read_safe": True, "parallel_write_safe": True}
