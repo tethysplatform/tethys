@@ -117,9 +117,14 @@ class RecipeGallery(Directive):
         Returns:
             str: The title of the document or the docname if the title is not found
         """
-        if docname not in env.titles:
-            return docname
-        return env.titles[docname].astext()
+        if docname in env.titles:
+            return env.titles[docname].astext()
+    
+        # Otherwise, fallback to a readable version of the filename
+        if "/" in docname:
+            return docname.split("/")[-1].replace("_", " ").title()
+        
+        return docname.replace("_", " ").title()
 
 
 def setup(app: Sphinx):
