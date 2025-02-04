@@ -1370,7 +1370,6 @@ class TestMapLayoutMixin(unittest.TestCase):
                 "renamable": False,
                 "show_legend": True,
                 "legend_url": None,
-                "legend_url": None,
             },
         )
 

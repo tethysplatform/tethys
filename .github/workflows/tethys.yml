@@ -233,7 +233,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           ls ~/conda-bld/noarch
           conda activate conda-build
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.* --force;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
@@ -272,7 +272,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           ls ~/conda-bld/noarch
           conda activate conda-build
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
       # No Upload if Pull Request
       - name: No Upload - micro
         if: ${{ github.event_name == 'pull_request' }}
