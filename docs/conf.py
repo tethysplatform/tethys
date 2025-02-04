@@ -27,8 +27,6 @@ from sphinxawesome_theme.postprocess import Icons
 # Add the current directory to sys.path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from directives import RecipeGallery
-
 # Mock Dependencies
 # NOTE: No obvious way to automatically anticipate all the sub modules without
 # installing the package, which is what we are trying to avoid.
