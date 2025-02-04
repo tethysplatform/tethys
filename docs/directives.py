@@ -60,7 +60,6 @@ class RecipeGallery(Directive):
             except Exception as e:
                 print(f"Could not resolve link {link}: {e}")
 
-
             print("Image path: ", image_path)
 
             # Add the image to the image container and the iamge container to the reference node
@@ -70,13 +69,15 @@ class RecipeGallery(Directive):
             card_container = nodes.container(classes=["recipe-card"])
 
             # Create the anchor element (wrapping everything)
-            card_node = nodes.raw("", f'<a href="{link}" class="recipe-link">', format="html")
+            card_node = nodes.raw(
+                "", f'<a href="{link}" class="recipe-link">', format="html"
+            )
 
             # Image container with a properly resolved Sphinx image
             image_container = nodes.container(classes=["recipe-image-container"])
             image_node = nodes.image(uri=image_path, alt="Image Not Found")
             image_container += image_node
-        
+
             # Close the anchor tag\
             card_close_html = f"""
                 <strong class="recipe-title">{title}</strong>
@@ -84,7 +85,6 @@ class RecipeGallery(Directive):
                 </a>
             """
             card_close = nodes.raw("", card_close_html, format="html")
-
 
             # Assemble the final structure
             card_container += card_node  # Opening <a>
@@ -134,11 +134,11 @@ class RecipeGallery(Directive):
         """
         if docname in env.titles:
             return env.titles[docname].astext()
-    
+
         # Otherwise, fallback to a readable version of the filename
         if "/" in docname:
             return docname.split("/")[-1].replace("_", " ").title()
-        
+
         return docname.replace("_", " ").title()
 
 
