@@ -112,8 +112,8 @@ Although using the :file:`gee/params.py` file to store our service account crede
             str: asset directory path for given user.
         """
         with open(private_key_path) as f:
-        private_key_contents = json.load(f)
-        project_id = private_key_contents.get("project_id", None)
+            private_key_contents = json.load(f)
+            project_id = private_key_contents.get("project_id", None)
 
         asset_roots = ee.data.listAssets({'parent': f'projects/{project_id}/assets'}).get('assets', [])
         if len(asset_roots) == 0:
