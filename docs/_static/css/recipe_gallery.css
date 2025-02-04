@@ -33,6 +33,10 @@
     border-radius: 5px;
 }
 
+.recipe-card:hover {
+    background-color: #e0e0e0;
+}
+
 .recipe-image-container {
     width: 85%;
     aspect-ratio: 1 / 1;
