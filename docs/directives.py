@@ -60,23 +60,38 @@ class RecipeGallery(Directive):
             except Exception as e:
                 print(f"Could not resolve link {link}: {e}")
 
-            # Create an image container to hold the reference node that will contain the image
+
+            print("Image path: ", image_path)
+
+            # Add the image to the image container and the iamge container to the reference node
+            # then add the reference node to the card node
+
+            # Create a container for the recipe card
+            card_container = nodes.container(classes=["recipe-card"])
+
+            # Create the anchor element (wrapping everything)
+            card_node = nodes.raw("", f'<a href="{link}" class="recipe-link">', format="html")
+
+            # Image container with a properly resolved Sphinx image
             image_container = nodes.container(classes=["recipe-image-container"])
-            ref_node = nodes.reference(refuri=link)
             image_node = nodes.image(uri=image_path, alt="Image Not Found")
+            image_container += image_node
+        
+            # Close the anchor tag\
+            card_close_html = f"""
+                <strong class="recipe-title">{title}</strong>
+                <p class="recipe-tags">{tags_string}</p>
+                </a>
+            """
+            card_close = nodes.raw("", card_close_html, format="html")
 
-            # Add the image to the reference node and the reference node to the
-            # image container, then add the image container to the recipe card node
-            ref_node += image_node
-            image_container += ref_node
-            card_node += image_container
 
-            # Add the title and tags to the recipe card node
-            card_node += nodes.strong(text=title)
-            tags_node = nodes.paragraph(text=tags_string)
-            tags_node["classes"].append("recipe-tags")
-            card_node += tags_node
-            recipe_card_nodes.append(card_node)
+            # Assemble the final structure
+            card_container += card_node  # Opening <a>
+            card_container += image_container  # Image
+            card_container += card_close  # Closing </a>
+
+            recipe_card_nodes.append(card_container)
 
         # Add all the recipe card nodes to the gallery node
         for node in recipe_card_nodes:
