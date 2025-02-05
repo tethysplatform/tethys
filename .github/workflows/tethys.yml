@@ -126,7 +126,7 @@ jobs:
           echo "Uploading is skipped for pull requests."
       # Save image as artifact for startup test job
       - name: Upload Docker Artifact
-        uses: ishworkh/container-image-artifact-upload@v1.1.1
+        uses: ishworkh/container-image-artifact-upload@v2.0.0
         with:
           image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
           retention_days: "1"
@@ -158,7 +158,7 @@ jobs:
           - 5432:5432
     steps:
       - name: Download Docker Artifact
-        uses: ishworkh/container-image-artifact-download@v1.1.1
+        uses: ishworkh/container-image-artifact-download@v2.0.0
         with:
           image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
       - name: Run Salt Test
@@ -233,7 +233,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           ls ~/conda-bld/noarch
           conda activate conda-build
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.* --force;
       # No Upload if Pull Request
       - name: No Upload
         if: ${{ github.event_name == 'pull_request' }}
@@ -272,7 +272,7 @@ jobs:
           . ~/miniconda/etc/profile.d/conda.sh;
           ls ~/conda-bld/noarch
           conda activate conda-build
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.tar.bz2 --force;
+          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
       # No Upload if Pull Request
       - name: No Upload - micro
         if: ${{ github.event_name == 'pull_request' }}
