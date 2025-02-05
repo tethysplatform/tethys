@@ -77,8 +77,10 @@ App Development
 .. toctree::
    :maxdepth: 2
 
+   recipes
    tutorials
    dev_guides
+   
 
 Deployment
 ==========
