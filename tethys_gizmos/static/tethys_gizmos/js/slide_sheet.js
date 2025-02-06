@@ -26,12 +26,14 @@ var SLIDE_SHEET = (function() {
     *************************************************************************/
     open = function(id) {
         // Check that id is not empty
+        console.log("Running open..")
         if (id.length) {
             $('#' + id + '.slide-sheet').addClass('show');
         }
     };
 
     close = function(id) {
+        console.log("Running Close...")
         // Check that id is not empty
         if (id.length) {
             $('#' + id + '.slide-sheet').removeClass('show');
@@ -43,9 +45,11 @@ var SLIDE_SHEET = (function() {
  	*************************************************************************/
 	public_interface = {
 		open: function(id) {
+            console.log("Running open public interface...")
 		    open(id);
 		},
 		close: function(id) {
+            console.log("Running ")
 		    close(id);
 		},
 	};
@@ -56,10 +60,17 @@ var SLIDE_SHEET = (function() {
 
 	// Initialization: jQuery function that gets called when
 	// the DOM tree finishes loading
-	$(document).ready(function(){});
+    // Commented out because it is not needed for now
+	// $(document).ready(function(){});
 
 	return public_interface;
 
 }()); // End of package wrapper
 // NOTE: that the call operator (open-closed parenthesis) is used to invoke the library wrapper
 // function immediately after being parsed.
+
+/* This statement for testing coverage purposes */
+/* istanbul ignore next */
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = SLIDE_SHEET;
+}
