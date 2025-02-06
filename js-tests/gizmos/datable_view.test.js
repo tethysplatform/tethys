@@ -25,7 +25,17 @@ describe("TETHYS_DATATABLE_VIEW", () => {
         $.fn.DataTable = jest.fn();
     });
 
-    test("should initialize DataTables on document ready", (done) => {
+    
+
+    test("should initialize DataTables when called manually", () => {
+        const TETHYS_DATATABLE_VIEW = reloadDatatableView();
+        const tableElement = $(".data_table_gizmo_view");
+        // Call the initialization function manually
+        TETHYS_DATATABLE_VIEW.initTableView(tableElement);
+        // Ensure DataTables was called
+        expect(tableElement.DataTable).toHaveBeenCalled();
+    });
+});test("should initialize DataTables on document ready", (done) => {
         const dataTableSpy = jest.spyOn($.fn, "DataTable");
         reloadDatatableView();
 
@@ -37,13 +47,3 @@ describe("TETHYS_DATATABLE_VIEW", () => {
             done();
         }, 100); 
     });
-
-    test("should initialize DataTables when called manually", () => {
-        const TETHYS_DATATABLE_VIEW = reloadDatatableView();
-        const tableElement = $(".data_table_gizmo_view");
-        // Call the initialization function manually
-        TETHYS_DATATABLE_VIEW.initTableView(tableElement);
-        // Ensure DataTables was called
-        expect(tableElement.DataTable).toHaveBeenCalled();
-    });
-});

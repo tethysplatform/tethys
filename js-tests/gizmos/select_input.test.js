@@ -4,11 +4,6 @@ $.fn.select2 = jest.fn();
 
 const TETHYS_SELECT_INPUT = require("../../tethys_gizmos/static/tethys_gizmos/js/select_input");
 
-const reloadSelect2 = () => {
-  jest.resetModules(); // Clear Jest’s module cache
-  return require("../../tethys_gizmos/static/tethys_gizmos/js/select_input");
-};
-
 describe("TETHYS_SELECT_INPUT", () => {
     beforeEach(() => {
         // Set up a mock DOM element for testing
@@ -22,7 +17,6 @@ describe("TETHYS_SELECT_INPUT", () => {
 
   test("should initialize Select2 on document ready", (done) => {
     const select2Spy = jest.spyOn($.fn, "select2");
-    reloadSelect2();
 
     // Wait for jQuery's document ready function
     setTimeout(() => {
