@@ -299,6 +299,8 @@ if has_module("session_security"):
     )  # TODO: Templates need to be upgraded
 if has_module("axes"):
     MIDDLEWARE.append("axes.middleware.AxesMiddleware")
+# if has_module("termsandconditions"):
+#     MIDDLEWARE.append("termsandconditions.middleware.TermsAndConditionsRedirectMiddleware")
 
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop("MIDDLEWARE", []))
 

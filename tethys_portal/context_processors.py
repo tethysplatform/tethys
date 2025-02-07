@@ -35,7 +35,7 @@ def tethys_portal_context(request):
         if settings.MULTIPLE_APP_MODE
         and (
             settings.ENABLE_OPEN_PORTAL
-            or (request.user.is_authenticated and request.user.is_active)
+            or (getattr(request, "user", None) and request.user.is_authenticated and request.user.is_active)
         )
         else False
     )

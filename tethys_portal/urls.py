@@ -180,6 +180,7 @@ developer_urls = [
 #     re_path(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
+# developer_urls.extend(development_error_urls)
 
 if settings.MULTIPLE_APP_MODE:
     urlpatterns = [
