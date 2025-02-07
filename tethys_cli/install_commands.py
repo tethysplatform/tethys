@@ -118,9 +118,7 @@ def open_file(file_path):
 
     except Exception as e:
         write_error(str(e))
-        write_error(
-            "An unexpected error occurred reading the file. Please try again."
-        )
+        write_error("An unexpected error occurred reading the file. Please try again.")
         exit(1)
 
 
@@ -173,9 +171,7 @@ def get_setting_type_from_setting(setting):
     ):
         return "wps"
 
-    raise RuntimeError(
-        f"Could not determine setting type for setting: {setting}"
-    )
+    raise RuntimeError(f"Could not determine setting type for setting: {setting}")
 
 
 def get_service_type_from_setting(setting):
@@ -212,9 +208,7 @@ def get_service_type_from_setting(setting):
     ):
         return "wps"
 
-    raise RuntimeError(
-        f"Could not determine service type for setting: {setting}"
-    )
+    raise RuntimeError(f"Could not determine service type for setting: {setting}")
 
 
 # Pulling this function out, so I can mock this for inputs to the interactive mode
@@ -231,9 +225,7 @@ def print_unconfigured_settings(app_name, unlinked_settings):
         write_msg(
             f"\nThe following settings were not configured for app: {app_name}:\n"
         )
-        write_msg(
-            "{0: <50}{1: <50}{2: <15}".format("Name", "Type", "Required")
-        )
+        write_msg("{0: <50}{1: <50}{2: <15}".format("Name", "Type", "Required"))
 
         for unlinked_setting in unlinked_settings:
             write_msg(
@@ -407,9 +399,7 @@ def run_interactive_services(app_name):
                             try:
                                 value = json.loads(Path(json_path).read_text())
                             except FileNotFoundError:
-                                write_warning(
-                                    "The current file path was not found"
-                                )
+                                write_warning("The current file path was not found")
                         else:
                             # String with JSON format
                             data_JSON_example = '{"size": "Medium", "price": 15.67, "toppings": ["Mushrooms", "Extra Cheese", "Pepperoni", "Basil"]}'
@@ -483,20 +473,14 @@ def run_interactive_services(app_name):
                     service_id = get_interactive_input()
                     if service_id != "":
                         try:
-                            setting_type = get_setting_type_from_setting(
-                                setting
-                            )
-                            service_type = get_service_type_from_setting(
-                                setting
-                            )
+                            setting_type = get_setting_type_from_setting(setting)
+                            service_type = get_service_type_from_setting(setting)
                         except RuntimeError as e:
                             write_error(str(e) + " Skipping...")
                             break
 
                         # Validate the given service id
-                        valid_service = validate_service_id(
-                            service_type, service_id
-                        )
+                        valid_service = validate_service_id(service_type, service_id)
 
                         if valid_service:
                             link_service_to_app_setting(
@@ -509,9 +493,7 @@ def run_interactive_services(app_name):
 
                             valid = True
                         else:
-                            write_error(
-                                "Incorrect service ID/Name. Please try again."
-                            )
+                            write_error("Incorrect service ID/Name. Please try again.")
 
                     else:
                         write_msg("Skipping setup of {}".format(setting.name))
@@ -550,9 +532,7 @@ def configure_services_from_file(services, app_name):
                 if service_type == "custom_settings":
                     try:
                         custom_setting = (
-                            CustomSettingBase.objects.filter(
-                                tethys_app=db_app.id
-                            )
+                            CustomSettingBase.objects.filter(tethys_app=db_app.id)
                             .select_subclasses()
                             .get(name=setting_name)
                         )
@@ -575,9 +555,7 @@ def configure_services_from_file(services, app_name):
                                 )
                                 continue
                         else:
-                            custom_setting.value = current_services[
-                                setting_name
-                            ]
+                            custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
                         write_success(
@@ -645,9 +623,7 @@ def run_portal_install(app_name):
 
     write_msg("Portal install file found...Processing...")
     portal_options = open_file(file_path)
-    app_check = (
-        portal_options and "apps" in portal_options and portal_options["apps"]
-    )
+    app_check = portal_options and "apps" in portal_options and portal_options["apps"]
     if (
         app_check
         and app_name in portal_options["apps"]
@@ -659,9 +635,7 @@ def run_portal_install(app_name):
         else:
             write_msg(
                 "No app configuration found for app: {} in portal config file. "
-                "Searching for local app level services.yml... ".format(
-                    app_name
-                )
+                "Searching for local app level services.yml... ".format(app_name)
             )
             return False
 
@@ -746,9 +720,7 @@ def install_command(args):
             )
 
             while generate_input not in valid_inputs:
-                generate_input = input(
-                    "Invalid option. Try again. (y/n): "
-                ).lower()
+                generate_input = input("Invalid option. Try again. (y/n): ").lower()
 
             if generate_input in no_inputs:
                 skip_config = True
@@ -777,9 +749,7 @@ def install_command(args):
                 skip = requirements_config["skip"]
 
             if skip:
-                write_warning(
-                    "Skipping package installation, Skip option found."
-                )
+                write_warning("Skipping package installation, Skip option found.")
             elif args.without_dependencies:
                 write_warning("Skipping package installation.")
             else:
@@ -805,9 +775,7 @@ def install_command(args):
                                         [
                                             "pip",
                                             "install",
-                                            *requirements_config["conda"][
-                                                "packages"
-                                            ],
+                                            *requirements_config["conda"]["packages"],
                                         ]
                                     )
                                 except Exception as e:
@@ -843,9 +811,7 @@ def install_command(args):
                             )
                         else:
                             with package_json_file.open("w") as f:
-                                json.dump(
-                                    {"dependencies": npm_requirements}, f
-                                )
+                                json.dump({"dependencies": npm_requirements}, f)
                     if package_json_file.exists():
                         download_vendor_static_files(
                             None, cwd=str(public_resources_dir)
@@ -948,7 +914,5 @@ def assign_json_value(value):
         # when the dict is read from the portal_config.yaml, if it is not a proper dict, the portal will fail, so it is not possible to test it
         return value
     else:
-        write_error(
-            f"The current value: {value} is not a dict or a valid file path"
-        )
+        write_error(f"The current value: {value} is not a dict or a valid file path")
         return None

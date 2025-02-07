@@ -29,9 +29,7 @@ class TestServiceInstallHelpers(TestCase):
         mock_file_path = mock.MagicMock()
         mock_file_path.open.side_effect = IOError("test")
 
-        self.assertRaises(
-            SystemExit, install_commands.open_file, mock_file_path
-        )
+        self.assertRaises(SystemExit, install_commands.open_file, mock_file_path)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual("test", po_call_args[0][0][0])
         self.assertIn(
@@ -76,9 +74,7 @@ class TestServiceInstallHelpers(TestCase):
 
         app_name = "foo"
 
-        install_commands.run_sync_stores(
-            app_name, [PersistentStoreConnectionSetting()]
-        )
+        install_commands.run_sync_stores(app_name, [PersistentStoreConnectionSetting()])
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(
             f"Running syncstores for app {app_name}", po_call_args[0][0][0]
@@ -87,9 +83,7 @@ class TestServiceInstallHelpers(TestCase):
             ["tethys", "syncstores", app_name],
         )
 
-    @mock.patch(
-        "tethys_cli.install_commands.validate_service_id", return_value=True
-    )
+    @mock.patch("tethys_cli.install_commands.validate_service_id", return_value=True)
     @mock.patch(
         "tethys_cli.install_commands.get_setting_type_from_setting",
         return_value="setting_type",
@@ -114,9 +108,7 @@ class TestServiceInstallHelpers(TestCase):
             service_type, service_id, app_name, "setting_type", setting_name
         )
 
-    @mock.patch(
-        "tethys_cli.install_commands.validate_service_id", return_value=False
-    )
+    @mock.patch("tethys_cli.install_commands.validate_service_id", return_value=False)
     @mock.patch(
         "tethys_cli.install_commands.get_setting_type_from_setting",
         return_value="setting_type",
@@ -144,9 +136,7 @@ class TestServiceInstallHelpers(TestCase):
 
         self.assertEqual(
             "persistent",
-            install_commands.get_setting_type(
-                PersistentStoreDatabaseSetting()
-            ),
+            install_commands.get_setting_type(PersistentStoreDatabaseSetting()),
         )
 
     def test_validate_service_id_valid_id_int(self):
@@ -425,9 +415,7 @@ class TestInstallServicesCommands(TestCase):
         json_custom_setting_wrong_path_value = '{"name": "John", "age": 30, "city": "New York", "interests": ["music", "sports", "reading"], "education": {"degree": "Bachelor", "major": "Computer Science", "university": "ABC University"}, "work_experience": [{"position": "Software Engineer", "company": "XYZ Inc.", "duration": "3 years"}, {"position": "Senior Developer", "company": "ABC Corp.", "duration": "2 years"}], "projects": [{"name": "Project A", "description": "Lorem ipsum dolor sit amet", "status": "completed"}, {"name": "Project B", "description": "Consectetur adipiscing elit", "status": "in progress"}], "family_members": [{"name": "Jane", "relationship": "Spouse", "age": 28}, {"name": "Sarah", "relationship": "Sister", "age": 32}, {"name": "Michael", "relationship": "Brother", "age": 26}], "address": {"street": "123 Main Street", "city": "New York", "state": "NY", "postal_code": "10001"}, "phone_numbers": {"home": "555-1234", "work": "555-5678", "cell": "555-9876"}}'
         json_custom_setting_value_error_name = "value_error_json_setting"
         json_custom_setting_value_error_value = '{"name": "John", "age": 30,}'
-        json_custom_setting_value_json_name = (
-            "json_custom_setting_which_is_json"
-        )
+        json_custom_setting_value_json_name = "json_custom_setting_which_is_json"
         json_custom_setting_value_json_value = {
             "name": "John",
             "age": 30,
@@ -581,9 +569,7 @@ class TestInstallServicesCommands(TestCase):
 
         # This persistent setting is not listed in the file, but exists in the db
         mock_setting_unlisted = mock.MagicMock()
-        mock_setting_unlisted.name = (
-            "this_setting_is_in_the_file_but_does_not_exist"
-        )
+        mock_setting_unlisted.name = "this_setting_is_in_the_file_but_does_not_exist"
 
         mock_setting_already_linked = mock.MagicMock()
         mock_setting_already_linked.name = setting_already_linked_name
@@ -598,9 +584,7 @@ class TestInstallServicesCommands(TestCase):
                 mock_setting_already_linked,  #: This setting is already linked, and so it won't be configured again
             ],
         }
-        install_commands.configure_services_from_file(
-            services_file_contents, app_name
-        )
+        install_commands.configure_services_from_file(services_file_contents, app_name)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
         self.assertIn(
@@ -688,9 +672,7 @@ class TestInstallServicesCommands(TestCase):
         # No settings found for this app
         mock_gas.return_value = None
 
-        install_commands.configure_services_from_file(
-            services_file_contents, app_name
-        )
+        install_commands.configure_services_from_file(services_file_contents, app_name)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(
@@ -773,9 +755,7 @@ class TestInstallServicesCommands(TestCase):
         install_commands.run_services("foo", args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(
-            "No Services listed in Services file.", po_call_args[0][0][0]
-        )
+        self.assertEqual("No Services listed in Services file.", po_call_args[0][0][0])
 
 
 class TestInstallCommands(TestCase):
@@ -797,9 +777,7 @@ class TestInstallCommands(TestCase):
     @mock.patch("builtins.input", side_effect=["x", "n"])
     @mock.patch("tethys_cli.install_commands.call")
     def test_install_file_not_generate(self, mock_call, _, mock_pretty_output):
-        chdir(
-            ".."
-        )  # move to a different directory that doesn't have an install.yml
+        chdir("..")  # move to a different directory that doesn't have an install.yml
         args = mock.MagicMock(
             file=None,
             quiet=False,
@@ -811,18 +789,12 @@ class TestInstallCommands(TestCase):
         install_commands.install_command(args)
         self.assertEqual(2, len(mock_call.call_args_list))
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(
-            "WARNING: No install file found.", po_call_args[0][0][0]
-        )
-        self.assertEqual(
-            "Generation of Install File cancelled.", po_call_args[1][0][0]
-        )
+        self.assertEqual("WARNING: No install file found.", po_call_args[0][0][0])
+        self.assertEqual("Generation of Install File cancelled.", po_call_args[1][0][0])
         self.assertEqual(
             "Continuing install without configuration.", po_call_args[2][0][0]
         )
-        self.assertEqual(
-            "Running application install....", po_call_args[3][0][0]
-        )
+        self.assertEqual("Running application install....", po_call_args[3][0][0])
         self.assertEqual("Successfully installed None.", po_call_args[4][0][0])
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
@@ -830,9 +802,7 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.install_commands.exit")
     def test_install_file_generate(self, mock_exit, mock_call, _, __):
-        chdir(
-            ".."
-        )  # move to a different directory that doesn't have an install.yml
+        chdir("..")  # move to a different directory that doesn't have an install.yml
         args = mock.MagicMock(
             file=None,
             quiet=False,
@@ -871,13 +841,9 @@ class TestInstallCommands(TestCase):
             "Quiet mode: No additional service setting validation will be performed.",
             po_call_args[2][0][0],
         )
-        self.assertIn(
-            "Services Configuration Completed.", po_call_args[3][0][0]
-        )
+        self.assertIn("Services Configuration Completed.", po_call_args[3][0][0])
         self.assertIn("Skipping syncstores.", po_call_args[4][0][0])
-        self.assertIn(
-            "Successfully installed test_app.", po_call_args[5][0][0]
-        )
+        self.assertIn("Successfully installed test_app.", po_call_args[5][0][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
@@ -906,30 +872,20 @@ class TestInstallCommands(TestCase):
             "Quiet mode: No additional service setting validation will be performed.",
             po_call_args[3][0][0],
         )
-        self.assertIn(
-            "Services Configuration Completed.", po_call_args[4][0][0]
-        )
+        self.assertIn("Services Configuration Completed.", po_call_args[4][0][0])
         self.assertIn("Skipping syncstores.", po_call_args[5][0][0])
-        self.assertIn(
-            "Running post installation tasks...", po_call_args[6][0][0]
-        )
+        self.assertIn("Running post installation tasks...", po_call_args[6][0][0])
         self.assertIn("Post Script Result: b'test", po_call_args[7][0][0])
-        self.assertIn(
-            "Successfully installed test_app.", po_call_args[8][0][0]
-        )
+        self.assertIn("Successfully installed test_app.", po_call_args[8][0][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.run_sync_stores")
     @mock.patch("tethys_cli.install_commands.run_interactive_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch(
-        "tethys_cli.install_commands.run_portal_install", return_value=False
-    )
+    @mock.patch("tethys_cli.install_commands.run_portal_install", return_value=False)
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    def test_skip_input_file(
-        self, mock_pretty_output, _, __, ___, ____, _____, ______
-    ):
+    def test_skip_input_file(self, mock_pretty_output, _, __, ___, ____, _____, ______):
         file_path = self.root_app_path / "install-skip-setup.yml"
 
         args = mock.MagicMock(
@@ -971,9 +927,7 @@ class TestInstallCommands(TestCase):
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch(
-        "tethys_cli.install_commands.conda_run", return_value=["", "", 1]
-    )
+    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install(
         self, mock_pretty_output, mock_conda_run, mock_call, _
@@ -1005,40 +959,24 @@ class TestInstallCommands(TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 9)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
-        self.assertEqual(
-            "Running conda installation tasks...", po_call_args[1][0][0]
-        )
+        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
         self.assertIn(
             "Warning: Packages installation ran into an error.",
             po_call_args[2][0][0],
         )
-        self.assertEqual(
-            "Running pip installation tasks...", po_call_args[3][0][0]
-        )
-        self.assertEqual(
-            "Running application install....", po_call_args[4][0][0]
-        )
+        self.assertEqual("Running pip installation tasks...", po_call_args[3][0][0])
+        self.assertEqual("Running application install....", po_call_args[4][0][0])
         self.assertEqual(
             "Quiet mode: No additional service setting validation will be performed.",
             po_call_args[5][0][0],
         )
-        self.assertEqual(
-            "Services Configuration Completed.", po_call_args[6][0][0]
-        )
+        self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[7][0][0])
-        self.assertEqual(
-            "Successfully installed test_app.", po_call_args[8][0][0]
-        )
+        self.assertEqual("Successfully installed test_app.", po_call_args[8][0][0])
 
-        self.assertEqual(
-            ["pip", "install", "see"], mock_call.mock_calls[0][1][0]
-        )
-        self.assertEqual(
-            ["pip", "install", "."], mock_call.mock_calls[1][1][0]
-        )
-        self.assertEqual(
-            ["tethys", "db", "sync"], mock_call.mock_calls[2][1][0]
-        )
+        self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[0][1][0])
+        self.assertEqual(["pip", "install", "."], mock_call.mock_calls[1][1][0])
+        self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[2][1][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
     @mock.patch("tethys_cli.install_commands.write_warning")
@@ -1068,36 +1006,20 @@ class TestInstallCommands(TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 7)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
-        self.assertEqual(
-            "Running pip installation tasks...", po_call_args[1][0][0]
-        )
-        self.assertEqual(
-            "Running application install....", po_call_args[2][0][0]
-        )
+        self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
+        self.assertEqual("Running application install....", po_call_args[2][0][0])
         self.assertEqual(
             "Quiet mode: No additional service setting validation will be performed.",
             po_call_args[3][0][0],
         )
-        self.assertEqual(
-            "Services Configuration Completed.", po_call_args[4][0][0]
-        )
+        self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
-        self.assertEqual(
-            "Successfully installed test_app.", po_call_args[6][0][0]
-        )
+        self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
-        self.assertEqual(
-            ["pip", "install", "geojson"], mock_call.mock_calls[0][1][0]
-        )
-        self.assertEqual(
-            ["pip", "install", "see"], mock_call.mock_calls[1][1][0]
-        )
-        self.assertEqual(
-            ["pip", "install", "."], mock_call.mock_calls[2][1][0]
-        )
-        self.assertEqual(
-            ["tethys", "db", "sync"], mock_call.mock_calls[3][1][0]
-        )
+        self.assertEqual(["pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
+        self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[1][1][0])
+        self.assertEqual(["pip", "install", "."], mock_call.mock_calls[2][1][0])
+        self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "n"])
     @mock.patch("tethys_cli.install_commands.write_warning")
@@ -1164,42 +1086,24 @@ class TestInstallCommands(TestCase):
             "Installing conda packages with pip failed with the following exception: ",
             po_call_args[1][0][0],
         )
-        self.assertEqual(
-            "Running pip installation tasks...", po_call_args[2][0][0]
-        )
-        self.assertEqual(
-            "Running application install....", po_call_args[3][0][0]
-        )
+        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
+        self.assertEqual("Running application install....", po_call_args[3][0][0])
         self.assertEqual(
             "Quiet mode: No additional service setting validation will be performed.",
             po_call_args[4][0][0],
         )
-        self.assertEqual(
-            "Services Configuration Completed.", po_call_args[5][0][0]
-        )
+        self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[6][0][0])
-        self.assertEqual(
-            "Successfully installed test_app.", po_call_args[7][0][0]
-        )
+        self.assertEqual("Successfully installed test_app.", po_call_args[7][0][0])
 
-        self.assertEqual(
-            ["pip", "install", "geojson"], mock_call.mock_calls[0][1][0]
-        )
-        self.assertEqual(
-            ["pip", "install", "see"], mock_call.mock_calls[1][1][0]
-        )
-        self.assertEqual(
-            ["pip", "install", "."], mock_call.mock_calls[2][1][0]
-        )
-        self.assertEqual(
-            ["tethys", "db", "sync"], mock_call.mock_calls[3][1][0]
-        )
+        self.assertEqual(["pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
+        self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[1][1][0])
+        self.assertEqual(["pip", "install", "."], mock_call.mock_calls[2][1][0])
+        self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch(
-        "tethys_cli.install_commands.conda_run", return_value=["", "", 1]
-    )
+    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_without_dependencies(
         self, mock_pretty_output, mock_conda_run, mock_call, _
@@ -1223,47 +1127,30 @@ class TestInstallCommands(TestCase):
         # Make sure 'pip install' isn't in any of the calls
         self.assertFalse(
             any(
-                [
-                    "pip install see" in " ".join(mc[1][0])
-                    for mc in mock_call.mock_calls
-                ]
+                ["pip install see" in " ".join(mc[1][0]) for mc in mock_call.mock_calls]
             )
         )
 
         # Validate output displayed to the user
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 7)
-        self.assertEqual(
-            "Skipping package installation.", po_call_args[1][0][0]
-        )
-        self.assertEqual(
-            "Running application install....", po_call_args[2][0][0]
-        )
+        self.assertEqual("Skipping package installation.", po_call_args[1][0][0])
+        self.assertEqual("Running application install....", po_call_args[2][0][0])
         self.assertEqual(
             "Quiet mode: No additional service setting validation will be performed.",
             po_call_args[3][0][0],
         )
-        self.assertEqual(
-            "Services Configuration Completed.", po_call_args[4][0][0]
-        )
+        self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
-        self.assertEqual(
-            "Successfully installed test_app.", po_call_args[6][0][0]
-        )
+        self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
         # Verify that the application install still happens
-        self.assertEqual(
-            ["pip", "install", "."], mock_call.mock_calls[0][1][0]
-        )
-        self.assertEqual(
-            ["tethys", "db", "sync"], mock_call.mock_calls[1][1][0]
-        )
+        self.assertEqual(["pip", "install", "."], mock_call.mock_calls[0][1][0])
+        self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[1][1][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch(
-        "tethys_cli.install_commands.conda_run", return_value=["", "", 1]
-    )
+    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install_only_dependencies(
         self, mock_pretty_output, mock_conda_run, mock_call, _
@@ -1296,16 +1183,12 @@ class TestInstallCommands(TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 6)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
-        self.assertEqual(
-            "Running conda installation tasks...", po_call_args[1][0][0]
-        )
+        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
         self.assertIn(
             "Warning: Packages installation ran into an error.",
             po_call_args[2][0][0],
         )
-        self.assertEqual(
-            "Running pip installation tasks...", po_call_args[3][0][0]
-        )
+        self.assertEqual("Running pip installation tasks...", po_call_args[3][0][0])
         self.assertEqual(
             "No public directory detected. Unable to process JavaScript dependencies.",
             po_call_args[4][0][0],
@@ -1316,15 +1199,11 @@ class TestInstallCommands(TestCase):
         )
 
         self.assertEqual(1, len(mock_call.mock_calls))
-        self.assertEqual(
-            ["pip", "install", "see"], mock_call.mock_calls[0][1][0]
-        )
+        self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[0][1][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch(
-        "tethys_cli.install_commands.conda_run", return_value=["", "", 1]
-    )
+    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install_update_installed(
         self, mock_pretty_output, mock_conda_run, mock_call, _
@@ -1359,36 +1238,22 @@ class TestInstallCommands(TestCase):
             "Warning: Updating previously installed packages. This could break your Tethys environment.",
             po_call_args[1][0][0],
         )
-        self.assertEqual(
-            "Running conda installation tasks...", po_call_args[2][0][0]
-        )
+        self.assertEqual("Running conda installation tasks...", po_call_args[2][0][0])
         self.assertIn(
             "Warning: Packages installation ran into an error.",
             po_call_args[3][0][0],
         )
-        self.assertEqual(
-            "Running pip installation tasks...", po_call_args[4][0][0]
-        )
-        self.assertEqual(
-            "Running application install....", po_call_args[5][0][0]
-        )
-        self.assertEqual(
-            "Successfully installed test_app.", po_call_args[6][0][0]
-        )
+        self.assertEqual("Running pip installation tasks...", po_call_args[4][0][0])
+        self.assertEqual("Running application install....", po_call_args[5][0][0])
+        self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
-        self.assertEqual(
-            ["pip", "install", "see"], mock_call.mock_calls[0][1][0]
-        )
-        self.assertEqual(
-            ["pip", "install", "."], mock_call.mock_calls[1][1][0]
-        )
+        self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[0][1][0])
+        self.assertEqual(["pip", "install", "."], mock_call.mock_calls[1][1][0])
 
     @mock.patch("builtins.input", side_effect=["x", 5])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    def test_interactive_custom_setting_set(
-        self, mock_pretty_output, mock_gas, _
-    ):
+    def test_interactive_custom_setting_set(self, mock_pretty_output, mock_gas, _):
         mock_cs = mock.MagicMock()
         mock_cs.name = "mock_cs"
         mock_cs.save.side_effect = [ValidationError("error"), mock.DEFAULT]
@@ -1441,16 +1306,12 @@ class TestInstallCommands(TestCase):
         mock_get_pass.return_value = "my_secret_string"
         mock_path_exist.side_effect = [False, True]
         mock_subprocess_call.return_value = mock.MagicMock()
-        mock_generate_salt_string.return_value.decode.return_value = (
-            "my_salt_string"
-        )
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
         app_target_name = "foo"
 
         before_content = {
             "secrets": {
-                app_target_name: {
-                    "custom_settings_salt_strings": {"mock_cs": ""}
-                },
+                app_target_name: {"custom_settings_salt_strings": {"mock_cs": ""}},
                 "version": "1.0",
             }
         }
@@ -1458,9 +1319,7 @@ class TestInstallCommands(TestCase):
         after_content = {
             "secrets": {
                 app_target_name: {
-                    "custom_settings_salt_strings": {
-                        "mock_cs": "my_salt_string"
-                    }
+                    "custom_settings_salt_strings": {"mock_cs": "my_salt_string"}
                 },
                 "version": "1.0",
             }
@@ -1479,9 +1338,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Type", po_call_args[3][0][0])
         self.assertIn("No secrets.yml found", po_call_args[4][0][0])
         self.assertIn("secrets file generated", po_call_args[5][0][0])
-        self.assertIn(
-            "Successfully created salt string for", po_call_args[6][0][0]
-        )
+        self.assertIn("Successfully created salt string for", po_call_args[6][0][0])
         self.assertIn(
             "custom_settings_salt_strings created for setting",
             po_call_args[7][0][0],
@@ -1489,9 +1346,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Enter the desired value", po_call_args[8][0][0])
         self.assertIn("Incorrect value type", po_call_args[9][0][0])
         self.assertIn("Enter the desired value", po_call_args[10][0][0])
-        self.assertEqual(
-            mock_cs.name + " successfully set", po_call_args[11][0][0]
-        )
+        self.assertEqual(mock_cs.name + " successfully set", po_call_args[11][0][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
@@ -1527,9 +1382,7 @@ class TestInstallCommands(TestCase):
         mock_get_pass.return_value = "my_secret_string"
         mock_path_exist.return_value = True
         mock_subprocess_call.return_value = mock.MagicMock()
-        mock_generate_salt_string.return_value.decode.return_value = (
-            "my_salt_string"
-        )
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
         app_target_name = "foo"
 
         before_content_secret_empty = {"secrets": {"version": "1.0"}}
@@ -1537,9 +1390,7 @@ class TestInstallCommands(TestCase):
         after_content = {
             "secrets": {
                 app_target_name: {
-                    "custom_settings_salt_strings": {
-                        "mock_cs": "my_salt_string"
-                    }
+                    "custom_settings_salt_strings": {"mock_cs": "my_salt_string"}
                 },
                 "version": "1.0",
             }
@@ -1557,9 +1408,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
         self.assertIn("Type", po_call_args[3][0][0])
         self.assertIn("No custom_settings_salt_strings", po_call_args[4][0][0])
-        self.assertIn(
-            "Successfully created salt string for", po_call_args[5][0][0]
-        )
+        self.assertIn("Successfully created salt string for", po_call_args[5][0][0])
 
         self.assertIn(
             "custom_settings_salt_strings created for setting",
@@ -1569,9 +1418,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Enter the desired value", po_call_args[7][0][0])
         self.assertIn("Incorrect value type", po_call_args[8][0][0])
         self.assertIn("Enter the desired value", po_call_args[9][0][0])
-        self.assertEqual(
-            mock_cs.name + " successfully set", po_call_args[10][0][0]
-        )
+        self.assertEqual(mock_cs.name + " successfully set", po_call_args[10][0][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "n"])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
@@ -1607,9 +1454,7 @@ class TestInstallCommands(TestCase):
         mock_get_pass.return_value = "my_secret_string"
         mock_path_exist.return_value = True
         mock_subprocess_call.return_value = mock.MagicMock()
-        mock_generate_salt_string.return_value.decode.return_value = (
-            "my_salt_string"
-        )
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
         app_target_name = "foo"
         before_content_secret_empty = {"secrets": {"version": "1.0"}}
 
@@ -1642,9 +1487,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Enter the desired value", po_call_args[6][0][0])
         self.assertIn("Incorrect value type", po_call_args[7][0][0])
         self.assertIn("Enter the desired value", po_call_args[8][0][0])
-        self.assertEqual(
-            mock_cs.name + " successfully set", po_call_args[9][0][0]
-        )
+        self.assertEqual(mock_cs.name + " successfully set", po_call_args[9][0][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "n"])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
@@ -1680,16 +1523,12 @@ class TestInstallCommands(TestCase):
         mock_get_pass.return_value = "my_secret_string"
         mock_path_exist.return_value = True
         mock_subprocess_call.return_value = mock.MagicMock()
-        mock_generate_salt_string.return_value.decode.return_value = (
-            "my_salt_string"
-        )
+        mock_generate_salt_string.return_value.decode.return_value = "my_salt_string"
         app_target_name = "foo"
 
         before_content = {
             "secrets": {
-                app_target_name: {
-                    "custom_settings_salt_strings": {"mock_cs": ""}
-                },
+                app_target_name: {"custom_settings_salt_strings": {"mock_cs": ""}},
                 "version": "1.0",
             }
         }
@@ -1718,9 +1557,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Enter the desired value", po_call_args[5][0][0])
         self.assertIn("Incorrect value type", po_call_args[6][0][0])
         self.assertIn("Enter the desired value", po_call_args[7][0][0])
-        self.assertEqual(
-            mock_cs.name + " successfully set", po_call_args[8][0][0]
-        )
+        self.assertEqual(mock_cs.name + " successfully set", po_call_args[8][0][0])
 
     @mock.patch(
         "tethys_cli.install_commands.input",
@@ -1756,9 +1593,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Enter the desired value", po_call_args[4][0][0])
         self.assertIn("Incorrect value type", po_call_args[5][0][0])
         self.assertIn("Enter the desired value", po_call_args[6][0][0])
-        self.assertIn(
-            mock_cs.name + " successfully set", po_call_args[7][0][0]
-        )
+        self.assertIn(mock_cs.name + " successfully set", po_call_args[7][0][0])
 
     @mock.patch(
         "tethys_cli.install_commands.input",
@@ -1787,12 +1622,8 @@ class TestInstallCommands(TestCase):
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
         self.assertIn("Type", po_call_args[3][0][0])
         self.assertIn("Enter the desired value", po_call_args[4][0][0])
-        self.assertIn(
-            "The current file path was not found", po_call_args[5][0][0]
-        )
-        self.assertEqual(
-            "Skipping setup of " + mock_cs.name, po_call_args[6][0][0]
-        )
+        self.assertIn("The current file path was not found", po_call_args[5][0][0])
+        self.assertEqual("Skipping setup of " + mock_cs.name, po_call_args[6][0][0])
 
     @mock.patch(
         "tethys_cli.install_commands.input",
@@ -1851,9 +1682,7 @@ class TestInstallCommands(TestCase):
     @mock.patch("builtins.input", side_effect=[""])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    def test_interactive_custom_setting_skip(
-        self, mock_pretty_output, mock_gas, _
-    ):
+    def test_interactive_custom_setting_skip(self, mock_pretty_output, mock_gas, _):
         mock_cs = mock.MagicMock()
         mock_cs.name = "mock_cs"
         mock_gas.return_value = {"unlinked_settings": [mock_cs]}
@@ -1864,9 +1693,7 @@ class TestInstallCommands(TestCase):
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
         self.assertIn("Type", po_call_args[3][0][0])
         self.assertIn("Enter the desired value", po_call_args[4][0][0])
-        self.assertEqual(
-            f"Skipping setup of {mock_cs.name}", po_call_args[5][0][0]
-        )
+        self.assertEqual(f"Skipping setup of {mock_cs.name}", po_call_args[5][0][0])
 
     @mock.patch("builtins.input", side_effect=KeyboardInterrupt)
     @mock.patch("tethys_cli.install_commands.exit")
@@ -1881,9 +1708,7 @@ class TestInstallCommands(TestCase):
 
         mock_exit.side_effect = SystemExit
 
-        self.assertRaises(
-            SystemExit, install_commands.run_interactive_services, "foo"
-        )
+        self.assertRaises(SystemExit, install_commands.run_interactive_services, "foo")
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn("Configuring mock_cs", po_call_args[2][0][0])
@@ -1970,9 +1795,7 @@ class TestInstallCommands(TestCase):
 
         mock_exit.side_effect = SystemExit
 
-        self.assertRaises(
-            SystemExit, install_commands.run_interactive_services, "foo"
-        )
+        self.assertRaises(SystemExit, install_commands.run_interactive_services, "foo")
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(
@@ -1980,37 +1803,23 @@ class TestInstallCommands(TestCase):
             "portal_config.yml will be ignored...",
             po_call_args[0][0][0],
         )
-        self.assertIn(
-            "Hit return at any time to skip a step.", po_call_args[1][0][0]
-        )
+        self.assertIn("Hit return at any time to skip a step.", po_call_args[1][0][0])
         self.assertIn("Configuring mock_ss", po_call_args[2][0][0])
         self.assertIn("Type: MagicMock", po_call_args[3][0][0])
-        self.assertIn(
-            f"Description: {mock_ss.description}", po_call_args[3][0][0]
-        )
+        self.assertIn(f"Description: {mock_ss.description}", po_call_args[3][0][0])
         self.assertIn(f"Required: {mock_ss.required}", po_call_args[3][0][0])
         self.assertIn("No compatible services found.", po_call_args[4][0][0])
-        self.assertIn(
-            "tethys services create persistent -h", po_call_args[4][0][0]
-        )
+        self.assertIn("tethys services create persistent -h", po_call_args[4][0][0])
         self.assertIn("Enter the service ID/Name", po_call_args[7][0][0])
         self.assertIn(
             "Incorrect service ID/Name. Please try again.",
             po_call_args[8][0][0],
         )
         self.assertIn("Enter the service ID/Name", po_call_args[9][0][0])
-        self.assertIn(
-            f"Skipping setup of {mock_ss.name}", po_call_args[13][0][0]
-        )
-        self.assertEqual(
-            "service_type_not_found Skipping...", po_call_args[17][0][0]
-        )
-        self.assertEqual(
-            "setting_type_not_found Skipping...", po_call_args[21][0][0]
-        )
-        self.assertEqual(
-            "\nInstall Command cancelled.", po_call_args[25][0][0]
-        )
+        self.assertIn(f"Skipping setup of {mock_ss.name}", po_call_args[13][0][0])
+        self.assertEqual("service_type_not_found Skipping...", po_call_args[17][0][0])
+        self.assertEqual("setting_type_not_found Skipping...", po_call_args[21][0][0])
+        self.assertEqual("\nInstall Command cancelled.", po_call_args[25][0][0])
 
         mock_lstas.assert_called_with(
             "persistent", "1", "foo", "ps_database", "mock_ss"
@@ -2058,9 +1867,7 @@ class TestInstallCommands(TestCase):
         file_path = self.root_app_path / "install-npm-dep.yml"
         import io
 
-        mock_open.return_value.__enter__.return_value = mock.MagicMock(
-            spec=io.StringIO
-        )
+        mock_open.return_value.__enter__.return_value = mock.MagicMock(spec=io.StringIO)
         args = mock.MagicMock(
             file=file_path,
             develop=False,
