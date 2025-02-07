@@ -1040,7 +1040,7 @@ class TestInstallCommands(TestCase):
             ["tethys", "db", "sync"], mock_call.mock_calls[2][1][0]
         )
 
-    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat","y"])
+    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.run_services")
@@ -1099,7 +1099,7 @@ class TestInstallCommands(TestCase):
             ["tethys", "db", "sync"], mock_call.mock_calls[3][1][0]
         )
 
-    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat","n"])
+    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "n"])
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.run_services")
@@ -1132,14 +1132,14 @@ class TestInstallCommands(TestCase):
 
         mock_exit.assert_called_with(0)
 
-    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat","y"])
+    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_install_no_conda_error(
-        self, mock_pretty_output, mock_call, _, mock_has_module, mock_warn
+        self, mock_pretty_output, mock_call, _, mock_has_module, mock_warn, __
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
