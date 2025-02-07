@@ -306,7 +306,7 @@
     {% endblock %}
 
     {% block tos_override %}
-      {% if has_terms %}
+      {% if has_terms and request.user %}
       {% include "terms.html" %}
       {% endif %}
     {% endblock %}
