@@ -4,10 +4,14 @@
 Coding Principles
 *****************
 
-**Last Updated:** December 2024
+**Last Updated:** February 2025
+
+This guide provides a high-level overview of the design and implementation of the foundational parts of Tethys Platform. It is intended to provide context and guidance for developers working on the core components of the platform so they can make informed decisions. It is not intended to be a comprehensive guide to all aspects of the platform.
 
 Tethys Core
 ===========
+
+
 
 .. toctree::
     :maxdepth: 1
@@ -17,6 +21,8 @@ Tethys Core
 Tethys CLI
 ==========
 
+
+
 .. toctree::
     :maxdepth: 1
 
@@ -24,6 +30,8 @@ Tethys CLI
 
 Tethys Jobs
 ===========
+
+
 
 .. toctree::
     :maxdepth: 1
@@ -33,6 +41,8 @@ Tethys Jobs
 Tethys Gizmos
 =============
 
+
+
 .. toctree::
     :maxdepth: 1
 
@@ -40,6 +50,8 @@ Tethys Gizmos
 
 Tethys Layouts
 ==============
+
+
 
 .. toctree::
     :maxdepth: 1
@@ -49,6 +61,8 @@ Tethys Layouts
 Tethys Portal
 =============
 
+
+
 .. toctree::
     :maxdepth: 1
 
@@ -57,6 +71,8 @@ Tethys Portal
 
 Code Organization
 =================
+
+
 
 .. toctree::
     :maxdepth: 1

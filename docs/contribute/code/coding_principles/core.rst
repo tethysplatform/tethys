@@ -11,8 +11,8 @@ App Loading
 
 
 
-Boostrapping Django
--------------------
+Bootstrapping Django
+--------------------
 
 
 
