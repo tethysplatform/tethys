@@ -46,7 +46,8 @@ def tethys_portal_context(request):
 
     context = {
         "has_analytical": has_module("analytical"),
-        "has_terms": has_module("termsandconditions"),
+        "has_terms": has_module("termsandconditions")
+        and getattr(request, "user", None),
         "has_mfa": has_module("mfa"),
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
