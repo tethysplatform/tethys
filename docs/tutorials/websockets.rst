@@ -192,7 +192,7 @@ Now that we have a working ``WebSocket connection`` and a communication backend 
 a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 71-81
+        :emphasize-lines: 1-2, 72-81
 
         from channels.layers import get_channel_layer
         from asgiref.sync import async_to_sync
@@ -295,6 +295,7 @@ a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 b. Let's create a message box to display our notification when a new app is added. Add the following code to the ``get_context`` method in your ``HomeMap`` class in  :file:`controllers.py`.
 
     .. code-block:: python
+        :emphasize-lines: 11-19
 
         from tethys_sdk.gizmos import MessageBox
 
@@ -302,6 +303,10 @@ b. Let's create a message box to display our notification when a new app is adde
 
         def get_context(self, request, context, *args, **kwargs):
             # Add custom context variables
+            context.update({
+                'can_add_dams': has_permission(request, 'add_dams'),
+            })
+
             message_box = MessageBox(
                 name='notification',
                 title='',
@@ -311,9 +316,12 @@ b. Let's create a message box to display our notification when a new app is adde
             )
 
             context.update({"message_box": message_box})
-    
-            ...
 
+            # Call the MapLayout get_context method to initialize the map view
+            context = super().get_context(request, context, *args, **kwargs)
+
+            return context
+            
     This ``gizmo`` creates an empty message box with a current page refresh. It will be populated in the next step based on our ``WebSocket connection``.
 
 c. Add a ``MessageBox`` gizmo to the home view and modify the ``JavaScript`` to display the message box when a "New Dam" message is recieved. Replace the code in the ``after_app_content`` block of the ``home.html`` with the following:
