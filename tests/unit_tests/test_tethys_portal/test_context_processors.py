@@ -28,7 +28,7 @@ class TestTethysPortalContext(TestCase):
             "configured_single_app": None,
             "idp_backends": {}.keys(),
         }
-        self.assertTrue(context == expected_context)
+        self.assertDictEqual(context, expected_context)
 
     @override_settings(MULTIPLE_APP_MODE=True)
     def test_context_processors_multiple_app_mode_no_request_user(self):
@@ -49,7 +49,7 @@ class TestTethysPortalContext(TestCase):
             "configured_single_app": None,
             "idp_backends": {}.keys(),
         }
-        self.assertTrue(context == expected_context)
+        self.assertDictEqual(context, expected_context)
 
     @override_settings(MULTIPLE_APP_MODE=False)
     @mock.patch("tethys_portal.context_processors.messages")
@@ -74,7 +74,7 @@ class TestTethysPortalContext(TestCase):
             "configured_single_app": None,
             "idp_backends": {}.keys(),
         }
-        self.assertTrue(context == expected_context)
+        self.assertDictEqual(context, expected_context)
         mock_messages.warning.assert_called_with(
             mock_request,
             "MULTIPLE_APP_MODE is disabled but there is no Tethys application installed.",
