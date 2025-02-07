@@ -174,6 +174,7 @@ developer_urls = [
     ),
 ]
 
+# Uncomment these lines to debug the error views more easily (e.g. http://localhost:8000/developer/500/)
 # development_error_urls = [
 #     re_path(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
 #     re_path(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
