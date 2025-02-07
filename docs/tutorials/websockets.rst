@@ -192,7 +192,7 @@ Now that we have a working ``WebSocket connection`` and a communication backend 
 a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 71-80
+        :emphasize-lines: 1-2, 71-81
 
         from channels.layers import get_channel_layer
         from asgiref.sync import async_to_sync
