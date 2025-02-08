@@ -77,7 +77,7 @@ a. Create a new file called ``consumers.py`` and add the following code:
         from tethys_sdk.routing import consumer
 
 
-        @consumer(name='dam_notification', url='dams/notifications')
+        @consumer(name='dam_notification', url='dams/notifications/')
         class NotificationsConsumer(AsyncWebsocketConsumer):
 
             async def authorized_connect(self):
@@ -130,7 +130,7 @@ a. Update the ``consumer class`` to look like this.
 
         ...
 
-        @consumer(name='dam_notification', url='dams/notifications')
+        @consumer(name='dam_notification', url='dams/notifications/')
         class NotificationsConsumer(AsyncWebsocketConsumer):
 
             async def authorized_connect(self):
