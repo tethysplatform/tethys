@@ -152,19 +152,15 @@ a. Update the ``consumer class`` to look like this.
 
 b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Add the following peace of code to the :file:`portal_config.yml` file.
 
-    .. code-block:: yaml
+b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Run the follow command to update your portal configurations:
 
-        settings:
-          CHANNEL_LAYERS:
-            default:
-              BACKEND: channels.layers.InMemoryChannelLayer
+    .. code-block:: bash
+
+        tethys settings --set CHANNEL_LAYERS.default.BACKEND channels.layers.InMemoryChannelLayer
 
     .. note::
 
         ``Django Channels`` recommends the use of an external backend store for production environments. The ``channels-redis`` python package plus ``Redis Server`` are the default recommendation. For more information see ``Django Channels`` `channel layers <https://channels.readthedocs.io/en/latest/topics/channel_layers.html>`_ and `deploying <https://channels.readthedocs.io/en/latest/deploying.html>`_ sections.
-
-    .. tip::
-        A ``Channel layer`` can be added to the `settings` section of the :file:`portal_config.yml` by manually editing the file or by running ``tethys settings --set CHANNEL_LAYERS.default.BACKEND <<CHANNEL_LAYERS_BACKEND>>`` where ``<<CHANNEL_LAYERS_BACKEND>>`` is the python dot-formatted path of the channel layer. See :ref:`tethys_configuration` for details.
 
 Channel Layer Definitions
 -------------------------
@@ -276,7 +272,7 @@ a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
                             }
                         )
 
-                    return App.redirect(App.reverse('dam_inventory:home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
             
