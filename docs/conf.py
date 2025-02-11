@@ -259,6 +259,13 @@ todo_include_todos = True
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
+# Link check options
+linkcheck_ignore = [
+    r'https?://(www\.)?example\.com.*',
+    r'https?://localhost.*',
+    r'https?://127\.0\.0\.1.*',
+]
+
 # Define the canonical URL if you are using a custom domain on Read the Docs
 html_baseurl = environ.get("READTHEDOCS_CANONICAL_URL", "")
 
