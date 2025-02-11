@@ -25,8 +25,6 @@ describe("TETHYS_DATATABLE_VIEW", () => {
         $.fn.DataTable = jest.fn();
     });
 
-    
-
     test("should initialize DataTables when called manually", () => {
         const TETHYS_DATATABLE_VIEW = reloadDatatableView();
         const tableElement = $(".data_table_gizmo_view");

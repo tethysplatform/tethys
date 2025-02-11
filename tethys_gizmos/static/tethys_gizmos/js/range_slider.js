@@ -27,7 +27,6 @@ var TETHYS_RANGE_SLIDER = (function() {
  	init_range_sliders = function() {
 		document.querySelectorAll('.form-range').forEach(element => {
 			element.addEventListener('input', function(e){
-				console.log("Changed: ", element.value);
 				element.nextElementSibling.innerHTML = element.value;
 			});
 		});

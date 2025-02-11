@@ -26,14 +26,12 @@ var SLIDE_SHEET = (function() {
     *************************************************************************/
     open = function(id) {
         // Check that id is not empty
-        console.log("Running open..")
         if (id.length) {
             $('#' + id + '.slide-sheet').addClass('show');
         }
     };
 
     close = function(id) {
-        console.log("Running Close...")
         // Check that id is not empty
         if (id.length) {
             $('#' + id + '.slide-sheet').removeClass('show');
@@ -45,11 +43,9 @@ var SLIDE_SHEET = (function() {
  	*************************************************************************/
 	public_interface = {
 		open: function(id) {
-            console.log("Running open public interface...")
 		    open(id);
 		},
 		close: function(id) {
-            console.log("Running ")
 		    close(id);
 		},
 	};
