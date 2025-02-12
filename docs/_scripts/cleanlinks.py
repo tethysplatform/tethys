@@ -22,7 +22,11 @@ def parse_linkcheck_output(docs_dir):
     linkcheck_out = linkcheck_dir / "output.json"
 
     click.echo("Searching for linkcheck output...")
-    if not build_dir.exists() or not linkcheck_dir.exists() or not linkcheck_out.exists():
+    if (
+        not build_dir.exists()
+        or not linkcheck_dir.exists()
+        or not linkcheck_out.exists()
+    ):
         click.echo("Could not find linkcheck output (output.json).")
         click.echo('Please, run "make linkcheck" first and try again.')
         sys.exit(1)
@@ -66,7 +70,13 @@ def fix_links(links_type, links, docs_dir, dry_run):
         raise ValueError(f"Invalid links type: {links_type}")
 
     # Prompt user if they want to fix the links
-    should_fix = click.prompt(click.style(f"{os.linesep}Would you like to {len(links)} fix {links_type} links? [y/n]", fg="magenta"), default="y")    
+    should_fix = click.prompt(
+        click.style(
+            f"{os.linesep}Would you like to {len(links)} fix {links_type} links? [y/n]",
+            fg="magenta",
+        ),
+        default="y",
+    )
     if should_fix.lower() == "n":
         return copy.deepcopy(links)
 
@@ -75,7 +85,13 @@ def fix_links(links_type, links, docs_dir, dry_run):
         # User must review each broken link, bc there is no way to know what the correct link is
         review_each = True
     elif links_type == "redirected":
-        review_each = click.prompt(click.style(f"Would you like to review each {links_type} fix [r] or fix automatically [a]?", fg="magenta"), default="r")
+        review_each = click.prompt(
+            click.style(
+                f"Would you like to review each {links_type} fix [r] or fix automatically [a]?",
+                fg="magenta",
+            ),
+            default="r",
+        )
         review_each = review_each.lower() == "r"
 
     click.secho(f"{os.linesep}Fixing {links_type} links...", bg="magenta")
@@ -92,9 +108,13 @@ def fix_links(links_type, links, docs_dir, dry_run):
             original_link = link["uri"]
             new_link = link["info"] if links_type == "redirected" else ""
             if links_type == "broken":
-                click.echo(f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")}")
+                click.echo(
+                    f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")}"
+                )
             elif links_type == "redirected":
-                click.echo(f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}")
+                click.echo(
+                    f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}"
+                )
 
             try:
                 line_idx = link["lineno"] - 1
@@ -103,23 +123,41 @@ def fix_links(links_type, links, docs_dir, dry_run):
                 # Check if the link is in the line
                 found = line.find(original_link)
                 if not found:
-                    click.secho(f"WARNING: Could not find link to replace in line:", fg="yellow")
+                    click.secho(
+                        "WARNING: Could not find link to replace in line:", fg="yellow"
+                    )
                     click.echo(f"         {link["lineno"]}: {lines[line_idx]}")
                     not_fixed.append(link)
                     continue
 
                 # Replace the link
                 if review_each:
-                    click.echo(f'  {click.style('Line', bold=True)}: {line}')
+                    click.echo(f"  {click.style('Line', bold=True)}: {line}")
                     if links_type == "broken":
-                        click.echo(f'  {click.style('Info', bold=True)}: {link["info"]}')
+                        click.echo(
+                            f'  {click.style('Info', bold=True)}: {link["info"]}'
+                        )
                     elif links_type == "redirected":
-                        click.echo(f'  {click.style('Code', bold=True)}: {link["code"]}')
+                        click.echo(
+                            f'  {click.style('Code', bold=True)}: {link["code"]}'
+                        )
 
                     if links_type == "broken":
-                        new_link = click.prompt(click.style("  Please enter new URL or press Enter to skip", fg="magenta"), default=new_link)
+                        new_link = click.prompt(
+                            click.style(
+                                "  Please enter new URL or press Enter to skip",
+                                fg="magenta",
+                            ),
+                            default=new_link,
+                        )
                     elif links_type == "redirected":
-                        new_link = click.prompt(click.style("  Please enter new URL or press Enter to accept the default", fg="magenta"), default=new_link)
+                        new_link = click.prompt(
+                            click.style(
+                                "  Please enter new URL or press Enter to accept the default",
+                                fg="magenta",
+                            ),
+                            default=new_link,
+                        )
 
                     if not new_link:
                         click.secho("  Skipped", fg="yellow")
@@ -146,7 +184,9 @@ def fix_links(links_type, links, docs_dir, dry_run):
 
 
 @click.command()
-@click.option("-dry", "--dry-run", "dry_run", is_flag=True, help="Do not make any changes.")
+@click.option(
+    "-dry", "--dry-run", "dry_run", is_flag=True, help="Do not make any changes."
+)
 def clean_links(dry_run):
     """Clean up the links in the documentation."""
     # Parse the linkcheck output
