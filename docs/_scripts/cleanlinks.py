@@ -21,18 +21,18 @@ def parse_linkcheck_output(docs_dir):
     linkcheck_dir = build_dir / "linkcheck"
     linkcheck_out = linkcheck_dir / "output.json"
 
-    click.echo("Searching for linkcheck output...")
     if (
         not build_dir.exists()
         or not linkcheck_dir.exists()
         or not linkcheck_out.exists()
     ):
-        click.echo("Could not find linkcheck output (output.json).")
-        click.echo('Please, run "make linkcheck" first and try again.')
+        click.secho("ERROR: Could not find linkcheck output (output.json).", fg="red")
+        click.secho(
+            '       Please, run "make linkcheck" first and try again.', fg="red"
+        )
         sys.exit(1)
 
-    click.echo(f"Using linkcheck output at {linkcheck_out}")
-    click.echo("Reading linkcheck output...")
+    click.echo(f"Using linkcheck output at {click.style(linkcheck_out, fg="blue")}")
 
     # Parse the linkcheck output
     with linkcheck_out.open() as f:
@@ -72,7 +72,7 @@ def fix_links(links_type, links, docs_dir, dry_run):
     # Prompt user if they want to fix the links
     should_fix = click.prompt(
         click.style(
-            f"{os.linesep}Would you like to {len(links)} fix {links_type} links? [y/n]",
+            f"{os.linesep}Would you like to fix {len(links)} {links_type} links? [y/n]",
             fg="magenta",
         ),
         default="y",
@@ -98,87 +98,96 @@ def fix_links(links_type, links, docs_dir, dry_run):
     not_fixed = []
 
     files = group_by_file(links)
-    for filename, file_links in files.items():
-        click.secho(f"{os.linesep}{filename}", fg="blue")
-        with open(docs_dir / filename, "r") as f:
-            lines = f.readlines()
+    with click.progressbar(
+        length=len(links), label=f"Fixing {links_type} links"
+    ) as progress_bar:
+        for filename, file_links in files.items():
+            file_links = files[filename]
+            click.secho(f"{os.linesep}{filename}", fg="blue")
+            with open(docs_dir / filename, "r") as f:
+                lines = f.readlines()
 
-        # Replace each link in the file
-        for link in file_links:
-            original_link = link["uri"]
-            new_link = link["info"] if links_type == "redirected" else ""
-            if links_type == "broken":
-                click.echo(
-                    f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")}"
-                )
-            elif links_type == "redirected":
-                click.echo(
-                    f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}"
-                )
-
-            try:
-                line_idx = link["lineno"] - 1
-                line = lines[line_idx].strip()
-
-                # Check if the link is in the line
-                found = line.find(original_link)
-                if not found:
-                    click.secho(
-                        "WARNING: Could not find link to replace in line:", fg="yellow"
+            # Replace each link in the file
+            for link in file_links:
+                original_link = link["uri"]
+                new_link = link["info"] if links_type == "redirected" else ""
+                if links_type == "broken":
+                    click.echo(
+                        f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")}"
                     )
-                    click.echo(f"         {link["lineno"]}: {lines[line_idx]}")
-                    not_fixed.append(link)
-                    continue
+                elif links_type == "redirected":
+                    click.echo(
+                        f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}"
+                    )
 
-                # Replace the link
-                if review_each:
-                    click.echo(f"  {click.style('Line', bold=True)}: {line}")
-                    if links_type == "broken":
-                        click.echo(
-                            f'  {click.style('Info', bold=True)}: {link["info"]}'
-                        )
-                    elif links_type == "redirected":
-                        click.echo(
-                            f'  {click.style('Code', bold=True)}: {link["code"]}'
-                        )
+                try:
+                    line_idx = link["lineno"] - 1
+                    line = lines[line_idx].strip()
 
-                    if links_type == "broken":
-                        new_link = click.prompt(
-                            click.style(
-                                "  Please enter new URL or press Enter to skip",
-                                fg="magenta",
-                            ),
-                            default=new_link,
+                    # Check if the link is in the line
+                    found = line.find(original_link)
+                    if not found:
+                        click.secho(
+                            "WARNING: Could not find link to replace in line:",
+                            fg="yellow",
                         )
-                    elif links_type == "redirected":
-                        new_link = click.prompt(
-                            click.style(
-                                "  Please enter new URL or press Enter to accept the default",
-                                fg="magenta",
-                            ),
-                            default=new_link,
-                        )
-
-                    if not new_link:
-                        click.secho("  Skipped", fg="yellow")
+                        click.echo(f"         {link["lineno"]}: {lines[line_idx]}")
                         not_fixed.append(link)
+                        progress_bar.update(1)
+                        continue
 
-                click.secho(f"  Replacing: {original_link} -> {new_link}", fg="green")
-                lines[line_idx] = lines[line_idx].replace(original_link, new_link)
+                    # Replace the link
+                    if review_each:
+                        click.echo(f"  {click.style('Line', bold=True)}: {line}")
+                        if links_type == "broken":
+                            click.echo(
+                                f'  {click.style('Info', bold=True)}: {link["info"]}'
+                            )
+                        elif links_type == "redirected":
+                            click.echo(
+                                f'  {click.style('Code', bold=True)}: {link["code"]}'
+                            )
 
-            except click.Abort:
-                # Propagate Abort to kill the script on Keyboard interrupt
-                raise
-            except IndexError:
-                click.secho("ERROR: Could not find line.", fg="red")
-                continue
-            except Exception as e:
-                click.echo(type(e))
-                click.secho(f"ERROR: {e}", fg="red")
+                        if links_type == "broken":
+                            new_link = click.prompt(
+                                click.style(
+                                    "  Please enter new URL or press Enter to skip",
+                                    fg="magenta",
+                                ),
+                                default=new_link,
+                            )
+                        elif links_type == "redirected":
+                            new_link = click.prompt(
+                                click.style(
+                                    "  Please enter new URL or press Enter to accept the default",
+                                    fg="magenta",
+                                ),
+                                default=new_link,
+                            )
 
-        if not dry_run:
-            with open(docs_dir / filename, "w") as f:
-                f.writelines(lines)
+                        if not new_link:
+                            click.secho("  Skipped", fg="yellow")
+                            not_fixed.append(link)
+
+                    click.secho(
+                        f"  Replacing: {original_link} -> {new_link}", fg="green"
+                    )
+                    lines[line_idx] = lines[line_idx].replace(original_link, new_link)
+
+                except click.Abort:
+                    # Propagate Abort to kill the script on Keyboard interrupt
+                    raise
+                except IndexError:
+                    click.secho("ERROR: Could not find line.", fg="red")
+                except Exception as e:
+                    click.echo(type(e))
+                    click.secho(f"ERROR: {e}", fg="red")
+
+                progress_bar.update(1)
+
+            if not dry_run:
+                with open(docs_dir / filename, "w") as f:
+                    f.writelines(lines)
 
     return not_fixed
 
