@@ -1,3 +1,4 @@
+from difflib import SequenceMatcher
 import copy
 import json
 from pathlib import Path
@@ -5,6 +6,10 @@ import os
 import sys
 
 import click
+
+
+def calculate_similarity(a, b):
+    return SequenceMatcher(None, a, b).ratio()
 
 
 def group_by_file(links):
@@ -65,7 +70,11 @@ def parse_linkcheck_output(docs_dir):
     return links, files
 
 
-def fix_links(links_type, links, docs_dir, dry_run):
+def fix_links(links_type, links, docs_dir):
+    ctx = click.get_current_context()
+    dry_run = ctx.params["dry_run"]
+    similarity_threshold = ctx.params["similarity_threshold"]
+
     if links_type not in ["broken", "redirected"]:
         raise ValueError(f"Invalid links type: {links_type}")
 
@@ -86,6 +95,7 @@ def fix_links(links_type, links, docs_dir, dry_run):
         review_each = True
     elif links_type == "redirected":
         review_each = click.prompt(
+            # TODO: automatic: fix only the links that are very different (long or different domain)
             click.style(
                 f"Would you like to review each {links_type} fix [r] or fix automatically [a]?",
                 fg="magenta",
@@ -136,8 +146,12 @@ def fix_links(links_type, links, docs_dir, dry_run):
                         progress_bar.update(1)
                         continue
 
+                    # Compute the similarity between the original and new link
+                    similarity = calculate_similarity(original_link, new_link)
+                    too_dissimilar = similarity <= similarity_threshold
+
                     # Replace the link
-                    if review_each:
+                    if review_each or too_dissimilar:
                         click.echo(f"  {click.style('Line', bold=True)}: {line}")
                         if links_type == "broken":
                             click.echo(
@@ -146,6 +160,11 @@ def fix_links(links_type, links, docs_dir, dry_run):
                         elif links_type == "redirected":
                             click.echo(
                                 f'  {click.style('Code', bold=True)}: {link["code"]}'
+                            )
+
+                        if not review_each and too_dissimilar:
+                            click.echo(
+                                f"  {click.style('Review Required', bold=True, fg="yellow")}: The new link is very different from the original."
                             )
 
                         if links_type == "broken":
@@ -196,30 +215,40 @@ def fix_links(links_type, links, docs_dir, dry_run):
 @click.option(
     "-dry", "--dry-run", "dry_run", is_flag=True, help="Do not make any changes."
 )
-def clean_links(dry_run):
+@click.option(
+    "-s",
+    "--similarity",
+    "similarity_threshold",
+    type=float,
+    default=0.8,
+    help="Similarity threshold used to determine if user input is required in automatic redirect fixes.",
+)
+def clean_links(dry_run, similarity_threshold):
     """Clean up the links in the documentation."""
     # Parse the linkcheck output
     docs_dir = Path(__file__).parents[1]
     links, files = parse_linkcheck_output(docs_dir)
 
     # Fix Redirected Links
-    redirect_not_fixed = fix_links("redirected", links["redirected"], docs_dir, dry_run)
+    redirect_not_fixed = fix_links("redirected", links["redirected"], docs_dir)
 
     # Fix Broken Links
-    broken_not_fixed = fix_links("broken", links["broken"], docs_dir, dry_run)
+    broken_not_fixed = fix_links("broken", links["broken"], docs_dir)
 
     # Summary Report
+    broken_fixed = len(links["broken"]) - len(broken_not_fixed)
+    redirect_fixed = len(links["redirected"]) - len(redirect_not_fixed)
     click.secho("Link Check Summary:", fg="blue")
+    click.echo(f"  Broken: {broken_fixed}/{len(links['broken'])}")
+    click.echo(f"  Redirected: {redirect_fixed}/{len(links['redirected'])}")
     click.echo(f"  Working: {len(links['working'])}")
     click.echo(f"  Ignored: {len(links['ignored'])}")
-    broken_fixed = len(links["broken"]) - len(broken_not_fixed)
-    click.echo(f"  Broken: {broken_fixed}/{len(links['broken'])}")
     click.echo(f"  Timeout: {len(links['timeout'])}")
-    redirect_fixed = len(links["redirected"]) - len(redirect_not_fixed)
-    click.echo(f"  Redirected: {redirect_fixed}/{len(links['redirected'])}")
     click.echo(f"  Other: {len(links['other'])}")
     click.echo(f"  Total: {len(links)}")
     click.echo(f"  Files: {len(files)}")
+
+    # TODO: Skipped/not fixed Report
 
 
 if __name__ == "__main__":
