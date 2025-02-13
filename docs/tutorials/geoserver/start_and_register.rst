@@ -67,7 +67,7 @@ If you are using the Docker containers, create and start your :doc:`../../softwa
 
 	tethys docker start -c geoserver
 
-Otherwise ensure that you have GeoServer installed and running. Refer to the `GeoServer Installation Guide <http://docs.geoserver.org/stable/en/user/installation/>`_ for system specific instructions.
+Otherwise ensure that you have GeoServer installed and running. Refer to the `GeoServer Installation Guide <https://docs.geoserver.org/stable/en/user/installation/>`_ for system specific instructions.
 
 5. Create GeoServer Spatial Dataset Service
 ===========================================

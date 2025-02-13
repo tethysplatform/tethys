@@ -323,7 +323,7 @@ Supervisor
 
     .. note::
 
-        These instructions are based on `Installing Supervisor <http://supervisord.org/installing.html>`_, `Install EPEL <https://fedoraproject.org/wiki/EPEL>`_, and `How to install Supervisor on RHEL/CentOS/AlmaLinux/RockyLinux <https://www.hostround.com/one/knowledgebase/100/How-to-install-Supervisor-on-RHELorCentOSorAlmaLinuxorRockyLinux.html>`_.
+        These instructions are based on `Installing Supervisor <https://supervisord.org/installing.html>`_, `Install EPEL <https://docs.fedoraproject.org/en-US/epel/>`_, and `How to install Supervisor on RHEL/CentOS/AlmaLinux/RockyLinux <https://www.hostround.com/one/knowledgebase/100/How-to-install-Supervisor-on-RHELorCentOSorAlmaLinuxorRockyLinux.html>`_.
 
 
 Postfix (Optional)

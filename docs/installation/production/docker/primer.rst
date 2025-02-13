@@ -72,6 +72,6 @@ Docker Hub
 .. [#f2] See `What is a container? | Docker <https://www.docker.com/resources/what-container>`_
 .. [#f3] See `Docker overview | Docker Documentation <https://docs.docker.com/get-started/overview/>`_
 .. [#f4] See `Dockerfile reference | Docker Documentation <https://docs.docker.com/engine/reference/builder/>`_
-.. [#f5] See `Use the Docker command line | Docker Documentation <https://docs.docker.com/engine/reference/commandline/cli/>`_
-.. [#f6] See `Docker Registry | Docker Documentation <https://docs.docker.com/registry/>`_
+.. [#f5] See `Use the Docker command line | Docker Documentation <https://docs.docker.com/reference/cli/docker/>`_
+.. [#f6] See `Docker Registry | Docker Documentation <https://docs.docker.com/retired/>`_
 .. [#f7] See `Docker Pricing & Monthly Plan Details | Docker <https://www.docker.com/pricing>`_

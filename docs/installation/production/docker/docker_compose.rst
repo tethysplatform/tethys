@@ -57,8 +57,8 @@ Starting all the services in a Docker Compose YAML is done using the following c
 Here is a list of resources that you can use to learn more about Docker Compose:
 
 * `Docker Compose Features List <https://docs.docker.com/compose/#features>`_
-* `Compose File Reference | Docker Documentation <https://docs.docker.com/compose/compose-file/>`_
-* `Compose Command Reference | Docker Documentation <https://docs.docker.com/compose/cli-command/>`_
+* `Compose File Reference | Docker Documentation <https://docs.docker.com/reference/compose-file/>`_
+* `Compose Command Reference | Docker Documentation <https://docs.docker.com/compose/>`_
 
 Create Docker Compose Recipe
 ============================
@@ -133,7 +133,7 @@ Add the following contents to the :file:`docker-compose.yml`:
 
 * `version <https://docs.docker.com/compose/compose-file/compose-file-v3/#compose-and-docker-compatibility-matrix>`_: This is the version of the Docker Compose file format that this Compose file uses.
 * `services <https://docs.docker.com/compose/compose-file/compose-file-v3/#service-configuration-reference>`_: This section contains a list of services or containers and configuration for each. Three stubs are defined for the four containers that need to be defined for the custom image: ``db``, ``thredds``, ``redis``, and ``web``.
-* `networks (top-level) <https://docs.docker.com/compose/compose-file/compose-file-v3/#network-configuration-reference>`_: Networks that should be created. In this example two networks are defined, one that is internal, meaning only accessible to the containers that are connected to it, and one that is external, to allow access to the web container for example. To learn more about Docker networks, see: `Networking overview | Docker Documentation <https://docs.docker.com/network/>`_.
+* `networks (top-level) <https://docs.docker.com/compose/compose-file/compose-file-v3/#network-configuration-reference>`_: Networks that should be created. In this example two networks are defined, one that is internal, meaning only accessible to the containers that are connected to it, and one that is external, to allow access to the web container for example. To learn more about Docker networks, see: `Networking overview | Docker Documentation <https://docs.docker.com/engine/network/>`_.
 
 3. Define Database Service
 --------------------------
@@ -207,7 +207,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
     * ``./data/thredds/:/usr/local/tomcat/content/thredds``: Main content directory for THREDDS. This directory will contain the data and XML configuration files for THREDDS.
     * ``./logs/thredds/tomcat/:/usr/local/tomcat/logs/``: Logs for Tomcat, the server running THREDDS.
     * ``./logs/thredds/thredds/:/usr/local/tomcat/content/thredds/logs/``: Logs for THREDDS.
-    * ``./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml``: Tomcat user configuration file. Use this file to create user accounts for the THREDDS Data Manager service that is also run inside the container (see: `THREDDS Data Manager (TDM) <https://www.unidata.ucar.edu/software/tds/current/reference/collections/TDM.html>`_ and `Manager App HOW-TO | Tomcat Documentation <https://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html>`_).
+    * ``./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml``: Tomcat user configuration file. Use this file to create user accounts for the THREDDS Data Manager service that is also run inside the container (see: `THREDDS Data Manager (TDM) <https://docs.unidata.ucar.edu/tds/current/userguide/index.html>`_ and `Manager App HOW-TO | Tomcat Documentation <https://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html>`_).
 
 5. Define Redis Service
 -----------------------

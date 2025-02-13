@@ -25,7 +25,7 @@ There are quite a few concepts to understand before working with GeoServer and s
 
 **Workspaces**: are arbitrary groupings of data to help with organization of the data. It would be a good idea to store all of the spatial datasets for your app in a workspace resembling the name of your app to avoid conflicts with other apps.
 
-**Styles**: are a set of rules that dictate how a *layer* will be rendered when accessed via WMS. A *layer* may be associated with many styles and a style may be associated with many *layers*. Styles on GeoServer are written in `Styled Layer Descriptor (SLD) <http://www.opengeospatial.org/standards/sld>`_ format.
+**Styles**: are a set of rules that dictate how a *layer* will be rendered when accessed via WMS. A *layer* may be associated with many styles and a style may be associated with many *layers*. Styles on GeoServer are written in `Styled Layer Descriptor (SLD) <https://www.ogc.org/publications/standard/sld/>`_ format.
 
 **Styled Layer Descriptor (SLD)**:  An XML-based markup language that can be used to specify how spatial datasets should be rendered. See GeoServer's `SLD Cookbook <http://docs.geoserver.org/stable/en/user/styling/sld-cookbook/index.html#sld-cookbook>`_ for a good primer on SLD.
 
@@ -106,9 +106,9 @@ Publishing the spatial dataset with a spatial dataset service would be pointless
 
 These links can be passed to a web mapping client like OpenLayers or Google Maps to render the map interactively on a web page. Note that the OGC mapping services are very powerful and the links provided represent only a simple query. You can construct custom OGC URLs queries without much difficulty. For excellent primers on WFS, WCS, and WMS with GeoServer, visit these links:
 
-* `GeoServer Web Feature Service Overview <http://docs.geoserver.org/stable/en/user/services/wfs/index.html>`_
-* `GeoServer Web Coverage Service Overview <http://docs.geoserver.org/stable/en/user/services/wcs/index.html>`_
-* `GeoServer Web Map Service Overview <http://docs.geoserver.org/stable/en/user/services/wms/index.html>`_
+* `GeoServer Web Feature Service Overview <https://docs.geoserver.org/stable/en/user/services/wfs/index.html>`_
+* `GeoServer Web Coverage Service Overview <https://docs.geoserver.org/stable/en/user/services/wcs/index.html>`_
+* `GeoServer Web Map Service Overview <https://docs.geoserver.org/stable/en/user/services/wms/index.html>`_
 
 .. tip::
 

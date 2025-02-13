@@ -38,7 +38,7 @@ To use the map publishing capabilities of GeoServer in your app refer to the :do
 THREDDS Data Server
 -------------------
 
-Tethys Platform supports the `THREDDS Data Server <https://www.unidata.ucar.edu/software/tds/current/>`_ as an alternative option for publishing spatial data as web services. "The THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, using OPeNDAP, OGC WMS and WCS, HTTP, and other remote data access protocols. The TDS is developed and supported by Unidata, a division of the University Corporation for Atmospheric Research, and is sponsored by the National Science Foundation."
+Tethys Platform supports the `THREDDS Data Server <https://docs.unidata.ucar.edu/tds/current/userguide/index.html>`_ as an alternative option for publishing spatial data as web services. "The THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, using OPeNDAP, OGC WMS and WCS, HTTP, and other remote data access protocols. The TDS is developed and supported by Unidata, a division of the University Corporation for Atmospheric Research, and is sponsored by the National Science Foundation."
 
 To use the map publishing capabilities of the THREDDS Data Server in your app refer to :doc:`./software_suite/thredds` documentation and use the :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`.
 
@@ -49,7 +49,7 @@ Geoprocessing
    :width: 150px
    :align: right
 
-`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in water resources web app development. It can be linked with geoprocessing libraries such as `GRASS <http://grass.osgeo.org/>`_, `Sextante <http://www.wikiwand.com/es/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <http://www.esri.com/software/arcgis/arcgisserver>`_ for out-of-the-box geoprocessing capabilities.
+`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in water resources web app development. It can be linked with geoprocessing libraries such as `GRASS <https://grass.osgeo.org/>`_, `Sextante <https://www.wikiwand.com/es/articles/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <https://enterprise.arcgis.com/en/server/10.9.1/get-started/windows/what-is-arcgis-for-server-.htm>`_ for out-of-the-box geoprocessing capabilities.
 
 The PostGIS extension, included in the software suite, can also provide geoprocessing capabilities on data that is stored in a spatially-enabled database. PostGIS includes SQL geoprocessing functions for splicing, dicing, morphing, reclassifying, and collecting/unioning raster and vector types. It also includes functions for vectorizing rasters, clipping rasters with vectors, and running stats on rasters by geometric region.
 
@@ -79,7 +79,7 @@ To use a Cesium map in your app use the **Cesium Map View Gizmo** of the :doc:`.
    :width: 75px
    :align: right
 
-Plotting capabilities are provided by `Highcharts <http://www.highcharts.com/>`_, a JavaScript library created by Highsoft AS. The plots created using Highcharts are interactive with hovering effects, pan and zoom capabilities, and the ability to export the plots as images.
+Plotting capabilities are provided by `Highcharts <https://www.highcharts.com/>`_, a JavaScript library created by Highsoft AS. The plots created using Highcharts are interactive with hovering effects, pan and zoom capabilities, and the ability to export the plots as images.
 
 To use an Highcharts in your app use the **Plot View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
@@ -87,7 +87,7 @@ To use an Highcharts in your app use the **Plot View Gizmo** of the :doc:`./teth
    :width: 75px
    :align: right
 
-The `Plotly Python Library <https://plot.ly/python/>`_ makes interactive, publication-quality graphs. Examples of how to make line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, multiple-axes, polar charts, and bubble charts. Plotly.py is free and open source and you can view the source, report issues or contribute on GitHub.
+The `Plotly Python Library <https://plotly.com/python/>`_ makes interactive, publication-quality graphs. Examples of how to make line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, multiple-axes, polar charts, and bubble charts. Plotly.py is free and open source and you can view the source, report issues or contribute on GitHub.
 
 To use an Plotly in your app use the **Plotly View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
@@ -111,7 +111,7 @@ Tethys Platform does not include software for handling flat file storage. Howeve
    :width: 150px
    :align: right
 
-`CKAN <http://ckan.org/>`_ is an open source data sharing platform that streamlines publishing, sharing, finding, and using data. There is no central CKAN hub or portal, rather data publishers setup their own instance of CKAN to host the data for their organization.
+`CKAN <https://ckan.org/>`_ is an open source data sharing platform that streamlines publishing, sharing, finding, and using data. There is no central CKAN hub or portal, rather data publishers setup their own instance of CKAN to host the data for their organization.
 
 .. image:: images/software/hydroshare.png
    :width: 200px

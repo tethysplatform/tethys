@@ -132,12 +132,12 @@ Commit the new submodules configuration that was generated (:file:`.gitmodules`)
 Edit Dockerfile
 ===============
 
-With the app source code checked out it is time to build out the Dockerfile. A :file:`Dockerfile` is composed of several different types of instructions. The instructions used in our :file:`Dockerfile` will be explained as it is built-out, but you can refer to the `Dockerfile Reference | Docker Documentation <https://docs.docker.com/engine/reference/builder/>`_ for full explanations of any instructions.
+With the app source code checked out it is time to build out the Dockerfile. A :file:`Dockerfile` is composed of several different types of instructions. The instructions used in our :file:`Dockerfile` will be explained as it is built-out, but you can refer to the `Dockerfile Reference | Docker Documentation <https://docs.docker.com/reference/dockerfile/>`_ for full explanations of any instructions.
 
 1. Add ``FROM`` instruction
 ---------------------------
 
-All Dockerfiles must begin with a `FROM <https://docs.docker.com/engine/reference/builder/#from>`_ instruction that specifies the base image or starting point for the image. Tethys Platform provides a :ref:`base image <docker_official_image_env>` that already has Tethys Platform installed. Add the ``FROM`` instruction to the top of the :file:`Dockerfile` as follows:
+All Dockerfiles must begin with a `FROM <https://docs.docker.com/reference/dockerfile/#from>`_ instruction that specifies the base image or starting point for the image. Tethys Platform provides a :ref:`base image <docker_official_image_env>` that already has Tethys Platform installed. Add the ``FROM`` instruction to the top of the :file:`Dockerfile` as follows:
 
 .. code-block:: dockerfile
 
@@ -151,7 +151,7 @@ All Dockerfiles must begin with a `FROM <https://docs.docker.com/engine/referenc
 2. Define environment variables
 -------------------------------
 
-The `ENV <https://docs.docker.com/engine/reference/builder/#env>`_ instruction can be used to specify environment variables that are used during the build and when the container is running. Environment variables are often overridden when creating the container and can be thought of as arguments for a container to configure it for the specific deployment use case. The base Tethys Platform image provides many environment variables, some of which we will use during our build. For a full list of the Tethys Platform image environment variables see :ref:`docker_official_image_env`.
+The `ENV <https://docs.docker.com/reference/dockerfile/#env>`_ instruction can be used to specify environment variables that are used during the build and when the container is running. Environment variables are often overridden when creating the container and can be thought of as arguments for a container to configure it for the specific deployment use case. The base Tethys Platform image provides many environment variables, some of which we will use during our build. For a full list of the Tethys Platform image environment variables see :ref:`docker_official_image_env`.
 
 For this image, define environment variables for the various settings for the apps that will be installed. Add the following lines to the :file:`Dockerfile`:
 
@@ -180,7 +180,7 @@ For this image, define environment variables for the various settings for the ap
 3. Add files to image
 ---------------------
 
-The `ADD <https://docs.docker.com/engine/reference/builder/#add>`_ and `COPY <https://docs.docker.com/engine/reference/builder/#copy>`_ instructions let you copy files into the docker image. The difference between the two is that ``ADD`` will automatically decompress archive files (e.g.: ``.tar.gz``) and it can take a URL as the source of the copy (though confusingly if the URL is pointing to an archive, it won't decompress it automatically). It is recommended to use ``COPY`` unless you specifically need the extra features of ``ADD``.
+The `ADD <https://docs.docker.com/engine/reference/builder/#add>`_ and `COPY <https://docs.docker.com/reference/dockerfile/#copy>`_ instructions let you copy files into the docker image. The difference between the two is that ``ADD`` will automatically decompress archive files (e.g.: ``.tar.gz``) and it can take a URL as the source of the copy (though confusingly if the URL is pointing to an archive, it won't decompress it automatically). It is recommended to use ``COPY`` unless you specifically need the extra features of ``ADD``.
 
 Copy the directories containing the app source code to the ``${TETHYS_HOME}/apps`` directory, which is the recommended directory for app source code. Add the following lines to the :file:`Dockerfile`:
 
@@ -222,7 +222,7 @@ d. Add the following lines to the Dockefile to add the images to the container i
 5. Install apps
 ---------------
 
-The `RUN <https://docs.docker.com/engine/reference/builder/#run>`_ instruction can be used to run any command during the build. For long commands, the ``\`` (backslash) character can be used to continue a ``RUN`` instruction on the next line for easier readability.
+The `RUN <https://docs.docker.com/reference/dockerfile/#run>`_ instruction can be used to run any command during the build. For long commands, the ``\`` (backslash) character can be used to continue a ``RUN`` instruction on the next line for easier readability.
 
 For this image we need to run the ``tethys install`` command for each of our apps. The trickiest part about doing this in a Docker build is activating the ``tethys`` environment, which must be done before installing the apps. Add the following lines to the :file:`Dockerfile`:
 
@@ -265,7 +265,7 @@ For this image we need to run the ``tethys install`` command for each of our app
 6. Expose ports (optional)
 --------------------------
 
-The `EXPOSE <https://docs.docker.com/engine/reference/builder/#expose>`_ instruction is used to tell Docker which ports the application running inside the container listens on. In the :ref:`Tethys Platform Docker image <docker_official_image_env>`, Tethys Portal has been configured to run on port 80, which is the standard HTTP port. Add the following lines to the :file:`Dockerfile` to inform Docker of this fact:
+The `EXPOSE <https://docs.docker.com/reference/dockerfile/#expose>`_ instruction is used to tell Docker which ports the application running inside the container listens on. In the :ref:`Tethys Platform Docker image <docker_official_image_env>`, Tethys Portal has been configured to run on port 80, which is the standard HTTP port. Add the following lines to the :file:`Dockerfile` to inform Docker of this fact:
 
 .. code-block:: dockerfile
 
@@ -281,9 +281,9 @@ The `EXPOSE <https://docs.docker.com/engine/reference/builder/#expose>`_ instruc
 7. Default command (optional)
 -----------------------------
 
-The `CMD <https://docs.docker.com/engine/reference/builder/#cmd>`_ instruction is used to specify the default command that is executed when the container starts. The :ref:`Tethys Platform Docker image <docker_official_image_env>` provides a :ref:`run.sh <docker_official_run_script>` script that performs the tasks that need to happen when the container starts, including starting the servers that run Tethys Portal.
+The `CMD <https://docs.docker.com/reference/dockerfile/#cmd>`_ instruction is used to specify the default command that is executed when the container starts. The :ref:`Tethys Platform Docker image <docker_official_image_env>` provides a :ref:`run.sh <docker_official_run_script>` script that performs the tasks that need to happen when the container starts, including starting the servers that run Tethys Portal.
 
-The `WORKDIR <https://docs.docker.com/engine/reference/builder/#workdir>`_ instruction is used to specify the working directory for the ``CMD``, ``RUN``, ``COPY``, and ``ADD`` instructions. You are welcome to use ``WORKDIR`` multiple times throughout the :file:`Dockerfile` to simplify any custom ``RUN`` instructions you may need. However, we recommend setting it to ``${TETHYS_HOME}`` before the ``CMD`` instruction, as the base image assumes this is the case.
+The `WORKDIR <https://docs.docker.com/reference/dockerfile/#workdir>`_ instruction is used to specify the working directory for the ``CMD``, ``RUN``, ``COPY``, and ``ADD`` instructions. You are welcome to use ``WORKDIR`` multiple times throughout the :file:`Dockerfile` to simplify any custom ``RUN`` instructions you may need. However, we recommend setting it to ``${TETHYS_HOME}`` before the ``CMD`` instruction, as the base image assumes this is the case.
 
 Add the following lines to the :file:`Dockerfile`:
 

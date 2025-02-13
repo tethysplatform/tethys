@@ -112,7 +112,7 @@ The ``consumer`` decorator is somewhat more simple than the ``controller`` decor
 Bokeh Integration
 -----------------
 
-Bokeh Integration in Tethys takes advantage of :ref:`websockets` and ``Django Channels`` to leverage Bokeh's flexible architecture. In particular, the ability to sync model objects to the client allows for a responsive user interface that can receive updates from the server using Python. This is referred to as ``Bokeh Server`` in the `Bokeh Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_.
+Bokeh Integration in Tethys takes advantage of :ref:`websockets` and ``Django Channels`` to leverage Bokeh's flexible architecture. In particular, the ability to sync model objects to the client allows for a responsive user interface that can receive updates from the server using Python. This is referred to as ``Bokeh Server`` in the `Bokeh Documentation <https://docs.bokeh.org/en/latest/docs/user_guide/server.html>`_.
 
 .. note::
 
@@ -133,7 +133,7 @@ A ``Bokeh Document`` comes with a ``Bokeh Request``. This request contains most 
         conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django
 
 .. tip::
-    For more information regarding Bokeh Server and available models visit the `Bokeh Server Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://bokeh.pydata.org/en/latest/docs/reference/models.html#bokeh-models>`_.
+    For more information regarding Bokeh Server and available models visit the `Bokeh Server Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://docs.bokeh.org/en/latest/docs/reference/models.html>`_.
 
 .. _handler-decorator:
 

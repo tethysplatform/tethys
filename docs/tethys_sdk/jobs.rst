@@ -15,8 +15,8 @@ The Jobs API leverages third-party job management systems to perform the actual 
 
 To learn more about HTCondor and Dask, review the following resources:
 
-* `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_
-* `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_
+* `Overview of HTCondor <https://condorpy.readthedocs.io/en/latest/htcondor.html>`_
+* `HTCondor User Manual <https://research.cs.wisc.edu/htcondor/manual/>`_
 * `Dask Overview <https://docs.dask.org/en/latest/>`_
 * `Dask Distributed <http://distributed.dask.org/en/stable/>`_
 

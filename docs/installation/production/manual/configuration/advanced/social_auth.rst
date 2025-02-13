@@ -37,7 +37,7 @@ Azure Active Directory
 
 1. Sign up for a free Microsoft Developer account or sign in with an existing account if you already have one. See: `<https://azure.microsoft.com/en-us/free/>`_
 
-2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/#home>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant#social-and-local-accounts>`_
+2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/#home>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant>`_
 
     .. note::
 
@@ -112,15 +112,15 @@ Azure Active Directory
 
         .. note::
 
-              Use ``b2c_`` as the value of ``SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY`` if you do not have a custom user flow. See: `User flows in Azure Active Directory B2C <https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview>`_ for more information.
+              Use ``b2c_`` as the value of ``SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY`` if you do not have a custom user flow. See: `User flows in Azure Active Directory B2C <https://learn.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview>`_ for more information.
 
 References
 ++++++++++
 
 For more detailed information about using Azure Active Directory social authentication see the following articles:
 
-* `Tutorial: Create an Azure Active Directory B2C tenant <https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant>`_
-* `Associate or add an Azure subscription to your Azure Active Directory tenant <https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp>`_
+* `Tutorial: Create an Azure Active Directory B2C tenant <https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant>`_
+* `Associate or add an Azure subscription to your Azure Active Directory tenant <https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp>`_
 * `Microsoft Azure Active Directory - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html>`_
 
 .. _social_adfs:
@@ -134,7 +134,7 @@ Active Directory Federation Services (AD FS)
 
         Tethys Platform only supports authenticating with **AD FS 2016 or later**.
 
-2. Follow the `App Registration in AD FS <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api#app-registration-in-ad-fs>`_ section of the `AD FS MSAL Web app (server app) calling web APIs <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api>`_ documentation to register your Tethys Portal with the AD FS server with the following considerations:
+2. Follow the `App Registration in AD FS <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api>`_ section of the `AD FS MSAL Web app (server app) calling web APIs <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api>`_ documentation to register your Tethys Portal with the AD FS server with the following considerations:
 
     * On the **Welcome** tab:
         * Select **Server application accessing a web API** as the **Template**.
@@ -165,7 +165,7 @@ Active Directory Federation Services (AD FS)
 
         tethys settings --set AUTHENTICATION_BACKENDS "['tethys_services.backends.adfs.ADFSOpenIdConnect']"
 
-    Use the ``Client Identifier`` and ``Secret`` obtained in Step 2 to set the ``SOCIAL_AUTH_ADFS_OIDC_KEY`` and ``SOCIAL_AUTH_ADFS_OIDC_SECRET`` settings, respectively. Also, set the ``SOCIAL_AUTH_ADFS_OIDC_DOMAIN`` setting with the Fully Qualified Domain Name (FQDN) of your AD FS server (e.g. "https://adfs.my-org.com"):
+    Use the ``Client Identifier`` and ``Secret`` obtained in Step 2 to set the ``SOCIAL_AUTH_ADFS_OIDC_KEY`` and ``SOCIAL_AUTH_ADFS_OIDC_SECRET`` settings, respectively. Also, set the ``SOCIAL_AUTH_ADFS_OIDC_DOMAIN`` setting with the Fully Qualified Domain Name (FQDN) of your AD FS server (e.g. "https://adfs.example.com"):
 
     .. code-block::
 
@@ -176,8 +176,8 @@ References
 
 For more detailed information about using Active Directory Federation Services social authentication see the following articles:
 
-* `Active Directory Federation Services <https://docs.microsoft.com/en-us/windows-server/identity/active-directory-federation-services>`_
-* `AD FS OpenID Connect/OAuth Concepts <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts>`_
+* `Active Directory Federation Services <https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services>`_
+* `AD FS OpenID Connect/OAuth Concepts <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts>`_
 
 .. _social_auth_facebook:
 
@@ -304,7 +304,7 @@ References
 For more detailed information about using Google social authentication see the following articles:
 
 * `Developer Console Help <https://developers.google.com/console/help/new/?hl=en_US#generatingoauth2>`_
-* `Google Identity Platform <https://developers.google.com/identity/protocols/OAuth2>`_
+* `Google Identity Platform <https://developers.google.com/identity/protocols/oauth2>`_
 
 .. _social_auth_hydroshare:
 
@@ -586,7 +586,7 @@ Tethys Platform supports two methods of Okta single sign on: OAuth 2.0 and OpenI
 
 2. Create an Okta Application
 
-    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app/go/create-okta-application/>`_. Set the callback URL as follows:
+    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app-redirect/go/main/#create-an-okta-integration-for-your-app>`_. Set the callback URL as follows:
 
     OAuth 2.0 method (recommended):
 
@@ -666,7 +666,7 @@ OneLogin
 
 1. Create an OneLogin Developer Account
 
-    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/developer-signup>`_.
+    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://developers.onelogin.com/>`_.
 
 2. Create an OneLogin Application
 
@@ -740,7 +740,7 @@ Jyn Erso would like to log in to a Tethys Portal that has been configured to use
 .. figure:: ./images/multi-tenant-tenant-page.png
     :width: 675px
 
-4. She is redirected to the authentication page for her company: http://rebel-acq.onelogin.com/login2/
+4. She is redirected to the authentication page for her company: https://rebel-acq.onelogin.com/login2/
 
 .. figure:: ./images/multi-tenant-onelogin-page.png
     :width: 675px

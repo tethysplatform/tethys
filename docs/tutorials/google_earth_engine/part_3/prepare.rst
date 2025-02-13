@@ -198,7 +198,7 @@ In this step you will add an appropriate open source license to your project. Th
 
 1. Navigate to `<https://opensource.org/licenses>`_ and peruse the list of Popular License.
 
-2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/licenses/BSD-3-Clause>`_ or a license of your choice.
+2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/license/BSD-3-Clause>`_ or a license of your choice.
 
 3. Create a new file called :file:`LICENSE` in the same directory as the :file:`setup.py`.
 

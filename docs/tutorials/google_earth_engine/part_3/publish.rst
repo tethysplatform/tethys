@@ -36,7 +36,7 @@ If you wish to use the previous solution as a starting point:
 1. Create GitHub Account or Sign In
 ===================================
 
-If you don't have a GitHub account yet, sign up using this link: `<https://github.com/join>`_.
+If you don't have a GitHub account yet, sign up using this link: `<https://github.com/signup>`_.
 
 Sign in to your GitHub account using this link: `<https://github.com/login>`_. After logging in, you'll be brought to your dashboard.
 
