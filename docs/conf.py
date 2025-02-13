@@ -261,9 +261,10 @@ todo_emit_warnings = True
 
 # Link check options
 linkcheck_ignore = [
-    r"https?://(www\.)?example\.com.*",
+    r"https?://(.*\.)?example\.com.*",
     r"https?://localhost.*",
     r"https?://127\.0\.0\.1.*",
+    r"https?://example.onelogin.com",
 ]
 
 # Define the canonical URL if you are using a custom domain on Read the Docs
