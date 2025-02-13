@@ -170,7 +170,7 @@ Session Object
 
 Database queries are issued using SQLAlchemy ``session`` objects. You need to create new session objects each time you perform a new set of queries (i.e.: in each controller). Creating ``session`` objects is done via a ``SessionMaker``. In the example above, the ``SessionMaker`` is created using the ``sessionmaker()`` function provided by SQLAlchemy. The ``SessionMaker`` is bound to the ``engine`` object. This means that anytime a ``session`` is created using that ``SessionMaker`` it will automatically be connected to the database that the ``engine`` provides a connection to. You should create a ``SessionMaker`` for each persistent store that you create. An example of how to use ``session`` and ``SessionMaker`` objects is shown in the `Initialization Function`_ section.
 
-SQLAlchemy ORM is a powerful tool for working with SQL databases. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_.
+SQLAlchemy ORM is a powerful tool for working with SQL databases. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <https://docs.sqlalchemy.org/en/20/orm/tutorial.html>`_.
 
 Initialization Function
 =======================

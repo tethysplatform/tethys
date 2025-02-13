@@ -133,7 +133,7 @@ A ``Bokeh Document`` comes with a ``Bokeh Request``. This request contains most 
         conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django
 
 .. tip::
-    For more information regarding Bokeh Server and available models visit the `Bokeh Server Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://docs.bokeh.org/en/latest/docs/reference/models.html>`_.
+    For more information regarding Bokeh Server and available models visit the `Bokeh Server Documentation <https://docs.bokeh.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://docs.bokeh.org/en/latest/docs/reference/models.html>`_.
 
 .. _handler-decorator:
 

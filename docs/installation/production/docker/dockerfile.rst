@@ -180,7 +180,7 @@ For this image, define environment variables for the various settings for the ap
 3. Add files to image
 ---------------------
 
-The `ADD <https://docs.docker.com/engine/reference/builder/#add>`_ and `COPY <https://docs.docker.com/reference/dockerfile/#copy>`_ instructions let you copy files into the docker image. The difference between the two is that ``ADD`` will automatically decompress archive files (e.g.: ``.tar.gz``) and it can take a URL as the source of the copy (though confusingly if the URL is pointing to an archive, it won't decompress it automatically). It is recommended to use ``COPY`` unless you specifically need the extra features of ``ADD``.
+The `ADD <https://docs.docker.com/reference/dockerfile/#add>`_ and `COPY <https://docs.docker.com/reference/dockerfile/#copy>`_ instructions let you copy files into the docker image. The difference between the two is that ``ADD`` will automatically decompress archive files (e.g.: ``.tar.gz``) and it can take a URL as the source of the copy (though confusingly if the URL is pointing to an archive, it won't decompress it automatically). It is recommended to use ``COPY`` unless you specifically need the extra features of ``ADD``.
 
 Copy the directories containing the app source code to the ``${TETHYS_HOME}/apps`` directory, which is the recommended directory for app source code. Add the following lines to the :file:`Dockerfile`:
 

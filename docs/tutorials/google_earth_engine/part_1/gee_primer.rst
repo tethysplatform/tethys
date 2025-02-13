@@ -85,7 +85,7 @@ Reference
 =========
 
 * `Earth Engine Code Editor <https://developers.google.com/earth-engine/guides/playground>`_
-* `Python Installation <https://developers.google.com/earth-engine/python_install>`_
+* `Python Installation <https://developers.google.com/earth-engine/guides/python_install>`_
 * `Install into an Existing Conda Installation <https://developers.google.com/earth-engine/guides/python_install-conda>`_
 * `Earth Engine Command Line Tool <https://developers.google.com/earth-engine/guides/command_line>`_
 * `Updating the Python API <https://developers.google.com/earth-engine/guides/python_install-conda>`_

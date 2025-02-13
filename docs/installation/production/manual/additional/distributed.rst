@@ -116,7 +116,7 @@ Here is an example of how to start the container:
 
     sudo docker run -d -p 5432:5432 --restart=always --name postgis -e POSTGRES_PASSWORD=mysecretpassword postgis/postgis
 
-Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
+Refer to the `Docker Run Reference <https://docs.docker.com/engine/containers/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
 
 Once the container is running, you can initialize the database using the ``tethys db`` command from your Tethys Portal server.
 

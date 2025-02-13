@@ -20,7 +20,7 @@ Spatial Database Storage
    :width: 170px
    :align: right
 
-Tethys Platform includes support for the `PostgreSQL <http://www.postgresql.org/>`_ database with `PostGIS <http://postgis.net/>`_, a spatial database extension, to provide spatial data storage capabilities for Tethys web apps. PostGIS adds spatial column types including raster, geometry, and geography. The extension also provides database functions for basic analysis of GIS objects.
+Tethys Platform includes support for the `PostgreSQL <https://www.postgresql.org/>`_ database with `PostGIS <http://postgis.net/>`_, a spatial database extension, to provide spatial data storage capabilities for Tethys web apps. PostGIS adds spatial column types including raster, geometry, and geography. The extension also provides database functions for basic analysis of GIS objects.
 
 To use a PostgreSQL database in your app use the :doc:`./tethys_sdk/tethys_services/persistent_store`. To use a spatially enabled database with PostGIS use the :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`.
 
@@ -31,7 +31,7 @@ Map Publishing
    :width: 200px
    :align: right
 
-Tethys Platform provides support for `GeoServer <http://geoserver.org/>`_ as one option for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats.
+Tethys Platform provides support for `GeoServer <https://geoserver.org/>`_ as one option for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats.
 
 To use the map publishing capabilities of GeoServer in your app refer to the :doc:`./software_suite/geoserver` documentation and use the :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`.
 
@@ -62,7 +62,7 @@ Visualization
    :width: 75px
    :align: right
 
-`OpenLayers <http://openlayers.org/>`_ is a JavaScript web-mapping client library for rendering interactive maps on a web page. It is capable of displaying 2D maps of OGC web services and a myriad of other spatial formats and sources including GeoJSON, KML, GML, TopoJSON, ArcGIS REST, and XYZ.
+`OpenLayers <https://openlayers.org/>`_ is a JavaScript web-mapping client library for rendering interactive maps on a web page. It is capable of displaying 2D maps of OGC web services and a myriad of other spatial formats and sources including GeoJSON, KML, GML, TopoJSON, ArcGIS REST, and XYZ.
 
 To use an OpenLayers map in your app use the **Map View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
@@ -70,7 +70,7 @@ To use an OpenLayers map in your app use the **Map View Gizmo** of the :doc:`./t
    :width: 75px
    :align: right
 
-`Cesium JS™ <https://cesium.com/>`_ is an open-source Javascript library for creating world-class 3D globes and maps with the best possible performance, precision, visual quality and ease of use.
+`Cesium JS™ <https://cesium.com/platform/cesiumjs/>`_ is an open-source Javascript library for creating world-class 3D globes and maps with the best possible performance, precision, visual quality and ease of use.
 
 
 To use a Cesium map in your app use the **Cesium Map View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
@@ -98,7 +98,7 @@ Distributed Computing
    :width: 300px
    :align: right
 
-To facilitate the large-scale computing that is often required by water resources applications, Tethys Platform leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_ and `Dask Distributed <http://distributed.dask.org/en/stable/>`_.
+To facilitate the large-scale computing that is often required by water resources applications, Tethys Platform leverages the computing management middleware `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ and `Dask Distributed <https://distributed.dask.org/en/stable/>`_.
 
 To use the HTCondor or Dask and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs`.
 
@@ -130,9 +130,9 @@ WebSocket Communication
 
 Tethys Platform supports WebSocket connections using `Django Channels <https://channels.readthedocs.io/en/latest/>`_. Django Channels is an official Django project that brings asynchronous and long-running connections to the synchronous Django.
 
-The WebSocket protocol provides a persistent connection between the client and the server. In contrast to the traditional HTTP protocol, the webscoket protocol allows for bidirectional communication between the client and the server (i.e. the server can trigger a response without the client sending a request). Django Channels uses Consumers to structure code and handle client/server communication in a similar way Controllers are used with the HTTP protocol. When creating a WebSocket connection, a "handshake" needs to be established between the client and server.
+The WebSocket protocol provides a persistent connection between the client and the server. In contrast to the traditional HTTP protocol, the websocket protocol allows for bidirectional communication between the client and the server (i.e. the server can trigger a response without the client sending a request). Django Channels uses Consumers to structure code and handle client/server communication in a similar way Controllers are used with the HTTP protocol. When creating a WebSocket connection, a "handshake" needs to be established between the client and server.
 
-For more information about Django Channels and Consumers visit `the Django Channels docummentation <https://channels.readthedocs.io/en/latest/>`_.
+For more information about Django Channels and Consumers visit `the Django Channels documentation <https://channels.readthedocs.io/en/latest/>`_.
 
 For more information on establishing a WebSocket connection see `the JavaScript WebSocket API <https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/>`_. Alternatively, other existing JavaScript or Python WebSocket clients can we used.
 

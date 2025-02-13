@@ -6,7 +6,7 @@ Plot View
 
 **Last Updated:** August 10, 2015
 
-Tethys Platform provides two interactive plotting engines: `D3 <https://d3js.org/>`_ and `Highcharts <http://www.highcharts.com/>`_. The Plot view options objects have been designed to be engine independent, meaning that you can configure a D3 plot using the same syntax as a Highcharts plot. This allows you to switch which plotting engine to use via configuration. This article describes each of the plot views that are available.
+Tethys Platform provides two interactive plotting engines: `D3 <https://d3js.org/>`_ and `Highcharts <https://www.highcharts.com/>`_. The Plot view options objects have been designed to be engine independent, meaning that you can configure a D3 plot using the same syntax as a Highcharts plot. This allows you to switch which plotting engine to use via configuration. This article describes each of the plot views that are available.
 
 .. warning::
 
