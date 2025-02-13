@@ -17,7 +17,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
     cd tethysapp-map_layout_tutorial
     git checkout -b add-spatial-data-solution add-spatial-data-solution-|version|
 

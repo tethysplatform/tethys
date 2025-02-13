@@ -267,6 +267,14 @@ linkcheck_ignore = [
     r"https?://example.onelogin.com",
 ]
 
+linkcheck_allowed_redirects = {
+    r"https?://anaconda\.org.*": r"https?://anaconda\.org/account/login.*",
+    r"https?://.*\.earthengine\.google\.com.*": r"https?://accounts\.google\.com.*",
+    r"https?://console\.developers\.google\.com.*": r"https?://accounts\.google\.com.*",
+    r"https?://hub\.docker\.com.*": r"https?://login\.docker\.com.*",
+    r"https?://(www)?\.hydroshare\.org": r"https?://auth\.cuahsi\.org.*",
+}
+
 # Define the canonical URL if you are using a custom domain on Read the Docs
 html_baseurl = environ.get("READTHEDOCS_CANONICAL_URL", "")
 

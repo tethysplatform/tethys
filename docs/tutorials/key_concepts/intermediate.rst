@@ -24,7 +24,7 @@ If you wish to use the beginner solution of the last tutorial as a starting poin
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b beginner-solution beginner-|version|
 
