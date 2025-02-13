@@ -71,9 +71,9 @@ class MapView(TethysGizmoOptions):
 
     For additional options that can be provided to each base map service see the following links:
 
-    * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
-    * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
-    * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
+    * OpenStreetMap: `ol/source/OSM <https://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
+    * Bing: `ol/source/BingMaps <https://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
+    * XYZ `ol/source/XYZ <https://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
 
     .. note::
 

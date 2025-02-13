@@ -154,7 +154,7 @@ After the image has been pulled, run a new Docker container as follows:
     sudo docker run -d -p 80:8080 -e USERNAME="foo" -e PASSWORD="bar" --restart=always --name n52wps ciwater/n52wps
 
 
-Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also sets the username and password for the admin user.
+Refer to the `Docker Run Reference <https://docs.docker.com/engine/containers/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also sets the username and password for the admin user.
 
 You may pass several environmental variables to set the service metadata and the admin username and password:
 

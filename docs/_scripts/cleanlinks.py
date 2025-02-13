@@ -195,35 +195,35 @@ def fix_links(links_type, links, docs_dir):
                                     f"    [4] Skip{os.linesep}",
                                     fg="magenta",
                                 ),
-                                default='2',
+                                default="2",
                             )
-                            if re_option == '1':
+                            if re_option == "1":
                                 new_link = original_link
-                            elif re_option == '2':
+                            elif re_option == "2":
                                 new_link = new_link
-                            elif re_option == '3':
+                            elif re_option == "3":
                                 new_link = click.prompt(
                                     click.style(
                                         "  Please enter new URL or press Enter to skip",
                                         fg="magenta",
                                     ),
-                                    default='',
+                                    default="",
                                 )
                                 if not new_link:
-                                    click.secho("  Skipped", fg="yellow")
+                                    click.secho("    Skipped", fg="yellow")
                                     link["unfixed_reason"] = "User skipped."
                                     not_fixed.append(link)
                                     progress_bar.update(1)
                                     continue
                             else:
-                                click.secho("  Skipped", fg="yellow")
+                                click.secho("    Skipped", fg="yellow")
                                 link["unfixed_reason"] = "User skipped."
                                 not_fixed.append(link)
                                 progress_bar.update(1)
                                 continue
 
                         if not new_link:
-                            click.secho("  Skipped", fg="yellow")
+                            click.secho("    Skipped", fg="yellow")
                             not_fixed.append(link)
                             progress_bar.update(1)
                             continue
@@ -232,6 +232,15 @@ def fix_links(links_type, links, docs_dir):
                         f"  Replacing: {original_link} -> {new_link}", fg="green"
                     )
                     lines[line_idx] = lines[line_idx].replace(original_link, new_link)
+                    if new_link not in lines[line_idx]:
+                        link["unfixed_reason"] = (
+                            "Link could not be updated - doc string?"
+                        )
+                        not_fixed.append(link)
+                        click.secho(
+                            "    WARNING: Could not replace link, is it in a doc string?",
+                            fg="yellow",
+                        )
 
                 except click.Abort:
                     # Propagate Abort to kill the script on Keyboard interrupt
@@ -256,7 +265,7 @@ def fix_links(links_type, links, docs_dir):
 
 @click.command()
 @click.option(
-    "-dry", "--dry-run", "dry_run", is_flag=True, help="Do not make any changes."
+    "-d", "--dry-run", "dry_run", is_flag=True, help="Do not make any changes."
 )
 @click.option(
     "-s",
@@ -278,6 +287,17 @@ def clean_links(dry_run, similarity_threshold):
     # Fix Broken Links
     broken_not_fixed = fix_links("broken", links["broken"], docs_dir)
 
+    # Skipped/Fixed Report
+    click.secho(f"{os.linesep}Skipped / Unfixed Links:", fg="blue")
+    # TODO: decided what to print: skipped? ignored? already fixed?
+    for link in broken_not_fixed:
+        click.echo(f"  Broken: {link['uri']}")
+        click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
+
+    for link in redirect_not_fixed:
+        click.echo(f"  Redirected: {link['uri']} -> {link['info']}")
+        click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
+
     # Summary Report
     broken_fixed = len(links["broken"]) - len(broken_not_fixed)
     redirect_fixed = len(links["redirected"]) - len(redirect_not_fixed)
@@ -290,17 +310,6 @@ def clean_links(dry_run, similarity_threshold):
     click.echo(f"  Other: {len(links['other'])}")
     click.echo(f"  Total: {len(links)}")
     click.echo(f"  Files: {len(files)}")
-
-    # Skipped/Fixed Report
-    click.secho(f"{os.linesep}Skipped / Unfixed Links:", fg="blue")
-    # TODO: decided what to print: skipped? ignored? already fixed?
-    for link in broken_not_fixed:
-        click.echo(f"  Broken: {link['uri']}")
-        click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
-
-    for link in redirect_not_fixed:
-        click.echo(f"  Redirected: {link['uri']} -> {link['info']}")
-        click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
 
 
 if __name__ == "__main__":

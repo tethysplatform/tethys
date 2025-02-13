@@ -16,7 +16,7 @@ __all__ = ["ToggleSwitch"]
 
 class ToggleSwitch(TethysGizmoOptions):
     """
-    Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle switches are implemented using the excellent `Bootstrap Switch reference <http://www.bootstrap-switch.org/>`_ project.
+    Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle switches are implemented using the excellent `Bootstrap Switch reference <https://bttstrp.github.io/bootstrap-switch/>`_ project.
 
     Attributes:
         display_text(str): Display text for the label that accompanies switch
