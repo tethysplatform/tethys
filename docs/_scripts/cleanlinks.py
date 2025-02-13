@@ -95,7 +95,6 @@ def fix_links(links_type, links, docs_dir):
         review_each = True
     elif links_type == "redirected":
         review_each = click.prompt(
-            # TODO: automatic: fix only the links that are very different (long or different domain)
             click.style(
                 f"Would you like to review each {links_type} fix [r] or fix automatically [a]?",
                 fg="magenta",
@@ -142,6 +141,7 @@ def fix_links(links_type, links, docs_dir):
                             fg="yellow",
                         )
                         click.echo(f"         {link["lineno"]}: {lines[line_idx]}")
+                        link["unfixed_reason"] = "Link not found in line."
                         not_fixed.append(link)
                         progress_bar.update(1)
                         continue
@@ -197,9 +197,12 @@ def fix_links(links_type, links, docs_dir):
                     # Propagate Abort to kill the script on Keyboard interrupt
                     raise
                 except IndexError:
+                    link["unfixed_reason"] = "Could not find line."
+                    not_fixed.append(link)
                     click.secho("ERROR: Could not find line.", fg="red")
                 except Exception as e:
-                    click.echo(type(e))
+                    link["unfixed_reason"] = f"Unexpected error occurred: {str(e)}"
+                    not_fixed.append(link)
                     click.secho(f"ERROR: {e}", fg="red")
 
                 progress_bar.update(1)
@@ -238,7 +241,7 @@ def clean_links(dry_run, similarity_threshold):
     # Summary Report
     broken_fixed = len(links["broken"]) - len(broken_not_fixed)
     redirect_fixed = len(links["redirected"]) - len(redirect_not_fixed)
-    click.secho("Link Check Summary:", fg="blue")
+    click.secho(f"{os.linesep}Link Check Summary:", fg="blue")
     click.echo(f"  Broken: {broken_fixed}/{len(links['broken'])}")
     click.echo(f"  Redirected: {redirect_fixed}/{len(links['redirected'])}")
     click.echo(f"  Working: {len(links['working'])}")
@@ -248,7 +251,15 @@ def clean_links(dry_run, similarity_threshold):
     click.echo(f"  Total: {len(links)}")
     click.echo(f"  Files: {len(files)}")
 
-    # TODO: Skipped/not fixed Report
+    # Skipped/Fixed Report
+    click.secho(f"{os.linesep}Skipped / Unfixed Links:", fg="blue")
+    for link in broken_not_fixed:
+        click.echo(f"  Broken: {link['uri']}")
+        click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
+
+    for link in redirect_not_fixed:
+        click.echo(f"  Redirected: {link['uri']} -> {link['info']}")
+        click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
 
 
 if __name__ == "__main__":
