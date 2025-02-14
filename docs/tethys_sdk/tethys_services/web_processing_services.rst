@@ -99,7 +99,7 @@ Working with WPS Services in Apps
         # pip
         pip install owslib
 
-The Web Processing Service API is powered by `OWSLib <http://geopython.github.io/OWSLib/#wps>`_, a Python client that can be used to interact with OGC web services. For detailed explanations the WPS client provided by OWSLib, refer to the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_. This article only provides a basic introduction to working with the OWSLib WPS client.
+The Web Processing Service API is powered by `OWSLib <https://owslib.readthedocs.io/en/latest/>`_, a Python client that can be used to interact with OGC web services. For detailed explanations the WPS client provided by OWSLib, refer to the `OWSLib WPS Documentation <https://owslib.readthedocs.io/en/latest/>`_. This article only provides a basic introduction to working with the OWSLib WPS client.
 
 Get a WPS Engine
 ----------------

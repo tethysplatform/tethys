@@ -265,6 +265,8 @@ linkcheck_ignore = [
     r"https?://localhost.*",
     r"https?://127\.0\.0\.1.*",
     r"https?://example.onelogin.com",
+    r"https?://tethys.not-real.org.*",
+    r"https?://<SERVER_DOMAIN_NAME>",
 ]
 
 linkcheck_allowed_redirects = {
