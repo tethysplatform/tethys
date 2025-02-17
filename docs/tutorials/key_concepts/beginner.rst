@@ -321,6 +321,6 @@ This concludes the Beginner Tutorial. You can view the solution on GitHub at `<h
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
     git checkout -b beginner-solution beginner-|version|

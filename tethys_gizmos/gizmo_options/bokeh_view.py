@@ -19,7 +19,7 @@ class BokehView(TethysGizmoOptions):
     """
     Simple options object for Bokeh plotting.
 
-    .. note:: For more information about Bokeh and for Python examples, see https://docs.bokeh.org/en/latest/.
+    .. note:: For more information about Bokeh and for Python examples, see http://bokeh.pydata.org.
 
     Attributes:
         plot_input(bokeh figure): A bokeh figure to be plotted.

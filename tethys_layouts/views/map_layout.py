@@ -794,7 +794,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
     def convert_geojson_to_shapefile(self, request, *args, **kwargs):
         """
         AJAX handler that converts GeoJSON data into a shapefile for download.
-            Credit to: https://github.com/TipsForGIS-zz/geoJSONToShpFile/blob/master/geoJ.py
+            Credit to: https://github.com/TipsForGIS/geoJSONToShpFile/blob/master/geoJ.py
 
         .. important::
 
