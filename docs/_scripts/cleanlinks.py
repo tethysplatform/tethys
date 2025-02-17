@@ -105,7 +105,7 @@ def fix_links(links_type, links, docs_dir):
         review_each = review_each.lower() == "r"
 
     click.secho(f"{os.linesep}Fixing {links_type} links...", bg="magenta")
-    not_fixed = []
+    not_fixed = list()
 
     files = group_by_file(links)
     with click.progressbar(
@@ -119,6 +119,7 @@ def fix_links(links_type, links, docs_dir):
                 lines = f.readlines()
 
             # Replace each link in the file
+            fixes = dict()
             for link in file_links:
                 original_link = link["uri"]
                 new_link = link["info"] if links_type == "redirected" else ""
@@ -189,6 +190,7 @@ def fix_links(links_type, links, docs_dir):
                                         f"  Please chose one of the following options:{os.linesep}"
                                         f"    [1] Keep Original: {original_link}{os.linesep}"
                                         f"    [2] Skip{os.linesep}"
+                                        f"    [9] Exit{os.linesep}"
                                         f"    [-] Enter new:{os.linesep}   ",
                                         fg="magenta",
                                     ),
@@ -199,8 +201,9 @@ def fix_links(links_type, links, docs_dir):
                                     click.style(
                                         f"  Please chose one of the following options:{os.linesep}"
                                         f"    [0] Use Redirected: {new_link}{os.linesep}"
-                                        f"    [1] Keep Original: {original_link}{os.linesep}"
+                                        f"    [1] Keep Original:  {original_link}{os.linesep}"
                                         f"    [2] Skip{os.linesep}"
+                                        f"    [9] Exit{os.linesep}"
                                         f"    [-] Enter new:{os.linesep}   ",
                                         fg="magenta",
                                     ),
@@ -220,6 +223,11 @@ def fix_links(links_type, links, docs_dir):
                                 click.secho(os.linesep)
                                 was_skipped = True
                                 break
+                            elif entered_option == "9":
+                                click.secho(
+                                    f"Exiting fixing {links_type} early...", fg="yellow"
+                                )
+                                return not_fixed
                             else:
                                 # User supplied a new link
                                 new_link = entered_option
@@ -239,10 +247,12 @@ def fix_links(links_type, links, docs_dir):
                                     click.secho(
                                         "  Please enter a valid URL.", fg="red"
                                     )
+                                    new_link = link["info"] if links_type == "redirected" else ""
                                     continue
                             except requests.RequestException as e:
                                 click.secho(f"  Error: {e}", fg="red")
                                 click.secho("  Please enter a valid URL.", fg="red")
+                                new_link = link["info"] if links_type == "redirected" else ""
                                 continue
 
                             click.secho("  URL is valid.", fg="green")
@@ -272,6 +282,14 @@ def fix_links(links_type, links, docs_dir):
                     # TODO: Refactor how replacing happens
                     # Save to dict and then do project-wide find and replace on rst and python files?
                     lines[line_idx] = lines[line_idx].replace(original_link, new_link)
+                    if original_link not in fixes:
+                        fixes[original_link] = new_link
+                    else:
+                        click.secho(
+                            f"    WARNING: Multiple fixes found for the same original link: {original_link}",
+                            fg="yellow",
+                        )
+
                     if new_link not in lines[line_idx]:
                         link["unfixed_reason"] = (
                             "Link could not be updated - doc string?"
@@ -298,8 +316,15 @@ def fix_links(links_type, links, docs_dir):
                 click.secho(os.linesep)
 
             if not dry_run:
+                # write changes to the case file
                 with open(docs_dir / filename, "w") as f:
                     f.writelines(lines)
+
+                # search for other instances of the URL in other files and replace them as well
+                for original_link, new_link in fixes.items():
+                    click.echo(
+                        f"  {click.style('Searching for other instances of:', bg="green")} {original_link} -> {new_link}"
+                    )
 
     return not_fixed
 
