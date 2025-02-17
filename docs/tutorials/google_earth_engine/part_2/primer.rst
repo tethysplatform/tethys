@@ -60,7 +60,7 @@ Many web browsers have built-in development tools including CSS inspectors. To s
 Google Earth Engine Assets
 ==========================
 
-Datasets can be uploaded to your Google Earth Engine account to make them more readily available to your scripts that run on the server. Assets can be manually uploaded using the `Asset Manager <https://developers.google.com/earth-engine/guides/manage_assets>`_ or programmatically as will be demonstrated in the File Upload tutorial. There are two types of assets: `Table Assets <https://developers.google.com/earth-engine/guides/table_upload>`_ and `Raster Assets <https://developers.google.com/earth-engine/guides/image_upload>`_. Shapefiles and CSVs can be uploaded as Table Assets and GeoTIFFS and TFRecords can be uploaded as Raster Assets.
+Datasets can be uploaded to your Google Earth Engine account to make them more readily available to your scripts that run on the server. Assets can be manually uploaded using the `Asset Manager <https://developers.google.com/earth-engine/asset_manager>`_ or programmatically as will be demonstrated in the File Upload tutorial. There are two types of assets: `Table Assets <https://developers.google.com/earth-engine/importing>`_ and `Raster Assets <https://developers.google.com/earth-engine/guides/image_upload>`_. Shapefiles and CSVs can be uploaded as Table Assets and GeoTIFFS and TFRecords can be uploaded as Raster Assets.
 
 REST API Primer
 ===============

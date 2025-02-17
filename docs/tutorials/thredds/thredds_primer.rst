@@ -28,7 +28,7 @@ The THREDDS Data Server (TDS) can be installed either manually (see: `Getting St
 
 .. warning::
 
-    Docker needs to be installed to use the ``tethys docker`` command (see `Install Docker <https://docs.docker.com/get-started/get-docker/>`_). You will also need to add your user to the docker group and logout and log back in (see `Linux Post Install <https://docs.docker.com/get-started/get-docker/linux/linux-postinstall/>`_).
+    Docker needs to be installed to use the ``tethys docker`` command (see `Install Docker <https://docs.docker.com/install/>`_). You will also need to add your user to the docker group and logout and log back in (see `Linux Post Install <https://docs.docker.com/install/linux/linux-postinstall/>`_).
 
 
 1. Initialize the THREDDS Docker container, **making sure to bind the data directory** when prompted:

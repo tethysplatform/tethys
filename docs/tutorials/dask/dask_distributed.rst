@@ -166,6 +166,6 @@ View the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-das
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial.git
     cd tethysapp-dask_tutorial
     git checkout -b dask-distributed-solution dask-distributed-solution-|version|

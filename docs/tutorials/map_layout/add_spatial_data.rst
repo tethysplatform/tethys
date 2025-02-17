@@ -384,7 +384,7 @@ This concludes the Add Spatial Data portion of the Map Layout Tutorial. You can 
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
     git checkout -b add-spatial-data-solution add-spatial-data-solution-|version|
 

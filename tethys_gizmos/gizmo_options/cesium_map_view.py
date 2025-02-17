@@ -83,7 +83,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **View**
 
-    Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://sandcastle.cesium.com/?src=Camera.html>`_):
+    Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Camera.html>`_):
 
     ::
 
@@ -111,7 +111,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Layers**
 
-    ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesium.com/learn/cesiumjs-learn/cesiumjs-imagery/#ready-to-stream-imagery>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
+    ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesiumjs.org/tutorials/Imagery-Layers-Tutorial/#imagery-providers>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
     You can load one or more imagery layers using the following pattern:
 
     ::
@@ -201,7 +201,7 @@ class CesiumMapView(TethysGizmoOptions):
             )
         ]
 
-    * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://sandcastle.cesium.com/?src=Imagery%20Layers%20Manipulation.html>`_
+    * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html>`_
 
     **Entities**
 
@@ -353,7 +353,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Terrain**
 
-    Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesium.com/learn/cesiumjs-learn/cesiumjs-terrain/#terrain-providers>`_
+    Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
 
     You can load a terrain provider using the following pattern:
 
@@ -497,7 +497,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Translate Cesium Attributes from Javascript to Python**
 
-    You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://sandcastle.cesium.com/>`_
+    You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html>`_
 
     Here are a few things to remember:
 

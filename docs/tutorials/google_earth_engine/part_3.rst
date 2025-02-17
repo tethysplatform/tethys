@@ -11,7 +11,7 @@ This tutorial builds on the app developed in the :ref:`google_earth_engine_part_
 Prerequisites
 -------------
 
-* `Google Earth Engine Service Account <https://developers.google.com/earth-engine/guides/service_account>`_
+* `Google Earth Engine Service Account <https://developers.google.com/earth-engine/service_account>`_
 * `GitHub Account <https://github.com/signup>`_
 * Access to a Production Tethys Platform Server
 * Complete the :ref:`google_earth_engine_part_1` and :ref:`google_earth_engine_part_2` Tutorials

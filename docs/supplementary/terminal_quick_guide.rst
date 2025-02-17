@@ -4,7 +4,7 @@ Terminal Quick Guide
 
 **Last Updated:** November 18, 2014
 
-To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. This guide provides tips and explanations of the most common features of command line that you will need to know to work with Tethys. For a more exhaustive reference, please review this excellent tutorial: `Learn the Bash Command Line <https://ryanstutorials.net/linuxtutorial/>`_.
+To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. This guide provides tips and explanations of the most common features of command line that you will need to know to work with Tethys. For a more exhaustive reference, please review this excellent tutorial: `Learn the Bash Command Line <http://ryanstutorials.net/linuxtutorial/>`_.
 
 $
 *

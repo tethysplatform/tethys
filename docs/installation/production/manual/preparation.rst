@@ -72,7 +72,7 @@ If you plan to enable the email capabilities to allow users to reset their forgo
 Security Enhanced Linux (SELinux)
 =================================
 
-If you plan to enable SELinux on your Rocky Linux server, read up on SELinux. Here are a few links to get you started: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `Rocky Linux - SELinux <https://docs.rockylinux.org/guides/security/learning_selinux/>`_, `RedHat SELinux <https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_
+If you plan to enable SELinux on your Rocky Linux server, read up on SELinux. Here are a few links to get you started: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `Rocky Linux - SELinux <https://docs.rockylinux.org/guides/security/learning_selinux/>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_
 
 Summary
 =======

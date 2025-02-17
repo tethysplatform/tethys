@@ -410,6 +410,6 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b dataset-controls-solution dataset-controls-solution-|version|
