@@ -37,7 +37,7 @@ There are several directories that you will need to create and be aware of throu
 Usernames and Passwords
 =======================
 
-Take time before you start your installation to decide on usernames and generate secure passwords for the various accounts that will be required during the installation. There are many secure password generation websites that make it easy to create more secure passwords: `Random Password Generator <https://www.random.org/passwords/>`_, `Last Pass Password Generator <https://www.lastpass.com/features/password-generator>`_, `Secure Password Generator <https://passwordsgenerator.net/>`_, `Pronounceable Password Generator <https://www.warpconduit.net/password-generator/>`_, or my favorite, `xkpass <https://xkpasswd.net/s/>`_.
+Take time before you start your installation to decide on usernames and generate secure passwords for the various accounts that will be required during the installation. There are many secure password generation websites that make it easy to create more secure passwords: `Random Password Generator <https://www.random.org/passwords/>`_, `Last Pass Password Generator <https://www.lastpass.com/password-generator>`_, `Secure Password Generator <https://passwordsgenerator.net/>`_, `Pronounceable Password Generator <https://www.warpconduit.net/password-generator/>`_, or my favorite, `xkpass <https://xkpasswd.net/s/>`_.
 
 In particular create the following usernames and passwords and store them in a secure place:
 

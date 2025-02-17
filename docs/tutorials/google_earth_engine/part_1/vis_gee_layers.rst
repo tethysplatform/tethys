@@ -82,7 +82,7 @@ To use GEE services, your app will need to authenticate using a GEE Account. Thi
 
 .. important::
 
-    The code at the top of this module handles authenticating with Google Earth Engine automatically when it is imported. By default it will check the ``params.py`` module for service account credentials and then fall back to checking the credentials file you generated earlier (see: :ref:`authenticate_gee_locally` of :doc:`./gee_primer`). Authenticating using the credential file works well for development but it will not work when you deploy the app. For production you will need to obtain and use a `Google Earth Engine Service Account <https://developers.google.com/earth-engine/guides/service_account>`_. Then add the credentials to the ``gee.param.py`` module. **DO NOT COMMIT THESE CREDENTIALS IN A PUBLIC REPOSITORY**.
+    The code at the top of this module handles authenticating with Google Earth Engine automatically when it is imported. By default it will check the ``params.py`` module for service account credentials and then fall back to checking the credentials file you generated earlier (see: :ref:`authenticate_gee_locally` of :doc:`./gee_primer`). Authenticating using the credential file works well for development but it will not work when you deploy the app. For production you will need to obtain and use a `Google Earth Engine Service Account <https://developers.google.com/earth-engine/service_account>`_. Then add the credentials to the ``gee.param.py`` module. **DO NOT COMMIT THESE CREDENTIALS IN A PUBLIC REPOSITORY**.
 
 2. Implement GEE Methods
 ========================

@@ -12,7 +12,7 @@ Prerequisites
 -------------
 
 * `Google Earth Engine Service Account <https://developers.google.com/earth-engine/service_account>`_
-* `GitHub Account <https://github.com/signup>`_
+* `GitHub Account <https://github.com/join?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F&source=header-home>`_
 * Access to a Production Tethys Platform Server
 * Complete the :ref:`google_earth_engine_part_1` and :ref:`google_earth_engine_part_2` Tutorials
 

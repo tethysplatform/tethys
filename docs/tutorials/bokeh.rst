@@ -314,6 +314,6 @@ This concludes the ``Bokeh Integration`` tutorial. You can view the solution on 
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial.git
     cd tethysapp-bokeh_tutorial
     git checkout -b solution solution-|version|

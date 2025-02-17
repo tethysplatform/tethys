@@ -69,7 +69,7 @@ This app will need a THREDDS service, so add the following method to the :term:`
 2. Create THREDDS Spatial Dataset Service
 =========================================
 
-For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Server: `<https://thredds.ucar.edu/thredds/catalog/catalog.html>`_. Complete the following steps to register the service as a Tethys Spatial Dataset Service:
+For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Server: `<http://thredds.ucar.edu/thredds>`_. Complete the following steps to register the service as a Tethys Spatial Dataset Service:
 
 1. Exit the app and navigate to the **Site Administration** page by selecting ``Site Admin`` from the drop down menu located to the right of your user name.
 

@@ -674,7 +674,7 @@ Conda Package
 Upgraded JQuery and Bootstrap
 -----------------------------
 
-* The JQuery and Bootstrap libraries that Tethys provides were upgraded to address known security vulnerabilities (see: https://security.snyk.io/package/npm/bootstrap/3.2.0 and https://security.snyk.io/package/npm/jquery/1.11.1).
+* The JQuery and Bootstrap libraries that Tethys provides were upgraded to address known security vulnerabilities (see: https://snyk.io/test/npm/bootstrap/3.2.0 and https://snyk.io/test/npm/jquery/1.11.1).
 * Bootstrap has been upgraded to version 3.4.1 (not 4 yet, sorry).
 * Coincidentally, JQuery was also upgraded to version 3.4.1.
 
@@ -992,7 +992,7 @@ Powered by Miniconda Environment
 * Installing packages like GDAL or NetCDF4 are as easy as ``conda install gdal``
 * Conda is cross platform: it works on Windows, Linux, and MacOS
 
-See: `Miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ and `Conda <https://docs.conda.io/projects/conda/en/latest/>`_
+See: `Miniconda <https://conda.io/miniconda.html>`_ and `Conda <https://conda.io/docs/>`_
 
 Cross Platform Support
 ----------------------

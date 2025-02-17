@@ -67,7 +67,7 @@ Open the new :file:`tethys_services.sls` file and add the following lines to imp
 
 **Custom Variables**
 
-You can also define custom variables in the Salt State files using `Jinja templating syntax <https://jinja.palletsprojects.com/en/stable/templates/>`_. For this example, define the following variables for use in the Salt State steps:
+You can also define custom variables in the Salt State files using `Jinja templating syntax <https://jinja.palletsprojects.com/en/3.0.x/templates/>`_. For this example, define the following variables for use in the Salt State steps:
 
 
 .. code-block:: sls

@@ -9,7 +9,7 @@ The Tethys Docker images can be used to easily install each of the software comp
 Install Docker on Each Server
 =============================
 
-After you have provisioned servers for each of the Tethys software components, install Docker on each using the appropriate `Docker installation instructions <https://docs.docker.com/get-started/get-docker/>`_. Docker provides installation instructions for most major types of servers.
+After you have provisioned servers for each of the Tethys software components, install Docker on each using the appropriate `Docker installation instructions <http://docs.docker.com/installation/>`_. Docker provides installation instructions for most major types of servers.
 
 Server Requirements
 ===================
@@ -91,7 +91,7 @@ After the image has been pulled, run a new Docker container as follows:
 
     sudo docker run -d -p 80:8080 --restart=always --name geoserver -e ENABLED_NODES=4 -e REST_NODES=1 -e MAX_MEMORY=1024 -e MIN_MEMORY=512 -e NUM_CORES=4 -e MAX_TIMEOUT=60 tethysplatform/geoserver
 
-Refer to the `Docker Run Reference <https://docs.docker.com/engine/containers/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name.
+Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name.
 
 More information about the GeoServer Docker can be found on the Docker Registry:
 

@@ -27,7 +27,7 @@ The :file:`tethysapp` package is a `Python namespace <http://docs.python.org/2/t
 
 .. caution::
 
-	When you generate a new app project using the command line tool, you will notice that many of the directories contain a :file:`\_\_init\_\_.py` file, many of which are empty. These are omitted in the diagram for simplicity. DO NOT DELETE THE :file:`\_\_init\_\_.py` FILES. These files indicate to Python that the directories containing them are `Python packages <https://docs.python.org/2/tutorial/modules.html>`_. Your app will not work properly without the :file:`\_\_init\_\_.py` files.
+	When you generate a new app project using the command line tool, you will notice that many of the directories contain a :file:`\_\_init\_\_.py` file, many of which are empty. These are omitted in the diagram for simplicity. DO NOT DELETE THE :file:`\_\_init\_\_.py` FILES. These files indicate to Python that the directories containing them are `Python packages <http://docs.python.org/2/tutorial/modules.html#packages>`_. Your app will not work properly without the :file:`\_\_init\_\_.py` files.
 
 The App Package
 ===============

@@ -6,11 +6,11 @@ Plot View
 
 **Last Updated:** August 10, 2015
 
-Tethys Platform provides two interactive plotting engines: `D3 <https://d3js.org/>`_ and `Highcharts <http://www.highcharts.com/>`_. The Plot view options objects have been designed to be engine independent, meaning that you can configure a D3 plot using the same syntax as a Highcharts plot. This allows you to switch which plotting engine to use via configuration. This article describes each of the plot views that are available.
+Tethys Platform provides two interactive plotting engines: `D3 <http://d3js.org/>`_ and `Highcharts <http://www.highcharts.com/>`_. The Plot view options objects have been designed to be engine independent, meaning that you can configure a D3 plot using the same syntax as a Highcharts plot. This allows you to switch which plotting engine to use via configuration. This article describes each of the plot views that are available.
 
 .. warning::
 
-    Highcharts is free-of-charge for certain applications (see: `Highcharts JS Licensing <https://shop.highcharts.com/#/highcharts.html>`_). If you need a guaranteed fee-free solution, D3 is recommended.
+    Highcharts is free-of-charge for certain applications (see: `Highcharts JS Licensing <http://shop.highsoft.com/highcharts.html>`_). If you need a guaranteed fee-free solution, D3 is recommended.
 
 .. note::
 
@@ -59,7 +59,7 @@ For advanced features, the JavaScript API can be used to interact with the HighC
 TETHYS_PLOT_VIEW.initHighChartsPlot(jquery_element)
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
-This method initializes a chart generated from an AJAX request. An example is demonstrated in the `Dam Break javascript tutorial <https://github.com/erdc/tethysapp-dam_break/wiki/Javascript-Tutorial>`_.
+This method initializes a chart generated from an AJAX request. An example is demonstrated in the `Dam Break javascript tutorial <https://github.com/erdc-cm/tethysapp-dam_break/wiki/Javascript-Tutorial>`_.
 
 .. note::
 
@@ -135,7 +135,7 @@ Three elements are required:
 Highcharts JavaScript API
 -------------------------
 
-The Highcharts plots can be modified via JavaScript by using jQuery to select the Highcharts div and calling the ``highcharts()`` method on it. This will return the JavaScript object that represents the plot, which can be modified using the `Highcharts API <https://api.highcharts.com/highcharts/>`_.
+The Highcharts plots can be modified via JavaScript by using jQuery to select the Highcharts div and calling the ``highcharts()`` method on it. This will return the JavaScript object that represents the plot, which can be modified using the `Highcharts API <http://api.highcharts.com/highcharts>`_.
 
 ::
 

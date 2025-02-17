@@ -23,7 +23,7 @@ Dask Delayed
 
 For the ``dask.delayed`` API, simply import the ``delayed`` and call it with the ``target_function``, followed by a second call operator containing the arguments to pass to the ``target_function``.
 
-The result will be a ``dask.Delayed`` instance and can be passed to subsequent ``delayed`` calls. See the `Dask Delayed documentation <https://docs.dask.org/en/latest/delayed.html>`_ for more details.
+The result will be a ``dask.Delayed`` instance and can be passed to subsequent ``delayed`` calls. See the `Dask Delayed documentation <http://docs.dask.org/en/latest/delayed.html>`_ for more details.
 
 In the example below, we create a function that builds our delayed style job The function returns the final ``dask.Delayed`` object, which will be used by the Dask Job:
 
@@ -82,7 +82,7 @@ Dask Distributed
 
 For ``dask.distributed`` API, use the ``dask.distributed.Client.submit`` method to submit tasks to the distributed cluster. Call ``submit`` with ``target_function``, as the first argument, followed by any number of args and kwargs to pass to the ``target_function``.
 
-The ``submit`` method submits the job immediately and returns a ``dask.distributed.Future`` instance. The ``Future`` instance can be passed as an argument to subsequent ``submit`` calls. See the `Dask Futures <https://docs.dask.org/en/latest/futures.html>`_ documentation for more details.
+The ``submit`` method submits the job immediately and returns a ``dask.distributed.Future`` instance. The ``Future`` instance can be passed as an argument to subsequent ``submit`` calls. See the `Dask Futures <http://docs.dask.org/en/latest/futures.html>`_ documentation for more details.
 
 In the example below, we create a function that builds a ``dask.distributed`` style job. The function takes as an argument a ``dask.distributed.Client`` instance and returns the final ``dask.distributed.Future`` object which will be used by the Dask Job.
 

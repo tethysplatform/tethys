@@ -25,7 +25,7 @@ If you wish to use the intermediate solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
     git checkout -b intermediate-solution intermediate-|version|
 
@@ -159,7 +159,7 @@ b. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by ad
                 return ps_settings
 
 
-Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. With SQLAlchemy, you can harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <https://docs.sqlalchemy.org/en/20/orm/tutorial.html>`_.
+Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. With SQLAlchemy, you can harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 
 c. Define a table called ``dams`` by creating a new class in ``model.py`` called ``Dam``:
 
