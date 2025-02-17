@@ -20,7 +20,7 @@ If you wish to use the advanced solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
     git checkout -b advanced-solution advanced-|version|
 
@@ -520,6 +520,6 @@ This concludes the Quotas Tutorial. You can view the solution on GitHub at `<htt
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
     git checkout -b quotas-solution quotas-|version|

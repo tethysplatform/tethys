@@ -18,7 +18,7 @@ If you wish to use the previous solution as a starting point, do the following:
 1. Clone the tutorial and switch to the appropriate branch
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
     git checkout -b new-app-project-solution new-app-project-solution-|version|
 
@@ -56,6 +56,6 @@ This concludes the Configure Map Layout portion of the Map Layout Tutorial. You 
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
     git checkout -b configure-map-layout-solution configure-map-layout-solution-|version|

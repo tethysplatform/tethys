@@ -13,7 +13,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
     git checkout -b configure-map-layout-solution configure-map-layout-solution-|version|
 
@@ -144,7 +144,7 @@ This concludes the Data Prep portion of the Map Layout Tutorial. You can view th
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
     cd tethysapp-map_layout_tutorial
     git checkout -b data-prep-solution data-prep-solution-|version|
 

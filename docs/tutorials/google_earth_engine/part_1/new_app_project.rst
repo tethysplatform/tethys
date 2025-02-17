@@ -139,6 +139,6 @@ This concludes the New App Project portion of the GEE Tutorial. You can view the
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b new-app-project-solution new-app-project-solution-|version|

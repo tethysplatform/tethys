@@ -26,7 +26,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b home-page-solution home-page-solution-|version|
 
@@ -437,6 +437,6 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b about-page-solution about-page-solution-|version|

@@ -23,7 +23,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b clip-by-asset-solution clip-by-asset-solution-|version|
 
@@ -1008,6 +1008,6 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b rest-api-solution rest-api-solution-|version|

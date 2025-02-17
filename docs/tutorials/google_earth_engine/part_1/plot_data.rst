@@ -22,7 +22,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b vis-gee-layers-solution vis-gee-layers-solution-|version|
 
@@ -600,6 +600,6 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
     git checkout -b plot-data-solution plot-data-solution-|version|

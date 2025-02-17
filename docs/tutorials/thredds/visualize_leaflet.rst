@@ -27,7 +27,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
     cd tethysapp-thredds_tutorial
     git checkout -b thredds-service-solution thredds-service-solution-|version|
 
@@ -1274,6 +1274,6 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
     cd tethysapp-thredds_tutorial
     git checkout -b visualize-leaflet-solution visualize-leaflet-solution-|version|
