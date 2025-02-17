@@ -17,4 +17,5 @@ This section provides a list of miscellaneous reference material that can be use
     supplementary/docker_testing
     supplementary/pgadmin
     ./glossary
+    ./summary
 

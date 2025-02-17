@@ -398,7 +398,7 @@ HydroShare
 5. (Optional) Link to a testing HydroShare instance
 
     The production HydroShare is located at `https://www.hydroshare.org/ <https://www.hydroshare.org/>`_. In some cases you may want to link your Tethys Portal to a testing HydroShare instance, like `hydroshare-beta <https://beta.hydroshare.org/>`_.
-    Tethys already provides OAuth backends for `hydroshare-beta <https://beta.hydroshare.org/>`_.
+    Tethys already provides OAuth backends for `hydroshare-beta <https://beta.hydroshare.org/>`_ and `hydroshare-playground <https://playground.hydroshare.org/>`_.
     To activate them, you need to go through steps 1-3 for each backend (replace www.hydroshare.org with the testing domain urls accordingly).
 
     At step 3:
@@ -407,6 +407,8 @@ HydroShare
 
         hydroshare-beta:
           ``tethys_services.backends.hydroshare_beta.HydroShareBetaOAuth2``
+        hydroshare-playground:
+          ``tethys_services.backends.hydroshare_playground.HydroSharePlaygroundOAuth2``
 
     b. Assign the ``Client ID`` and ``Client Secret`` to the following variables:
 
@@ -415,9 +417,21 @@ HydroShare
 
           ``SOCIAL_AUTH_HYDROSHARE_BETA_SECRET``
 
+        hydroshare-playground:
+          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_KEY``
+
+          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_SECRET``
+
     .. note::
 
         To prevent any unexpected behavior in section (4), a Tethys account SHOULD NOT be associated with multiple HydroShare social accounts.
+
+References
+++++++++++
+
+For more detailed information about using HydroShare social authentication see the following articles:
+
+* `https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support <https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support>`_
 
 .. _social_auth_arcgis:
 

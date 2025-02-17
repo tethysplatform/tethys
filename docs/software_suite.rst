@@ -117,7 +117,7 @@ Tethys Platform does not include software for handling flat file storage. Howeve
    :width: 200px
    :align: right
 
-`HydroShare <https://hydroshare.org/>`_ is an online hydrologic model and data sharing portal being developed by CUAHSI. It builds on the sharing capabilities of CUAHSI’s Hydrologic Information System by adding support for sharing models and using social media functionality.
+`HydroShare <http://hydroshare.cuahsi.org/>`_ is an online hydrologic model and data sharing portal being developed by CUAHSI. It builds on the sharing capabilities of CUAHSI’s Hydrologic Information System by adding support for sharing models and using social media functionality.
 
 To use a CKAN instance for flat file storage in your app use the :doc:`./tethys_sdk/tethys_services/dataset_services`. HydroShare is not fully supported at this time, but when it is you will use the :doc:`./tethys_sdk/tethys_services/dataset_services` to access HydroShare resources.
 
@@ -136,7 +136,7 @@ For more information about Django Channels and Consumers visit `the Django Chann
 
 For more information on establishing a WebSocket connection see `the JavaScript WebSocket API <https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/>`_. Alternatively, other existing JavaScript or Python WebSocket clients can we used.
 
-To create a URL mapping using the WebSocket protocol see the example provided in the :ref:`app_base_class_api`.
+To create a URL mapping using the WebSocket protocol see the example provided in the `App Base Class API documentation <./tethys_sdk/app_class.html#override-methods>`_.
 
 Docker Installation
 ===================
