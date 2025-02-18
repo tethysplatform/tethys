@@ -313,7 +313,7 @@ h. Finally, remove the permissions restrictions on adding dams so that any user 
             """
             ...
 
-    base.html:
+    Replace the contents of the app_navigation_items block in ``base.html`` with the following:
 
     .. code-block:: html+django
 
@@ -329,7 +329,7 @@ h. Finally, remove the permissions restrictions on adding dams so that any user 
         <li class="nav-item"><a class="nav-link{% if request.path == assign_hydrograph_url %} active{% endif %}" href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
         {% endblock %}
 
-    home.html:
+    Add a template file named ``home.html`` and add the following contents:
 
     .. code-block:: html+django
 
