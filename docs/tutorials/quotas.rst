@@ -32,7 +32,7 @@ In the :ref:`key_concepts_advanced_tutorial` tutorial we refactored the Model to
 a. Add the ``user_workspace`` argument to the ``controller`` decorator and a ``user_workspace`` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
 
     .. code-block:: python
-        :emphasize-lines: 5-6, 44-59
+        :emphasize-lines: 1, 5-6, 44-59
 
         import os
 
@@ -44,7 +44,7 @@ a. Add the ``user_workspace`` argument to the ``controller`` decorator and a ``u
             Controller for the Add Hydrograph page.
             """
             # Get dams from database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
             all_dams = session.query(Dam).all()
 
@@ -98,7 +98,7 @@ a. Add the ``user_workspace`` argument to the ``controller`` decorator and a ``u
                         messages.info(request, 'Successfully assigned hydrograph.')
                     else:
                         messages.info(request, 'Unable to assign hydrograph. Please try again.')
-                    return App.redirect(reverse('home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
 
@@ -267,7 +267,7 @@ f. Modify the ``assign_hydrograph`` controller again, this time to only allow us
             Controller for the Add Hydrograph page.
             """
             # Get dams from database
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
             all_dams = session.query(Dam).filter(Dam.user_id == request.user.id)
 
@@ -373,7 +373,7 @@ a. Creating a custom quota is pretty simple. Create a new file called ``dam_quot
                     Int: current number of dams in database
                 """
                 # Query database for count of dams
-                Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
                 session = Session()
                 current_use = session.query(Dam).filter(Dam.user_id == self.entity.id).count()
 
@@ -441,7 +441,7 @@ a. Create the ``delete_dam`` function in ``controllers.py``:
             """
             Controller for the deleting a dam.
             """
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            Session = App.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Delete hydrograph file related to dam if exists
@@ -457,7 +457,7 @@ a. Create the ``delete_dam`` function in ``controllers.py``:
 
             messages.success(request, "{} Dam has been successfully deleted.".format(dam.name))
 
-            return App.redirect(reverse('dams'))
+            return App.redirect(App.reverse('dams'))
 
 d. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. The code will restrict user's to deleting only dams that they created.
 
