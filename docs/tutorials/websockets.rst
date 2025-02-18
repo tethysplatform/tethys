@@ -150,8 +150,6 @@ a. Update the ``consumer class`` to look like this.
 
         The respective print messages set on connect and disconnect will appear in the terminal when the app home is opened or closed.
 
-b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Add the following peace of code to the :file:`portal_config.yml` file.
-
 b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Run the follow command to update your portal configurations:
 
     .. code-block:: bash
