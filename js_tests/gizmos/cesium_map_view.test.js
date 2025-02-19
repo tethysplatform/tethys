@@ -3,7 +3,7 @@ import * as Cesium from "cesium";
 
 global.Cesium = Cesium;
 
-const CESIUM_MAP_VIEW = require("../../tethys_gizmos/static/tethys_gizmos/js/cesium_map_view");
+const CESIUM_MAP_VIEW = require("../../../tethys_gizmos/static/tethys_gizmos/js/cesium_map_view");
 const { _testOnly } = CESIUM_MAP_VIEW; 
 
 jest.mock('cesium');
