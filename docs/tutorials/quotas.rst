@@ -110,7 +110,19 @@ b. Go to the :ref:`tethys_quotas_resource_quota` section of the admin pages and 
 * Active - ``Enabled``
 * Impose default - ``Enabled``
 
-c. To test:
+c. Update your tethys portal settings by running the following command:
+
+    .. code-block:: bash
+
+        tethys settings --set USE_OLD_WORKSPACES_API False
+
+    .. note::
+        
+        The ``USE_OLD_WORKSPACES_API`` setting is set to ``True`` by default. The workspaces quota requires this setting to match the API version used by the app. Since you're using the newer workspaces API, you need to set this to ``False``.
+        
+        If you're on Tethys 5+, you can skip this step as the new workspace API is used by default.
+
+d. To test:
 
     a. assign ``hydrograph2.csv`` and ``hydrograph4.csv`` (from :ref:`Sample Hydrographs <sample_hydrographs>`) to two separate dams through the app
     b. try to assign a third hydrograph (all of this must be done on a non-administrator account). 
