@@ -1,7 +1,7 @@
 import $ from "jquery";
 
 // Import module AFTER mocking jQuery
-const TETHYS_RANGE_SLIDER = require("../../tethys_gizmos/static/tethys_gizmos/js/range_slider");
+const TETHYS_RANGE_SLIDER = require("../../../tethys_gizmos/static/tethys_gizmos/js/range_slider");
 
 describe("TETHYS_RANGE_SLIDER", () => {
     beforeEach(() => {

@@ -5,7 +5,7 @@ $.fn.addClass = jest.fn();
 $.fn.removeClass = jest.fn();
 
 // Import the module AFTER mocking jQuery
-const SLIDE_SHEET = require("../../tethys_gizmos/static/tethys_gizmos/js/slide_sheet");
+const SLIDE_SHEET = require("../../../tethys_gizmos/static/tethys_gizmos/js/slide_sheet");
 
 describe("SLIDE_SHEET", () => {
     beforeEach(() => {

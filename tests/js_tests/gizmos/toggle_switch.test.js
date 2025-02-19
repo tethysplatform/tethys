@@ -4,7 +4,7 @@ import $ from "jquery";
 $.fn.bootstrapSwitch = jest.fn();
 
 // Import the module
-const TETHYS_TOGGLE_SWITCH = require("../../tethys_gizmos/static/tethys_gizmos/js/toggle_switch");
+const TETHYS_TOGGLE_SWITCH = require("../../../tethys_gizmos/static/tethys_gizmos/js/toggle_switch");
 
 describe("TETHYS_TOGGLE_SWITCH", () => {
     beforeEach(() => {

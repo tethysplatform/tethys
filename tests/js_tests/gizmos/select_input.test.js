@@ -2,7 +2,7 @@ import $ from "jquery";
 
 $.fn.select2 = jest.fn();
 
-const TETHYS_SELECT_INPUT = require("../../tethys_gizmos/static/tethys_gizmos/js/select_input");
+const TETHYS_SELECT_INPUT = require("../../../tethys_gizmos/static/tethys_gizmos/js/select_input");
 
 describe("TETHYS_SELECT_INPUT", () => {
     beforeEach(() => {

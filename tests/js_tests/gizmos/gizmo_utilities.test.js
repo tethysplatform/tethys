@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-require("../../tethys_gizmos/static/tethys_gizmos/js/gizmo_utilities");
+require("../../../tethys_gizmos/static/tethys_gizmos/js/gizmo_utilities");
 
 describe("gizmo_utilities.js", () => {
     let testElement;

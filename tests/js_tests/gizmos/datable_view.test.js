@@ -6,7 +6,7 @@ $.fn.DataTable = jest.fn();
 // Function to reload the module to trigger document ready function
 const reloadDatatableView = () => {
     jest.resetModules(); // Clear Jest’s module cache
-    return require("../../tethys_gizmos/static/tethys_gizmos/js/datatable_view");
+    return require("../../../tethys_gizmos/static/tethys_gizmos/js/datatable_view");
 };
 
 describe("TETHYS_DATATABLE_VIEW", () => {
