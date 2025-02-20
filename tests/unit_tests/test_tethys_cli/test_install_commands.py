@@ -990,6 +990,7 @@ class TestInstallCommands(TestCase):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
             file=file_path,
+            quiet=False,
             develop=False,
             verbose=False,
             services_file=None,
@@ -1004,17 +1005,13 @@ class TestInstallCommands(TestCase):
 
         mock_warn.assert_called_once()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(len(po_call_args), 7)
+        self.assertEqual(len(po_call_args), 6)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
         self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
         self.assertEqual("Running application install....", po_call_args[2][0][0])
-        self.assertEqual(
-            "Quiet mode: No additional service setting validation will be performed.",
-            po_call_args[3][0][0],
-        )
-        self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
-        self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
-        self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[3][0][0])
+        self.assertEqual("Skipping syncstores.", po_call_args[4][0][0])
+        self.assertEqual("Successfully installed test_app.", po_call_args[5][0][0])
 
         self.assertEqual(["pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
         self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[1][1][0])
@@ -1033,7 +1030,6 @@ class TestInstallCommands(TestCase):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
             file=file_path,
-            quiet=False,
             develop=False,
             verbose=False,
             services_file=None,
@@ -1048,13 +1044,17 @@ class TestInstallCommands(TestCase):
 
         mock_warn.assert_called_once()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(len(po_call_args), 7)
+        self.assertEqual(len(po_call_args), 8)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
         self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
         self.assertEqual("Running application install....", po_call_args[2][0][0])
-        self.assertEqual("Services Configuration Completed.", po_call_args[3][0][0])
-        self.assertEqual("Skipping syncstores.", po_call_args[4][0][0])
-        self.assertEqual("Successfully installed test_app.", po_call_args[5][0][0])
+        self.assertEqual(
+            "Quiet mode: No additional service setting validation will be performed.",
+            po_call_args[3][0][0],
+        )
+        self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
+        self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
+        self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
         self.assertEqual(["pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
         self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[1][1][0])
@@ -1073,6 +1073,7 @@ class TestInstallCommands(TestCase):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
             file=file_path,
+            quiet=False,
             develop=False,
             verbose=False,
             services_file=None,
