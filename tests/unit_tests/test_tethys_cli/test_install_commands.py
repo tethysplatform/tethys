@@ -1010,7 +1010,9 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
         self.assertEqual("Running application install....", po_call_args[2][0][0])
         self.assertIn("Running Interactive Service Mode.", po_call_args[3][0][0])
-        self.assertEqual("Hit return at any time to skip a step.", po_call_args[4][0][0])
+        self.assertEqual(
+            "Hit return at any time to skip a step.", po_call_args[4][0][0]
+        )
         self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[6][0][0])
         self.assertEqual("Successfully installed test_app.", po_call_args[7][0][0])
