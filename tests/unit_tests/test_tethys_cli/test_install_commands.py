@@ -1005,7 +1005,7 @@ class TestInstallCommands(TestCase):
 
         mock_warn.assert_called_once()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(len(po_call_args), 6)
+        self.assertEqual(len(po_call_args), 8)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
         self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
         self.assertEqual("Running application install....", po_call_args[2][0][0])
@@ -1044,7 +1044,7 @@ class TestInstallCommands(TestCase):
 
         mock_warn.assert_called_once()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(len(po_call_args), 8)
+        self.assertEqual(len(po_call_args), 7)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
         self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
         self.assertEqual("Running application install....", po_call_args[2][0][0])
