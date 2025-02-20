@@ -1021,6 +1021,46 @@ class TestInstallCommands(TestCase):
         self.assertEqual(["pip", "install", "."], mock_call.mock_calls[2][1][0])
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
+    @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
+    @mock.patch("tethys_cli.install_commands.write_warning")
+    @mock.patch("tethys_cli.install_commands.has_module")
+    @mock.patch("tethys_cli.install_commands.run_services")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_conda_install_no_conda_proceed_quietly(
+        self, mock_pretty_output, mock_call, _, mock_has_module, mock_warn, __
+    ):
+        file_path = self.root_app_path / "install-dep.yml"
+        args = mock.MagicMock(
+            file=file_path,
+            quiet=False,
+            develop=False,
+            verbose=False,
+            services_file=None,
+            update_installed=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=False,
+        )
+        mock_has_module.return_value = False
+
+        install_commands.install_command(args)
+
+        mock_warn.assert_called_once()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(len(po_call_args), 7)
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[1][0][0])
+        self.assertEqual("Running application install....", po_call_args[2][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[3][0][0])
+        self.assertEqual("Skipping syncstores.", po_call_args[4][0][0])
+        self.assertEqual("Successfully installed test_app.", po_call_args[5][0][0])
+
+        self.assertEqual(["pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
+        self.assertEqual(["pip", "install", "see"], mock_call.mock_calls[1][1][0])
+        self.assertEqual(["pip", "install", "."], mock_call.mock_calls[2][1][0])
+        self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
+
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "n"])
     @mock.patch("tethys_cli.install_commands.write_warning")
     @mock.patch("tethys_cli.install_commands.has_module")

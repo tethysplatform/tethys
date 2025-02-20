@@ -762,11 +762,14 @@ def install_command(args):
                         )
                     else:
                         write_warning("Conda is not installed...")
-                        proceed = input(
-                            "Attempt to install conda packages with pip and continue the installation process: [y/n]"
-                        )
-                        while proceed not in ["y", "n", "Y", "N"]:
-                            proceed = input('Please enter either "y" or "n": ')
+                        if not args.quiet:
+                            proceed = input(
+                                "Attempt to install conda packages with pip and continue the installation process: [y/n]"
+                            )
+                            while proceed not in ["y", "n", "Y", "N"]:
+                                proceed = input('Please enter either "y" or "n": ')
+                        else:
+                            proceed = "y"
 
                         if proceed in ["y", "n", "Y", "N"]:
                             if proceed in ["y", "Y"]:
