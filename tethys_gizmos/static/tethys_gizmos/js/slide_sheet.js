@@ -29,6 +29,7 @@ var SLIDE_SHEET = (function() {
         if (id.length) {
             $('#' + id + '.slide-sheet').addClass('show');
         }
+        console.log("Testing here opening...");
     };
 
     close = function(id) {
@@ -36,6 +37,7 @@ var SLIDE_SHEET = (function() {
         if (id.length) {
             $('#' + id + '.slide-sheet').removeClass('show');
         }
+        console.log("Testing here...");
     };
 
 	/************************************************************************

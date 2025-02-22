@@ -1,51 +1,75 @@
-import $ from "jquery";
+import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
+const { screen, fireEvent } = require("@testing-library/dom");
 
-// Mock jQuery functions
-$.fn.addClass = jest.fn();
-$.fn.removeClass = jest.fn();
+import SLIDE_SHEET from "../../../tethys_gizmos/static/tethys_gizmos/js/slide_sheet.js"
 
-// Import the module AFTER mocking jQuery
-const SLIDE_SHEET = require("../../../tethys_gizmos/static/tethys_gizmos/js/slide_sheet");
+global.SLIDE_SHEET = SLIDE_SHEET;
 
-describe("SLIDE_SHEET", () => {
-    beforeEach(() => {
-        jest.clearAllMocks(); // Reset mocks before each test
+let renderedHtml = '';
 
-        // Set up a mock DOM element for testing
-        document.body.innerHTML = `
-            <div id="test-slide" class="slide-sheet"></div>
-        `;
+const SLIDE_SHEET_ID = "test_slide_sheet_id"
+
+beforeAll(() => {
+    const templateName = "tethys_gizmos/gizmos/slide_sheet.html";
+    const context = JSON.stringify({
+        title: "Testing the slide sheet gizmo",
+        id: SLIDE_SHEET_ID,
+        content_template: "test_template.html"
     });
 
-    test("Module should have open and close functions", () => {
-        expect(SLIDE_SHEET).toHaveProperty("open");
-        expect(typeof SLIDE_SHEET.open).toBe("function");
+    execSync(`python render_template.py ${templateName} '${context}' `, { stdio: "inherit" });
 
-        expect(SLIDE_SHEET).toHaveProperty("close");
-        expect(typeof SLIDE_SHEET.close).toBe("function");
-    });
+    const outputPath = path.resolve("./rendered_templates/test_slide_sheet_output.html");
+    renderedHtml = fs.readFileSync(outputPath, "utf8");
+})
 
-    test("open should add 'show' class to slide-sheet", () => {
-        SLIDE_SHEET.open("test-slide");
+beforeEach(() => {
+    document.body.innerHTML = renderedHtml;
+    let testOpenButton = document.createElement("button");
+    testOpenButton.textContent = "Open Slide Sheet";
+    testOpenButton.onclick = () => SLIDE_SHEET.open(SLIDE_SHEET_ID);
+    document.body.appendChild(testOpenButton);
 
-        expect($("#test-slide.slide-sheet").addClass).toHaveBeenCalledWith("show");
-    });
+    // Add event listeners to all elements with an onclick attribute
+    document.querySelectorAll("[onclick]").forEach((el) => {
+        const onClickAttr = el.getAttribute("onclick");
 
-    test("close should remove 'show' class from slide-sheet", () => {
-        SLIDE_SHEET.close("test-slide");
-
-        expect($("#test-slide.slide-sheet").removeClass).toHaveBeenCalledWith("show");
-    });
-
-    test("open does nothing if id is empty", () => {
-        SLIDE_SHEET.open("");
-
-        expect($.fn.addClass).not.toHaveBeenCalled();
-    });
-
-    test("close does nothing if id is empty", () => {
-        SLIDE_SHEET.close("");
-
-        expect($.fn.removeClass).not.toHaveBeenCalled();
+        // Create a new function from the onclick attribute string
+        if (onClickAttr) {
+            el.addEventListener("click", function () {
+                eval(onClickAttr); // 🔥 Execute the original inline script
+            });
+        }
     });
 });
+
+
+
+test("Gizmo renders correctly", () => {
+    expect(screen.getByText("Testing the slide sheet gizmo")).toBeInTheDocument();
+});
+
+test("Clicking open button opens slide sheet", () => {
+    const slideSheet = document.getElementById(SLIDE_SHEET_ID);
+    fireEvent.click(screen.getByText("Open Slide Sheet"));
+    expect(slideSheet.classList.contains("show")).toBe(true);
+    
+})
+
+test("Clicking close button closes slide sheet", () => {
+    const slideSheet = document.getElementById(SLIDE_SHEET_ID);
+
+    SLIDE_SHEET.open(SLIDE_SHEET_ID);
+    expect(slideSheet.classList.contains("show")).toBe(true);
+
+    const closeButton = screen.getByLabelText("Close");
+    // closeButton.addEventListener("click", () => {
+    //     SLIDE_SHEET.close(SLIDE_SHEET_ID);
+    // });
+    fireEvent.click(screen.getByLabelText("Close"));
+
+    expect(slideSheet.classList.contains("show")).toBe(false);
+});
+

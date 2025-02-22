@@ -29,3 +29,5 @@ global.$ = $;
 global.jQuery = $;
 
 global.$.fn = global.$.fn || {};
+
+import "@testing-library/jest-dom";
