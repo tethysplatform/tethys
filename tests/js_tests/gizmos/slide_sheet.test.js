@@ -12,7 +12,7 @@ let renderedHtml = '';
 const SLIDE_SHEET_ID = "test_slide_sheet_id"
 
 beforeAll(() => {
-    const templateName = "tethys_gizmos/gizmos/slide_sheet.html";
+    const templateName = "tethys_gizmos/gizmos/slides_sheet.html";
     const context = JSON.stringify({
         title: "Testing the slide sheet gizmo",
         id: SLIDE_SHEET_ID,
@@ -32,7 +32,7 @@ beforeEach(() => {
     testOpenButton.onclick = () => SLIDE_SHEET.open(SLIDE_SHEET_ID);
     document.body.appendChild(testOpenButton);
 
-    // Add event listeners to all elements with an onclick attribute
+    // Add event listeners to all elements with an inline onclick attribute
     document.querySelectorAll("[onclick]").forEach((el) => {
         const onClickAttr = el.getAttribute("onclick");
 
@@ -60,16 +60,11 @@ test("Clicking open button opens slide sheet", () => {
 
 test("Clicking close button closes slide sheet", () => {
     const slideSheet = document.getElementById(SLIDE_SHEET_ID);
-
     SLIDE_SHEET.open(SLIDE_SHEET_ID);
     expect(slideSheet.classList.contains("show")).toBe(true);
 
     const closeButton = screen.getByLabelText("Close");
-    // closeButton.addEventListener("click", () => {
-    //     SLIDE_SHEET.close(SLIDE_SHEET_ID);
-    // });
-    fireEvent.click(screen.getByLabelText("Close"));
-
+    fireEvent.click(closeButton);
     expect(slideSheet.classList.contains("show")).toBe(false);
 });
 
