@@ -12,7 +12,7 @@ let renderedHtml = '';
 const SLIDE_SHEET_ID = "test_slide_sheet_id"
 
 beforeAll(() => {
-    const templateName = "tethys_gizmos/gizmos/slides_sheet.html";
+    const templateName = "tethys_gizmos/gizmos/slide_sheet.html";
     const context = JSON.stringify({
         title: "Testing the slide sheet gizmo",
         id: SLIDE_SHEET_ID,
