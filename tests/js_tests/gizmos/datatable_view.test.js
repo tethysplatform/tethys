@@ -8,13 +8,12 @@ import $ from "jquery";
 import DataTable from "datatables.net";
 $.fn.DataTable = DataTable;
 
-// Import DataTable module
 import TETHYS_DATATABLE_VIEW from "../../../tethys_gizmos/static/tethys_gizmos/js/datatable_view.js";
 
 global.TETHYS_DATATABLE_VIEW = TETHYS_DATATABLE_VIEW;
+
 global.Node = window.Node;
 global.Option = window.Option || function Option() {};
-
 
 let renderedHtml = '';
 
