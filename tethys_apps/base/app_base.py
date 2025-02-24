@@ -32,6 +32,7 @@ from .paths import (
     get_user_workspace,
     get_app_media,
     get_user_media,
+    _resolve_username
 )
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
@@ -58,11 +59,11 @@ class TethysBase(TethysBaseMixin):
     root_url = ""
     index = None
     controller_modules = []
+    _registered_url_maps = None
 
     def __init__(self):
         self._url_patterns = None
         self._handler_patterns = None
-        self._registered_url_maps = None
 
     @classproperty
     def package_namespace(cls):
@@ -284,10 +285,12 @@ class TethysBase(TethysBaseMixin):
 
     @property
     def registered_url_maps(self):
-        if self._registered_url_maps is None:
-            self._registered_url_maps = self.register_url_maps()
+        # Ensures registered_url_maps is cached on the child class or the direct instance of the TethyBase base class
+        cls = type(self) if type(self) != TethysBase else self
+        if cls._registered_url_maps is None:
+            cls._registered_url_maps = self.register_url_maps()
 
-        return self._registered_url_maps
+        return cls._registered_url_maps
 
     @property
     def url_patterns(self):
@@ -588,6 +591,8 @@ class TethysAppBase(TethysBase):
     show_in_apps_library = True
     default_layout = None
     nav_links = []
+    _app_workspace = None
+    _user_workspaces = None
 
     def __str__(self):
         """
@@ -1148,7 +1153,13 @@ class TethysAppBase(TethysBase):
                 user_workspace = App.get_user_workspace(request.user)
                 ...
         """  # noqa: E501
-        return get_user_workspace(cls, user_or_request)
+        if cls._user_workspaces is None:
+            cls._user_workspaces = {}
+        username = _resolve_username(user_or_request, bypass_quota=True)
+        if username not in cls._user_workspaces:
+            cls._user_workspaces[username] = get_user_workspace(cls, user_or_request)
+
+        return cls._user_workspaces[username]
 
     @classmethod
     def get_user_media(cls, user_or_request):
@@ -1200,7 +1211,10 @@ class TethysAppBase(TethysBase):
                 app_workspace = App.get_app_workspace()
                 ...
         """
-        return get_app_workspace(cls)
+        if cls._app_workspace is None:
+            cls._app_workspace = get_app_workspace(cls)
+
+        return cls._app_workspace
 
     @classmethod
     def get_app_media(cls):
@@ -2078,3 +2092,27 @@ class TethysAppBase(TethysBase):
         """
         Override this method to post-process the app media directory after it is emptied
         """
+    
+    @classmethod
+    def get_layout_component(cls, layout):
+        if callable(layout) or layout is None:
+            layout_func = layout
+        elif layout == "default":
+            if callable(cls.default_layout):
+                layout_func = cls.default_layout
+            else:
+                from tethys_components import layouts
+
+                layout_func = getattr(layouts, cls.default_layout)
+        else:
+            from tethys_components import layouts
+
+            layout_func = getattr(layouts, cls.default_layout)
+
+        return layout_func
+
+    @classmethod
+    def page(cls, *args, **kwargs):
+        from tethys_apps.base.controller import page
+        kwargs['app'] = cls
+        return page(*args, **kwargs)

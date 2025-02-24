@@ -17,19 +17,30 @@ logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
+class ComponentLibraryManager:
+    LIBRARIES = {}
+
+    def __init__(self):
+        raise Exception("The ComponentLibraryManager should only be used as a class")
+
+    @classmethod
+    def get_library(cls, library_name):
+        if library_name not in cls.LIBRARIES:
+            cls.LIBRARIES[library_name] = ComponentLibrary(library_name)
+        
+        return cls.LIBRARIES[library_name]
 
 class ComponentLibrary:
     """
     Class for providing access to registered ReactPy/ReactJS components
     """
-
-    EXPORT_NAME = "main"
-    REACTJS_VERSION = "18.2.0"
+    REACTJS_VERSION = "19.0"
+    REACTJS_VERSION_INT = int(REACTJS_VERSION.split(".")[0])
     REACTJS_DEPENDENCIES = [
         f"react@{REACTJS_VERSION}",
         f"react-dom@{REACTJS_VERSION}",
         f"react-is@{REACTJS_VERSION}",
-        "@restart/ui@1.6.8",
+        # "@restart/ui@1.6.8",
     ]
     PACKAGE_BY_ACCESSOR = {
         "bs": "react-bootstrap@2.10.2",
@@ -43,8 +54,9 @@ class ComponentLibrary:
         "chakra": "@chakra-ui/react@2.8.2",
         "icons": "react-bootstrap-icons@1.11.4",
         "html": None,  # Managed internally
-        "tethys": None,  # Managed internally,
+        "tethys": None,  # Managed internally
         "hooks": None,  # Managed internally
+        "utils": None,  # Managed internally
     }
     DEFAULTS = ["rp", "mapgl"]
     STYLE_DEPS = {
@@ -60,16 +72,23 @@ class ComponentLibrary:
     INTERNALLY_MANAGED_PACKAGES = [
         key for key, val in PACKAGE_BY_ACCESSOR.items() if val is None
     ]
-    ACCESOR_BY_PACKAGE = {val: key for key, val in PACKAGE_BY_ACCESSOR.items()}
-    _ALLOW_LOADING = False
-    components_by_package = {}
-    package_handles = {}
-    styles = []
-    defaults = []
 
-    def __init__(self, package=None, parent_package=None):
+    def __init__(self, package, parent_package=None):
         self.package = package
         self.parent_package = parent_package
+        self.components_by_package = {}
+        self.package_handles = {}
+        self.styles = []
+        self.defaults = []
+        
+        if parent_package:
+            self.components_by_package = parent_package.components_by_package
+            self.package_handles = parent_package.package_handles
+            self.styles = parent_package.styles
+            self.defaults = parent_package.defaults
+            self.PACKAGE_BY_ACCESSOR = parent_package.PACKAGE_BY_ACCESSOR
+            self.STYLE_DEPS = parent_package.STYLE_DEPS
+            self.DEFAULTS = parent_package.DEFAULTS
 
     def __getattr__(self, attr):
         """
@@ -79,41 +98,41 @@ class ComponentLibrary:
         instructed and expected to refer to the official documentation for the ReactJS library.
         """
         if attr in self.PACKAGE_BY_ACCESSOR:
-            # First time accessing "X" library via lib.X (e.g. lib.bs)
             if attr == "tethys":
                 from tethys_components import custom
-
                 lib = custom
             elif attr == "html":
                 from reactpy import html
-
                 lib = html
             elif attr == "hooks":
                 from tethys_components import hooks
-
                 lib = hooks
+            elif attr == "utils":
+                from tethys_components import utils
+                lib = utils
             else:
                 if attr not in self.package_handles:
                     self.package_handles[attr] = ComponentLibrary(
-                        self.package, parent_package=attr
+                        attr, parent_package=self
                     )
                     if attr in self.STYLE_DEPS:
                         self.styles.extend(self.STYLE_DEPS[attr])
+                setattr(self, attr, self.package_handles[attr])
                 lib = self.package_handles[attr]
             return lib
         elif self.parent_package:
             component = attr
-            package_name = self.PACKAGE_BY_ACCESSOR[self.parent_package]
+            package_name = self.PACKAGE_BY_ACCESSOR[self.package]
             if package_name not in self.components_by_package:
                 self.components_by_package[package_name] = []
             if component not in self.components_by_package[package_name]:
-                if self.parent_package in self.DEFAULTS:
+                if self.package in self.DEFAULTS:
                     self.defaults.append(component)
                 self.components_by_package[package_name].append(component)
                 from reactpy import web
 
                 module = web.module_from_string(
-                    name=self.EXPORT_NAME,
+                    name=self.parent_package.package,
                     content=self.get_reactjs_module_wrapper_js(),
                     resolve_exports=False,
                 )
@@ -122,34 +141,7 @@ class ComponentLibrary:
         else:
             raise AttributeError(f"Invalid component library package: {attr}")
 
-    @classmethod
-    def refresh(cls, new_identifier=None):
-        """
-        Refreshes the library as if no components were ever loaded.
-        This ensures a clean slate for each page, meaning that the javascript file
-        produced and grabbed by the browser (via the ReactPy Django Client) only
-        contains the JavaScript that is relevant for the page being rendered.
-        This is necessary since the Library is treated as a Singleton - which is
-        necessary to be able to import the lib from anywhere and use it, but not
-        have an ever-growing javascript file (i.e. ever-growing list of Javascript
-        dependencies).
-
-        This function, though a public method of the class, is only called in one single
-        place: tethys_apps/base/page_handler.py in the global_page_controller
-
-        Args:
-            new_identifier(str): The name that will be used for the JavaScript file
-                that will be used on the new page load
-        """
-        cls.components_by_package = {}
-        cls.package_handles = {}
-        cls.styles = []
-        cls.defaults = []
-        if new_identifier:
-            cls.EXPORT_NAME = new_identifier
-
-    @classmethod
-    def get_reactjs_module_wrapper_js(cls):
+    def get_reactjs_module_wrapper_js(self):
         """
         Creates the JavaScript file that imports all of the ReactJS components.
 
@@ -164,20 +156,18 @@ class ComponentLibrary:
         )
         with open(template_fpath) as f:
             template = Template(f.read())
-
-        content = template.render(
-            {
-                "components_by_package": cls.components_by_package,
-                "dependencies": cls.REACTJS_DEPENDENCIES,
-                "named_defaults": cls.defaults,
-                "style_deps": cls.styles,
-            }
-        )
+        context = {
+            "components_by_package": self.components_by_package,
+            "dependencies": self.REACTJS_DEPENDENCIES,
+            "named_defaults": self.defaults,
+            "style_deps": self.styles,
+            "reactjs_version_int": self.REACTJS_VERSION_INT,
+        }
+        content = template.render(context)
 
         return content
 
-    @classmethod
-    def register(cls, package, accessor, styles=None, use_default=False):
+    def register(self, package, accessor, styles=None, use_default=False):
         """
         Registers a new package to be used by the ComponentLibrary
 
@@ -217,18 +207,18 @@ class ComponentLibrary:
                 )
 
         """
-        if accessor in cls.PACKAGE_BY_ACCESSOR:
-            if cls.PACKAGE_BY_ACCESSOR[accessor] != package:
+        if accessor in self.PACKAGE_BY_ACCESSOR:
+            if self.PACKAGE_BY_ACCESSOR[accessor] != package:
                 raise ValueError(
                     f"Accessor {accessor} already exists on the component library. Please choose a new accessor."
                 )
             else:
                 return
-        cls.PACKAGE_BY_ACCESSOR[accessor] = package
+        self.PACKAGE_BY_ACCESSOR[accessor] = package
         if styles:
-            cls.STYLE_DEPS[accessor] = styles
+            self.STYLE_DEPS[accessor] = styles
         if use_default:
-            cls.DEFAULTS.append(accessor)
+            self.DEFAULTS.append(accessor)
 
     def load_dependencies_from_source_code(self, source_code):
         """
@@ -253,13 +243,17 @@ class ComponentLibrary:
             source_code(str): The string representation of the python code to be analyzed for
                 calls to the component library (i.e. "lib.X.Y")
         """
-        matches = findall("lib\\.([^\\(]*)\\(", source_code)
+        matches = findall("\\blib\\.([^\\(]*\\.[^\\(]*)\\(", source_code)
         for match in matches:
-            package_name, component_name = match.split(".")
-            if package_name in self.INTERNALLY_MANAGED_PACKAGES:
-                continue
-            package = getattr(self, package_name)
-            getattr(package, component_name)
+            try:
+                package_name, component_name = match.split(".")
+                if package_name in self.INTERNALLY_MANAGED_PACKAGES:
+                    continue
+                if package_name not in self.PACKAGE_BY_ACCESSOR:
+                    continue
+                package = getattr(self, package_name)
+                getattr(package, component_name)
+            except:
+                print(f"Couldn't process match {match}")
 
-
-Library = ComponentLibrary()
+Library = None

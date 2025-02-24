@@ -1,24 +1,10 @@
-import asyncio
 import inspect
 from pathlib import Path
-from channels.db import database_sync_to_async
-
-
-async def get_workspace(app_package, user):
-    from tethys_apps.harvester import SingletonHarvester
-
-    for app_s in SingletonHarvester().apps:
-        if app_s.package == app_package:
-            if user:
-                workspace = await database_sync_to_async(app_s.get_user_workspace)(user)
-            else:
-                workspace = await database_sync_to_async(app_s.get_app_workspace)()
-            return workspace
+from tethys_apps.harvester import SingletonHarvester
 
 
 def use_workspace(user=None):
-    from reactpy_django.hooks import use_memo
-
+    workspace = None
     app_package = None
 
     for item in inspect.stack():
@@ -32,9 +18,21 @@ def use_workspace(user=None):
             break
         except IndexError:
             pass
+    
+    if not app_package:
+        raise Exception("The use_workspace hook must be called from a tethysapp package. No package was found in the call stack.")
 
-    workspace = use_memo(lambda: asyncio.run(get_workspace(app_package, user)))
-
+    for app_s in SingletonHarvester().apps:
+        if app_s.package == app_package:
+            if user:
+                workspace = app_s.get_user_workspace(user)
+            else:
+                workspace = app_s.get_app_workspace()
+            break
+    
+    if not workspace:
+        raise Exception("The {app_package} app was not found.")
+    
     return workspace
 
 
@@ -46,16 +44,22 @@ def delayed_execute(callable, delay_seconds, args=None):
 
 
 class Props(dict):
+    def _snake_to_camel(self, snake):
+        parts = snake.split('_')
+        if len(parts) == 1:
+            camel = snake
+        else:
+            camel = parts[0] + ''.join(map(lambda x: x.title(), parts[1:]))
+        
+        return camel
+        
     def __init__(self, **kwargs):
         new_kwargs = {}
         for k, v in kwargs.items():
             v = "none" if v is None else v
             if k.endswith("_"):
                 new_kwargs[k[:-1]] = v
-            elif not k.startswith("on_") and k != "class_name":
-                new_kwargs[k.replace("_", "-")] = v
-            else:
-                new_kwargs[k] = v
+            new_kwargs[self._snake_to_camel(k)] = v
             setattr(self, k, v)
         super(Props, self).__init__(**new_kwargs)
 
