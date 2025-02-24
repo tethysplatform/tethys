@@ -9,11 +9,14 @@
 """
 
 from django import forms
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
 
+from tethys_cli.scaffold_commands import get_random_color
+import os
 
 def get_captcha():
     if getattr(settings, "ENABLE_CAPTCHA", False):
@@ -270,4 +273,79 @@ class SsoTenantForm(forms.Form):
     remember = forms.BooleanField(
         label="Remember for next time",
         required=False,
+    )
+
+class AppScaffoldForm(forms.Form):
+    """
+    A form for scaffolding an app.
+    """
+    scaffold_template = forms.ChoiceField(
+        choices=[("default", "Classic"), ("reactpy", "ReactPy"), ("reactjs", "ReactJS"),]
+    )
+
+    project_name = forms.CharField(
+        max_length=50,
+        label="Project Name:",
+        required=True,
+        widget=forms.TextInput(
+            attrs={"placeholder": "my_app", "class": "form-control", "autofocus": "autofocus"}
+        ),
+        validators=[
+            RegexValidator(r"^123$", "The project name must contain only letters, numbers, and underscores."),
+        ],
+    )
+
+    app_name = forms.CharField(
+        max_length=100,
+        label="App Name:",
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "My App", "class": "form-control"}),
+    )
+
+    description = forms.CharField(
+        max_length=500,
+        label="App Description:",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
+    )
+
+    app_theme_color = forms.CharField(
+        max_length=7,
+        label="App Theme Color:",
+        required=False,
+        widget=forms.TextInput(attrs={"value": get_random_color(), "class": "form-control"}),
+    )
+
+    tags = forms.CharField(
+        max_length=100,
+        label="Tags:",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "test,app,hydrology", "class": "form-control"}),
+        validators=[
+            RegexValidator(
+                regex='(".*",?)+',
+                message="The package name must contain only letters, numbers, and underscores."
+            ),
+        ],
+    )
+
+    author = forms.CharField(
+        max_length=30,
+        label="Author Name:",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
+    )
+
+    author_email = forms.EmailField(
+        max_length=254,
+        label="Author Email:",
+        required=False,
+        widget=forms.EmailInput(attrs={"placeholder": "", "class": "form-control"}),
+    )
+
+    license = forms.CharField(
+        max_length=30,
+        label="License:",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
     )

@@ -17,6 +17,12 @@
     {% if user.is_staff %}
       <li><hr class="dropdown-divider"></li>
       <li>
+        <a class="dropdown-item" href="{% url 'admin:build_app' %}" title="Build App">
+          <i class="bi bi-hammer"></i><span class="ms-2">Build App</span>
+        </a>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      <li>
         <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">
           <i class="bi bi-gear-wide-connected"></i><span class="ms-2">Site Admin</span>
         </a>

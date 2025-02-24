@@ -1,0 +1,37 @@
+{% extends "tethys_portal/accounts/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ block.super }} - Remove App{% endblock %}
+
+{% block account_form_title %}Remove App{% endblock %}
+
+{% block account_form_body %}
+  {% if not deleting %}
+  <strong>Are you sure you want to remove the following app from this portal?</strong>
+  <br><br>
+  "{{app.name}}" ({{app.package}})
+  <br><br>
+  <form role="form" method="post">
+      {% csrf_token %}
+      <a href="{{redirect_url }}" id="cancel-app-remove" class="btn btn-light">Cancel</a>
+      <button type="submit" id="do-app-remove" class="btn btn-danger" name="remove-app-submit">Remove</button>
+  </form>
+  {% else %}
+    <img id='loader' src="{% static 'tethys_compute/img/loader.gif' %}" />
+    Removing the following app:
+    <br><br>
+    "{{app.name}}" ({{app.package}})
+    <br><br>
+    Do not leave this page!
+  {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  {% if not form %}
+    <script>var REDIRECT_URL = "{{ redirect_url }}"</script>;
+    <script type="text/javascript" src="{% static 'tethys_portal/js/app_lifecycle.js' %}"></script>
+  {% endif %}
+{% endblock %}

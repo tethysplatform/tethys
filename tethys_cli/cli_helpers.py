@@ -79,6 +79,33 @@ def supress_stdout(func):
 
     return wrapped
 
+def prompt_yes_or_no(question, default="y"):
+    """ Handles a yes/no question cli prompt
+
+    Returns:
+        True if "yes"
+        False if "no"
+        None if cancelled (IMPORTANT: None is falsey, so don't confuse cancelled with "no")
+    """
+    negative_choices = ["n", "no", ""]
+    valid_choices = ["y", "n", "yes", "no"]
+    
+    response = ""
+    valid = False
+    while not valid:
+        try:
+            response = (
+                input(f"{question} [Y/n]: ")
+                or default
+            )
+        except (KeyboardInterrupt, SystemExit):
+            return None
+
+        if response.lower() in valid_choices:
+            valid = True
+
+    return response.lower() not in negative_choices
+
 
 def setup_django(supress_output=False):
     func = django.setup

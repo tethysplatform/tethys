@@ -57,6 +57,7 @@
 
     /* App Card Description */
     .app-help-icon,
+    .app-settings-icon,
     .redirect-icon{
       border-radius: 50%;
       font-size: 10pt;
@@ -66,7 +67,7 @@
       background: white;
     }
 
-    .app-help-icon:hover{
+    .app-help-icon:hover,.app-settings-icon:hover{
         background: #dddddd;
         cursor: pointer;
     }
@@ -119,7 +120,9 @@
         </div>
       </div>
     {% else %}
-      <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+      <h2 class="no-apps-loaded-message">There are no apps loaded.<br><br>
+        <a class="btn btn-lg btn-primary" role="button" href="{% url 'admin:build_app' %}" title="Build App">Build App</a>
+      </h2>
     {% endif %}
   </div>
   <div id="app-library-curtain"></div>
