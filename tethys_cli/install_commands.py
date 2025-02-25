@@ -770,7 +770,9 @@ def install_command(args):
                                 proceed = input('Please enter either "y" or "n": ')
                         else:
                             proceed = "y"
-                            write_warning("Attempting to install conda packages with pip...")
+                            write_warning(
+                                "Attempting to install conda packages with pip..."
+                            )
 
                         if proceed.lower() in ["y"]:
                             try:

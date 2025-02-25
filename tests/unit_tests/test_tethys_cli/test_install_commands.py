@@ -1046,7 +1046,14 @@ class TestInstallCommands(TestCase):
 
         install_commands.install_command(args)
 
-        mock_warn.assert_called_once()
+        self.assertEqual(mock_warn.call_count, 2)
+        mock_warn.assert_has_calls(
+            [
+                mock.call("Conda is not installed..."),
+                mock.call("Attempting to install conda packages with pip..."),
+            ]
+        )
+
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 7)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
@@ -1123,7 +1130,14 @@ class TestInstallCommands(TestCase):
         mock_call.side_effect = [Exception, None, None, None]
         install_commands.install_command(args)
 
-        mock_warn.assert_called_once()
+        self.assertEqual(mock_warn.call_count, 2)
+        mock_warn.assert_has_calls(
+            [
+                mock.call("Conda is not installed..."),
+                mock.call("Attempting to install conda packages with pip..."),
+            ]
+        )
+
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 8)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
