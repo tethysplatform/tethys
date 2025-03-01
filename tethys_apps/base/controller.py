@@ -9,7 +9,6 @@ import importlib
 import inspect
 from collections import OrderedDict
 import traceback
-import re
 
 from channels.consumer import SyncConsumer, AsyncConsumer
 from django.views.generic import View
@@ -500,9 +499,12 @@ def page(
         custom_js: A list of URLs to additional js files that should be rendered with the page. These will be rendered in the order provided.
     """  # noqa: E501
     if not app:
-        raise ValueError("The app argument must be supplied. Alternatively, use the @App.page wrapper, which supplies the app argument.")
+        raise ValueError(
+            "The app argument must be supplied. Alternatively, use the @App.page wrapper, which supplies the app argument."
+        )
     permissions_required = _listify(permissions_required)
     enforce_quota_codenames = _listify(enforce_quotas)
+
     def wrapped(component_function):
         url_map_kwargs_list = _get_url_map_kwargs_list(
             function_or_class=component_function,
@@ -512,20 +514,16 @@ def page(
             regex=regex,
             title=title,
             index=index,
+            for_page=True,
         )
 
         component_source_code = inspect.getsource(component_function)
-        lib = ComponentLibraryManager.get_library(f'{app.package}_{component_function.__name__}')
+
+        lib = ComponentLibraryManager.get_library(
+            f"{app.package}-{component_function.__name__}"
+        )
         lib.load_dependencies_from_source_code(component_source_code)
-        if layout is not None:
-            lib.load_dependencies_from_source_code(inspect.getsource(app.get_layout_component(layout)))
 
-        use_app_workspace = re.search(r'\.hooks\.use_workspace\(\)', component_source_code) is not None
-        use_user_workspace = re.search(r'\.hooks\.use_workspace\([^)]+\)', component_source_code) is not None
-
-        if use_app_workspace:
-            app.get_app_workspace()  # Caches app workspace to class
-        
         def controller_wrapper(request, **kwargs):
             controller = handler or global_page_controller
             if permissions_required:
@@ -557,7 +555,6 @@ def page(
                 title=url_map_kwargs_list[0]["title"],
                 custom_css=custom_css,
                 custom_js=custom_js,
-                use_user_workspace=use_user_workspace,
                 **kwargs,
             )
 
@@ -777,6 +774,7 @@ def _get_url_map_kwargs_list(
     app_resources=False,
     title=None,
     index=None,
+    for_page=False,
 ):
     final_urls = []
     if url is not None:
@@ -806,6 +804,11 @@ def _get_url_map_kwargs_list(
                     inspect.signature(function_or_class).parameters
                 )
 
+            if for_page:
+                # Removes the standard ComponentLib parameter
+                arg = list(parameters.keys())[0]
+                parameters.pop(arg)
+
             for condition in [
                 app_workspace,
                 user_workspace,
@@ -817,9 +820,6 @@ def _get_url_map_kwargs_list(
                 if condition:
                     arg = list(parameters.keys())[1]
                     parameters.pop(arg)
-            
-            if 'lib' in parameters:
-                parameters.pop('lib')
 
             optional_url_parameters = list()
             for parameter_name, parameter in parameters.items():

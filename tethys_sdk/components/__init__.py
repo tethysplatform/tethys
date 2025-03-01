@@ -9,5 +9,4 @@
 
 # flake8: noqa
 # DO NOT ERASE
-from tethys_components.library import Library as lib
 from . import utils

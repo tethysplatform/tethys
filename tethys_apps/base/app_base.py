@@ -32,7 +32,6 @@ from .paths import (
     get_user_workspace,
     get_app_media,
     get_user_media,
-    _resolve_username
 )
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
@@ -59,11 +58,11 @@ class TethysBase(TethysBaseMixin):
     root_url = ""
     index = None
     controller_modules = []
-    _registered_url_maps = None
 
     def __init__(self):
         self._url_patterns = None
         self._handler_patterns = None
+        self._registered_url_maps = None
 
     @classproperty
     def package_namespace(cls):
@@ -285,12 +284,10 @@ class TethysBase(TethysBaseMixin):
 
     @property
     def registered_url_maps(self):
-        # Ensures registered_url_maps is cached on the child class or the direct instance of the TethyBase base class
-        cls = type(self) if type(self) != TethysBase else self
-        if cls._registered_url_maps is None:
-            cls._registered_url_maps = self.register_url_maps()
+        if self._registered_url_maps is None:
+            self._registered_url_maps = self.register_url_maps()
 
-        return cls._registered_url_maps
+        return self._registered_url_maps
 
     @property
     def url_patterns(self):
@@ -578,7 +575,8 @@ class TethysAppBase(TethysBase):
       tags (string): A string for filtering apps.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
-
+      enabled (boolean): Whether or not the app is enabled
+      show_in_apps_library (boolean): Whether or not the app should be shown on the Apps Library page.
     """
 
     index = ""
@@ -589,10 +587,6 @@ class TethysAppBase(TethysBase):
     feedback_emails = []
     enabled = True
     show_in_apps_library = True
-    default_layout = None
-    nav_links = []
-    _app_workspace = None
-    _user_workspaces = None
 
     def __str__(self):
         """
@@ -615,29 +609,6 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         return TethysApp
-
-    @property
-    def navigation_links(self):
-        nav_links = self.nav_links
-        if nav_links == "auto":
-            nav_links = []
-            for url_map in sorted(
-                self.registered_url_maps,
-                key=lambda x: x.index if x.index is not None else 999,
-            ):
-                href = f"/apps/{self.root_url}/"
-                if url_map.name != self.index:
-                    href += url_map.name.replace("_", "-") + "/"
-                if url_map.index == -1:
-                    continue  # Do not render
-                nav_links.append(
-                    {
-                        "title": url_map.title,
-                        "href": href,
-                    }
-                )
-            self.nav_links = nav_links  # Caches results of "auto"
-        return nav_links
 
     def custom_settings(self):
         """
@@ -1153,13 +1124,7 @@ class TethysAppBase(TethysBase):
                 user_workspace = App.get_user_workspace(request.user)
                 ...
         """  # noqa: E501
-        if cls._user_workspaces is None:
-            cls._user_workspaces = {}
-        username = _resolve_username(user_or_request, bypass_quota=True)
-        if username not in cls._user_workspaces:
-            cls._user_workspaces[username] = get_user_workspace(cls, user_or_request)
-
-        return cls._user_workspaces[username]
+        return get_user_workspace(cls, user_or_request)
 
     @classmethod
     def get_user_media(cls, user_or_request):
@@ -1211,10 +1176,7 @@ class TethysAppBase(TethysBase):
                 app_workspace = App.get_app_workspace()
                 ...
         """
-        if cls._app_workspace is None:
-            cls._app_workspace = get_app_workspace(cls)
-
-        return cls._app_workspace
+        return get_app_workspace(cls)
 
     @classmethod
     def get_app_media(cls):
@@ -2092,27 +2054,3 @@ class TethysAppBase(TethysBase):
         """
         Override this method to post-process the app media directory after it is emptied
         """
-    
-    @classmethod
-    def get_layout_component(cls, layout):
-        if callable(layout) or layout is None:
-            layout_func = layout
-        elif layout == "default":
-            if callable(cls.default_layout):
-                layout_func = cls.default_layout
-            else:
-                from tethys_components import layouts
-
-                layout_func = getattr(layouts, cls.default_layout)
-        else:
-            from tethys_components import layouts
-
-            layout_func = getattr(layouts, cls.default_layout)
-
-        return layout_func
-
-    @classmethod
-    def page(cls, *args, **kwargs):
-        from tethys_apps.base.controller import page
-        kwargs['app'] = cls
-        return page(*args, **kwargs)

@@ -12,12 +12,9 @@ def global_page_controller(
     title=None,
     custom_css=None,
     custom_js=None,
-    use_user_workspace=False,
-    **kwargs
+    **kwargs,
 ):
     layout_func = get_layout_component(app, layout)
-    if use_user_workspace:
-        app.get_user_workspace(request)  # Caches user_workspaces to class
 
     context = {
         "app": app,
@@ -32,6 +29,7 @@ def global_page_controller(
     }
 
     return render(request, "tethys_apps/reactpy_base.html", context)
+
 
 if has_module("reactpy"):
     from reactpy import component
@@ -50,13 +48,15 @@ if has_module("reactpy"):
             layout(func or None): The layout component, if any, that the page content will be nested in
             component(func): The page component to render
         """
-        lib = ComponentLibraryManager.get_library(f'{app.package}_{component.__name__}')
+        lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}")
+        component_obj = component(lib, **extras) if extras else component(lib)
+
         if layout is not None:
-            return_obj = layout(
+            page_obj = layout(
                 {"app": app, "user": user, "nav-links": app.navigation_links},
-                component(lib, **extras) if extras else component(lib),
+                component_obj,
             )
         else:
-            return_obj = component(lib, **extras) if extras else component(lib)
+            page_obj = component_obj
 
-        return return_obj
+        return page_obj

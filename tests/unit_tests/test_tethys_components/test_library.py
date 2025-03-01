@@ -7,9 +7,10 @@ RESOURCES_DIR = THIS_DIR / "test_resources"
 
 class TestComponentLibrary(TestCase):
     def test_standard_library_workflow(self):
-        from tethys_components.library import Library as lib, ComponentLibrary
+        from tethys_components.library import ComponentLibrary
 
         mock_import = mock.patch("builtins.__import__").start()
+        lib = ComponentLibrary("test_library_instance")
 
         # TEST VALID ACCESSORS
         lib.tethys
@@ -26,8 +27,8 @@ class TestComponentLibrary(TestCase):
         external_lib = lib.bs
         self.assertNotEqual(lib.bs, lib)
         self.assertIsInstance(external_lib, ComponentLibrary)
-        self.assertIsNone(lib.bs.package)
-        self.assertEqual(lib.bs.parent_package, "bs")
+        self.assertEqual(lib.bs.package, "bs")
+        self.assertEqual(lib.bs.parent_package, lib)
         self.assertEqual(len(lib.styles), 1)
         self.assertEqual(lib.styles[0], lib.STYLE_DEPS["bs"][0])
         self.assertDictEqual(lib.components_by_package, {})
@@ -43,37 +44,38 @@ class TestComponentLibrary(TestCase):
         # CREATE JAVASCRIPT WRAPPER FOR LIBRARY
         ComponentLibrary.get_reactjs_module_wrapper_js = orig_func
         content = lib.get_reactjs_module_wrapper_js()
-        # (RESOURCES_DIR / 'expected_1.js').open('w+').write(content)  # Uncomment to write newly expected js
+        (RESOURCES_DIR / "expected_1.js").open("w+").write(
+            content
+        )  # Uncomment to write newly expected js
         self.assertEqual(content, (RESOURCES_DIR / "expected_1.js").open("r").read())
 
         # LOAD A NEW PAGE
-        ComponentLibrary.refresh("new_page")
-        self.assertDictEqual(lib.components_by_package, {})
-        self.assertDictEqual(lib.package_handles, {})
-        self.assertListEqual(lib.styles, [])
-        self.assertListEqual(lib.defaults, [])
-        self.assertEqual(lib.EXPORT_NAME, "new_page")
+        new_lib = ComponentLibrary("test_library_instance_2")
+        self.assertDictEqual(new_lib.components_by_package, {})
+        self.assertDictEqual(new_lib.package_handles, {})
+        self.assertListEqual(new_lib.styles, [])
+        self.assertListEqual(new_lib.defaults, [])
 
         # TRY TO ACCESS INVALID PACKAGE
-        self.assertRaises(AttributeError, lambda: lib.does_not_exist)
+        self.assertRaises(AttributeError, lambda: new_lib.does_not_exist)
 
         # REGISTER PACKAGE
-        lib.register(
+        new_lib.register(
             "my-react-package@0.0.0",
             "does_not_exist",
             styles=["my_style.css"],
             use_default=True,
         )
-        self.assertIn("does_not_exist", lib.PACKAGE_BY_ACCESSOR)
+        self.assertIn("does_not_exist", new_lib.PACKAGE_BY_ACCESSOR)
         self.assertEqual(
-            lib.PACKAGE_BY_ACCESSOR["does_not_exist"], "my-react-package@0.0.0"
+            new_lib.PACKAGE_BY_ACCESSOR["does_not_exist"], "my-react-package@0.0.0"
         )
-        self.assertIn("does_not_exist", lib.STYLE_DEPS)
-        self.assertListEqual(lib.STYLE_DEPS["does_not_exist"], ["my_style.css"])
-        self.assertListEqual(lib.DEFAULTS, ["rp", "mapgl", "does_not_exist"])
+        self.assertIn("does_not_exist", new_lib.STYLE_DEPS)
+        self.assertListEqual(new_lib.STYLE_DEPS["does_not_exist"], ["my_style.css"])
+        self.assertListEqual(new_lib.DEFAULTS, ["rp", "mapgl", "does_not_exist"])
 
         # REGISTER AGAIN EXACTLY
-        lib.register(
+        new_lib.register(
             "my-react-package@0.0.0",
             "does_not_exist",
             styles=["my_style.css"],
@@ -82,43 +84,48 @@ class TestComponentLibrary(TestCase):
 
         # REGISTER NEW PACKAGE TO SAME ACCESSOR (NAUGHTY)
         self.assertRaises(
-            ValueError, lib.register, "different-react-package@1.1.1", "does_not_exist"
+            ValueError,
+            new_lib.register,
+            "different-react-package@1.1.1",
+            "does_not_exist",
         )
 
         # PREVIOUSLY INVALID PACKAGE NOW WORKS
-        lib.does_not_exist  # Does not raise AttributeError it did before
+        new_lib.does_not_exist  # Does not raise AttributeError it did before
 
         # LOAD COMPONENTS FROM SOURCE CODE
         mock_import = mock.patch("builtins.__import__").start()
         ComponentLibrary.get_reactjs_module_wrapper_js = mock_func
         test_source_code = """
         @compoenent
-        def my_component():
+        def my_component(lib):
             return lib.html.div(
                 lib.pm.Map(),
                 lib.bs.Button(Props(), "My Button"),
                 lib.does_not_exist.Test()
             )
         """
-        lib.load_dependencies_from_source_code(test_source_code)
+        new_lib.load_dependencies_from_source_code(test_source_code)
 
         self.assertDictEqual(
-            lib.components_by_package,
+            new_lib.components_by_package,
             {
                 "pigeon-maps@0.21.6": ["Map"],
                 "react-bootstrap@2.10.2": ["Button"],
                 "my-react-package@0.0.0": ["Test"],
             },
         )
-        self.assertIn("pm", lib.package_handles)
-        self.assertIn("bs", lib.package_handles)
-        self.assertIn("does_not_exist", lib.package_handles)
-        self.assertIn("my_style.css", lib.styles)
-        self.assertEqual(lib.defaults, ["Test"])
+        self.assertIn("pm", new_lib.package_handles)
+        self.assertIn("bs", new_lib.package_handles)
+        self.assertIn("does_not_exist", new_lib.package_handles)
+        self.assertIn("my_style.css", new_lib.styles)
+        self.assertEqual(new_lib.defaults, ["Test"])
         ComponentLibrary.get_reactjs_module_wrapper_js = orig_func
         mock.patch.stopall()
 
         # EXPORT TO JS ONCE MORE
-        content = lib.get_reactjs_module_wrapper_js()
-        # (RESOURCES_DIR / 'expected_2.js').open('w+').write(content)  # Uncomment to write newly expected js
+        content = new_lib.get_reactjs_module_wrapper_js()
+        (RESOURCES_DIR / "expected_2.js").open("w+").write(
+            content
+        )  # Uncomment to write newly expected js
         self.assertEqual(content, (RESOURCES_DIR / "expected_2.js").open("r").read())

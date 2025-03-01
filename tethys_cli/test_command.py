@@ -57,11 +57,12 @@ def check_and_install_prereqs(tests_path):
     except ImportError:
         write_warning("Test App not found. Installing.....")
         setup_path = tests_path / "apps" / "tethysapp-test_app"
-        subprocess.call(
+        subprocess.run(
             ["pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
             cwd=str(setup_path),
+            check=True,
         )
 
     try:
@@ -72,11 +73,12 @@ def check_and_install_prereqs(tests_path):
     except ImportError:
         write_warning("Test Extension not found. Installing.....")
         setup_path = Path(tests_path) / "extensions" / "tethysext-test_extension"
-        subprocess.call(
+        subprocess.run(
             ["pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
             cwd=str(setup_path),
+            check=True,
         )
 
 
@@ -174,15 +176,15 @@ def test_command(args):
         except Exception:
             webbrowser.open_new_tab(str(tests_path / report_dirname / index_fname))
 
-    # Removing Test App
-    try:
-        subprocess.call(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
-    except Exception:
-        pass
+    # # Removing Test App
+    # try:
+    #     subprocess.call(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
+    # except Exception:
+    #     pass
 
-    try:
-        subprocess.call(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
-    except Exception:
-        pass
+    # try:
+    #     subprocess.call(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
+    # except Exception:
+    #     pass
 
     exit(test_status)

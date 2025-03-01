@@ -301,6 +301,7 @@ if has_module("axes"):
     MIDDLEWARE.append("axes.middleware.AxesMiddleware")
 
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop("MIDDLEWARE", []))
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 default_authentication_backends = [
     "django.contrib.auth.backends.ModelBackend",

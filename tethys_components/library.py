@@ -17,6 +17,7 @@ logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
+
 class ComponentLibraryManager:
     LIBRARIES = {}
 
@@ -27,13 +28,15 @@ class ComponentLibraryManager:
     def get_library(cls, library_name):
         if library_name not in cls.LIBRARIES:
             cls.LIBRARIES[library_name] = ComponentLibrary(library_name)
-        
+
         return cls.LIBRARIES[library_name]
+
 
 class ComponentLibrary:
     """
     Class for providing access to registered ReactPy/ReactJS components
     """
+
     REACTJS_VERSION = "19.0"
     REACTJS_VERSION_INT = int(REACTJS_VERSION.split(".")[0])
     REACTJS_DEPENDENCIES = [
@@ -80,7 +83,7 @@ class ComponentLibrary:
         self.package_handles = {}
         self.styles = []
         self.defaults = []
-        
+
         if parent_package:
             self.components_by_package = parent_package.components_by_package
             self.package_handles = parent_package.package_handles
@@ -100,15 +103,19 @@ class ComponentLibrary:
         if attr in self.PACKAGE_BY_ACCESSOR:
             if attr == "tethys":
                 from tethys_components import custom
+
                 lib = custom
             elif attr == "html":
                 from reactpy import html
+
                 lib = html
             elif attr == "hooks":
                 from tethys_components import hooks
+
                 lib = hooks
             elif attr == "utils":
                 from tethys_components import utils
+
                 lib = utils
             else:
                 if attr not in self.package_handles:
@@ -253,7 +260,8 @@ class ComponentLibrary:
                     continue
                 package = getattr(self, package_name)
                 getattr(package, component_name)
-            except:
+            except Exception:
                 print(f"Couldn't process match {match}")
+
 
 Library = None
