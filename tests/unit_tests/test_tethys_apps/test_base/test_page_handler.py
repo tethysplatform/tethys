@@ -9,7 +9,7 @@ import tethys_apps.base.controller as tethys_controller
 class TestPageHandler(TestCase):
     @mock.patch("tethys_apps.base.page_handler.render")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibrary")
-    @mock.patch("tethys_apps.base.page_handler.get_layout_component")
+    @mock.patch("tethys_apps.base.page_handler._get_layout_component")
     def test_global_page_controller(self, mock_get_layout, mock_lib, mock_render):
         # FUNCTION ARGS
         request = mock.MagicMock()

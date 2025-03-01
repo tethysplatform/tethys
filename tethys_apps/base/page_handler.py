@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from tethys_components.library import ComponentLibrary, ComponentLibraryManager
-from tethys_components.utils import get_layout_component
+from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
 
 
@@ -14,7 +14,7 @@ def global_page_controller(
     custom_js=None,
     **kwargs,
 ):
-    layout_func = get_layout_component(app, layout)
+    layout_func = _get_layout_component(app, layout)
 
     context = {
         "app": app,

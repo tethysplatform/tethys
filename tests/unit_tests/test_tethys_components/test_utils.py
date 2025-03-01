@@ -53,7 +53,7 @@ class TestComponentUtils(TestCase):
         result = utils.use_workspace()
 
         # EVALUATE RESULT
-        self.assertIsInstance(result, utils.PathsQuery)
+        self.assertIsInstance(result, utils._PathsQuery)
         self.assertTrue(result.checking_quota)
         mock_import().use_query.assert_called_once_with(
             utils._get_app_workspace, {"app_or_request": self.app}, postprocessor=None
@@ -73,7 +73,7 @@ class TestComponentUtils(TestCase):
         result = utils.use_workspace(self.user)
 
         # EVALUATE RESULT
-        self.assertIsInstance(result, utils.PathsQuery)
+        self.assertIsInstance(result, utils._PathsQuery)
         self.assertFalse(result.checking_quota)
         self.assertTrue(result.quota_exceeded)
         mock_import().use_query.assert_called_once_with(
@@ -114,7 +114,7 @@ class TestComponentUtils(TestCase):
         result = utils.use_media()
 
         # EVALUATE RESULT
-        self.assertIsInstance(result, utils.PathsQuery)
+        self.assertIsInstance(result, utils._PathsQuery)
         self.assertTrue(result.checking_quota)
         mock_import().use_query.assert_called_once_with(
             utils._get_app_media, {"app_or_request": self.app}, postprocessor=None
@@ -134,7 +134,7 @@ class TestComponentUtils(TestCase):
         result = utils.use_media(self.user)
 
         # EVALUATE RESULT
-        self.assertIsInstance(result, utils.PathsQuery)
+        self.assertIsInstance(result, utils._PathsQuery)
         self.assertFalse(result.checking_quota)
         self.assertTrue(result.quota_exceeded)
         mock_import().use_query.assert_called_once_with(
@@ -213,7 +213,7 @@ class TestComponentUtils(TestCase):
             pass
 
         self.assertEqual(
-            utils.get_layout_component(self.app, test_layout_func), test_layout_func
+            utils._get_layout_component(self.app, test_layout_func), test_layout_func
         )
 
     def test_get_layout_component_default_layout_callable(self):
@@ -222,14 +222,14 @@ class TestComponentUtils(TestCase):
 
         self.app.default_layout = test_layout_func
         self.assertEqual(
-            utils.get_layout_component(self.app, "default"), self.app.default_layout
+            utils._get_layout_component(self.app, "default"), self.app.default_layout
         )
 
     def test_get_layout_component_default_layout_not_callable(self):
         self.app.default_layout = "TestLayout"
         mock_import = mock.patch("builtins.__import__").start()
         self.assertEqual(
-            utils.get_layout_component(self.app, "default"),
+            utils._get_layout_component(self.app, "default"),
             mock_import().layouts.TestLayout,
         )
         mock.patch.stopall()
@@ -237,7 +237,7 @@ class TestComponentUtils(TestCase):
     def test_get_layout_component_not_default_not_callable(self):
         mock_import = mock.patch("builtins.__import__").start()
         self.assertEqual(
-            utils.get_layout_component(self.app, "TestLayout"),
+            utils._get_layout_component(self.app, "TestLayout"),
             mock_import().layouts.TestLayout,
         )
         mock.patch.stopall()

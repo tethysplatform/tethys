@@ -8,7 +8,7 @@ from tethys_apps.base.paths import (
     _get_user_media,
 )
 
-class PathsQuery:
+class _PathsQuery:
     STATUS_CHECKING_QUOTA = 1
     STATUS_QUOTA_EXCEEDED = 2
     
@@ -42,7 +42,7 @@ def _infer_app_from_stack_trace():
 
     if not app_package:
         raise Exception(
-            "The use_workspace hook must be called from a tethysapp package. No package was found in the call stack."
+            "This hook must be called from a tethysapp package. No package was found in the call stack."
         )
 
     for app_s in SingletonHarvester().apps:
@@ -56,6 +56,16 @@ def _infer_app_from_stack_trace():
     return app
 
 def use_workspace(user=None):
+    """
+    A custom ReactPy hook used to access the TethysPath representing the app or user's workspace directory.
+
+    Args:
+        user (auth.models.User): If provided, get the TethysPath for the user's workspace directory, rather than the app's.
+    
+    Returns:
+        PathsQuery object if the state of the underlying query is "loading" or "error"
+        TethysPath representing either the app's or user's workspace directory otherwise
+    """
     from reactpy_django.hooks import use_query
 
     app = _infer_app_from_stack_trace()
@@ -69,9 +79,9 @@ def use_workspace(user=None):
     workspace_query = use_query(get_workspace, get_workspace_args, postprocessor=None)
 
     if workspace_query.loading:
-        return PathsQuery(PathsQuery.STATUS_CHECKING_QUOTA)
+        return _PathsQuery(_PathsQuery.STATUS_CHECKING_QUOTA)
     elif workspace_query.error:
-        return PathsQuery(PathsQuery.STATUS_QUOTA_EXCEEDED)
+        return _PathsQuery(_PathsQuery.STATUS_QUOTA_EXCEEDED)
     else:
         workspace = workspace_query.data
         setattr(workspace, "checking_quota", False)
@@ -79,10 +89,26 @@ def use_workspace(user=None):
         return workspace
 
 def use_resources():
+    """
+    A custom ReactPy hook used to access the TethysPath representing the app's resources directory.
+    
+    Returns:
+        TethysPath representing the app's resources directory
+    """
     app = _infer_app_from_stack_trace()
     return app.resources_path
 
 def use_media(user=None):
+    """
+    A custom ReactPy hook used to access the TethysPath representing the app or user's media directory.
+
+    Args:
+        user (auth.models.User): If provided, get the TethysPath for the user's media directory, rather than the app's.
+    
+    Returns:
+        PathsQuery object if the state of the underlying query is "loading" or "error"
+        TethysPath representing either the app's or user's media directory otherwise
+    """
     from reactpy_django.hooks import use_query
 
     app = _infer_app_from_stack_trace()
@@ -96,9 +122,9 @@ def use_media(user=None):
     media_query = use_query(get_media, get_media_args, postprocessor=None)
 
     if media_query.loading:
-        return PathsQuery(PathsQuery.STATUS_CHECKING_QUOTA)
+        return _PathsQuery(_PathsQuery.STATUS_CHECKING_QUOTA)
     elif media_query.error:
-        return PathsQuery(PathsQuery.STATUS_QUOTA_EXCEEDED)
+        return _PathsQuery(_PathsQuery.STATUS_QUOTA_EXCEEDED)
     else:
         media = media_query.data
         setattr(media, "checking_quota", False)
@@ -106,10 +132,26 @@ def use_media(user=None):
         return media
 
 def use_public():
+    """
+    A custom ReactPy hook used to access the TethysPath representing the app's public directory.
+    
+    Returns:
+        TethysPath representing the app's public directory
+    """
     app = _infer_app_from_stack_trace()
     return app.public_path
 
 def background_execute(callable, args=[], delay_seconds=None):
+    """
+    Kick off a task in the background, optionally with a delay
+
+    Args:
+        callable (Callable): The callable that will be executed on a thread in the background
+        args (list): A list of arguments that should be passed to the callable when executed
+        delay_seconds (int|float): The number of seconds after which the callable should be executed
+
+    Returns: None
+    """
     if delay_seconds:
         from threading import Timer
         t = Timer(delay_seconds, callable, args)
@@ -120,6 +162,13 @@ def background_execute(callable, args=[], delay_seconds=None):
     t.start()
 
 class Props(dict):
+    """
+    Wrapper for ReactPy component property dictionaries that allow them to be passed as python kwargs instead.
+    They are converted back to ReactPy propery dictionaries when accessed.
+
+    Example:
+        Instead of lib.html.div({"backgroundColor": "red", "fontSize": "12px"}, "Hello"), you can use lib.html.div(Props(background_color="red, font_size="12px"), "Hello")
+    """
     def _snake_to_camel(self, snake):
         parts = snake.split("_")
         if len(parts) == 1:
@@ -140,7 +189,7 @@ class Props(dict):
         super(Props, self).__init__(**new_kwargs)
 
 
-def get_layout_component(app, layout):
+def _get_layout_component(app, layout):
     if callable(layout) or layout is None:
         layout_func = layout
     elif layout == "default":
