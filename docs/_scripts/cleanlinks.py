@@ -267,7 +267,7 @@ def fix_links(links_type, links, docs_dir):
                                 break
                             elif entered_option == "9":
                                 click.secho(
-                                    f"Exiting fixing {links_type} early...", fg="yellow"
+                                    f"Exiting {links_type}...", fg="yellow"
                                 )
                                 return fixes
                             else:
