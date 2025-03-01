@@ -262,6 +262,3 @@ class ComponentLibrary:
                 getattr(package, component_name)
             except Exception:
                 print(f"Couldn't process match {match}")
-
-
-Library = None

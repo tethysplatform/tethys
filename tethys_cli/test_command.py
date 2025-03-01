@@ -178,12 +178,12 @@ def test_command(args):
 
     # Removing Test App
     try:
-        subprocess.call(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
+        subprocess.run(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
     except Exception:
         pass
 
     try:
-        subprocess.call(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
+        subprocess.run(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
     except Exception:
         pass
 
