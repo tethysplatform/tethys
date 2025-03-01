@@ -72,7 +72,7 @@ def parse_linkcheck_output(docs_dir):
 
 
 def recursive_search_and_save(fixes, directory, dry_run):
-    files_updated = list()
+    files_updated = set()
     if len(fixes) == 0:
         return
 
@@ -114,7 +114,7 @@ def recursive_search_and_save(fixes, directory, dry_run):
                         f"  {click.style('Dry Run:', bg="yellow")} Changes NOT saved."
                     )
 
-                files_updated.append(str(curr_file))
+                files_updated.add(str(curr_file))
 
     click.secho(f"{os.linesep}Fixed {len(fixes)} links in {len(files_updated)} files.", fg="green")
 
@@ -281,7 +281,7 @@ def fix_links(links_type, links, docs_dir):
                                     fg="blue",
                                 )
                                 response = requests.get(new_link, timeout=10)
-                                if response.status_code != 200:
+                                if not 200 >= response.status_code < 300 and response.status_code not in [403, 406]:
                                     click.secho(
                                         f"  Error: URL returned status code {response.status_code}.",
                                         fg="red",
