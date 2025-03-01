@@ -181,7 +181,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
 .. code-block:: yaml
 
     thredds:
-      image: unidata/thredds-docker:5.5
+      image: unidata/thredds-docker:5.6
       restart: always
       networks:
         - "internal"
