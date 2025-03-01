@@ -71,7 +71,55 @@ def parse_linkcheck_output(docs_dir):
     return links, files
 
 
+def recursive_search_and_save(fixes, directory, dry_run):
+    files_updated = list()
+    if len(fixes) == 0:
+        return
+
+    click.secho(f"Scanning {str(directory)} for links to update...", fg="blue")
+    for root, _dirs, files in directory.walk():
+        for file in files:
+            curr_file = root / file
+            if curr_file.suffix not in (".rst", ".py"):
+                continue
+
+            click.secho(".", fg="blue", nl=False)
+
+            with curr_file.open('r') as f:
+                text = f.read()
+
+            # search for other instances of the URL in other files and replace them as well
+            for original_link, new_link in fixes.items():
+                if original_link not in text:
+                    continue
+
+                click.secho(f"{os.linesep}{curr_file}", fg="blue")
+                click.secho(
+                    f"  {original_link} -> {new_link}",
+                    fg="green",
+                )
+
+                if not dry_run:
+                    # Replace the link in the text
+                    text = text.replace(original_link, new_link)
+
+                    # Save changes to the file
+                    with curr_file.open("w") as f:
+                        f.write(text)
+                    click.echo(
+                        f"  {click.style('Changes saved!', fg="green")}"
+                    )
+                else:
+                    click.echo(
+                        f"  {click.style('Dry Run:', bg="yellow")} Changes NOT saved."
+                    )
+
+                files_updated.append(str(curr_file))
+
+    click.secho(f"{os.linesep}Fixed {len(fixes)} links in {len(files_updated)} files.", fg="green")
+
 def fix_links(links_type, links, docs_dir):
+    fixes = dict()
     ctx = click.get_current_context()
     dry_run = ctx.params["dry_run"]
     similarity_threshold = ctx.params["similarity_threshold"]
@@ -88,7 +136,7 @@ def fix_links(links_type, links, docs_dir):
         default="y",
     )
     if should_fix.lower() == "n":
-        return copy.deepcopy(links)
+        return fixes
 
     # Prompt user if they want to review each link
     if links_type == "broken":
@@ -105,8 +153,6 @@ def fix_links(links_type, links, docs_dir):
         review_each = review_each.lower() == "r"
 
     click.secho(f"{os.linesep}Fixing {links_type} links...", bg="magenta")
-    not_fixed = list()
-
     files = group_by_file(links)
     with click.progressbar(
         length=len(links), label=f"Fixing {links_type} links"
@@ -119,7 +165,6 @@ def fix_links(links_type, links, docs_dir):
                 lines = f.readlines()
 
             # Replace each link in the file
-            fixes = dict()
             for link in file_links:
                 original_link = link["uri"]
                 new_link = link["info"] if links_type == "redirected" else ""
@@ -144,7 +189,6 @@ def fix_links(links_type, links, docs_dir):
                             new_found = link.find(new_link)
                             if new_found:
                                 link["unfixed_reason"] = "ALREADY_FIXED"
-                                not_fixed.append(link)
                                 progress_bar.update(1)
                                 click.secho(os.linesep)
                                 continue
@@ -155,7 +199,6 @@ def fix_links(links_type, links, docs_dir):
                         )
                         click.echo(f"         {link["lineno"]}: {lines[line_idx]}")
                         link["unfixed_reason"] = "Link not found in line."
-                        not_fixed.append(link)
                         progress_bar.update(1)
                         click.secho(os.linesep)
                         continue
@@ -190,7 +233,7 @@ def fix_links(links_type, links, docs_dir):
                                         f"  Please chose one of the following options:{os.linesep}"
                                         f"    [1] Keep Original: {original_link}{os.linesep}"
                                         f"    [2] Skip{os.linesep}"
-                                        f"    [9] Exit{os.linesep}"
+                                        f"    [9] Exit and Save{os.linesep}"
                                         f"    [-] Enter new:{os.linesep}   ",
                                         fg="magenta",
                                     ),
@@ -203,7 +246,7 @@ def fix_links(links_type, links, docs_dir):
                                         f"    [0] Use Redirected: {new_link}{os.linesep}"
                                         f"    [1] Keep Original:  {original_link}{os.linesep}"
                                         f"    [2] Skip{os.linesep}"
-                                        f"    [9] Exit{os.linesep}"
+                                        f"    [9] Exit and Save{os.linesep}"
                                         f"    [-] Enter new:{os.linesep}   ",
                                         fg="magenta",
                                     ),
@@ -218,7 +261,6 @@ def fix_links(links_type, links, docs_dir):
                             elif entered_option == "2":
                                 click.echo(f"  {click.style('Skipped', bg="yellow")}")
                                 link["unfixed_reason"] = "User skipped."
-                                not_fixed.append(link)
                                 progress_bar.update(1)
                                 click.secho(os.linesep)
                                 was_skipped = True
@@ -227,7 +269,7 @@ def fix_links(links_type, links, docs_dir):
                                 click.secho(
                                     f"Exiting fixing {links_type} early...", fg="yellow"
                                 )
-                                return not_fixed
+                                return fixes
                             else:
                                 # User supplied a new link
                                 new_link = entered_option
@@ -264,7 +306,6 @@ def fix_links(links_type, links, docs_dir):
                         if not new_link:
                             click.echo(f"  {click.style('Skipped', bg="yellow")}")
                             link["unfixed_reason"] = "No link provided."
-                            not_fixed.append(link)
                             progress_bar.update(1)
                             click.secho(os.linesep)
                             continue
@@ -276,12 +317,10 @@ def fix_links(links_type, links, docs_dir):
                             continue
                         else:
                             click.echo(
-                                f"  {click.style('Replacing:', bg="green")} {original_link} -> {new_link}"
+                                f"  {click.style('Fix:', bg="green")} {original_link} -> {new_link}"
                             )
 
-                    # TODO: Refactor how replacing happens
-                    # Save to dict and then do project-wide find and replace on rst and python files?
-                    lines[line_idx] = lines[line_idx].replace(original_link, new_link)
+                    # Save to fixes dict
                     if original_link not in fixes:
                         fixes[original_link] = new_link
                     else:
@@ -290,43 +329,20 @@ def fix_links(links_type, links, docs_dir):
                             fg="yellow",
                         )
 
-                    if new_link not in lines[line_idx]:
-                        link["unfixed_reason"] = (
-                            "Link could not be updated - doc string?"
-                        )
-                        not_fixed.append(link)
-                        click.secho(
-                            "    WARNING: Could not replace link, is it in a doc string?",
-                            fg="yellow",
-                        )
-
                 except click.Abort:
                     # Propagate Abort to kill the script on Keyboard interrupt
                     raise
                 except IndexError:
                     link["unfixed_reason"] = "Could not find line."
-                    not_fixed.append(link)
                     click.secho("ERROR: Could not find line.", fg="red")
                 except Exception as e:
                     link["unfixed_reason"] = f"Unexpected error occurred: {str(e)}"
-                    not_fixed.append(link)
                     click.secho(f"ERROR: {e}", fg="red")
 
                 progress_bar.update(1)
                 click.secho(os.linesep)
 
-            if not dry_run:
-                # write changes to the case file
-                with open(docs_dir / filename, "w") as f:
-                    f.writelines(lines)
-
-                # search for other instances of the URL in other files and replace them as well
-                for original_link, new_link in fixes.items():
-                    click.echo(
-                        f"  {click.style('Searching for other instances of:', bg="green")} {original_link} -> {new_link}"
-                    )
-
-    return not_fixed
+    return fixes
 
 
 @click.command()
@@ -343,30 +359,28 @@ def fix_links(links_type, links, docs_dir):
 )
 def clean_links(dry_run, similarity_threshold):
     """Clean up the links in the documentation."""
+    if dry_run:
+        click.secho(
+            f"Dry Run: No changes will be saved.",
+            fg="yellow",
+        )
+
     # Parse the linkcheck output
     docs_dir = Path(__file__).parents[1]
+    project_root = docs_dir.parents[0]
     links, files = parse_linkcheck_output(docs_dir)
 
     # Fix Redirected Links
-    redirect_not_fixed = fix_links("redirected", links["redirected"], docs_dir)
+    redirect_fixes = fix_links("redirected", links["redirected"], docs_dir)
+    recursive_search_and_save(redirect_fixes, project_root, dry_run)
 
     # Fix Broken Links
-    broken_not_fixed = fix_links("broken", links["broken"], docs_dir)
-
-    # Skipped/Fixed Report
-    # click.secho(f"{os.linesep}Skipped / Unfixed Links:", fg="blue")
-    # # TODO: decided what to print: skipped? ignored? already fixed?
-    # for link in broken_not_fixed:
-    #     click.echo(f"  Broken: {link['uri']}")
-    #     click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
-
-    # for link in redirect_not_fixed:
-    #     click.echo(f"  Redirected: {link['uri']} -> {link['info']}")
-    #     click.echo(f"    Reason: {link.get('unfixed_reason', 'Skipped')}")
+    broken_fixes = fix_links("broken", links["broken"], docs_dir)
+    recursive_search_and_save(broken_fixes, project_root, dry_run)
 
     # Summary Report
-    broken_fixed = len(links["broken"]) - len(broken_not_fixed)
-    redirect_fixed = len(links["redirected"]) - len(redirect_not_fixed)
+    redirect_fixed = len(redirect_fixes)
+    broken_fixed = len(broken_fixes)
     click.secho(f"{os.linesep}Link Check Summary:", fg="blue")
     click.echo(f"  Broken: {broken_fixed}/{len(links['broken'])}")
     click.echo(f"  Redirected: {redirect_fixed}/{len(links['redirected'])}")
