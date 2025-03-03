@@ -1,7 +1,7 @@
-from tethys_sdk.base import TethysAppBase
+from tethys_sdk.base import ReactPyBase
 
 
-class App(TethysAppBase):
+class App(ReactPyBase):
     """
     Tethys app class for {{proper_name}}.
     """
@@ -20,6 +20,7 @@ class App(TethysAppBase):
     default_layout = "NavHeader"
     nav_links = "auto"
 
+
 @App.page
 def home(lib):
     map_center, set_map_center = lib.hooks.use_state([39.254852, -98.593853])
@@ -32,3 +33,4 @@ def home(lib):
             defaultZoom=map_zoom
         )
     )
+
