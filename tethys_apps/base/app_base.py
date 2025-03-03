@@ -43,7 +43,7 @@ except ImportError:
 
 tethys_log = logging.getLogger("tethys.app_base")
 
-DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages"]
+DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages", "app"]
 
 
 class TethysBase(TethysBaseMixin):

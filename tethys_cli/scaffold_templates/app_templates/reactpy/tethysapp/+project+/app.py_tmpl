@@ -19,3 +19,16 @@ class App(TethysAppBase):
     exit_url = '/apps/'
     default_layout = "NavHeader"
     nav_links = "auto"
+
+@App.page
+def home(lib):
+    map_center, set_map_center = lib.hooks.use_state([39.254852, -98.593853])
+    map_zoom, set_map_zoom = lib.hooks.use_state(4)
+    
+    return lib.html.div()(
+        lib.pm.Map(
+            height="calc(100vh - 62px)",
+            defaultCenter=map_center,
+            defaultZoom=map_zoom
+        )
+    )
