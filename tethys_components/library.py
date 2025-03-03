@@ -24,7 +24,7 @@ class _ReactPyElementWrapper:
         def __call__(self, *args):
             self["children"] = list(args)
             return self
-    
+
     def __init__(self, vdom_func):
         self.vdom_func = vdom_func
 
@@ -46,8 +46,10 @@ class _ReactPyHTMLManager:
     Creates a new syntactical way to write ReactPy code. Instead of lib.html.<element>(Props, <children_as_args>)
     with this manager you can now do lib.html.<element>(**props_as_kwargs)(children_as_args)
     """
+
     def __getattr__(self, element):
         from reactpy import html
+
         if hasattr(html, element):
             return _ReactPyElementWrapper(getattr(html, element))
 
@@ -56,6 +58,7 @@ class ComponentLibraryManager:
     """
     Class for caching/managing ComponentLibrary instances, one per page
     """
+
     LIBRARIES = {}
 
     def __init__(self):
@@ -181,7 +184,9 @@ class ComponentLibrary:
                     content=self.get_reactjs_module_wrapper_js(),
                     resolve_exports=False,
                 )
-                setattr(self, attr, _ReactPyElementWrapper(web.export(module, component)))
+                setattr(
+                    self, attr, _ReactPyElementWrapper(web.export(module, component))
+                )
             return getattr(self, attr)
         else:
             raise AttributeError(f"Invalid component library package: {attr}")

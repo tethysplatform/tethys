@@ -5,6 +5,7 @@ from tethys_components.library import _ReactPyHTMLManager
 THIS_DIR = Path(__file__).parent
 RESOURCES_DIR = THIS_DIR / "test_resources"
 
+
 class TestComponentLibrary(TestCase):
     @mock.patch("tethys_components.library._ReactPyElementWrapper")
     def test_standard_library_workflow(self, mock_element_wrapper):
@@ -39,7 +40,9 @@ class TestComponentLibrary(TestCase):
         button_component = lib.bs.Button
         lib.bs.Button
         mock_func.assert_called_once()
-        self.assertEqual(button_component, mock_element_wrapper(mock_import().web.export()))
+        self.assertEqual(
+            button_component, mock_element_wrapper(mock_import().web.export())
+        )
         mock.patch.stopall()
 
         # CREATE JAVASCRIPT WRAPPER FOR LIBRARY
