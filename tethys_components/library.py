@@ -12,13 +12,50 @@ from pathlib import Path
 from jinja2 import Template
 from re import findall
 import logging
+from tethys_components.utils import Props
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
 
+class _ReactPyElementWrapper:
+    class _CallableDict(dict):
+        def __call__(self, *args):
+            self["children"] = list(args)
+            return self
+    
+    def __init__(self, vdom_func):
+        self.vdom_func = vdom_func
+
+    def __call__(self, *args, **kwargs):
+        if args and not kwargs:
+            # Classic ReactPy
+            pass
+        if kwargs and not args:
+            # Custom ReactPy
+            args = [Props(**kwargs)]
+            kwargs = {}
+        return self._CallableDict(self.vdom_func(*args, **kwargs))
+
+
+class _ReactPyHTMLManager:
+    """
+    Substitutes for "html" in lib.html (lib.<instance of ReactPyManager>)
+
+    Creates a new syntactical way to write ReactPy code. Instead of lib.html.<element>(Props, <children_as_args>)
+    with this manager you can now do lib.html.<element>(**props_as_kwargs)(children_as_args)
+    """
+    def __getattr__(self, element):
+        from reactpy import html
+        if hasattr(html, element):
+            return _ReactPyElementWrapper(getattr(html, element))
+
+
 class ComponentLibraryManager:
+    """
+    Class for caching/managing ComponentLibrary instances, one per page
+    """
     LIBRARIES = {}
 
     def __init__(self):
@@ -59,7 +96,8 @@ class ComponentLibrary:
         "html": None,  # Managed internally
         "tethys": None,  # Managed internally
         "hooks": None,  # Managed internally
-        "utils": None,  # Managed internally
+        "utils": None,  # Managed internally,
+        "Props": None,
     }
     DEFAULTS = ["rp", "mapgl"]
     STYLE_DEPS = {
@@ -106,9 +144,7 @@ class ComponentLibrary:
 
                 lib = custom
             elif attr == "html":
-                from reactpy import html
-
-                lib = html
+                lib = _ReactPyHTMLManager()
             elif attr == "hooks":
                 from tethys_components import hooks
 
@@ -117,6 +153,8 @@ class ComponentLibrary:
                 from tethys_components import utils
 
                 lib = utils
+            elif attr == "Props":
+                lib = Props
             else:
                 if attr not in self.package_handles:
                     self.package_handles[attr] = ComponentLibrary(
@@ -143,7 +181,7 @@ class ComponentLibrary:
                     content=self.get_reactjs_module_wrapper_js(),
                     resolve_exports=False,
                 )
-                setattr(self, attr, web.export(module, component))
+                setattr(self, attr, _ReactPyElementWrapper(web.export(module, component)))
             return getattr(self, attr)
         else:
             raise AttributeError(f"Invalid component library package: {attr}")

@@ -1,12 +1,13 @@
 from unittest import TestCase, mock
 from pathlib import Path
+from tethys_components.library import _ReactPyHTMLManager
 
 THIS_DIR = Path(__file__).parent
 RESOURCES_DIR = THIS_DIR / "test_resources"
 
-
 class TestComponentLibrary(TestCase):
-    def test_standard_library_workflow(self):
+    @mock.patch("tethys_components.library._ReactPyElementWrapper")
+    def test_standard_library_workflow(self, mock_element_wrapper):
         from tethys_components.library import ComponentLibrary
 
         mock_import = mock.patch("builtins.__import__").start()
@@ -17,9 +18,9 @@ class TestComponentLibrary(TestCase):
         self.assertEqual(mock_import.call_args_list[-1][0][0], "tethys_components")
         self.assertEqual(mock_import.call_args_list[-1][0][3][0], "custom")
         lib.html
-        self.assertEqual(mock_import.call_args_list[-1][0][0], "reactpy")
-        self.assertEqual(mock_import.call_args_list[-1][0][3][0], "html")
+        self.assertIsInstance(lib.html, _ReactPyHTMLManager)
         lib.hooks
+        self.assertEqual(lib.Props(test="yeah"), {"test": "yeah"})
         self.assertEqual(mock_import.call_args_list[-1][0][0], "tethys_components")
         self.assertEqual(mock_import.call_args_list[-1][0][3][0], "hooks")
         self.assertEqual(len(lib.styles), 0)
@@ -38,7 +39,7 @@ class TestComponentLibrary(TestCase):
         button_component = lib.bs.Button
         lib.bs.Button
         mock_func.assert_called_once()
-        self.assertEqual(button_component, mock_import().web.export())
+        self.assertEqual(button_component, mock_element_wrapper(mock_import().web.export()))
         mock.patch.stopall()
 
         # CREATE JAVASCRIPT WRAPPER FOR LIBRARY

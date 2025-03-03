@@ -8,13 +8,14 @@ from tethys_apps.base.paths import (
     _get_user_media,
 )
 
+
 class _PathsQuery:
     STATUS_CHECKING_QUOTA = 1
     STATUS_QUOTA_EXCEEDED = 2
-    
+
     def __init__(self, status):
         self.status = status
-    
+
     @property
     def checking_quota(self):
         return self.status == self.STATUS_CHECKING_QUOTA
@@ -55,13 +56,14 @@ def _infer_app_from_stack_trace():
 
     return app
 
+
 def use_workspace(user=None):
     """
     A custom ReactPy hook used to access the TethysPath representing the app or user's workspace directory.
 
     Args:
         user (auth.models.User): If provided, get the TethysPath for the user's workspace directory, rather than the app's.
-    
+
     Returns:
         PathsQuery object if the state of the underlying query is "loading" or "error"
         TethysPath representing either the app's or user's workspace directory otherwise
@@ -84,19 +86,21 @@ def use_workspace(user=None):
         return _PathsQuery(_PathsQuery.STATUS_QUOTA_EXCEEDED)
     else:
         workspace = workspace_query.data
-        setattr(workspace, "checking_quota", False)
-        setattr(workspace, "quota_exceeded", False)
+        workspace.checking_quota = False
+        workspace.quota_exceeded = False
         return workspace
+
 
 def use_resources():
     """
     A custom ReactPy hook used to access the TethysPath representing the app's resources directory.
-    
+
     Returns:
         TethysPath representing the app's resources directory
     """
     app = _infer_app_from_stack_trace()
     return app.resources_path
+
 
 def use_media(user=None):
     """
@@ -104,7 +108,7 @@ def use_media(user=None):
 
     Args:
         user (auth.models.User): If provided, get the TethysPath for the user's media directory, rather than the app's.
-    
+
     Returns:
         PathsQuery object if the state of the underlying query is "loading" or "error"
         TethysPath representing either the app's or user's media directory otherwise
@@ -127,21 +131,23 @@ def use_media(user=None):
         return _PathsQuery(_PathsQuery.STATUS_QUOTA_EXCEEDED)
     else:
         media = media_query.data
-        setattr(media, "checking_quota", False)
-        setattr(media, "quota_exceeded", False)
+        media.checking_quota = False
+        media.quota_exceeded = False
         return media
+
 
 def use_public():
     """
     A custom ReactPy hook used to access the TethysPath representing the app's public directory.
-    
+
     Returns:
         TethysPath representing the app's public directory
     """
     app = _infer_app_from_stack_trace()
     return app.public_path
 
-def background_execute(callable, args=[], delay_seconds=None):
+
+def background_execute(callable, args=None, delay_seconds=None):
     """
     Kick off a task in the background, optionally with a delay
 
@@ -154,12 +160,15 @@ def background_execute(callable, args=[], delay_seconds=None):
     """
     if delay_seconds:
         from threading import Timer
-        t = Timer(delay_seconds, callable, args)
+
+        t = Timer(delay_seconds, callable, args if args else [])
     else:
         from threading import Thread
-        t = Thread(callable, args=args)
+
+        t = Thread(callable, args=args if args else [])
 
     t.start()
+
 
 class Props(dict):
     """
@@ -169,6 +178,7 @@ class Props(dict):
     Example:
         Instead of lib.html.div({"backgroundColor": "red", "fontSize": "12px"}, "Hello"), you can use lib.html.div(Props(background_color="red, font_size="12px"), "Hello")
     """
+
     def _snake_to_camel(self, snake):
         parts = snake.split("_")
         if len(parts) == 1:
