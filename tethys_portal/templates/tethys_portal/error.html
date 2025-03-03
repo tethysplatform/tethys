@@ -51,4 +51,6 @@
       </div>
     </div>
   </div>
+  {# Override TOS block, b/c some errors prevent middleware from running and TOS can't handle it #}
+  {% block tos_override %}{% endblock %}
 {% endblock %}
