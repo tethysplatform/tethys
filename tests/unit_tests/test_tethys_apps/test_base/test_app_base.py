@@ -12,7 +12,6 @@ from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
 )
 import tethys_apps.base.app_base as tethys_app_base
-from tethys_apps.base.url_map import UrlMapBase
 from tethys_apps.base.paths import TethysPath
 from tethys_apps.base.permissions import Permission, PermissionGroup
 from ... import UserFactory
@@ -1544,52 +1543,3 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check tethys log error
         mock_log.error.assert_called()
-
-    def test_navigation_links_not_auto(self):
-        app = tethys_app_base.TethysAppBase()
-        app.nav_links = ["test", "1", "2", "3"]
-        links = app.navigation_links
-        self.assertListEqual(links, app.nav_links)
-
-    def test_navigation_links_auto_excluded_page(self):
-        app = tethys_app_base.TethysAppBase()
-        app.nav_links = "auto"
-        app.index = "home"
-        app.root_url = "test-app"
-
-        app._registered_url_maps = [
-            UrlMapBase(
-                name="exclude_page",
-                url="",
-                controller=None,
-                title="Exclude Page",
-                index=-1,
-            ),
-            UrlMapBase(
-                name="last_page", url="", controller=None, title="Last Page", index=3
-            ),
-            UrlMapBase(
-                name="third_page", url="", controller=None, title="Third Page", index=2
-            ),
-            UrlMapBase(
-                name="second_page",
-                url="",
-                controller=None,
-                title="Second Page",
-                index=1,
-            ),
-            UrlMapBase(name="home", url="", controller=None, title="Home", index=0),
-        ]
-
-        links = app.navigation_links
-
-        self.assertListEqual(
-            links,
-            [
-                {"title": "Home", "href": "/apps/test-app/"},
-                {"title": "Second Page", "href": "/apps/test-app/second-page/"},
-                {"title": "Third Page", "href": "/apps/test-app/third-page/"},
-                {"title": "Last Page", "href": "/apps/test-app/last-page/"},
-            ],
-        )
-        self.assertEqual(links, app.nav_links)

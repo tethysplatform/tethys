@@ -1,9 +1,9 @@
 
-import {Map} from "https://esm.sh/pigeon-maps@0.21.6?deps=react@18.2.0,react-dom@18.2.0,react-is@18.2.0,@restart/ui@1.6.8&exports=Map&bundle_deps";
+import {Map} from "https://esm.sh/pigeon-maps@0.21.6?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Map&bundle_deps";
 export {Map};
-import {Button} from "https://esm.sh/react-bootstrap@2.10.2?deps=react@18.2.0,react-dom@18.2.0,react-is@18.2.0,@restart/ui@1.6.8&exports=Button&bundle_deps";
+import {Button} from "https://esm.sh/react-bootstrap@2.10.2?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Button&bundle_deps";
 export {Button};
-import Test from "https://esm.sh/my-react-package@0.0.0?deps=react@18.2.0,react-dom@18.2.0,react-is@18.2.0,@restart/ui@1.6.8&bundle_deps";
+import Test from "https://esm.sh/my-react-package@0.0.0?deps=react@19.0,react-dom@19.0,react-is@19.0&bundle_deps";
 export {Test};
 loadCSS("my_style.css");
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
@@ -35,6 +35,7 @@ export default ({ children, ...props }) => {
         : null;
 };
 
+
 export function bind(node, config) {
     const root = ReactDOM.createRoot(node);
     return {
@@ -44,6 +45,7 @@ export function bind(node, config) {
         unmount: () => root.unmount()
     };
 }
+
 
 function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);

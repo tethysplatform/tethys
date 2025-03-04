@@ -38,6 +38,7 @@ export default ({ children, ...props }) => {
         : null;
 };
 
+{% if reactjs_version_int > 17 %}
 export function bind(node, config) {
     const root = ReactDOM.createRoot(node);
     return {
@@ -47,6 +48,16 @@ export function bind(node, config) {
         unmount: () => root.unmount()
     };
 }
+{% else %}
+export function bind(node, config) {
+    return {
+        create: (component, props, children) =>
+            React.createElement(component, wrapEventHandlers(props), ...children),
+        render: (element) => ReactDOM.render(element, node),
+        unmount: () => ReactDOM.unmountComponentAtNode(node),
+    };
+}
+{% endif %}
 
 function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);

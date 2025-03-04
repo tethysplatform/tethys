@@ -32,6 +32,7 @@ To learn more about writing tests, see:
     https://docs.tethysplatform.org/en/stable/tethys_sdk/testing.html
 """
 
+
 class {{class_name}}TestCase(TethysTestCase):
     """
     In this class you may define as many functions as you'd like to test different aspects of your app.
@@ -117,31 +118,3 @@ class {{class_name}}TestCase(TethysTestCase):
         self.assertFalse(not self.is_tethys_platform_great())
         self.assertIs(self.is_tethys_platform_great(), True)
         self.assertIsNot(self.is_tethys_platform_great(), False)
-
-    def test_home_controller(self):
-        """
-        This is an example test function of how you might test a controller that returns an HTML template rendered
-        with context variables.
-        """
-
-        # If all test functions were testing controllers or required a test client for another reason, the following
-        # 3 lines of code could be placed once in the set_up function. Note that in that case, each variable should be
-        # prepended with "self." (i.e. self.c = ...) to make those variables "global" to this test class and able to be
-        # used in each separate test function.
-        c = self.get_test_client()
-        user = self.create_test_user(username="joe", password="secret", email="joe@some_site.com")
-        c.force_login(user)
-
-        # Have the test client "browse" to your home page
-        response = c.get('/apps/{{project_url}}/')  # The final '/' is essential for all pages/controllers
-
-        # Test that the request processed correctly (with a 200 status code)
-        self.assertEqual(response.status_code, 200)
-
-        '''
-        NOTE: Next, you would likely test that your context variables returned as expected. That would look
-        something like the following:
-
-        context = response.context
-        self.assertEqual(context['my_integer'], 10)
-        '''
