@@ -165,8 +165,13 @@ def fix_links(links_type, links, docs_dir):
             file_links = files[filename]
             click.secho(os.linesep)
             click.secho(f"{filename}", bg="blue")
-            with open(docs_dir / filename, "r") as f:
-                lines = f.readlines()
+            try:
+                with open(docs_dir / filename, "r") as f:
+                    lines = f.readlines()
+            except Exception as e:
+                click.secho(f"ERROR: an unexpected error occurred while reading lines in {str(filename)}: {e}", fg="red")
+                click.secho(f"       Skipping file...", fg="red")
+                continue
 
             # Replace each link in the file
             for link in file_links:
@@ -271,7 +276,7 @@ def fix_links(links_type, links, docs_dir):
                                 break
                             elif entered_option == "9":
                                 click.secho(
-                                    f"Exiting {links_type}...", fg="yellow"
+                                    f"Exiting {links_type} links check...", fg="yellow"
                                 )
                                 return fixes
                             else:
