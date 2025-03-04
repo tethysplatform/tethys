@@ -1,4 +1,4 @@
-from tethys_sdk.base import ReactPyBase
+from tethys_sdk.components import ReactPyBase
 
 
 class App(ReactPyBase):
