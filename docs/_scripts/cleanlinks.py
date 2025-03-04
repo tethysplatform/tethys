@@ -79,42 +79,46 @@ def recursive_search_and_save(fixes, directory, dry_run):
     click.secho(f"Scanning {str(directory)} for links to update...", fg="blue")
     for root, _dirs, files in directory.walk():
         for file in files:
-            curr_file = root / file
-            if curr_file.suffix not in (".rst", ".py"):
-                continue
-
-            click.secho(".", fg="blue", nl=False)
-
-            with curr_file.open('r') as f:
-                text = f.read()
-
-            # search for other instances of the URL in other files and replace them as well
-            for original_link, new_link in fixes.items():
-                if original_link not in text:
+            try:
+                curr_file = root / file
+                if curr_file.suffix not in (".rst", ".py"):
                     continue
 
-                click.secho(f"{os.linesep}{curr_file}", fg="blue")
-                click.secho(
-                    f"  {original_link} -> {new_link}",
-                    fg="green",
-                )
+                click.secho(".", fg="blue", nl=False)
 
-                if not dry_run:
-                    # Replace the link in the text
-                    text = text.replace(original_link, new_link)
+                with curr_file.open('r') as f:
+                    text = f.read()
 
-                    # Save changes to the file
-                    with curr_file.open("w") as f:
-                        f.write(text)
-                    click.echo(
-                        f"  {click.style('Changes saved!', fg="green")}"
-                    )
-                else:
-                    click.echo(
-                        f"  {click.style('Dry Run:', bg="yellow")} Changes NOT saved."
+                # search for other instances of the URL in other files and replace them as well
+                for original_link, new_link in fixes.items():
+                    if original_link not in text:
+                        continue
+
+                    click.secho(f"{os.linesep}{curr_file}", fg="blue")
+                    click.secho(
+                        f"  {original_link} -> {new_link}",
+                        fg="green",
                     )
 
-                files_updated.add(str(curr_file))
+                    if not dry_run:
+                        # Replace the link in the text
+                        text = text.replace(original_link, new_link)
+
+                        # Save changes to the file
+                        with curr_file.open("w") as f:
+                            f.write(text)
+                        click.echo(
+                            f"  {click.style('Changes saved!', fg="green")}"
+                        )
+                    else:
+                        click.echo(
+                            f"  {click.style('Dry Run:', bg="yellow")} Changes NOT saved."
+                        )
+
+                    files_updated.add(str(curr_file))
+            except Exception as e:
+                click.secho(f"ERROR: an unexpected error occurred while replacing links in {str(file)}: {e}", fg="red")
+                click.secho(f"       Skipping file...", fg="red")
 
     click.secho(f"{os.linesep}Fixed {len(fixes)} links in {len(files_updated)} files.", fg="green")
 
