@@ -9,13 +9,11 @@ import tethys_apps.base.controller as tethys_controller
 class TestPageHandler(TestCase):
     @mock.patch("tethys_apps.base.page_handler.render")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibrary")
-    @mock.patch("tethys_apps.base.page_handler.get_active_app")
-    @mock.patch("tethys_apps.base.page_handler.get_layout_component")
-    def test_global_page_controller(
-        self, mock_get_layout, mock_get_app, mock_lib, mock_render
-    ):
+    @mock.patch("tethys_apps.base.page_handler._get_layout_component")
+    def test_global_page_controller(self, mock_get_layout, mock_lib, mock_render):
         # FUNCTION ARGS
         request = mock.MagicMock()
+        mock_app = mock.MagicMock()
         layout = "test_layout"
         component_func = mock.MagicMock()
         component_source_code = "test123"
@@ -24,7 +22,6 @@ class TestPageHandler(TestCase):
         custom_js = ["custom.js"]
 
         # MOCK INTERNALS
-        mock_get_app.return_value = "app object"
         component_func.__name__ = "my_mock_component_func"
         expected_return_value = "Expected return value"
         mock_render.return_value = expected_return_value
@@ -33,6 +30,7 @@ class TestPageHandler(TestCase):
         # EXECUTE FUNCTION
         response = page_handler.global_page_controller(
             request=request,
+            app=mock_app,
             layout=layout,
             component_func=component_func,
             component_source_code=component_source_code,
@@ -42,12 +40,7 @@ class TestPageHandler(TestCase):
         )
 
         # EVALUATE EXECUTION
-        mock_get_app.assert_called_once_with(request=request, get_class=True)
-        mock_get_layout.assert_called_once_with(mock_get_app(), layout)
-        mock_lib.refresh.assert_called_with(new_identifier="my-mock-component-func")
-        mock_lib.load_dependencies_from_source_code.assert_called_with(
-            component_source_code
-        )
+        mock_get_layout.assert_called_once_with(mock_app, layout)
         render_called_with_args = mock_render.call_args.args
         self.assertEqual(render_called_with_args[0], request)
         self.assertEqual(render_called_with_args[1], "tethys_apps/reactpy_base.html")
@@ -59,16 +52,20 @@ class TestPageHandler(TestCase):
                 "layout_func",
                 "component_func",
                 "reactjs_version",
+                "reactjs_version_int",
                 "title",
                 "custom_css",
                 "custom_js",
                 "extras",
             ],
         )
-        self.assertEqual(render_context["app"], "app object")
+        self.assertEqual(render_context["app"], mock_app)
         self.assertEqual(render_context["layout_func"](), "my_layout_func")
         self.assertEqual(render_context["component_func"](), component_func)
         self.assertEqual(render_context["reactjs_version"], mock_lib.REACTJS_VERSION)
+        self.assertEqual(
+            render_context["reactjs_version_int"], mock_lib.REACTJS_VERSION_INT
+        )
         self.assertEqual(render_context["title"], title)
         self.assertEqual(render_context["custom_css"], custom_css)
         self.assertEqual(render_context["custom_js"], custom_js)
@@ -93,68 +90,94 @@ class TestPageComponentWrapper(TestCase):
         del sys.modules["reactpy"]
         reload(page_handler)
 
-    def test_page_component_wrapper__layout_none(self):
+    @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
+    def test_page_component_wrapper__layout_none(self, mock_clm):
+        mock_lib = mock.MagicMock()
+        mock_clm.get_library.return_value = mock_lib
         # FUNCTION ARGS
-        app = mock.MagicMock()
+        app = mock.MagicMock(package="test_app")
         user = mock.MagicMock()
         layout = None
-        component = mock.MagicMock()
-        component_return_val = "rendered_component"
-        component.return_value = component_return_val
+        proof_mock = mock.MagicMock()
+
+        def component(lib):
+            proof_mock(lib)
+            return "rendered_component"
 
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
-        self.assertEqual(return_value, component_return_val)
+        self.assertEqual(return_value, "rendered_component")
+        mock_clm.get_library.assert_called_once_with("test_app-component")
+        proof_mock.assert_called_once_with(mock_lib)
 
-    def test_page_component_wrapper__layout_none_with_extras(self):
+    @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
+    def test_page_component_wrapper__layout_none_with_extras(self, mock_clm):
+        mock_lib = mock.MagicMock()
+        mock_clm.get_library.return_value = mock_lib
         # FUNCTION ARGS
-        app = mock.MagicMock()
+        app = mock.MagicMock(package="test_app")
         user = mock.MagicMock()
         layout = None
         extras = {"extra1": "val1", "extra2": 2}
-        component = mock.MagicMock()
-        component_return_val = "rendered_component"
-        component.return_value = component_return_val
+        proof_mock = mock.MagicMock()
+
+        def component(lib, extra1, extra2):
+            proof_mock(lib, extra1, extra2)
+            return "rendered_component"
 
         return_value = page_handler.page_component_wrapper(
             app, user, layout, component, extras
         )
 
-        self.assertEqual(return_value, component_return_val)
-        component.assert_called_once_with(extra1="val1", extra2=2)
+        self.assertEqual(return_value, "rendered_component")
+        proof_mock.assert_called_once_with(mock_lib, "val1", 2)
+        mock_clm.get_library.assert_called_once_with("test_app-component")
 
-    def test_page_component_wrapper__layout_not_none(self):
+    @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
+    def test_page_component_wrapper__layout_not_none(self, mock_clm):
+        mock_lib = mock.MagicMock()
+        mock_clm.get_library.return_value = mock_lib
         # FUNCTION ARGS
-        app = mock.MagicMock()
+        app = mock.MagicMock(package="test_app")
         app.registered_url_maps = []
         user = mock.MagicMock()
         layout = mock.MagicMock()
         layout_return_val = "returned_layout"
         layout.return_value = layout_return_val
-        component = mock.MagicMock()
-        component_return_val = "rendered_component"
-        component.return_value = component_return_val
+        proof_mock = mock.MagicMock()
+
+        def component(lib):
+            proof_mock(lib)
+            return "rendered_component"
 
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
         self.assertEqual(return_value, layout_return_val)
         layout.assert_called_once_with(
             {"app": app, "user": user, "nav-links": app.navigation_links},
-            component_return_val,
+            "rendered_component",
         )
+        proof_mock.assert_called_once_with(mock_lib)
+        mock_clm.get_library.assert_called_once_with("test_app-component")
 
-    def test_page_component_wrapper__layout_not_none_with_extras(self):
+    @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
+    def test_page_component_wrapper__layout_not_none_with_extras(self, mock_clm):
+        mock_lib = mock.MagicMock()
+        mock_clm.get_library.return_value = mock_lib
         # FUNCTION ARGS
-        app = mock.MagicMock()
+        app = mock.MagicMock(package="test_app")
         app.registered_url_maps = []
         user = mock.MagicMock()
         layout = mock.MagicMock()
         layout_return_val = "returned_layout"
         layout.return_value = layout_return_val
         extras = {"extra1": "val1", "extra2": 2}
-        component = mock.MagicMock()
         component_return_val = "rendered_component"
-        component.return_value = component_return_val
+        proof_mock = mock.MagicMock()
+
+        def component(lib, extra1, extra2):
+            proof_mock(lib, extra1, extra2)
+            return component_return_val
 
         return_value = page_handler.page_component_wrapper(
             app, user, layout, component, extras
@@ -165,7 +188,8 @@ class TestPageComponentWrapper(TestCase):
             {"app": app, "user": user, "nav-links": app.navigation_links},
             component_return_val,
         )
-        component.assert_called_once_with(extra1="val1", extra2=2)
+        proof_mock.assert_called_once_with(mock_lib, "val1", 2)
+        mock_clm.get_library.assert_called_once_with("test_app-component")
 
 
 class TestPage(TestCase):
@@ -194,6 +218,7 @@ class TestPage(TestCase):
         my_function = lambda x: x  # noqa E731
 
         return_value = tethys_controller.page(
+            app=mock.MagicMock(),
             permissions_required=["test_permission"],
             enforce_quotas=["test_quota"],
             ensure_oauth2_provider=["test_oauth2_provider"],
@@ -224,7 +249,11 @@ class TestPage(TestCase):
             regex=None,
             title=title,
             index=index,
+            for_page=True,
         )
+
+    def test_page_raises_error_if_not_called_with_app(self):
+        self.assertRaises(ValueError, tethys_controller.page)
 
     @mock.patch("tethys_apps.base.controller._process_url_kwargs")
     @mock.patch("tethys_apps.base.controller.global_page_controller")
@@ -236,7 +265,7 @@ class TestPage(TestCase):
         mock_process_kwargs,
     ):
         my_function = lambda x: x  # noqa: E731
-        return_value = tethys_controller.page()(my_function)
+        return_value = tethys_controller.page(app=mock.MagicMock())(my_function)
         self.assertTrue(callable(return_value))
         mock_request = mock.MagicMock()
         mock_process_kwargs.assert_called_once()
@@ -262,6 +291,7 @@ class TestPage(TestCase):
             regex=None,
             title=None,
             index=None,
+            for_page=True,
         )
 
     @mock.patch("tethys_apps.base.controller._process_url_kwargs")
@@ -275,9 +305,9 @@ class TestPage(TestCase):
     ):
         component_function = lambda x: x  # noqa: E731
         handler_function = mock.MagicMock()
-        return_value = tethys_controller.page(handler=handler_function)(
-            component_function
-        )
+        return_value = tethys_controller.page(
+            app=mock.MagicMock(), handler=handler_function
+        )(component_function)
         self.assertTrue(callable(return_value))
         mock_request = mock.MagicMock()
         mock_process_kwargs.assert_called_once()
@@ -304,4 +334,18 @@ class TestPage(TestCase):
             regex=None,
             title=None,
             index=None,
+            for_page=True,
         )
+
+    def test_page(self):
+        tethys_controller.app_controllers_list = list()
+
+        @tethys_controller.page(app=mock.MagicMock())
+        def my_page(lib):
+            pass
+
+        kwargs = tethys_controller.app_controllers_list.pop(0)
+        name = my_page.__name__
+        self.assertEqual(name, kwargs["name"])
+        url = f'test-page-handler/{name.replace("_", "-")}/'
+        self.assertEqual(url, kwargs["url"])

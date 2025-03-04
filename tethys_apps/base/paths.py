@@ -356,7 +356,7 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
     Returns: TethysPath representing the user workspace.
 
     """
-    app = _resolve_app_class(app_or_request)
+    app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
     username = _resolve_username(user_or_request, bypass_quota=bypass_quota)
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
 
@@ -454,7 +454,7 @@ def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
     Returns: TethysPath representing the user's media directory for the app.
 
     """
-    app = _resolve_app_class(app_or_request)
+    app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
     username = _resolve_username(username_or_request, bypass_quota=bypass_quota)
     return TethysPath(_get_app_media_root(app) / "user" / username)
 
