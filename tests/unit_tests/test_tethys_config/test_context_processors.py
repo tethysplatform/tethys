@@ -61,7 +61,7 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
         mock_setting.as_dict.assert_called_once()
         mock_terms.get_active_terms_list.assert_called_once()
         mock_terms.get_active_list.assert_not_called()
-        now = dt.datetime.now(dt.UTC)
+        now = dt.datetime.now(dt.timezone.utc)
 
         expected_context = {
             "site_defaults": {"copyright": f"Copyright © {now:%Y} Your Organization"},
@@ -99,7 +99,7 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
         mock_setting.as_dict.assert_called_once()
         mock_terms.get_active_terms_list.assert_called_once()
         mock_terms.get_active_list.assert_not_called()
-        now = dt.datetime.now(dt.UTC)
+        now = dt.datetime.now(dt.timezone.utc)
 
         expected_context = {
             "site_defaults": {"copyright": f"Copyright © {now:%Y} Your Organization"},

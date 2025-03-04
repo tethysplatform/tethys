@@ -21,11 +21,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
-import os
 import sys
 import yaml
 import logging
 import datetime as dt
+from os import getenv
 from pathlib import Path
 from importlib import import_module
 from importlib.machinery import SourceFileLoader
@@ -82,7 +82,8 @@ ENABLE_OPEN_SIGNUP = TETHYS_PORTAL_CONFIG.pop("ENABLE_OPEN_SIGNUP", False)
 # Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
 ENABLE_OPEN_PORTAL = TETHYS_PORTAL_CONFIG.pop("ENABLE_OPEN_PORTAL", False)
 
-# Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
+# Set to True to allow restricted app access. This mode removes access to apps for nonadmins unless given explicit permission.
+# A list can also be provided to restrict specific applications unless users are given explicit permission
 ENABLE_RESTRICTED_APP_ACCESS = TETHYS_PORTAL_CONFIG.pop(
     "ENABLE_RESTRICTED_APP_ACCESS", False
 )
@@ -201,7 +202,7 @@ LOGGERS.setdefault(
     "django",
     {
         "handlers": ["console_simple"],
-        "level": os.getenv("DJANGO_LOG_LEVEL", "WARNING"),
+        "level": getenv("DJANGO_LOG_LEVEL", "WARNING"),
     },
 )
 LOGGERS.setdefault(
@@ -221,6 +222,7 @@ LOGGERS.setdefault(
 
 default_installed_apps = [
     "channels",
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -254,6 +256,7 @@ for module in [
     "django_recaptcha",
     "social_django",
     "termsandconditions",
+    "reactpy_django",
 ]:
     if has_module(module):
         default_installed_apps.append(module)
@@ -329,6 +332,8 @@ SUPPRESS_QUOTA_WARNINGS = portal_config_settings.pop(
     "SUPPRESS_QUOTA_WARNINGS", ["user_workspace_quota", "app_workspace_quota"]
 )
 
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -385,6 +390,15 @@ if has_module("social_django"):
         ]
     )
 
+CONTEXT_PROCESSORS = portal_config_settings.pop(
+    "CONTEXT_PROCESSORS_OVERRIDE",
+    default_context_processors,
+)
+
+CONTEXT_PROCESSORS = tuple(
+    CONTEXT_PROCESSORS + portal_config_settings.pop("CONTEXT_PROCESSORS", [])
+)
+
 # Templates
 
 ADDITIONAL_TEMPLATE_DIRS = [
@@ -400,7 +414,7 @@ TEMPLATES = [
             BASE_DIR / "templates",
         ],
         "OPTIONS": {
-            "context_processors": default_context_processors,
+            "context_processors": CONTEXT_PROCESSORS,
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
                 "django.template.loaders.app_directories.Loader",

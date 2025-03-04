@@ -55,7 +55,7 @@ To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``
           - conda-forge
         packages:
           - bokeh
-          - bokeh_django
+          - bokeh-django
           - bokeh_sampledata
 
       pip:
@@ -79,9 +79,11 @@ Let's use Bokeh's sea temperature sample data to create a time series plot and l
 
     from tethys_sdk.routing import handler
 
+    from .app import App
+
 
     @handler(
-        template="bokeh_tutorial/home.html",
+        template=f"{App.package}/home.html",
     )
     def home(document):
         df = sea_surface_temperature.copy()
@@ -101,7 +103,7 @@ This simple handler contains the logic for a time series plot of the sea surface
 
 .. code-block:: html+django
 
-    {% extends "bokeh_tutorial/base.html" %}
+    {% extends tethys_app.package|add:"/base.html" %}
 
     {% block app_content %}
       <h1>Bokeh Integration Example</h1>
@@ -126,6 +128,9 @@ This is a simple Bokeh plot. We will now add the rest of the logic to make it an
 
     ...
 
+    @handler(
+        template=f"{App.package}/home.html",
+    )
     def home(document):
         df = sea_surface_temperature.copy()
         source = ColumnDataSource(data=df)
@@ -172,27 +177,10 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
 
 .. code-block:: yaml
 
-    # This file should be committed to your app code.
-    version: 1.0
-    # This should match the app - package name in your setup.py
-    name: bokeh_tutorial
-
-    requirements:
-      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-      skip: false
-      conda:
-        channels:
-          - conda-forge
-        packages:
-          - bokeh
-          - bokeh_django
-          - bokeh_sampledata
-          - panel
-          - param
-
-      pip:
-
-    post:
+    packages:
+      ...
+      - panel
+      - param
 
 
 3. Add the following objects to a new file called ``param_model.py``.
@@ -287,12 +275,14 @@ The added classes depend on ``Bokeh``.  The `Circle` and `NGon` classes depend o
 
 .. code-block:: python
 
+    ...
+
     from .param_model import ShapeViewer
 
     ...
 
     @handler(
-        app_package='bokeh_tutorial',
+        app_package=App.package,
     )
     def shapes(document):
         viewer = ShapeViewer().panel()

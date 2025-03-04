@@ -4,7 +4,7 @@
 Install System Dependencies
 ***************************
 
-**Last Updated:** September 2022
+**Last Updated:** September 2024
 
 This guide describes how to install the necessary system dependencies. You will need ``sudo`` or root access on the server to complete these steps.
 
@@ -24,11 +24,11 @@ You will need a text editor to modify the configuration files during the install
 
       sudo apt install -y vim nano
 
-  **CentOS**:
+  **Rocky Linux**:
 
   .. code-block:: bash
 
-      sudo yum install -y vim nano
+      sudo dnf install -y vim nano
 
 wget
 ----
@@ -41,11 +41,11 @@ Wget is used during the installation to download files needed for the installati
 
       sudo apt install -y wget
 
-  **CentOS**:
+  **Rocky Linux**:
 
   .. code-block:: bash
 
-      sudo yum install -y wget
+      sudo dnf install -y wget
 
 PostgreSQL
 ==========
@@ -58,53 +58,42 @@ PostgreSQL
 
             sudo apt install -y postgresql postgresql-contrib
 
-    **CentOS**:
+    **Rocky Linux**:
 
         .. code-block:: bash
 
-            sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-
-        .. code-block:: bash
-
-            sudo dnf -qy module disable postgresql
-            sudo dnf -y install postgresql12 postgresql12-server
+            sudo dnf install -y postgresql-server glibc-all-langpacks
 
         Initialize the database:
 
         .. code-block:: bash
 
             # Initialize the database
-            sudo /usr/pgsql-12/bin/postgresql-12-setup initdb
+            sudo postgresql-setup --initdb
 
         Start PostgreSQL and enable it so it starts up automatically when the server restarts:
 
         .. code-block:: bash
 
-            sudo systemctl start postgresql-12
-            sudo systemctl enable postgresql-12
+            sudo systemctl start postgresql
+            sudo systemctl enable postgresql
             
 .. note::
 
-    You may be wondering why you didn't need to initialize the database and start/enable it when installing PostgreSQL on Ubuntu. This has to do with the differing philosophies between CentOS and Ubuntu. Ubuntu packages are usually installed with a reasonable default configurtaion and already enabled and running, whereas CentOS only installs the binaries and leaves the configurtaion and enabling up to you.
+    You may be wondering why you didn't need to initialize the database and start/enable it when installing PostgreSQL on Ubuntu. This has to do with the differing philosophies between Rocky Linux and Ubuntu. Ubuntu packages are usually installed with a default configurtaion and already enabled and running, whereas Rocky Linux only installs the binaries and leaves the configurtaion and enabling up to you.
 
 
 2. Verify that PostgreSQL is Running:
 
-    **Ubuntu**:
+    **Both**:
 
         .. code-block:: bash
 
             sudo systemctl status postgresql
 
-    **CentOS**:
-
-        .. code-block:: bash
-
-            sudo systemctl status postgresql-12
-
 .. note::
 
-    Install PostgreSQL using these instructions if you plan on having the database on the same server as your Tethys Portal. If you plan to use a separate server for your database, you may also use these instructions to install PostgreSQL on that server, but do not run these installation commands on the Tethys Portal server.  These instructions are based on `How To Install and Use PostgreSQL on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-20-04>`_ and `How To Install PostgreSQL 12 on CentOS 7 / CentOS 8 <https://computingforgeeks.com/how-to-install-postgresql-12-on-centos-7/>`_.
+    Install PostgreSQL using these instructions if you plan on having the database on the same server as your Tethys Portal. If you plan to use a separate server for your database, you may also use these instructions to install PostgreSQL on that server, but do not run these installation commands on the Tethys Portal server. These instructions are based on `How To Install and Use PostgreSQL on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-20-04>`_ and `How To Install and Use PostgreSQL on Rocky Linux 9 <https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-rocky-linux-9>`_.
 
 Set ``postgres`` Password
 -------------------------
@@ -121,13 +110,15 @@ Set ``postgres`` Password
 
         Replace ``<POSTGRES_PASSWORD>`` with the password you created during the :ref:`production_preparation` step.
 
-2. On CentOS it is also necessary to enable password authentication for local connections. This is done in the :file:`pg_hba.conf` file as follows:
+2. On Rocky Linux it is also necessary to enable password authentication for local IP connections. This is done in the :file:`pg_hba.conf` file as follows:
 
-    **CentOS**:
+    **Rocky Linux**:
 
         .. code-block:: bash
 
-            sudo vim /var/lib/pgsql/12/data/pg_hba.conf
+            sudo vim /var/lib/pgsql/data/pg_hba.conf
+
+    **pg_hba.conf**:
 
         Change:
 
@@ -139,29 +130,42 @@ Set ``postgres`` Password
             host    all             all             127.0.0.1/32            ident
             # IPv6 local connections:
             host    all             all             ::1/128                 ident
+            # Allow replication connections from localhost, by a user with the
+            # replication privilege.
+            local   replication     all                                     peer
+            host    replication     all             127.0.0.1/32            ident
+            host    replication     all             ::1/128                 ident
 
         To:
 
-        .. code-block::
+        .. code-block:: bash
 
             # "local" is for Unix domain socket connections only
-            local   all             all                                     md5
+            local   all             all                                     peer
             # IPv4 local connections:
             host    all             all             127.0.0.1/32            md5
             # IPv6 local connections:
             host    all             all             ::1/128                 md5
+            # Allow replication connections from localhost, by a user with the
+            # replication privilege.
+            local   replication     all                                     peer
+            host    replication     all             127.0.0.1/32            md5
+            host    replication     all             ::1/128                 md5
 
-        Then restart PostgreSQL:
+
+    **Rocky Linux**:
+
+    Then restart PostgreSQL:
 
         .. code-block::
 
-            sudo systemctl restart postgresql-12
+            sudo systemctl restart postgresql
 
 3. Verify that password authentication is working by opening a connection to the database using the commandline client ``psql``:
 
     .. code-block::
 
-        PGPASSWORD=<POSTGRES_PASSWORD> psql -U postgres
+        PGPASSWORD=<POSTGRES_PASSWORD> psql -U postgres -h localhost
 
     To quit ``psql`` type ``\q`` and press ``Enter``.
 
@@ -187,23 +191,37 @@ PostGIS Extension (Optional)
 
         .. code-block:: bash
 
-            sudo apt install -y postgis postgresql-12-postgis-3
+            sudo apt install -y postgis postgresql-16-postgis-3
 
-    **CentOS**:
+    **Rocky Linux**:
 
         .. code-block:: bash
 
-            sudo yum install -y epel-release
-            sudo dnf config-manager --set-enabled PowerTools
-            sudo yum install -y postgis30_12
+            # Install the Postgresql repository
+            sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+            # Install EPEL repo RPM:
+            sudo dnf -y install epel-release
+
+            # Enable additional repositories to resolve dependencies
+            sudo dnf config-manager --enable crb
+
+            # Disable default PostgreSQL AppStream repository.
+            sudo dnf -qy module disable postgresql
+
+            # Select the right PostGIS and PostgreSQL versions
+            sudo yum -y install postgis32_13
+
+            # Restart postgresql
+            systemctl restart postgresql
 
     .. note::
 
-        These instructions are based on `How To Install PostGIS on Ubuntu 20.04/18.04 | Debian 10 <https://computingforgeeks.com/how-to-install-postgis-on-ubuntu-debian/>`_ and `How To Install PostGIS on CentOS 8 <https://computingforgeeks.com/how-to-install-postgis-on-centos-8-linux/>`_.
+        These instructions are based on `Users Wiki: Ubuntu Install Guide <https://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS3UbuntuPGSQLApt>`_ and `Install PostGIS on Rocky Linux 8|CentOS 8|AlmaLinux 8 <https://computingpost.medium.com/install-postgis-on-rocky-linux-8-centos-8-almalinux-8-fa384a6ee920>`_.
 
 
-NGINX
-=====
+NGINX (Recommended)
+===================
 
 `NGINX <https://www.nginx.com/resources/wiki/>`_ (pronounced "N-gin-X") is a free and open-source HTTP server and reverse proxy. It is known for its high performance, stability, rich feature set, simple configuration, and low resource consumption. NGINX is used in combination with Daphne as an HTTP server to host Tethys Portal in production.
 
@@ -219,19 +237,47 @@ NGINX
 
         .. code-block:: bash
 
-            sudo systemctl stop nginx  # Will manage w/ supervisor
-            sudo systemctl disable nginx  # Will manage w/ supervisor
+            sudo systemctl stop nginx
+            sudo systemctl disable nginx
 
     
-    **CentOS**:
+    **Rocky Linux**:
     
         .. code-block:: bash
         
-            sudo yum install -y nginx
+            sudo dnf install -y nginx
 
     .. note::
 
-        These instructions are based on `How To Install Nginx on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04>`_ and `How to Install Nginx on CentOS 8 <https://linuxize.com/post/how-to-install-nginx-on-centos-8/>`_.
+        These instructions are based on `How To Install Nginx on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04>`_ and `How To Install Nginx on Rocky Linux 9 <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-rocky-linux-9>`_.
+
+Apache (Optional)
+=================
+
+`Apache <https://httpd.apache.org/>`_ is a free and open-source cross-platform web server software. If you prefer to use Apache instead of NGINX, you can install it as follows:
+
+    **Ubuntu**:
+
+        .. code-block:: bash
+
+            sudo apt install -y apache2
+
+        Disable and stop Apache because it will be managed with Supervisor
+
+        .. code-block:: bash
+
+            sudo systemctl stop apache2
+            sudo systemctl disable apache2
+
+    **Rocky Linux**:
+
+        .. code-block:: bash
+
+            sudo dnf install -y httpd
+
+    .. note::
+
+        These instructions are based on `How To Install the Apache Web Server on Ubuntu 20.04 <https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-20-04>`_ and `How to install Apache on Rocky Linux 9 <https://www.linuxteck.com/how-to-install-apache-on-rocky-linux/>`_.
 
 Supervisor
 ==========
@@ -248,16 +294,17 @@ Supervisor
             sudo apt update
             sudo apt install -y supervisor
 
-    **CentOS**:
+    **Rocky Linux**:
 
         .. code-block:: bash
 
-            sudo yum install -y epel-release
+            # If you haven't already, install the EPEL repository
+            sudo dnf install -y epel-release
 
         .. code-block:: bash
 
-            sudo yum update
-            sudo yum install -y supervisor
+            # Install supervisor
+            sudo dnf install -y supervisor
 
         Start Supervisor and enable it so it starts up automatically when the server restarts:
 
@@ -276,7 +323,7 @@ Supervisor
 
     .. note::
 
-        These instructions are based on `Installing Supervisor <http://supervisord.org/installing.html>`_, `Install EPEL <https://fedoraproject.org/wiki/EPEL>`_, and `Installing Supervisor on CentOS 7 <https://cloudwafer.com/blog/how-to-install-and-configure-supervisor-on-centos-7/>`_.
+        These instructions are based on `Installing Supervisor <http://supervisord.org/installing.html>`_, `Install EPEL <https://fedoraproject.org/wiki/EPEL>`_, and `How to install Supervisor on RHEL/CentOS/AlmaLinux/RockyLinux <https://www.hostround.com/one/knowledgebase/100/How-to-install-Supervisor-on-RHELorCentOSorAlmaLinuxorRockyLinux.html>`_.
 
 
 Postfix (Optional)
@@ -292,11 +339,11 @@ Postfix (Optional)
         
             sudo apt install -y postfix libsasl2-modules
     
-    **CentOS**:
+    **Rocky Linux**:
     
         .. code-block:: bash
         
-            sudo yum install -y postfix cyrus-sasl-plain cyrus-sasl-md5
+            sudo dnf install -y postfix cyrus-sasl-plain cyrus-sasl-md5
 
         Start Postfix and enable it so it starts up automatically when the server restarts:
 

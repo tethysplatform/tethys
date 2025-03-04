@@ -4,9 +4,13 @@
 NGINX Configuration
 *******************
 
-**Last Updated:** September 2022
+**Last Updated:** October 2024
 
 `NGINX <https://www.nginx.com/resources/wiki/>`_ is used as the primary HTTP server for a Tethys Portal deployment. It is used to handle all incoming HTTP traffic and directs it to the Daphne/Django server. It also hosts the static files needed by the apps and Tethys Portal. In this section of the production installation guide, you will generate the NGINX configuration files.
+
+.. note::
+
+    Skip this section if you are using Apache as your primary HTTP server. See :ref:`production_apache_config` for Apache configuration.
 
 1. Generate the NGINX Configuration
 ===================================
@@ -36,6 +40,7 @@ Review the contents of the NGINX configuration file:
         * The ``server_name`` parameter is set to your server's public domain name (e.g. my.example.com).
         * The ``/static`` location matches the location of your ``STATIC_ROOT`` directory.
         * The ``/workspace`` location matches the location of your ``TETHYS_WORKSPACES_ROOT`` directory.
+        * The ``/media`` location matches the location of your ``MEDIA_ROOT`` directory.
 
 3. Link the Tethys NGINX Configuration
 ======================================
@@ -48,7 +53,7 @@ Create a symbolic link from the ``tethys_nginx.conf`` file to the NGINX configur
         
             sudo ln -s <TETHYS_HOME>/tethys_nginx.conf /etc/nginx/sites-enabled/tethys_nginx.conf
     
-    **CentOS**:
+    **Rocky Linux**:
     
         .. code-block:: bash
         

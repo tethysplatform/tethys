@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:bullseye
+FROM mambaorg/micromamba:bookworm
 ###################
 # BUILD ARGUMENTS #
 ###################
@@ -7,6 +7,8 @@ ARG MICRO_TETHYS=false
 ARG DJANGO_VERSION=4.2.*
 ARG DJANGO_CHANNELS_VERSION
 ARG DAPHNE_VERSION
+
+RUN echo "Build Options: Python ${PYTHON_VERSION}, Django ${DJANGO_VERSION}, Daphne ${DAPHNE_VERSION}, Django Channels ${DJANGO_CHANNELS_VERSION}, Micro Tethys ${MICRO_TETHYS}"
 
 ###############
 # ENVIRONMENT #
@@ -120,11 +122,12 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 
 # Install APT packages
 RUN rm -rf /var/lib/apt/lists/*\
+  && apt-get clean \
   && apt-get update \
   && apt-get -y install curl \
-  && mkdir /etc/apt/keyrings \
-  && curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/debian/11/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg \
-  && echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=amd64] https://repo.saltproject.io/salt/py3/debian/11/amd64/latest bullseye main" | tee /etc/apt/sources.list.d/salt.list \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | tee /etc/apt/keyrings/salt-archive-keyring.pgp \
+  && curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.sources | tee /etc/apt/sources.list.d/salt.sources \
   && apt-get update \
   && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
   && rm -rf /var/lib/apt/lists/*
@@ -183,6 +186,7 @@ RUN groupadd www \
 ADD --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
 ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
 ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
+ADD --chown=www:www tethys_components ${TETHYS_HOME}/tethys/tethys_components/
 ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
 ADD --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
 ADD --chown=www:www tethys_layouts ${TETHYS_HOME}/tethys/tethys_layouts/

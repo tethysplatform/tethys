@@ -37,7 +37,7 @@ from tethys_portal.views import (
 )
 from tethys_portal.optional_dependencies import has_module
 from tethys_apps import views as tethys_apps_views
-from tethys_compute.views import dask_dashboard as tethys_dask_views
+from tethys_compute import views as tethys_compute_views
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 # ensure at least staff users logged in before accessing admin login page
@@ -71,7 +71,7 @@ admin_url_list.insert(
     0,
     re_path(
         r"^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$",
-        tethys_dask_views.dask_dashboard,
+        tethys_compute_views.dask_dashboard,
         name="dask_dashboard",
     ),
 )
@@ -174,12 +174,14 @@ developer_urls = [
     ),
 ]
 
+# Uncomment these lines to debug the error views more easily (e.g. http://localhost:8000/developer/500/)
 # development_error_urls = [
 #     re_path(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
 #     re_path(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
 #     re_path(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
+# developer_urls.extend(development_error_urls)
 
 if settings.MULTIPLE_APP_MODE:
     urlpatterns = [
@@ -212,12 +214,12 @@ urlpatterns.extend(
         ),
         re_path(
             r"^update-job-status/(?P<job_id>[\w-]+)/$",
-            tethys_apps_views.update_job_status,
+            tethys_compute_views.update_job_status,
             name="update_job_status",
         ),
         re_path(
             r"^update-dask-job-status/(?P<key>[\w-]+)/$",
-            tethys_apps_views.update_dask_job_status,
+            tethys_compute_views.update_dask_job_status,
             name="update_dask_job_status",
         ),
         re_path(r"^api/", include((api_urls, "api"), namespace="api")),
@@ -318,3 +320,6 @@ if (
             name="login_prefix",
         )
     )
+
+if has_module("reactpy_django"):
+    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))

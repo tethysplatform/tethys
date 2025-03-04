@@ -11,10 +11,10 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-import os
 import sys
 import subprocess
 from dataclasses import asdict
+from os import environ
 from pathlib import Path
 from unittest import mock
 
@@ -23,6 +23,9 @@ from django.conf import settings
 from setuptools_scm import get_version
 from sphinxawesome_theme import ThemeOptions, LinkIcon
 from sphinxawesome_theme.postprocess import Icons
+
+# Add the current directory to sys.path
+sys.path.insert(0, str(Path(__file__).parent))
 
 # Mock Dependencies
 # NOTE: No obvious way to automatically anticipate all the sub modules without
@@ -106,7 +109,7 @@ sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
 # patcher.start()
 
 # Fixes django settings module problem
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, str(Path("..").absolute().resolve()))
 
 installed_apps = [
     "django.contrib.admin",
@@ -146,6 +149,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinxarg.ext",
     "sphinxawesome_theme",
+    "directives",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -165,7 +169,7 @@ project = "Tethys Platform"
 copyright = "2023, Tethys Platform"
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get("READTHEDOCS") == "True"
+on_rtd = environ.get("READTHEDOCS") == "True"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -178,7 +182,7 @@ version = ".".join(release.split(".")[:2])
 print(f'Using simplified version "{version}"')
 
 # Determine branch
-git_directory = Path(__file__).parent.parent
+git_directory = Path(__file__).parents[1]
 ret = subprocess.run(
     ["git", "-C", git_directory, "rev-parse", "--abbrev-ref", "HEAD"],
     capture_output=True,
@@ -256,10 +260,10 @@ todo_include_todos = True
 todo_emit_warnings = True
 
 # Define the canonical URL if you are using a custom domain on Read the Docs
-html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+html_baseurl = environ.get("READTHEDOCS_CANONICAL_URL", "")
 
 # Tell Jinja2 templates the build is running on Read the Docs
-if os.environ.get("READTHEDOCS", "") == "True":
+if environ.get("READTHEDOCS", "") == "True":
     if "html_context" not in globals():
         html_context = {}
     html_context["READTHEDOCS"] = True
@@ -273,7 +277,11 @@ html_favicon = "images/default_favicon.ico"
 html_static_path = ["_static"]
 html_css_files = [
     "css/tethys.css",
+    "css/recipe_gallery.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",  # Font Awesome for arrow icons in recipe carousels
 ]
+
+html_js_files = ["js/recipe_gallery.js"]
 
 html_theme = "sphinxawesome_theme"
 theme_options = ThemeOptions(

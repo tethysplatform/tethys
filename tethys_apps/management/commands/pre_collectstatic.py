@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 
-import os
+from pathlib import Path
 import shutil
 
 from django.core.management.base import BaseCommand
@@ -64,12 +64,12 @@ class Command(BaseCommand):
 
         for item, path in installed_apps_and_extensions.items():
             # Check for both variants of the static directory (named either public or static)
-            public_path = os.path.join(path, "public")
-            static_path = os.path.join(path, "static")
+            public_path = Path(path) / "public"
+            static_path = Path(path) / "static"
 
-            if os.path.isdir(public_path):
+            if public_path.is_dir():
                 item_static_source_dir = public_path
-            elif os.path.isdir(static_path):
+            elif static_path.is_dir():
                 item_static_source_dir = static_path
             else:
                 print(
@@ -78,12 +78,12 @@ class Command(BaseCommand):
                 continue
 
             # Path for app in the STATIC_ROOT directory
-            item_static_root_dir = os.path.join(static_root, item)
+            item_static_root_dir = Path(static_root) / item
 
             # Clear out old symbolic links/directories if necessary
             try:
                 # Remove link
-                os.remove(item_static_root_dir)
+                item_static_root_dir.unlink()
             except OSError:
                 try:
                     # Remove directory
@@ -94,7 +94,7 @@ class Command(BaseCommand):
 
             # Create appropriate symbolic link
             if link_opt:
-                os.symlink(item_static_source_dir, item_static_root_dir)
+                item_static_source_dir.symlink_to(item_static_root_dir)
                 print(
                     'INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(
                         item
