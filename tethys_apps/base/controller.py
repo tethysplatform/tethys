@@ -17,6 +17,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 
 from tethys_apps.base.page_handler import global_page_controller
 from tethys_cli.cli_colors import write_warning
+from tethys_components.library import ComponentLibraryManager
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
@@ -471,6 +472,7 @@ def page(
     index=None,
     custom_css=None,
     custom_js=None,
+    app=None,
 ) -> Callable:
     """
     Decorator to register a function as a Page in the ReactPy paradigm
@@ -496,11 +498,14 @@ def page(
         custom_css: A list of URLs to additional css files that should be rendered with the page. These will be rendered in the order provided.
         custom_js: A list of URLs to additional js files that should be rendered with the page. These will be rendered in the order provided.
     """  # noqa: E501
+    if not app:
+        raise ValueError(
+            "The app argument must be supplied. Alternatively, use the @App.page wrapper, which supplies the app argument."
+        )
     permissions_required = _listify(permissions_required)
     enforce_quota_codenames = _listify(enforce_quotas)
 
     def wrapped(component_function):
-        component_source_code = inspect.getsource(component_function)
         url_map_kwargs_list = _get_url_map_kwargs_list(
             function_or_class=component_function,
             name=name,
@@ -509,7 +514,15 @@ def page(
             regex=regex,
             title=title,
             index=index,
+            for_page=True,
         )
+
+        component_source_code = inspect.getsource(component_function)
+
+        lib = ComponentLibraryManager.get_library(
+            f"{app.package}-{component_function.__name__}"
+        )
+        lib.load_dependencies_from_source_code(component_source_code)
 
         def controller_wrapper(request, **kwargs):
             controller = handler or global_page_controller
@@ -533,11 +546,12 @@ def page(
                 controller = login_required_decorator(
                     redirect_field_name=redirect_field_name, login_url=login_url
                 )(controller)
+
             return controller(
                 request,
+                app=app,
                 layout=layout,
                 component_func=component_function,
-                component_source_code=component_source_code,
                 title=url_map_kwargs_list[0]["title"],
                 custom_css=custom_css,
                 custom_js=custom_js,
@@ -760,6 +774,7 @@ def _get_url_map_kwargs_list(
     app_resources=False,
     title=None,
     index=None,
+    for_page=False,
 ):
     final_urls = []
     if url is not None:
@@ -788,6 +803,11 @@ def _get_url_map_kwargs_list(
                 parameters = OrderedDict(
                     inspect.signature(function_or_class).parameters
                 )
+
+            if for_page:
+                # Removes the standard ComponentLib parameter
+                arg = list(parameters.keys())[0]
+                parameters.pop(arg)
 
             for condition in [
                 app_workspace,

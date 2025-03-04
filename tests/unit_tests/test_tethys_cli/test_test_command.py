@@ -14,7 +14,7 @@ TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
 class TestCommandTests(unittest.TestCase):
     def setUp(self):
         mock.patch(
-            "tethys_cli.test_command.subprocess.call", side_effect=Exception
+            "tethys_cli.test_command.subprocess.run", side_effect=Exception
         ).start()
 
     def tearDown(self):
@@ -318,7 +318,7 @@ class TestCommandTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.test_command.write_warning")
-    @mock.patch("tethys_cli.test_command.subprocess.call")
+    @mock.patch("tethys_cli.test_command.subprocess.run")
     @mock.patch("tethysapp.test_app", new=None)
     @mock.patch("tethysext.test_extension", new=None)
     def test_check_and_install_prereqs(self, mock_run_process, mock_write_warning):
@@ -332,6 +332,7 @@ class TestCommandTests(unittest.TestCase):
             stdout=mock.ANY,
             stderr=mock.ANY,
             cwd=str(setup_path),
+            check=True,
         )
 
         mock_run_process.assert_any_call(
@@ -339,6 +340,7 @@ class TestCommandTests(unittest.TestCase):
             stdout=mock.ANY,
             stderr=mock.ANY,
             cwd=str(extension_setup_path),
+            check=True,
         )
 
         mock_write_warning.assert_called()

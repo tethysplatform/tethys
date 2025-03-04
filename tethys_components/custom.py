@@ -1,7 +1,9 @@
 from reactpy import component
 from tethys_portal.settings import STATIC_URL
 from .utils import Props
-from .library import Library as lib
+from .library import ComponentLibraryManager
+
+lib = ComponentLibraryManager.get_library("tethys_components_custom")
 
 
 @component
