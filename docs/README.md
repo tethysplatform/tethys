@@ -41,3 +41,27 @@ Alternatively, use autobuild to build the docs, host them with a dev server, and
 cd docs
 sphinx-autobuild --host 127.0.0.1 --port 8001 . ./_build/html
 ```
+
+## Spell Checking
+
+You can check for spelling issues in the documentation using the sphinxcontrib-spelling extension. The dependencies should be installed if you used the `docs_environment.yml` file to create the conda environment, but some setup is necessary. Do the following:
+
+1. Rename or copy the `hunspell_dictionary` directory to `hunspell`:
+
+```
+cp -r <path_to_conda>/envs/tethys-docs/share/hunspell_dictionaries <path_to_conda>/envs/tethys-docs/share/hunspell
+```
+
+2. Set the `ENCHANT_CONFIG_DIR` environment variable to point to the `share` directory:
+
+```
+export ENCHANT_CONFIG_DIR=<path_to_conda>/envs/tethys-docs/share
+```
+
+3. Run the `spelling` make target:
+
+```
+make spelling
+```
+
+4. Review the output for spelling errors.
