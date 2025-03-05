@@ -756,8 +756,8 @@ See: :ref:`tethys_cli_docker`
 Extended Services and Link Commands
 -----------------------------------
 
-* The ``tethys services`` command has been extended to support creating all Tethys services programatically.
-* The ``tethys link`` command has been extended to support link all types of Tethys services to applicable App Settings programatically.
+* The ``tethys services`` command has been extended to support creating all Tethys services programmatically.
+* The ``tethys link`` command has been extended to support link all types of Tethys services to applicable App Settings programmatically.
 
 See: :ref:`tethys_cli_services` and :ref:`tethys_cli_link`
 
