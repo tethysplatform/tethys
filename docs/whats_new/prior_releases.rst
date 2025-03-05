@@ -1144,13 +1144,13 @@ GeoServer
 * The GeoServer docker was updated to version 2.8.3
 * It can be configured to run in clustered mode (multiple instances of GeoServer running inside the container) for greater stability and performance
 * Several extensions are now included:
-   * `JMS Clustering <http://docs.geoserver.org/2.8.x/en/user/community/jms-cluster/index.html>`_
+   * `JMS Clustering <https://docs.geoserver.org/latest/en/user/community/jms-cluster/index.html>`_
    * `Flow Control <http://docs.geoserver.org/2.8.x/en/user/extensions/css/index.html>`_
-   * `CSS Styles <http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html>`_
-   * `NetCDF <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf/netcdf.html>`_
-   * `NetCDF Output <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf-out/index.html>`_
-   * `GDAL WCS Output <http://docs.geoserver.org/2.8.x/en/user/community/gdal/index.html>`_
-   * `Image Pyramid <http://docs.geoserver.org/2.8.x/en/user/tutorials/imagepyramid/imagepyramid.html>`_
+   * `CSS Styles <https://docs.geoserver.org/latest/en/user/extensions/controlflow/index.html>`_
+   * `NetCDF <https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html>`_
+   * `NetCDF Output <https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html>`_
+   * `GDAL WCS Output <https://docs.geoserver.org/latest/en/user/community/gdal/index.html>`_
+   * `Image Pyramid <https://docs.geoserver.org/latest/en/user/tutorials/imagepyramid/imagepyramid.html>`_
 
 Tethys Docker CLI
 -----------------

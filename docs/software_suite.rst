@@ -117,7 +117,7 @@ Tethys Platform does not include software for handling flat file storage. Howeve
    :width: 200px
    :align: right
 
-`HydroShare <http://hydroshare.cuahsi.org/>`_ is an online hydrologic model and data sharing portal being developed by CUAHSI. It builds on the sharing capabilities of CUAHSI’s Hydrologic Information System by adding support for sharing models and using social media functionality.
+`HydroShare <https://hydroshare.org/>`_ is an online hydrologic model and data sharing portal being developed by CUAHSI. It builds on the sharing capabilities of CUAHSI’s Hydrologic Information System by adding support for sharing models and using social media functionality.
 
 To use a CKAN instance for flat file storage in your app use the :doc:`./tethys_sdk/tethys_services/dataset_services`. HydroShare is not fully supported at this time, but when it is you will use the :doc:`./tethys_sdk/tethys_services/dataset_services` to access HydroShare resources.
 

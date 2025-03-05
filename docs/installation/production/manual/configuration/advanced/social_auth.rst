@@ -561,7 +561,7 @@ References
 
 For more detailed information about using LinkedIn social authentication see the following articles:
 
-* `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
+* `LinkedIn: Authenticating with OAuth 2.0 <https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication>`_
 
 .. _social_auth_okta:
 

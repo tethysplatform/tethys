@@ -31,16 +31,16 @@ This page is provides a list of all the external resources referred too during t
 * `Django Tag Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-tags>`_
 * `Django Template Inheritance <https://docs.djangoproject.com/en/2.2/topics/templates/#template-inheritance>`_
 * `Django static tag <https://docs.djangoproject.com/en/2.2/ref/contrib/staticfiles/#static>`_
-* `Cross Site Forgery protection <https://docs.djangoproject.com/en/2.2/ref/contrib/csrf/>`_
+* `Cross Site Forgery protection <https://docs.djangoproject.com/en/5.1/topics/security/#cross-site-request-forgery-csrf-protection>`_
 
 **CKAN**
 
-* `Install CKAN 2.2 from Source <http://docs.ckan.org/en/ckan-2.2/install-from-source.html>`_
-* `CKAN instances around the world <https://ckan.org/instances/#>`_
-* `FileStore Setup <http://docs.ckan.org/en/ckan-2.2/filestore.html?highlight=filestore>`_
-* `DataStore Setup <http://docs.ckan.org/en/ckan-2.2/datastore.html>`_
+* `Install CKAN 2.2 from Source <https://docs.ckan.org/en/2.11/maintaining/installing/index.html#source-install>`_
+* `CKAN instances around the world <https://ckan.org/showcase>`_
+* `FileStore Setup <https://docs.ckan.org/en/2.11/maintaining/filestore.html#setup-file-uploads>`_
+* `DataStore Setup <https://docs.ckan.org/en/2.11/maintaining/datastore.html#setting-up-the-datastore>`_
 * `Install on Other Operating Systems <https://github.com/ckan/ckan/wiki/How-to-Install-CKAN>`_
-* `Actions API <http://ckan.readthedocs.org/en/ckan-2.2/api.html#action-api-reference>`_
+* `Actions API <https://docs.ckan.org/en/2.11/api/index.html#action-api-reference>`_
 
 **IDEs**
 
@@ -69,7 +69,7 @@ This page is provides a list of all the external resources referred too during t
 
 **Google**
 
-* `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_
+* `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/get-api-key>`_
 
 **Python**
 
