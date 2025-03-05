@@ -38,7 +38,7 @@ In this guide you will host Tethys Portal using the `Daphne <https://github.com/
     :width: 800px
     :align: center
 
-Daphne can and should be configured to run multiple processes or workers. The default configuration will create four (4) Daphne processes for example. To make managing the Daphne processes and HTTP server process more manageable, `Supervisor <http://supervisord.org/>`_ will be used to allow all five processes to be started, stopped, and restarted with a single command.
+Daphne can and should be configured to run multiple processes or workers. The default configuration will create four (4) Daphne processes for example. To make managing the Daphne processes and HTTP server process more manageable, `Supervisor <https://supervisord.org/>`_ will be used to allow all five processes to be started, stopped, and restarted with a single command.
 
 NGINX
 -----

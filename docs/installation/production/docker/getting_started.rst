@@ -6,7 +6,7 @@ Getting Started with Docker
 
 **Last Updated:** November 2021
 
-To get started using Docker, you'll first need to install it. Docker provide excellent documentation for installation that can be found here: `Get Docker | Docker Documentation <https://docs.docker.com/get-docker/>`_. This guide provides shortcuts to installation instructions that are most relevant to Tethys app developers.
+To get started using Docker, you'll first need to install it. Docker provide excellent documentation for installation that can be found here: `Get Docker | Docker Documentation <https://docs.docker.com/get-started/get-docker/>`_. This guide provides shortcuts to installation instructions that are most relevant to Tethys app developers.
 
 Install
 =======
@@ -39,8 +39,8 @@ On Windows and Mac you will install Docker Desktop, which provides a graphical u
 
 Use one of the links below to install Docker Desktop on Windows or Mac:
 
-* `Install Docker Desktop for Windows <https://docs.docker.com/desktop/windows/install/>`_
-* `Install Docker Desktop for Mac <https://docs.docker.com/desktop/mac/install/>`_
+* `Install Docker Desktop for Windows <https://docs.docker.com/desktop/setup/install/windows-install/>`_
+* `Install Docker Desktop for Mac <https://docs.docker.com/desktop/setup/install/mac-install/>`_
 
 Verify Installation
 ===================
@@ -73,11 +73,11 @@ Tutorial
 If you are new to Docker, we highly recommend completing the Getting Started tutorial that is now running Docker (see previous step). You can also access the tutorial on Docker's website: `Orientation and setup | Docker Documentation <https://docs.docker.com/get-started/>`_. In this tutorial you will learn the following important concepts:
 
 * `Building Docker Images <https://docs.docker.com/get-started/02_our_app/#build-the-apps-container-image>`_
-* `Running Docker Containers <https://docs.docker.com/get-started/02_our_app/#start-an-app-container>`_
-* `Managing Docker Containers <https://docs.docker.com/get-started/03_updating_app/>`_
-* `Publishing Docker Images on Docker Hub <https://docs.docker.com/get-started/04_sharing_app/>`_
-* `Persisting Container Data with Volumes <https://docs.docker.com/get-started/05_persisting_data/>`_
-* `Mounting Directories into Containers <https://docs.docker.com/get-started/06_bind_mounts/>`_
-* `Multiple Container Apps <https://docs.docker.com/get-started/07_multi_container/>`_
-* `Docker Compose <https://docs.docker.com/get-started/08_using_compose/>`_
-* `Image Building Best Practices <https://docs.docker.com/get-started/09_image_best/>`_
+* `Running Docker Containers <https://docs.docker.com/get-started/workshop/02_our_app/>`_
+* `Managing Docker Containers <https://docs.docker.com/get-started/workshop/03_updating_app/>`_
+* `Publishing Docker Images on Docker Hub <https://docs.docker.com/get-started/workshop/04_sharing_app/>`_
+* `Persisting Container Data with Volumes <https://docs.docker.com/get-started/workshop/05_persisting_data/>`_
+* `Mounting Directories into Containers <https://docs.docker.com/get-started/workshop/06_bind_mounts/>`_
+* `Multiple Container Apps <https://docs.docker.com/get-started/workshop/07_multi_container/>`_
+* `Docker Compose <https://docs.docker.com/get-started/workshop/08_using_compose/>`_
+* `Image Building Best Practices <https://docs.docker.com/get-started/workshop/09_image_best/>`_

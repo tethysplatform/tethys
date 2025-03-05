@@ -11,7 +11,7 @@ This primer provides simple explanations for some of the concepts you and tools 
 Google Earth Engine Service Accounts
 ====================================
 
-A service account is an account associated with an application instead of a user. Google service accounts can be granted access to certain Google APIs including the Google Earth Engine API. However, enabling the Google Earth Engine API on a service account requires manual review and approval--a process that can take days. You should apply for a service account and register it with Google Earth Engine if you have not already done so before completing this tutorial. See `Google Earth Engine - Service Accounts <https://developers.google.com/earth-engine/service_account>`_ for how this is to be done.
+A service account is an account associated with an application instead of a user. Google service accounts can be granted access to certain Google APIs including the Google Earth Engine API. However, enabling the Google Earth Engine API on a service account requires manual review and approval--a process that can take days. You should apply for a service account and register it with Google Earth Engine if you have not already done so before completing this tutorial. See `Google Earth Engine - Service Accounts <https://developers.google.com/earth-engine/guides/service_account>`_ for how this is to be done.
 
 Prepare App for Publishing
 ==========================

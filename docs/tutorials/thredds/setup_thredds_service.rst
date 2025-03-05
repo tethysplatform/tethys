@@ -20,7 +20,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b new-app-project-solution new-app-project-solution-|version|
 
@@ -69,7 +69,7 @@ This app will need a THREDDS service, so add the following method to the :term:`
 2. Create THREDDS Spatial Dataset Service
 =========================================
 
-For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Server: `<http://thredds.ucar.edu/thredds>`_. Complete the following steps to register the service as a Tethys Spatial Dataset Service:
+For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Server: `<https://thredds.ucar.edu/thredds/catalog/catalog.html>`_. Complete the following steps to register the service as a Tethys Spatial Dataset Service:
 
 1. Exit the app and navigate to the **Site Administration** page by selecting ``Site Admin`` from the drop down menu located to the right of your user name.
 
@@ -83,8 +83,8 @@ For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Serve
 
     * Name: Global_0p5deg
     * Engine: THREDDS
-    * Endpoint: http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg
-    * Public Endpoint: http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg
+    * Endpoint: https://thredds.ucar.edu/thredds/catalog/catalog.html/catalog/grib/NCEP/GFS/Global_0p5deg
+    * Public Endpoint: https://thredds.ucar.edu/thredds/catalog/catalog.html/catalog/grib/NCEP/GFS/Global_0p5deg
     * ApiKey: (LEAVE BLANK)
     * Username: (LEAVE BLANK)
     * Password: (LEAVE BLANK)
@@ -132,6 +132,6 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b thredds-service-solution thredds-service-solution-|version|

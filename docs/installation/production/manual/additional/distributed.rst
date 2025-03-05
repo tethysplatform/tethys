@@ -9,7 +9,7 @@ The Tethys Docker images can be used to easily install each of the software comp
 Install Docker on Each Server
 =============================
 
-After you have provisioned servers for each of the Tethys software components, install Docker on each using the appropriate `Docker installation instructions <http://docs.docker.com/installation/>`_. Docker provides installation instructions for most major types of servers.
+After you have provisioned servers for each of the Tethys software components, install Docker on each using the appropriate `Docker installation instructions <https://docs.docker.com/get-started/get-docker/>`_. Docker provides installation instructions for most major types of servers.
 
 Server Requirements
 ===================
@@ -91,7 +91,7 @@ After the image has been pulled, run a new Docker container as follows:
 
     sudo docker run -d -p 80:8080 --restart=always --name geoserver -e ENABLED_NODES=4 -e REST_NODES=1 -e MAX_MEMORY=1024 -e MIN_MEMORY=512 -e NUM_CORES=4 -e MAX_TIMEOUT=60 tethysplatform/geoserver
 
-Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name.
+Refer to the `Docker Run Reference <https://docs.docker.com/engine/containers/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name.
 
 More information about the GeoServer Docker can be found on the Docker Registry:
 
@@ -104,7 +104,7 @@ More information about the GeoServer Docker can be found on the Docker Registry:
 PostgreSQL with PostGIS Docker Deployment
 =========================================
 
-We recommend using the `postgis/postgis <https://registry.hub.docker.com/r/postgis/postgis/>`_ image to deploy PostgreSQL with PostGIS using Docker. This image is based on the official PostgreSQL image. Pull the Docker image for PostgreSQL with PostGIS using the following command:
+We recommend using the `postgis/postgis <https://hub.docker.com/r/postgis/postgis/>`_ image to deploy PostgreSQL with PostGIS using Docker. This image is based on the official PostgreSQL image. Pull the Docker image for PostgreSQL with PostGIS using the following command:
 
 ::
 
@@ -116,7 +116,7 @@ Here is an example of how to start the container:
 
     sudo docker run -d -p 5432:5432 --restart=always --name postgis -e POSTGRES_PASSWORD=mysecretpassword postgis/postgis
 
-Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
+Refer to the `Docker Run Reference <https://docs.docker.com/engine/containers/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
 
 Once the container is running, you can initialize the database using the ``tethys db`` command from your Tethys Portal server.
 
@@ -135,7 +135,7 @@ Then run the ``tethys db configure`` command, prepending it with the PGPASSWORD 
 
 More information about the PostgreSQL with PostGIS Docker can be found on the Docker Registry:
 
-`<https://registry.hub.docker.com/r/postgis/postgis/>`_
+`<https://hub.docker.com/r/postgis/postgis/>`_
 
 
 52 North WPS Docker Deployment
@@ -154,7 +154,7 @@ After the image has been pulled, run a new Docker container as follows:
     sudo docker run -d -p 80:8080 -e USERNAME="foo" -e PASSWORD="bar" --restart=always --name n52wps ciwater/n52wps
 
 
-Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also sets the username and password for the admin user.
+Refer to the `Docker Run Reference <https://docs.docker.com/engine/containers/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also sets the username and password for the admin user.
 
 You may pass several environmental variables to set the service metadata and the admin username and password:
 

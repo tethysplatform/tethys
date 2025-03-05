@@ -8,18 +8,18 @@ This page is provides a list of all the external resources referred too during t
 
 **Ubuntu**
 
-* `Download Ubuntu <http://www.ubuntu.com/desktop>`_
+* `Download Ubuntu <https://ubuntu.com/desktop>`_
 * `Dual Boot Ubuntu with Windows PC <https://help.ubuntu.com/community/WindowsDualBoot>`_
-* `Learn the Bash Command Line <http://ryanstutorials.net/linuxtutorial/>`_
+* `Learn the Bash Command Line <https://ryanstutorials.net/linuxtutorial/>`_
 
 **Docker**
 
-* `Docker virtualization container <https://www.docker.io/>`_
+* `Docker virtualization container <https://www.docker.com/>`_
 
 **Virtualization Options**
 
 * `VMWare <https://www.vmware.com/>`_
-* `Parallels <http://www.parallels.com/>`_
+* `Parallels <https://www.parallels.com/>`_
 * `VirtualBox <https://www.virtualbox.org/>`_
 
 **Django**
@@ -36,7 +36,7 @@ This page is provides a list of all the external resources referred too during t
 **CKAN**
 
 * `Install CKAN 2.2 from Source <http://docs.ckan.org/en/ckan-2.2/install-from-source.html>`_
-* `CKAN instances around the world <http://ckan.org/instances/#>`_
+* `CKAN instances around the world <https://ckan.org/instances/#>`_
 * `FileStore Setup <http://docs.ckan.org/en/ckan-2.2/filestore.html?highlight=filestore>`_
 * `DataStore Setup <http://docs.ckan.org/en/ckan-2.2/datastore.html>`_
 * `Install on Other Operating Systems <https://github.com/ckan/ckan/wiki/How-to-Install-CKAN>`_
@@ -44,22 +44,22 @@ This page is provides a list of all the external resources referred too during t
 
 **IDEs**
 
-* `How to Install Aptana on Ubuntu 12.04 <http://www.samclarke.com/2012/04/how-to-install-aptana-studio-3-on-ubuntu-12-04-lts-precise-pangolin/>`_
+* `How to Install Aptana on Ubuntu 12.04 <https://www.samclarke.com/2012/04/how-to-install-aptana-studio-3-on-ubuntu-12-04-lts-precise-pangolin/>`_
 
 **SQLAlchemy**
 
-* `SQLAlchemy <http://www.sqlalchemy.org/>`_
+* `SQLAlchemy <https://www.sqlalchemy.org/>`_
 * `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_
 
 **GeoAlchemy**
 
-* `GeoAlchemy2 <https://geoalchemy-2.readthedocs.org/en/latest/index.html>`_
-* `GeoAlchemy ORM <https://geoalchemy-2.readthedocs.org/en/latest/orm_tutorial.html>`_
-* `Well Known Text <http://en.wikipedia.org/wiki/Well-known_text>`_
+* `GeoAlchemy2 <https://geoalchemy-2.readthedocs.io/en/latest/index.html>`_
+* `GeoAlchemy ORM <https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html>`_
+* `Well Known Text <https://en.wikipedia.org/wiki/Well-known_text>`_
 
 **Database Clients**
 
-* `PGAdmin III <http://www.pgadmin.org>`_
+* `PGAdmin III <https://www.pgadmin.org/>`_
 
 **PostGIS**
 
@@ -73,7 +73,7 @@ This page is provides a list of all the external resources referred too during t
 
 **Python**
 
-* `PyPI <https://pypi.python.org/pypi>`_
+* `PyPI <https://pypi.org/>`_
 * `Setuptools Documentation <https://pythonhosted.org/setuptools/setuptools.html>`_
 * `Writing Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_
 * `Namespace <http://docs.python.org/2/tutorial/classes.html#python-scopes-and-namespaces>`_
@@ -93,5 +93,5 @@ This page is provides a list of all the external resources referred too during t
 **Miscellaneous**
 
 * `Universally unique identifier <http://en.wikipedia.org/wiki/Universally_unique_identifier>`_
-* `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_
+* `The Definitive Guide to GET vs POST <https://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_
 

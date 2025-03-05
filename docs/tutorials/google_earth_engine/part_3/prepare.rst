@@ -27,7 +27,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b rest-api-solution rest-api-solution-|version|
 
@@ -176,7 +176,7 @@ Create a new file called :file:`README.md` in the same directory as the :file:`s
 
     ## Settings
 
-    The app has two Custom Settings that can be used to configure the app to use a [Google Earth Engine service account](https://developers.google.com/earth-engine/service_account):
+    The app has two Custom Settings that can be used to configure the app to use a [Google Earth Engine service account](https://developers.google.com/earth-engine/guides/service_account):
 
     * **service_account_email**: Email associated with the service account.
     * **private_key_file**: Path to service account JSON file containing the private key.
@@ -198,7 +198,7 @@ In this step you will add an appropriate open source license to your project. Th
 
 1. Navigate to `<https://opensource.org/licenses>`_ and peruse the list of Popular License.
 
-2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/licenses/BSD-3-Clause>`_ or a license of your choice.
+2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/license/BSD-3-Clause>`_ or a license of your choice.
 
 3. Create a new file called :file:`LICENSE` in the same directory as the :file:`setup.py`.
 
@@ -307,6 +307,6 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b prepare-publish-solution prepare-publish-solution-|version|
