@@ -207,7 +207,7 @@ def clear_workspace(request, root_url):
         workspace.clear()
         app.post_delete_user_workspace(user)
 
-        media = get_user_media(app, user)
+        media = get_user_media(app, user, bypass_quota=True)
         app.pre_delete_user_media(user)
         media.clear()
         app.post_delete_user_media(user)
