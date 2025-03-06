@@ -24,7 +24,7 @@ In this tutorial you will be introduced to THREDDS using the Docker container th
 1. Install TDS
 ==============
 
-The THREDDS Data Server (TDS) can be installed either manually (see: `Getting Started with the TDS <https://docs.unidata.ucar.edu/tds/current/userguide/index.htmltutorial/GettingStarted.html>`_) or using the Docker image developed by Unidata (see `THREDDS Docker image <https://hub.docker.com/r/unidata/thredds-docker/dockerfile>`_). For this tutorial, we recommend using the Docker image to install THREDDS. We have made it easier to install the THREDDS Docker image by adding it as an option to the Tethys Docker command.
+The THREDDS Data Server (TDS) can be installed either manually (see: `Getting Started with the TDS <https://docs.unidata.ucar.edu/tds/current/userguide/>`_) or using the Docker image developed by Unidata (see `THREDDS Docker image <https://hub.docker.com/r/unidata/thredds-docker/dockerfile>`_). For this tutorial, we recommend using the Docker image to install THREDDS. We have made it easier to install the THREDDS Docker image by adding it as an option to the Tethys Docker command.
 
 .. warning::
 

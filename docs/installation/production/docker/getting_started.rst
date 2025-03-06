@@ -72,7 +72,7 @@ Tutorial
 
 If you are new to Docker, we highly recommend completing the Getting Started tutorial that is now running Docker (see previous step). You can also access the tutorial on Docker's website: `Orientation and setup | Docker Documentation <https://docs.docker.com/get-started/>`_. In this tutorial you will learn the following important concepts:
 
-* `Building Docker Images <https://docs.docker.com/get-started/02_our_app/#build-the-apps-container-image>`_
+* `Building Docker Images <https://docs.docker.com/get-started/workshop/02_our_app/#build-the-apps-container-image>`_
 * `Running Docker Containers <https://docs.docker.com/get-started/workshop/02_our_app/>`_
 * `Managing Docker Containers <https://docs.docker.com/get-started/workshop/03_updating_app/>`_
 * `Publishing Docker Images on Docker Hub <https://docs.docker.com/get-started/workshop/04_sharing_app/>`_

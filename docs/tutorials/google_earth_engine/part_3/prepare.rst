@@ -209,7 +209,7 @@ In this step you will add an appropriate open source license to your project. Th
 5. Add Metadata to Setup.py
 ===========================
 
-In this step you will add appropriate metadata to the :file:`setup.py`. This metadata will be used by packaging services such as the Python Package Index (PyPI) or Conda, should you choose to distribute your package on one of those platforms. It is also used by ``pip`` when a user lists information about an installed package. An explanation of possible ``setup`` keywords you can use can be found here: `New and Changed setup() Keywords <https://setuptools.readthedocs.io/en/latest/setuptools.html#new-and-changed-setup-keywords>`_. As a minimum, you should set the version
+In this step you will add appropriate metadata to the :file:`setup.py`. This metadata will be used by packaging services such as the Python Package Index (PyPI) or Conda, should you choose to distribute your package on one of those platforms. It is also used by ``pip`` when a user lists information about an installed package. An explanation of possible ``setup`` keywords you can use can be found here: `New and Changed setup() Keywords <https://setuptools.pypa.io/en/latest/references/keywords.html>`_. As a minimum, you should set the version
 
 1. Open :file:`setup.py`, located in the root directory of your app code.
 

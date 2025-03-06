@@ -1104,7 +1104,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
 .. note::
 
-    The ``loading`` event is called whenever tile layers start loading and the ``load`` event is called when the visible tiles of a tile layer have finished loading. See: `TileLayer.WMS reference <https://leafletjs.com/reference-1.6.0.html#tilelayer-wms>`_.
+    The ``loading`` event is called whenever tile layers start loading and the ``load`` event is called when the visible tiles of a tile layer have finished loading. See: `TileLayer.WMS reference <https://leafletjs.com/reference.html#tilelayer>`_.
 
 7. Also show the map loader when the variable control is updating (the ``fetch`` call to get the WMS layers could take some time to run). **Replace** the ``update_variable_control`` method in :file:`public/js/leaflet_map.js` with the following updated implementation:
 

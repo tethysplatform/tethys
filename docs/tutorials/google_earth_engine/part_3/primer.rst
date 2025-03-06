@@ -51,7 +51,7 @@ Files other than the Python scripts that are required by your app are called Pac
 Setup.py Metadata
 -----------------
 
-Tethys app projects are Python libraries. You should define metadata for the app in the :file:`setup.py` as you would for any Python library. This is especially true if you plan to publish your app to the Python Package Index or Conda. Some the pertinent metadata includes the version, description, author name and email, and license. You should update the version of your app every time you release the app and we recommend using `Semantic Versioning <https://semver.org/>`_. For more information on the :file:`setup.py` and semantic versioning see `Creating setup.py <https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py>`_ and `Introduction to Semantic Versioning <https://www.geeksforgeeks.org/introduction-semantic-versioning/>`_
+Tethys app projects are Python libraries. You should define metadata for the app in the :file:`setup.py` as you would for any Python library. This is especially true if you plan to publish your app to the Python Package Index or Conda. Some the pertinent metadata includes the version, description, author name and email, and license. You should update the version of your app every time you release the app and we recommend using `Semantic Versioning <https://semver.org/>`_. For more information on the :file:`setup.py` and semantic versioning see `Creating setup.py <https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#setup-py>`_ and `Introduction to Semantic Versioning <https://www.geeksforgeeks.org/introduction-semantic-versioning/>`_
 
 Installing Apps in Production
 =============================

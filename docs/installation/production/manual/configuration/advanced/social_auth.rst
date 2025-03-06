@@ -43,7 +43,7 @@ Azure Active Directory
 
         Tethys Platform supports single sign on with both the Azure AD and Azure AD B2C environments.
 
-3. Register a new application. See: `Register a new application using the Azure portal <https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-a-new-application-using-the-azure-portal>`_
+3. Register a new application. See: `Register a new application using the Azure portal <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app?tabs=certificate%2Cexpose-a-web-api#register-an-application>`_
 
 * Select **Web** as the type of app.
 * Enter one of the following for the redirect URL:
@@ -241,7 +241,7 @@ References
 For more detailed information about using Facebook social authentication see the following articles:
 
 * `Facebook Login <https://developers.facebook.com/docs/facebook-login/v2.4>`_
-* `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/login-flow-for-web/v2.4>`_
+* `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/web>`_
 
 .. _social_auth_google:
 
@@ -509,7 +509,7 @@ References
 
 For more detailed information about using the ArcGIS Online or ArcGIS Enterprise Portal social logins see the following articles:
 
-* `Portal for ArcGIS: Register Your App <https://enterprise.arcgis.com/en/portal/latest/administer/windows/add-items.htm#REG_APP>`_
+* `Portal for ArcGIS: Register Your App <https://enterprise.arcgis.com/en/portal/latest/use/add-app-url.htm>`_
 * `ArcGIS Rest API: Authentication <https://developers.arcgis.com/rest/users-groups-and-items/authentication.htm>`_
 
 

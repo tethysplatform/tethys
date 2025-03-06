@@ -179,7 +179,7 @@ Here is an example of how to use the environmental variables to set metadata whe
 
 More information about the 52 North WPS Docker can be found on the Docker Registry:
 
-`<https://registry.hub.docker.com/u/ciwater/n52wps/>`_
+`<https://hub.docker.com/r/ciwater/n52wps>`_
 
 .. important::
 

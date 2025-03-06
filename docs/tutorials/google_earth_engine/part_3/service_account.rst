@@ -8,7 +8,7 @@ Google Earth Engine Service Account
 
 Up to this point, you've been using your personal Google account to authenticate with Google Earth Engine (see: :ref:`gee_authentication_step`). However, when you run an app that uses Google Earth Engine in a production environment, you will not want it to be using your personal credentials. Instead you will use a `service account <https://developers.google.com/earth-engine/guides/service_account>`_, which is an account associated with an application instead of a user.
 
-This tutorial requires you to already have a service account registered with Google Earth Engine. If you do not already have a service account, follow the instructions here: `How do I create a service account? <https://developers.google.com/earth-engine/guides/service_account#how-do-i-create-a-service-account>`_. It may take several days for your registration application to be reviewed and approved.
+This tutorial requires you to already have a service account registered with Google Earth Engine. If you do not already have a service account, follow the instructions here: `How do I create a service account? <https://developers.google.com/earth-engine/guides/service_account#create-a-service-account>`_. It may take several days for your registration application to be reviewed and approved.
 
 The following topics are covered in this tutorial:
 

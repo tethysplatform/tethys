@@ -1165,7 +1165,7 @@ Select2 Gizmo
 * Updated the Select2 Gizmo libraries to version 4.0.
 * Not changes should be necessary for basic usage of the Select2 Gizmo.
 * If you are using advanced features of Select2, you will likely need to migrate some of your code.
-* Refer to `<https://select2.github.io/announcements-4.0.html#migrating-from-select2-35>`_ for migration help.
+* Refer to `<https://select2.org/upgrading/migrating-from-35>`_ for migration help.
 
 MapView Gizmo
 -------------
