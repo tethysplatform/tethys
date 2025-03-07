@@ -29,7 +29,7 @@ This page is provides a list of all the external resources referred too during t
 * `Django template Variables <https://docs.djangoproject.com/en/2.2/topics/templates/#variables>`_
 * `Django Filter Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-filters>`_
 * `Django Tag Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-tags>`_
-* `Django Template Inheritance <https://docs.djangoproject.com/en/2.2/topics/templates/#template-inheritance>`_
+* `Django Template Inheritance <https://docs.djangoproject.com/en/5.1/ref/templates/language/#template-inheritance>`_
 * `Django static tag <https://docs.djangoproject.com/en/5.1/ref/contrib/staticfiles/>`_
 * `Cross Site Forgery protection <https://docs.djangoproject.com/en/5.1/topics/security/#cross-site-request-forgery-csrf-protection>`_
 

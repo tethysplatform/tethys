@@ -586,7 +586,7 @@ Tethys Platform supports two methods of Okta single sign on: OAuth 2.0 and OpenI
 
 2. Create an Okta Application
 
-    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app-redirect/go/main/#create-an-okta-integration-for-your-app>`_. Set the callback URL as follows:
+    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app-redirect/go/main/#create-an-app-integration-in-the-admin-console>`_. Set the callback URL as follows:
 
     OAuth 2.0 method (recommended):
 
@@ -639,8 +639,8 @@ References
 
 For more detailed information about using Okta social authentication see the following articles:
 
-* `OAuth 2.0 Overview - Okta Developer <https://developer.okta.com/docs/concepts/auth-overview/#authentication-api>`_
-* `Sign users in to your web application: <https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/before-you-begin/>`_
+* `OAuth 2.0 Overview - Okta Developer <https://developer.okta.com/docs/concepts/oauth-openid/>`_
+* `Sign users in to your web application: <https://developer.okta.com/docs/guides/sign-in-overview/main/>`_
 * `Okta Backend - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/okta.html>`_
 
 .. _social_auth_onelogin:

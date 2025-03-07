@@ -16,7 +16,7 @@ Use the appropriate instructions below to install Docker:
 Linux
 -----
 
-Docker provides `installation instructions for the most popular Linux distributions <https://docs.docker.com/engine/install/#server>`_ including (CentOS, Debian, Fedora, Raspbian, RHEL, SLES, and Ubuntu). It should be possible to install it on other Linux distributions. As we recommend deploying Tethys Platform on either CentOS or Ubuntu, links to the installation instructions for these two distributions are provided below:
+Docker provides `installation instructions for the most popular Linux distributions <https://docs.docker.com/engine/install/>`_ including (CentOS, Debian, Fedora, Raspbian, RHEL, SLES, and Ubuntu). It should be possible to install it on other Linux distributions. As we recommend deploying Tethys Platform on either CentOS or Ubuntu, links to the installation instructions for these two distributions are provided below:
 
 * `Install Docker Engine on CentOS | Docker Documentation <https://docs.docker.com/engine/install/centos/>`_
 * `Install Docker Engine on Ubuntu | Docker Documentation <https://docs.docker.com/engine/install/ubuntu/>`_
@@ -72,8 +72,8 @@ Tutorial
 
 If you are new to Docker, we highly recommend completing the Getting Started tutorial that is now running Docker (see previous step). You can also access the tutorial on Docker's website: `Orientation and setup | Docker Documentation <https://docs.docker.com/get-started/>`_. In this tutorial you will learn the following important concepts:
 
-* `Building Docker Images <https://docs.docker.com/get-started/workshop/02_our_app/#build-the-apps-container-image>`_
-* `Running Docker Containers <https://docs.docker.com/get-started/workshop/02_our_app/>`_
+* `Building Docker Images <https://docs.docker.com/get-started/workshop/02_our_app/#build-the-apps-image>`_
+* `Running Docker Containers <https://docs.docker.com/get-started/workshop/02_our_app/#start-an-app-container>`_
 * `Managing Docker Containers <https://docs.docker.com/get-started/workshop/03_updating_app/>`_
 * `Publishing Docker Images on Docker Hub <https://docs.docker.com/get-started/workshop/04_sharing_app/>`_
 * `Persisting Container Data with Volumes <https://docs.docker.com/get-started/workshop/05_persisting_data/>`_

@@ -1145,7 +1145,7 @@ GeoServer
 * It can be configured to run in clustered mode (multiple instances of GeoServer running inside the container) for greater stability and performance
 * Several extensions are now included:
    * `JMS Clustering <https://docs.geoserver.org/latest/en/user/community/jms-cluster/index.html>`_
-   * `Flow Control <http://docs.geoserver.org/2.8.x/en/user/extensions/css/index.html>`_
+   * `Flow Control <https://docs.geoserver.org/stable/en/user/extensions/controlflow/index.html>`_
    * `CSS Styles <https://docs.geoserver.org/latest/en/user/extensions/controlflow/index.html>`_
    * `NetCDF <https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html>`_
    * `NetCDF Output <https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html>`_

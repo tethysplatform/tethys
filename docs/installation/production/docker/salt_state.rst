@@ -6,7 +6,7 @@ Salt State Files
 
 **Last Updated:** February 2023
 
-The Tethys Platform Docker uses `Salt States <https://docs.saltproject.io/en/getstarted/fundamentals/states.html>`_, one component of `Salt Stack <https://docs.saltproject.io/en/latest/topics/index.html>`_, to perform runtime initialization of Tethys and apps. Salt States are YAML files that specify the various commands to run when Tethys starts up. It is best understood through examples. For this Docker image, we'll create three Salt State files that will perform the following tasks:
+The Tethys Platform Docker uses `Salt States <https://docs.saltproject.io/en/latest/topics/tutorials/starting_states.html>`_, one component of `Salt Stack <https://docs.saltproject.io/en/latest/topics/index.html>`_, to perform runtime initialization of Tethys and apps. Salt States are YAML files that specify the various commands to run when Tethys starts up. It is best understood through examples. For this Docker image, we'll create three Salt State files that will perform the following tasks:
 
 1. Create the Tethys Services our apps need (THREDDS and PostGIS)
 2. Configure the app settings for each app

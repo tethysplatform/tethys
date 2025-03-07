@@ -207,7 +207,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
     * ``./data/thredds/:/usr/local/tomcat/content/thredds``: Main content directory for THREDDS. This directory will contain the data and XML configuration files for THREDDS.
     * ``./logs/thredds/tomcat/:/usr/local/tomcat/logs/``: Logs for Tomcat, the server running THREDDS.
     * ``./logs/thredds/thredds/:/usr/local/tomcat/content/thredds/logs/``: Logs for THREDDS.
-    * ``./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml``: Tomcat user configuration file. Use this file to create user accounts for the THREDDS Data Manager service that is also run inside the container (see: `THREDDS Data Manager (TDM) <https://docs.unidata.ucar.edu/tds/current/userguide/index.htmlreference/collections/TDM.html>`_ and `Manager App HOW-TO | Tomcat Documentation <https://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html>`_).
+    * ``./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml``: Tomcat user configuration file. Use this file to create user accounts for the THREDDS Data Manager service that is also run inside the container (see: `THREDDS Data Manager (TDM) <https://docs.unidata.ucar.edu/tds/current/userguide/tdm_ref.html>`_ and `Manager App HOW-TO | Tomcat Documentation <https://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html>`_).
 
 5. Define Redis Service
 -----------------------
