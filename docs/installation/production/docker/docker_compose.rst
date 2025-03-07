@@ -58,7 +58,7 @@ Here is a list of resources that you can use to learn more about Docker Compose:
 
 * `Docker Compose Features List <https://docs.docker.com/compose/#features>`_
 * `Compose File Reference | Docker Documentation <https://docs.docker.com/reference/compose-file/>`_
-* `Compose Command Reference | Docker Documentation <https://docs.docker.com/compose/cli-command/>`_
+* `Compose Command Reference | Docker Documentation <https://docs.docker.com/reference/cli/docker/compose/>`_
 
 Create Docker Compose Recipe
 ============================

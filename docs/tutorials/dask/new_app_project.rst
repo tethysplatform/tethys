@@ -80,7 +80,7 @@ Install the app and it's dependencies into your development Tethys Portal. In a 
 6. Dask
 =======
 
-Documentation for Dask may be found at `<https://dask.org>`_
+Documentation for Dask may be found at `<https://www.dask.org/>`_
 
 Dask is a tool for natively scaling and parallelizing python. It can broadly be categorized into dynamic task scheduling, and "big data" collections.
 

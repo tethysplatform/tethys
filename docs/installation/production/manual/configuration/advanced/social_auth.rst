@@ -666,7 +666,7 @@ OneLogin
 
 1. Create an OneLogin Developer Account
 
-    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/developer-signup>`_.
+    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/free-trial>`_.
 
 2. Create an OneLogin Application
 
@@ -740,7 +740,7 @@ Jyn Erso would like to log in to a Tethys Portal that has been configured to use
 .. figure:: ./images/multi-tenant-tenant-page.png
     :width: 675px
 
-4. She is redirected to the authentication page for her company: http://rebel-acq.onelogin.com/login2/
+4. She is redirected to the authentication page for her company: https://rebel-acq.onelogin.com/login2/
 
 .. figure:: ./images/multi-tenant-onelogin-page.png
     :width: 675px

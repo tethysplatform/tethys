@@ -50,7 +50,7 @@ The selector portion of a CSS rule-set defines which elements in the HTML docume
 Rules
 -----
 
-The rules are compose of a property and value with each rule being separated by a semicolon. There are a lot of CSS properties for changing everything from the background color to the font of text in the element. Many of the values support a number of different units of length or formats. The best way to learn what the different properties do is to use them in a project. See `w3schools CSS Reference <https://www.w3schools.com/cssref/default.asp>`_ for a fairly comprehensive list of CSS properties.
+The rules are compose of a property and value with each rule being separated by a semicolon. There are a lot of CSS properties for changing everything from the background color to the font of text in the element. Many of the values support a number of different units of length or formats. The best way to learn what the different properties do is to use them in a project. See `w3schools CSS Reference <https://www.w3schools.com/cssref/index.php>`_ for a fairly comprehensive list of CSS properties.
 
 CSS Browser Tools
 -----------------

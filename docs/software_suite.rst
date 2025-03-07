@@ -49,7 +49,7 @@ Geoprocessing
    :width: 150px
    :align: right
 
-`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in water resources web app development. It can be linked with geoprocessing libraries such as `GRASS <https://grass.osgeo.org/>`_, `Sextante <http://www.wikiwand.com/es/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <http://www.esri.com/software/arcgis/arcgisserver>`_ for out-of-the-box geoprocessing capabilities.
+`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in water resources web app development. It can be linked with geoprocessing libraries such as `GRASS <https://grass.osgeo.org/>`_, `Sextante <https://www.wikiwand.com/es/articles/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <http://www.esri.com/software/arcgis/arcgisserver>`_ for out-of-the-box geoprocessing capabilities.
 
 The PostGIS extension, included in the software suite, can also provide geoprocessing capabilities on data that is stored in a spatially-enabled database. PostGIS includes SQL geoprocessing functions for splicing, dicing, morphing, reclassifying, and collecting/unioning raster and vector types. It also includes functions for vectorizing rasters, clipping rasters with vectors, and running stats on rasters by geometric region.
 

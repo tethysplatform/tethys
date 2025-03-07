@@ -76,7 +76,7 @@ This page is provides a list of all the external resources referred too during t
 * `PyPI <https://pypi.org/>`_
 * `Setuptools Documentation <https://pythonhosted.org/setuptools/setuptools.html>`_
 * `Writing Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_
-* `Namespace <http://docs.python.org/2/tutorial/classes.html#python-scopes-and-namespaces>`_
+* `Namespace <https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces>`_
 
 **Production Installation**
 
@@ -92,6 +92,6 @@ This page is provides a list of all the external resources referred too during t
 
 **Miscellaneous**
 
-* `Universally unique identifier <http://en.wikipedia.org/wiki/Universally_unique_identifier>`_
+* `Universally unique identifier <https://en.wikipedia.org/wiki/Universally_unique_identifier>`_
 * `The Definitive Guide to GET vs POST <https://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_
 
