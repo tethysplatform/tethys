@@ -16,13 +16,13 @@ def clear_workspace(request, app_id):
 
     # Handle form submission
     if request.method == "POST" and "clear-workspace-submit" in request.POST:
-        workspace = get_app_workspace(app)
+        workspace = get_app_workspace(app, bypass_quota=True)
 
         app.pre_delete_app_workspace()
         workspace.clear()
         app.post_delete_app_workspace()
 
-        media = get_app_media(app)
+        media = get_app_media(app, bypass_quota=True)
 
         app.pre_delete_app_media()
         media.clear()
