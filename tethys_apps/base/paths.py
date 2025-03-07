@@ -323,11 +323,14 @@ def _get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
     Returns: TethysPath representing the app workspace.
 
     """
+    if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
+        return get_app_workspace_old(app_or_request, bypass_quota)
+    
     app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
     return TethysPath(_get_app_workspace_root(app) / "app_workspace")
 
 
-def get_app_workspace(app_or_request) -> TethysPath:
+def get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
     """
 
     Args:
@@ -341,9 +344,9 @@ def get_app_workspace(app_or_request) -> TethysPath:
 
     """
     if settings.USE_OLD_WORKSPACES_API:
-        return get_app_workspace_old(app_or_request)
+        return get_app_workspace_old(app_or_request, bypass_quota)
 
-    return _get_app_workspace(app_or_request)
+    return _get_app_workspace(app_or_request, bypass_quota)
 
 
 def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
@@ -363,8 +366,8 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
     """
     app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
     username = _resolve_username(user_or_request, bypass_quota=bypass_quota)
-
-    if settings.USE_OLD_WORKSPACES_API:
+    
+    if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
         return get_user_workspace_old(app, user_or_request, bypass_quota)
     
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
@@ -431,7 +434,7 @@ def _get_app_media(app_or_request, bypass_quota=False):
     return TethysPath(_get_app_media_root(app) / "app")
 
 
-def get_app_media(app_or_request):
+def get_app_media(app_or_request, bypass_quota=False):
     """
 
     Args:
@@ -445,7 +448,7 @@ def get_app_media(app_or_request):
     Returns: TethysPath representing the media directory for the app.
 
     """
-    return _get_app_media(app_or_request)
+    return _get_app_media(app_or_request, bypass_quota)
 
 
 def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
