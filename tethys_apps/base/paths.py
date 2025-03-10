@@ -325,7 +325,7 @@ def _get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
     """
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
         return get_app_workspace_old(app_or_request, bypass_quota)
-    
+
     app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
     return TethysPath(_get_app_workspace_root(app) / "app_workspace")
 
@@ -366,10 +366,10 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
     """
     app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
     username = _resolve_username(user_or_request, bypass_quota=bypass_quota)
-    
+
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
         return get_user_workspace_old(app, user_or_request, bypass_quota)
-    
+
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
 
 
