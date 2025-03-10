@@ -248,7 +248,7 @@ def _resolve_app_class(app_or_request, bypass_quota=False):
     ):
         app = app_or_request
     elif isinstance(app_or_request, HttpRequest):
-        app = get_active_app(app_or_request, get_class=True)
+        app = get_active_app(app_or_request, get_class=False)
     elif isinstance(app_or_request, TethysApp):
         app = get_app_class(app_or_request)
     else:
@@ -258,7 +258,7 @@ def _resolve_app_class(app_or_request, bypass_quota=False):
         )
 
     if not bypass_quota:
-        assert passes_quota(app, "app_workspace_quota")
+        assert passes_quota(app, "tethysapp_workspace_quota")
 
     return app
 
