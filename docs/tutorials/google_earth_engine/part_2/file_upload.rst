@@ -739,7 +739,7 @@ Browse to `<http://localhost:8000/apps/earth-engine/viewer/>`_ in a web browser 
 10. Solution
 ============
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/file-upload-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/file-upload-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 

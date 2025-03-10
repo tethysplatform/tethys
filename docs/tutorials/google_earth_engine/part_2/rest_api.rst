@@ -1004,7 +1004,7 @@ With the parameters properly vetted, you are now ready to call the ``get_time_se
 14. Solution
 ============
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/rest-api-solution-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/rest-api-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 

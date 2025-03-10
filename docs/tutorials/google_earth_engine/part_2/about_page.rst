@@ -433,7 +433,7 @@ In this step, you will add a new stylesheet for the disclaimer modal and add sty
 7. Solution
 ===========
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/about-page-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/about-page-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 

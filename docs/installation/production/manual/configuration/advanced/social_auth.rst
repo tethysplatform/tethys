@@ -520,7 +520,7 @@ LinkedIn
 
 1. Create a LinkedIn Developer Account
 
-    You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://developer.linkedin.com/my-apps <https://developer.linkedin.com/my-apps>`_ and sign in with a LinkedIn account.
+    You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://www.linkedin.com/developers/apps <https://www.linkedin.com/developers/apps>`_ and sign in with a LinkedIn account.
 
 2. Create a LinkedIn Application
 

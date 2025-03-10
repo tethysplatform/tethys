@@ -303,7 +303,7 @@ There are no additional resource files for the Earth Engine app, so no calls to 
 8. Solution
 ===========
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/prepare-publish-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/prepare-publish-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 

@@ -379,7 +379,7 @@ There you have it! With less than 200 lines of code, we have quickly developed a
 5. Solution
 ===========
 
-This concludes the Configure Data Plotting portion of the Map Layout Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-map_layout_tutorial/tree/configure-data-plotting>`_ or clone it as follows:
+This concludes the Configure Data Plotting portion of the Map Layout Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-map_layout_tutorial/tree/configure-data-plotting-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
