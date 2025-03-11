@@ -303,6 +303,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     def test__get_user_workspace_old(self, mock_tw):
         import sys
+
         p = paths._get_user_workspace(
             self.mock_app_base_class, self.user, bypass_quota=True
         )
