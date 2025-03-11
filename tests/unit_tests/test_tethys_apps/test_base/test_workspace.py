@@ -325,7 +325,7 @@ class TestUrlMap(unittest.TestCase):
         ret = get_app_workspace_old(request)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_called_with(request, get_class=False)
-        mock_pq.assert_called_with(mock_app, "app_workspace_quota")
+        mock_pq.assert_called_with(mock_app, "tethysapp_workspace_quota")
         mock_gaw.assert_called_with(mock_app)
 
     def test_get_app_workspace_error(self):
