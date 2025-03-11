@@ -238,7 +238,7 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         a2 = paths._resolve_app_class(self.mock_request)
         self.assertEqual(a2, self.mock_app)
-        mock_get_active_app.assert_called_with(self.mock_request, get_class=True)
+        mock_get_active_app.assert_called_with(self.mock_request, get_class=False)
 
         a3 = paths._resolve_app_class(self.mock_app_class)
         self.assertEqual(a3, self.mock_app)
