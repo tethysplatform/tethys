@@ -201,13 +201,13 @@ def clear_workspace(request, root_url):
         app = get_app_class(app)
 
         user = request.user
-        workspace = get_user_workspace(app, user)
+        workspace = get_user_workspace(app, user, bypass_quota=True)
 
         app.pre_delete_user_workspace(user)
         workspace.clear()
         app.post_delete_user_workspace(user)
 
-        media = get_user_media(app, user)
+        media = get_user_media(app, user, bypass_quota=True)
         app.pre_delete_user_media(user)
         media.clear()
         app.post_delete_user_media(user)
@@ -236,7 +236,7 @@ def manage_storage(request):
     user = request.user
 
     for app in apps:
-        workspace = get_user_workspace(app, user)
+        workspace = get_user_workspace(app, user, bypass_quota=True)
         app.current_use = _convert_storage_units("gb", workspace.get_size("gb"))
 
     codename = "user_workspace_quota"
