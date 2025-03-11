@@ -280,12 +280,14 @@ class TestUrlMap(unittest.TestCase):
         )
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test__get_app_workspace(self, mock_tws):
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test__get_app_workspace(self, mock_ac, mock_tws):
+        mock_ac.return_value = self.app.__class__
         ret = _get_app_workspace(self.app)
-        self.assertEqual(ret, mock_tws())
-        expected_path = Path("workspaces") / "app_workspace"
+        self.assertEqual(ret, mock_tws(self.app))
+        expected_workspace_path = Path("workspaces") / "app_workspace"
         rts_call_args = mock_tws.call_args_list
-        self.assertIn(str(expected_path), rts_call_args[0][0][0])
+        self.assertIn(str(expected_workspace_path), rts_call_args[0][0][0])
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.utilities.get_active_app")
@@ -296,7 +298,7 @@ class TestUrlMap(unittest.TestCase):
         ret = get_app_workspace_old(self.app)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_not_called()
-        mock_pq.assert_called_with(self.app, "app_workspace_quota")
+        mock_pq.assert_called_with(self.app, "tethysapp_workspace_quota")
         mock_gaw.assert_called_with(self.app)
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
@@ -308,7 +310,7 @@ class TestUrlMap(unittest.TestCase):
         ret = get_app_workspace_old(TethysAppChild)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_not_called()
-        mock_pq.assert_called_with(TethysAppChild, "app_workspace_quota")
+        mock_pq.assert_called_with(TethysAppChild, "tethysapp_workspace_quota")
         mock_gaw.assert_called_with(TethysAppChild)
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
@@ -322,7 +324,7 @@ class TestUrlMap(unittest.TestCase):
         mock_gaa.return_value = mock_app
         ret = get_app_workspace_old(request)
         self.assertEqual(ret, mock_workspace)
-        mock_gaa.assert_called_with(request, get_class=True)
+        mock_gaa.assert_called_with(request, get_class=False)
         mock_pq.assert_called_with(mock_app, "app_workspace_quota")
         mock_gaw.assert_called_with(mock_app)
 
