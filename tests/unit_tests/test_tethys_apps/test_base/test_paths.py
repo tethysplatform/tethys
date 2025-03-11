@@ -265,6 +265,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(DEBUG=True)
     def test_old_get_app_workspace_root(self):
         import sys
+
         p = paths._get_app_workspace_root(self.mock_app)
         self.assertEqual(p, Path(sys.modules[self.mock_app.__module__].__file__).parent)
 
@@ -274,9 +275,14 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.get_app_class")
     def test__get_app_workspace_old(self, mock_ac, mock_tw):
         import sys
+
         mock_ac.return_value = self.mock_app
         p = paths._get_app_workspace(self.mock_app_base_class, bypass_quota=True)
-        expected_path = mock_tw(Path(sys.modules[self.mock_app.__module__].__file__).parent / "workspaces" / "app_workspace")
+        expected_path = mock_tw(
+            Path(sys.modules[self.mock_app.__module__].__file__).parent
+            / "workspaces"
+            / "app_workspace"
+        )
         self.assertEqual(p, expected_path)
 
     @mock.patch("tethys_apps.base.paths.get_app_workspace_old")
@@ -298,10 +304,16 @@ class TestTethysPathHelpers(unittest.TestCase):
     def test__get_user_workspace_old(self, mock_tw):
         breakpoint()
         import sys
-        p = paths._get_user_workspace(self.mock_app_base_class, self.user, bypass_quota=True)
-        expected_path = mock_tw(Path(sys.modules[self.mock_app.__module__].__file__).parent / "workspaces" / "tester")
+
+        p = paths._get_user_workspace(
+            self.mock_app_base_class, self.user, bypass_quota=True
+        )
+        expected_path = mock_tw(
+            Path(sys.modules[self.mock_app.__module__].__file__).parent
+            / "workspaces"
+            / "tester"
+        )
         self.assertEqual(p, expected_path)
-    
 
     @mock.patch("tethys_apps.base.paths.get_user_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
