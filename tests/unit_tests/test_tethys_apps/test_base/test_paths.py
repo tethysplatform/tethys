@@ -261,9 +261,26 @@ class TestTethysPathHelpers(unittest.TestCase):
         p = paths._get_app_workspace_root(self.mock_app)
         self.assertEqual(p, Path(settings.TETHYS_WORKSPACES_ROOT + "/app_package"))
 
+    @override_settings(USE_OLD_WORKSPACES_API=True)
+    @override_settings(DEBUG=True)
+    def test_old_get_app_workspace_root(self):
+        import sys
+        p = paths._get_app_workspace_root(self.mock_app)
+        self.assertEqual(p, Path(sys.modules[self.mock_app.__module__].__file__).parent)
+
+    @override_settings(USE_OLD_WORKSPACES_API=True)
+    @override_settings(DEBUG=True)
+    @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test__get_app_workspace_old(self, mock_ac, mock_tw):
+        import sys
+        mock_ac.return_value = self.mock_app
+        p = paths._get_app_workspace(self.mock_app_base_class, bypass_quota=True)
+        expected_path = mock_tw(Path(sys.modules[self.mock_app.__module__].__file__).parent / "workspaces" / "app_workspace")
+        self.assertEqual(p, expected_path)
+
     @mock.patch("tethys_apps.base.paths.get_app_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
-    @override_settings(USE_OLD_WORKSPACES_API=True)
     def test_get_app_workspace_old(
         self, mock_get_active_app, mock_get_app_workspace_old
     ):
@@ -274,6 +291,17 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         mock_get_app_workspace_old.assert_called_once()
         self.assertEqual(ws, mock_return)
+
+    @override_settings(USE_OLD_WORKSPACES_API=True)
+    @override_settings(DEBUG=True)
+    @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
+    def test__get_user_workspace_old(self, mock_tw):
+        breakpoint()
+        import sys
+        p = paths._get_user_workspace(self.mock_app_base_class, self.user, bypass_quota=True)
+        expected_path = mock_tw(Path(sys.modules[self.mock_app.__module__].__file__).parent / "workspaces" / "tester")
+        self.assertEqual(p, expected_path)
+    
 
     @mock.patch("tethys_apps.base.paths.get_user_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
