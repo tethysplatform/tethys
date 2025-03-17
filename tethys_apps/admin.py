@@ -526,9 +526,14 @@ class UserKeyAdmin(admin.ModelAdmin):
 
 def register_custom_group():
     try:
-
         class CustomGroup(GroupAdmin):
-            form = make_gop_app_access_form()
+            _form = None
+            
+            @property
+            def form(self):
+                if self._form is None:
+                    self._form = make_gop_app_access_form()
+                return self._form
 
         admin.site.unregister(Group)
         admin.site.register(Group, CustomGroup)

@@ -9,6 +9,8 @@
 
 import logging
 from django.apps import AppConfig
+from django.core.signals import request_started
+from django.db import connections, transaction
 from django.db.utils import ProgrammingError, OperationalError
 from tethys_quotas.utilities import sync_resource_quota_handlers
 
@@ -20,12 +22,18 @@ class TethysQuotasConfig(AppConfig):
     verbose_name = "Tethys Quotas"
 
     def ready(self):
-        try:
-            sync_resource_quota_handlers()
-        except (ProgrammingError, OperationalError) as e:
-            if isinstance(e, ProgrammingError):
-                log.warning(
-                    "Unable to sync resource quota handlers: Resource Quota table does not exist"
-                )
-            elif isinstance(e, OperationalError):
-                log.warning("Unable to sync resource quota handlers: No database found")
+        def _sync_resource_quota_handlers(sender, **kwargs):
+            with connections['default'].cursor() as cursor:
+                try:
+                    sync_resource_quota_handlers()
+                except (ProgrammingError, OperationalError) as e:
+                    if isinstance(e, ProgrammingError):
+                        log.warning(
+                            "Unable to sync resource quota handlers: Resource Quota table does not exist"
+                        )
+                    elif isinstance(e, OperationalError):
+                        log.warning("Unable to sync resource quota handlers: No database found")
+                    
+        # Run as soon as db is ready.
+        request_started.connect(_sync_resource_quota_handlers)
+
