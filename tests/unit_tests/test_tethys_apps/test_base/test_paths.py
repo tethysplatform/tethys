@@ -238,7 +238,7 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         a2 = paths._resolve_app_class(self.mock_request)
         self.assertEqual(a2, self.mock_app)
-        mock_get_active_app.assert_called_with(self.mock_request, get_class=False)
+        mock_get_active_app.assert_called_with(self.mock_request, get_class=True)
 
         a3 = paths._resolve_app_class(self.mock_app_class)
         self.assertEqual(a3, self.mock_app)
@@ -285,6 +285,7 @@ class TestTethysPathHelpers(unittest.TestCase):
         )
         self.assertEqual(p, expected_path)
 
+    @override_settings(USE_OLD_WORKSPACES_API=True)
     @mock.patch("tethys_apps.base.paths.get_app_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
     def test_get_app_workspace_old(
