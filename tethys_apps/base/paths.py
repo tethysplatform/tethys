@@ -220,8 +220,6 @@ class TethysPath:
             ][0]
 
         return total_size / conversion_factor
-    
-
 
 
 def _resolve_app_class(app_or_request):
@@ -309,6 +307,7 @@ def _resolve_username(user_or_request):
         )
 
     return user.username
+
 
 def _check_user_quota(user_or_request):
     """
@@ -414,7 +413,7 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
 
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
         return get_user_workspace_old(app, user_or_request, bypass_quota)
-    
+
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
 
 
