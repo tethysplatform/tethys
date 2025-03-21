@@ -9,7 +9,7 @@ from django.test import override_settings
 
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base import paths
-from tethys_apps.base.paths import TethysPath
+from tethys_apps.base.paths import TethysPath, _check_app_quota, _check_user_quota
 
 
 class TestTethysPath(unittest.TestCase):
@@ -333,6 +333,52 @@ class TestTethysPathHelpers(unittest.TestCase):
     def test_get_app_media_root(self):
         p = paths._get_app_media_root(self.mock_app)
         self.assertEqual(p, Path(settings.MEDIA_ROOT + "/app_package"))
+
+    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
+    def test__check_app_quota_passes(self, mock_passes_quota, mock_get_active_app):
+        mock_get_active_app.return_value = self.mock_app
+        try:
+            _check_app_quota(mock_get_active_app(self.mock_request))
+        except AssertionError:
+            self.fail(
+                "_check_app_quota() raised AssertionError when it shouldn't have."
+            )
+
+    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=False)
+    def test__check_app_quota_fails(self, mock_passes_quota, mock_get_active_app,):
+        mock_get_active_app.return_value = self.mock_app
+        with self.assertRaises(AssertionError):
+            _check_app_quota(self.mock_request)
+
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
+    def test__check_user_quota_User(self, mock_passes_quota):
+        try:
+            _check_user_quota(self.user)
+        except AssertionError:
+            self.fail(
+                "_check_user_quota() raised AssertionError when it shouldn't have."
+            )
+
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
+    def test__check_user_quota_HttpRequest(self, mock_passes_quota):
+        try:
+            _check_user_quota(self.mock_request)
+        except AssertionError:
+            self.fail(
+                "_check_user_quota() raised AssertionError when it shouldn't have."
+            )
+
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
+    def test__check_user_quota_TethysApp(self, mock_passes_quota):
+        with self.assertRaises(ValueError):
+            _check_user_quota(self.mock_app)
+
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=False)
+    def test__check_user_quota_fails(self, mock_passes_quota):
+        with self.assertRaises(AssertionError):
+            _check_user_quota(self.user)
 
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @mock.patch("tethys_apps.base.paths._resolve_username")
