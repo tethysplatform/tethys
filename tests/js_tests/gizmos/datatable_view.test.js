@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-const { screen, fireEvent } = require("@testing-library/dom");
+const { screen } = require("@testing-library/dom");
 
 import $ from "jquery";
 
