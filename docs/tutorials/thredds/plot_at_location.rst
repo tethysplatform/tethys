@@ -8,7 +8,7 @@ In this tutorial you will add a tool for querying the active THREDDS dataset for
 
 * :ref:`plotly_view_gizmo`
 * `Leaflet Plugins <https://leafletjs.com/plugins.html>`_: `Leaflet.Draw <http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html>`_
-* `THREDDS NetCDF Subset Service (NCSS) <https://www.unidata.ucar.edu/software/tds/current/reference/NetcdfSubsetServiceReference.html>`_
+* `THREDDS NetCDF Subset Service (NCSS) <https://docs.unidata.ucar.edu/tds/current/userguide/netcdf_subset_service_ref.html>`_
 * `JQuery Load <https://api.jquery.com/load/>`_
 
 .. figure:: ./resources/plot_at_location_solution.png
@@ -23,7 +23,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b visualize-leaflet-solution visualize-leaflet-solution-|version|
 
@@ -690,6 +690,6 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b plot-at-location-solution plot-at-location-solution-|version|

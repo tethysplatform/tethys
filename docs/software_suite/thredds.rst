@@ -7,7 +7,7 @@ THREDDS Docker
 Features
 ========
 
-* Tethys can setup a `THREDDS <https://www.unidata.ucar.edu/software/thredds/current/tds/>`_ docker container
+* Tethys can setup a `THREDDS <https://docs.unidata.ucar.edu/tds/current/userguide/index.html>`_ docker container
 * It can be configured to mount a data directory that contains the following items:
 
    * Public Data Directory

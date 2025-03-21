@@ -120,7 +120,7 @@ One of the advantages of using the Django template language is that it provides 
 
 .. hint::
 
-    The `Django Template Inheritance <https://docs.djangoproject.com/en/2.2/topics/templates/#template-inheritance>`_ documentation provides an excellent example that illustrates how inheritance works.
+    The `Django Template Inheritance <https://docs.djangoproject.com/en/5.1/ref/templates/language/#template-inheritance>`_ documentation provides an excellent example that illustrates how inheritance works.
 
 
 Base Templates

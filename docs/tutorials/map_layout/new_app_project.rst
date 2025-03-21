@@ -129,6 +129,6 @@ This concludes the New App Project portion of the Map Layout Tutorial. You can v
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
     cd tethysapp-map_layout_tutorial
     git checkout -b new-app-project-solution new-app-project-solution-|version|

@@ -27,7 +27,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b thredds-service-solution thredds-service-solution-|version|
 
@@ -1104,7 +1104,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
 .. note::
 
-    The ``loading`` event is called whenever tile layers start loading and the ``load`` event is called when the visible tiles of a tile layer have finished loading. See: `TileLayer.WMS reference <https://leafletjs.com/reference-1.6.0.html#tilelayer-wms>`_.
+    The ``loading`` event is called whenever tile layers start loading and the ``load`` event is called when the visible tiles of a tile layer have finished loading. See: `TileLayer.WMS reference <https://leafletjs.com/reference.html#tilelayer>`_.
 
 7. Also show the map loader when the variable control is updating (the ``fetch`` call to get the WMS layers could take some time to run). **Replace** the ``update_variable_control`` method in :file:`public/js/leaflet_map.js` with the following updated implementation:
 
@@ -1274,6 +1274,6 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b visualize-leaflet-solution visualize-leaflet-solution-|version|

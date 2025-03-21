@@ -4,7 +4,7 @@ PGAdmin III Tutorial
 
 **Last Updated:** November 20, 2014
 
-All of the SQL databases used in Tethys Platform are `PostregSQL <http://www.postgresql.org/>`_ databases. An excellent graphical client for PostgreSQL. It is available for Windows, OSX, and many Linux distributions. Please visit the `Download <http://www.pgadmin.org/download/index.php>`_ page to learn how to install it for your particular operating system. After it is installed, you can connect to your Tethys Platform databases by using the credentials for the ``tethys_super`` database user you defined during installation.
+All of the SQL databases used in Tethys Platform are `PostregSQL <https://www.postgresql.org/>`_ databases. An excellent graphical client for PostgreSQL. It is available for Windows, OSX, and many Linux distributions. Please visit the `Download <https://www.pgadmin.org/download/>`_ page to learn how to install it for your particular operating system. After it is installed, you can connect to your Tethys Platform databases by using the credentials for the ``tethys_super`` database user you defined during installation.
 
 To create a new connection to your PostgreSQL database using PGAdmin:
 

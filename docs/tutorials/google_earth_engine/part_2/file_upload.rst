@@ -24,7 +24,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b about-page-solution about-page-solution-|version|
 
@@ -739,10 +739,10 @@ Browse to `<http://localhost:8000/apps/earth-engine/viewer/>`_ in a web browser 
 10. Solution
 ============
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/file-upload-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/file-upload-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b file-upload-solution file-upload-solution-|version|

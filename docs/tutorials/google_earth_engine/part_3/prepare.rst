@@ -27,7 +27,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b rest-api-solution rest-api-solution-|version|
 
@@ -176,7 +176,7 @@ Create a new file called :file:`README.md` in the same directory as the :file:`s
 
     ## Settings
 
-    The app has two Custom Settings that can be used to configure the app to use a [Google Earth Engine service account](https://developers.google.com/earth-engine/service_account):
+    The app has two Custom Settings that can be used to configure the app to use a [Google Earth Engine service account](https://developers.google.com/earth-engine/guides/service_account):
 
     * **service_account_email**: Email associated with the service account.
     * **private_key_file**: Path to service account JSON file containing the private key.
@@ -198,7 +198,7 @@ In this step you will add an appropriate open source license to your project. Th
 
 1. Navigate to `<https://opensource.org/licenses>`_ and peruse the list of Popular License.
 
-2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/licenses/BSD-3-Clause>`_ or a license of your choice.
+2. Click on the link for the `BSD-3-Clause "New" or "Revised" license <https://opensource.org/license/BSD-3-Clause>`_ or a license of your choice.
 
 3. Create a new file called :file:`LICENSE` in the same directory as the :file:`setup.py`.
 
@@ -209,7 +209,7 @@ In this step you will add an appropriate open source license to your project. Th
 5. Add Metadata to Setup.py
 ===========================
 
-In this step you will add appropriate metadata to the :file:`setup.py`. This metadata will be used by packaging services such as the Python Package Index (PyPI) or Conda, should you choose to distribute your package on one of those platforms. It is also used by ``pip`` when a user lists information about an installed package. An explanation of possible ``setup`` keywords you can use can be found here: `New and Changed setup() Keywords <https://setuptools.readthedocs.io/en/latest/setuptools.html#new-and-changed-setup-keywords>`_. As a minimum, you should set the version
+In this step you will add appropriate metadata to the :file:`setup.py`. This metadata will be used by packaging services such as the Python Package Index (PyPI) or Conda, should you choose to distribute your package on one of those platforms. It is also used by ``pip`` when a user lists information about an installed package. An explanation of possible ``setup`` keywords you can use can be found here: `New and Changed setup() Keywords <https://setuptools.pypa.io/en/latest/references/keywords.html>`_. As a minimum, you should set the version
 
 1. Open :file:`setup.py`, located in the root directory of your app code.
 
@@ -303,10 +303,10 @@ There are no additional resource files for the Earth Engine app, so no calls to 
 8. Solution
 ===========
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/prepare-publish-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/prepare-publish-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b prepare-publish-solution prepare-publish-solution-|version|
