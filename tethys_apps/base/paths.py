@@ -316,8 +316,6 @@ def _check_user_quota(user_or_request):
     Raises:
         AssertionError: if quota for the user workspace/media directory has been exceeded.
     """
-    from django.contrib.auth.models import User
-
     user = _resolve_user(user_or_request)
 
     assert passes_quota(user, "user_workspace_quota")
