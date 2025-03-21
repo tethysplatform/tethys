@@ -347,7 +347,11 @@ class TestTethysPathHelpers(unittest.TestCase):
 
     @mock.patch("tethys_apps.utilities.get_active_app")
     @mock.patch("tethys_apps.base.paths.passes_quota", return_value=False)
-    def test__check_app_quota_fails(self, mock_passes_quota, mock_get_active_app,):
+    def test__check_app_quota_fails(
+        self,
+        mock_passes_quota,
+        mock_get_active_app,
+    ):
         mock_get_active_app.return_value = self.mock_app
         with self.assertRaises(AssertionError):
             _check_app_quota(self.mock_request)
