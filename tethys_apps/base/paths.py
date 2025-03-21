@@ -279,13 +279,11 @@ def _resolve_user(user_or_request):
 
     Args:
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
-        bypass_quota (bool): Whether to check the user's workspace/media quota.
 
     Raises:
         ValueError: if user_or_request is not correct type.
-        AssertionError: if `bypass_quota` is False and quota for the user workspace/media directory has been exceeded.
 
-    Returns: username of user or request.user
+    Returns: request.user
 
     """
     from django.contrib.auth.models import User
