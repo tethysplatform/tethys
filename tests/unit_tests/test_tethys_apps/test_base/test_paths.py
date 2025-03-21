@@ -247,15 +247,15 @@ class TestTethysPathHelpers(unittest.TestCase):
         with self.assertRaises(ValueError):
             paths._resolve_app_class(None)
 
-    def test_resolve_username(self):
-        user = paths._resolve_username(self.user)
+    def test_resolve_user(self):
+        user = paths._resolve_user(self.user).username
         self.assertEqual(user, "tester")
 
-        request_user = paths._resolve_username(self.mock_request)
+        request_user = paths._resolve_user(self.mock_request).username
         self.assertEqual(request_user, "tester")
 
         with self.assertRaises(ValueError):
-            paths._resolve_username(None)
+            paths._resolve_user(None)
 
     def test_get_app_workspace_root(self):
         p = paths._get_app_workspace_root(self.mock_app)
@@ -385,7 +385,7 @@ class TestTethysPathHelpers(unittest.TestCase):
             _check_user_quota(self.user)
 
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
-    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths.TethysPath")
     def test_add_path_decorator(self, mock_TethysPath, _, __, ___):
@@ -400,7 +400,7 @@ class TestTethysPathHelpers(unittest.TestCase):
         self.assertEqual(user_media, "user_media_return")
 
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
-    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths.TethysPath")
     def test_add_path_decorator_no_user(self, mock_TethysPath, _, __, ___):

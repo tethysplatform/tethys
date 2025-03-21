@@ -246,9 +246,6 @@ def _resolve_app_class(app_or_request):
     ):
         app = app_or_request
     elif isinstance(app_or_request, HttpRequest):
-        # OLD VERSION
-        # app = get_active_app(app_or_request, get_class=False)
-        # NEW VERSION
         app = get_active_app(app_or_request, get_class=True)
     elif isinstance(app_or_request, TethysApp):
         app = get_app_class(app_or_request)
@@ -277,7 +274,7 @@ def _check_app_quota(app_or_request):
     assert passes_quota(app_model, "tethysapp_workspace_quota")
 
 
-def _resolve_username(user_or_request):
+def _resolve_user(user_or_request):
     """
 
     Args:
@@ -306,7 +303,7 @@ def _resolve_username(user_or_request):
             f'"{type(user_or_request)}" given.'
         )
 
-    return user.username
+    return user
 
 
 def _check_user_quota(user_or_request):
@@ -321,18 +318,7 @@ def _check_user_quota(user_or_request):
     """
     from django.contrib.auth.models import User
 
-    # Get user
-    if isinstance(user_or_request, User) or isinstance(
-        user_or_request, SimpleLazyObject
-    ):
-        user = user_or_request
-    elif isinstance(user_or_request, HttpRequest):
-        user = user_or_request.user
-    else:
-        raise ValueError(
-            f'Argument "user_or_request" must be of type HttpRequest or User: '
-            f'"{type(user_or_request)}" given.'
-        )
+    user = _resolve_user(user_or_request)
 
     assert passes_quota(user, "user_workspace_quota")
 
@@ -406,7 +392,7 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
 
     """
     app = _resolve_app_class(app_or_request)
-    username = _resolve_username(user_or_request)
+    username = _resolve_user(user_or_request).username
 
     if not bypass_quota:
         _check_user_quota(user_or_request)
@@ -516,7 +502,7 @@ def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
 
     """
     app = _resolve_app_class(app_or_request)
-    username = _resolve_username(username_or_request)
+    username = _resolve_user(username_or_request).username
 
     if not bypass_quota:
         _check_user_quota(username_or_request)
