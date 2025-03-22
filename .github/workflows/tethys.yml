@@ -106,9 +106,11 @@ jobs:
         
       - name: Install Dependencies
         run: npm install  
+        working-directory: tethys/tests/js_tests
 
       - name: Run Tests
         run: npm test
+        working-directory: tethys/tests/js_tests
 
   docker-build:
     name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
