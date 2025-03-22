@@ -20,19 +20,11 @@ django.setup()
 
 def confirm_template_path(template_name):
     try:
-        # Second try block wrapping is required for handling
-        # django errors and getting it to print in js testing
-        try:
-            select_template([template_name])
-
-        except Exception as e:
-            print(f"Error finding template: {e}")
-            traceback.print_exc(file=sys.stdout)
-            sys.exit(1)
+        select_template([template_name])
 
     except Exception as e:
         print(f"Error finding template: {e}")
-        traceback.print_exc(file=sys.stdout)
+        
         sys.exit(1)
 
 
@@ -48,17 +40,10 @@ def render_template(template_name, context):
 
         # Render template using context
         try:
-            try:
-                rendered_html = render_to_string(template_name, context)
-
-            except Exception as e:
-                print(f"Error: {e}")
-                traceback.print_exc(file=sys.stdout)
-                sys.exit(1)
+            rendered_html = render_to_string(template_name, context)
 
         except Exception as e:
             print(f"Error: {e}")
-            traceback.print_exc(file=sys.stdout)
             sys.exit(1)
 
         output_path = f"./rendered_templates/test_{os.path.basename(form_output_name(template_name))}"
