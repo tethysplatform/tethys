@@ -107,19 +107,25 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
-      - name: Install Python Dependencies
+      - name: Install Tethys and Dependencies
         run: |
+          
+          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -x -d 5.1 --python-version 3.12
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
           python -m pip install --upgrade pip
-          pip install django 
-        
+          
       - name: Install Dependencies
         run: npm install  
         working-directory: tests/js_tests
 
       - name: Run Tests
-        run: npm test
+        run: |
+          . ~/miniconda/etc/profile.d/conda.sh
+          conda activate tethys
+          npm test
         working-directory: tests/js_tests
 
   docker-build:
