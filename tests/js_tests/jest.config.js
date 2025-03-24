@@ -1,5 +1,5 @@
 module.exports = {
-    testEnvironment: "", 
+    testEnvironment: "jsdom", 
     roots: ["<rootDir>"],
     setupFilesAfterEnv: ["<rootDir>/setup.js"],
     collectCoverage: true,    
