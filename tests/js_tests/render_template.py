@@ -24,7 +24,7 @@ def confirm_template_path(template_name):
 
     except Exception as e:
         print(f"Error finding template: {e}")
-        
+
         sys.exit(1)
 
 
