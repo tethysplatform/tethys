@@ -16,7 +16,7 @@ Tethys is a platform that can be used to develop and host engaging, interactive 
 Software Suite
 ==============
 
-Tethys Platform provides a suite of free and open source software. Included in the :doc:`./software_suite` is `PostgreSQL <http://www.postgresql.org/>`_ with the `PostGIS <http://postgis.net/>`_ extension for spatial database storage, `GeoServer <http://geoserver.org/>`_ for spatial data publishing, and `52 North WPS <http://52north.org/communities/geoprocessing/wps/>`_ for geoprocessing. Tethys also provides Gizmos for inserting `OpenLayers <http://openlayers.org/>`_ and `Google Maps <https://developers.google.com/maps/web/>`_ for interactive spatial data visualizations in your web apps. The :doc:`./software_suite` also includes `HTCondor <http://research.cs.wisc.edu/htcondor/>`_ for managing distributed computing resources and scheduling computing jobs.
+Tethys Platform provides a suite of free and open source software. Included in the :doc:`./software_suite` is `PostgreSQL <https://www.postgresql.org/>`_ with the `PostGIS <http://postgis.net/>`_ extension for spatial database storage, `GeoServer <https://geoserver.org/>`_ for spatial data publishing, and `52 North WPS <http://52north.org/communities/geoprocessing/wps/>`_ for geoprocessing. Tethys also provides Gizmos for inserting `OpenLayers <https://openlayers.org/>`_ and `Google Maps <https://developers.google.com/maps/documentation>`_ for interactive spatial data visualizations in your web apps. The :doc:`./software_suite` also includes `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ for managing distributed computing resources and scheduling computing jobs.
 
 .. figure:: images/features/tethys_platform_diagram.png
     :width: 600px
@@ -79,7 +79,7 @@ The portal also includes landing page that can be used to showcase the capabilit
 Computing
 =========
 
-Tethys Platform includes Python modules that allow you to run computing jobs in distributed computing environments. With CondorPy you can define your computing jobs and submit them to distributed computing environments using `HTCondor <http://research.cs.wisc.edu/htcondor/>`_ or `Dask Distributed <http://distributed.dask.org/en/stable/>`_.
+Tethys Platform includes Python modules that allow you to run computing jobs in distributed computing environments. With CondorPy you can define your computing jobs and submit them to distributed computing environments using `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ or `Dask Distributed <https://distributed.dask.org/en/stable/>`_.
 
 .. figure:: images/features/computing_condorpy.png
     :width: 400px

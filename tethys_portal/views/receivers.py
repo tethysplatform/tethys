@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 
 
 # create API Token for newly created django USER object
-# see: http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+# see: https://www.django-rest-framework.org/api-guide/authentication/
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

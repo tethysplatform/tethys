@@ -155,6 +155,6 @@ View the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-das
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-dask_tutorial
     cd tethysapp-dask_tutorial
     git checkout -b setup-scheduler-solution setup-scheduler-solution-|version|

@@ -100,6 +100,6 @@ This concludes the this part of the GeoServer tutorial. You can view the solutio
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-geoserver_app.git
+    git clone https://github.com/tethysplatform/tethysapp-geoserver_app
     cd tethysapp-geoserver_app
     git checkout -b upload-shapefile-solution upload-shapefile-solution-|version|

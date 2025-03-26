@@ -12,7 +12,7 @@ class PlotlyView(TethysGizmoOptions):
     """
     Simple options object for plotly view.
 
-    .. note:: Information about the Plotly API can be found at https://plot.ly/python.
+    .. note:: Information about the Plotly API can be found at https://plotly.com/python/.
 
     Attributes:
         plot_input(plotly graph_objs): A plotly graph_objs to be plotted.

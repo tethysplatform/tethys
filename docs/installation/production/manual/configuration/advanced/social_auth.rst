@@ -37,13 +37,13 @@ Azure Active Directory
 
 1. Sign up for a free Microsoft Developer account or sign in with an existing account if you already have one. See: `<https://azure.microsoft.com/en-us/free/>`_
 
-2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/#home>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant#social-and-local-accounts>`_
+2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/#home>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant>`_
 
     .. note::
 
         Tethys Platform supports single sign on with both the Azure AD and Azure AD B2C environments.
 
-3. Register a new application. See: `Register a new application using the Azure portal <https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-a-new-application-using-the-azure-portal>`_
+3. Register a new application. See: `Register a new application using the Azure portal <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app?tabs=certificate%2Cexpose-a-web-api#register-an-application>`_
 
 * Select **Web** as the type of app.
 * Enter one of the following for the redirect URL:
@@ -112,15 +112,15 @@ Azure Active Directory
 
         .. note::
 
-              Use ``b2c_`` as the value of ``SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY`` if you do not have a custom user flow. See: `User flows in Azure Active Directory B2C <https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview>`_ for more information.
+              Use ``b2c_`` as the value of ``SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY`` if you do not have a custom user flow. See: `User flows in Azure Active Directory B2C <https://learn.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview>`_ for more information.
 
 References
 ++++++++++
 
 For more detailed information about using Azure Active Directory social authentication see the following articles:
 
-* `Tutorial: Create an Azure Active Directory B2C tenant <https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant>`_
-* `Associate or add an Azure subscription to your Azure Active Directory tenant <https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp>`_
+* `Tutorial: Create an Azure Active Directory B2C tenant <https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant>`_
+* `Associate or add an Azure subscription to your Azure Active Directory tenant <https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp>`_
 * `Microsoft Azure Active Directory - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html>`_
 
 .. _social_adfs:
@@ -134,7 +134,7 @@ Active Directory Federation Services (AD FS)
 
         Tethys Platform only supports authenticating with **AD FS 2016 or later**.
 
-2. Follow the `App Registration in AD FS <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api#app-registration-in-ad-fs>`_ section of the `AD FS MSAL Web app (server app) calling web APIs <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api>`_ documentation to register your Tethys Portal with the AD FS server with the following considerations:
+2. Follow the `App Registration in AD FS <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api#app-registration-in-ad-fs>`_ section of the `AD FS MSAL Web app (server app) calling web APIs <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api>`_ documentation to register your Tethys Portal with the AD FS server with the following considerations:
 
     * On the **Welcome** tab:
         * Select **Server application accessing a web API** as the **Template**.
@@ -176,8 +176,8 @@ References
 
 For more detailed information about using Active Directory Federation Services social authentication see the following articles:
 
-* `Active Directory Federation Services <https://docs.microsoft.com/en-us/windows-server/identity/active-directory-federation-services>`_
-* `AD FS OpenID Connect/OAuth Concepts <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts>`_
+* `Active Directory Federation Services <https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services>`_
+* `AD FS OpenID Connect/OAuth Concepts <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts>`_
 
 .. _social_auth_facebook:
 
@@ -241,7 +241,7 @@ References
 For more detailed information about using Facebook social authentication see the following articles:
 
 * `Facebook Login <https://developers.facebook.com/docs/facebook-login/v2.4>`_
-* `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/login-flow-for-web/v2.4>`_
+* `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/web>`_
 
 .. _social_auth_google:
 
@@ -304,7 +304,7 @@ References
 For more detailed information about using Google social authentication see the following articles:
 
 * `Developer Console Help <https://developers.google.com/console/help/new/?hl=en_US#generatingoauth2>`_
-* `Google Identity Platform <https://developers.google.com/identity/protocols/OAuth2>`_
+* `Google Identity Platform <https://developers.google.com/identity/protocols/oauth2>`_
 
 .. _social_auth_hydroshare:
 
@@ -509,7 +509,7 @@ References
 
 For more detailed information about using the ArcGIS Online or ArcGIS Enterprise Portal social logins see the following articles:
 
-* `Portal for ArcGIS: Register Your App <https://enterprise.arcgis.com/en/portal/latest/administer/windows/add-items.htm#REG_APP>`_
+* `Portal for ArcGIS: Register Your App <https://enterprise.arcgis.com/en/portal/latest/use/add-app-url.htm>`_
 * `ArcGIS Rest API: Authentication <https://developers.arcgis.com/rest/users-groups-and-items/authentication.htm>`_
 
 
@@ -520,7 +520,7 @@ LinkedIn
 
 1. Create a LinkedIn Developer Account
 
-    You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://developer.linkedin.com/my-apps <https://developer.linkedin.com/my-apps>`_ and sign in with a LinkedIn account.
+    You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://www.linkedin.com/developers/apps <https://www.linkedin.com/developers/apps>`_ and sign in with a LinkedIn account.
 
 2. Create a LinkedIn Application
 
@@ -561,7 +561,7 @@ References
 
 For more detailed information about using LinkedIn social authentication see the following articles:
 
-* `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
+* `LinkedIn: Authenticating with OAuth 2.0 <https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication>`_
 
 .. _social_auth_okta:
 
@@ -586,7 +586,7 @@ Tethys Platform supports two methods of Okta single sign on: OAuth 2.0 and OpenI
 
 2. Create an Okta Application
 
-    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app/go/create-okta-application/>`_. Set the callback URL as follows:
+    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app-redirect/go/main/#create-an-app-integration-in-the-admin-console>`_. Set the callback URL as follows:
 
     OAuth 2.0 method (recommended):
 
@@ -639,8 +639,8 @@ References
 
 For more detailed information about using Okta social authentication see the following articles:
 
-* `OAuth 2.0 Overview - Okta Developer <https://developer.okta.com/docs/concepts/auth-overview/#authentication-api>`_
-* `Sign users in to your web application: <https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/before-you-begin/>`_
+* `OAuth 2.0 Overview - Okta Developer <https://developer.okta.com/docs/concepts/oauth-openid/>`_
+* `Sign users in to your web application: <https://developer.okta.com/docs/guides/sign-in-overview/main/>`_
 * `Okta Backend - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/okta.html>`_
 
 .. _social_auth_onelogin:
@@ -666,7 +666,7 @@ OneLogin
 
 1. Create an OneLogin Developer Account
 
-    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/developer-signup>`_.
+    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/free-trial>`_.
 
 2. Create an OneLogin Application
 
@@ -740,7 +740,7 @@ Jyn Erso would like to log in to a Tethys Portal that has been configured to use
 .. figure:: ./images/multi-tenant-tenant-page.png
     :width: 675px
 
-4. She is redirected to the authentication page for her company: http://rebel-acq.onelogin.com/login2/
+4. She is redirected to the authentication page for her company: https://rebel-acq.onelogin.com/login2/
 
 .. figure:: ./images/multi-tenant-onelogin-page.png
     :width: 675px

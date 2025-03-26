@@ -16,7 +16,7 @@ Dataset Services API
         # pip
         pip install tethys_dataset_services
 
-:term:`Dataset services` are web services external to Tethys Platform that can be used to store and publish file-based :term:`datasets` (e.g.: text files, Excel files, zip archives, other model files). Tethys app developers can use the Dataset Services API to access :term:`datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce. Supported options include `CKAN <http://ckan.org>`_ and `HydroShare <http://hydroshare.org>`_.
+:term:`Dataset services` are web services external to Tethys Platform that can be used to store and publish file-based :term:`datasets` (e.g.: text files, Excel files, zip archives, other model files). Tethys app developers can use the Dataset Services API to access :term:`datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce. Supported options include `CKAN <https://ckan.org/>`_ and `HydroShare <https://hydroshare.org/>`_.
 
 Key Concepts
 ============

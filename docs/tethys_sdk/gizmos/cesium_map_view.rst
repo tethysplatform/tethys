@@ -14,7 +14,7 @@ For advanced features, the JavaScript API can be used to interact with the Cesiu
 CESIUM_MAP_VIEW.getMap()
 ++++++++++++++++++++++++
 
-This method returns the Cesium ``Viewer`` instance. You can use the `Cesium.Viewer API Docs <https://cesiumjs.org/Cesium/Build/Documentation/Viewer.html>`_ to perform operations on this object such as changing the view, animating, and modifying the entities, layers, and models.
+This method returns the Cesium ``Viewer`` instance. You can use the `Cesium.Viewer API Docs <https://cesium.com/learn/cesiumjs/ref-doc/Viewer.html>`_ to perform operations on this object such as changing the view, animating, and modifying the entities, layers, and models.
 
 ::
 

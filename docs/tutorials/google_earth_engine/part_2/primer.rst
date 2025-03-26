@@ -50,7 +50,7 @@ The selector portion of a CSS rule-set defines which elements in the HTML docume
 Rules
 -----
 
-The rules are compose of a property and value with each rule being separated by a semicolon. There are a lot of CSS properties for changing everything from the background color to the font of text in the element. Many of the values support a number of different units of length or formats. The best way to learn what the different properties do is to use them in a project. See `w3schools CSS Reference <https://www.w3schools.com/cssref/default.asp>`_ for a fairly comprehensive list of CSS properties.
+The rules are compose of a property and value with each rule being separated by a semicolon. There are a lot of CSS properties for changing everything from the background color to the font of text in the element. Many of the values support a number of different units of length or formats. The best way to learn what the different properties do is to use them in a project. See `w3schools CSS Reference <https://www.w3schools.com/cssref/index.php>`_ for a fairly comprehensive list of CSS properties.
 
 CSS Browser Tools
 -----------------
@@ -60,7 +60,7 @@ Many web browsers have built-in development tools including CSS inspectors. To s
 Google Earth Engine Assets
 ==========================
 
-Datasets can be uploaded to your Google Earth Engine account to make them more readily available to your scripts that run on the server. Assets can be manually uploaded using the `Asset Manager <https://developers.google.com/earth-engine/asset_manager>`_ or programmatically as will be demonstrated in the File Upload tutorial. There are two types of assets: `Table Assets <https://developers.google.com/earth-engine/importing>`_ and `Raster Assets <https://developers.google.com/earth-engine/image_upload>`_. Shapefiles and CSVs can be uploaded as Table Assets and GeoTIFFS and TFRecords can be uploaded as Raster Assets.
+Datasets can be uploaded to your Google Earth Engine account to make them more readily available to your scripts that run on the server. Assets can be manually uploaded using the `Asset Manager <https://developers.google.com/earth-engine/guides/manage_assets>`_ or programmatically as will be demonstrated in the File Upload tutorial. There are two types of assets: `Table Assets <https://developers.google.com/earth-engine/guides/table_upload>`_ and `Raster Assets <https://developers.google.com/earth-engine/guides/image_upload>`_. Shapefiles and CSVs can be uploaded as Table Assets and GeoTIFFS and TFRecords can be uploaded as Raster Assets.
 
 REST API Primer
 ===============
@@ -69,4 +69,4 @@ REST is acronym for REpresentational State Transfer and is a software architectu
 
 Different operations can be performed on a web resource by submitting a request to its URI with one of the HTTP verbs to indicate the operation to perform. The most commonly used HTTP verbs are GET and POST, but others include HEAD, DELETE, PUT, PATCH, CONNECT, OPTIONS, and TRACE. The POST verb is often used in place of the other verbs due to a lack of support of the other verbs historically. REST APIs should use appropriate response codes in their responses (e.g. 200 OK, 400 BAD REQUEST, 418 I'm a teapot).
 
-The GET verb should only be used for operations that are non-destructive, such as data read operations. Any operation that changes, updates, or deletes data should be handled with POST (or the appropriate HTTP verb), because servers implement extra precautions with POST requests to make the requests more secure. For more information on RESTful APIs see: `Wikipedia - Representational state transfer <https://en.wikipedia.org/wiki/Representational_state_transfer>`_, `REST API Tutorial <https://restfulapi.net/>`_, `HTTP Status Codes <https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>`_.
+The GET verb should only be used for operations that are non-destructive, such as data read operations. Any operation that changes, updates, or deletes data should be handled with POST (or the appropriate HTTP verb), because servers implement extra precautions with POST requests to make the requests more secure. For more information on RESTful APIs see: `Wikipedia - Representational state transfer <https://en.wikipedia.org/wiki/Representational_state_transfer>`_, `REST API Tutorial <https://restfulapi.net/>`_, `HTTP Status Codes <https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status>`_.

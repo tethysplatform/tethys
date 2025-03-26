@@ -23,11 +23,11 @@ The release package must contain a setup script (:file:`setup.py`) and :file:`te
 
 The setup script to install your app and its dependencies. A basic setup script is generated as part of the scaffolding for a new app project. For more information on writing setup scripts refer to this article: `Writing the Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_.
 
-The :file:`tethysapp` package is a `Python namespace <http://docs.python.org/2/tutorial/classes.html#python-scopes-and-namespaces>`_ package. It provides a way to mimic the production environment during development of the app (i.e.: when the app is installed, it will reside in a namespace package called :file:`tethysapp`). This package contains the :term:`app package`, which has the same name as your app name by convention.
+The :file:`tethysapp` package is a `Python namespace <https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces>`_ package. It provides a way to mimic the production environment during development of the app (i.e.: when the app is installed, it will reside in a namespace package called :file:`tethysapp`). This package contains the :term:`app package`, which has the same name as your app name by convention.
 
 .. caution::
 
-	When you generate a new app project using the command line tool, you will notice that many of the directories contain a :file:`\_\_init\_\_.py` file, many of which are empty. These are omitted in the diagram for simplicity. DO NOT DELETE THE :file:`\_\_init\_\_.py` FILES. These files indicate to Python that the directories containing them are `Python packages <http://docs.python.org/2/tutorial/modules.html#packages>`_. Your app will not work properly without the :file:`\_\_init\_\_.py` files.
+	When you generate a new app project using the command line tool, you will notice that many of the directories contain a :file:`\_\_init\_\_.py` file, many of which are empty. These are omitted in the diagram for simplicity. DO NOT DELETE THE :file:`\_\_init\_\_.py` FILES. These files indicate to Python that the directories containing them are `Python packages <https://docs.python.org/3/tutorial/modules.html>`_. Your app will not work properly without the :file:`\_\_init\_\_.py` files.
 
 The App Package
 ===============

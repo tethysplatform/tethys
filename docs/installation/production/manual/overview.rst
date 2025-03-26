@@ -32,13 +32,13 @@ Production Server
 
 Tethys Portal is a Django web application with the `Django Channels app <https://channels.readthedocs.io/en/latest/>`_ installed, which makes it an `Asynchronous Server Gateway Interface (ASGI) <https://asgi.readthedocs.io/en/latest/>`_ application. As such, it requires an ASGI server to host it.
 
-In this guide you will host Tethys Portal using the `Daphne <https://github.com/django/daphne>`_ ASGI server with `NGINX <https://www.nginx.com/resources/wiki/>`_ acting as the primary HTTP server (see: `Example Setups <https://channels.readthedocs.io/en/latest/deploying.html#example-setups>`_). Alternatively, the `Apache <https://httpd.apache.org/>`_ server can also be used as the primary HTTP server. All incoming HTTP traffic will be handled by the HTTP server which will route most of it to Daphne. Daphne in turn will be hosting the Tethys Portal. The response will be returned up the chain through Daphne to NGINX and back to the client. The HTTP server will handle requests for static files directly for efficiency.
+In this guide you will host Tethys Portal using the `Daphne <https://github.com/django/daphne>`_ ASGI server with `NGINX <https://docs.nginx.com>`_ acting as the primary HTTP server (see: `Example Setups <https://channels.readthedocs.io/en/latest/deploying.html#example-setups>`_). Alternatively, the `Apache <https://httpd.apache.org/>`_ server can also be used as the primary HTTP server. All incoming HTTP traffic will be handled by the HTTP server which will route most of it to Daphne. Daphne in turn will be hosting the Tethys Portal. The response will be returned up the chain through Daphne to NGINX and back to the client. The HTTP server will handle requests for static files directly for efficiency.
 
 .. figure:: ./images/tethys_production_diagram.png
     :width: 800px
     :align: center
 
-Daphne can and should be configured to run multiple processes or workers. The default configuration will create four (4) Daphne processes for example. To make managing the Daphne processes and HTTP server process more manageable, `Supervisor <http://supervisord.org/>`_ will be used to allow all five processes to be started, stopped, and restarted with a single command.
+Daphne can and should be configured to run multiple processes or workers. The default configuration will create four (4) Daphne processes for example. To make managing the Daphne processes and HTTP server process more manageable, `Supervisor <https://supervisord.org/>`_ will be used to allow all five processes to be started, stopped, and restarted with a single command.
 
 NGINX
 -----

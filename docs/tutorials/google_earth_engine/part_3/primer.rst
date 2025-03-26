@@ -11,7 +11,7 @@ This primer provides simple explanations for some of the concepts you and tools 
 Google Earth Engine Service Accounts
 ====================================
 
-A service account is an account associated with an application instead of a user. Google service accounts can be granted access to certain Google APIs including the Google Earth Engine API. However, enabling the Google Earth Engine API on a service account requires manual review and approval--a process that can take days. You should apply for a service account and register it with Google Earth Engine if you have not already done so before completing this tutorial. See `Google Earth Engine - Service Accounts <https://developers.google.com/earth-engine/service_account>`_ for how this is to be done.
+A service account is an account associated with an application instead of a user. Google service accounts can be granted access to certain Google APIs including the Google Earth Engine API. However, enabling the Google Earth Engine API on a service account requires manual review and approval--a process that can take days. You should apply for a service account and register it with Google Earth Engine if you have not already done so before completing this tutorial. See `Google Earth Engine - Service Accounts <https://developers.google.com/earth-engine/guides/service_account>`_ for how this is to be done.
 
 Prepare App for Publishing
 ==========================
@@ -51,7 +51,7 @@ Files other than the Python scripts that are required by your app are called Pac
 Setup.py Metadata
 -----------------
 
-Tethys app projects are Python libraries. You should define metadata for the app in the :file:`setup.py` as you would for any Python library. This is especially true if you plan to publish your app to the Python Package Index or Conda. Some the pertinent metadata includes the version, description, author name and email, and license. You should update the version of your app every time you release the app and we recommend using `Semantic Versioning <https://semver.org/>`_. For more information on the :file:`setup.py` and semantic versioning see `Creating setup.py <https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py>`_ and `Introduction to Semantic Versioning <https://www.geeksforgeeks.org/introduction-semantic-versioning/>`_
+Tethys app projects are Python libraries. You should define metadata for the app in the :file:`setup.py` as you would for any Python library. This is especially true if you plan to publish your app to the Python Package Index or Conda. Some the pertinent metadata includes the version, description, author name and email, and license. You should update the version of your app every time you release the app and we recommend using `Semantic Versioning <https://semver.org/>`_. For more information on the :file:`setup.py` and semantic versioning see `Creating setup.py <https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#setup-py>`_ and `Introduction to Semantic Versioning <https://www.geeksforgeeks.org/introduction-semantic-versioning/>`_
 
 Installing Apps in Production
 =============================

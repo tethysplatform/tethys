@@ -17,7 +17,7 @@ Tethys is a platform that can be used to develop and host environmental web apps
 Quick Start
 ===========
 
-The quickest way to get started with Tethys Platform is via ``conda`` (`Miniconda <https://docs.anaconda.com/miniconda/miniconda-install/>`_ or `Anaconda <https://docs.anaconda.com/anaconda/install/>`_):
+The quickest way to get started with Tethys Platform is via ``conda`` (`Miniconda <https://www.anaconda.com/docs/getting-started/miniconda/install>`_ or `Anaconda <https://www.anaconda.com/docs/getting-started/anaconda/install>`_):
 
 .. code-block:: bash
 

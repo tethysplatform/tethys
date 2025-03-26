@@ -66,14 +66,14 @@ class MapView(TethysGizmoOptions):
     .. note::
 
         The Bing Map service has been depricated in favor of Azure Maps service.
-        For more options for Azure Maps tilesetId, please refer to this link: `TilesetID <https://learn.microsoft.com/en-us/rest/api/maps/render/get-map-tile?view=rest-maps-2024-04-01&tabs=HTTP#tilesetid>`_
+        For more options for Azure Maps tilesetId, please refer to this link: `TilesetID <https://learn.microsoft.com/en-us/rest/api/maps/render/get-map-tile?view=rest-maps-2025-01-01&viewFallbackFrom=rest-maps-2024-04-01&tabs=HTTP>`_
 
 
     For additional options that can be provided to each base map service see the following links:
 
-    * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
-    * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
-    * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
+    * OpenStreetMap: `ol/source/OSM <https://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
+    * Bing: `ol/source/BingMaps <https://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
+    * XYZ `ol/source/XYZ <https://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
 
     .. note::
 
