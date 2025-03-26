@@ -86,7 +86,7 @@ def recursive_search_and_save(fixes, directory, dry_run):
 
                 click.secho(".", fg="blue", nl=False)
 
-                with curr_file.open('r') as f:
+                with curr_file.open("r") as f:
                     text = f.read()
 
                 # search for other instances of the URL in other files and replace them as well
@@ -107,9 +107,7 @@ def recursive_search_and_save(fixes, directory, dry_run):
                         # Save changes to the file
                         with curr_file.open("w") as f:
                             f.write(text)
-                        click.echo(
-                            f"  {click.style('Changes saved!', fg="green")}"
-                        )
+                        click.echo(f"  {click.style('Changes saved!', fg="green")}")
                     else:
                         click.echo(
                             f"  {click.style('Dry Run:', bg="yellow")} Changes NOT saved."
@@ -117,10 +115,17 @@ def recursive_search_and_save(fixes, directory, dry_run):
 
                     files_updated.add(str(curr_file))
             except Exception as e:
-                click.secho(f"ERROR: an unexpected error occurred while replacing links in {str(file)}: {e}", fg="red")
+                click.secho(
+                    f"ERROR: an unexpected error occurred while replacing links in {str(file)}: {e}",
+                    fg="red",
+                )
                 click.secho(f"       Skipping file...", fg="red")
 
-    click.secho(f"{os.linesep}Fixed {len(fixes)} links in {len(files_updated)} files.", fg="green")
+    click.secho(
+        f"{os.linesep}Fixed {len(fixes)} links in {len(files_updated)} files.",
+        fg="green",
+    )
+
 
 def fix_links(links_type, links, docs_dir):
     fixes = dict()
@@ -169,7 +174,10 @@ def fix_links(links_type, links, docs_dir):
                 with open(docs_dir / filename, "r") as f:
                     lines = f.readlines()
             except Exception as e:
-                click.secho(f"ERROR: an unexpected error occurred while reading lines in {str(filename)}: {e}", fg="red")
+                click.secho(
+                    f"ERROR: an unexpected error occurred while reading lines in {str(filename)}: {e}",
+                    fg="red",
+                )
                 click.secho(f"       Skipping file...", fg="red")
                 continue
 
@@ -275,9 +283,7 @@ def fix_links(links_type, links, docs_dir):
                                 was_skipped = True
                                 break
                             elif entered_option == "9":
-                                click.secho(
-                                    f"Exiting {links_type}...", fg="yellow"
-                                )
+                                click.secho(f"Exiting {links_type}...", fg="yellow")
                                 return fixes
                             else:
                                 # User supplied a new link
@@ -290,20 +296,27 @@ def fix_links(links_type, links, docs_dir):
                                     fg="blue",
                                 )
                                 response = requests.get(new_link, timeout=10)
-                                if not 200 >= response.status_code < 300 and response.status_code not in [403, 406]:
+                                if (
+                                    not 200 >= response.status_code < 300
+                                    and response.status_code not in [403, 406]
+                                ):
                                     click.secho(
                                         f"  Error: URL returned status code {response.status_code}.",
                                         fg="red",
                                     )
-                                    click.secho(
-                                        "  Please enter a valid URL.", fg="red"
+                                    click.secho("  Please enter a valid URL.", fg="red")
+                                    new_link = (
+                                        link["info"]
+                                        if links_type == "redirected"
+                                        else ""
                                     )
-                                    new_link = link["info"] if links_type == "redirected" else ""
                                     continue
                             except requests.RequestException as e:
                                 click.secho(f"  Error: {e}", fg="red")
                                 click.secho("  Please enter a valid URL.", fg="red")
-                                new_link = link["info"] if links_type == "redirected" else ""
+                                new_link = (
+                                    link["info"] if links_type == "redirected" else ""
+                                )
                                 continue
 
                             click.secho("  URL is valid.", fg="green")
