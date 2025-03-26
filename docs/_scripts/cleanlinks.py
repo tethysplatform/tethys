@@ -1,5 +1,4 @@
 from difflib import SequenceMatcher
-import copy
 import json
 from pathlib import Path
 import os
@@ -119,7 +118,7 @@ def recursive_search_and_save(fixes, directory, dry_run):
                     f"ERROR: an unexpected error occurred while replacing links in {str(file)}: {e}",
                     fg="red",
                 )
-                click.secho(f"       Skipping file...", fg="red")
+                click.secho("       Skipping file...", fg="red")
 
     click.secho(
         f"{os.linesep}Fixed {len(fixes)} links in {len(files_updated)} files.",
@@ -130,7 +129,6 @@ def recursive_search_and_save(fixes, directory, dry_run):
 def fix_links(links_type, links, docs_dir):
     fixes = dict()
     ctx = click.get_current_context()
-    dry_run = ctx.params["dry_run"]
     similarity_threshold = ctx.params["similarity_threshold"]
 
     if links_type not in ["broken", "redirected"]:
@@ -178,7 +176,7 @@ def fix_links(links_type, links, docs_dir):
                     f"ERROR: an unexpected error occurred while reading lines in {str(filename)}: {e}",
                     fg="red",
                 )
-                click.secho(f"       Skipping file...", fg="red")
+                click.secho("       Skipping file...", fg="red")
                 continue
 
             # Replace each link in the file
@@ -383,7 +381,7 @@ def clean_links(dry_run, similarity_threshold):
     """Clean up the links in the documentation."""
     if dry_run:
         click.secho(
-            f"Dry Run: No changes will be saved.",
+            "Dry Run: No changes will be saved.",
             fg="yellow",
         )
 
