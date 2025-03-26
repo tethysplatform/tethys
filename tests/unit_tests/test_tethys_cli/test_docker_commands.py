@@ -293,7 +293,7 @@ class TestDockerCommands(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn(
             "Tethys uses the postgis/postgis image on Docker Hub. "
-            "See: https://registry.hub.docker.com/r/postgis/postgis/",
+            "See: https://hub.docker.com/r/postgis/postgis/",
             po_call_args[0][0][0],
         )
         mock_default_options.assert_called()

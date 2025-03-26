@@ -24,7 +24,7 @@ The app class, located in ``app.py`` is the primary configuration file for Tethy
 
 a. Open ``app.py`` in your favorite Python IDE or text editor.
 
-b. Change the theme color of your app by changing the value of the ``color`` property of the ``DamInventory`` class. Use a site like `color-hex <http://www.color-hex.com/>`_ to find an appropriate hexadecimal RGB color.
+b. Change the theme color of your app by changing the value of the ``color`` property of the ``DamInventory`` class. Use a site like `color-hex <https://www.color-hex.com/>`_ to find an appropriate hexadecimal RGB color.
 
 c. You can also change the icon of your app. Find a new image online (square images work best) and save it in the ``public/images/`` directory of your app. Then change the value of the ``icon`` property of the ``DamInventory`` class to match the name of the image.
 
@@ -321,6 +321,6 @@ This concludes the Beginner Tutorial. You can view the solution on GitHub at `<h
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b beginner-solution beginner-|version|

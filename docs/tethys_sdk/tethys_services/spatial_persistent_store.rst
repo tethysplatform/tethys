@@ -16,7 +16,7 @@ Spatial Persistent Stores API
         # pip
         pip install psycopg2 "sqlalchemy<2" geoalchemy2
 
-Persistent store databases can support spatial data types. The spatial capabilities are provided by the `PostGIS <http://postgis.net/>`_ extension for the `PostgreSQL <http://www.postgresql.org/>`_ database. PostGIS extends the column types of PostgreSQL databases by adding ``geometry``, ``geography``, and ``raster`` types. PostGIS also provides hundreds of database functions that can be used to perform spatial operations on data stored in spatial columns. For more information on PostGIS, see `<http://www.postgis.net>`_.
+Persistent store databases can support spatial data types. The spatial capabilities are provided by the `PostGIS <http://postgis.net/>`_ extension for the `PostgreSQL <https://www.postgresql.org/>`_ database. PostGIS extends the column types of PostgreSQL databases by adding ``geometry``, ``geography``, and ``raster`` types. PostGIS also provides hundreds of database functions that can be used to perform spatial operations on data stored in spatial columns. For more information on PostGIS, see `<http://www.postgis.net>`_.
 
 The following article details the the spatial capabilities of persistent stores in Tethys Platform. This article builds on the concepts and ideas introduced in the :doc:`./persistent_store` documentation. Please review it before continuing.
 
@@ -57,7 +57,7 @@ Registering spatially enabled persistent stores is the same process as registeri
 Adding Spatial Columns to Model
 -------------------------------
 
-Working with the ``raster``, ``geometry``, and ``geography`` column types provided by PostGIS is not supported natively in SQLAlchemy. Tethys Platform includes `GeoAlchemy2 <https://geoalchemy-2.readthedocs.org/en/latest/index.html>`_, which extends SQLAlchemy to support spatial columns and database functions. The following example illustrates how a data model could be developed using SQLAlchemy and GeoAlchemy2:
+Working with the ``raster``, ``geometry``, and ``geography`` column types provided by PostGIS is not supported natively in SQLAlchemy. Tethys Platform includes `GeoAlchemy2 <https://geoalchemy-2.readthedocs.io/en/latest/index.html>`_, which extends SQLAlchemy to support spatial columns and database functions. The following example illustrates how a data model could be developed using SQLAlchemy and GeoAlchemy2:
 
 ::
 
@@ -89,7 +89,7 @@ Working with the ``raster``, ``geometry``, and ``geography`` column types provid
             self.geometry = 'SRID=4326;POINT({0} {1})'.format(longitude, latitude)
             self.value = value
 
-This data model is very similar to the data model defined in the :doc:`./persistent_store` documentation. Rather than using ``Float`` columns to store the latitude and longitude coordinates, the spatial data model uses a GeoAlchemy2 ``Geometry`` column called "geometry". Notice that the constructor (``__init__.py``) takes the ``latitude`` and ``longitude`` provided and sets the value of the ``geometry`` column to a string with a special format called `Well Known Text <http://en.wikipedia.org/wiki/Well-known_text>`_. This is a common pattern when working with GeoAlchemy2 columns.
+This data model is very similar to the data model defined in the :doc:`./persistent_store` documentation. Rather than using ``Float`` columns to store the latitude and longitude coordinates, the spatial data model uses a GeoAlchemy2 ``Geometry`` column called "geometry". Notice that the constructor (``__init__.py``) takes the ``latitude`` and ``longitude`` provided and sets the value of the ``geometry`` column to a string with a special format called `Well Known Text <https://en.wikipedia.org/wiki/Well-known_text>`_. This is a common pattern when working with GeoAlchemy2 columns.
 
 Initialization Function
 -----------------------
@@ -154,4 +154,4 @@ GeoAlchemy2 makes it easy to use the spatial functions provided by PostGIS to pe
 
 .. important::
 
-    This article only briefly introduces the concepts of working with GeoAlchemy2. It is highly recommended that you complete the `GeoAlchemy ORM <https://geoalchemy-2.readthedocs.org/en/latest/orm_tutorial.html>`_ tutorial.
+    This article only briefly introduces the concepts of working with GeoAlchemy2. It is highly recommended that you complete the `GeoAlchemy ORM <https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html>`_ tutorial.

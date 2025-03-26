@@ -21,14 +21,14 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b dataset-controls-solution dataset-controls-solution-|version|
 
 1. Stub out new JavaScript file
 ===============================
 
-In this step you'll learn how to create a JavaScript module using the closure method. For more on JavaScript closures see: `JavaScript Closures - MDN <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_. The basic module developed in this step will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data you embedded in the template in the previous tutorial.
+In this step you'll learn how to create a JavaScript module using the closure method. For more on JavaScript closures see: `JavaScript Closures - MDN <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures>`_. The basic module developed in this step will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data you embedded in the template in the previous tutorial.
 
 1. Create a new JavaScript file at :file:`public/js/gee_datasets.js` with the following contents:
 
@@ -344,6 +344,6 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b dataset-controls-js-solution dataset-controls-js-solution-|version|

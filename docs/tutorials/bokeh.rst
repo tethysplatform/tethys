@@ -165,7 +165,7 @@ The ``Slider`` and ``Plot`` will appear in the order they were added to the ``Co
 
 ``Param`` is a Python library for providing parameters with dynamically generated values. One of the main advantages of ``Param`` is that parameters are provided using declarative programming. ``Panel``, on the other hand, is a visualization library for creating custom dashboards that rely on the use of widgets to render plots, images, and tables. These libraries can be used in combination with ``Bokeh Server`` to attain the same result of creating interactive tools within an app that are connected to Python objects. Given the depth of these libraries, the resulting code structure, and the level of difficulty for creating complex visualizations may be simplified.
 
-In this example we will build on top of the ``bokeh_tutorial`` app to demonstrate how to use ``Param`` and ``Panel`` in combination with ``bokeh Server``. This same example can be found in `Panel's documentation <https://panel.pyviz.org/gallery/param/param_subobjects.html#gallery-param-subobjects>`_.
+In this example we will build on top of the ``bokeh_tutorial`` app to demonstrate how to use ``Param`` and ``Panel`` in combination with ``bokeh Server``. This same example can be found in `Panel's documentation <https://panel.holoviz.org/how_to/param/examples/subobjects.html#param-subobjects>`_.
 
 1. Install the ``param`` and ``panel`` libraries by running the following with your Tethys environment activated:
 
@@ -314,6 +314,6 @@ This concludes the ``Bokeh Integration`` tutorial. You can view the solution on 
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial
     cd tethysapp-bokeh_tutorial
     git checkout -b solution solution-|version|

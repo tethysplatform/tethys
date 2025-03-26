@@ -69,4 +69,4 @@ Glossary
         A WPS Service provides processes/geoprocesses as web services using the Open Geospatial Consortium Web Processing Service (WPS) standard.
 
     Debian
-        Debian is a type of Linux operating system and many Linux distributions are based on it including Ubuntu. See `Linux Distributions <http://en.wikipedia.org/wiki/Linux_distribution#Examples>`_ for more information.
+        Debian is a type of Linux operating system and many Linux distributions are based on it including Ubuntu. See `Linux Distributions <https://en.wikipedia.org/wiki/Linux_distribution>`_ for more information.

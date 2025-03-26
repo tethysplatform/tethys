@@ -4,7 +4,7 @@ Web Processing Services API
 
 **Last Updated:** May 2017
 
-Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be formatted. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite.
+Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <https://www.ogc.org/publications/standard/wps/>`_ that provides rules for how inputs and outputs for processing services should be formatted. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite.
 
 Web Processing Service Settings
 ===============================
@@ -99,7 +99,7 @@ Working with WPS Services in Apps
         # pip
         pip install owslib
 
-The Web Processing Service API is powered by `OWSLib <http://geopython.github.io/OWSLib/#wps>`_, a Python client that can be used to interact with OGC web services. For detailed explanations the WPS client provided by OWSLib, refer to the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_. This article only provides a basic introduction to working with the OWSLib WPS client.
+The Web Processing Service API is powered by `OWSLib <https://owslib.readthedocs.io/en/latest/usage.html#wps>`_, a Python client that can be used to interact with OGC web services. For detailed explanations the WPS client provided by OWSLib, refer to the `OWSLib WPS Documentation <https://owslib.readthedocs.io/en/latest/usage.html#wps>`_. This article only provides a basic introduction to working with the OWSLib WPS client.
 
 Get a WPS Engine
 ----------------
@@ -141,4 +141,4 @@ After you have retrieved a valid ``owslib.wps.WebProcessingService`` engine obje
   monitorExecution(execution)
 
 
-It is also possible to perform requests using data that are hosted on WFS servers, such as the GeoServer that is provided as part of the Tethys Platform software suite. See the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_ for more details on how this is to be done.
+It is also possible to perform requests using data that are hosted on WFS servers, such as the GeoServer that is provided as part of the Tethys Platform software suite. See the `OWSLib WPS Documentation <https://owslib.readthedocs.io/en/latest/usage.html#wps>`_ for more details on how this is to be done.

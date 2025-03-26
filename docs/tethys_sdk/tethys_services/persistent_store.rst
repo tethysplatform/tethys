@@ -16,7 +16,7 @@ Persistent Stores API
         # pip
         pip install psycopg2 "sqlalchemy<2"
 
-The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
+The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. The databases that will be created are `PostgreSQL <https://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
 
 The process of creating a new persistent database can be summarized in the following steps:
 

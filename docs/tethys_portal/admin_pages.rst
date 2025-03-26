@@ -154,7 +154,7 @@ The ``AnonymousUser`` can be used to assign permissions and permission groups to
 Python Social Auth
 ==================
 
-Tethys leverages the excellent `Python Social Auth <https://python-social-auth-docs.readthedocs.io/en/latest/configuration/django.html>`_ to provide support for authenticating with popular servies such as Facebook, Google, LinkedIn, and HydroShare. The links under the ``PYTHON SOCIAL AUTH`` heading can be used to manually manage the social associations and data that is linked to users when they authenticate using Python Social Auth.
+Tethys leverages the excellent `Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/configuration/django.html>`_ to provide support for authenticating with popular servies such as Facebook, Google, LinkedIn, and HydroShare. The links under the ``PYTHON SOCIAL AUTH`` heading can be used to manually manage the social associations and data that is linked to users when they authenticate using Python Social Auth.
 
 .. tip::
 

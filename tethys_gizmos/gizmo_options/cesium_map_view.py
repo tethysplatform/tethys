@@ -12,7 +12,7 @@ class CesiumMapView(TethysGizmoOptions):
     Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. If the Cesium Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
     Attributes:
-        cesium_ion_token(str): Cesium Ion Access Token. See: `Cesium Rest API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
+        cesium_ion_token(str): Cesium Ion Access Token. See: `Cesium Rest API - Authentication <https://cesium.com/learn/ion/ion-upload-rest/>`_.
         options(dict): Viewer basic options. One item in dictionary per option.
         globe(dict): Options to set on the Globe of the view.
         view(dict): Set the initial view of the map using various methods(e.g.: flyTo, setView).
@@ -46,7 +46,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Cesium Ion Token**
 
-    This is your Cesium Ion Access token that grants you access to the Cesium REST APIs. In newer version of Cesium this token is required for proper functioning of the map viewer. To learn how to obtain a token, see `Cesium REST API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
+    This is your Cesium Ion Access token that grants you access to the Cesium REST APIs. In newer version of Cesium this token is required for proper functioning of the map viewer. To learn how to obtain a token, see `Cesium REST API - Authentication <https://cesium.com/learn/ion/ion-upload-rest/>`_.
 
     ::
 
