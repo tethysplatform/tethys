@@ -259,6 +259,24 @@ todo_include_todos = True
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
+# Link check options
+linkcheck_ignore = [
+    r"https?://(.*\.)?example\.com.*",
+    r"https?://localhost.*",
+    r"https?://127\.0\.0\.1.*",
+    r"https?://example.onelogin.com",
+    r"https?://tethys.not-real.org.*",
+    r"https?://<SERVER_DOMAIN_NAME>",
+]
+
+linkcheck_allowed_redirects = {
+    r"https?://anaconda\.org.*": r"https?://anaconda\.org/account/login.*",
+    r"https?://.*\.earthengine\.google\.com.*": r"https?://accounts\.google\.com.*",
+    r"https?://console\.developers\.google\.com.*": r"https?://accounts\.google\.com.*",
+    r"https?://hub\.docker\.com.*": r"https?://login\.docker\.com.*",
+    r"https?://(www)?\.hydroshare\.org": r"https?://auth\.cuahsi\.org.*",
+}
+
 # Define the canonical URL if you are using a custom domain on Read the Docs
 html_baseurl = environ.get("READTHEDOCS_CANONICAL_URL", "")
 
