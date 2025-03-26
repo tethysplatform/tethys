@@ -294,7 +294,7 @@ class PostGisContainerMetadata(ContainerMetadata):
         if not defaults:
             write_pretty_output(
                 "Tethys uses the postgis/postgis image on Docker Hub. "
-                "See: https://registry.hub.docker.com/r/postgis/postgis/"
+                "See: https://hub.docker.com/r/postgis/postgis/"
             )
 
             # POSTGRES_PASSWORD

@@ -17,17 +17,17 @@ Review the `Google Earth Engine Introduction <https://developers.google.com/eart
 
 As a Tethys Developer, you will likely use the the Python API more often than the JavaScript API. However, there are not as many examples or documentation for Python. We recommend becoming familiar with the JavaScript examples and then learning how to convert any JavaScript example into the Python equivalent.
 
-Complete the `Get Started guide <https://developers.google.com/earth-engine/getstarted>`_.
+Complete the `Get Started guide <https://developers.google.com/earth-engine/guides/getstarted>`_.
 
 3. Google Earth Engine Python API
 =================================
 
-Complete the `Python Installation - Colab Notebook guide <https://developers.google.com/earth-engine/python_install-colab.html>`_
+Complete the `Python Installation - Colab Notebook guide <https://developers.google.com/earth-engine/guides/python_install-colab.html>`_
 
 4. Convert JavaScript Example to Python
 =======================================
 
-1. Review the following syntax differences between the JavaScript and Python APIs: `JavaScript-Python Syntax Comparison <https://developers.google.com/earth-engine/python_install>`_
+1. Review the following syntax differences between the JavaScript and Python APIs: `JavaScript-Python Syntax Comparison <https://developers.google.com/earth-engine/guides/python_install>`_
 
 2. Choose an example from the **Scripts** tab of the `Code Editor <https://code.earthengine.google.com/>`_ and convert it into Python in the Colab editor using the guidelines from the article above.
 
@@ -75,17 +75,17 @@ Run the following command and replace ``<project_id>`` with your Google Cloud Pr
 8. Review GEE Key Concepts
 ==========================
 
-* `Client vs. Server <https://developers.google.com/earth-engine/client_server>`_
-* `Deferred Execution <https://developers.google.com/earth-engine/deferred_execution>`_
-* `Scale <https://developers.google.com/earth-engine/scale>`_
-* `Projections <https://developers.google.com/earth-engine/projections>`_
-* `Debugging <https://developers.google.com/earth-engine/debugging>`_
+* `Client vs. Server <https://developers.google.com/earth-engine/guides/client_server>`_
+* `Deferred Execution <https://developers.google.com/earth-engine/guides/deferred_execution>`_
+* `Scale <https://developers.google.com/earth-engine/guides/scale>`_
+* `Projections <https://developers.google.com/earth-engine/guides/projections>`_
+* `Debugging <https://developers.google.com/earth-engine/guides/debugging>`_
 
 Reference
 =========
 
-* `Earth Engine Code Editor <https://developers.google.com/earth-engine/playground>`_
-* `Python Installation <https://developers.google.com/earth-engine/python_install>`_
-* `Install into an Existing Conda Installation <https://developers.google.com/earth-engine/python_install-conda.html#install_api>`_
-* `Earth Engine Command Line Tool <https://developers.google.com/earth-engine/command_line>`_
-* `Updating the Python API <https://developers.google.com/earth-engine/python_install-conda.html#updating_the_api>`_
+* `Earth Engine Code Editor <https://developers.google.com/earth-engine/guides/playground>`_
+* `Python Installation <https://developers.google.com/earth-engine/guides/python_install>`_
+* `Install into an Existing Conda Installation <https://developers.google.com/earth-engine/guides/python_install-conda.html#install_api>`_
+* `Earth Engine Command Line Tool <https://developers.google.com/earth-engine/guides/command_line>`_
+* `Updating the Python API <https://developers.google.com/earth-engine/guides/python_install-conda.html#updating_the_api>`_
