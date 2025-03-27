@@ -312,5 +312,6 @@ html_collapsible_definitions = True
 # Link icon for header links instead of pharagraph icons that are the default
 html_permalinks_icon = Icons.permalinks_icon
 
-
+spelling_exclude_patterns = ["_build", "_static", "_scripts", "_templates"]
 spelling_show_suggestions = True
+spelling_suggestion_limit=5
