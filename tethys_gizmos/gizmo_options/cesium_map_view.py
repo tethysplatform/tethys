@@ -83,7 +83,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **View**
 
-    Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Camera.html>`_):
+    Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://sandcastle.cesium.com/?src=Camera.html>`_):
 
     ::
 
@@ -201,7 +201,7 @@ class CesiumMapView(TethysGizmoOptions):
             )
         ]
 
-    * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html>`_
+    * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://sandcastle.cesium.com/?src=Imagery%20Layers%20Manipulation.html>`_
 
     **Entities**
 
@@ -497,7 +497,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Translate Cesium Attributes from Javascript to Python**
 
-    You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html>`_
+    You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://sandcastle.cesium.com/>`_
 
     Here are a few things to remember:
 
