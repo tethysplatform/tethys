@@ -267,6 +267,7 @@ linkcheck_ignore = [
     r"https?://example.onelogin.com",
     r"https?://tethys.not-real.org.*",
     r"https?://<SERVER_DOMAIN_NAME>",
+    r"https?://(.*\.)?my-org.com.*",
 ]
 
 linkcheck_allowed_redirects = {
@@ -275,6 +276,7 @@ linkcheck_allowed_redirects = {
     r"https?://console\.developers\.google\.com.*": r"https?://accounts\.google\.com.*",
     r"https?://hub\.docker\.com.*": r"https?://login\.docker\.com.*",
     r"https?://(www)?\.hydroshare\.org": r"https?://auth\.cuahsi\.org.*",
+    r"https?://signup.sendgrid.com.*": r"https?://login.sendgrid.com/unified_login/start.*",
 }
 
 # Define the canonical URL if you are using a custom domain on Read the Docs

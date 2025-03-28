@@ -223,7 +223,7 @@ PostGIS Extension (Optional)
 NGINX (Recommended)
 ===================
 
-`NGINX <https://www.nginx.com/resources/wiki/>`_ (pronounced "N-gin-X") is a free and open-source HTTP server and reverse proxy. It is known for its high performance, stability, rich feature set, simple configuration, and low resource consumption. NGINX is used in combination with Daphne as an HTTP server to host Tethys Portal in production.
+`NGINX <https://docs.nginx.com>`_ (pronounced "N-gin-X") is a free and open-source HTTP server and reverse proxy. It is known for its high performance, stability, rich feature set, simple configuration, and low resource consumption. NGINX is used in combination with Daphne as an HTTP server to host Tethys Portal in production.
 
     Install NGINX as follows:
 
@@ -282,7 +282,7 @@ Apache (Optional)
 Supervisor
 ==========
 
-`Supervisor <http://supervisord.org/>`_ is a process control system. It allows users to control and monitor many processes on UNIX-like operating systems. Supervisor is used in the Tethys Portal production deployment to control the NGINX and Daphne server processes.
+`Supervisor <https://supervisord.org/>`_ is a process control system. It allows users to control and monitor many processes on UNIX-like operating systems. Supervisor is used in the Tethys Portal production deployment to control the NGINX and Daphne server processes.
 
     1. Install Supervisor as follows:
 
@@ -323,7 +323,7 @@ Supervisor
 
     .. note::
 
-        These instructions are based on `Installing Supervisor <http://supervisord.org/installing.html>`_, `Install EPEL <https://fedoraproject.org/wiki/EPEL>`_, and `How to install Supervisor on RHEL/CentOS/AlmaLinux/RockyLinux <https://www.hostround.com/one/knowledgebase/100/How-to-install-Supervisor-on-RHELorCentOSorAlmaLinuxorRockyLinux.html>`_.
+        These instructions are based on `Installing Supervisor <https://supervisord.org/installing.html>`_, `Install EPEL <https://docs.fedoraproject.org/en-US/epel/>`_, and `How to install Supervisor on RHEL/CentOS/AlmaLinux/RockyLinux <https://www.hostround.com/one/knowledgebase/100/How-to-install-Supervisor-on-RHELorCentOSorAlmaLinuxorRockyLinux.html>`_.
 
 
 Postfix (Optional)

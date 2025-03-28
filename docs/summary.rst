@@ -49,7 +49,7 @@ This page is provides a list of all the external resources referred too during t
 **SQLAlchemy**
 
 * `SQLAlchemy <https://www.sqlalchemy.org/>`_
-* `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_
+* `Unified Tutorial <https://docs.sqlalchemy.org/en/20/tutorial/index.html#unified-tutorial>`_
 
 **GeoAlchemy**
 
@@ -75,7 +75,7 @@ This page is provides a list of all the external resources referred too during t
 
 * `PyPI <https://pypi.org/>`_
 * `Setuptools Documentation <https://pythonhosted.org/setuptools/setuptools.html>`_
-* `Writing Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_
+* `Writing Setup Script <https://setuptools.pypa.io/en/latest/userguide/quickstart.html>`_
 * `Namespace <https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces>`_
 
 **Production Installation**
