@@ -74,7 +74,7 @@ This page is provides a list of all the external resources referred too during t
 **Python**
 
 * `PyPI <https://pypi.org/>`_
-* `Setuptools Documentation <https://pythonhosted.org/setuptools/setuptools.html>`_
+* `Setuptools Documentation <https://setuptools.pypa.io/en/latest/index.html>`_
 * `Writing Setup Script <https://setuptools.pypa.io/en/latest/userguide/quickstart.html>`_
 * `Namespace <https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces>`_
 

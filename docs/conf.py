@@ -226,13 +226,25 @@ todo_emit_warnings = True
 # Link Check Configuration
 # --------------------------------------------------------------------------------------------------------------------
 linkcheck_ignore = [
-    r"https?://(.*\.)?example\.com.*",
+    r"https?:(//)?(.*\.)?example\.com.*",
     r"https?://localhost.*",
     r"https?://127\.0\.0\.1.*",
     r"https?://example.onelogin.com",
     r"https?://tethys.not-real.org.*",
-    r"https?://<SERVER_DOMAIN_NAME>",
     r"https?://(.*\.)?my-org.com.*",
+    r"https?://\<(.*)\>.*",
+    r"https?:\/\/\<SERVER_DOMAIN_NAME\>.*",
+    r"https?://arcgis_enterprise_host.domain.com.*",
+    r"https?://developers.facebook.com.*",
+    r"https?://business.facebook.com.*",
+    r"https?://developers.google.com.*",
+    r"https?://domain-name.*",
+    r"https?://github.com/<USERNAME>/tethysapp-earth_engine",
+    r"https?://linux.die.net/.*",
+    r"https?://sampleserver1.arcgisonline.com.*",
+    r"https?://raw.githubusercontent.com.*",
+    # Tethys Dataset Services
+    r"http://docs.ckan.org/en/ckan-2.2/api.html",
 ]
 
 linkcheck_allowed_redirects = {
@@ -242,6 +254,7 @@ linkcheck_allowed_redirects = {
     r"https?://hub\.docker\.com.*": r"https?://login\.docker\.com.*",
     r"https?://(www)?\.hydroshare\.org": r"https?://auth\.cuahsi\.org.*",
     r"https?://signup.sendgrid.com.*": r"https?://login.sendgrid.com/unified_login/start.*",
+    r"https?://portal.azure.com.*": r"https?://login.microsoftonline.com/.*",
 }
 
 # --------------------------------------------------------------------------------------------------------------------

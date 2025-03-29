@@ -185,7 +185,7 @@ def fix_links(links_type, links, docs_dir):
                 new_link = link["info"] if links_type == "redirected" else ""
                 if links_type == "broken":
                     click.echo(
-                        f"{os.linesep}  {click.style(link["code"], bold=True)}: {click.style(original_link, bg="magenta")}"
+                        f"{os.linesep}  {click.style(original_link, bg="magenta")}"
                     )
                 elif links_type == "redirected":
                     click.echo(

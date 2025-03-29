@@ -148,4 +148,4 @@ Finally, install the SELinux policy module using the ``semodule`` command with t
 SELinux Troubleshooting
 =======================
 
-The following article may provide help on troubleshooting `SELinux: A sysadmin's guid to SELinux: 42 answers to the big questions <https://opensource.com/article/18/7/sysadmin-guide-selinux#:~:text=SELinux%20is%20a%20LABELING%20system,The%20kernel%20enforces%20these%20rules>`_.
+The following article may provide help on troubleshooting `SELinux: A sysadmin's guid to SELinux: 42 answers to the big questions <https://opensource.com/article/18/7/sysadmin-guide-selinux>`_.
