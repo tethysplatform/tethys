@@ -111,7 +111,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Layers**
 
-    ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesiumjs.org/tutorials/Imagery-Layers-Tutorial/#imagery-providers>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
+    ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesium.com/learn/cesiumjs-learn/cesiumjs-imagery/#more-imagery-providers>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
     You can load one or more imagery layers using the following pattern:
 
     ::
@@ -353,7 +353,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Terrain**
 
-    Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
+    Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesium.com/learn/cesiumjs-learn/cesiumjs-terrain/#terrain-providers>`_
 
     You can load a terrain provider using the following pattern:
 
