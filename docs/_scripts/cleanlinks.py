@@ -331,10 +331,7 @@ def fix_links(links_type, links, docs_dir):
                 except click.Abort:
                     # Propagate Abort to kill the script on Keyboard interrupt
                     raise
-                except IndexError as e:
-                    import traceback
-
-                    traceback.print_exc()
+                except IndexError:
                     link["unfixed_reason"] = "Could not find line."
                     click.secho("ERROR: Could not find line.", fg="red")
                 except Exception as e:
