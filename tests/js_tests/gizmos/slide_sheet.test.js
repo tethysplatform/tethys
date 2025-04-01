@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-const { screen, fireEvent, waitFor } = require("@testing-library/dom");
+const { screen, fireEvent } = require("@testing-library/dom");
 
 import SLIDE_SHEET from "../../../tethys_gizmos/static/tethys_gizmos/js/slide_sheet.js"
 
