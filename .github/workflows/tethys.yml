@@ -93,7 +93,7 @@ jobs:
           coveralls --service=github
 
   frontend-tests:
-    name: Frontend Tests With Jest
+    name: Frontend Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo

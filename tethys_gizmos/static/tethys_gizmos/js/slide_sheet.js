@@ -21,6 +21,9 @@ var SLIDE_SHEET = (function() {
     // Slide sheet
     var open_slide_sheet, close_slide_sheet;
 
+    // Private functions
+    var open, close;
+
     /************************************************************************
     *                    PRIVATE FUNCTION IMPLEMENTATIONS
     *************************************************************************/
