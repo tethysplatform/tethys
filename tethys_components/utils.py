@@ -1,4 +1,5 @@
 import inspect
+from typing import Any
 from pathlib import Path
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.base.paths import (
@@ -7,6 +8,52 @@ from tethys_apps.base.paths import (
     _get_app_media,
     _get_user_media,
 )
+
+
+class AttrDict(dict):
+    """Wrapper for event args provided by ReactPy as dicts to allow attribute access"""
+
+    def __getattr__(self, key: str) -> Any:
+        val : str = None
+        if key in self:
+            mod_key = key
+        else:
+            mod_key = self.snake_to_camel(key)
+
+        if mod_key in self:
+            val = self[mod_key]
+            if isinstance(val, dict):
+                val = AttrDict(val)
+            elif isinstance(val, list):
+                val = [AttrDict(v) if isinstance(v, dict) else v for v in val]
+            return val
+        else:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
+
+    @staticmethod
+    def snake_to_camel(snake_str: str) -> str:
+        words = snake_str.split('_')
+        camel_case = words[0] + ''.join(word.capitalize() for word in words[1:])
+        return camel_case
+
+
+def args_to_attrdicts(func: callable) -> callable:
+    """Wrapper that converts all dict args to AttrDict objects"""
+
+    def wrapped(*data):
+        return func(*[AttrDict(d) if isinstance(d, dict) else d for d in data])
+
+    return wrapped
+
+
+def fetch_json(url: str, as_attr_dict: bool = True) -> dict | AttrDict:
+    """Fetches data expected to be JSON from url and returns result as AttrDict"""
+    from requests import get
+
+    result = get(url).json()
+    if as_attr_dict:
+        result = AttrDict(result)
+    return result
 
 
 class _PathsQuery:
@@ -42,8 +89,8 @@ def _infer_app_from_stack_trace():
             pass
 
     if not app_package:
-        raise Exception(
-            "This hook must be called from a tethysapp package. No package was found in the call stack."
+        raise ModuleNotFoundError(
+            "This hook must be called from a tethysapp module. No such module was found in the call stack."
         )
 
     for app_s in SingletonHarvester().apps:
@@ -52,7 +99,7 @@ def _infer_app_from_stack_trace():
             break
 
     if not app:
-        raise Exception("The {app_package} app was not found.")
+        raise EnvironmentError("The {app_package} app was not found.")
 
     return app
 
@@ -165,9 +212,18 @@ def background_execute(callable, args=None, delay_seconds=None):
     else:
         from threading import Thread
 
-        t = Thread(callable, args=args if args else [])
+        t = Thread(target=callable, args=args if args else [])
 
     t.start()
+
+
+def transform_coordinate(coordinate, src_proj, target_proj):
+    from pyproj import Transformer, CRS
+
+    source_crs = CRS(src_proj)
+    target_crs = CRS(target_proj)
+    transformer = Transformer.from_crs(source_crs, target_crs)
+    return transformer.transform(coordinate[0], coordinate[1])
 
 
 class Props(dict):
@@ -181,10 +237,7 @@ class Props(dict):
 
     def _snake_to_camel(self, snake):
         parts = snake.split("_")
-        if len(parts) == 1:
-            camel = snake
-        else:
-            camel = parts[0] + "".join(map(lambda x: x.title(), parts[1:]))
+        camel = parts[0] + "".join(map(lambda x: x.title(), parts[1:]))
 
         return camel
 

@@ -1,7 +1,6 @@
 
-import {Button} from "https://esm.sh/react-bootstrap@2.10.2?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Button&bundle_deps";
-export {Button};
-loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
+import ReactPlayer from "https://esm.sh/react-player/?deps=react@19.0,react-dom@19.0,react-is@19.0";
+export {ReactPlayer};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -16,19 +15,6 @@ function loadCSS(href) {
         head.append(style);
     }
 }
-
-export default ({ children, ...props }) => {
-    const [{ component }, setComponent] = React.useState({});
-    React.useEffect(() => {
-        import("https://esm.sh/{npm_package_name}?deps={dependencies}").then((module) => {
-            // dynamically load the default export since we don't know if it's exported.
-            setComponent({ component: module.default });
-        });
-    });
-    return component
-        ? React.createElement(component, props, ...(children || []))
-        : null;
-};
 
 
 export function bind(node, config) {
@@ -60,6 +46,16 @@ function stringifyToDepth(val, depth, replacer, space) {
     return JSON.stringify(_build('', val, depth), null, space);
 }
 
+function stringifyReplacer (key, value) {
+    if (key === '') return value;
+    try {
+        JSON.stringify(value);
+        return value;
+    } catch (err) {
+        return (typeof value === 'object') ? value : undefined;
+    }
+}
+
 function makeJsonSafeEventHandler(oldHandler) {
     // Since we can't really know what the event handlers get passed we have to check if
     // they are JSON serializable or not. We can allow normal synthetic events to pass
@@ -68,20 +64,24 @@ function makeJsonSafeEventHandler(oldHandler) {
 
         var filteredArguments = [];
         Array.from(arguments).forEach(function (arg) {
+            let filteredArg;
             if (typeof arg === "object" && arg.nativeEvent) {
                 // this is probably a standard React synthetic event
-                filteredArguments.push(arg);
+                filteredArg = arg;
             } else {
-                filteredArguments.push(JSON.parse(stringifyToDepth(arg, 3, (key, value) => {
-                    if (key === '') return value;
-                    try {
-                        JSON.stringify(value);
-                        return value;
-                    } catch (err) {
-                        return (typeof value === 'object') ? value : undefined;
-                    }
-                })))
+                filteredArg = JSON.parse(stringifyToDepth(arg, 3, stringifyReplacer));
             }
+            // Add non-enumerable properties 
+            if (arg.__proto__) {
+                Object.getOwnPropertyNames(arg.__proto__).forEach(function (propName) {
+                    if (propName == 'constructor') return;
+                    if (!arg.hasOwnProperty(propName) && arg[propName]) {
+                        filteredArg[propName] = arg[propName];
+                        delete filteredArg[propName + '_'];
+                    }
+                });
+            }
+            filteredArguments.push(filteredArg);
         });
         oldHandler(...Array.from(filteredArguments));
     };

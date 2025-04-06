@@ -1,16 +1,14 @@
-from reactpy import component, html
-from tethys_components.utils import Props
-from tethys_components.custom import HeaderWithNavBar
+def NavHeader(lib, **kwargs):
+    app = kwargs["app"]
+    user = kwargs["user"]
+    nav_links = kwargs.get("nav_links", [])
+    content = kwargs.get("content")
+    if not isinstance(content, list):
+        content = [content]
 
-
-@component
-def NavHeader(props, *children):
-    app = props.get("app")
-    user = props.get("user")
-    nav_links = props.get("nav-links")
-
-    return html.div(
-        Props(class_name="h-100"),
-        HeaderWithNavBar(app, user, nav_links),
-        html.div(Props(style=Props(padding_top="56px")), *children),
+    return lib.html.div(class_name="h-100")(
+        lib.tethys.HeaderWithNavBar(app=app, user=user, nav_links=nav_links),
+        lib.html.div(style=lib.Props(padding_top="56px"))(
+            *content
+        ),
     )

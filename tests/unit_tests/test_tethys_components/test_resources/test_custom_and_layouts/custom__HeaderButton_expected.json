@@ -1,0 +1,1 @@
+{"tagName": "Button", "attributes": {"variant": "light", "size": "sm", "className": " styled-header-button", "style": {"backgroundColor": "rgba(255, 255, 255, 0.1)", "border": "none", "color": "white", "borderRadius": "unset"}}, "importSource": {"source": "components-test-lib.js", "sourceType": "NAME", "fallback": "\u231b", "unmountBeforeUpdate": false}, "children": []}
