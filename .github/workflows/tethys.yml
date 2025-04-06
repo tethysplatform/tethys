@@ -77,7 +77,7 @@ jobs:
           conda activate tethys
           conda list
           tethys db start
-          pip install coveralls
+          pip install coveralls reactpy
       # Test Tethys
       - name: Test Tethys
         run: |
