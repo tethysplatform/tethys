@@ -8,7 +8,5 @@ def NavHeader(lib, **kwargs):
 
     return lib.html.div(class_name="h-100")(
         lib.tethys.HeaderWithNavBar(app=app, user=user, nav_links=nav_links),
-        lib.html.div(style=lib.Props(padding_top="56px"))(
-            *content
-        ),
+        lib.html.div(style=lib.Props(padding_top="56px"))(*content),
     )

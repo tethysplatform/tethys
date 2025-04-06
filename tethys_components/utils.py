@@ -14,7 +14,7 @@ class AttrDict(dict):
     """Wrapper for event args provided by ReactPy as dicts to allow attribute access"""
 
     def __getattr__(self, key: str) -> Any:
-        val : str = None
+        val: str = None
         if key in self:
             mod_key = key
         else:
@@ -28,12 +28,14 @@ class AttrDict(dict):
                 val = [AttrDict(v) if isinstance(v, dict) else v for v in val]
             return val
         else:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{key}'"
+            )
 
     @staticmethod
     def snake_to_camel(snake_str: str) -> str:
-        words = snake_str.split('_')
-        camel_case = words[0] + ''.join(word.capitalize() for word in words[1:])
+        words = snake_str.split("_")
+        camel_case = words[0] + "".join(word.capitalize() for word in words[1:])
         return camel_case
 
 

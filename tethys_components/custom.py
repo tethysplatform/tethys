@@ -78,6 +78,7 @@ def LoadingAnimation(lib, **kwargs):
         )
     )
 
+
 def BaseMapSuite(lib, **kwargs):
     default = kwargs.get("default", "OpenStreetMap")
     ESRI_BASEMAP_NAMES = [
@@ -128,16 +129,14 @@ def BaseMapSuite(lib, **kwargs):
 
 def Map(lib, **kwargs):
     on_click = kwargs.get("onClick")
-    return lib.ol.Map(
-        **({"onClick": on_click} if on_click else {})
-    )(
-        lib.ol.View(center=kwargs.get("center", [-100, 40]), zoom=kwargs.get("zoom", 3.5)),
-        lib.tethys.BaseMapSuite(),
-        lib.ol.layer.Group(title="Overlays", fold="open")(
-            *kwargs.get("children", [])
+    return lib.ol.Map(**({"onClick": on_click} if on_click else {}))(
+        lib.ol.View(
+            center=kwargs.get("center", [-100, 40]), zoom=kwargs.get("zoom", 3.5)
         ),
+        lib.tethys.BaseMapSuite(),
+        lib.ol.layer.Group(title="Overlays", fold="open")(*kwargs.get("children", [])),
         lib.ol.control.ScaleLine(),
-        lib.tethys.LayerPanel()
+        lib.tethys.LayerPanel(),
     )
 
 
@@ -185,12 +184,10 @@ def HeaderButton(lib, **kwargs):
             background_color="rgba(255, 255, 255, 0.1)",
             border="none",
             color="white",
-            border_radius="50%" if kwargs.get("shape") == "circle" else "unset"
-        )
+            border_radius="50%" if kwargs.get("shape") == "circle" else "unset",
+        ),
     )
-    return lib.bs.Button(
-        **dict(defaults, **kwargs)
-    )(
+    return lib.bs.Button(**dict(defaults, **kwargs))(
         *kwargs.get("children", []),
     )
 
@@ -256,11 +253,7 @@ def HeaderWithNavBar(lib, **kwargs):
                 },
             ),
         )(
-            lib.bs.Container(
-                as_="header", 
-                fluid=True, 
-                class_name="px-4"
-            )(
+            lib.bs.Container(as_="header", fluid=True, class_name="px-4")(
                 lib.bs.NavbarToggle(
                     aria_controls="offcanvasNavbar",
                     class_name="styled-header-button",
@@ -275,9 +268,7 @@ def HeaderWithNavBar(lib, **kwargs):
                     ),
                     f" {app.name}",
                 ),
-                lib.bs.Form(
-                    inline="true"
-                )(
+                lib.bs.Form(inline="true")(
                     (
                         lib.tethys.HeaderButton(
                             id="btn-app-settings",
@@ -298,12 +289,9 @@ def HeaderWithNavBar(lib, **kwargs):
                     ),
                 ),
                 lib.bs.NavbarOffcanvas(
-                    id="offcanvasNavbar", 
-                    aria_labelledby="offcanvasNavbarLabel"
+                    id="offcanvasNavbar", aria_labelledby="offcanvasNavbarLabel"
                 )(
-                    lib.bs.OffcanvasHeader(
-                        closeButton=True
-                    )(
+                    lib.bs.OffcanvasHeader(closeButton=True)(
                         lib.bs.OffcanvasTitle(id="offcanvasNavbarLabel")("Navigation")
                     ),
                     lib.bs.OffcanvasBody(

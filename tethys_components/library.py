@@ -15,6 +15,7 @@ import logging
 from functools import partial
 from tethys_components.utils import Props, args_to_attrdicts, inspect
 from tethys_components import custom as custom_components
+
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
@@ -72,9 +73,8 @@ class _ReactPyElementWrapper:
                 if callable(v):
                     kwargs[k] = args_to_attrdicts(v)
             # Custom ReactPy
-            if (
-                self.component.startswith("ol")
-                and any(x in self.component for x in ["ol.source", "ol.layer"])
+            if self.component.startswith("ol") and any(
+                x in self.component for x in ["ol.source", "ol.layer"]
             ):
                 args = [{"options": Props(**kwargs)}]
             else:
@@ -454,8 +454,9 @@ class ComponentLibrary:
 
         register_matches = re.findall(r"""lib\.register\([^\)]+\)""", source_code)
         for register_match in register_matches:
-            capture_match = re.match(r"""lib\.register\((?:package=)?['"]([^'"]+)['"], ?(?:accessor=)?['"]([^'"]+)['"],? ?(?:(?:styles=)?(\[[^\]]+\])?,? ?)(?:(?:default_export=)?['"]([^'"]+)['"])?""",
-                ''.join(register_match.split()),
+            capture_match = re.match(
+                r"""lib\.register\((?:package=)?['"]([^'"]+)['"], ?(?:accessor=)?['"]([^'"]+)['"],? ?(?:(?:styles=)?(\[[^\]]+\])?,? ?)(?:(?:default_export=)?['"]([^'"]+)['"])?""",
+                "".join(register_match.split()),
             )
             args = []
             for m in capture_match.groups():
@@ -485,6 +486,7 @@ class ComponentLibrary:
 
 class CustomComponentManager:
     """Wraps calls to lib.tethys to silently pass the library as the first argument to every custom component"""
+
     def __init__(self, library):
         self.library = library
 

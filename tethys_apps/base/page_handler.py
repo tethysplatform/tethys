@@ -50,10 +50,18 @@ if has_module("reactpy"):
             component(func): The page component to render
         """
         lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}")
-        component_obj = PageLoader(lib, content=component(lib, **extras) if extras else component(lib))
+        component_obj = PageLoader(
+            lib, content=component(lib, **extras) if extras else component(lib)
+        )
 
         if layout is not None:
-            page_obj = layout(lib, app=app, user=user, nav_links=app.navigation_links, content=component_obj)
+            page_obj = layout(
+                lib,
+                app=app,
+                user=user,
+                nav_links=app.navigation_links,
+                content=component_obj,
+            )
         else:
             page_obj = component_obj
 
