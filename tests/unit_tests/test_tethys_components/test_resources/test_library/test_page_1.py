@@ -5,7 +5,7 @@ def test(lib):
         lib.bs.Container(fluid=True, style=lib.utils.Props(height="calc(100vh - 75px"))(
             lib.bs.Row()(lib.bs.Button()("Render")),
             lib.bs.Row()(
-                lib.bs.Col(style=lib.Props(width="50vw"))(
+                lib.bs.Col(style=lib.Style(width="50vw"))(
                     lib.me.Editor(
                         height="80vh",
                         language="python",
@@ -16,9 +16,9 @@ def test(lib):
                         ),
                     )
                 ),
-                lib.bs.Col(style=lib.Props(width="50vw"))(
+                lib.bs.Col(style=lib.Style(width="50vw"))(
                     lib.html.iframe(
-                        style=lib.Props(height="100%", width="100%"),
+                        style=lib.Style(height="100%", width="100%"),
                         src="/apps/reactpy-playground/render",
                         title="Result",
                     )

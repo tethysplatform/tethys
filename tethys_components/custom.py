@@ -5,11 +5,18 @@ THIS_DIR = Path(__file__).parent
 RESOURCE_DIR = THIS_DIR / "resources"
 
 
-def LayerPanel(lib, **kwargs):
-    return lib.ollp.LayerPanel(**kwargs)
+def Display(lib, children=None):
+    """A full screen container for nesting content within."""
+    return lib.bs.Container(fluid=True, style=lib.Style(height="100%"))(
+        *(children or [])
+    )
 
 
-def PageLoader(lib, **kwargs):
+def LayerPanel(lib):
+    return lib.ollp.LayerPanel()
+
+
+def PageLoader(lib, content):
     hide_loading, set_hide_loading = lib.hooks.use_state(True)
     hide_content, set_hide_content = lib.hooks.use_state(True)
 
@@ -29,7 +36,7 @@ def PageLoader(lib, **kwargs):
         dependencies=[],
     )
 
-    return lib.html.div(
+    return lib.html.div(style=lib.Style(height="100%", width="100%"))(
         (
             lib.html.div(key="loading-content")(
                 lib.tethys.LoadingAnimation(),
@@ -39,15 +46,17 @@ def PageLoader(lib, **kwargs):
         ),
         lib.html.div(
             key="page-content",
-            style=lib.Props(display=None if hide_content else "unset"),
-        )(kwargs.get("content", [])),
+            style=lib.Style(
+                display=None if hide_content else "unset", height="100%", width="100%"
+            ),
+        )(content),
     )
 
 
-def LoadingAnimation(lib, **kwargs):
+def LoadingAnimation(lib):
     return lib.html._(
         lib.html.div(
-            style=lib.Props(
+            style=lib.Style(
                 zIndex=1029,
                 background="white",
                 top=0,
@@ -79,8 +88,7 @@ def LoadingAnimation(lib, **kwargs):
     )
 
 
-def BaseMapSuite(lib, **kwargs):
-    default = kwargs.get("default", "OpenStreetMap")
+def BaseMapSuite(lib, default="OpenStreetMap"):
     ESRI_BASEMAP_NAMES = [
         "NatGeo_World_Map",
         "USA_Topo_Maps",
@@ -127,43 +135,89 @@ def BaseMapSuite(lib, **kwargs):
     )
 
 
-def Map(lib, **kwargs):
-    on_click = kwargs.get("onClick")
+def Map(lib, center=None, zoom=3.5, on_click=None, children=None):
+    """A Map for displaying geospatial data
+
+    Args:
+        center ([int|float,int|float]): The center point of the rendered map, in [lon, lat] or [x, y] format. Defaults to [-100, 40].
+        zoom (int|float): The initial zoom level of the map, where 1 is at the global scale and 20 is at the neighborhood scale. Defaults to 3.5.
+        on_click (callable): A function that should be called when the map is clicked. Defaults to None.
+        children (list[]): A list of layers to be rendered. These can also be passed in as nested components (i.e. Map()(layer1, layer2, layer3)). Defaults to [].
+    """
+
+    center = center or [-100, 40]
     return lib.ol.Map(**({"onClick": on_click} if on_click else {}))(
-        lib.ol.View(
-            center=kwargs.get("center", [-100, 40]), zoom=kwargs.get("zoom", 3.5)
-        ),
+        lib.ol.View(center=center, zoom=zoom),
         lib.tethys.BaseMapSuite(),
-        lib.ol.layer.Group(title="Overlays", fold="open")(*kwargs.get("children", [])),
+        lib.ol.layer.Group(title="Overlays", fold="open")(*children or []),
         lib.ol.control.ScaleLine(),
         lib.tethys.LayerPanel(),
     )
 
 
-def Panel(lib, **kwargs):
-    show = kwargs.get("show", False)
-    set_show = kwargs.get("set_show", lambda x: x)
-    position = kwargs.get("position", "end")
-    extent = kwargs.get("extent", "40vw")
-    name = kwargs.get("name", "Panel")
-    style = kwargs.get("style", {})
-    if position in ["top", "bottom"]:  # pragma: no cover
+def Chart(lib, data, width=400, height=300, x_label="", y_label=""):
+    """A chart for displaying x-y coordinate pairs
+    Args:
+        data (list[dict]): The data to be rendered, given as a list of dicts where each dict represents a point on chart (e.g. {"x": x, "y": y})
+        width (int): The rendered width of the chart in pixels. Defaults to 500.
+        height (int): The rendered height of the chart in pixels. Defaults to 400.
+        x_label (str): The rendered label of the x-axis. Defauls to "".
+        y_label (str): The rendered label of the y-axis. Defauls to "".
+    """
+    return lib.rc.LineChart(
+        width=width,
+        height=height,
+        data=data,
+    )(
+        lib.rc.CartesianGrid(strokeDasharray="3 3"),
+        lib.rc.XAxis(dataKey="x", label=x_label),
+        lib.rc.YAxis(label=lib.Props(value=y_label, angle=-90, position="insideLeft")),
+        lib.rc.Tooltip(),
+        lib.rc.Line(type="monotone", dataKey="y"),
+    )
+
+
+def Panel(
+    lib,
+    show=False,
+    set_show=None,
+    anchor="right",
+    extent="500px",
+    title="Panel",
+    style=None,
+    children=None,
+):
+    """A pop out panel with custom content anchored to the left, right, top or bottom
+    Args:
+        show (bool): Whether to show initially. Defaults to False.
+        set_show (callable): The function that will be used to update the show state. It accepts
+        anchor (str): Where to anchor the panel. Must be one of: right, left, top, or bottom. Defaults to "right".
+        extent (str): The height/width of the panel. Defaults to "500px".
+        title (str): The title to display at the top of the panel. Defaults to "Panel".
+        style (dict[str: str]|Style): Any CSS styles as key:value pairs to be applied to the panel. Defaults to {}.
+        children: The actual nested content that is to be rendered. Can also be supplied as call args to Panel (i.e. Panel()(panel_content)).
+    """
+    style = style or {}
+    if anchor in ["top", "bottom"]:
         style["height"] = extent
     else:
+        if anchor not in ["right", "left"]:
+            raise ValueError("Position must be one of: right, left, top, or bottom")
+        anchor = {"right": "end", "left": "start"}[anchor]
         style["width"] = extent
 
-    def handle_close(event):  # pragma: no cover
+    def handle_close(_):
         set_show(False)
 
     return lib.html.div(
         role="dialog",
         **{"aria-modal": "true"},
-        class_name=f"offcanvas offcanvas-{position}{' show' if show else ''}",
+        class_name=f"offcanvas offcanvas-{anchor}{' show' if show else ''}",
         tabIndex="-1",
-        style=lib.Props(visibility="visible") | style,
+        style=lib.Style(visibility="visible") | style,
     )(
         lib.html.div(class_name="offcanvas-header")(
-            lib.html.div(class_name="offcanvas-title h5")(name),
+            lib.html.div(class_name="offcanvas-title h5")(title),
             lib.html.button(
                 type="button",
                 class_name="btn-close",
@@ -171,7 +225,7 @@ def Panel(lib, **kwargs):
                 onClick=handle_close,
             ),
         ),
-        lib.html.div(class_name="offcanvas-body")(*kwargs.get("children", [])),
+        lib.html.div(class_name="offcanvas-body")(*children or []),
     )
 
 
@@ -180,40 +234,36 @@ def HeaderButton(lib, **kwargs):
         variant="light",
         size="sm",
         class_name=f"{kwargs.get('class_name', '')} styled-header-button",
-        style=lib.Props(
+        style=lib.Style(
             background_color="rgba(255, 255, 255, 0.1)",
             border="none",
             color="white",
             border_radius="50%" if kwargs.get("shape") == "circle" else "unset",
-        ),
+        )
+        | kwargs.get("style", {}),
     )
     return lib.bs.Button(**dict(defaults, **kwargs))(
         *kwargs.get("children", []),
     )
 
 
-def NavIcon(lib, **kwargs):
+def NavIcon(lib, src="", style=None):
+    style = style or {}
     return lib.html.img(
-        src=kwargs.get("src"),
+        src=src,
         class_name="d-inline-block align-top",
-        style=lib.Props(
+        style=lib.Style(
             padding=0,
             height="30px",
             **{"border-radius": "50%"},
-            background=kwargs.get("backgroundColor") or kwargs.get("background-color"),
-        ),
+        )
+        | style,
     )
 
 
-def _get_db_object(app):
-    return app.db_object
-
-
-def HeaderWithNavBar(lib, **kwargs):
-    app = kwargs["app"]
-    user = kwargs["user"]
-    nav_links = kwargs.get("nav_links", [])
-    app_db_query = lib.hooks.use_query(_get_db_object, {"app": app})
+def HeaderWithNavBar(lib, app, user, nav_links=None):
+    nav_links = nav_links or []
+    app_db_query = lib.hooks.use_query(lib.utils._get_db_object, {"app": app})
     app_id = app_db_query.data.id if app_db_query.data else 999
     location = lib.hooks.use_location()
     margin_top, set_margin_top = lib.hooks.use_state(-56)
@@ -241,7 +291,7 @@ def HeaderWithNavBar(lib, **kwargs):
             class_name="shadow",
             expand=False,
             variant="dark",
-            style=lib.Props(
+            style=lib.Style(
                 background=app.color,
                 height="56px",
                 margin_top=margin_top,
@@ -261,10 +311,11 @@ def HeaderWithNavBar(lib, **kwargs):
                 lib.bs.NavbarBrand(
                     href=f"/apps/{app.root_url}/",
                     class_name="mx-0 d-none d-sm-block",
-                    style=lib.Props(color="white"),
+                    style=lib.Style(color="white"),
                 )(
                     lib.tethys.NavIcon(
-                        src=f"{STATIC_URL}{app.icon}", background_color=app.color
+                        src=f"{STATIC_URL}{app.icon}",
+                        style=lib.Style(background_color=app.color),
                     ),
                     f" {app.name}",
                 ),
@@ -306,7 +357,7 @@ def HeaderWithNavBar(lib, **kwargs):
                                     href=link["href"],
                                     key=f"link-{index}",
                                     active=location.pathname == link["href"],
-                                    style=lib.Props(padding_left="10pt"),
+                                    style=lib.Style(padding_left="10pt"),
                                 )(
                                     link["title"],
                                 )

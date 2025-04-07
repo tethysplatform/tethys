@@ -224,22 +224,18 @@ class TestComponentUtils(TestCase):
             utils._get_layout_component(self.app, "default"), self.app.default_layout
         )
 
-    def test_get_layout_component_default_layout_not_callable(self):
+    @mock.patch("tethys_components.utils.layouts")
+    def test_get_layout_component_default_layout_not_callable(self, mock_layouts):
         self.app.default_layout = "TestLayout"
-        mock_import = mock.patch("builtins.__import__").start()
         self.assertEqual(
-            utils._get_layout_component(self.app, "default"),
-            mock_import().layouts.TestLayout,
+            utils._get_layout_component(self.app, "default"), mock_layouts.TestLayout
         )
-        mock.patch.stopall()
 
-    def test_get_layout_component_not_default_not_callable(self):
-        mock_import = mock.patch("builtins.__import__").start()
+    @mock.patch("tethys_components.utils.layouts")
+    def test_get_layout_component_not_default_not_callable(self, mock_layouts):
         self.assertEqual(
-            utils._get_layout_component(self.app, "TestLayout"),
-            mock_import().layouts.TestLayout,
+            utils._get_layout_component(self.app, "TestLayout"), mock_layouts.TestLayout
         )
-        mock.patch.stopall()
 
     def test_AttrDict_all_the_stops(self):
         test_dict = {
@@ -255,27 +251,31 @@ class TestComponentUtils(TestCase):
             "oneMore": {"howbout": "this"},
         }
 
-        d = utils.AttrDict(test_dict)
+        d = utils.DotNotationDict(test_dict)
 
         self.assertTrue(hasattr(d, "camel_prop"))
         self.assertTrue(isinstance(d.camel_prop, list))
         self.assertEqual(len(d.camel_prop), 1)
-        self.assertTrue(isinstance(d.camel_prop[0], utils.AttrDict))
+        self.assertTrue(isinstance(d.camel_prop[0], utils.DotNotationDict))
         self.assertTrue(hasattr(d.camel_prop[0], "list"))
         self.assertEqual(d.camel_prop[0].list, "of")
         self.assertTrue(hasattr(d.camel_prop[0], "props"))
         self.assertTrue(isinstance(d.camel_prop[0].props, list))
         self.assertEqual(len(d.camel_prop[0].props), 3)
         self.assertEqual(d.camel_prop[0].props[0], "that")
-        self.assertTrue(isinstance(d.camel_prop[0].props[1], utils.AttrDict))
+        self.assertTrue(isinstance(d.camel_prop[0].props[1], utils.DotNotationDict))
         self.assertTrue(hasattr(d.camel_prop[0].props[1], "are"))
         self.assertEqual(d.camel_prop[0].props[1].are, "all")
         self.assertEqual(d.camel_prop[0].props[2], "very")
         self.assertTrue(hasattr(d.camel_prop[0], "differ_ent"))
         self.assertTrue(isinstance(d.camel_prop[0].differ_ent, list))
         self.assertEqual(len(d.camel_prop[0].differ_ent), 2)
-        self.assertTrue(isinstance(d.camel_prop[0].differ_ent[0], utils.AttrDict))
-        self.assertTrue(isinstance(d.camel_prop[0].differ_ent[1], utils.AttrDict))
+        self.assertTrue(
+            isinstance(d.camel_prop[0].differ_ent[0], utils.DotNotationDict)
+        )
+        self.assertTrue(
+            isinstance(d.camel_prop[0].differ_ent[1], utils.DotNotationDict)
+        )
         self.assertTrue(hasattr(d.camel_prop[0].differ_ent[0], "types"))
         self.assertEqual(d.camel_prop[0].differ_ent[0].types, "and")
         self.assertTrue(hasattr(d.camel_prop[0].differ_ent[1], "nesting"))
@@ -285,17 +285,17 @@ class TestComponentUtils(TestCase):
         self.assertTrue(hasattr(d, "update_"))
         self.assertEqual(d.update_, 100)
         self.assertTrue(hasattr(d, "one_more"))
-        self.assertTrue(isinstance(d.one_more, utils.AttrDict))
+        self.assertTrue(isinstance(d.one_more, utils.DotNotationDict))
         self.assertTrue(hasattr(d.one_more, "howbout"))
         self.assertEqual(d.one_more.howbout, "this")
         with self.assertRaises(AttributeError):
             d.not_there
 
     def test_args_to_attrdicts_wrapper(self):
-        @utils.args_to_attrdicts
+        @utils.args_to_dot_notation_dicts
         def test_func(arg1, arg2, arg3):
-            self.assertTrue(isinstance(arg1, utils.AttrDict))
-            self.assertTrue(isinstance(arg2, utils.AttrDict))
+            self.assertTrue(isinstance(arg1, utils.DotNotationDict))
+            self.assertTrue(isinstance(arg2, utils.DotNotationDict))
             self.assertTrue(isinstance(arg3, str))
 
         test_func(
@@ -311,7 +311,7 @@ class TestComponentUtils(TestCase):
         data = utils.fetch_json(test_url)
 
         mock_import.return_value.get.assert_called_once_with(test_url)
-        self.assertTrue(isinstance(data, utils.AttrDict))
+        self.assertTrue(isinstance(data, utils.DotNotationDict))
         self.assertEqual(data.this, "is")
         self.assertEqual(data.a, "test")
 
@@ -347,3 +347,8 @@ class TestComponentUtils(TestCase):
         )
 
         mock.patch.stopall()
+
+    def test_get_db_object(self):
+        app = mock.MagicMock(db_object="expected")
+        val = utils._get_db_object(app)
+        self.assertEqual(val, "expected")

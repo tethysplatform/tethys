@@ -26,32 +26,33 @@ class TestComponentLibrary(TestCase):
     def test_building_complex_page(self):
         for test_page in self.test_pages:
             test_page_name = test_page.name[:-3]
-            expected_vdom_json_fpath = (
-                LIBRARY_EVAL_DIR / f"{test_page_name}_expected.json"
-            )
-            expected_js_module_fpath = (
-                LIBRARY_EVAL_DIR / f"{test_page_name}_expected.js"
-            )
+            with self.subTest(page=test_page_name):
+                expected_vdom_json_fpath = (
+                    LIBRARY_EVAL_DIR / f"{test_page_name}_expected.json"
+                )
+                expected_js_module_fpath = (
+                    LIBRARY_EVAL_DIR / f"{test_page_name}_expected.js"
+                )
 
-            lib = library.ComponentLibrary(test_page_name)
-            test_module = __import__(test_page_name, fromlist=["test"])
-            raw_vdom = test_module.test(lib)
-            js_string = lib.render_js_template()
-            json_vdom = dumps(raw_vdom, default=self.json_serializer)
+                lib = library.ComponentLibrary(test_page_name)
+                test_module = __import__(test_page_name, fromlist=["test"])
+                raw_vdom = test_module.test(lib)
+                js_string = lib.render_js_template()
+                json_vdom = dumps(raw_vdom, default=self.json_serializer)
 
-            alternate_lib = library.ComponentLibrary(f"{test_page_name}_alternate")
-            alternate_lib.load_dependencies_from_source_code(test_module.test)
-            alternate_lib_js_string = lib.render_js_template()
-            self.assertEqual(js_string, alternate_lib_js_string)
+                alternate_lib = library.ComponentLibrary(f"{test_page_name}_alternate")
+                alternate_lib.load_dependencies_from_source_code(test_module.test)
+                alternate_lib_js_string = lib.render_js_template()
+                self.assertEqual(js_string, alternate_lib_js_string)
 
-            # # Uncomment to create expected files when writing new test
-            # expected_vdom_json_fpath.write_text(json_vdom)
-            # expected_js_module_fpath.write_text(js_string)
+                # # Uncomment to create expected files when writing new test
+                # expected_vdom_json_fpath.write_text(json_vdom)
+                # expected_js_module_fpath.write_text(js_string)
 
-            expected_json_vdom = expected_vdom_json_fpath.read_text()
-            expected_js_string = expected_js_module_fpath.read_text()
-            self.assertEqual(json_vdom, expected_json_vdom)
-            self.assertEqual(js_string, expected_js_string)
+                expected_json_vdom = expected_vdom_json_fpath.read_text()
+                expected_js_string = expected_js_module_fpath.read_text()
+                self.assertEqual(json_vdom, expected_json_vdom)
+                self.assertEqual(js_string, expected_js_string)
 
     def test_cannot_instantiate_ComponentLibraryManager(self):
         with self.assertRaises(RuntimeError):

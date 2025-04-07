@@ -4,7 +4,7 @@ def test(lib):
         "river_id": "Test 123",
         "series": [{"x": 1, "y": 100}, {"x": 2, "y": 200}],
     }
-    return lib.html.div(style=lib.Props(width="100vw", height="calc(100vh - 57px)"))(
+    return lib.html.div(style=lib.Style(width="100vw", height="calc(100vh - 57px)"))(
         lib.tethys.Map(
             lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
                 lib.ol.source.ImageArcGISRest(
@@ -14,9 +14,9 @@ def test(lib):
         ),
         lib.tethys.Panel(
             show=True,
-            position="end",
+            anchor="right",
             extent="50vw",
-            name="Forecast",
+            title="Forecast",
         )(
             lib.bs.Container(
                 lib.bs.Row(

@@ -4,6 +4,7 @@ from pathlib import Path
 from tethys_components import custom, layouts
 from tethys_components.library import ComponentLibrary
 from unittest import TestCase, mock
+from asgiref.sync import async_to_sync
 
 
 THIS_DIR = Path(__file__).parent
@@ -25,8 +26,10 @@ class TestCustomComponents(TestCase):
         cls.lib.hooks.use_location.return_value = "MOCK"
         cls.lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
         cls.required_kwargs_mapping = {
-            "HeaderWithNavBar": ["app", "user"],
-            "NavHeader": ["app", "user"],
+            "HeaderWithNavBar": {"app": cls.mock_all, "user": cls.mock_all},
+            "NavHeader": {"app": cls.mock_all, "user": cls.mock_all},
+            "PageLoader": {"content": "TEST"},
+            "Chart": {"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]},
         }
 
     def json_serializer(self, obj):
@@ -37,29 +40,32 @@ class TestCustomComponents(TestCase):
 
     def _do_test(self, module):
         for attr in dir(module):
-            module_name = module.__name__.split(".")[-1]
-            if attr.startswith("_"):
-                continue
-            component = getattr(module, attr)
-            if not callable(component):
-                continue
-            if list(inspect.signature(component).parameters.items())[0][0] != "lib":
-                continue
+            with self.subTest(module=module, attr=attr):
+                module_name = module.__name__.split(".")[-1]
+                if attr.startswith("_"):
+                    continue
+                component = getattr(module, attr)
+                if not callable(component):
+                    continue
+                if list(inspect.signature(component).parameters.items())[0][0] != "lib":
+                    continue
 
-            expected_vdom_json_fpath = (
-                CUSTOM_EVAL_DIR / f"{module_name}__{attr}_expected.json"
-            )
-            kwargs = {}
-            if attr in self.required_kwargs_mapping:
-                kwargs = {k: self.mock_all for k in self.required_kwargs_mapping[attr]}
-            raw_vdom = component(self.lib, **kwargs)
-            json_vdom = dumps(raw_vdom, default=self.json_serializer)
+                expected_vdom_json_fpath = (
+                    CUSTOM_EVAL_DIR / f"{module_name}__{attr}_expected.json"
+                )
+                kwargs = {}
+                if attr in self.required_kwargs_mapping:
+                    kwargs = {
+                        k: v for k, v in self.required_kwargs_mapping[attr].items()
+                    }
+                raw_vdom = component(self.lib, **kwargs)
+                json_vdom = dumps(raw_vdom, default=self.json_serializer)
 
-            # # Uncomment to create expected files when writing new test
-            # expected_vdom_json_fpath.write_text(json_vdom)
+                # # Uncomment to create expected files when writing new test
+                # expected_vdom_json_fpath.write_text(json_vdom)
 
-            expected_json_vdom = expected_vdom_json_fpath.read_text()
-            self.assertEqual(json_vdom, expected_json_vdom)
+                expected_json_vdom = expected_vdom_json_fpath.read_text()
+                self.assertEqual(json_vdom, expected_json_vdom)
 
     def test_all_custom_components(self):
         self._do_test(custom)
@@ -67,7 +73,34 @@ class TestCustomComponents(TestCase):
     def test_all_layouts(self):
         self._do_test(layouts)
 
-    def test_get_db_object(self):
-        app = mock.MagicMock(db_object="expected")
-        val = custom._get_db_object(app)
-        self.assertEqual(val, "expected")
+    def test_panel_special_case_1(self):
+        mock_lib = mock.MagicMock()
+        with self.assertRaises(ValueError):
+            custom.Panel(mock_lib, anchor="fail")
+
+    def test_panel_special_case_2(self):
+        mock_lib = mock.MagicMock()
+        style = mock.MagicMock()
+        custom.Panel(mock_lib, anchor="top", style=style)
+        style.__setitem__.assert_called_once_with("height", "500px")
+
+    def test_panel_special_case_3(self):
+        proof = mock.MagicMock()
+
+        def test_set_show(val):
+            proof(val)
+
+        panel = custom.Panel(self.lib, set_show=test_set_show)
+        async_to_sync(
+            panel["children"][0]["children"][1]["eventHandlers"]["onClick"].function
+        )(["ignored"])
+        proof.assert_called_once_with(False)
+
+    def test_navheader_special_case_1(self):
+        content = "not_list"
+        layout = layouts.NavHeader(
+            self.lib, app=self.mock_all, user=self.mock_all, content=content
+        )
+        vdom_content = layout["children"][1]["children"]
+        self.assertIsInstance(vdom_content, list)
+        self.assertListEqual([content], vdom_content)

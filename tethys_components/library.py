@@ -13,7 +13,7 @@ from pathlib import Path
 from jinja2 import Template
 import logging
 from functools import partial
-from tethys_components.utils import Props, args_to_attrdicts, inspect
+from tethys_components import utils
 from tethys_components import custom as custom_components
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
@@ -52,7 +52,7 @@ class _CustomComponentWrapper:
         elif kwargs and not args:
             for k, v in kwargs.items():
                 if callable(v):
-                    kwargs[k] = args_to_attrdicts(v)
+                    kwargs[k] = utils.args_to_dot_notation_dicts(v)
             vdom = self.vdom_func(**kwargs)
             vdom["__creator_func__"] = self.vdom_func
             vdom["__creator_kwargs__"] = kwargs
@@ -71,14 +71,14 @@ class _ReactPyElementWrapper:
         if kwargs and not args:
             for k, v in kwargs.items():
                 if callable(v):
-                    kwargs[k] = args_to_attrdicts(v)
+                    kwargs[k] = utils.args_to_dot_notation_dicts(v)
             # Custom ReactPy
             if self.component.startswith("ol") and any(
                 x in self.component for x in ["ol.source", "ol.layer"]
             ):
-                args = [{"options": Props(**kwargs)}]
+                args = [{"options": utils.Props(**kwargs)}]
             else:
-                args = [Props(**kwargs)]
+                args = [utils.Props(**kwargs)]
             kwargs = {}
         vdom = self.vdom_func(*args, **kwargs)
         return _CallableVdom(vdom)
@@ -92,11 +92,14 @@ class _ReactPyHTMLManager:
     with this manager you can now do lib.html.<element>(**props_as_kwargs)(children_as_args)
     """
 
-    def __getattr__(self, element):
+    def __init__(self):
         from reactpy import html
 
-        if hasattr(html, element):
-            return _ReactPyElementWrapper(getattr(html, element))
+        self.html = html
+
+    def __getattr__(self, element):
+        if hasattr(self.html, element):
+            return _ReactPyElementWrapper(getattr(self.html, element))
 
 
 class ComponentLibraryManager:
@@ -261,6 +264,7 @@ class ComponentLibrary:
         "hooks",
         "utils",
         "Props",
+        "Style",
     ]
     CURATED_PACKAGES = PackageManager(
         {
@@ -327,11 +331,11 @@ class ComponentLibrary:
 
                 package = hooks
             elif package_accessor == "utils":
-                from tethys_components import utils
-
                 package = utils
             elif package_accessor == "Props":
-                package = Props
+                package = utils.Props
+            elif package_accessor == "Style":
+                package = utils.Style
         elif hasattr(self.CURATED_PACKAGES, package_accessor):
             package = DynamicPackageManager(
                 library=self,
@@ -447,10 +451,11 @@ class ComponentLibrary:
                 calls to the component library (i.e. "lib.X.Y")
         """
         source_code = (
-            inspect.getsource(function_or_source_code)
+            utils.inspect.getsource(function_or_source_code)
             if callable(function_or_source_code)
             else function_or_source_code
         )
+        source_code = utils.remove_comments_and_docstrings(source_code)
 
         register_matches = re.findall(r"""lib\.register\([^\)]+\)""", source_code)
         for register_match in register_matches:
@@ -472,6 +477,11 @@ class ComponentLibrary:
 
                 if module_name == "register":
                     continue
+
+                if module_name == "tethys":
+                    self.load_dependencies_from_source_code(
+                        getattr(custom_components, path_parts[1])
+                    )
 
                 if module_name in self.INTERNALLY_MANAGED:
                     continue
@@ -503,7 +513,6 @@ class CustomComponentManager:
 
 
 class DynamicPackageManager:
-    """"""
 
     def __init__(
         self,
@@ -511,9 +520,12 @@ class DynamicPackageManager:
         package: Package = None,
         component: str = "",
     ):
+        from reactpy import web
+
         self.library = library
         self.package = package
         self.component = component
+        self.web = web
 
     def __getattr__(self, attr):
         component = f"{self.component}.{attr}" if self.component else attr
@@ -524,8 +536,6 @@ class DynamicPackageManager:
         return new_instance
 
     def __call__(self, *args, **kwargs):
-        from reactpy import web
-
         component_parts = self.component.split(".")
         _component = self.component
 
@@ -555,13 +565,13 @@ class DynamicPackageManager:
 
         added = self.package.add_component(module_path, component)
         if added:
-            self.package._reactpy_module = web.module_from_string(
+            self.package._reactpy_module = self.web.module_from_string(
                 name=self.library.name,
                 content=self.library.render_js_template(),
                 resolve_exports=False,
                 fallback="⌛",
             )
         return _ReactPyElementWrapper(
-            web.export(self.package._reactpy_module, export_component),
+            self.web.export(self.package._reactpy_module, export_component),
             self.package.accessor + "." + self.component,
         )(*args, **kwargs)

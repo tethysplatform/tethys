@@ -1,4 +1,7 @@
 import inspect
+import io
+import tokenize
+from tethys_components import layouts
 from typing import Any
 from pathlib import Path
 from tethys_apps.harvester import SingletonHarvester
@@ -10,7 +13,7 @@ from tethys_apps.base.paths import (
 )
 
 
-class AttrDict(dict):
+class DotNotationDict(dict):
     """Wrapper for event args provided by ReactPy as dicts to allow attribute access"""
 
     def __getattr__(self, key: str) -> Any:
@@ -23,9 +26,9 @@ class AttrDict(dict):
         if mod_key in self:
             val = self[mod_key]
             if isinstance(val, dict):
-                val = AttrDict(val)
+                val = DotNotationDict(val)
             elif isinstance(val, list):
-                val = [AttrDict(v) if isinstance(v, dict) else v for v in val]
+                val = [DotNotationDict(v) if isinstance(v, dict) else v for v in val]
             return val
         else:
             raise AttributeError(
@@ -39,22 +42,22 @@ class AttrDict(dict):
         return camel_case
 
 
-def args_to_attrdicts(func: callable) -> callable:
+def args_to_dot_notation_dicts(func: callable) -> callable:
     """Wrapper that converts all dict args to AttrDict objects"""
 
     def wrapped(*data):
-        return func(*[AttrDict(d) if isinstance(d, dict) else d for d in data])
+        return func(*[DotNotationDict(d) if isinstance(d, dict) else d for d in data])
 
     return wrapped
 
 
-def fetch_json(url: str, as_attr_dict: bool = True) -> dict | AttrDict:
+def fetch_json(url: str, as_attr_dict: bool = True) -> dict | DotNotationDict:
     """Fetches data expected to be JSON from url and returns result as AttrDict"""
     from requests import get
 
     result = get(url).json()
     if as_attr_dict:
-        result = AttrDict(result)
+        result = DotNotationDict(result)
     return result
 
 
@@ -254,6 +257,23 @@ class Props(dict):
         super(Props, self).__init__(**new_kwargs)
 
 
+class Style(dict):
+    """
+    Wrapper for style dictionaries that allow them to be passed as python kwargs instead.
+    This namely converts dashes ("-") to underscores for styles
+
+    Example:
+        Instead of lib.html.div(style={"background-color": "red", "font-size": "12px"}, "Hello"),
+        try using lib.html.div(style=Style(background_color="red, font_size="12px"), "Hello")
+    """
+
+    def __init__(self, **kwargs):
+        new_kwargs = {}
+        for k, v in kwargs.items():
+            new_kwargs[k.replace("_", "-")] = v
+        super(Style, self).__init__(**new_kwargs)
+
+
 def _get_layout_component(app, layout):
     if callable(layout) or layout is None:
         layout_func = layout
@@ -261,12 +281,44 @@ def _get_layout_component(app, layout):
         if callable(app.default_layout):
             layout_func = app.default_layout
         else:
-            from tethys_components import layouts
-
             layout_func = getattr(layouts, app.default_layout)
     else:
-        from tethys_components import layouts
-
         layout_func = getattr(layouts, app.default_layout)
 
     return layout_func
+
+
+def remove_comments_and_docstrings(source):
+    """Taken directly from https://stackoverflow.com/a/62074206"""
+    io_obj = io.StringIO(source)
+    out = ""
+    prev_toktype = tokenize.INDENT
+    last_lineno = -1
+    last_col = 0
+    for tok in tokenize.generate_tokens(io_obj.readline):
+        token_type = tok[0]
+        token_string = tok[1]
+        start_line, start_col = tok[2]
+        end_line, end_col = tok[3]
+        if start_line > last_lineno:
+            last_col = 0
+        if start_col > last_col:
+            out += " " * (start_col - last_col)
+        if token_type == tokenize.COMMENT:
+            pass
+        elif token_type == tokenize.STRING:
+            if prev_toktype != tokenize.INDENT:
+                if prev_toktype != tokenize.NEWLINE:
+                    if start_col > 0:
+                        out += token_string
+        else:
+            out += token_string
+        prev_toktype = token_type
+        last_col = end_col
+        last_lineno = end_line
+    out = "\n".join(x for x in out.splitlines() if x.strip())
+    return out
+
+
+def _get_db_object(app):
+    return app.db_object
