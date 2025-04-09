@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 
+import sys
 from django.core.management import get_commands
 
 from tethys_cli.cli_helpers import get_manage_path, run_process
@@ -99,13 +100,13 @@ def manage_command(args, unknown_args=None):
 
     if args.command == MANAGE_START:
         if args.port:
-            primary_process = ["python", manage_path, "runserver", args.port]
+            primary_process = [sys.executable, manage_path, "runserver", args.port]
         else:
-            primary_process = ["python", manage_path, "runserver"]
+            primary_process = [sys.executable, manage_path, "runserver"]
 
     elif args.command == MANAGE_COLLECTSTATIC:
         # Run pre_collectstatic
-        intermediate_process = ["python", manage_path, "pre_collectstatic"]
+        intermediate_process = [sys.executable, manage_path, "pre_collectstatic"]
 
         if args.link:
             intermediate_process.append("--link")
@@ -113,7 +114,7 @@ def manage_command(args, unknown_args=None):
         run_process(intermediate_process)
 
         # Setup for main collectstatic
-        primary_process = ["python", manage_path, "collectstatic"]
+        primary_process = [sys.executable, manage_path, "collectstatic"]
 
         if args.noinput:
             primary_process.append("--noinput")
@@ -130,9 +131,9 @@ def manage_command(args, unknown_args=None):
             f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
         )
         if args.force:
-            primary_process = ["python", manage_path, "collectworkspaces", "--force"]
+            primary_process = [sys.executable, manage_path, "collectworkspaces", "--force"]
         else:
-            primary_process = ["python", manage_path, "collectworkspaces"]
+            primary_process = [sys.executable, manage_path, "collectworkspaces"]
 
     elif args.command == MANAGE_COLLECT:
         # Convenience command to run collectstatic and collectworkspaces
@@ -148,11 +149,11 @@ def manage_command(args, unknown_args=None):
         )
 
         # Run pre_collectstatic
-        intermediate_process = ["python", manage_path, "pre_collectstatic"]
+        intermediate_process = [sys.executable, manage_path, "pre_collectstatic"]
         run_process(intermediate_process)
 
         # Setup for main collectstatic
-        intermediate_process = ["python", manage_path, "collectstatic"]
+        intermediate_process = [sys.executable, manage_path, "collectstatic"]
 
         if args.noinput:
             intermediate_process.append("--noinput")
@@ -160,16 +161,16 @@ def manage_command(args, unknown_args=None):
         run_process(intermediate_process)
 
         # Run collectworkspaces command
-        primary_process = ["python", manage_path, "collectworkspaces"]
+        primary_process = [sys.executable, manage_path, "collectworkspaces"]
 
     elif args.command == MANAGE_GET_PATH:
         print(manage_path)
 
     else:
         if args.django_help:
-            primary_process = ["python", manage_path, args.command, "--help"]
+            primary_process = [sys.executable, manage_path, args.command, "--help"]
         else:
-            primary_process = ["python", manage_path, args.command, *unknown_args]
+            primary_process = [sys.executable, manage_path, args.command, *unknown_args]
 
     if primary_process:
         run_process(primary_process)

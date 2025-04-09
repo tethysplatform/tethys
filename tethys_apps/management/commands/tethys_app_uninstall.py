@@ -11,6 +11,7 @@
 import site
 import subprocess
 import warnings
+import sys
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
@@ -132,7 +133,7 @@ class Command(BaseCommand):
                 db_app_group.delete()
 
         # Uninstall using pip
-        process = ["pip", "uninstall", "-y", item_with_prefix]
+        process = [sys.executable, "-m", "pip", "uninstall", "-y", item_with_prefix]
 
         try:
             subprocess.Popen(
