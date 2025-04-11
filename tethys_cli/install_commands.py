@@ -753,7 +753,7 @@ def install_command(args):
             elif args.without_dependencies:
                 write_warning("Skipping package installation.")
             else:
-                if validate_schema("conda", requirements_config):  # noqa: E501
+                if "conda" in requirements_config and validate_schema("packages", requirements_config["conda"]):  # noqa: E501
                     if has_module(conda_run):
                         conda_config = requirements_config["conda"]
                         install_packages(
