@@ -753,7 +753,9 @@ def install_command(args):
             elif args.without_dependencies:
                 write_warning("Skipping package installation.")
             else:
-                if "conda" in requirements_config and validate_schema("packages", requirements_config["conda"]):  # noqa: E501
+                if "conda" in requirements_config and validate_schema(
+                    "packages", requirements_config["conda"]
+                ):  # noqa: E501
                     if has_module(conda_run):
                         conda_config = requirements_config["conda"]
                         install_packages(
@@ -795,7 +797,15 @@ def install_command(args):
 
                 if validate_schema("pip", requirements_config):
                     write_msg("Running pip installation tasks...")
-                    call([sys.executable, "-m", "pip", "install", *requirements_config["pip"]])
+                    call(
+                        [
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            *requirements_config["pip"],
+                        ]
+                    )
                 try:
                     public_resources_dir = [
                         *Path().glob(str(Path("tethysapp", "*", "public"))),
@@ -833,7 +843,7 @@ def install_command(args):
     write_msg("Running application install....")
 
     cmd = [sys.executable, "-m", "pip", "install"]
-    
+
     if args.develop:
         cmd += ["-e", "."]
     else:

@@ -751,7 +751,6 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         expand_user_path = "/home/tethys"
         active_venv = None
 
-
         mock_environ.get.side_effect = [
             env_tethys_home,
             active_conda_env,

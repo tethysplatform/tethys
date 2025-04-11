@@ -131,7 +131,12 @@ def manage_command(args, unknown_args=None):
             f"{DOCS_BASE_URL}/tethys_sdk/workspaces.html#transition-to-paths-guide",
         )
         if args.force:
-            primary_process = [sys.executable, manage_path, "collectworkspaces", "--force"]
+            primary_process = [
+                sys.executable,
+                manage_path,
+                "collectworkspaces",
+                "--force",
+            ]
         else:
             primary_process = [sys.executable, manage_path, "collectworkspaces"]
 

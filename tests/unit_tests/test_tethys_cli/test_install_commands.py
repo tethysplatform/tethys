@@ -975,8 +975,13 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Skipping syncstores.", po_call_args[7][0][0])
         self.assertEqual("Successfully installed test_app.", po_call_args[8][0][0])
 
-        self.assertEqual([sys.executable, "-m", "pip", "install", "see"], mock_call.mock_calls[0][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "see"],
+            mock_call.mock_calls[0][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0]
+        )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[2][1][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
@@ -1018,9 +1023,17 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Skipping syncstores.", po_call_args[6][0][0])
         self.assertEqual("Successfully installed test_app.", po_call_args[7][0][0])
 
-        self.assertEqual([sys.executable, "-m", "pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "see"], mock_call.mock_calls[1][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "geojson"],
+            mock_call.mock_calls[0][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "see"],
+            mock_call.mock_calls[1][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+        )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "y"])
@@ -1068,9 +1081,17 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
         self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
-        self.assertEqual([sys.executable, "-m", "pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "see"], mock_call.mock_calls[1][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "geojson"],
+            mock_call.mock_calls[0][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "see"],
+            mock_call.mock_calls[1][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+        )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
     @mock.patch("tethys_cli.install_commands.input", side_effect=["cat", "n"])
@@ -1156,9 +1177,17 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Skipping syncstores.", po_call_args[6][0][0])
         self.assertEqual("Successfully installed test_app.", po_call_args[7][0][0])
 
-        self.assertEqual([sys.executable, "-m", "pip", "install", "geojson"], mock_call.mock_calls[0][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "see"], mock_call.mock_calls[1][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "geojson"],
+            mock_call.mock_calls[0][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "see"],
+            mock_call.mock_calls[1][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[2][1][0]
+        )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[3][1][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
@@ -1205,7 +1234,9 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
         # Verify that the application install still happens
-        self.assertEqual([sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[0][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[0][1][0]
+        )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[1][1][0])
 
     @mock.patch("tethys_cli.install_commands.run_services")
@@ -1259,7 +1290,10 @@ class TestInstallCommands(TestCase):
         )
 
         self.assertEqual(1, len(mock_call.mock_calls))
-        self.assertEqual([sys.executable, "-m", "pip", "install", "see"], mock_call.mock_calls[0][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "see"],
+            mock_call.mock_calls[0][1][0],
+        )
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
@@ -1307,8 +1341,13 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Running application install....", po_call_args[5][0][0])
         self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
-        self.assertEqual([sys.executable, "-m", "pip", "install", "see"], mock_call.mock_calls[0][1][0])
-        self.assertEqual([sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0])
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "see"],
+            mock_call.mock_calls[0][1][0],
+        )
+        self.assertEqual(
+            [sys.executable, "-m", "pip", "install", "."], mock_call.mock_calls[1][1][0]
+        )
 
     @mock.patch("builtins.input", side_effect=["x", 5])
     @mock.patch("tethys_cli.install_commands.get_app_settings")

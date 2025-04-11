@@ -294,7 +294,12 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
-            [sys.executable, "/foo/manage.py", "test", str(Path("/foo/tests/unit_tests"))]
+            [
+                sys.executable,
+                "/foo/manage.py",
+                "test",
+                str(Path("/foo/tests/unit_tests")),
+            ]
         )
 
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
@@ -315,7 +320,12 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
-            [sys.executable, "/foo/manage.py", "test", str(Path("/foo/tests/gui_tests"))]
+            [
+                sys.executable,
+                "/foo/manage.py",
+                "test",
+                str(Path("/foo/tests/gui_tests")),
+            ]
         )
 
     @mock.patch("tethys_cli.test_command.write_warning")
