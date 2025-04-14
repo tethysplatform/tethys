@@ -33,9 +33,9 @@ class TestTethysStaticFinder(unittest.TestCase):
     def test_find_all(self):
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
-        path_ret = tethys_static_finder.find(path, all=True)
+        path_ret = tethys_static_finder.find(path, find_all=True)
         self.assertIn(self.root / "css" / "main.css", path_ret)
-        str_ret = tethys_static_finder.find(str(path), all=True)
+        str_ret = tethys_static_finder.find(str(path), find_all=True)
         self.assertIn(self.root / "css" / "main.css", str_ret)
 
     def test_find_location_with_no_prefix(self):

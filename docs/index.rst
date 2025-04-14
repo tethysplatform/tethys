@@ -4,7 +4,7 @@
 Tethys Platform |version|
 *************************
 
-**Last Updated:** September 2024
+**Last Updated:** April 2025
 
 Tethys is a platform that can be used to develop and host environmental web apps. It includes a suite of free and open source software (FOSS) that has been carefully selected to address the unique development needs of environmental web apps. Tethys web apps are developed using a Python software development kit (SDK) which includes programmatic links to each software component. Tethys Platform is powered by the Django Python web framework giving it a solid web foundation with excellent security and performance. Refer to the :doc:`./features` article for an overview of the features of Tethys Platform.
 
@@ -17,17 +17,18 @@ Tethys is a platform that can be used to develop and host environmental web apps
 Quick Start
 ===========
 
-The quickest way to get started with Tethys Platform is via ``conda`` (`Miniconda <https://www.anaconda.com/docs/getting-started/miniconda/install>`_ or `Anaconda <https://www.anaconda.com/docs/getting-started/anaconda/install>`_):
+Get started with Tethys Platform using two simple commands:
 
 .. code-block:: bash
 
-    conda create -n tethys -c conda-forge tethys-platform
-    conda activate tethys
+    pip install tethys-platform
     tethys quickstart
 
 .. tip::
 
-    For more details on the installation process see :ref:`development_installation`.
+    If using ``conda`` (`Miniconda <https://www.anaconda.com/docs/getting-started/miniconda/install>`_ or `Anaconda <https://www.anaconda.com/docs/getting-started/anaconda/install>`_), use ``conda install -c conda-forge tethys-platform`` instead.
+    
+    To learn what goes on behind the scenes during ``tethys quickstart`` see :ref:`development_installation`.
     
 Your browser will automatically open to http://127.0.0.1:8000/. 
 

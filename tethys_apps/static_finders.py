@@ -39,7 +39,7 @@ class TethysStaticFinder(BaseFinder):
 
         super().__init__(*args, **kwargs)
 
-    def find(self, path, all=False):
+    def find(self, path, find_all=False):
         """
         Looks for files in the Tethys apps static or public directories
         """
@@ -47,7 +47,7 @@ class TethysStaticFinder(BaseFinder):
         for prefix, root in self.locations:
             matched_path = self.find_location(root, path, prefix)
             if matched_path:
-                if not all:
+                if not find_all:
                     return matched_path
                 matches.append(matched_path)
         return matches
