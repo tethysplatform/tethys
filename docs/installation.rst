@@ -4,13 +4,12 @@
 Getting Started
 ***************
 
-**Last Updated:** September 2024
+**Last Updated:** April 2025
 
 This section describes how to get Tethys Platform up and running as a fresh installation for app development.
+The steps within this section are what is executed behind the scenes when using ``tethys quickstart`` (see :ref:`quickstart`).
 
 .. note::
-    
-    For the simplest and most streamlined instructions, see :ref:`quickstart`.
     
     For upgrading an existing installation, see :ref:`update_tethys`. 
     
