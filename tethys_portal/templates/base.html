@@ -264,7 +264,7 @@
         <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
           {% block flash %}
             {% if messages %}
-              <div class="flash-messages position-absolute w-100">
+              <div class="flash-messages position-absolute w-50">
                 {% comment "flash_messages explanation" %}
                   Use the flash messages block to display temporary feedback to the user. Pass
                   a list of dictionaries called "flash_messages". Each dictionary should have the
@@ -275,7 +275,7 @@
                 {% endcomment %}
 
                 {% for message in messages %}
-                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show mx-auto w-50" role="alert">
+                  <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show mx-auto w-100" role="alert">
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>
@@ -306,7 +306,7 @@
     {% endblock %}
 
     {% block tos_override %}
-      {% if has_terms %}
+      {% if has_terms and request.user %}
       {% include "terms.html" %}
       {% endif %}
     {% endblock %}

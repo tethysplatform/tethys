@@ -37,7 +37,7 @@ There are several directories that you will need to create and be aware of throu
 Usernames and Passwords
 =======================
 
-Take time before you start your installation to decide on usernames and generate secure passwords for the various accounts that will be required during the installation. There are many secure password generation websites that make it easy to create more secure passwords: `Random Password Generator <https://www.random.org/passwords/>`_, `Last Pass Password Generator <https://www.lastpass.com/password-generator>`_, `Secure Password Generator <https://passwordsgenerator.net/>`_, `Pronounceable Password Generator <https://www.warpconduit.net/password-generator/>`_, or my favorite, `xkpass <https://xkpasswd.net/s/>`_.
+Take time before you start your installation to decide on usernames and generate secure passwords for the various accounts that will be required during the installation. There are many secure password generation websites that make it easy to create more secure passwords: `Random Password Generator <https://www.random.org/passwords/>`_, `Last Pass Password Generator <https://www.lastpass.com/features/password-generator>`_, `Secure Password Generator <https://passwordsgenerator.net/>`_, `Pronounceable Password Generator <https://www.warpconduit.net/password-generator/>`_, or my favorite, `xkpass <https://xkpasswd.net/s/>`_.
 
 In particular create the following usernames and passwords and store them in a secure place:
 
@@ -72,7 +72,7 @@ If you plan to enable the email capabilities to allow users to reset their forgo
 Security Enhanced Linux (SELinux)
 =================================
 
-If you plan to enable SELinux on your Rocky Linux server, read up on SELinux. Here are a few links to get you started: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `Rocky Linux - SELinux <https://docs.rockylinux.org/guides/security/learning_selinux/>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_
+If you plan to enable SELinux on your Rocky Linux server, read up on SELinux. Here are a few links to get you started: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `Rocky Linux - SELinux <https://docs.rockylinux.org/guides/security/learning_selinux/>`_, `RedHat SELinux <https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_
 
 Summary
 =======

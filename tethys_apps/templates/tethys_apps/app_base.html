@@ -307,7 +307,7 @@
     {% endblock %}
 
     {% block terms-of-service-override %}
-      {% if has_terms %}
+      {% if has_terms and request.user %}
       {% include "terms.html" %}
       {% endif %}
     {% endblock %}

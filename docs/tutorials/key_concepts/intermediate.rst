@@ -24,7 +24,7 @@ If you wish to use the beginner solution of the last tutorial as a starting poin
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b beginner-solution beginner-|version|
 
@@ -59,7 +59,7 @@ HTML forms are the primary mechanism for obtaining input from users of your app.
 
     The form is composed of the the HTML ``<form>`` tag and various input gizmos inside it. We'll use the ``add_button`` gizmo to submit the form. Also note the use of the ``csrf_token`` tag in the form. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_ article in the Django documentation for more details).
 
-    Also note that the ``method`` attribute of the ``<form>`` element is set to ``post``. This means the form will use the POST HTTP method to submit and transmit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
+    Also note that the ``method`` attribute of the ``<form>`` element is set to ``post``. This means the form will use the POST HTTP method to submit and transmit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <https://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
 
 b. Define the options for the form gizmos in the controller and change the ``add_button`` gizmo to be a submit button for the form in the ``add_dam`` controller:
 
@@ -989,6 +989,6 @@ This concludes the Intermediate Tutorial. You can view the solution on GitHub at
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b intermediate-solution intermediate-|version|

@@ -25,7 +25,7 @@ If you wish to use the intermediate solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b intermediate-solution intermediate-|version|
 
@@ -1311,6 +1311,6 @@ This concludes the Advanced Tutorial. You can view the solution on GitHub at `<h
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b advanced-solution advanced-|version|

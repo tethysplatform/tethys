@@ -58,7 +58,7 @@ The :ref:`gizmo_options` section provides detailed descriptions of each Gizmo op
 2. Load Gizmo Library in Template
 ---------------------------------
 
-Now near the top of the template where the Gizmo will be inserted, load the ``tethys`` library using the `Django load tag <https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#load>`_. This only needs to be done once per template:
+Now near the top of the template where the Gizmo will be inserted, load the ``tethys`` library using the `Django load tag <https://docs.djangoproject.com/en/5.1/ref/templates/builtins/#load>`_. This only needs to be done once per template:
 
 ::
 

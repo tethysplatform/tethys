@@ -26,9 +26,9 @@ Go to `SendGrid New Account <https://signup.sendgrid.com/>`_ and signup for an a
 2. Sender Verification
 ----------------------
 
-You will need to setup a verified email address or domain to be used as the "From" email address. The easiest option is to setup single sender verification with your own email address or another email address you have access to. However, the preferred method is to setup Domain Authentication, but you will need access to the DNS settings for your domain. For more information on this topic, read `Sender Identity <https://sendgrid.com/docs/for-developers/sending-email/sender-identity/>`_.
+You will need to setup a verified email address or domain to be used as the "From" email address. The easiest option is to setup single sender verification with your own email address or another email address you have access to. However, the preferred method is to setup Domain Authentication, but you will need access to the DNS settings for your domain. For more information on this topic, read `Sender Identity <https://www.twilio.com/docs/sendgrid/for-developers/sending-email/sender-identity>`_.
 
-For now, setup up Single Sender Verification by following these instructions: `Single Sender Verification <https://sendgrid.com/docs/ui/sending-email/sender-verification/>`_.
+For now, setup up Single Sender Verification by following these instructions: `Single Sender Verification <https://www.twilio.com/docs/sendgrid/ui/sending-email/sender-verification>`_.
 
 3. Create SMTP Relay Key
 ------------------------

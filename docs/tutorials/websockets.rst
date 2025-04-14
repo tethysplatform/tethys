@@ -21,7 +21,7 @@ If you wish to use the advanced solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b advanced-solution advanced-|version|
 
@@ -77,7 +77,7 @@ a. Create a new file called ``consumers.py`` and add the following code:
         from tethys_sdk.routing import consumer
 
 
-        @consumer(name='dam_notification', url='dams/notifications')
+        @consumer(name='dam_notification', url='dams/notifications/')
         class NotificationsConsumer(AsyncWebsocketConsumer):
 
             async def authorized_connect(self):
@@ -130,7 +130,7 @@ a. Update the ``consumer class`` to look like this.
 
         ...
 
-        @consumer(name='dam_notification', url='dams/notifications')
+        @consumer(name='dam_notification', url='dams/notifications/')
         class NotificationsConsumer(AsyncWebsocketConsumer):
 
             async def authorized_connect(self):
@@ -150,21 +150,15 @@ a. Update the ``consumer class`` to look like this.
 
         The respective print messages set on connect and disconnect will appear in the terminal when the app home is opened or closed.
 
-b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Add the following peace of code to the :file:`portal_config.yml` file.
+b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Run the follow command to update your portal configurations:
 
-    .. code-block:: yaml
+    .. code-block:: bash
 
-        settings:
-          CHANNEL_LAYERS:
-            default:
-              BACKEND: channels.layers.InMemoryChannelLayer
+        tethys settings --set CHANNEL_LAYERS.default.BACKEND channels.layers.InMemoryChannelLayer
 
     .. note::
 
         ``Django Channels`` recommends the use of an external backend store for production environments. The ``channels-redis`` python package plus ``Redis Server`` are the default recommendation. For more information see ``Django Channels`` `channel layers <https://channels.readthedocs.io/en/latest/topics/channel_layers.html>`_ and `deploying <https://channels.readthedocs.io/en/latest/deploying.html>`_ sections.
-
-    .. tip::
-        A ``Channel layer`` can be added to the `settings` section of the :file:`portal_config.yml` by manually editing the file or by running ``tethys settings --set CHANNEL_LAYERS.default.BACKEND <<CHANNEL_LAYERS_BACKEND>>`` where ``<<CHANNEL_LAYERS_BACKEND>>`` is the python dot-formatted path of the channel layer. See :ref:`tethys_configuration` for details.
 
 Channel Layer Definitions
 -------------------------
@@ -192,7 +186,7 @@ Now that we have a working ``WebSocket connection`` and a communication backend 
 a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 
     .. code-block:: python
-        :emphasize-lines: 1-2, 71-80
+        :emphasize-lines: 1-2, 72-81
 
         from channels.layers import get_channel_layer
         from asgiref.sync import async_to_sync
@@ -276,7 +270,7 @@ a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
                             }
                         )
 
-                    return App.redirect(App.reverse('dam_inventory:home'))
+                    return App.redirect(App.reverse('home'))
 
                 messages.error(request, "Please fix errors.")
             
@@ -295,6 +289,7 @@ a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 b. Let's create a message box to display our notification when a new app is added. Add the following code to the ``get_context`` method in your ``HomeMap`` class in  :file:`controllers.py`.
 
     .. code-block:: python
+        :emphasize-lines: 11-19
 
         from tethys_sdk.gizmos import MessageBox
 
@@ -302,6 +297,10 @@ b. Let's create a message box to display our notification when a new app is adde
 
         def get_context(self, request, context, *args, **kwargs):
             # Add custom context variables
+            context.update({
+                'can_add_dams': has_permission(request, 'add_dams'),
+            })
+
             message_box = MessageBox(
                 name='notification',
                 title='',
@@ -311,9 +310,12 @@ b. Let's create a message box to display our notification when a new app is adde
             )
 
             context.update({"message_box": message_box})
-    
-            ...
 
+            # Call the MapLayout get_context method to initialize the map view
+            context = super().get_context(request, context, *args, **kwargs)
+
+            return context
+            
     This ``gizmo`` creates an empty message box with a current page refresh. It will be populated in the next step based on our ``WebSocket connection``.
 
 c. Add a ``MessageBox`` gizmo to the home view and modify the ``JavaScript`` to display the message box when a "New Dam" message is recieved. Replace the code in the ``after_app_content`` block of the ``home.html`` with the following:
@@ -348,6 +350,6 @@ This concludes the WebSockets tutorial. You can view the solution on GitHub at `
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory
     cd tethysapp-dam_inventory
     git checkout -b websocket-solution websocket-|version|

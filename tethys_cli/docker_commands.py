@@ -294,7 +294,7 @@ class PostGisContainerMetadata(ContainerMetadata):
         if not defaults:
             write_pretty_output(
                 "Tethys uses the postgis/postgis image on Docker Hub. "
-                "See: https://registry.hub.docker.com/r/postgis/postgis/"
+                "See: https://hub.docker.com/r/postgis/postgis/"
             )
 
             # POSTGRES_PASSWORD
@@ -566,7 +566,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
     name = "tethys_thredds"
     display_name = "THREDDS"
     image_name = "unidata/thredds-docker"
-    tag = "5.4"
+    tag = "5.6"
     host_port = 8383
     container_port = 8080
 

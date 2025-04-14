@@ -24,6 +24,9 @@ from setuptools_scm import get_version
 from sphinxawesome_theme import ThemeOptions, LinkIcon
 from sphinxawesome_theme.postprocess import Icons
 
+# Add the current directory to sys.path
+sys.path.insert(0, str(Path(__file__).parent))
+
 # Mock Dependencies
 # NOTE: No obvious way to automatically anticipate all the sub modules without
 # installing the package, which is what we are trying to avoid.
@@ -146,6 +149,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinxarg.ext",
     "sphinxawesome_theme",
+    "directives",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -255,6 +259,24 @@ todo_include_todos = True
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
+# Link check options
+linkcheck_ignore = [
+    r"https?://(.*\.)?example\.com.*",
+    r"https?://localhost.*",
+    r"https?://127\.0\.0\.1.*",
+    r"https?://example.onelogin.com",
+    r"https?://tethys.not-real.org.*",
+    r"https?://<SERVER_DOMAIN_NAME>",
+]
+
+linkcheck_allowed_redirects = {
+    r"https?://anaconda\.org.*": r"https?://anaconda\.org/account/login.*",
+    r"https?://.*\.earthengine\.google\.com.*": r"https?://accounts\.google\.com.*",
+    r"https?://console\.developers\.google\.com.*": r"https?://accounts\.google\.com.*",
+    r"https?://hub\.docker\.com.*": r"https?://login\.docker\.com.*",
+    r"https?://(www)?\.hydroshare\.org": r"https?://auth\.cuahsi\.org.*",
+}
+
 # Define the canonical URL if you are using a custom domain on Read the Docs
 html_baseurl = environ.get("READTHEDOCS_CANONICAL_URL", "")
 
@@ -273,7 +295,11 @@ html_favicon = "images/default_favicon.ico"
 html_static_path = ["_static"]
 html_css_files = [
     "css/tethys.css",
+    "css/recipe_gallery.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",  # Font Awesome for arrow icons in recipe carousels
 ]
+
+html_js_files = ["js/recipe_gallery.js"]
 
 html_theme = "sphinxawesome_theme"
 theme_options = ThemeOptions(

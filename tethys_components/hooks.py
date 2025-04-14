@@ -1,4 +1,9 @@
-from tethys_components.utils import use_workspace  # noqa: F401
+from tethys_components.utils import (  # noqa: F401
+    use_workspace,
+    use_resources,
+    use_media,
+    use_public,
+)
 from reactpy_django.hooks import (  # noqa: F401
     use_location,
     use_origin,
