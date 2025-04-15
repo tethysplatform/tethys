@@ -7,5 +7,11 @@
   margin-left: 10%;
   margin-right: 10%;
   margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom:.2rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+#dask-dashboard-content > div {
+  height: 800px;
 }
