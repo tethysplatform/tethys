@@ -71,3 +71,58 @@ async def _run_after_delay(func, /, *args, delay, periodic, count, **kwargs):
                 func, *args, delay=delay, periodic=periodic, count=count, **kwargs
             )
         )
+
+
+background_tasks = []
+
+
+def background_task(func=None, delay=0, period=0, count=None):
+    def wrapped(func):
+        background_tasks.append((func, delay, period, count))
+        return func
+
+    return wrapped if func is None else wrapped(func)
+
+
+def process_background_tasks():
+    for func, delay, period, count in background_tasks:
+        logger.info(f"Starting background task {func.__module__}.{func.__name__} with {delay=} {period=} {count=}")
+        if count is None or count > 0:
+            create_task(func, delay=delay)
+        if count is None or count > 1:
+            if count and count > 1:
+                count -= 2  # since tethys calls it one extra time
+            reactor.callLater(delay, partial(create_task, delay=period), func, periodic=True, count=count)
+
+
+def get_countdown(time):
+    """Gets the number of seconds until `time`. If `time` has already passed on the current day,
+    then the number of seconds until `time` on the following day.
+
+    Args:
+        time: datetime.time object, integer (between 0-23), or string in the format (00[:00[:00]])
+            representing a time of doy.
+
+    Returns: (int) Number of seconds until the next `time`.
+
+    """
+    usage_message = (
+        'The "time" argument must be a datetime.time object, an integer between 0 and 24,'
+        ' or a string in the format "00:00:00".'
+    )
+    if isinstance(time, datetime.time):
+        until_time = time
+    else:
+        m = re.match(r"(?P<hours>\d\d?)(?::(?P<minutes>\d\d?)(?::(?P<seconds>\d\d?))?)?", str(time))
+        if m is None:
+            raise ValueError(usage_message)
+        hours, minutes, seconds = [int(i) if i is not None else 0 for i in m.groups()]
+        until_time = datetime.time(hours, minutes, seconds)
+
+    delay_until_time = datetime.datetime.combine(datetime.date.today(), until_time) - datetime.datetime.now()
+    if delay_until_time.days < 0:
+        delay_until_time += datetime.timedelta(hours=24)
+    return delay_until_time.seconds
+
+
+reactor.callLater(0, process_background_tasks)
