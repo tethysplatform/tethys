@@ -28,7 +28,7 @@ ajax_urls = [
         name="show_log",
     ),
     re_path(
-        r"^(?P<job_id>[\d.@+-]+)/log-content/(?P<key1>[\w+_-]+)(?:/(?P<key2>.*))?",
+        r"^(?P<job_id>[\d.@+-]+)/log-content/(?P<key1>.[^/]+)(?:/(?P<key2>.*))?",
         jobs_table_views.get_log_content,
         name="log_content",
     ),

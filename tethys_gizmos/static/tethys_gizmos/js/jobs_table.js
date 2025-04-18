@@ -112,20 +112,21 @@ function load_log_content(job_id) {
 function update_log_menu(event){
   var key = event.target.value;
   $('.jobs-table-log-menu').addClass('d-none');
-  $('#log_select_' + key).removeClass('d-none');
-  $('#log_' + key).trigger('change');
+  // use native getElementById method in case `key` has special characters
+  $(document.getElementById(`log_select_${key}`)).removeClass('d-none');
+  $(document.getElementById(`log_${key}`)).trigger('change');
 }
 
 function update_log_content(event, use_cache=true){
   var job_id = $('#sub_job_select').data('job-id');
   var key1 = $('#sub_job_select').val();
-  var key2 = $('#log_' + key1).val();
+  var key2 = $(document.getElementById(`log_${key1}`)).val();
   var content;
-  var log_content_url = base_ajax_url + job_id + '/log-content/' + key1;
+  var log_content_url = `${base_ajax_url}${job_id}/log-content/${key1}`;
   if (key2 === undefined){
     content = log_contents[key1];
   }else{
-    log_content_url += '/' + key2;
+    log_content_url += `/${key2}`;
     content = log_contents[key1][key2];
   }
 

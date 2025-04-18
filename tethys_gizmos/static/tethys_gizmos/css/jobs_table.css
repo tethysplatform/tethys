@@ -177,23 +177,22 @@ p.loading-error {
   height:100%;
   background: rgba(0,0,0,0.6);
 }
-.cv-spinner {
+#jobs_table_overlay .cv-spinner, #jobs_table_logs_overlay .cv-spinner {
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.spinner {
+#jobs_table_overlay .spinner, #jobs_table_logs_overlay .spinner {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
   border: 4px #ddd solid;
   border-top: 4px #2e93e6 solid;
   border-radius: 50%;
   animation: sp-anime 0.8s infinite linear;
 }
+
 @keyframes sp-anime {
   100% {
     transform: rotate(360deg);
