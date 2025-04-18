@@ -87,8 +87,20 @@ class TethysApp(models.Model, TethysBaseMixin):
         if setting_list is not None:
             for setting in setting_list:
                 # Don't add the same setting twice
-                if self.settings_set.filter(name=setting.name):
-                    continue
+                try:
+                    db_setting = self.settings.filter(name=setting.name).first()
+                    if type(setting) != type(db_setting):
+                        print(f"Setting {setting.name} was changed from {type(db_setting).__name__} to {setting.__class__.__name__}")
+                        # TODO what if the setting type changes?
+                    else:
+                        # update values that may have changed
+                        db_setting.description = setting.description
+                        db_setting.required = setting.required
+                        db_setting.default = setting.default
+                        db_setting.save()
+                        continue
+                except:
+                    pass
 
                 # Associate setting with this app
                 setting.tethys_app = self
@@ -105,7 +117,7 @@ class TethysApp(models.Model, TethysBaseMixin):
         self.add_settings(setting_list)
         setting_names = [setting.name for setting in setting_list]
         for setting in existing_settings:
-            # Do not remove dynamically craeted settings
+            # Do not remove dynamically created settings
             if getattr(setting, "dynamic", False) and setting.dynamic:
                 continue
 
@@ -516,6 +528,7 @@ class JSONCustomSetting(CustomSettingBase):
         """
         Validate prior to saving changes.
         """
+        # TODO can the default and/or value be empty dicts, lists, or strings?
         if self.default:
             if not self.value:
                 self.value = self.default
