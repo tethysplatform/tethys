@@ -50,11 +50,6 @@ repository = "https://github.com/tethysplatform/tethys"
 [project.scripts]
 tethys = "tethys_cli:tethys_command"
 
-# [project.optional-dependencies]
-# test = [
-#     "requests_mock"
-# ]
-
 [tool.setuptools_scm]
 write_to = "tethys_portal/_version.py"
 local_scheme = "no-local-version"

@@ -10,15 +10,16 @@
 
 import site
 import subprocess
-import warnings
 import sys
+import warnings
 from pathlib import Path
 
-from django.core.management.base import BaseCommand
+from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import Permission, Group
-from tethys_apps.utilities import get_installed_tethys_items, delete_secrets
+from django.core.management.base import BaseCommand
+
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
+from tethys_apps.utilities import delete_secrets, get_installed_tethys_items
 
 
 class Command(BaseCommand):

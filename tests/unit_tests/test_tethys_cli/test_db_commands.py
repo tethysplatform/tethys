@@ -1,6 +1,6 @@
+import sys
 import unittest
 import warnings
-import sys
 from unittest import mock
 
 from django.test.utils import override_settings

@@ -1,11 +1,13 @@
 import sys
-from os import devnull, chdir
+from os import chdir, devnull
 from pathlib import Path
+from unittest import mock
+
+from conda.cli.python_api import Commands
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.test import TestCase
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from unittest import mock
-from conda.cli.python_api import Commands
+
 from tethys_cli import install_commands
 
 
