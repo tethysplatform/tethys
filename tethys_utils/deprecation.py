@@ -3,7 +3,7 @@
 * Name: deprecation.py
 * Author: Scott Christensen
 * Created On: April 2024
-* Copyright: (c) Tethys Geospatial Foundation 2024
+* Copyright: (c) Tethys Geoscience Foundation 2024
 * License: BSD 2-Clause
 ********************************************************************************
 """
