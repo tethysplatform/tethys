@@ -9,17 +9,20 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from django.urls import re_path
 from tethys_portal.optional_dependencies import has_module
+from tethys_portal import routing
 
 
 def build_application(asgi_app):
+    websocket_urlpatterns = routing.websocket_urlpatterns
     from tethys_apps.urls import app_websocket_urls, http_handler_patterns
 
+    websocket_urlpatterns += app_websocket_urls
     if has_module("reactpy_django"):
         from reactpy_django import REACTPY_WEBSOCKET_ROUTE
         from reactpy_django.utils import register_component
 
         register_component("tethys_apps.base.page_handler.page_component_wrapper")
-        app_websocket_urls.append(REACTPY_WEBSOCKET_ROUTE)
+        websocket_urlpatterns.append(REACTPY_WEBSOCKET_ROUTE)
 
     application = ProtocolTypeRouter(
         {
@@ -31,7 +34,7 @@ def build_application(asgi_app):
                     ]
                 )
             ),
-            "websocket": AuthMiddlewareStack(URLRouter(app_websocket_urls)),
+            "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
         }
     )
     return application

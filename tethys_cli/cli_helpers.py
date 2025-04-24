@@ -79,8 +79,9 @@ def supress_stdout(func):
 
     return wrapped
 
+
 def prompt_yes_or_no(question, default="y"):
-    """ Handles a yes/no question cli prompt
+    """Handles a yes/no question cli prompt
 
     Returns:
         True if "yes"
@@ -89,15 +90,12 @@ def prompt_yes_or_no(question, default="y"):
     """
     negative_choices = ["n", "no", ""]
     valid_choices = ["y", "n", "yes", "no"]
-    
+
     response = ""
     valid = False
     while not valid:
         try:
-            response = (
-                input(f"{question} [Y/n]: ")
-                or default
-            )
+            response = input(f"{question} [y/n]: ") or default
         except (KeyboardInterrupt, SystemExit):
             return None
 

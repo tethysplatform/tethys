@@ -109,6 +109,7 @@ def add_scaffold_parser(subparsers):
         func=scaffold_command, template="default", extension=False
     )
 
+
 def project_name_validator(project_name):
     valid = True
     # Only lowercase
@@ -150,18 +151,20 @@ def project_name_validator(project_name):
                 FG_YELLOW,
             )
             valid = False
-    
+
     return valid, project_name
+
 
 def description_validator(value, default):
     # Check for default
     if value == default:
         return True, value
-    
+
     value = value.replace("'", "\\'")
 
     return True, value
-    
+
+
 def tags_validator(value, default):
     """
     Validate tags user input.
@@ -169,11 +172,12 @@ def tags_validator(value, default):
     # Check for default
     if value == default:
         return True, value
-    
-    tags = map(lambda x: x.replace('"', '').strip(), value.split(','))
+
+    tags = map(lambda x: x.replace('"', "").strip(), value.split(","))
     value = '"' + '","'.join(tags) + '"'
-    
+
     return True, value
+
 
 def proper_name_validator(value, default):
     """
@@ -293,11 +297,11 @@ def scaffold_command(args):
         is_extension = True
         template_name = args.template
         template_root = EXTENSION_PATH / args.template
-        keyword = 'extenstion'
+        keyword = "extenstion"
     else:
         template_name = args.template
         template_root = APP_PATH / args.template
-        keyword = 'app'
+        keyword = "app"
 
     log.debug("Template root directory: {}".format(template_root))
 
@@ -344,7 +348,7 @@ def scaffold_command(args):
         {
             "name": "tags",
             "prompt": "Tags: Use commas to delineate tags "
-            '(e.g.: Hydrology,Reference Timeseries)',
+            "(e.g.: Hydrology,Reference Timeseries)",
             "default": "",
             "validator": tags_validator,
         },
@@ -376,7 +380,7 @@ def scaffold_command(args):
     context = {
         "project": project_name,
         "project_dir": project_dir,
-        "project_url": project_name.replace("_", "-")
+        "project_url": project_name.replace("_", "-"),
     }
 
     for item in metadata_input:
@@ -388,10 +392,15 @@ def scaffold_command(args):
             provided_via_cli = getattr(args, item["name"])
             valid = True
             if callable(item["validator"]):
-                valid, provided_via_cli = item["validator"](provided_via_cli, item["default"])
+                valid, provided_via_cli = item["validator"](
+                    provided_via_cli, item["default"]
+                )
 
             if not valid:
-                write_pretty_output(f"Invalid value provided for {item['name']}: {response}", FG_RED)
+                write_pretty_output(
+                    f"Invalid value provided for {item['name']}: {provided_via_cli}",
+                    FG_RED,
+                )
                 exit(1)
 
             context[item["name"]] = provided_via_cli
@@ -431,11 +440,13 @@ def do_scaffold(project_root, template_root, context, overwrite):
     # Create root directory
     if project_root.is_dir():
         if not overwrite:
-            response = prompt_yes_or_no(f'Directory "{project_root}" already exists. Would you like to overwrite it?')
+            response = prompt_yes_or_no(
+                f'Directory "{project_root}" already exists. Would you like to overwrite it?'
+            )
             if not response:
                 write_pretty_output("\nScaffolding cancelled.", FG_YELLOW)
                 exit(1 if response is None else 0)
-        
+
         try:
             shutil.rmtree(str(project_root))
         except OSError:

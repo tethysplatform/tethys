@@ -16,7 +16,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 
 from tethys_cli.scaffold_commands import get_random_color
-import os
+
 
 def get_captcha():
     if getattr(settings, "ENABLE_CAPTCHA", False):
@@ -275,12 +275,18 @@ class SsoTenantForm(forms.Form):
         required=False,
     )
 
+
 class AppScaffoldForm(forms.Form):
     """
     A form for scaffolding an app.
     """
+
     scaffold_template = forms.ChoiceField(
-        choices=[("default", "Classic"), ("reactpy", "ReactPy"), ("reactjs", "ReactJS"),]
+        choices=[
+            ("default", "Classic"),
+            ("reactpy", "ReactPy"),
+            ("reactjs", "ReactJS"),
+        ]
     )
 
     project_name = forms.CharField(
@@ -288,10 +294,17 @@ class AppScaffoldForm(forms.Form):
         label="Project Name:",
         required=True,
         widget=forms.TextInput(
-            attrs={"placeholder": "my_app", "class": "form-control", "autofocus": "autofocus"}
+            attrs={
+                "placeholder": "my_app",
+                "class": "form-control",
+                "autofocus": "autofocus",
+            }
         ),
         validators=[
-            RegexValidator(r"^123$", "The project name must contain only letters, numbers, and underscores."),
+            RegexValidator(
+                r"^\w+$",
+                "The project name must contain only letters, numbers, and underscores.",
+            ),
         ],
     )
 
@@ -299,7 +312,9 @@ class AppScaffoldForm(forms.Form):
         max_length=100,
         label="App Name:",
         required=True,
-        widget=forms.TextInput(attrs={"placeholder": "My App", "class": "form-control"}),
+        widget=forms.TextInput(
+            attrs={"placeholder": "My App", "class": "form-control"}
+        ),
     )
 
     description = forms.CharField(
@@ -313,18 +328,22 @@ class AppScaffoldForm(forms.Form):
         max_length=7,
         label="App Theme Color:",
         required=False,
-        widget=forms.TextInput(attrs={"value": get_random_color(), "class": "form-control"}),
+        widget=forms.TextInput(
+            attrs={"value": get_random_color(), "class": "form-control"}
+        ),
     )
 
     tags = forms.CharField(
         max_length=100,
         label="Tags:",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "test,app,hydrology", "class": "form-control"}),
+        widget=forms.TextInput(
+            attrs={"placeholder": "test,app,hydrology", "class": "form-control"}
+        ),
         validators=[
             RegexValidator(
                 regex='(".*",?)+',
-                message="The package name must contain only letters, numbers, and underscores."
+                message="The package name must contain only letters, numbers, and underscores.",
             ),
         ],
     )

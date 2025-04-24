@@ -1,6 +1,6 @@
 {% extends "tethys_portal/accounts/base.html" %}
 
-{% load django_bootstrap5 static %}
+{% load django_bootstrap5 %}
 
 {% block title %}{{ block.super }} - Build App{% endblock %}
 
@@ -17,16 +17,7 @@
       <button type="submit" id="scaffold-app-submit" class="btn btn-primary" name="scaffold-app-submit">Build</button>
     </form>
   {% else %}
-    <img id='loader' src="{% static 'tethys_compute/img/loader.gif' %}" />
-    Building... Do not leave this page!
+    {% include "./lifecycle_progress.html" with action="Building" app_name=app_name app_package=app_package %}
   {% endif %}
 
-{% endblock %}
-
-{% block scripts %}
-  {{ block.super }}
-  {% if not form %}
-    <script>var REDIRECT_URL = "{{ redirect_url }}"</script>;
-    <script type="text/javascript" src="{% static 'tethys_portal/js/app_lifecycle.js' %}"></script>
-  {% endif %}
 {% endblock %}

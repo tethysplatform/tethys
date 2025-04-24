@@ -101,8 +101,6 @@ admin_url_list.insert(
     re_path(r"^build_app/$", app_lifecycle.build_app, name="build_app"),
 )
 
-app_lifecycle_websocket_url = ''
-
 # Recreate admin.site.urls tuple
 admin_urls = (admin_url_list, admin.site.urls[1], admin.site.urls[2])
 

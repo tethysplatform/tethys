@@ -25,13 +25,6 @@
         </div>
     </a>
     {% if app.description %}
-    {% if request.user.is_staff %}
-    <a 
-        class="app-settings-icon d-none position-absolute top-0 start-0 p-1 m-2 border border-dark"
-        href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
-        <i class="bi bi-gear"></i></a>
-    </a>
-    {% endif %}
     <div class="app-help-icon d-none position-absolute top-0 end-0 p-1 m-2 border border-dark">
         <i class="bi bi-info-lg"></i>
     </div>
@@ -39,5 +32,12 @@
         <button type="button" class="btn-close float-end" aria-label="Close"></button>
         <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
     </div>
+    {% endif %}
+    {% if request.user.is_staff %}
+    <a 
+        class="app-settings-icon d-none position-absolute top-0 start-0 p-1 m-2 border border-dark"
+        href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
+        <i class="bi bi-gear"></i></a>
+    </a>
     {% endif %}
 </div>

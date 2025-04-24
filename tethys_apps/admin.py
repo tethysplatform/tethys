@@ -226,12 +226,12 @@ class TethysAppAdmin(GuardedModelAdmin):
                 current_use, quota, url=url
             )
         )
-    
+
     def remove_app(self, app):
         url = reverse("admin:remove_app", kwargs={"app_id": app.id})
         return format_html(
             f"""
-            <a 
+            <a
                 id="remove-app" class="btn btn-danger btn-sm"
                 href="{url}"
             >
