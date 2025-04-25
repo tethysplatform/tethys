@@ -31,11 +31,17 @@ class TestTethysStaticFinder(unittest.TestCase):
         self.assertEqual(self.root / "css" / "main.css", str_ret)
 
     def test_find_all(self):
+        import django
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
-        path_ret = tethys_static_finder.find(path, all=True)
+        use_find_all = django.VERSION >= (5, 2)
+        if use_find_all:
+            path_ret = tethys_static_finder.find(path, find_all=True)
+            str_ret = tethys_static_finder.find(str(path), find_all=True)
+        else:
+            path_ret = tethys_static_finder.find(path, all=True)
+            str_ret = tethys_static_finder.find(str(path), all=True)
         self.assertIn(self.root / "css" / "main.css", path_ret)
-        str_ret = tethys_static_finder.find(str(path), all=True)
         self.assertIn(self.root / "css" / "main.css", str_ret)
 
     def test_find_location_with_no_prefix(self):
