@@ -32,6 +32,7 @@ class TestTethysStaticFinder(unittest.TestCase):
 
     def test_find_all(self):
         import django
+
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
         use_find_all = django.VERSION >= (5, 2)
