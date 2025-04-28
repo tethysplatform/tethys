@@ -75,11 +75,10 @@ For convenience, you may consider setting up these or similar aliases in the act
         conda deactivate
         . setup_aliases.sh
 
-3. Activate your Tethys environment and test the commands and check permissions on the directories to verify they worked:
+3. :ref:`activate_environment` and test the commands and check permissions on the directories to verify they worked:
 
     .. code-block:: bash
 
-        conda activate tethys
         tethys_user_own
 
 4. Be sure to change ownership back to the NGINX user before moving on:

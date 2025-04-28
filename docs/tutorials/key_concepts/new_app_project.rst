@@ -19,7 +19,6 @@ To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` t
 
 .. code-block:: bash
 
-    conda activate tethys
     tethys scaffold dam_inventory
 
 .. tip::

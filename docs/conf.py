@@ -150,6 +150,7 @@ extensions = [
     "sphinxarg.ext",
     "sphinxawesome_theme",
     "directives",
+    "sphinx_tabs.tabs"
 ]
 
 # Add any paths that contain templates here, relative to this directory.

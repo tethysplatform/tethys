@@ -26,20 +26,47 @@ Be sure that the system you are using meets the minimum :ref:`system_reqs`.
 1. Install the ``tethys-platform`` package
 ------------------------------------------
 
-This can be done using ``pip`` within any Python-enabled environment (an isolated virtual environment is recommended), or using ``conda`` within a conda environment. If you are unsure of which to choose or unfamiliar with ``conda``, just go with ``pip``.
+We strongly encourage you to execute the following commands within a :ref:`virtual_environment`.
 
-Using ``pip``:
+|
 
-.. code-block:: bash
+.. tabs::
 
-    pip install tethys-platform django=<DJANGO_VERSION>
+    .. tab:: Conda
 
+        .. code-block:: bash
 
-Using ``conda``:
+            conda install -c conda-forge tethys-platform django=<DJANGO_VESION>
+        
+        .. tip::
 
-.. code-block:: bash
+            **Installation Speedup**
 
-    conda install -c conda-forge tethys-platform django=<DJANGO_VESION>
+            If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
+
+            |
+
+            **Install Micro-Tethys**
+
+            The ``micro-tethys-platform`` conda package is a minimal version of ``tethys-platform``. It has the exact same code base, but doesn't include any of the optional dependencies. As a result the environment is much smaller, but none of the optional features will be enabled. Any of the optional features can be enabled simply by installing the dependencies required by those features (see :ref:`optional_features`).
+
+                .. code-block:: bash
+
+                    conda install -c tethysplatform -c conda-forge micro-tethys-platform
+
+            **Install Development Build**
+
+            To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels:
+
+                .. code-block:: bash
+
+                    conda install -c tethysplatform/label/dev -c conda-forge tethys-platform
+
+    .. tab:: Pip
+
+        .. code-block:: bash
+
+            pip install tethys-platform django=<DJANGO_VERSION>
 
 .. important::
 
@@ -47,29 +74,7 @@ Using ``conda``:
 
     As of Tethys 4.3 and above, the version of Django is no longer pinned in the ``tethys-platform`` package. You will need to specify the version of Django that you want to use when creating the environment. This is especially important for production installations, as only the LTS versions of Django recieve bug and security fixes. For development installations, we recommend using the same version of Django that you plan to use in production. For production installations, we recommend using the current LTS version of Django (see: `How to get Django - Supported Versions <https://www.djangoproject.com/download/>`_. Failing to provide the Django version will result in installing the latest version of Django which may not be the LTS version.
 
-.. tip::
-
-    **Conda Installation Speedup**
-
-    If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
-
-    **Conda Install Micro-Tethys**
-
-    The ``micro-tethys-platform`` conda package is a minimal version of ``tethys-platform``. It has the exact same code base, but doesn't include any of the optional dependencies. As a result the environment is much smaller, but none of the optional features will be enabled. Any of the optional features can be enabled simply by installing the dependencies required by those features (see :ref:`optional_features`).
-
-        .. code-block:: bash
-
-            conda install -c tethysplatform -c conda-forge micro-tethys-platform
-
-    **Conda Install Development Build**
-
-    To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels:
-
-        .. code-block:: bash
-
-            conda install -c tethysplatform/label/dev -c conda-forge tethys-platform
-
-    Alternatively, to install from source refer to the :ref:`developer_installation` docs.
+Alternatively, to install from source refer to the :ref:`developer_installation` docs.
 
 2. Create a :file:`portal_config.yml` File
 ------------------------------------------
