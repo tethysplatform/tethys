@@ -26,7 +26,7 @@ Be sure that the system you are using meets the minimum :ref:`system_reqs`.
 1. Install the ``tethys-platform`` package
 ------------------------------------------
 
-We strongly encourage you to execute the following commands within a :ref:`virtual_environment`.
+First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands:
 
 |
 
