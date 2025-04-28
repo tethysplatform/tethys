@@ -17,7 +17,7 @@ Tethys is a platform that can be used to develop and host geoscientific web apps
 Quick Start
 ===========
 
-We strongly encourage you to execute the following commands within a :ref:`virtual_environment`.
+First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands:
 
 |
 
