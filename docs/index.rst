@@ -75,7 +75,7 @@ There are several directions that you may want to go from here.
 Acknowledgements
 ================
 
-This material is based upon work supported by the National Science Foundation under Grant No. 1135482
+This material is based upon work supported by the National Science Foundation under Grants 1135482 and 2303756.
 
 .. toctree::
    :maxdepth: 1
