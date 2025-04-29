@@ -72,57 +72,40 @@ There are several directions that you may want to go from here.
 * Checkout the :doc:`./installation/web_admin_setup` docs to customize your Tethys Portal.
 * For help getting started with docker see :ref:`using_docker`
 
-Contents
-========
-
-.. toctree::
-   :maxdepth: 1
-   
-   Quick Start <self>
-
-App Development
-===============
-
-.. toctree::
-   :maxdepth: 2
-
-   tutorials
-   recipes
-   dev_guides
-
-Contributing
-============
-
-.. toctree::
-   :maxdepth: 1
-
-   tethys_development
-
-Deployment
-==========
-
-.. toctree::
-   :maxdepth: 3
-
-   installation/production
-
-Latest
-======
-
-.. toctree::
-   :maxdepth: 1
-
-   whats_new
-   installation/update
-
 Acknowledgements
 ================
 
 This material is based upon work supported by the National Science Foundation under Grant No. 1135482
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   
+   Quick Start <self>
 
-* :ref:`genindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 2
+   :hidden:
 
+   tutorials
+   recipes
+   dev_guides
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   tethys_development
+
+.. toctree::
+   :maxdepth: 3
+   :hidden:
+
+   installation/production
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   whats_new
+   installation/update
