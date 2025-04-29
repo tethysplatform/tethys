@@ -78,10 +78,7 @@ Contents
 .. toctree::
    :maxdepth: 1
    
-   features
-   whats_new
-   installation
-   installation/update
+   Quick Start <self>
 
 App Development
 ===============
@@ -89,10 +86,17 @@ App Development
 .. toctree::
    :maxdepth: 2
 
-   recipes
    tutorials
+   recipes
    dev_guides
-   
+
+Contributing
+============
+
+.. toctree::
+   :maxdepth: 1
+
+   tethys_development
 
 Deployment
 ==========
@@ -102,15 +106,14 @@ Deployment
 
    installation/production
 
-Contributing
-============
+Latest
+======
 
 .. toctree::
    :maxdepth: 1
 
-   repos
-   tethys_development
-   supplementary
+   whats_new
+   installation/update
 
 Acknowledgements
 ================

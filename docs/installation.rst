@@ -1,8 +1,10 @@
+:orphan:
+
 .. _development_installation:
 
-***************
-Getting Started
-***************
+*********************
+Detailed Installation
+*********************
 
 **Last Updated:** April 2025
 
