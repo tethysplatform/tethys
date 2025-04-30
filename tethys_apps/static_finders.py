@@ -10,6 +10,7 @@
 
 from pathlib import Path
 from collections import OrderedDict as SortedDict
+import django
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.files.storage import FileSystemStorage
@@ -39,15 +40,18 @@ class TethysStaticFinder(BaseFinder):
 
         super().__init__(*args, **kwargs)
 
-    def find(self, path, all=False):
+    # Django changes the argument `all` to `find_all` since the version 5.2
+    # Remove the argument `all` when Tethys doesn't support Django<5.2 anymore
+    def find(self, path, all=False, find_all=False):
         """
         Looks for files in the Tethys apps static or public directories
         """
+        find_all_files = find_all if django.VERSION >= (5, 2) else all
         matches = []
         for prefix, root in self.locations:
             matched_path = self.find_location(root, path, prefix)
             if matched_path:
-                if not all:
+                if not find_all_files:
                     return matched_path
                 matches.append(matched_path)
         return matches
