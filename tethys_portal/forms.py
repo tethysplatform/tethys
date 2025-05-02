@@ -7,15 +7,17 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from pathlib import Path
+from shutil import get_unpack_formats
 
 from django import forms
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, FileExtensionValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
 
-from tethys_cli.scaffold_commands import get_random_color
+from tethys_cli.scaffold_commands import get_random_color, APP_PREFIX
 
 
 def get_captcha():
@@ -276,6 +278,42 @@ class SsoTenantForm(forms.Form):
     )
 
 
+class AppImportForm(forms.Form):
+    """
+    A form for importing an app from disk or github
+    """
+
+    git_url = forms.CharField(
+        max_length=500,
+        label="Git URL",
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "https://github.com/space/tethysapp-example_app.git",
+                "class": "form-control",
+            }
+        ),
+        validators=[
+            RegexValidator(
+                r"^https://github.com/.*\.git$",
+                'The URL must start with "https://github.com" and end with ".git"',
+            ),
+        ],
+    )
+
+    zip_file = forms.FileField(
+        label="Archive File",
+        required=False,
+        validators=[
+            FileExtensionValidator(sum([extensions for name, extensions, _ in get_unpack_formats()], []))
+        ]
+    )
+
+    def clean(self):
+        if self.cleaned_data.get("git_url") and self.cleaned_data.get("zip_file"):
+            raise forms.ValidationError("Input provided for both Git URL and Archive File. Please only specify one or the other.")
+
+
 class AppScaffoldForm(forms.Form):
     """
     A form for scaffolding an app.
@@ -305,6 +343,10 @@ class AppScaffoldForm(forms.Form):
                 r"^\w+$",
                 "The project name must contain only letters, numbers, and underscores.",
             ),
+            lambda v: (Path.cwd() / f"{APP_PREFIX}-{v}").exists()
+            and exec(
+                "raise(forms.ValidationError('A project already exists with that name', code='project_exists',))"
+            ),
         ],
     )
 
@@ -329,7 +371,11 @@ class AppScaffoldForm(forms.Form):
         label="App Theme Color:",
         required=False,
         widget=forms.TextInput(
-            attrs={"value": get_random_color(), "class": "form-control"}
+            attrs={
+                "type": "color",
+                "value": get_random_color(),
+                "class": "form-control",
+            }
         ),
     )
 

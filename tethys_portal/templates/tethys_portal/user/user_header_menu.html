@@ -17,8 +17,13 @@
     {% if user.is_staff %}
       <li><hr class="dropdown-divider"></li>
       <li>
-        <a class="dropdown-item" href="{% url 'admin:build_app' %}" title="Build App">
-          <i class="bi bi-hammer"></i><span class="ms-2">Build App</span>
+        <a class="dropdown-item" href="{% url 'admin:create_app' %}" title="Create App">
+          <i class="bi bi-hammer"></i><span class="ms-2">Create App</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="{% url 'admin:import_app' %}" title="Import App">
+          <i class="bi bi-box-arrow-in-down"></i><span class="ms-2">Import App</span>
         </a>
       </li>
       <li><hr class="dropdown-divider"></li>

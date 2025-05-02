@@ -16,7 +16,7 @@
     if (DISCONNECTED) {
       updateProgress({message: "Done", percentage: 100});
       let redirectUrl = window.location.protocol + "//" + window.location.host + '/apps/';
-      if (APP_LIFECYCLE_ACTION == "Building") {
+      if (APP_LIFECYCLE_ACTION != "Removing") {
         redirectUrl += PROJECT_NAME.replace("_", "-") + "/"
       }
       window.location.assign(redirectUrl);

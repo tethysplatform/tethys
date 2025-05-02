@@ -2,11 +2,11 @@
 
 {% load django_bootstrap5 %}
 
-{% block title %}{{ block.super }} - Build App{% endblock %}
+{% block title %}Create App{% endblock %}
 
 {% bootstrap_messages %}
 
-{% block account_form_title %}Build App{% endblock %}
+{% block account_form_title %}Create App{% endblock %}
 
 {% block account_form_body %}
   {% if form %}
@@ -14,10 +14,10 @@
       {% csrf_token %}
       {% bootstrap_form form %}
       <a href="{% url 'app_library' %}" class="btn btn-outline-secondary">Cancel</a>
-      <button type="submit" id="scaffold-app-submit" class="btn btn-primary" name="scaffold-app-submit">Build</button>
+      <button type="submit" class="btn btn-primary" name="create-app-submit">Create</button>
     </form>
   {% else %}
-    {% include "./lifecycle_progress.html" with action="Building" app_name=app_name app_package=app_package %}
+    {% include "./lifecycle_progress.html" with action="Creating" app_name=app_name app_package=app_package %}
   {% endif %}
 
 {% endblock %}

@@ -98,7 +98,11 @@ admin_url_list.insert(
 )
 admin_url_list.insert(
     0,
-    re_path(r"^build_app/$", app_lifecycle.build_app, name="build_app"),
+    re_path(r"^create_app/$", app_lifecycle.create_app, name="create_app"),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^import_app/$", app_lifecycle.import_app, name="import_app"),
 )
 
 # Recreate admin.site.urls tuple

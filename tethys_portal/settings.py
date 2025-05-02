@@ -341,6 +341,8 @@ REST_FRAMEWORK = {
     ),
 }
 
+# X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 # Terms and conditions settings
 ACCEPT_TERMS_PATH = "/terms/accept/"
 TERMS_EXCLUDE_URL_PREFIX_LIST = {

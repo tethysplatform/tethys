@@ -1,9 +1,11 @@
 import json
+import os
 import platform
 
 from pathlib import Path
-from os import getpid, environ
+from shutil import unpack_archive, rmtree
 from subprocess import run
+from tempfile import mkdtemp
 from threading import Timer
 from time import sleep
 
@@ -19,18 +21,21 @@ from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.models import TethysApp
 from tethys_apps.utilities import get_app_class
 from tethys_cli.scaffold_commands import APP_PREFIX
-from tethys_portal.forms import AppScaffoldForm
+from tethys_portal.forms import AppScaffoldForm, AppImportForm
 
 
-CONDA_ENV = environ["CONDA_DEFAULT_ENV"]
+CONDA_ENV = os.environ["CONDA_DEFAULT_ENV"]
 KILL_COMMAND = (
-    f"taskkill /F /PID {getpid()}"
+    f"taskkill /F /PID {os.getpid()}"
     if platform.system() == "Windows"
-    else f"kill -9 {getpid()}"
+    else f"kill -9 {os.getpid()}"
 )
 
 
-def _execute_lifecycle_commands(app_package, command_message_tuples):
+def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=None):
+    if cleanup and not callable(cleanup):
+        raise ValueError("The \"cleanup\" argument must be a function or callable.")
+    
     channel_layer = get_channel_layer()
     for index, (command, message) in enumerate(command_message_tuples):
         async_to_sync(channel_layer.group_send)(
@@ -48,6 +53,8 @@ def _execute_lifecycle_commands(app_package, command_message_tuples):
                 0.5
             )  # So the websocket has time to send the message prior to killing the server
         run(command, shell=True, check=True)
+    if cleanup:
+        cleanup()
 
 
 class AppLifeCycleConsumer(AsyncWebsocketConsumer):
@@ -75,32 +82,111 @@ class AppLifeCycleConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps(progress_metadata))
 
+# import os
+# import gzip
+# import shutil
+# import zipfile
+# def extract_archive(file_path, destination_folder):
+#     nested_folder = f"{destination_folder}/{Path(file_path).stem}"
+#     os.mkdir(nested_folder)
+#     destination_folder = nested_folder
+#     if file_path.endswith('.zip'):
+#         with zipfile.ZipFile(file_path, 'r') as zip_ref:
+#             zip_ref.extractall(destination_folder)
+#     elif file_path.endswith('.gz'):
+#         file_name = os.path.basename(file_path)
+#         extracted_name = os.path.splitext(file_name)[0]
+#         extracted_path = os.path.join(destination_folder, extracted_name)
+#         with gzip.open(file_path, 'rb') as f_in:
+#             with open(extracted_path, 'wb') as f_out:
+#                 shutil.copyfileobj(f_in, f_out)
+#     else:
+#         print(f"Unsupported file format: {file_path}")
 
 @login_required
 @staff_member_required
-def build_app(request):
+def import_app(request):
+    context = {"form": AppImportForm()}  # form key removed below if valid POST request
+
+    if request.method == "POST":
+        form = AppImportForm(request.POST, request.FILES)
+        context["form"] = form
+        if form.is_valid():
+            git_url = form.cleaned_data["git_url"]
+            zip_file = form.cleaned_data["zip_file"]
+            tmpdir = mkdtemp()
+            import_name = git_url or zip_file.name
+            app_folder_name = Path(import_name).stem
+            app_package = app_folder_name.replace(f"{APP_PREFIX}-", "")
+
+            command_message_tuples = [
+                (f"conda activate {CONDA_ENV}", "Activating environment..."),
+            ]
+
+            if zip_file:
+                dest_fpath = f"{tmpdir}/{zip_file.name}"
+                with open(dest_fpath, "wb+") as dest:
+                    for chunk in zip_file.chunks():
+                        dest.write(chunk)
+                unpack_archive(dest_fpath, tmpdir)
+                os.remove(dest_fpath)
+                unzipped_contents = os.listdir(tmpdir)
+                
+                if len(unzipped_contents) == 1:
+                    app_folder_name = Path(tmpdir) / unzipped_contents[0]
+                else:
+                    app_folder_name = tmpdir
+
+            else:  # git_url
+                command_message_tuples.append(
+                    (
+                        f"cd {tmpdir} && git clone {git_url}",
+                        f"Cloning source code from {git_url}",
+                    ),
+                )
+            
+            command_message_tuples += [
+                (
+                    f"cd {app_folder_name} && tethys install -q",
+                    "Installing into Tethys Portal...",
+                ),
+                (f"{KILL_COMMAND} && tethys start", "Restarting server..."),
+            ]
+            print("************\n"*5)
+            print(tmpdir)
+            print("************\n"*5)
+
+            Timer(
+                1,
+                _execute_lifecycle_commands,
+                args=[app_package, command_message_tuples, lambda: rmtree(tmpdir)],
+            ).start()
+
+            context["app_name"] = import_name
+            context["app_package"] = app_package
+            del context["form"]
+
+    return render(request, "tethys_portal/import_app.html", context)
+
+
+@login_required
+@staff_member_required
+def create_app(request):
     context = {}
 
-    if request.POST:
-        template = request.POST.get("scaffold_template")
-        project_name = request.POST.get("project_name")
-        app_name = request.POST.get("app_name")
-        description = request.POST.get("description").replace('"', '""')
-        theme_color = request.POST.get("app_theme_color")
-        tags = request.POST.get("tags")
-        author = request.POST.get("author")
-        author_email = request.POST.get("author_email")
-        license = request.POST.get("license")
-
-        data = {k: v[0] for k, v in dict(request.POST).items()}
-
-        project_path = Path.cwd() / f"{APP_PREFIX}-{project_name}"
-        if project_path.exists():
-            messages.add_message(
-                request, messages.ERROR, f"A project already exists at {project_path}"
-            )
-            context["form"] = AppScaffoldForm(initial=data)
-        else:
+    if request.method == "POST":
+        form = AppScaffoldForm(request.POST)
+        if form.is_valid():
+            # Form is valid
+            template = form.cleaned_data["scaffold_template"]
+            project_name = form.cleaned_data["project_name"]
+            app_name = form.cleaned_data["app_name"]
+            description = form.cleaned_data["description"].replace('"', '""')
+            theme_color = form.cleaned_data["app_theme_color"]
+            tags = form.cleaned_data["tags"]
+            author = form.cleaned_data["author"]
+            author_email = form.cleaned_data["author_email"]
+            license = form.cleaned_data["license"]
             migrate_cmd = "&& tethys db migrate" if template == "reactpy" else ""
 
             command_message_tuples = [
@@ -130,9 +216,11 @@ def build_app(request):
             "author_email": request.user.email,
         }
 
-        context["form"] = AppScaffoldForm(initial=data)
+        form = AppScaffoldForm(initial=data)
 
-    return render(request, "tethys_portal/scaffold_app.html", context)
+    context["form"] = form
+
+    return render(request, "tethys_portal/create_app.html", context)
 
 
 @login_required
@@ -147,7 +235,7 @@ def remove_app(request, app_id):
         "deleting": False,
         "redirect_url": reverse("admin:tethys_apps_tethysapp_change", args=(app_id,)),
     }
-    if request.POST:
+    if request.method == "POST":
         command_message_tuples = [
             (f"conda activate {CONDA_ENV}", "Activating environment..."),
             (

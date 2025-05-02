@@ -120,9 +120,9 @@
         </div>
       </div>
     {% else %}
-      <h2 class="no-apps-loaded-message">There are no apps loaded.<br><br>
-        <a class="btn btn-lg btn-primary" role="button" href="{% url 'admin:build_app' %}" title="Build App">Build App</a>
-      </h2>
+      <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+      <p><a class="btn btn-lg btn-primary" role="button" href="{% url 'admin:create_app' %}" title="Create App">Create App</a></p>
+      <p><a class="btn btn-lg btn-primary" role="button" href="{% url 'admin:import_app' %}" title="Import App">Import App</a></p>
     {% endif %}
   </div>
   <div id="app-library-curtain"></div>
