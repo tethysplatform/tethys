@@ -18,7 +18,7 @@ Single Sign On (Optional)
       # pip
       pip install social-auth-app-django
 
-Tethys Portal supports authenticating users with several social authentication and single sign on providers such as Google, Facebook, and LinkedIn via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
+Tethys Portal supports authenticating users with several social authentication and single sign on providers such as Google, Facebook, and LinkedIn via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/>`_ module. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 
 
 Enable Social Login
@@ -37,7 +37,7 @@ Azure Active Directory
 
 1. Sign up for a free Microsoft Developer account or sign in with an existing account if you already have one. See: `<https://azure.microsoft.com/en-us/free/>`_
 
-2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/#home>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant>`_
+2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant>`_
 
     .. note::
 
@@ -176,7 +176,7 @@ References
 
 For more detailed information about using Active Directory Federation Services social authentication see the following articles:
 
-* `Active Directory Federation Services <https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services>`_
+* `Active Directory Federation Services <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/ad-fs-overview>`_
 * `AD FS OpenID Connect/OAuth Concepts <https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts>`_
 
 .. _social_auth_facebook:
@@ -240,7 +240,7 @@ References
 
 For more detailed information about using Facebook social authentication see the following articles:
 
-* `Facebook Login <https://developers.facebook.com/docs/facebook-login/v2.4>`_
+* `Facebook Login <https://business.facebook.com/business/loginpage/>`_
 * `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/web>`_
 
 .. _social_auth_google:
@@ -397,9 +397,9 @@ HydroShare
 
 5. (Optional) Link to a testing HydroShare instance
 
-    The production HydroShare is located at `https://www.hydroshare.org/ <https://www.hydroshare.org/>`_. In some cases you may want to link your Tethys Portal to a testing HydroShare instance, like `hydroshare-beta <https://beta.hydroshare.org/>`_.
-    Tethys already provides OAuth backends for `hydroshare-beta <https://beta.hydroshare.org/>`_ and `hydroshare-playground <https://playground.hydroshare.org/>`_.
-    To activate them, you need to go through steps 1-3 for each backend (replace www.hydroshare.org with the testing domain urls accordingly).
+    The production HydroShare is located at `https://www.hydroshare.org/ <https://www.hydroshare.org/>`_. In some cases you may want to link your Tethys Portal to a test HydroShare instance, like `hydroshare-beta <https://beta.hydroshare.org/>`_.
+    Tethys also provides an OAuth backend for `hydroshare-beta <https://beta.hydroshare.org/>`_.
+    To activate it, you need to go through steps 1-3 for each backend (replace www.hydroshare.org with the testing domain urls accordingly).
 
     At step 3:
 
@@ -407,8 +407,6 @@ HydroShare
 
         hydroshare-beta:
           ``tethys_services.backends.hydroshare_beta.HydroShareBetaOAuth2``
-        hydroshare-playground:
-          ``tethys_services.backends.hydroshare_playground.HydroSharePlaygroundOAuth2``
 
     b. Assign the ``Client ID`` and ``Client Secret`` to the following variables:
 
@@ -416,11 +414,6 @@ HydroShare
           ``SOCIAL_AUTH_HYDROSHARE_BETA_KEY``
 
           ``SOCIAL_AUTH_HYDROSHARE_BETA_SECRET``
-
-        hydroshare-playground:
-          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_KEY``
-
-          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_SECRET``
 
     .. note::
 
@@ -431,7 +424,7 @@ References
 
 For more detailed information about using HydroShare social authentication see the following articles:
 
-* `https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support <https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support>`_
+* `https://github.com/hydroshare/hs_restclient/blob/develop/README.rst`_
 
 .. _social_auth_arcgis:
 
