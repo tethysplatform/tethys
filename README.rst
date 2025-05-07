@@ -14,6 +14,6 @@ Tethys Platform
     :target: http://docs.tethysplatform.org/en/stable/?badge=stable
     :alt: Documentation Status
 
-Tethys Platform provides both a development environment and a hosting environment for water resources web apps.
+Tethys Platform provides both a development environment and a hosting environment for geoscientific web apps.
 
 Documentation can be found here: `<http://docs.tethysplatform.org/>`_

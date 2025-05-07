@@ -98,7 +98,7 @@ Distributed Computing
    :width: 300px
    :align: right
 
-To facilitate the large-scale computing that is often required by water resources applications, Tethys Platform leverages the computing management middleware `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ and `Dask Distributed <https://distributed.dask.org/en/stable/>`_.
+To facilitate the large-scale computing that is often required by geoscientific applications, Tethys Platform leverages the computing management middleware `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ and `Dask Distributed <https://distributed.dask.org/en/stable/>`_.
 
 To use the HTCondor or Dask and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs`.
 
