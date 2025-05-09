@@ -30,6 +30,10 @@ A virtual environment is essentially a folder that can store all of the unique d
 
         Requires `Miniconda <https://www.anaconda.com/docs/getting-started/miniconda/install>`_ or `Anaconda <https://www.anaconda.com/docs/getting-started/anaconda/install>`_
 
+        .. tip::
+
+            Windows Users: Use the Anaconda Powershell Prompt application for your command line
+
         .. code-block:: bash
 
             conda create -n <name>
