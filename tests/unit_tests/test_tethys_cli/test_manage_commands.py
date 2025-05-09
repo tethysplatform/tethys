@@ -1,3 +1,4 @@
+import sys
 import unittest
 from unittest import mock
 
@@ -30,7 +31,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("runserver", process_call_args[0][0][0][2])
         self.assertEqual("8080", process_call_args[0][0][0][3])
@@ -47,7 +48,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("runserver", process_call_args[0][0][0][2])
 
@@ -65,12 +66,12 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # intermediate process
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
 
         # primary process
-        self.assertEqual("python", process_call_args[1][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[1][0][0][0])
         self.assertIn("manage.py", process_call_args[1][0][0][1])
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
         self.assertNotIn("--noinput", process_call_args[1][0][0])
@@ -91,12 +92,12 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # intermediate process
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
 
         # primary process
-        self.assertEqual("python", process_call_args[1][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[1][0][0][0])
         self.assertIn("manage.py", process_call_args[1][0][0][1])
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
         self.assertEqual("--noinput", process_call_args[1][0][0][3])
@@ -116,7 +117,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("collectworkspaces", process_call_args[0][0][0][2])
         self.assertEqual("--force", process_call_args[0][0][0][3])
@@ -136,7 +137,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("collectworkspaces", process_call_args[0][0][0][2])
         self.assertNotIn("--force", process_call_args[0][0][0])
@@ -156,18 +157,18 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # pre_collectstatic
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
 
         # collectstatic
-        self.assertEqual("python", process_call_args[1][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[1][0][0][0])
         self.assertIn("manage.py", process_call_args[1][0][0][1])
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
         self.assertNotIn("--noinput", process_call_args[1][0][0])
 
         # collectworkspaces
-        self.assertEqual("python", process_call_args[2][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[2][0][0][0])
         self.assertIn("manage.py", process_call_args[2][0][0][1])
         self.assertEqual("collectworkspaces", process_call_args[2][0][0][2])
 
@@ -186,18 +187,18 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # pre_collectstatic
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
 
         # collectstatic
-        self.assertEqual("python", process_call_args[1][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[1][0][0][0])
         self.assertIn("manage.py", process_call_args[1][0][0][1])
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
         self.assertEqual("--noinput", process_call_args[1][0][0][3])
 
         # collectworkspaces
-        self.assertEqual("python", process_call_args[2][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[2][0][0][0])
         self.assertIn("manage.py", process_call_args[2][0][0][1])
         self.assertEqual("collectworkspaces", process_call_args[2][0][0][2])
 
@@ -227,7 +228,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("shell", process_call_args[0][0][0][2])
         self.assertEqual("--help", process_call_args[0][0][0][3])
@@ -244,7 +245,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertIn("shell", process_call_args[0][0][0][2])
 
@@ -261,7 +262,7 @@ class TestManageCommands(unittest.TestCase):
         process_call_args = mock_run_process.call_args_list
 
         # check the values from the argument list
-        self.assertEqual("python", process_call_args[0][0][0][0])
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("check", process_call_args[0][0][0][2])
         self.assertEqual(unknown_args[0], process_call_args[0][0][0][3])

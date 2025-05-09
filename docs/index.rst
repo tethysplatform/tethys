@@ -4,7 +4,7 @@
 Tethys Platform |version|
 *************************
 
-**Last Updated:** September 2024
+**Last Updated:** April 2025
 
 Tethys is a platform that can be used to develop and host geoscientific web apps. It includes a suite of free and open source software (FOSS) that has been carefully selected to address the unique development needs of geoscientific web apps. Tethys web apps are developed using a Python software development kit (SDK) which includes programmatic links to each software component. Tethys Platform is powered by the Django Python web framework giving it a solid web foundation with excellent security and performance. Refer to the :doc:`./features` article for an overview of the features of Tethys Platform.
 
@@ -17,17 +17,29 @@ Tethys is a platform that can be used to develop and host geoscientific web apps
 Quick Start
 ===========
 
-The quickest way to get started with Tethys Platform is via ``conda`` (`Miniconda <https://www.anaconda.com/docs/getting-started/miniconda/install>`_ or `Anaconda <https://www.anaconda.com/docs/getting-started/anaconda/install>`_):
+First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands:
 
-.. code-block:: bash
+|
 
-    conda create -n tethys -c conda-forge tethys-platform
-    conda activate tethys
-    tethys quickstart
+.. tabs::
+
+    .. tab:: Conda
+
+        .. code-block:: bash
+
+            conda install -c conda-forge tethys-platform
+            tethys quickstart
+
+    .. tab:: Pip
+
+        .. code-block:: bash
+
+            pip install tethys-platform
+            tethys quickstart
 
 .. tip::
-
-    For more details on the installation process see :ref:`development_installation`.
+    
+    To learn what goes on behind the scenes during ``tethys quickstart`` see :ref:`development_installation`.
     
 Your browser will automatically open to http://127.0.0.1:8000/. 
 
@@ -60,54 +72,40 @@ There are several directions that you may want to go from here.
 * Checkout the :doc:`./installation/web_admin_setup` docs to customize your Tethys Portal.
 * For help getting started with docker see :ref:`using_docker`
 
-Contents
-========
-
-.. toctree::
-   :maxdepth: 1
-   
-   features
-   whats_new
-   installation
-   installation/update
-
-App Development
-===============
-
-.. toctree::
-   :maxdepth: 2
-
-   recipes
-   tutorials
-   dev_guides
-   
-
-Deployment
-==========
-
-.. toctree::
-   :maxdepth: 3
-
-   installation/production
-
-Contributing
-============
-
-.. toctree::
-   :maxdepth: 1
-
-   repos
-   tethys_development
-   supplementary
-
 Acknowledgements
 ================
 
-This material is based upon work supported by the National Science Foundation under Grant No. 1135482
+This material is based upon work supported by the National Science Foundation under Grants 1135482 and 2303756.
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   
+   Quick Start <self>
 
-* :ref:`genindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 2
+   :hidden:
 
+   tutorials
+   recipes
+   dev_guides
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   tethys_development
+
+.. toctree::
+   :maxdepth: 3
+   :hidden:
+
+   installation/production
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   whats_new
+   installation/update
