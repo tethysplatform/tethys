@@ -90,10 +90,12 @@ class TestPageComponentWrapper(TestCase):
         del sys.modules["reactpy"]
         reload(page_handler)
 
+    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_none(self, mock_clm):
+    def test_page_component_wrapper__layout_none(self, mock_clm, mock_pl):
         mock_lib = mock.MagicMock()
         mock_clm.get_library.return_value = mock_lib
+        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
         app = mock.MagicMock(package="test_app")
         user = mock.MagicMock()
@@ -106,17 +108,20 @@ class TestPageComponentWrapper(TestCase):
 
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
-        self.assertEqual(return_value, "rendered_component")
+        self.assertEqual(return_value, "rendered_page")
         mock_clm.get_library.assert_called_once_with("test_app-component")
+        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
         proof_mock.assert_called_once_with(mock_lib)
 
+    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_none_with_extras(self, mock_clm):
+    def test_page_component_wrapper__layout_none_with_extras(self, mock_clm, mock_pl):
         mock_lib = mock.MagicMock()
         mock_clm.get_library.return_value = mock_lib
+        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
-        app = mock.MagicMock(package="test_app")
-        user = mock.MagicMock()
+        mock_app = mock.MagicMock(package="test_app")
+        mock_user = mock.MagicMock()
         layout = None
         extras = {"extra1": "val1", "extra2": 2}
         proof_mock = mock.MagicMock()
@@ -126,21 +131,24 @@ class TestPageComponentWrapper(TestCase):
             return "rendered_component"
 
         return_value = page_handler.page_component_wrapper(
-            app, user, layout, component, extras
+            mock_app, mock_user, layout, component, extras
         )
 
-        self.assertEqual(return_value, "rendered_component")
+        self.assertEqual(return_value, mock_pl.return_value)
         proof_mock.assert_called_once_with(mock_lib, "val1", 2)
         mock_clm.get_library.assert_called_once_with("test_app-component")
+        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
 
+    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_not_none(self, mock_clm):
+    def test_page_component_wrapper__layout_not_none(self, mock_clm, mock_pl):
         mock_lib = mock.MagicMock()
         mock_clm.get_library.return_value = mock_lib
+        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
-        app = mock.MagicMock(package="test_app")
-        app.registered_url_maps = []
-        user = mock.MagicMock()
+        mock_app = mock.MagicMock(package="test_app")
+        mock_app.registered_url_maps = []
+        mock_user = mock.MagicMock()
         layout = mock.MagicMock()
         layout_return_val = "returned_layout"
         layout.return_value = layout_return_val
@@ -150,24 +158,34 @@ class TestPageComponentWrapper(TestCase):
             proof_mock(lib)
             return "rendered_component"
 
-        return_value = page_handler.page_component_wrapper(app, user, layout, component)
+        return_value = page_handler.page_component_wrapper(
+            mock_app, mock_user, layout, component
+        )
 
         self.assertEqual(return_value, layout_return_val)
         layout.assert_called_once_with(
-            {"app": app, "user": user, "nav-links": app.navigation_links},
-            "rendered_component",
+            mock_lib,
+            app=mock_app,
+            user=mock_user,
+            nav_links=mock_app.navigation_links,
+            content=mock_pl.return_value,
         )
         proof_mock.assert_called_once_with(mock_lib)
         mock_clm.get_library.assert_called_once_with("test_app-component")
+        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
 
+    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_not_none_with_extras(self, mock_clm):
+    def test_page_component_wrapper__layout_not_none_with_extras(
+        self, mock_clm, mock_pl
+    ):
         mock_lib = mock.MagicMock()
         mock_clm.get_library.return_value = mock_lib
+        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
-        app = mock.MagicMock(package="test_app")
-        app.registered_url_maps = []
-        user = mock.MagicMock()
+        mock_app = mock.MagicMock(package="test_app")
+        mock_app.registered_url_maps = []
+        mock_user = mock.MagicMock()
         layout = mock.MagicMock()
         layout_return_val = "returned_layout"
         layout.return_value = layout_return_val
@@ -180,16 +198,20 @@ class TestPageComponentWrapper(TestCase):
             return component_return_val
 
         return_value = page_handler.page_component_wrapper(
-            app, user, layout, component, extras
+            mock_app, mock_user, layout, component, extras
         )
 
         self.assertEqual(return_value, layout_return_val)
         layout.assert_called_once_with(
-            {"app": app, "user": user, "nav-links": app.navigation_links},
-            component_return_val,
+            mock_lib,
+            app=mock_app,
+            user=mock_user,
+            nav_links=mock_app.navigation_links,
+            content=mock_pl.return_value,
         )
         proof_mock.assert_called_once_with(mock_lib, "val1", 2)
         mock_clm.get_library.assert_called_once_with("test_app-component")
+        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
 
 
 class TestPage(TestCase):
