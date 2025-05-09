@@ -82,23 +82,26 @@ function makeJsonSafeEventHandler(oldHandler) {
 
         var filteredArguments = [];
         Array.from(arguments).forEach(function (arg) {
-            let filteredArg;
-            if (typeof arg === "object" && arg.nativeEvent) {
-                // this is probably a standard React synthetic event
-                filteredArg = arg;
-            } else {
-                filteredArg = JSON.parse(stringifyToDepth(arg, 3, stringifyReplacer));
+            let filteredArg = arg;
+            if (typeof arg === "object") {
+                if (arg.nativeEvent) {
+                    // this is probably a standard React synthetic event
+                    filteredArg = arg;
+                } else {
+                    filteredArg = JSON.parse(stringifyToDepth(arg, 3, stringifyReplacer));
+                }
+                
+                if (arg.__proto__) {
+                    Object.getOwnPropertyNames(arg.__proto__).forEach(function (propName) {
+                        if (propName == 'constructor') return;
+                        if (!arg.hasOwnProperty(propName) && arg[propName]) {
+                            filteredArg[propName] = arg[propName];
+                            delete filteredArg[propName + '_'];
+                        }
+                    });
+                }
             }
             // Add non-enumerable properties 
-            if (arg.__proto__) {
-                Object.getOwnPropertyNames(arg.__proto__).forEach(function (propName) {
-                    if (propName == 'constructor') return;
-                    if (!arg.hasOwnProperty(propName) && arg[propName]) {
-                        filteredArg[propName] = arg[propName];
-                        delete filteredArg[propName + '_'];
-                    }
-                });
-            }
             filteredArguments.push(filteredArg);
         });
         oldHandler(...Array.from(filteredArguments));
