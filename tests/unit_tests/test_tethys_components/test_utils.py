@@ -22,14 +22,13 @@ class TestComponentUtils(TestCase):
         app = utils._infer_app_from_stack_trace()
         self.assertEqual(app.package, "test_app")
 
-    @mock.patch("tethys_components.utils.inspect")
-    def test_infer_app_from_stack_trace_fails_no_app_package(self, mock_inspect):
-        mock_stack_item_1 = mock.MagicMock()
-        mock_stack_item_1.__getitem__().f_code.co_filename = "throws_exception"
+    @mock.patch("tethys_components.utils.Path")
+    def test_infer_app_from_stack_trace_fails_no_app_package(self, mock_path):
+        mock_path.side_effect = IndexError
 
-        with self.assertRaises(Exception) as cm:
+        with self.assertRaises(ModuleNotFoundError) as cm:
             utils._infer_app_from_stack_trace()
-            self.assertIn("No package was found", str(cm.exception))
+            self.assertIn("No such module was found", str(cm.exception))
 
     @mock.patch("tethys_components.utils.inspect")
     def test_infer_app_from_stack_trace_fails_no_app(self, mock_inspect):
@@ -38,7 +37,7 @@ class TestComponentUtils(TestCase):
             "test", "fake"
         )
         mock_inspect.stack.return_value = [mock_stack_item_1, mock_stack_item_1]
-        with self.assertRaises(Exception) as cm:
+        with self.assertRaises(EnvironmentError) as cm:
             utils._infer_app_from_stack_trace()
             self.assertIn("app was not found", str(cm.exception))
 
@@ -187,7 +186,7 @@ class TestComponentUtils(TestCase):
             pass
 
         utils.background_execute(test_func, ["Hello"])
-        mock_import().Thread.assert_called_once_with(test_func, args=["Hello"])
+        mock_import().Thread.assert_called_once_with(target=test_func, args=["Hello"])
         mock_import().Thread().start.assert_called_once()
         mock.patch.stopall()
 
@@ -225,19 +224,131 @@ class TestComponentUtils(TestCase):
             utils._get_layout_component(self.app, "default"), self.app.default_layout
         )
 
-    def test_get_layout_component_default_layout_not_callable(self):
+    @mock.patch("tethys_components.utils.layouts")
+    def test_get_layout_component_default_layout_not_callable(self, mock_layouts):
         self.app.default_layout = "TestLayout"
-        mock_import = mock.patch("builtins.__import__").start()
         self.assertEqual(
-            utils._get_layout_component(self.app, "default"),
-            mock_import().layouts.TestLayout,
+            utils._get_layout_component(self.app, "default"), mock_layouts.TestLayout
         )
+
+    @mock.patch("tethys_components.utils.layouts")
+    def test_get_layout_component_not_default_not_callable(self, mock_layouts):
+        self.assertEqual(
+            utils._get_layout_component(self.app, "TestLayout"), mock_layouts.TestLayout
+        )
+
+    def test_AttrDict_all_the_stops(self):
+        test_dict = {
+            "camelProp": [
+                {
+                    "list": "of",
+                    "props": ["that", {"are": "all"}, "very"],
+                    "differEnt": [{"types": "and"}, {"nesting": "orders"}],
+                },
+            ],
+            "clear": "is reserved",
+            "update": 100,
+            "oneMore": {"howbout": "this"},
+        }
+
+        d = utils.DotNotationDict(test_dict)
+
+        self.assertTrue(hasattr(d, "camel_prop"))
+        self.assertTrue(isinstance(d.camel_prop, list))
+        self.assertEqual(len(d.camel_prop), 1)
+        self.assertTrue(isinstance(d.camel_prop[0], utils.DotNotationDict))
+        self.assertTrue(hasattr(d.camel_prop[0], "list"))
+        self.assertEqual(d.camel_prop[0].list, "of")
+        self.assertTrue(hasattr(d.camel_prop[0], "props"))
+        self.assertTrue(isinstance(d.camel_prop[0].props, list))
+        self.assertEqual(len(d.camel_prop[0].props), 3)
+        self.assertEqual(d.camel_prop[0].props[0], "that")
+        self.assertTrue(isinstance(d.camel_prop[0].props[1], utils.DotNotationDict))
+        self.assertTrue(hasattr(d.camel_prop[0].props[1], "are"))
+        self.assertEqual(d.camel_prop[0].props[1].are, "all")
+        self.assertEqual(d.camel_prop[0].props[2], "very")
+        self.assertTrue(hasattr(d.camel_prop[0], "differ_ent"))
+        self.assertTrue(isinstance(d.camel_prop[0].differ_ent, list))
+        self.assertEqual(len(d.camel_prop[0].differ_ent), 2)
+        self.assertTrue(
+            isinstance(d.camel_prop[0].differ_ent[0], utils.DotNotationDict)
+        )
+        self.assertTrue(
+            isinstance(d.camel_prop[0].differ_ent[1], utils.DotNotationDict)
+        )
+        self.assertTrue(hasattr(d.camel_prop[0].differ_ent[0], "types"))
+        self.assertEqual(d.camel_prop[0].differ_ent[0].types, "and")
+        self.assertTrue(hasattr(d.camel_prop[0].differ_ent[1], "nesting"))
+        self.assertEqual(d.camel_prop[0].differ_ent[1].nesting, "orders")
+        self.assertTrue(hasattr(d, "clear_"))
+        self.assertEqual(d.clear_, "is reserved")
+        self.assertTrue(hasattr(d, "update_"))
+        self.assertEqual(d.update_, 100)
+        self.assertTrue(hasattr(d, "one_more"))
+        self.assertTrue(isinstance(d.one_more, utils.DotNotationDict))
+        self.assertTrue(hasattr(d.one_more, "howbout"))
+        self.assertEqual(d.one_more.howbout, "this")
+        with self.assertRaises(AttributeError):
+            d.not_there
+
+    def test_args_to_attrdicts_wrapper(self):
+        @utils.args_to_dot_notation_dicts
+        def test_func(arg1, arg2, arg3):
+            self.assertTrue(isinstance(arg1, utils.DotNotationDict))
+            self.assertTrue(isinstance(arg2, utils.DotNotationDict))
+            self.assertTrue(isinstance(arg3, str))
+
+        test_func(
+            {"this": "is", "a": "test"}, {"how": "about", "another": "one"}, "done"
+        )
+
+    def test_fetch_json_as_attrdict(self):
+        mock_import = mock.patch("builtins.__import__").start()
+        test_dict = {"this": "is", "a": "test"}
+        mock_import.return_value.get.return_value.json.return_value = test_dict
+        test_url = "test-url"
+
+        data = utils.fetch_json(test_url)
+
+        mock_import.return_value.get.assert_called_once_with(test_url)
+        self.assertTrue(isinstance(data, utils.DotNotationDict))
+        self.assertEqual(data.this, "is")
+        self.assertEqual(data.a, "test")
+
         mock.patch.stopall()
 
-    def test_get_layout_component_not_default_not_callable(self):
+    def test_fetch_json_not_attrdict(self):
         mock_import = mock.patch("builtins.__import__").start()
-        self.assertEqual(
-            utils._get_layout_component(self.app, "TestLayout"),
-            mock_import().layouts.TestLayout,
-        )
+        test_dict = {"this": "is", "a": "test"}
+        mock_import.return_value.get.return_value.json.return_value = test_dict
+        test_url = "test-url"
+
+        data = utils.fetch_json(test_url, as_attr_dict=False)
+
+        mock_import.return_value.get.assert_called_once_with(test_url)
+        self.assertDictEqual(data, test_dict)
+
         mock.patch.stopall()
+
+    def test_transform_coordinate(self):
+        mock_import = mock.patch("builtins.__import__").start()
+        coordinate = [0, 0]
+        src_proj = "EPSG:3857"
+        target_proj = "EPSG:4326"
+
+        result = utils.transform_coordinate(coordinate, src_proj, target_proj)
+
+        self.assertEqual(
+            mock_import.return_value.Transformer.from_crs.return_value.transform.return_value,
+            result,
+        )
+        mock_import.return_value.CRS.assert_has_calls(
+            [mock.call(src_proj), mock.call(target_proj)]
+        )
+
+        mock.patch.stopall()
+
+    def test_get_db_object(self):
+        app = mock.MagicMock(db_object="expected")
+        val = utils._get_db_object(app)
+        self.assertEqual(val, "expected")

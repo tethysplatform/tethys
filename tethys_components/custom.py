@@ -1,196 +1,370 @@
-from reactpy import component
 from tethys_portal.settings import STATIC_URL
-from .utils import Props
-from .library import ComponentLibraryManager
+from pathlib import Path
 
-lib = ComponentLibraryManager.get_library("tethys_components_custom")
+THIS_DIR = Path(__file__).parent
+RESOURCE_DIR = THIS_DIR / "resources"
 
 
-@component
-def Panel(props, *children):
-    show = props.pop("show", False)
-    set_show = props.pop("set-show", lambda x: x)
-    position = props.pop("position", "bottom")
-    extent = props.pop("extent", "300px")
-    name = props.pop("name", "Panel")
-    style = {}
-    if position in ["top", "bottom"]:
+def Display(lib, children=None):
+    """A full screen container for nesting content within."""
+    return lib.bs.Container(fluid=True, style=lib.Style(height="100%"))(
+        *(children or [])
+    )
+
+
+def LayerPanel(lib):
+    return lib.ollp.LayerPanel()
+
+
+def PageLoader(lib, content):
+    hide_loading, set_hide_loading = lib.hooks.use_state(True)
+    hide_content, set_hide_content = lib.hooks.use_state(True)
+
+    lib.hooks.use_effect(
+        # Delay the content load so it doesn't flash at all
+        lambda: (
+            None
+            if all(
+                [
+                    set_hide_loading(False),
+                    lib.utils.background_execute(set_hide_content, [False], 0.5),
+                    lib.utils.background_execute(set_hide_loading, [True], 2),
+                ]
+            )
+            else None
+        ),
+        dependencies=[],
+    )
+
+    return lib.html.div(style=lib.Style(height="100%", width="100%"))(
+        (
+            lib.html.div(key="loading-content")(
+                lib.tethys.LoadingAnimation(),
+            )
+            if not hide_loading
+            else None
+        ),
+        lib.html.div(
+            key="page-content",
+            style=lib.Style(
+                display=None if hide_content else "unset", height="100%", width="100%"
+            ),
+        )(content),
+    )
+
+
+def LoadingAnimation(lib):
+    return lib.html._(
+        lib.html.div(
+            style=lib.Style(
+                zIndex=1029,
+                background="white",
+                top=0,
+                right=0,
+                bottom=0,
+                left=0,
+                position="absolute",
+            )
+        )(
+            lib.html.div(className="center"),
+            lib.html.div(className="inner-spin")(
+                lib.html.div(className="inner-arc inner-arc_start-a"),
+                lib.html.div(className="inner-arc inner-arc_end-a"),
+                lib.html.div(className="inner-arc inner-arc_start-b"),
+                lib.html.div(className="inner-arc inner-arc_end-b"),
+                lib.html.div(className="inner-moon-a"),
+                lib.html.div(className="inner-moon-b"),
+            ),
+            lib.html.div(className="outer-spin")(
+                lib.html.div(className="outer-arc outer-arc_start-a"),
+                lib.html.div(className="outer-arc outer-arc_end-a"),
+                lib.html.div(className="outer-arc outer-arc_start-b"),
+                lib.html.div(className="outer-arc outer-arc_end-b"),
+                lib.html.div(className="outer-moon-a"),
+                lib.html.div(className="outer-moon-b"),
+            ),
+            lib.html.div(className="loading-text")("Loading..."),
+        )
+    )
+
+
+def BaseMapSuite(lib, default="OpenStreetMap"):
+    ESRI_BASEMAP_NAMES = [
+        "NatGeo_World_Map",
+        "USA_Topo_Maps",
+        "World_Imagery",
+        "World_Physical_Map",
+        "World_Shaded_Relief",
+        "World_Street_Map",
+        "World_Terrain_Base",
+        "World_Topo_Map",
+    ]
+    CARTO_DB_BASEMAP_STYLES = ["light", "dark"]
+    CARTO_DB_BASEMAP_LABELS = ["all", "nolabels"]
+    SUPPORTED_BASEMAPS = {
+        "None": lib.ol.source.XYZ(),
+        "OpenStreetMap": lib.ol.source.OSM(),
+        # "Bing": lib.ol.source.BingMaps(),
+        "XYZ": lib.ol.source.XYZ(
+            url="https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+        ),
+        **{
+            " ".join(esri_basemap.split("_")): lib.ol.source.XYZ(
+                url=f"https://server.arcgisonline.com/ArcGIS/rest/services/{esri_basemap}/MapServer/tile/{{z}}/{{y}}/{{x}}"
+            )
+            for esri_basemap in ESRI_BASEMAP_NAMES
+        },
+        **{
+            f"CartoDB ({style}_{label})": lib.ol.source.XYZ(
+                url=f"http://{{1-4}}.basemaps.cartocdn.com/{style}_{label}/{{z}}/{{x}}/{{y}}.png"
+            )
+            for style, label in [
+                (style, label)
+                for style in CARTO_DB_BASEMAP_STYLES
+                for label in CARTO_DB_BASEMAP_LABELS
+            ]
+        },
+    }
+    return lib.ol.layer.Group(title="Basemap", fold="close")(
+        *[
+            lib.ol.layer.Tile(visible=default == title, type="base", title=title)(
+                source
+            )
+            for title, source in SUPPORTED_BASEMAPS.items()
+        ]
+    )
+
+
+def Map(lib, center=None, zoom=3.5, on_click=None, children=None):
+    """A Map for displaying geospatial data
+
+    Args:
+        center ([int|float,int|float]): The center point of the rendered map, in [lon, lat] or [x, y] format. Defaults to [-100, 40].
+        zoom (int|float): The initial zoom level of the map, where 1 is at the global scale and 20 is at the neighborhood scale. Defaults to 3.5.
+        on_click (callable): A function that should be called when the map is clicked. Defaults to None.
+        children (list[]): A list of layers to be rendered. These can also be passed in as nested components (i.e. Map()(layer1, layer2, layer3)). Defaults to [].
+    """
+
+    center = center or [-100, 40]
+    return lib.ol.Map(**({"onClick": on_click} if on_click else {}))(
+        lib.ol.View(center=center, zoom=zoom),
+        lib.tethys.BaseMapSuite(),
+        lib.ol.layer.Group(title="Overlays", fold="open")(*children or []),
+        lib.ol.control.ScaleLine(),
+        lib.tethys.LayerPanel(),
+    )
+
+
+def Chart(lib, data, width=400, height=300, x_label="", y_label=""):
+    """A chart for displaying x-y coordinate pairs
+    Args:
+        data (list[dict]): The data to be rendered, given as a list of dicts where each dict represents a point on chart (e.g. {"x": x, "y": y})
+        width (int): The rendered width of the chart in pixels. Defaults to 500.
+        height (int): The rendered height of the chart in pixels. Defaults to 400.
+        x_label (str): The rendered label of the x-axis. Defauls to "".
+        y_label (str): The rendered label of the y-axis. Defauls to "".
+    """
+    return lib.rc.LineChart(
+        width=width,
+        height=height,
+        data=data,
+    )(
+        lib.rc.CartesianGrid(strokeDasharray="3 3"),
+        lib.rc.XAxis(dataKey="x", label=x_label),
+        lib.rc.YAxis(label=lib.Props(value=y_label, angle=-90, position="insideLeft")),
+        lib.rc.Tooltip(),
+        lib.rc.Line(type="monotone", dataKey="y"),
+    )
+
+
+def Panel(
+    lib,
+    show=False,
+    set_show=None,
+    anchor="right",
+    extent="500px",
+    title="Panel",
+    style=None,
+    children=None,
+):
+    """A pop out panel with custom content anchored to the left, right, top or bottom
+    Args:
+        show (bool): Whether to show initially. Defaults to False.
+        set_show (callable): The function that will be used to update the show state. It accepts
+        anchor (str): Where to anchor the panel. Must be one of: right, left, top, or bottom. Defaults to "right".
+        extent (str): The height/width of the panel. Defaults to "500px".
+        title (str): The title to display at the top of the panel. Defaults to "Panel".
+        style (dict[str: str]|Style): Any CSS styles as key:value pairs to be applied to the panel. Defaults to {}.
+        children: The actual nested content that is to be rendered. Can also be supplied as call args to Panel (i.e. Panel()(panel_content)).
+    """
+    style = style or {}
+    if anchor in ["top", "bottom"]:
         style["height"] = extent
     else:
+        if anchor not in ["right", "left"]:
+            raise ValueError("Position must be one of: right, left, top, or bottom")
+        anchor = {"right": "end", "left": "start"}[anchor]
         style["width"] = extent
 
-    def handle_close(event):
+    def handle_close(_):
         set_show(False)
 
     return lib.html.div(
-        Props(
-            role="dialog",
-            aria_modal="true",
-            class_name=f"offcanvas offcanvas-{position}{' show' if show else ''}",
-            tabindex="-1",
-            style=Props(visibility="visible") | style,
-        ),
-        lib.html.div(
-            Props(class_name="offcanvas-header"),
-            lib.html.div(Props(class_name="offcanvas-title h5"), name),
+        role="dialog",
+        **{"aria-modal": "true"},
+        class_name=f"offcanvas offcanvas-{anchor}{' show' if show else ''}",
+        tabIndex="-1",
+        style=lib.Style(visibility="visible") | style,
+    )(
+        lib.html.div(class_name="offcanvas-header")(
+            lib.html.div(class_name="offcanvas-title h5")(title),
             lib.html.button(
-                Props(
-                    type="button",
-                    class_name="btn-close",
-                    aria_label="Close",
-                    on_click=handle_close,
-                )
+                type="button",
+                class_name="btn-close",
+                **{"aria-label": "true"},
+                onClick=handle_close,
             ),
         ),
-        lib.html.div(Props(class_name="offcanvas-body"), *children),
+        lib.html.div(class_name="offcanvas-body")(*children or []),
     )
 
 
-# @component  NOTE: Breaks if @component decorator applied
-def HeaderButton(props, *children):
-    href = props.get("href")
-    shape = props.get("shape")
-    style = props.pop("style", {})
-    class_name = props.pop("class_name", "")
-
-    return lib.bs.Button(
-        Props(
-            href=href,
-            variant="light",
-            size="sm",
-            class_name=f"{class_name} styled-header-button",
-            style=Props(
-                background_color="rgba(255, 255, 255, 0.1)",
-                border="none",
-                color="white",
-            )
-            | style
-            | (Props(border_radius="50%") if shape == "circle" else {}),
+def HeaderButton(lib, **kwargs):
+    defaults = lib.Props(
+        variant="light",
+        size="sm",
+        class_name=f"{kwargs.get('class_name', '')} styled-header-button",
+        style=lib.Style(
+            background_color="rgba(255, 255, 255, 0.1)",
+            border="none",
+            color="white",
+            border_radius="50%" if kwargs.get("shape") == "circle" else "unset",
         )
-        | props,
-        *children,
+        | kwargs.get("style", {}),
+    )
+    return lib.bs.Button(**dict(defaults, **kwargs))(
+        *kwargs.get("children", []),
     )
 
 
-# @component  NOTE: Breaks if @component decorator applied
-def NavIcon(src, background_color):
+def NavIcon(lib, src="", style=None):
+    style = style or {}
     return lib.html.img(
-        Props(
-            src=src,
-            class_name="d-inline-block align-top",
-            style={
-                "padding": "0",
-                "height": "30px",
-                "border-radius": "50%",
-                "background": background_color,
-            },
+        src=src,
+        class_name="d-inline-block align-top",
+        style=lib.Style(
+            padding=0,
+            height="30px",
+            **{"border-radius": "50%"},
         )
+        | style,
     )
 
 
-@component
-def NavMenu(props, *children):
-    nav_title = props.pop("nav-title", "Navigation")
-
-    return lib.html.div(
-        lib.bs.Offcanvas(
-            Props(id="offcanvasNavbar", show=False) | props,
-            lib.bs.OffcanvasHeader(
-                Props(closeButton=True), lib.bs.OffcanvasTitle(nav_title)
-            ),
-            lib.bs.OffcanvasBody(*children),
-        )
-    )
-
-
-def get_db_object(app):
-    return app.db_object
-
-
-@component
-def HeaderWithNavBar(app, user, nav_links):
-    app_db_query = lib.hooks.use_query(get_db_object, {"app": app})
+def HeaderWithNavBar(lib, app, user, nav_links=None):
+    nav_links = nav_links or []
+    app_db_query = lib.hooks.use_query(lib.utils._get_db_object, {"app": app})
     app_id = app_db_query.data.id if app_db_query.data else 999
     location = lib.hooks.use_location()
+    margin_top, set_margin_top = lib.hooks.use_state(-56)
+    redirect, set_redirect = lib.hooks.use_state(False)
 
-    return lib.bs.Navbar(
-        Props(
+    lib.hooks.use_effect(
+        lambda: lib.utils.background_execute(set_margin_top, [0], 0.5), []
+    )
+
+    def handle_exit(*_, **__):  # pragma: no cover
+        set_margin_top(-56)
+        set_redirect(True)
+
+    return lib.html.div(
+        (
+            lib.html.script(
+                f"""window.setTimeout(function () {{window.location = "{app.exit_url}";}}, 200);"""
+            )
+            if redirect
+            else None
+        ),
+        lib.bs.Navbar(
+            key="navbar",
             fixed="top",
             class_name="shadow",
             expand=False,
             variant="dark",
-            style=Props(background=app.color, min_height="56px"),
-        ),
-        lib.bs.Container(
-            Props(as_="header", fluid=True, class_name="px-4"),
-            lib.bs.NavbarToggle(
-                Props(
-                    aria_controls="offcanvasNavbar", class_name="styled-header-button"
-                )
+            style=lib.Style(
+                background=app.color,
+                height="56px",
+                margin_top=margin_top,
+                **{
+                    "transition": "margin 0.4s ease",
+                    "-webkit-transition": "margin 0.4s ease",
+                    "-moz-transition": "margin 0.4s ease",
+                    "-o-transition": "margin 0.4s ease",
+                },
             ),
-            lib.bs.NavbarBrand(
-                Props(
+        )(
+            lib.bs.Container(as_="header", fluid=True, class_name="px-4")(
+                lib.bs.NavbarToggle(
+                    aria_controls="offcanvasNavbar",
+                    class_name="styled-header-button",
+                ),
+                lib.bs.NavbarBrand(
                     href=f"/apps/{app.root_url}/",
                     class_name="mx-0 d-none d-sm-block",
-                    style=Props(color="white"),
+                    style=lib.Style(color="white"),
+                )(
+                    lib.tethys.NavIcon(
+                        src=f"{STATIC_URL}{app.icon}",
+                        style=lib.Style(background_color=app.color),
+                    ),
+                    f" {app.name}",
                 ),
-                NavIcon(src=f"{STATIC_URL}{app.icon}", background_color=app.color),
-                f" {app.name}",
-            ),
-            lib.bs.Form(
-                Props(inline="true"),
-                (
-                    HeaderButton(
-                        Props(
+                lib.bs.Form(inline="true")(
+                    (
+                        lib.tethys.HeaderButton(
                             id="btn-app-settings",
                             href=f"/admin/tethys_apps/tethysapp/{app_id}/change/",
-                            tooltipPlacement="bottom",
-                            tooltipText="Settings",
                             class_name="me-2",
-                        ),
-                        lib.icons.Gear(Props(size="1.5rem")),
-                    )
-                    if user.is_staff
-                    else ""
-                ),
-                HeaderButton(
-                    Props(
+                        )(
+                            lib.icons.Gear(size="1.5rem"),
+                        )
+                        if user.is_staff
+                        else None
+                    ),
+                    lib.tethys.HeaderButton(
                         id="btn-exit-app",
-                        href=app.exit_url,
-                        tooltipPlacement="bottom",
-                        tooltipText="Exit",
-                    ),
-                    lib.icons.X(Props(size="1.5rem")),
-                ),
-            ),
-            lib.bs.NavbarOffcanvas(
-                Props(id="offcanvasNavbar", aria_labelledby="offcanvasNavbarLabel"),
-                lib.bs.OffcanvasHeader(
-                    Props(closeButton=True),
-                    lib.bs.OffcanvasTitle(
-                        Props(id="offcanvasNavbarLabel"), "Navigation"
+                        href="#",
+                        onClick=handle_exit,
+                    )(
+                        lib.icons.X(size="1.5rem"),
                     ),
                 ),
-                lib.bs.OffcanvasBody(
-                    lib.bs.Nav(
-                        {
-                            "variant": "pills",
-                            "defaultActiveKey": f"/apps/{app.root_url}",
-                            "class_name": "flex-column",
-                        },
-                        [
-                            lib.bs.NavLink(
-                                Props(
+                lib.bs.NavbarOffcanvas(
+                    id="offcanvasNavbar", aria_labelledby="offcanvasNavbarLabel"
+                )(
+                    lib.bs.OffcanvasHeader(closeButton=True)(
+                        lib.bs.OffcanvasTitle(id="offcanvasNavbarLabel")("Navigation")
+                    ),
+                    lib.bs.OffcanvasBody(
+                        lib.bs.Nav(
+                            {
+                                "variant": "pills",
+                                "defaultActiveKey": f"/apps/{app.root_url}",
+                                "class_name": "flex-column",
+                            },
+                            [
+                                lib.bs.NavLink(
                                     href=link["href"],
                                     key=f"link-{index}",
                                     active=location.pathname == link["href"],
-                                    style=Props(padding_left="10pt"),
-                                ),
-                                link["title"],
-                            )
-                            for index, link in enumerate(nav_links)
-                        ],
-                    )
+                                    style=lib.Style(padding_left="10pt"),
+                                )(
+                                    link["title"],
+                                )
+                                for index, link in enumerate(nav_links)
+                            ],
+                        )
+                    ),
                 ),
             ),
         ),

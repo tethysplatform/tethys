@@ -1,0 +1,140 @@
+html {
+    --center: translate(-50%, -50%);
+    --center-dia: 40px;
+    --inner-spin: 15s;
+    --inner-arc-dia: 150px;
+    --inner-moon-dia: 15px;
+    --inner-moon-orbit: 72px;
+    --outer-spin: 13s;
+    --outer-arc-dia: 300px;
+    --outer-moon-dia: 25px;
+    --outer-moon-orbit: 148px;
+}
+.loading-text {
+    position: absolute;
+    top: 70%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 40pt;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: var(--app-primary-color);
+}
+.center {
+    position: absolute;
+    width: var(--center-dia);
+    height: var(--center-dia);
+    background: var(--app-primary-color);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: var(--center);
+}
+.outer-spin, .inner-spin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+.outer-spin {
+    animation: revspin var(--outer-spin) linear infinite;
+}
+.outer-arc, .inner-arc {
+    position: absolute;
+    border-radius: 50%;
+    border: 5px solid;
+}
+.outer-arc {
+    width: var(--outer-arc-dia);
+    height: var(--outer-arc-dia);
+}
+.outer-arc_start-a {
+    border-color: transparent transparent transparent var(--app-primary-color);
+   /*NOTE: the order here very much matters! */
+    transform: var(--center) rotate(55deg);
+}
+.outer-arc_end-a {
+    border-color: var(--app-primary-color) transparent transparent transparent;
+    transform: var(--center) rotate(35deg);
+}
+.outer-arc_start-b {
+    border-color: transparent transparent transparent var(--app-primary-color);
+    transform: var(--center) rotate(55deg) scale(-1, -1);
+}
+.outer-arc_end-b {
+    border-color: var(--app-primary-color) transparent transparent transparent;
+    transform: var(--center) rotate(35deg) scale(-1, -1);
+}
+.outer-moon-a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--outer-moon-dia);
+    height: var(--outer-moon-dia);
+    background: var(--app-primary-color);
+    border-radius: 50%;
+    transform: var(--center) translate(var(--outer-moon-orbit), 0);
+}
+.outer-moon-b {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--outer-moon-dia);
+    height: var(--outer-moon-dia);
+    background: var(--app-primary-color);
+    border-radius: 50%;
+    transform: var(--center) translate(calc(-1 * var(--outer-moon-orbit)), 0);
+}
+.inner-spin {
+    animation: spin var(--inner-spin) linear infinite;
+}
+.inner-arc {
+    width: var(--inner-arc-dia);
+    height: var(--inner-arc-dia);
+}
+.inner-arc_start-a {
+    border-color: transparent transparent transparent var(--app-primary-color);
+   /*NOTE: the order here very much matters! */
+    transform: var(--center) rotate(60deg);
+}
+.inner-arc_end-a {
+    border-color: var(--app-primary-color) transparent transparent transparent;
+    transform: var(--center) rotate(30deg);
+}
+.inner-arc_start-b {
+    border-color: transparent transparent transparent var(--app-primary-color);
+    transform: var(--center) rotate(60deg) scale(-1, -1);
+}
+.inner-arc_end-b {
+    border-color: var(--app-primary-color) transparent transparent transparent;
+    transform: var(--center) rotate(30deg) scale(-1, -1);
+}
+.inner-moon-a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--inner-moon-dia);
+    height: var(--inner-moon-dia);
+    background: var(--app-primary-color);
+    border-radius: 50%;
+    transform: var(--center) translate(var(--inner-moon-orbit), 0);
+}
+.inner-moon-b {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--inner-moon-dia);
+    height: var(--inner-moon-dia);
+    background: var(--app-primary-color);
+    border-radius: 50%;
+    transform: var(--center) translate(calc(-1 * var(--inner-moon-orbit)), 0);
+}
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+   }
+}
+@keyframes revspin {
+    100% {
+        transform: rotate(-360deg);
+   }
+}

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from tethys_components.library import ComponentLibrary, ComponentLibraryManager
 from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
+from tethys_components.custom import PageLoader
 
 
 def global_page_controller(
@@ -49,12 +50,17 @@ if has_module("reactpy"):
             component(func): The page component to render
         """
         lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}")
-        component_obj = component(lib, **extras) if extras else component(lib)
+        component_obj = PageLoader(
+            lib, content=component(lib, **extras) if extras else component(lib)
+        )
 
         if layout is not None:
             page_obj = layout(
-                {"app": app, "user": user, "nav-links": app.navigation_links},
-                component_obj,
+                lib,
+                app=app,
+                user=user,
+                nav_links=app.navigation_links,
+                content=component_obj,
             )
         else:
             page_obj = component_obj
