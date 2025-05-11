@@ -4,6 +4,7 @@
 {% block title %}{{ title }} | {{ tethys_app.name }}{% endblock %}
 
 {% block styles %}
+  <link href="{% static 'tethys_apps/css/loader.css' %}" rel="stylesheet" />
   {% if tethys_app.enable_feedback %}
     <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
   {% endif %}
