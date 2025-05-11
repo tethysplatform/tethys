@@ -1,15 +1,24 @@
-{%- for package in packages %}
-    {%- set import_statements, exports_statement = package.compose_javascript_statements() %}
-    {%- for import_statement in import_statements %}
-{{import_statement}}
-    {%- endfor %}
-    {%- if exports_statement %}
-{{exports_statement}}
-        {%- for style in package.styles %}
-loadCSS("{{ style }}");
-        {%- endfor %}
-    {%- endif %}
-{%- endfor %}
+
+import {Col, Row, Container} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Col,Row,Container";
+export {Col, Row, Container};
+loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
+import ImageLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Image?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import ImageArcGISRest from "https://esm.sh/@planet/maps@11.2.0/source/ImageArcGISRest?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import Map from "https://esm.sh/@planet/maps@11.2.0/Map?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import View from "https://esm.sh/@planet/maps@11.2.0/View?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import XYZ from "https://esm.sh/@planet/maps@11.2.0/source/XYZ?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import OSM from "https://esm.sh/@planet/maps@11.2.0/source/OSM?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import LayerGroup from "https://esm.sh/@planet/maps@11.2.0/layer/Group?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import VectorLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Tile?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import ScaleLine from "https://esm.sh/@planet/maps@11.2.0/control/ScaleLine?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+export {ImageLayer, ImageArcGISRest, Map, View, XYZ, OSM, LayerGroup, VectorLayer, ScaleLine};
+loadCSS("https://esm.sh/ol@10.4.0/ol.css");
+import {LayerPanel} from "/static/tethys_apps/js/layer-panel.js/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LayerPanel";
+export {LayerPanel};
+loadCSS("https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css");
+loadCSS("https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css");
+import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
+export {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -25,7 +34,7 @@ function loadCSS(href) {
     }
 }
 
-{% if reactjs_version_int > 17 %}
+
 export function bind(node, config) {
     const root = ReactDOM.createRoot(node);
     return {
@@ -35,16 +44,7 @@ export function bind(node, config) {
         unmount: () => root.unmount()
     };
 }
-{% else %}
-export function bind(node, config) {
-    return {
-        create: (component, props, children) =>
-            React.createElement(component, wrapEventHandlers(props), ...children),
-        render: (element) => ReactDOM.render(element, node),
-        unmount: () => ReactDOM.unmountComponentAtNode(node),
-    };
-}
-{% endif %}
+
 
 function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
