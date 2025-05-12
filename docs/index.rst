@@ -90,8 +90,8 @@ This material is based upon work supported by the National Science Foundation un
    tutorials
    recipes
    Guides <dev_guides>
-   Contribute <contribute>
    Production <installation/production>
+   Contribute <contribute>
 
 .. toctree::
    :maxdepth: 1
