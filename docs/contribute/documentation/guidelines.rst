@@ -399,7 +399,7 @@ When referring to brand names, use the correct capitalization and spelling. For 
 Spelling
 --------
 
-Use US English spelling in the documentation. For example, use "color" instead of "colour". Translations to other languages should be handled using the internationalization features of Sphinx.
+Use US English spelling in the documentation. For example, use "color" instead of "colour". Translations to other languages should be handled using the internationalization features of Sphinx. See :ref:`contribute_docs_i18n`.
 
 Use the ``sphinxcontrib.spelling`` extension for Sphinx to check spelling before you commit changes. Run the following command from the :file:`docs` director to check spelling:
 

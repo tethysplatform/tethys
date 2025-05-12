@@ -49,3 +49,23 @@ Learn about how Tethys Platform uses Read the Docs to publish the documentation.
    :maxdepth: 2
 
    documentation/readthedocs
+
+Demonstrations
+==============
+
+Help maintain the demonstration applications and portals that are provided to help users get started with the Tethys Platform.
+
+.. toctree::
+   :maxdepth: 2
+
+   documentation/demo
+
+Internationalization
+====================
+
+Help translate the Tethys Platform documentation into multiple languages.
+
+.. toctree::
+   :maxdepth: 1
+
+   documentation/i18n
