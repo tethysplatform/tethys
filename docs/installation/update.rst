@@ -28,19 +28,27 @@ Upgrade Steps
 
 1. Review the :ref:`whats_new` documentation before attempting any upgrade, especially on production servers.
 
-2. Activate the ``tethys`` conda environment::
-
-    conda activate tethys
+2. :ref:`activate_environment`
 
 3. Update the Tethys Platform conda package and dependencies by installing the new version of Tethys Platform:
 
-    .. code-block:: bash
+    .. tabs::
 
-        conda install -c conda-forge -c tethysplatform tethys-platform=4.*
+      .. tab:: Conda
 
-    .. note::
+        .. code-block:: bash
 
-        The order of the channels matters here. In Tethys 3, the ``tethysplatform`` channel was listed before (higher priority) ``conda-forge``. For Tethys 4, this is reversed so that ``conda-forge`` has higher priority.
+          conda install -c conda-forge -c tethysplatform tethys-platform=4.*
+        
+        .. note::
+
+            The order of the channels matters here. In Tethys 3, the ``tethysplatform`` channel was listed before (higher priority) ``conda-forge``. For Tethys 4, this is reversed so that ``conda-forge`` has higher priority.
+      
+      .. tab:: Pip
+
+        .. code-block:: bash
+
+          pip install tethys-platform==4.*
 
 4. Migrate the Tethys Platform database tables::
 

@@ -1,5 +1,6 @@
 from os import chdir
 from pathlib import Path
+import sys
 import webbrowser
 from argparse import Namespace
 from tethys_apps.utilities import get_installed_tethys_items
@@ -43,9 +44,9 @@ def add_quickstart_parser(subparsers):
 def start_command(args):
     manage_path = get_manage_path(args)
     if args.port:
-        primary_process = ["python", manage_path, "runserver", args.port]
+        primary_process = [sys.executable, manage_path, "runserver", args.port]
     else:
-        primary_process = ["python", manage_path, "runserver"]
+        primary_process = [sys.executable, manage_path, "runserver"]
 
     run_process(primary_process)
 

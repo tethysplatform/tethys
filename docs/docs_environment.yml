@@ -21,3 +21,4 @@ dependencies:
       - sphinxawesome-theme
       - sphinx-autobuild
       - sphinx_autodoc_typehints
+      - sphinx-tabs
