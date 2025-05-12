@@ -11,11 +11,7 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
 
 Create a new app for this tutorial as follows:
 
-a. Activate the Tethys conda environment:
-
-    .. code-block:: bash
-
-        conda activate tethys
+a. :ref:`activate_environment`
 
 b. Scaffold a new app named ``dask_tutorial``:
 

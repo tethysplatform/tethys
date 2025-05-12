@@ -16,11 +16,10 @@ Adding a REDIS CHANNEL_LAYER
 ============================
 Development installations make use of the default ``InMemoryChannelLayer``, however this layer has some limitations in production (See `Django Channels documentation <https://channels.readthedocs.io/en/latest/topics/channel_layers.html#in-memory-channel-layer>`_). To address these limitations, ``Django Channels`` suppports a ``REDIS CHANNEL LAYER``, however other ``CHANNEL_LAYERS`` can be configured. The following documentation demonstrates how to configure a ``REDIS CHANNEL LAYER``.
 
-First, install the ``channels_redis`` Python package in your Tethys conda environment.
+First, install the ``channels_redis`` Python package (be sure to :ref:`activate_environment`).
 
 .. code-block:: bash
 
-    conda activate tethys
     pip install channels_redis
 
 Second, add or modify the ``CHANNEL_LAYERS`` parameter in the ``portal_config.yml`` as follows:

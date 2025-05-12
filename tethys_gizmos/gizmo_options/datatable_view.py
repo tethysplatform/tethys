@@ -124,7 +124,7 @@ class DataTableView(TethysGizmoOptions):
         dark=False,
         attributes=None,
         classes="",
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor

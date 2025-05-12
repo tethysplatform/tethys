@@ -1,3 +1,4 @@
+import sys
 import unittest
 from unittest import mock
 from argparse import Namespace
@@ -14,7 +15,7 @@ class TestStartCommands(unittest.TestCase):
         start_command(args)
         mock_get_manage_path.assert_called_once_with(args)
         mock_run_process.assert_called_once_with(
-            ["python", "path/to/manage.py", "runserver"]
+            [sys.executable, "path/to/manage.py", "runserver"]
         )
 
     @mock.patch("tethys_cli.start_commands.get_manage_path")
@@ -25,7 +26,7 @@ class TestStartCommands(unittest.TestCase):
         start_command(args)
         mock_get_manage_path.assert_called_once_with(args)
         mock_run_process.assert_called_once_with(
-            ["python", "path/to/manage.py", "runserver", "8000"]
+            [sys.executable, "path/to/manage.py", "runserver", "8000"]
         )
 
     @mock.patch("tethys_cli.start_commands.start_command")

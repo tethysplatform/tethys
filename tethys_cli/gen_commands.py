@@ -10,6 +10,7 @@
 
 import json
 import string
+import sys
 import random
 from os import environ
 from datetime import datetime
@@ -506,7 +507,9 @@ def gen_install(args):
 def gen_requirements_txt(args):
     write_warning("WARNING: The requirements.txt is currently only experimental.")
     # pip list --format=freeze | sed '/conda/d'
-    output = run(["pip", "list", "--format=freeze"], capture_output=True)
+    output = run(
+        [sys.executable, "-m", "pip", "list", "--format=freeze"], capture_output=True
+    )
     packages = output.stdout.decode().splitlines()
     packages = [
         p

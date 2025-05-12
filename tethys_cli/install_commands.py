@@ -753,7 +753,9 @@ def install_command(args):
             elif args.without_dependencies:
                 write_warning("Skipping package installation.")
             else:
-                if validate_schema("conda", requirements_config):  # noqa: E501
+                if "conda" in requirements_config and validate_schema(
+                    "packages", requirements_config["conda"]
+                ):  # noqa: E501
                     if has_module(conda_run):
                         conda_config = requirements_config["conda"]
                         install_packages(
@@ -778,6 +780,8 @@ def install_command(args):
                             try:
                                 call(
                                     [
+                                        sys.executable,
+                                        "-m",
                                         "pip",
                                         "install",
                                         *requirements_config["conda"]["packages"],
@@ -793,7 +797,15 @@ def install_command(args):
 
                 if validate_schema("pip", requirements_config):
                     write_msg("Running pip installation tasks...")
-                    call(["pip", "install", *requirements_config["pip"]])
+                    call(
+                        [
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            *requirements_config["pip"],
+                        ]
+                    )
                 try:
                     public_resources_dir = [
                         *Path().glob(str(Path("tethysapp", "*", "public"))),
@@ -830,10 +842,12 @@ def install_command(args):
     # Install Python Package
     write_msg("Running application install....")
 
+    cmd = [sys.executable, "-m", "pip", "install"]
+
     if args.develop:
-        cmd = ["pip", "install", "-e", "."]
+        cmd += ["-e", "."]
     else:
-        cmd = ["pip", "install", "."]
+        cmd.append(".")
 
     if args.verbose:
         call(cmd, stderr=STDOUT)

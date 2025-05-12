@@ -18,13 +18,23 @@ Upgrade Steps
 
 1. Review the :ref:`whats_new` documentation before attempting any upgrade, especially on production servers.
 
-2. Activate the ``tethys`` conda environment::
+2. :ref:`activate_environment`
 
-    conda activate tethys
+3. Update the Tethys Platform package and dependencies by installing the new version of Tethys Platform
 
-3. Update the Tethys Platform conda package and dependencies by installing the new version of Tethys Platform::
+    .. tabs::
 
-    conda install -c tethysplatform -c conda-forge tethys-platform=3.*
+      .. tab:: Conda
+
+        .. code-block:: bash
+
+          conda install -c conda-forge tethys-platform=3.*
+      
+      .. tab:: Pip
+
+        .. code-block:: bash
+
+          pip install tethys-platform==3.*
 
 4. Migrate the Tethys Platform database tables::
 
@@ -76,9 +86,8 @@ In 2.1 custom settings were specified directly in the :file:`settings.py` file. 
 Upgrade Steps
 =============
 
-1. Activate Tethys environment uninstall the previous version of ``tethys-platform``::
+1. :ref:`activate_environment` and uninstall the previous version of ``tethys-platform``::
 
-    conda activate tethys
     pip uninstall tethys-platform
 
 2. Install the new conda packaged version of ``tethys-platform``::
