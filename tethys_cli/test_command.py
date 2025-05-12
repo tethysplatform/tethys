@@ -2,6 +2,7 @@ from pathlib import Path
 from os import devnull, environ
 import webbrowser
 import subprocess
+import sys
 from tethys_cli.manage_commands import get_manage_path, run_process
 from tethys_cli.cli_colors import write_warning, write_error
 from tethys_apps.utilities import get_tethys_src_dir
@@ -58,7 +59,7 @@ def check_and_install_prereqs(tests_path):
         write_warning("Test App not found. Installing.....")
         setup_path = tests_path / "apps" / "tethysapp-test_app"
         subprocess.run(
-            ["pip", "install", "-e", "."],
+            [sys.executable, "-m", "pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
             cwd=str(setup_path),
@@ -74,7 +75,7 @@ def check_and_install_prereqs(tests_path):
         write_warning("Test Extension not found. Installing.....")
         setup_path = Path(tests_path) / "extensions" / "tethysext-test_extension"
         subprocess.run(
-            ["pip", "install", "-e", "."],
+            [sys.executable, "-m", "pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
             cwd=str(setup_path),
@@ -98,7 +99,7 @@ def test_command(args):
         exit(1)
 
     # Define the process to be run
-    primary_process = ["python", manage_path, "test"]
+    primary_process = [sys.executable, manage_path, "test"]
 
     # Tag to later check if tests are being run on a specific app or extension
     app_package_tag = "tethys_apps.tethysapp."

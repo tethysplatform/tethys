@@ -1,16 +1,17 @@
+:orphan:
+
 .. _development_installation:
 
-***************
-Getting Started
-***************
+*********************
+Detailed Installation
+*********************
 
-**Last Updated:** September 2024
+**Last Updated:** April 2025
 
 This section describes how to get Tethys Platform up and running as a fresh installation for app development.
+The steps within this section are what is executed behind the scenes when using ``tethys quickstart`` (see :ref:`quickstart`).
 
 .. note::
-    
-    For the simplest and most streamlined instructions, see :ref:`quickstart`.
     
     For upgrading an existing installation, see :ref:`update_tethys`. 
     
@@ -21,19 +22,53 @@ This section describes how to get Tethys Platform up and running as a fresh inst
 Prerequisites
 -------------
 
-Tethys Platform requires the `conda packaging system <https://docs.conda.io/en/latest/index.html>`_. If you do not already have an installation of ``Miniconda`` (or ``Anaconda``) then refer to their `documentation <https://docs.conda.io/en/latest/miniconda.html>`_ for installation instructions.
-
-Also, be sure that the system you are using meets the minimum :ref:`system_reqs`.
+Be sure that the system you are using meets the minimum :ref:`system_reqs`.
 
 
-1. Install the ``tethys-platform`` Conda Package
-------------------------------------------------
+1. Install the ``tethys-platform`` package
+------------------------------------------
 
-a. To install ``tethys-platform`` into a new conda environment then run the following commands:
+First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands:
 
-.. code-block:: bash
+|
 
-    conda create -n tethys -c conda-forge tethys-platform django=<DJANGO_VESION>
+.. tabs::
+
+    .. tab:: Conda
+
+        .. code-block:: bash
+
+            conda install -c conda-forge tethys-platform django=<DJANGO_VESION>
+        
+        .. tip::
+
+            **Installation Speedup**
+
+            If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
+
+            |
+
+            **Install Micro-Tethys**
+
+            The ``micro-tethys-platform`` conda package is a minimal version of ``tethys-platform``. It has the exact same code base, but doesn't include any of the optional dependencies. As a result the environment is much smaller, but none of the optional features will be enabled. Any of the optional features can be enabled simply by installing the dependencies required by those features (see :ref:`optional_features`).
+
+                .. code-block:: bash
+
+                    conda install -c tethysplatform -c conda-forge micro-tethys-platform
+
+            **Install Development Build**
+
+            To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels:
+
+                .. code-block:: bash
+
+                    conda install -c tethysplatform/label/dev -c conda-forge tethys-platform
+
+    .. tab:: Pip
+
+        .. code-block:: bash
+
+            pip install tethys-platform django=<DJANGO_VERSION>
 
 .. important::
 
@@ -41,41 +76,9 @@ a. To install ``tethys-platform`` into a new conda environment then run the foll
 
     As of Tethys 4.3 and above, the version of Django is no longer pinned in the ``tethys-platform`` package. You will need to specify the version of Django that you want to use when creating the environment. This is especially important for production installations, as only the LTS versions of Django recieve bug and security fixes. For development installations, we recommend using the same version of Django that you plan to use in production. For production installations, we recommend using the current LTS version of Django (see: `How to get Django - Supported Versions <https://www.djangoproject.com/download/>`_. Failing to provide the Django version will result in installing the latest version of Django which may not be the LTS version.
 
-.. tip::
+Alternatively, to install from source refer to the :ref:`developer_installation` docs.
 
-    **Installation Speedup**
-
-    If conda is taking too long to solve the Tethys environment, try using the ``libmamba`` solver: :ref:`libmamba_solver`.
-
-    **Install Micro-Tethys**
-
-    The ``micro-tethys-platform`` conda package is a minimal version of ``tethys-platform``. It has the exact same code base, but doesn't include any of the optional dependencies. As a result the environment is much smaller, but none of the optional features will be enabled. Any of the optional features can be enabled simply by installing the dependencies required by those features (see :ref:`optional_features`).
-
-        .. code-block:: bash
-
-            conda create -n tethys -c tethysplatform -c conda-forge micro-tethys-platform
-
-    **Install Development Build**
-
-    To install the latest development build of ``tethys-platform`` add the ``tethysplatform/label/dev`` channel to the list of conda channels:
-
-        .. code-block:: bash
-
-            conda create -n tethys -c tethysplatform/label/dev -c conda-forge tethys-platform
-
-    Alternatively, to install from source refer to the :ref:`developer_installation` docs.
-
-
-2. Activate the Tethys Conda Environment
-----------------------------------------
-
-Anytime you want to work with Tethys Platform, you'll need to activate the ``tethys`` Conda environment. You will know the ``tethys`` environment is active when ``(tethys)`` is displayed to the left of the terminal prompt. Activate the ``tethys`` environment now as follows:
-
-.. code-block:: bash
-
-    conda activate tethys
-
-3. Create a :file:`portal_config.yml` File
+2. Create a :file:`portal_config.yml` File
 ------------------------------------------
 
 To add custom configurations such as the database and other local settings you will need to generate a :file:`portal_config.yml` file. To generate a new template :file:`portal_config.yml` run:
@@ -87,7 +90,7 @@ To add custom configurations such as the database and other local settings you w
 You can customize your settings in the :file:`portal_config.yml` file after you generate it by manually editing the file or by using the :ref:`tethys_settings_cmd` command. Refer to the :ref:`tethys_configuration` documentation for more information.
 
 
-4. Configure the Tethys Database
+3. Configure the Tethys Database
 --------------------------------
 
 There are several options for setting up a DB server: local, docker, or remote. Tethys Platform uses a local SQLite database by default. For development environments you can use Tethys to create a local server:
@@ -102,7 +105,7 @@ There are several options for setting up a DB server: local, docker, or remote. 
 
 For additional options for configuring a database see :ref:`database_configuration`
 
-5. Start the Development Server
+4. Start the Development Server
 -------------------------------
 
 Once you have a database successfully configured you can run the Tethys development server:
@@ -123,7 +126,7 @@ This will start up a locally running web server. You can access the Tethys Porta
 
     See :ref:`tethys_manage_cmd` for more details.
 
-6. Next Steps
+5. Next Steps
 -------------
 
 There are several directions that you may want to go from here.
