@@ -619,7 +619,6 @@ Congratulations! You have learned how to make code contributions to Tethys Platf
 
   * Find something to work on and make your first contribution. Review the tips in the :ref:`contribute_getting_started_decide` section.
   * Review the :ref:`contribute_development_process` documentation for a more detailed explanation of the development process.
-  * Learn more about the design and implementation of different Tethys Platform features in the :ref:`coding_principles` documentation.
 
 If you decide coding isn't your thing, there are many other ways to contribute to Tethys Platform. Check out the :ref:`contribute_intro_ways` section for more ideas.
 

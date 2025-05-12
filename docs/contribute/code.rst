@@ -77,16 +77,6 @@ Understand how Issues are used to track bugs, feature requests, and other tasks 
 
    code/issues
 
-Coding Principles
-=================
-
-Learn the high-level explanations of the design, implementation, and motivations of various parts of Tethys Platform. This guide is best used as a primer for understanding specific areas of the code you plan to work on. For instance, if you are interested in adding a new backend for the Tethys Jobs API, you should review the Tethys Jobs documentation to learn how the current backends are implemented.
-
-.. toctree::
-   :maxdepth: 2
-
-   code/coding_principles
-
 Maintain Dependencies
 =====================
 
