@@ -1,3 +1,5 @@
+:orphan:
+
 ************
 Supplemental
 ************
@@ -16,6 +18,7 @@ This section provides a list of miscellaneous reference material that can be use
     supplementary/install_ubuntu
     supplementary/docker_testing
     supplementary/pgadmin
+    supplementary/virtual_environment
     ./glossary
     ./summary
 

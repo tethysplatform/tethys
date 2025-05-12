@@ -1,3 +1,4 @@
+import sys
 import unittest
 import warnings
 from unittest import mock
@@ -400,7 +401,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         kwargs = self._get_kwargs(remove=["db_alias"])
         self.mock_run_process.assert_called_with(
-            ["python", "foo/manage.py", "migrate", "--database", "test"],
+            [sys.executable, "foo/manage.py", "migrate", "--database", "test"],
             "Running migrations for Tethys database...",
             **kwargs,
         )

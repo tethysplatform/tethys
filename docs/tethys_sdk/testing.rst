@@ -108,11 +108,7 @@ Running Tests
 -------------
 To run tests for an app:
 
-1. Open a terminal and activate the Tethys environment:
-
-  .. code-block:: shell
-
-      conda activate tethys
+1. :ref:`activate_environment`
 
 2. In portal_config.yml make sure that the default database user is set to ``tethys_super`` or is a super user of the database:
 
