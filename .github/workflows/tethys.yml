@@ -55,43 +55,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-latest]
-        python-version: ["3.10", "3.11", "3.12"]
-        django-version: ["3.2", "4.2", "5.2"]
+        platform: [ ubuntu-latest, macos-latest ]
+        python-version: [ "3.10", "3.11", "3.12" ]
+        django-version: [ "3.2", "4.2", "5.2" ]
     steps:
-      # Checkout the source
-      - name: Checkout Source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      # Install Tethys
-      - name: Install Tethys
-        run: |
-          cd ..
-          bash ./tethys/scripts/install_tethys.sh -h
-          bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -x -d ${{ matrix.django-version }} --python-version ${{ matrix.python-version }}
-      # Setup Tethys and Conda
-      - name: Setup Tethys and Conda
-        run: |
-          . ~/miniconda/etc/profile.d/conda.sh
-          conda activate tethys
-          conda list
-          tethys db start
-          pip install coveralls reactpy_django
-      # Test Tethys
-      - name: Test Tethys
-        run: |
-          . ~/miniconda/etc/profile.d/conda.sh
-          conda activate tethys
-          tethys test -c -u -v 2
-      # Generate Coverage Report
-      - name: Generate Coverage Report
-        if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.django-version == '4.2' }}
-        run: |
-          pip install coveralls
-          . ~/miniconda/etc/profile.d/conda.sh
-          conda activate tethys
-          coveralls --service=github
+    # Checkout the source
+    - name: Checkout Source
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    # Install Tethys
+    - name: Install Tethys
+      run: |
+        cd ..
+        bash ./tethys/scripts/install_tethys.sh -h
+        bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys -x -d ${{ matrix.django-version }} --python-version ${{ matrix.python-version }}
+    # Setup Tethys and Conda
+    - name: Setup Tethys and Conda
+      run: |
+        . ~/miniconda/etc/profile.d/conda.sh
+        conda activate tethys
+        conda list
+        tethys db start
+        pip install coveralls reactpy_django
+    # Test Tethys
+    - name: Test Tethys
+      run: |
+        . ~/miniconda/etc/profile.d/conda.sh
+        conda activate tethys
+        tethys test -c -u -v 2
+    # Generate Coverage Report
+    - name: Generate Coverage Report
+      if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.django-version == '4.2' }}
+      run: |
+        pip install coveralls
+        . ~/miniconda/etc/profile.d/conda.sh
+        conda activate tethys
+        coveralls --service=github
 
   docker-build:
     name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
@@ -99,9 +99,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12"]
-        django-version: ["3.2", "4.2", "5.2"]
+        platform: [ ubuntu-latest ]
+        python-version: [ "3.10", "3.11", "3.12" ]
+        django-version: [ "3.2", "4.2", "5.2" ]
     steps:
     # Checkout the source
     - name: Checkout Source
@@ -139,9 +139,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12"]
-        django-version: ["3.2", "4.2", "5.2"]
+        platform: [ ubuntu-latest ]
+        python-version: [ "3.10", "3.11", "3.12" ]
+        django-version: [ "3.2", "4.2", "5.2" ]
     services:
       tethys-postgis:
         image: postgis/postgis:14-3.3
@@ -239,40 +239,39 @@ jobs:
         echo "Uploading is skipped for pull requests."
 
     # BUILD micro-tethys-platform
-
-      # Generate Conda Recipe Without Constrained Dependencies
-      - name: Generate Conda Recipe - micro
-        run: |
-          cd ..
-          . ~/miniconda/etc/profile.d/conda.sh;
-          conda activate tethys;
-          tethys gen metayaml --micro --overwrite;
-      # Show Tethys Meta
-      - name: Show Tethys Meta - micro
-        run: |
-          cd ..
-          cat ./tethys/conda.recipe/meta.yaml
-      # Build Conda
-      - name: Build Conda - micro
-        run: |
-          cd ..
-          . ~/miniconda/etc/profile.d/conda.sh;
-          conda create -y -c conda-forge -n conda-build conda-build anaconda-client
-          conda activate conda-build
-          conda config --set anaconda_upload no
-          mkdir -p ~/conda-bld
-          conda-build -c conda-forge ./tethys/conda.recipe
-      # Upload Conda No Pull Request No Tag
-      - name: Upload Conda No Tag - micro
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          cd ..
-          . ~/miniconda/etc/profile.d/conda.sh;
-          ls ~/conda-bld/noarch
-          conda activate conda-build
-          anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
-      # No Upload if Pull Request
-      - name: No Upload - micro
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          echo "Uploading is skipped for pull requests."
+    # Generate Conda Recipe Without Constrained Dependencies
+    - name: Generate Conda Recipe - micro
+      run: |
+        cd ..
+        . ~/miniconda/etc/profile.d/conda.sh;
+        conda activate tethys;
+        tethys gen metayaml --micro --overwrite;
+    # Show Tethys Meta
+    - name: Show Tethys Meta - micro
+      run: |
+        cd ..
+        cat ./tethys/conda.recipe/meta.yaml
+    # Build Conda
+    - name: Build Conda - micro
+      run: |
+        cd ..
+        . ~/miniconda/etc/profile.d/conda.sh;
+        conda create -y -c conda-forge -n conda-build conda-build anaconda-client
+        conda activate conda-build
+        conda config --set anaconda_upload no
+        mkdir -p ~/conda-bld
+        conda-build -c conda-forge ./tethys/conda.recipe
+    # Upload Conda No Pull Request No Tag
+    - name: Upload Conda No Tag - micro
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        cd ..
+        . ~/miniconda/etc/profile.d/conda.sh;
+        ls ~/conda-bld/noarch
+        conda activate conda-build
+        anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
+    # No Upload if Pull Request
+    - name: No Upload - micro
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        echo "Uploading is skipped for pull requests."
