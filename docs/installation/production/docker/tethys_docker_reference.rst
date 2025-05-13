@@ -321,7 +321,7 @@ For example, to run the :file:`run.sh` script with one of the options, override 
 Salt Scripts
 ============
 
-.. _`Salt State files`: https://docs.saltstack.com/en/latest/topics/index.html
+.. _`Salt State files`: https://docs.saltproject.io/salt/user-guide/en/latest/topics/states.html
 .. _`top.sls`: https://github.com/tethysplatform/tethys/blob/main/docker/salt/top.sls
 
 Tethys uses `Salt State files`_ to perform runtime initialization of the container. The file, named `top.sls`_, contains a list of state files to run and the order in which to run them. These files are ``pre_tethys.sls``, ``tethyscore.sls`` and ``post_app.sls``. You can override this file with your own ``top.sls`` file to insert additional salt state files for your app (see: :ref:`docker_salt_state`).
