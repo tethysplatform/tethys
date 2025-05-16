@@ -89,19 +89,9 @@ This material is based upon work supported by the National Science Foundation un
 
    tutorials
    recipes
-   dev_guides
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   tethys_development
-
-.. toctree::
-   :maxdepth: 3
-   :hidden:
-
-   installation/production
+   Guides <dev_guides>
+   Production <installation/production>
+   Contribute <contribute>
 
 .. toctree::
    :maxdepth: 1
