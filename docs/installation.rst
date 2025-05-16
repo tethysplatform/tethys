@@ -17,13 +17,14 @@ The steps within this section are what is executed behind the scenes when using 
     
     For deploying a production instance of Tethys Portal, see :ref:`production_installation`.
     
-    To contribute to the Tethys Platform source code itself, see :ref:`developer_installation`.
+    To contribute to the Tethys Platform source code itself, see :ref:`setup_dev_environment`.
 
 Prerequisites
 -------------
 
 Be sure that the system you are using meets the minimum :ref:`system_reqs`.
 
+.. _getting_started_install_tethys:
 
 1. Install the ``tethys-platform`` package
 ------------------------------------------
@@ -70,13 +71,13 @@ First create a :ref:`virtual_environment` with the tool of your choice and then 
 
             pip install tethys-platform django=<DJANGO_VERSION>
 
+Alternatively, to install from source refer to the :ref:`setup_dev_environment` docs
+
 .. important::
 
     **Django Version**
 
     As of Tethys 4.3 and above, the version of Django is no longer pinned in the ``tethys-platform`` package. You will need to specify the version of Django that you want to use when creating the environment. This is especially important for production installations, as only the LTS versions of Django recieve bug and security fixes. For development installations, we recommend using the same version of Django that you plan to use in production. For production installations, we recommend using the current LTS version of Django (see: `How to get Django - Supported Versions <https://www.djangoproject.com/download/>`_. Failing to provide the Django version will result in installing the latest version of Django which may not be the LTS version.
-
-Alternatively, to install from source refer to the :ref:`developer_installation` docs.
 
 2. Create a :file:`portal_config.yml` File
 ------------------------------------------
@@ -152,6 +153,6 @@ Related Docs
     installation/showcase_apps
     installation/update
     installation/production
-    installation/developer_installation
+    contribute/code/dev_environment
     installation/using_docker
     installation/web_admin_setup

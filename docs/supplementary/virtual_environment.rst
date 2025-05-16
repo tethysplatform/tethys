@@ -71,7 +71,7 @@ A virtual environment is essentially a folder that can store all of the unique d
 .. _activate_environment:
 
 Activate Your Virtual Environment
---------------------------------
+---------------------------------
 
 Activating a virtual environment essentially switches the context of your command line to that of the specified environment, meaning that when fetching dependencies it will check for them in the active
 environment's folder first.
