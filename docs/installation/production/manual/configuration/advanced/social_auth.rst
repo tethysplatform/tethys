@@ -424,7 +424,7 @@ References
 
 For more detailed information about using HydroShare social authentication see the following articles:
 
-* `https://github.com/hydroshare/hs_restclient/blob/develop/README.rst`_
+* https://github.com/hydroshare/hs_restclient/blob/develop/README.rst
 
 .. _social_auth_arcgis:
 
