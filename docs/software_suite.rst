@@ -51,7 +51,7 @@ Geoprocessing
    :width: 150px
    :align: right
 
-`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in geoscientific web app development. It can be linked with geoprocessing libraries such as `GRASS <https://grass.osgeo.org/>`_, `Sextante <https://www.wikiwand.com/es/articles/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <https://www.esri.com/en-us/arcgis/products/arcgis-enterprise/overview?rsource=%2Fsoftware%2Farcgis%2Farcgisserver>`_ for out-of-the-box geoprocessing capabilities.
+`52°North Web Processing Service (WPS) <https://52north.org/software/software-components/javaps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in geoscientific web app development. It can be linked with geoprocessing libraries such as `GRASS <https://grass.osgeo.org/>`_, `Sextante <https://www.wikiwand.com/es/articles/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <https://www.esri.com/en-us/arcgis/products/arcgis-enterprise/overview?rsource=%2Fsoftware%2Farcgis%2Farcgisserver>`_ for out-of-the-box geoprocessing capabilities.
 
 The PostGIS extension, included in the software suite, can also provide geoprocessing capabilities on data that is stored in a spatially-enabled database. PostGIS includes SQL geoprocessing functions for splicing, dicing, morphing, reclassifying, and collecting/unioning raster and vector types. It also includes functions for vectorizing rasters, clipping rasters with vectors, and running stats on rasters by geometric region.
 
@@ -138,7 +138,7 @@ For more information about Django Channels and Consumers visit `the Django Chann
 
 For more information on establishing a WebSocket connection see `the JavaScript WebSocket API <https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/>`_. Alternatively, other existing JavaScript or Python WebSocket clients can we used.
 
-To create a URL mapping using the WebSocket protocol see the example provided in the `App Base Class API documentation <./tethys_sdk/app_class.html#override-methods>`_.
+To create a URL mapping using the WebSocket protocol see the example provided in the :ref:`App Base Class API documentation <app_base_class_api>`.
 
 Docker Installation
 ===================
