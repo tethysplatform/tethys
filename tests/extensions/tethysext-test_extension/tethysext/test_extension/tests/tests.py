@@ -40,7 +40,7 @@ To run any tests:
             Test command: "tethys test -f tethysext.test_extension.tests.tests.TestExtensionTestCase.test_if_tethys_platform_is_great"
 
 To learn more about writing tests, see:
-    https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
+    https://docs.djangoproject.com/en/5.1/topics/testing/
     https://docs.python.org/2.7/library/unittest.html#module-unittest
 """  # noqa: E501
 

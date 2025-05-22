@@ -199,9 +199,9 @@ CAPTCHA_CONFIG
 Setting                                            Description
 ================================================== ================================================================================
 ENABLE_CAPTCHA                                     Boolean specifying if captcha should be enabled on the login screen. If using Google ReCaptcha then the following two settings are required. Default is ``False``
-RECAPTCHA_PRIVATE_KEY                              Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2?tab=readme-ov-file#how-to-install>`_.
-RECAPTCHA_PUBLIC_KEY                               Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2?tab=readme-ov-file#how-to-install>`_.
-RECAPTCHA_PROXY_HOST                               Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2?tab=readme-ov-file#how-to-install>`_.
+RECAPTCHA_PRIVATE_KEY                              Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.
+RECAPTCHA_PUBLIC_KEY                               Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.
+RECAPTCHA_PROXY_HOST                               Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.
 ================================================== ================================================================================
 
 OAUTH_CONFIG
