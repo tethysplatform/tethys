@@ -29,7 +29,7 @@ Web frameworks also handle requests differently than traditional web pages. When
 Model View Controller
 ---------------------
 
-The dynamic templating feature is only one aspect of what web frameworks offer. Many web frameworks use a software development pattern called `Model View Controller (MVC) <http://en.wikipedia.org/wiki/Model–view–controller?oldformat=true>`_. MVC is used to organize the code that is used to develop user interfaces into conceptual components. A brief explanation of each components is provided:
+The dynamic templating feature is only one aspect of what web frameworks offer. Many web frameworks use a software development pattern called `Model View Controller (MVC) <https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller?oldformat=true>`_. MVC is used to organize the code that is used to develop user interfaces into conceptual components. A brief explanation of each components is provided:
 
 Model
 +++++
