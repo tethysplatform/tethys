@@ -284,7 +284,7 @@ In this step we'll add the content to the Resources panel of the home page. The 
 
 .. note::
 
-    In addition to Lorem Ipsum generators, there are also `placeholder image generators <https://loremipsum.io/21-of-the-best-placeholder-image-generators/>`_ that can be used to generate placeholder images for development. Most of these services allow you to specify the size of the images and some of them allow you to specify text that is shown on the image. The images above were obtained from `PlaceIMG <http://placeimg.com/>`_.
+    In addition to Lorem Ipsum generators, there are also `placeholder image generators <https://loremipsum.io/21-of-the-best-placeholder-image-generators/>`_ that can be used to generate placeholder images for development. Most of these services allow you to specify the size of the images and some of them allow you to specify text that is shown on the image.
 
 3. Add three resources to the ``<div>`` element with id ``resources-container``. Use `Bootstrap Flex Utilities <https://getbootstrap.com/docs/5.2/utilities/flex/#media-object>`_ to create media "objects" for each resource. Each media object includes, a title, a short description and a thumbnail image. The image is wrapped in an ``<a>`` tag that can be used to provide a link to an external resource. Again, use the built-in ``static`` tag to get the paths for the images.
 
