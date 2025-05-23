@@ -42,7 +42,7 @@ As an example, if wanting to automate the testing of a the map controller in the
 
 Tethys Platform leverages the native Django testing framework (which leverages the unittests Python module) to make writing tests for your app much simpler. While Tethys Platform encapsulates most of what is needed in its Testing API, it may still be necessary to refer to the Django and Python documentation for additional help while writing tests. Refer to their documentation here:
 
-https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
+https://docs.djangoproject.com/en/5.1/topics/testing/
 
 https://docs.python.org/2.7/library/unittest.html#module-unittest
 
@@ -108,11 +108,7 @@ Running Tests
 -------------
 To run tests for an app:
 
-1. Open a terminal and activate the Tethys environment:
-
-  .. code-block:: shell
-
-      conda activate tethys
+1. :ref:`activate_environment`
 
 2. In portal_config.yml make sure that the default database user is set to ``tethys_super`` or is a super user of the database:
 

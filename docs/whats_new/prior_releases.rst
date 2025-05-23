@@ -216,7 +216,7 @@ Tethys Docker Command
 * The ``tethys docker`` command was updated to use the ``postgis/postgis`` image instead of the ``mdillon/postgis`` image.
 * The ``latest`` version of ``postgis/postgis`` will be pulled which was 14_3.3 at time of writing (PostgreSQL 14, PostGIS 3.3).
 
-See: `<https://registry.hub.docker.com/r/postgis/postgis/>`_
+See: `<https://hub.docker.com/r/postgis/postgis/>`_
 
 Static Dependencies
 -------------------
@@ -674,7 +674,7 @@ Conda Package
 Upgraded JQuery and Bootstrap
 -----------------------------
 
-* The JQuery and Bootstrap libraries that Tethys provides were upgraded to address known security vulnerabilities (see: https://snyk.io/test/npm/bootstrap/3.2.0 and https://snyk.io/test/npm/jquery/1.11.1).
+* The JQuery and Bootstrap libraries that Tethys provides were upgraded to address known security vulnerabilities (see: https://security.snyk.io/package/npm/bootstrap/3.2.0 and https://security.snyk.io/package/npm/jquery/1.11.1).
 * Bootstrap has been upgraded to version 3.4.1 (not 4 yet, sorry).
 * Coincidentally, JQuery was also upgraded to version 3.4.1.
 
@@ -934,7 +934,7 @@ Partial Install Options
 * Upgrade using the install script!
 * Linux and Mac only.
 
-See: :doc:`../installation/developer_installation` and :doc:`../installation/update`
+See: :ref:`dev_setup_script` and :doc:`../installation/update`
 
 Command Line Interface
 ----------------------
@@ -992,7 +992,7 @@ Powered by Miniconda Environment
 * Installing packages like GDAL or NetCDF4 are as easy as ``conda install gdal``
 * Conda is cross platform: it works on Windows, Linux, and MacOS
 
-See: `Miniconda <https://conda.io/miniconda.html>`_ and `Conda <https://conda.io/docs/>`_
+See: `Miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ and `Conda <https://docs.conda.io/projects/conda/en/latest/>`_
 
 Cross Platform Support
 ----------------------
@@ -1144,13 +1144,13 @@ GeoServer
 * The GeoServer docker was updated to version 2.8.3
 * It can be configured to run in clustered mode (multiple instances of GeoServer running inside the container) for greater stability and performance
 * Several extensions are now included:
-   * `JMS Clustering <http://docs.geoserver.org/2.8.x/en/user/community/jms-cluster/index.html>`_
-   * `Flow Control <http://docs.geoserver.org/2.8.x/en/user/extensions/css/index.html>`_
-   * `CSS Styles <http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html>`_
-   * `NetCDF <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf/netcdf.html>`_
-   * `NetCDF Output <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf-out/index.html>`_
-   * `GDAL WCS Output <http://docs.geoserver.org/2.8.x/en/user/community/gdal/index.html>`_
-   * `Image Pyramid <http://docs.geoserver.org/2.8.x/en/user/tutorials/imagepyramid/imagepyramid.html>`_
+   * `JMS Clustering <https://docs.geoserver.org/latest/en/user/community/jms-cluster/index.html>`_
+   * `Flow Control <https://docs.geoserver.org/stable/en/user/extensions/controlflow/index.html>`_
+   * `CSS Styles <https://docs.geoserver.org/latest/en/user/extensions/controlflow/index.html>`_
+   * `NetCDF <https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html>`_
+   * `NetCDF Output <https://docs.geoserver.org/latest/en/user/extensions/netcdf/netcdf.html>`_
+   * `GDAL WCS Output <https://docs.geoserver.org/latest/en/user/community/gdal/index.html>`_
+   * `Image Pyramid <https://docs.geoserver.org/latest/en/user/tutorials/imagepyramid/imagepyramid.html>`_
 
 Tethys Docker CLI
 -----------------
@@ -1165,7 +1165,7 @@ Select2 Gizmo
 * Updated the Select2 Gizmo libraries to version 4.0.
 * Not changes should be necessary for basic usage of the Select2 Gizmo.
 * If you are using advanced features of Select2, you will likely need to migrate some of your code.
-* Refer to `<https://select2.github.io/announcements-4.0.html#migrating-from-select2-35>`_ for migration help.
+* Refer to `<https://select2.org/upgrading/migrating-from-35>`_ for migration help.
 
 MapView Gizmo
 -------------

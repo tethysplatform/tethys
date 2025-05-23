@@ -1,3 +1,4 @@
+import sys
 import unittest
 from unittest import mock
 
@@ -26,7 +27,7 @@ class UninstallCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "tethys_app_uninstall", "foo_ext", "-e"]
+            [sys.executable, "/foo/manage.py", "tethys_app_uninstall", "foo_ext", "-e"]
         )
 
     @mock.patch("tethys_cli.uninstall_command.subprocess.call")
@@ -47,7 +48,7 @@ class UninstallCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "tethys_app_uninstall", "foo_app"]
+            [sys.executable, "/foo/manage.py", "tethys_app_uninstall", "foo_app"]
         )
 
     @mock.patch("tethys_cli.uninstall_command.subprocess.call")
@@ -66,5 +67,5 @@ class UninstallCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "tethys_app_uninstall", "foo_ext", "-f"]
+            [sys.executable, "/foo/manage.py", "tethys_app_uninstall", "foo_ext", "-f"]
         )

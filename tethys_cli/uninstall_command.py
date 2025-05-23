@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 from tethys_cli.cli_helpers import get_manage_path
 
@@ -35,7 +36,7 @@ def uninstall_command(args):
     # Get the path to manage.py
     manage_path = get_manage_path(args)
     item_name = args.app_or_extension
-    process = ["python", manage_path, "tethys_app_uninstall", item_name]
+    process = [sys.executable, manage_path, "tethys_app_uninstall", item_name]
     if args.is_extension:
         process.append("-e")
     if args.is_forced:

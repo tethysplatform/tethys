@@ -1,3 +1,5 @@
+.. _tethys_jobs_condor:
+
 ***************
 Condor Job Type
 ***************
@@ -21,7 +23,7 @@ The :doc:`condor_job_type` (and :doc:`condor_workflow_type`) are used to create 
 
 .. seealso::
 
-    The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+    The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <https://condorpy.readthedocs.io/en/latest/>`_ and specifically the `Overview of HTCondor <https://condorpy.readthedocs.io/en/latest/htcondor.html>`_.
 
 
 Creating a Condor Job

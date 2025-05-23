@@ -9,11 +9,7 @@ from tethys_sdk.testing import TethysTestCase
 """
 To run tests for an extension:
 
-    1. Open a terminal and activate the Tethys environment::
-
-        conda activate tethys
-
-    2. In portal_config.yml make sure that the default database user is set to tethys_super or is a super user of the database
+    1. In portal_config.yml make sure that the default database user is set to tethys_super or is a super user of the database
         DATABASES:
             default:
                 ENGINE: django.db.backends.postgresql_psycopg2
@@ -23,7 +19,7 @@ To run tests for an extension:
                 HOST: 127.0.0.1
                 PORT: 5435
 
-    3. From the root directory of your extension, run the ``tethys manage test`` command::
+    2. From the root directory of your extension, run the ``tethys manage test`` command::
 
         tethys manage test tethysext/<extension_name>/tests
 

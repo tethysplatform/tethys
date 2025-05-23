@@ -24,12 +24,12 @@ The static method of developing web pages presents some problems for developers.
 
 Web frameworks provide a way to develop websites using a programmatic approach. Instead of static HTML files, developers create generic reusable HTML templates. With a web framework, the developer can create one template file containing only the markup for the header and another template file for the footer. Now when the developer wants to include the header and footer in another page, she uses an import construct that references the header and footer templates. The header and footer markup is added dynamically to all the files that need it upon request by a template rendering program. Maintenance is much easier, because changes to the header and footer only need to be made in one place and the entire site will be updated. In this way, the site becomes dynamic. One type of software that makes it possible to create dynamic web pages is a web framework.
 
-Web frameworks also handle requests differently than traditional web pages. When the user submits a request to the server, instead of looking up a file on the server at the directory implied by the URL, the request is handed to the web framework application. The web framework application processes the request and usually returns a web page that has been generated dynamically as the result. This type of web framework application is called a `Common Gateway Interface (CGI) <http://en.wikipedia.org/wiki/Common_Gateway_Interface>`_ application; or if the application is a Python web framework, it is called a `Web Server Gateway Interface (WSGI) <http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_  or `Asynchronous Server Gateway Interface (ASGI) <https://asgi.readthedocs.io/en/latest>`_ application.
+Web frameworks also handle requests differently than traditional web pages. When the user submits a request to the server, instead of looking up a file on the server at the directory implied by the URL, the request is handed to the web framework application. The web framework application processes the request and usually returns a web page that has been generated dynamically as the result. This type of web framework application is called a `Common Gateway Interface (CGI) <https://en.wikipedia.org/wiki/Common_Gateway_Interface>`_ application; or if the application is a Python web framework, it is called a `Web Server Gateway Interface (WSGI) <https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_  or `Asynchronous Server Gateway Interface (ASGI) <https://asgi.readthedocs.io/en/latest>`_ application.
 
 Model View Controller
 ---------------------
 
-The dynamic templating feature is only one aspect of what web frameworks offer. Many web frameworks use a software development pattern called `Model View Controller (MVC) <http://en.wikipedia.org/wiki/Model–view–controller?oldformat=true>`_. MVC is used to organize the code that is used to develop user interfaces into conceptual components. A brief explanation of each components is provided:
+The dynamic templating feature is only one aspect of what web frameworks offer. Many web frameworks use a software development pattern called `Model View Controller (MVC) <https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller?oldformat=true>`_. MVC is used to organize the code that is used to develop user interfaces into conceptual components. A brief explanation of each components is provided:
 
 Model
 +++++
@@ -49,7 +49,7 @@ Controllers are used to orchestrate the interaction between the view and the mod
 .. figure:: ../images/basic_mvc.png
     :align: center
 
-    A typical collaboration of MVC components (courtesy of `Cake PHP Docs <http://book.cakephp.org/2.0/en/cakephp-overview/understanding-model-view-controller.html>`_)
+    A typical collaboration of MVC components (courtesy of `Cake PHP Docs <https://book.cakephp.org/2/en/cakephp-overview/understanding-model-view-controller.html>`_)
 
 When a user submits a request, the web application (dispatcher in the Figure above) looks up the controller that is mapped to the URL and executes it. The controller may perform change or lookup data from the model after which it returns this data and a template to render. This is handed off to a template rendering utility that processes the template and generates HTML. The HTML is rendered for the user's viewing pleasure in the web browser or other client. The user sends another request, and the process repeats.
 
@@ -108,7 +108,7 @@ Before you dive into writing your app, you should take some time to design the U
 
 .. caution::
 
-    The examples above used integer IDs for simplicity. However, using integer IDs in URLs is not recommended, because they are often incremented consecutively and can be easily guessed. For example, it would be very easy for an attacker to write a script that would increment through integer IDs and call the delete method on all your resources. A better option would be to use randomly assigned IDs such as a `UUID <http://en.wikipedia.org/wiki/Universally_unique_identifier?oldformat=true>`_.
+    The examples above used integer IDs for simplicity. However, using integer IDs in URLs is not recommended, because they are often incremented consecutively and can be easily guessed. For example, it would be very easy for an attacker to write a script that would increment through integer IDs and call the delete method on all your resources. A better option would be to use randomly assigned IDs such as a `UUID <https://en.wikipedia.org/wiki/Universally_unique_identifier?oldformat=true>`_.
 
 HTTP Verbs
 ----------

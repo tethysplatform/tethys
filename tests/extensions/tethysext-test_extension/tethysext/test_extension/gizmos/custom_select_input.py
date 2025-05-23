@@ -17,7 +17,7 @@ class CustomSelectInput(TethysGizmoOptions):
         multiselect=False,
         disabled=False,
         error="",
-        **kwargs
+        **kwargs,
     ):
         """
         constructor
