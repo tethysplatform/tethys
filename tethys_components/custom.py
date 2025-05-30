@@ -157,6 +157,7 @@ def Map(lib, center=None, zoom=3.5, on_click=None, children=None):
 
 def Chart(lib, data, width=400, height=300, x_label="", y_label=""):
     """A chart for displaying x-y coordinate pairs
+
     Args:
         data (list[dict]): The data to be rendered, given as a list of dicts where each dict represents a point on chart (e.g. {"x": x, "y": y})
         width (int): The rendered width of the chart in pixels. Defaults to 500.
@@ -188,6 +189,7 @@ def Panel(
     children=None,
 ):
     """A pop out panel with custom content anchored to the left, right, top or bottom
+    
     Args:
         show (bool): Whether to show initially. Defaults to False.
         set_show (callable): The function that will be used to update the show state. It accepts
