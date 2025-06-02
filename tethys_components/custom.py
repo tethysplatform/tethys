@@ -189,7 +189,7 @@ def Panel(
     children=None,
 ):
     """A pop out panel with custom content anchored to the left, right, top or bottom
-    
+
     Args:
         show (bool): Whether to show initially. Defaults to False.
         set_show (callable): The function that will be used to update the show state. It accepts

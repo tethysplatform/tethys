@@ -390,8 +390,8 @@ class ComponentLibrary:
                 @App.page
                 def test_reactive_button(lib):
                     lib.register(
-                        'reactive-button@1.3.15', 
-                        'rb', 
+                        'reactive-button@1.3.15',
+                        'rb',
                         default_export="ReactiveButton"
                     )
                     state, set_state = hooks.use_state('idle');
@@ -406,7 +406,7 @@ class ComponentLibrary:
                         successText="Done",
                         onClick=on_click_handler
                     )
-            
+
             .. code-block:: python
 
                 @App.page
