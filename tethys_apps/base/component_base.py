@@ -15,9 +15,9 @@ class AppSingleton(type):
         return cls._instances[cls]
 
 
-class ReactPyBase(TethysAppBase, metaclass=AppSingleton):
+class ComponentBase(TethysAppBase, metaclass=AppSingleton):
     """
-    Base class used to define the app class for ReactPy apps.
+    Base class used for Component Apps.
 
     Inherited Attributes:
       name (string): Name of the app.

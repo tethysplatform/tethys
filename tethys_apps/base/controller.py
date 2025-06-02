@@ -475,7 +475,7 @@ def page(
     app=None,
 ) -> Callable:
     """
-    Decorator to register a function as a Page in the ReactPy paradigm
+    Decorator to register a function as a Page in the Component App paradigm
     (by automatically registering a UrlMap for it).
 
     Args:

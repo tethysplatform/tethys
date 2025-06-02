@@ -457,7 +457,7 @@ class ComponentLibrary:
         Significant shortcoming: If someone has a custom component that itself has newly referenced
         library packages nested in conditional logic, these will not be picked up with this method.
         To solve this, we'd need to write a function crawler of sorts that is able to traverse the
-        entire
+        entire potential logic tree of a function and find all calls to the component library.
 
         Like the "refresh" function above, this is only called in on single place:
         tethys_apps/base/page_handler.py in the global_page_controller

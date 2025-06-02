@@ -111,7 +111,7 @@ def _infer_app_from_stack_trace():
 
 def use_workspace(user=None):
     """
-    A custom ReactPy hook used to access the TethysPath representing the app or user's workspace directory.
+    A custom hook used to access the TethysPath representing the app or user's workspace directory.
 
     Args:
         user (auth.models.User): If provided, get the TethysPath for the user's workspace directory, rather than the app's.
@@ -145,7 +145,7 @@ def use_workspace(user=None):
 
 def use_resources():
     """
-    A custom ReactPy hook used to access the TethysPath representing the app's resources directory.
+    A custom hook used to access the TethysPath representing the app's resources directory.
 
     Returns:
         TethysPath representing the app's resources directory
@@ -156,7 +156,7 @@ def use_resources():
 
 def use_media(user=None):
     """
-    A custom ReactPy hook used to access the TethysPath representing the app or user's media directory.
+    A custom hook used to access the TethysPath representing the app or user's media directory.
 
     Args:
         user (auth.models.User): If provided, get the TethysPath for the user's media directory, rather than the app's.
@@ -190,7 +190,7 @@ def use_media(user=None):
 
 def use_public():
     """
-    A custom ReactPy hook used to access the TethysPath representing the app's public directory.
+    A custom hook used to access the TethysPath representing the app's public directory.
 
     Returns:
         TethysPath representing the app's public directory
