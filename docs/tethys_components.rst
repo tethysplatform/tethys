@@ -15,7 +15,7 @@ Getting Started
 
 .. note::
     
-    Be sure to `ref:activate_your_environment` before running any of the commands below.
+    Be sure to `ref:activate_environment` before running any of the commands below.
 
 1. Scaffold a new Tethys app using the ``reactpy`` template 
 -----------------------------------------------------------
