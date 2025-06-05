@@ -142,6 +142,7 @@ RUN ln -s /bin/micromamba ${CONDA_HOME}/bin/conda
 # Setup Conda Environment
 COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml ${TETHYS_HOME}/tethys/
 COPY --chown=$MAMBA_USER:$MAMBA_USER micro_environment.yml ${TETHYS_HOME}/tethys/
+COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml ${TETHYS_HOME}/tethys/
 
 WORKDIR ${TETHYS_HOME}/tethys
 
@@ -183,25 +184,24 @@ RUN groupadd www \
   ; chown -R www: ${TETHYS_LOG} /run /var/log/supervisor /var/log/nginx /var/lib/nginx
 
 # ADD files from repo
-ADD --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
-ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
-ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
-ADD --chown=www:www tethys_components ${TETHYS_HOME}/tethys/tethys_components/
-ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
-ADD --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
-ADD --chown=www:www tethys_layouts ${TETHYS_HOME}/tethys/tethys_layouts/
-ADD --chown=www:www tethys_gizmos ${TETHYS_HOME}/tethys/tethys_gizmos/
-ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
-ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
-ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
-ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
-ADD --chown=www:www tethys_utils ${TETHYS_HOME}/tethys/tethys_utils/
-ADD --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
-ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
-ADD --chown=www:www LICENSE ${TETHYS_HOME}/tethys/
-ADD --chown=www:www *.toml ${TETHYS_HOME}/tethys/
-ADD --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
-ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
+COPY --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
+COPY --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
+COPY --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
+COPY --chown=www:www tethys_components ${TETHYS_HOME}/tethys/tethys_components/
+COPY --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
+COPY --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
+COPY --chown=www:www tethys_layouts ${TETHYS_HOME}/tethys/tethys_layouts/
+COPY --chown=www:www tethys_gizmos ${TETHYS_HOME}/tethys/tethys_gizmos/
+COPY --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
+COPY --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
+COPY --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
+COPY --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
+COPY --chown=www:www tethys_utils ${TETHYS_HOME}/tethys/tethys_utils/
+COPY --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
+COPY --chown=www:www README.rst ${TETHYS_HOME}/tethys/
+COPY --chown=www:www LICENSE ${TETHYS_HOME}/tethys/
+COPY --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
+COPY --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
@@ -228,9 +228,9 @@ EXPOSE 80
 ###############*
 # COPY IN SALT #
 ###############*
-ADD docker/salt/ /srv/salt/
-ADD docker/run.sh ${TETHYS_HOME}/
-ADD docker/liveness-probe.sh ${TETHYS_HOME}/
+COPY docker/salt/ /srv/salt/
+COPY docker/run.sh ${TETHYS_HOME}/
+COPY docker/liveness-probe.sh ${TETHYS_HOME}/
 
 ########
 # RUN! #
