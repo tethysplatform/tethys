@@ -205,7 +205,7 @@ ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-RUN pip install -e .
+RUN pip install --no-deps -e .
 RUN tethys gen portal_config
 
 # Install channel-redis
