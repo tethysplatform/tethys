@@ -146,7 +146,7 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml ${TETHYS_HOME}/tethys/
 
 WORKDIR ${TETHYS_HOME}/tethys
 
-# Set the versions of Django, Channels, and Daphne if provided in environment.tyml and micro_environment.yml
+# Set the versions of Django, Channels, and Daphne if provided in environment.yml and micro_environment.yml
 RUN if [ -n "$DJANGO_VERSION" ]; then \
   sed -i "s/\s*- django[^-].*/  - django==${DJANGO_VERSION}/" environment.yml micro_environment.yml; \
   fi && \
@@ -221,7 +221,7 @@ RUN apt-get -y remove gcc \
 #########################
 # CONFIGURE  ENVIRONMENT#
 #########################
-ENV PATH ${CONDA_HOME}/miniconda/envs/tethys/bin:$PATH 
+ENV PATH=${CONDA_HOME}/miniconda/envs/tethys/bin:$PATH 
 VOLUME ["${TETHYS_PERSIST}", "${TETHYS_HOME}/keys"]
 EXPOSE 80
 
@@ -231,6 +231,10 @@ EXPOSE 80
 COPY docker/salt/ /srv/salt/
 COPY docker/run.sh ${TETHYS_HOME}/
 COPY docker/liveness-probe.sh ${TETHYS_HOME}/
+COPY docker/build-checks.sh ${TETHYS_HOME}/
+
+# Run build.sh to verify Django and Python versions
+RUN bash ${TETHYS_HOME}/build-checks.sh
 
 ########
 # RUN! #
