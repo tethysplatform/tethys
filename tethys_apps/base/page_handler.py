@@ -29,7 +29,7 @@ def global_page_controller(
         "extras": kwargs,
     }
 
-    return render(request, "tethys_apps/reactpy_base.html", context)
+    return render(request, "tethys_apps/component_base.html", context)
 
 
 if has_module("reactpy"):
@@ -38,9 +38,9 @@ if has_module("reactpy"):
     @component
     def page_component_wrapper(app, user, layout, component, extras=None):
         """
-        ReactPy Component that wraps every custom user page
+        ReactPy component that wraps every custom user page
 
-        The path to this component is hard-coded in tethys_apps/reactpy_base.html
+        The path to this component is hard-coded in tethys_apps/component_base.html
         and the component is registered on server startup in tethys_portal/asgi.py
 
         Args:

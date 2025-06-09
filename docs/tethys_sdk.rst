@@ -2,7 +2,7 @@
 Software Development Kit
 ************************
 
-**Last Updated:** May 2022
+**Last Updated:** June 2025
 
 The Tethys Platform provides a Python Software Development Kit (SDK) to make it easier to incorporate the functionality of the various supported software packages into apps. The SDK is includes an Application Programming Interface (API) for each of the major software components of Tethys Platform. This section contains the documentation for each API that is included in the SDK:
 
@@ -26,3 +26,4 @@ The Tethys Platform provides a Python Software Development Kit (SDK) to make it 
    tethys_sdk/tethys_services
    tethys_sdk/workspaces
    tethys_sdk/static_resources
+   tethys_sdk/components

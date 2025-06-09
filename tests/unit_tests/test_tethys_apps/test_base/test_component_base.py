@@ -2,14 +2,14 @@ import unittest
 from unittest import mock
 from django.test import RequestFactory
 
-import tethys_apps.base.reactpy_base as reactpy_app_base
+import tethys_apps.base.component_base as component_app_base
 from tethys_apps.base.url_map import UrlMapBase
 from ... import UserFactory
 
 
 class TestTethysAppBase(unittest.TestCase):
     def setUp(self):
-        self.app = reactpy_app_base.ReactPyBase()
+        self.app = component_app_base.ComponentBase()
         self.user = UserFactory()
         self.request_factory = RequestFactory()
         self.fake_name = "fake_name"
@@ -22,7 +22,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertListEqual(self.app.navigation_links, self.app.nav_links)
 
     def test_navigation_links_auto_excluded_page(self):
-        app = reactpy_app_base.ReactPyBase()
+        app = component_app_base.ComponentBase()
         app.nav_links = "auto"
         app.index = "home"
         app.root_url = "test-app"
@@ -64,12 +64,12 @@ class TestTethysAppBase(unittest.TestCase):
         )
         self.assertEqual(links, app.nav_links)
 
-    @mock.patch("tethys_apps.base.reactpy_base.page_controller")
+    @mock.patch("tethys_apps.base.component_base.page_controller")
     def test_page_decorator(self, mock_pc):
-        app = reactpy_app_base.ReactPyBase()
+        app = component_app_base.ComponentBase()
 
         def test_page(lib):
             return lib.html.div("Test 123")
 
         self.assertEqual(app.page(test_page), mock_pc.return_value)
-        mock_pc.assert_called_once_with(test_page, app=reactpy_app_base.ReactPyBase)
+        mock_pc.assert_called_once_with(test_page, app=component_app_base.ComponentBase)
