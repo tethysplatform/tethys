@@ -32,8 +32,11 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
     Unique Attributes:
-      default_layout = None
-      nav_links = []
+      default_layout (string): The default layout for the app. Can be ``"NavHeader"`` or ``None``.
+      nav_links (list or "auto"): A list of dictionaries containing navigation links for the app.
+        Each dictionary should have a "title" and "href" key. If set to "auto", the navigation links will be
+        automatically generated based on the functions decorated with ``@App.page``.
+
     """
 
     @property

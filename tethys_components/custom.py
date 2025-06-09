@@ -135,8 +135,8 @@ def BaseMapSuite(lib, default="OpenStreetMap"):
     )
 
 
-def Map(lib, center=None, zoom=3.5, on_click=None, children=None):
-    """A Map for displaying geospatial data
+def Map(lib, projection="EPSG:3857", center=None, zoom=3.5, on_click=None, children=None):
+    """A Map for displaying geospatial data. Fixed to the EPSG:3857 projection.
 
     Args:
         center ([int|float,int|float]): The center point of the rendered map, in [lon, lat] or [x, y] format. Defaults to [-100, 40].
@@ -145,9 +145,9 @@ def Map(lib, center=None, zoom=3.5, on_click=None, children=None):
         children (list[]): A list of layers to be rendered. These can also be passed in as nested components (i.e. Map()(layer1, layer2, layer3)). Defaults to [].
     """
 
-    center = center or [-100, 40]
+    center = center or [-100, 40] if projection == "EPSG:3857" else lib.utils.transform_coordinate([-100, 40], 'EPSG:3857', projection)
     return lib.ol.Map(**({"onClick": on_click} if on_click else {}))(
-        lib.ol.View(center=center, zoom=zoom),
+        lib.ol.View(projection=projection, center=center, zoom=zoom),
         lib.tethys.BaseMapSuite(),
         lib.ol.layer.Group(title="Overlays", fold="open")(*children or []),
         lib.ol.control.ScaleLine(),
@@ -155,7 +155,7 @@ def Map(lib, center=None, zoom=3.5, on_click=None, children=None):
     )
 
 
-def Chart(lib, data, width=400, height=300, x_label="", y_label=""):
+def Chart(lib, data=None, width=400, height=300, title="", x_label="", y_label=""):
     """A chart for displaying x-y coordinate pairs
 
     Args:
@@ -165,22 +165,27 @@ def Chart(lib, data, width=400, height=300, x_label="", y_label=""):
         x_label (str): The rendered label of the x-axis. Defauls to "".
         y_label (str): The rendered label of the y-axis. Defauls to "".
     """
-    return lib.rc.LineChart(
-        width=width,
-        height=height,
-        data=data,
-    )(
-        lib.rc.CartesianGrid(strokeDasharray="3 3"),
-        lib.rc.XAxis(dataKey="x", label=x_label),
-        lib.rc.YAxis(label=lib.Props(value=y_label, angle=-90, position="insideLeft")),
-        lib.rc.Tooltip(),
-        lib.rc.Line(type="monotone", dataKey="y"),
+    if not data:
+        data = []
+    return lib.html.div(
+        lib.html.h2(title) if title else None,
+        lib.rc.LineChart(
+            width=width,
+            height=height,
+            data=data,
+        )(
+            lib.rc.CartesianGrid(strokeDasharray="3 3"),
+            lib.rc.XAxis(dataKey="x", label=x_label),
+            lib.rc.YAxis(label=lib.Props(value=y_label, angle=-90, position="insideLeft")),
+            lib.rc.Tooltip(),
+            lib.rc.Line(type="monotone", dataKey="y"),
+        )
     )
 
 
 def Panel(
     lib,
-    show=False,
+    show=True,
     set_show=None,
     anchor="right",
     extent="500px",
@@ -199,6 +204,10 @@ def Panel(
         style (dict[str: str]|Style): Any CSS styles as key:value pairs to be applied to the panel. Defaults to {}.
         children: The actual nested content that is to be rendered. Can also be supplied as call args to Panel (i.e. Panel()(panel_content)).
     """
+    # This following block allows this Panel to have the "x" icon 
+    # handle closing itself even if set_close isn't overridden
+    _show, _set_show = lib.hooks.use_state(show and True)
+
     style = style or {}
     if anchor in ["top", "bottom"]:
         style["height"] = extent
@@ -209,12 +218,12 @@ def Panel(
         style["width"] = extent
 
     def handle_close(_):
-        set_show(False)
+        set_show(False) if set_show is not None else _set_show(False)
 
     return lib.html.div(
         role="dialog",
         **{"aria-modal": "true"},
-        class_name=f"offcanvas offcanvas-{anchor}{' show' if show else ''}",
+        class_name=f"offcanvas offcanvas-{anchor}{' show' if (show if set_show is not None else _show) else ''}",
         tabIndex="-1",
         style=lib.Style(visibility="visible") | style,
     )(

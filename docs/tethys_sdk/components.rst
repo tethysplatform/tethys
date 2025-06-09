@@ -1,84 +1,19 @@
-.. _tethys_components_reactpy:
+.. _tethys_components:
 
-***************************************
-Pure-Python-Component-Based Development
-***************************************
+*********************
+Tethys Component Apps
+*********************
 
-.. note::
+.. important::
 
-    This guide assumes you have already installed Tethys Platform. 
-    If you haven't done so, please first complete the :ref:`development_installation` guide.
-
-
-Getting Started
-===============
-
-.. note::
-    
-    Be sure to `ref:activate_environment` before running any of the commands below.
-
-1. Scaffold a new Tethys app using the ``reactpy`` template 
------------------------------------------------------------
-
-.. code-block:: bash
-
-    tethys app scaffold <app_project_folder_name> -t reactpy
-
-This command will prompt you to answer a few questions via the command line and then will create all of the necessary files and directories for your app, which are as follows:
-
-::
-
-    <app_project_folder_name>
-    ├── install.yml - Tethys project configuration.
-    ├── pyproject.toml - Python project configuration.
-    ├── README.rst - Documentation.
-    └── tethysapp/<app_project_folder_name>/ - Source code
-            ├── __init__.py - Python package initialization file
-            ├── app.py - Main application
-            ├── public/images/ - Public images
-            |   └── icon.png - Default icon
-            └── tests/ - Test files
-                └── ``test.py`` - Unit tests
-
-2. Navigate to the newly created app directory
-----------------------------------------------
-
-.. code-block:: bash
-
-    cd <app_project_folder_name>
-
-3. Install the app into Tethys Platform:
-----------------------------------------
-
-.. code-block:: bash
-
-    tethys install -d
-
-Include ``-d`` to install the app in development mode, which allows you to make changes without needing to reinstall the app each time.
-
-4. Start the Tethys server
---------------------------
-
-.. code-block:: bash
-
-    tethys start
-
-5. Open your application in the browser
----------------------------------------
-
-Navigate to http://localhost:8000/apps/<app-project-folder-name>.
-
-6. Start Building Your App
---------------------------
-
-Modify the ``app.py`` file to create the application of your dreams. The Tethys server will automatically reload your app when you save changes to the ``app.py`` file so you can view the changes in the browser.
+    This API documentation only applies to Component Apps.
 
 The ``app.py`` File
 ===================
 
-The ``app.py`` file is the heart of your Tethys app. It typically includes:
+The ``app.py`` file is the heart of your Tethys Component App. It typically includes:
 
-- An ``App`` class inheriting from ``ReactPyBase`` (required)
+- An ``App`` class inheriting from ``ComponentBase`` (required)
 - The code for your app's Component-based Pages (optional, see note below)
 
 .. note::
@@ -88,7 +23,7 @@ The ``app.py`` file is the heart of your Tethys app. It typically includes:
 The ``App`` Class
 =================
 
-The ``App`` class inherits from ``ReactPyBase`` and dictates your app's high-level metadata and configuration by overriding the appropriate properties of the ``ReactPyBase`` class. These properties include:
+The ``App`` class inherits from ``ComponentBase`` and dictates your app's high-level metadata and configuration by overriding the appropriate properties of the ``ComponentBase`` class. These properties include:
 
     - ``name``: The title of the app, as formally displayed to users.
     - ``description``: A brief description of the app. This will be displayed in the Tethys Portal when hovering over the app's info icon in the Apps Library page.
@@ -112,11 +47,11 @@ The ``App`` class inherits from ``ReactPyBase`` and dictates your app's high-lev
 
 .. code-block:: python
 
-    from tethys_sdk.components import ReactPyBase
+    from tethys_sdk.components import ComponentBase
 
-    class App(ReactPyBase):
+    class App(ComponentBase):
         """
-        Tethys app class for ReactPy Demo.
+        Tethys app class for Component App Demo.
         """
         name = 'Tutorial'
         description = 'This is a tutorial app.'
@@ -134,14 +69,20 @@ The ``App`` class inherits from ``ReactPyBase`` and dictates your app's high-lev
 
 .. _tethys_components_pages:
 
-Pages (The ``App.page`` Decorator)
-====================================
+Pages
+=====
 
-Pages are defined via functions decorated with ``App.page``, where ``App`` is your app class that inherits from ``ReactPyBase``.
-These page functions can be defined anywhere in your app's source code, such as in a separate ``pages.py`` file or in multiple ``<page_name>.py`` files within a ``pages`` directory. 
-The important thing is that they are decorated with the ``App.page`` decorator to register them as pages of your app.
+Each page of your app must be defined by a single function that:
 
-Each decorated function must receive a ``lib`` argument, which provides access to built-in component libraries, hooks for managing state and app interactivity, and other relevant utilities (see :ref:`tethys_components_library`. Each page function should return a single :ref:`Component <tethys_components_components>` representing the page's content, which can as simple or complex as you'd like.
+- Is decorated with the ``@App.page`` decorator
+- Accepts a single argument, ``lib``, which is an instance of the :ref:`tethys_components_library` that provides namespaced access to various component and utility modules for building your app
+- Returns a single Component from the :ref:`tethys_components_library`
+
+.. note::
+
+    These page functions do not have to live in the `app.py` file, but can be defined anywhere in your app's source code. 
+    As your app grows in complexity, we recommend moving them to either a separate ``pages.py`` file or in multiple ``<page_name>.py`` files within a ``pages`` directory.
+    The important thing is that they are decorated with the ``App.page`` decorator to register them as pages of your app.
 
 Various arguments can be passed to the ``App.page`` decorator to customize the page's behavior and appearance. See the API below:
 
@@ -155,7 +96,7 @@ Various arguments can be passed to the ``App.page`` decorator to customize the p
     def home(lib):
         # This is the home page of the app
         return lib.html.div(
-            lib.html.h1("Welcome to My ReactPy App"),
+            lib.html.h1("Welcome to My Component App"),
             lib.html.p("This is the home page."),
         )
     
@@ -204,7 +145,7 @@ This function should return a single component that represents the layout of you
 
 .. code-block:: python
 
-    from tethys_sdk.components import ReactPyBase
+    from tethys_sdk.components import ComponentBase
 
     def custom_app_layout(lib, app, user, nav_links=None, content=None):
         return lib.html.div(
@@ -215,9 +156,9 @@ This function should return a single component that represents the layout of you
             )
         )
 
-    class App(ReactPyBase):
+    class App(ComponentBase):
         """
-        Tethys app class for ReactPy Demo.
+        Tethys app class for Component App Demo.
         """
         # ... See other App class examples for other properties
         default_layout = custom_app_layout
@@ -238,14 +179,14 @@ Each component can be accessed and defined via one of the following syntaxes:
 
 .. code-block:: python
 
-    lib.<library>.<ComponentName>()            
-    lib.<library>.<ComponentName>(<props_as_kwargs>)
-    lib.<library>.<ComponentName>(<children_as_args>)
-    lib.<library>.<ComponentName>(<props_as_kwargs>)(<children_as_args>)
+    lib.<module>.<ComponentName>()            
+    lib.<module>.<ComponentName>(<props_as_kwargs>)
+    lib.<module>.<ComponentName>(<children_as_args>)
+    lib.<module>.<ComponentName>(<props_as_kwargs>)(<children_as_args>)
 
 Where:
     - ``lib``: The library object passed to the page function.
-    - ``<library>``: The built-in name of the component library.
+    - ``<module>``: The namespace of the component module.
     - ``<ComponentName>``: The name of the component (e.g., ``div``, ``Button``, ``Map``). Can be called directly without arguments if no ``<props_as_kwargs>`` or ``<children_as_args>`` are needed, with either one or the other if only one is needed. If both are are needed, you basically call the component twice, once with the ``<props_as_kwargs>`` and immediately after with the ``<children_as_args>``.
     - ``<props_as_kwargs>``: The properties to pass to the component as kwargs (e.g., ``color="primary"``, ``height="100px"``).
     - ``<children_as_args>``: The child components or content to render inside the component as args. This can be a single component, a list of components, or even plain text.
@@ -253,7 +194,7 @@ Where:
 
 .. warning::
     
-    The following syntax is not supported in Tethys apps using ReactPy:
+    The following syntax is not supported for Components:
 
     .. code-block:: python
 
@@ -266,7 +207,7 @@ Where:
 .. code-block:: python
 
     header_and_button = lib.html.div(
-        lib.html.h1("Welcome to My ReactPy App"),
+        lib.html.h1("Welcome to My Component App"),
         lib.bs.Button(color="primary")("Click Me!")
     )
 
@@ -276,47 +217,47 @@ Where:
 
 .. _tethys_components_library:
 
-Component-Based Page Library
-============================
+Tethys Component App Page Library
+=================================
 
-Every page function decorated with ``App.page`` will receive a ``lib`` argument at runtime, which provides access to various libraries and utilities that you can use to build your app's pages.
+Every page function decorated with ``App.page`` will receive a ``lib`` argument at runtime, which provides access to various modules that provide components and relevant utilities that you can use to build your app's pages.
 
 API Overview
 ------------
 
-There are four main categories of libraries available via the ``lib`` object:
+There are four main categories of modules available via the ``lib`` object:
 
-1. **HTML Elements**: These are basic HTML elements that can be used to build the structure of your page.
+1. **HTML Elements**: These are basic HTML elements that are directly incorporated via ReactPy's built-in HTML components. They provide a Pythonic representation of standard HTML elements and attributes, allowing you to create the basic structure of your app's pages.
 
 2. **Tethys Custom Components**: These are custom components provided by Tethys that extend the functionality of the basic HTML elements.
 
-3. **Third-Party Libraries**: These are popular ReactJS component libraries that provide a wide range of UI components and utilities for building modern web applications.
+3. **Third-Party ReactJS Libraries**: These are popular ReactJS component libraries that are directly incorporated via a wrapped, Pythonic representation of their standard JavaScript APIs. This powerful feature is made possible by ReactPy.
 
 4. **Hooks and Utilities**: These are ReactJS/ReactPy hooks and utility functions that help manage state, side effects, and other common tasks in your app.
 
 HTML Elements
 -------------
 |
-| **Library Accessor:** ``lib.html``
+| **Module Namespace:** ``lib.html``
 | **Description:** HTML Elements are the basic building blocks of any web page. This library leverages ReactPy's built-in HTML components, which Pythonify the standard HTML elements and attributes.
-| **API:** See the `official ReactPy documentation <https://reactpy.dev/docs/api/reactpy.html>`_ or `Mozilla's HTML documentation <https://developer.mozilla.org/en-US/docs/Web/HTML>`_ for a complete list of available HTML elements and their properties.
+| **API:** See `ReactPy's HTML documentation <https://reactpy.dev/docs/guides/creating-interfaces/html-with-reactpy/index.html>`_, `Mozilla's HTML documentation <https://developer.mozilla.org/en-US/docs/Web/HTML>`_, and :ref:`tethys_components_html_jsx_to_python` below.
 
 
 Tethys Custom Components
 ------------------------
 |
-| **Library Accessor:** ``lib.tethys``
+| **Module Namespace:** ``lib.tethys``
 | **Description:** Tethys Components are custom components provided by Tethys that drastically simplify a few common, complex components. If you want more control over the components and their behavior, you can use the standard HTML elements or third-party libraries instead.
 | **API:** See :ref:`tethys_components_custom`
 
-Third-Party Libraries
----------------------
+Third-Party ReactJS Libraries
+-----------------------------
 |
-| **Library Accessor:** Various. See below.
+| **Module Namespace:** Various. See below.
 | **Description:** These libraries provide Pythonic access to popular ReactJS component libraries that can be used to build modern web applications. In all of these cases, you will need to convert the ReactJS syntax to the Pythonic equivalent.
-| **API:** Consult the ReactJS documentation itself for each library to see the available components and their properties, remembering that you must convert the officially documented ReactJS syntax to the Pythonic equivalent.
+| **API:** Consult the ReactJS documentation itself for each library to see the available components and their properties, remembering that you must convert the officially documented ReactJS syntax to the Python Tethys Component equivalent (see :ref:`tethys_components_html_jsx_to_python` below).
 
-Here is a list of the built-in third-party libraries grouped by category and listed by their library accessor paired with a link to their official documentation:
+Here is a list of the built-in third-party libraries grouped by category and listed by their module namespace and paired with a link to their official documentation:
 
 **Standard UI components:**
 
@@ -344,25 +285,118 @@ Here is a list of the built-in third-party libraries grouped by category and lis
 Hooks and Utilities
 -------------------
 |
-| **Library Accessor:** Various. See below.
-| **Description:** These libraries provide access to ReactPy hooks and utility functions that help manage state, side effects, and other common tasks in your app.
-| **API:** See below for the available libraries and their respective APIs.
+| **Module Namespace:** Various. See below.
+| **Description:** These modules provide access to ReactPy hooks and utility functions that help manage state, side effects, and other common tasks in your app.
+| **API:** See below for the available modules and their respective APIs.
 
 - ``lib.hooks``: Provides access to ReactPy hooks for managing state and side effects for creating dynamic, interactive components. See `ReactPy Hooks <https://reactpy.dev/docs/reference/hooks-api.html>`_ and `ReactPy-Django Hooks <https://reactive-python.github.io/reactpy-django/3.8.0/reference/hooks/>`_ for API documentation.
 - ``lib.utils``: Provides access to utility functions for resource management and workspace operations. See :ref:`tethys_components_utils`.
-- ``lib.register``: A function to register additional ReactJS component libraries dynamically (see below).
+- ``lib.register``: A function to register additional ReactJS component libraries dynamically (see :ref:`tethys_components_register_library` below).
 
 The general API of each specific component-based library follows the same pattern prescribed to all .. _tethys_components_components:. Rather than listing all of the available components here, we will refer you to the documentation for each library.
 
+.. _tethys_components_register_library:
 
-Registering Additional Component Libraries
-------------------------------------------
+Registering Additional ReactJS Component Libraries
+--------------------------------------------------
 
 You can register additional ReactJS component libraries dynamically using the ``lib.register`` function.
 
 Here is the API:
 
 .. autofunction:: tethys_components.library.ComponentLibrary.register
+
+.. _tethys_components_html_jsx_to_python:
+
+Converting HTML/JSX to Python
+=============================
+
+When using the ReactPy HTML (``lib.html``) or Third Party ReactJS Libraries (``lib.<reactjs_module_namespace>``) modules in your Component Apps, you will need to translate the native API's HTML/JSX syntax into the Python equivalent.
+
+Here are the key conversion rules with examples:
+
+- HTML/JSX elements, with their opening and closing tags, become standard Python functions that are called with opening and closing parenthesis. Comopnent names are case-sensitive and match the respective ReactJS API.
+    |
+    | **JSX**: ``<Button />`` (Bootstrap)
+    | **Python**: ``lib.bs.Button()``
+    |
+- Props (attributes) are passed as keyword arguments. Prop names are case-sensitive and match the respective ReactJS API.
+    |
+    | **JSX**: ``<Button color="primary" size="lg" />`` (Bootstrap)
+    | **Python**: ``lib.bs.Button(color="primary", size="lg")``
+    |
+- Children are passed as positional arguments. Lists of children can be passed as separate arguments or as a list.
+    |
+    | **JSX**: ``<Button>Click Me!</Button>`` (Bootstrap)
+    | **Python**: ``lib.bs.Button("Click Me!")``
+    |
+- If combining props and children, call the Python component directly with keyword arguments for props, then chain another call with the children as positional args.
+    |
+    | **JSX**: ``<Button color="primary">Click Me!</Button>``  
+    | **Python**: ``lib.bs.Button(color="primary")("Click Me!")``
+
+**Example Conversion Table**
+
++-------------------------------------------+---------------------------------------------+
+| HTML / JSX                                | Tethys Components (Python)                  |
++===========================================+=============================================+
+| ``<Button color="primary" />``            | ``lib.bs.Button(color="primary")``          |
++-------------------------------------------+---------------------------------------------+
+| ``<Button>Click</Button>``                | ``lib.bs.Button("Click")``                  |
++-------------------------------------------+---------------------------------------------+
+| ``<Alert variant="danger">Error!</Alert>``| ``lib.bs.Alert(variant="danger")("Error!")``|
++-------------------------------------------+---------------------------------------------+
+| ``<div><h1>Hi</h1></div>``                | ``lib.html.div(lib.html.h1("Hi"))``         |
++-------------------------------------------+---------------------------------------------+
+
+By following these conventions, you can seamlessly use ReactJS components in your Tethys Component Apps using only Python.
+
+
+Managing Component App State
+============================
+
+Interactive applications can change state via user interactions or other observable events such as the time passing. 
+For example, let's imagine we want to create an effective ``Clock`` component from scratch, which will simply display current time on a page. 
+We would want the visual rendering of this component in the browser (i.e. a web page) to continue to render the current time, even after the initial render.
+We wouldn't want the clock to render with "10:15AM" displayed if the actual time is 4:43PM.
+As a developer, you are in charge of creating and managing the clock's state via ***state* variables**.
+
+The ``lib.hooks`` module provides a number of hooks for managing state, with the most common one being the ``use_state`` hook.
+
+In this case, you could create a state variable called ``time`` and have your component display the variable rather than a hard-coded, static time. 
+You would also need to set up the cron process that updates your state variable on the interval of your choosing.
+
+For example, let's compare two Clock components: one that is static and one that updates with time.
+
+A **static clock** simply displays the time it was initialized with and never changes:
+
+.. code-block:: python
+
+    import time
+    
+    def StaticClock(lib):
+        initialial_time = time.strftime("%H:%M:%S")
+        return lib.html.div(f"Time: {initial_time}")
+
+This component is not interactive; it does not respond to the passage of time or user actions.
+
+A **reactive clock** uses state to keep track of the current time and updates itself every second:
+
+.. code-block:: python
+
+    import time
+
+    def Clock(lib):
+        current_time, set_current_time = lib.hooks.use_state(time.strftime("%H:%M:%S"))
+
+        def tick():
+            set_current_time(time.strftime("%H:%M:%S"))
+
+        lib.hooks.use_effect(lambda: lib.utils.background_execute(tick, repeat_seconds=1), [])
+
+        return lib.html.div(f"Time: {current_time}")
+
+Here, `current_time` is state. The `tick` function updates the state every second, causing the component to re-render and display the new time. This is the essence of state in reactive web development: the UI automatically updates in response to changes in state.
 
 
 Additional References
@@ -371,5 +405,5 @@ Additional References
 .. toctree::
    :maxdepth: 1
 
-   tethys_components/custom
-   tethys_components/utils
+   ../tethys_components/custom
+   ../tethys_components/utils

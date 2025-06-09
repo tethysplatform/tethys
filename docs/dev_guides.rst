@@ -15,4 +15,3 @@ Use the following guides as resources for learning how to develop apps with Teth
    ../tethys_sdk
    ../tethys_portal
    ../software_suite
-   ../tethys_components

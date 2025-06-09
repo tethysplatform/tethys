@@ -199,7 +199,7 @@ def use_public():
     return app.public_path
 
 
-def background_execute(callable, args=None, delay_seconds=None):
+def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=None):
     """
     Kick off a task in the background, optionally with a delay
 
@@ -220,6 +220,13 @@ def background_execute(callable, args=None, delay_seconds=None):
         t = Thread(target=callable, args=args if args else [])
 
     t.start()
+
+    if repeat_seconds:
+        from threading import Timer
+        def repeat_function():
+            Thread(target=callable, args=args if args else []).start()
+            Timer(repeat_seconds, repeat_function).start()
+        repeat_function()
 
 
 def transform_coordinate(coordinate, src_proj, target_proj):

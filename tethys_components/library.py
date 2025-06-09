@@ -74,7 +74,7 @@ class _ReactPyElementWrapper:
                     kwargs[k] = utils.args_to_dot_notation_dicts(v)
             # Custom ReactPy
             if self.component.startswith("ol") and any(
-                x in self.component for x in ["ol.source", "ol.layer"]
+                x in self.component for x in ["ol.source", "ol.layer", "ol.View"]
             ):
                 args = [{"options": utils.Props(**kwargs)}]
             else:
