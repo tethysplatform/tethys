@@ -25,7 +25,7 @@ We recommend you use the previous solution as a starting point for Part 2:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b plot-data-solution plot-data-solution-|version|
 
@@ -284,7 +284,7 @@ In this step we'll add the content to the Resources panel of the home page. The 
 
 .. note::
 
-    In addition to Lorem Ipsum generators, there are also `placeholder image generators <https://loremipsum.io/21-of-the-best-placeholder-image-generators/>`_ that can be used to generate placeholder images for development. Most of these services allow you to specify the size of the images and some of them allow you to specify text that is shown on the image. The images above were obtained from `PlaceIMG <http://placeimg.com/>`_.
+    In addition to Lorem Ipsum generators, there are also `placeholder image generators <https://loremipsum.io/21-of-the-best-placeholder-image-generators/>`_ that can be used to generate placeholder images for development. Most of these services allow you to specify the size of the images and some of them allow you to specify text that is shown on the image.
 
 3. Add three resources to the ``<div>`` element with id ``resources-container``. Use `Bootstrap Flex Utilities <https://getbootstrap.com/docs/5.2/utilities/flex/#media-object>`_ to create media "objects" for each resource. Each media object includes, a title, a short description and a thumbnail image. The image is wrapped in an ``<a>`` tag that can be used to provide a link to an external resource. Again, use the built-in ``static`` tag to get the paths for the images.
 
@@ -503,11 +503,11 @@ Browse to `<http://localhost:8000/apps/earth-engine/>`_ in a web browser and log
 10. Solution
 ============
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/home-page-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/home-page-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b home-page-solution home-page-solution-|version|
 

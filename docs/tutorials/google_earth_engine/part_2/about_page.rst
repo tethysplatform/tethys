@@ -26,7 +26,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b home-page-solution home-page-solution-|version|
 
@@ -433,10 +433,10 @@ In this step, you will add a new stylesheet for the disclaimer modal and add sty
 7. Solution
 ===========
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/about-page-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/about-page-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b about-page-solution about-page-solution-|version|

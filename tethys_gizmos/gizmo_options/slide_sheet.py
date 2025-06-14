@@ -54,7 +54,7 @@ class SlideSheet(TethysGizmoOptions):
         title: str = "",
         attributes: dict = dict,
         classes: str = "",
-        **kwargs
+        **kwargs,
     ):
         # Initialize parent
         super(SlideSheet, self).__init__(attributes=attributes, classes=classes)

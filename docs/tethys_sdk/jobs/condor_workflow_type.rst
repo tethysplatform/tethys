@@ -1,3 +1,5 @@
+.. _tethys_jobs_condor_workflow:
+
 ************************
 Condor Workflow Job Type
 ************************
@@ -19,7 +21,7 @@ Condor Workflow Job Type
 A Condor Workflow provides a way to run a group of jobs (which can have hierarchical relationships) as a single (Tethys) job. The hierarchical relationships are defined as parent-child relationships. For example, suppose a workflow is defined with three jobs: ``JobA``, ``JobB``, and ``JobC``, which must be run in that order. These jobs would be defined with the following relationships: ``JobA`` is the parent of ``JobB``, and ``JobB`` is the parent of ``JobC``.
 
 .. seealso::
-    The Condor Workflow job type uses the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+    The Condor Workflow job type uses the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <https://condorpy.readthedocs.io/en/latest/>`_ and specifically the `Overview of HTCondor <https://condorpy.readthedocs.io/en/latest/htcondor.html>`_.
 
 Creating a Condor Workflow
 ==========================

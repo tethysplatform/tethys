@@ -13,7 +13,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b plot-at-location-solution plot-at-location-solution-|version|
 

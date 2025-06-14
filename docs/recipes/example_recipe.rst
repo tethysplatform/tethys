@@ -2,8 +2,8 @@
 
 :orphan:
 
-************
+**************
 Example Recipe
-************
+**************
 
-this is an example recipe page
+**COMING SOON!**

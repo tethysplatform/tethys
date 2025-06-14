@@ -14,9 +14,7 @@ Installing apps in a Tethys Portal configured for production can be challenging.
 Activate the Tethys Environment
 ===============================
 
-    .. code-block:: bash
-    
-        conda activate tethys
+See :ref:`activate_environment`.
 
 .. _installing_apps_production_app_dir:
 

@@ -43,7 +43,7 @@ except ImportError:
 
 tethys_log = logging.getLogger("tethys.app_base")
 
-DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages"]
+DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages", "app"]
 
 
 class TethysBase(TethysBaseMixin):
@@ -575,7 +575,8 @@ class TethysAppBase(TethysBase):
       tags (string): A string for filtering apps.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
-
+      enabled (boolean): Whether or not the app is enabled
+      show_in_apps_library (boolean): Whether or not the app should be shown on the Apps Library page.
     """
 
     index = ""
@@ -586,8 +587,6 @@ class TethysAppBase(TethysBase):
     feedback_emails = []
     enabled = True
     show_in_apps_library = True
-    default_layout = None
-    nav_links = []
 
     def __str__(self):
         """
@@ -610,29 +609,6 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         return TethysApp
-
-    @property
-    def navigation_links(self):
-        nav_links = self.nav_links
-        if nav_links == "auto":
-            nav_links = []
-            for url_map in sorted(
-                self.registered_url_maps,
-                key=lambda x: x.index if x.index is not None else 999,
-            ):
-                href = f"/apps/{self.root_url}/"
-                if url_map.name != self.index:
-                    href += url_map.name.replace("_", "-") + "/"
-                if url_map.index == -1:
-                    continue  # Do not render
-                nav_links.append(
-                    {
-                        "title": url_map.title,
-                        "href": href,
-                    }
-                )
-            self.nav_links = nav_links  # Caches results of "auto"
-        return nav_links
 
     def custom_settings(self):
         """

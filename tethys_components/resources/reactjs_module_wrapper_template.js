@@ -1,14 +1,14 @@
-{%- for package, components in components_by_package.items() %}
-{% if components|length == 1 and components[0] in named_defaults -%}
-import {{ components|join('') }} from "https://esm.sh/{{ package }}?deps={{ dependencies|join(',') }}&bundle_deps";
-{% else -%}
-import {{ '{' }}{{ components|join(', ') }}{{ '}' }} from "https://esm.sh/{{ package }}?deps={{ dependencies|join(',') }}&exports={{ components|join(',') }}&bundle_deps";
-{% endif -%}
-export {{ '{' }}{{ components|join(', ') }}{{ '}' }};
-{%- endfor %}
-
-{%- for style in style_deps %}
+{%- for package in packages %}
+    {%- set import_statements, exports_statement = package.compose_javascript_statements() %}
+    {%- for import_statement in import_statements %}
+{{import_statement}}
+    {%- endfor %}
+    {%- if exports_statement %}
+{{exports_statement}}
+        {%- for style in package.styles %}
 loadCSS("{{ style }}");
+        {%- endfor %}
+    {%- endif %}
 {%- endfor %}
 
 function loadCSS(href) {  
@@ -25,19 +25,7 @@ function loadCSS(href) {
     }
 }
 
-export default ({ children, ...props }) => {
-    const [{ component }, setComponent] = React.useState({});
-    React.useEffect(() => {
-        import("https://esm.sh/{npm_package_name}?deps={dependencies}").then((module) => {
-            // dynamically load the default export since we don't know if it's exported.
-            setComponent({ component: module.default });
-        });
-    });
-    return component
-        ? React.createElement(component, props, ...(children || []))
-        : null;
-};
-
+{% if reactjs_version_int > 17 %}
 export function bind(node, config) {
     const root = ReactDOM.createRoot(node);
     return {
@@ -47,6 +35,16 @@ export function bind(node, config) {
         unmount: () => root.unmount()
     };
 }
+{% else %}
+export function bind(node, config) {
+    return {
+        create: (component, props, children) =>
+            React.createElement(component, wrapEventHandlers(props), ...children),
+        render: (element) => ReactDOM.render(element, node),
+        unmount: () => ReactDOM.unmountComponentAtNode(node),
+    };
+}
+{% endif %}
 
 function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
@@ -66,6 +64,16 @@ function stringifyToDepth(val, depth, replacer, space) {
     return JSON.stringify(_build('', val, depth), null, space);
 }
 
+function stringifyReplacer (key, value) {
+    if (key === '') return value;
+    try {
+        JSON.stringify(value);
+        return value;
+    } catch (err) {
+        return (typeof value === 'object') ? value : undefined;
+    }
+}
+
 function makeJsonSafeEventHandler(oldHandler) {
     // Since we can't really know what the event handlers get passed we have to check if
     // they are JSON serializable or not. We can allow normal synthetic events to pass
@@ -74,20 +82,27 @@ function makeJsonSafeEventHandler(oldHandler) {
 
         var filteredArguments = [];
         Array.from(arguments).forEach(function (arg) {
-            if (typeof arg === "object" && arg.nativeEvent) {
-                // this is probably a standard React synthetic event
-                filteredArguments.push(arg);
-            } else {
-                filteredArguments.push(JSON.parse(stringifyToDepth(arg, 3, (key, value) => {
-                    if (key === '') return value;
-                    try {
-                        JSON.stringify(value);
-                        return value;
-                    } catch (err) {
-                        return (typeof value === 'object') ? value : undefined;
-                    }
-                })))
+            let filteredArg = arg;
+            if (typeof arg === "object") {
+                if (arg.nativeEvent) {
+                    // this is probably a standard React synthetic event
+                    filteredArg = arg;
+                } else {
+                    filteredArg = JSON.parse(stringifyToDepth(arg, 3, stringifyReplacer));
+                }
+                
+                if (arg.__proto__) {
+                    Object.getOwnPropertyNames(arg.__proto__).forEach(function (propName) {
+                        if (propName == 'constructor') return;
+                        if (!arg.hasOwnProperty(propName) && arg[propName]) {
+                            filteredArg[propName] = arg[propName];
+                            delete filteredArg[propName + '_'];
+                        }
+                    });
+                }
             }
+            // Add non-enumerable properties 
+            filteredArguments.push(filteredArg);
         });
         oldHandler(...Array.from(filteredArguments));
     };

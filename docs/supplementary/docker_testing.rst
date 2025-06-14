@@ -1,3 +1,5 @@
+.. _supplementary_docker_testing:
+
 Test Docker Containers
 ======================
 
@@ -46,4 +48,4 @@ Default GeoServer Admin
 * Username: admin
 * Password: geoserver
 
-The PostgreSQL database is installed with the database users and databases required by Tethys Platform: **tethys_default**, **tethys_db_manager**, and **tethys_super**. You set the passwords for each user during installation of the container. You can test the database by installing the `PGAdmin III <http://www.pgadmin.org/>`_ desktop client for PostgreSQL and using the credentials of the **tethys_super** database user to connect to it. For more detailed instructions on how to do this, see the :doc:`./pgadmin`.
+The PostgreSQL database is installed with the database users and databases required by Tethys Platform: **tethys_default**, **tethys_db_manager**, and **tethys_super**. You set the passwords for each user during installation of the container. You can test the database by installing the `PGAdmin III <https://www.pgadmin.org//>`_ desktop client for PostgreSQL and using the credentials of the **tethys_super** database user to connect to it. For more detailed instructions on how to do this, see the :doc:`./pgadmin`.

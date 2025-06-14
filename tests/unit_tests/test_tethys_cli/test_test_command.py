@@ -1,3 +1,4 @@
+import sys
 import unittest
 from pathlib import Path
 from os import devnull
@@ -14,7 +15,7 @@ TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
 class TestCommandTests(unittest.TestCase):
     def setUp(self):
         mock.patch(
-            "tethys_cli.test_command.subprocess.call", side_effect=Exception
+            "tethys_cli.test_command.subprocess.run", side_effect=Exception
         ).start()
 
     def tearDown(self):
@@ -40,7 +41,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
-            ["python", "/foo/manage.py", "test", "foo", "--pattern", "bar_file"]
+            [sys.executable, "/foo/manage.py", "test", "foo", "--pattern", "bar_file"]
         )
 
     @mock.patch("tethys_cli.test_command.run_process")
@@ -62,7 +63,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
-            ["python", "/foo/manage.py", "test", "foo_file"]
+            [sys.executable, "/foo/manage.py", "test", "foo_file"]
         )
 
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
@@ -293,7 +294,12 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
-            ["python", "/foo/manage.py", "test", str(Path("/foo/tests/unit_tests"))]
+            [
+                sys.executable,
+                "/foo/manage.py",
+                "test",
+                str(Path("/foo/tests/unit_tests")),
+            ]
         )
 
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
@@ -314,11 +320,16 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
-            ["python", "/foo/manage.py", "test", str(Path("/foo/tests/gui_tests"))]
+            [
+                sys.executable,
+                "/foo/manage.py",
+                "test",
+                str(Path("/foo/tests/gui_tests")),
+            ]
         )
 
     @mock.patch("tethys_cli.test_command.write_warning")
-    @mock.patch("tethys_cli.test_command.subprocess.call")
+    @mock.patch("tethys_cli.test_command.subprocess.run")
     @mock.patch("tethysapp.test_app", new=None)
     @mock.patch("tethysext.test_extension", new=None)
     def test_check_and_install_prereqs(self, mock_run_process, mock_write_warning):
@@ -328,17 +339,19 @@ class TestCommandTests(unittest.TestCase):
         extension_setup_path = tests_path / "extensions" / "tethysext-test_extension"
 
         mock_run_process.assert_any_call(
-            ["pip", "install", "-e", "."],
+            [sys.executable, "-m", "pip", "install", "-e", "."],
             stdout=mock.ANY,
             stderr=mock.ANY,
             cwd=str(setup_path),
+            check=True,
         )
 
         mock_run_process.assert_any_call(
-            ["pip", "install", "-e", "."],
+            [sys.executable, "-m", "pip", "install", "-e", "."],
             stdout=mock.ANY,
             stderr=mock.ANY,
             cwd=str(extension_setup_path),
+            check=True,
         )
 
         mock_write_warning.assert_called()
@@ -359,7 +372,7 @@ class TestCommandTests(unittest.TestCase):
         self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_with(
-            ["python", "/foo/manage.py", "test", "-v", "2"]
+            [sys.executable, "/foo/manage.py", "test", "-v", "2"]
         )
 
     @mock.patch("tethys_cli.test_command.write_error")

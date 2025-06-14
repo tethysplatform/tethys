@@ -18,7 +18,7 @@ REST API
 
     **Don't Forget**: If you end up using this feature in your app, add ``djangorestframework`` as a requirement to your :file:`install.yml`.
 
-REST API's in Tethys Platform use token authentication (see: http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication).
+REST API's in Tethys Platform use token authentication (see: https://www.django-rest-framework.org/api-guide/authentication/).
 
 You can find the API token for your user on the user management page (http://[HOST_Portal]/user/[username]/).
 

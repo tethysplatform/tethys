@@ -1,30 +1,28 @@
 from django.shortcuts import render
-from tethys_components.library import Library as ComponentLibrary
-from tethys_apps.utilities import get_active_app
-from tethys_components.utils import get_layout_component
+from tethys_components.library import ComponentLibrary, ComponentLibraryManager
+from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
+from tethys_components.custom import PageLoader
 
 
 def global_page_controller(
     request,
+    app,
     layout,
     component_func,
-    component_source_code,
     title=None,
     custom_css=None,
     custom_js=None,
-    **kwargs
+    **kwargs,
 ):
-    app = get_active_app(request=request, get_class=True)
-    layout_func = get_layout_component(app, layout)
-    ComponentLibrary.refresh(new_identifier=component_func.__name__.replace("_", "-"))
-    ComponentLibrary.load_dependencies_from_source_code(component_source_code)
+    layout_func = _get_layout_component(app, layout)
 
     context = {
         "app": app,
         "layout_func": lambda: layout_func,
         "component_func": lambda: component_func,
         "reactjs_version": ComponentLibrary.REACTJS_VERSION,
+        "reactjs_version_int": ComponentLibrary.REACTJS_VERSION_INT,
         "title": title,
         "custom_css": custom_css or [],
         "custom_js": custom_js or [],
@@ -51,10 +49,20 @@ if has_module("reactpy"):
             layout(func or None): The layout component, if any, that the page content will be nested in
             component(func): The page component to render
         """
+        lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}")
+        component_obj = PageLoader(
+            lib, content=component(lib, **extras) if extras else component(lib)
+        )
+
         if layout is not None:
-            return layout(
-                {"app": app, "user": user, "nav-links": app.navigation_links},
-                component(**extras) if extras else component(),
+            page_obj = layout(
+                lib,
+                app=app,
+                user=user,
+                nav_links=app.navigation_links,
+                content=component_obj,
             )
         else:
-            return component(**extras) if extras else component()
+            page_obj = component_obj
+
+        return page_obj

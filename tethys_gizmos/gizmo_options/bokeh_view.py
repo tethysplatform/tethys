@@ -19,7 +19,7 @@ class BokehView(TethysGizmoOptions):
     """
     Simple options object for Bokeh plotting.
 
-    .. note:: For more information about Bokeh and for Python examples, see http://bokeh.pydata.org.
+    .. note:: For more information about Bokeh and for Python examples, see https://docs.bokeh.org/en/latest/.
 
     Attributes:
         plot_input(bokeh figure): A bokeh figure to be plotted.
@@ -35,7 +35,7 @@ class BokehView(TethysGizmoOptions):
         from bokeh.plotting import figure
 
         plot = figure(plot_height=300)
-        plot.circle([1,2], [3,4])
+        plot.circle([1,2], [3,4], radius=0.5)
         my_bokeh_view = BokehView(plot, height="300px")
 
         context = {'bokeh_view_input': my_bokeh_view}

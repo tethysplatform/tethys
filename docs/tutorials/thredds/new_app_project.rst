@@ -18,12 +18,7 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 1. Generate Scaffold
 ====================
 
-To generate a new Tethys App using the scaffold, open a terminal and execute the following commands:
-
-.. code-block:: bash
-
-    # Activate the tethys environment
-    conda activate tethys
+To generate a new Tethys App using the scaffold, open a terminal, :ref:`activate_environment`, and execute the following commands:
 
 .. code-block:: bash
 
@@ -127,6 +122,6 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial
     cd tethysapp-thredds_tutorial
     git checkout -b new-app-project-solution new-app-project-solution-|version|

@@ -63,7 +63,7 @@ Three elements are required:
         Controller for the bokeh ajax request.
         """
         plot = figure(plot_height=300)
-        plot.circle([1,2], [3,4])
+        plot.circle([1,2], [3,4], radius=0.5)
         my_bokeh_view = BokehView(plot, height="300px")
 
         context = {'bokeh_view_input': my_bokeh_view}

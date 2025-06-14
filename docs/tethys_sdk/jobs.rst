@@ -15,10 +15,10 @@ The Jobs API leverages third-party job management systems to perform the actual 
 
 To learn more about HTCondor and Dask, review the following resources:
 
-* `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_
-* `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_
+* `Overview of HTCondor <https://condorpy.readthedocs.io/en/latest/htcondor.html>`_
+* `HTCondor User Manual <https://research.cs.wisc.edu/htcondor/manual/>`_
 * `Dask Overview <https://docs.dask.org/en/latest/>`_
-* `Dask Distributed <http://distributed.dask.org/en/stable/>`_
+* `Dask Distributed <https://distributed.dask.org/en/stable/>`_
 
 
 .. _jobs_api_schedulers:
@@ -48,7 +48,7 @@ To facilitate interacting with jobs asynchronously, the metadata of the jobs are
 
 .. .. seealso::
 
-..     The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+..     The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <https://condorpy.readthedocs.io/en/latest/>`_ and specifically the `Overview of HTCondor <https://condorpy.readthedocs.io/en/latest/htcondor.html>`_.
 
 ..     The Dask Job uses the Dask Distributed python library to automatically parallelize your Python code and run them on a distributed cluster of workers. For more information on Dask, see: `Dask <https://docs.dask.org/en/latest/>`_ and `Dask Distributed <https://distributed.dask.org/en/latest/>`_ documentation.
 

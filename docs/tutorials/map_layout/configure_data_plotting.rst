@@ -17,7 +17,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
     cd tethysapp-map_layout_tutorial
     git checkout -b add-spatial-data-solution add-spatial-data-solution-|version|
 
@@ -379,11 +379,11 @@ There you have it! With less than 200 lines of code, we have quickly developed a
 5. Solution
 ===========
 
-This concludes the Configure Data Plotting portion of the Map Layout Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-map_layout_tutorial/tree/configure-data-plotting>`_ or clone it as follows:
+This concludes the Configure Data Plotting portion of the Map Layout Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-map_layout_tutorial/tree/configure-data-plotting-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
     cd tethysapp-map_layout_tutorial
     git checkout -b configure-data-plotting configure-data-plotting-|version|
 

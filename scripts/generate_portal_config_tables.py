@@ -61,9 +61,9 @@ d = {
         },
     },
     "CAPTCHA_CONFIG": {
-        "RECAPTCHA_PRIVATE_KEY": "Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.",
-        "RECAPTCHA_PUBLIC_KEY": "Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.",
-        "RECAPTCHA_PROXY_HOST": "Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.",
+        "RECAPTCHA_PRIVATE_KEY": "Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.",
+        "RECAPTCHA_PUBLIC_KEY": "Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.",
+        "RECAPTCHA_PROXY_HOST": "Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.",
     },
     "OAUTH_CONFIG": {
         "SSO_TENANT_REGEX": 'A regular expression defining the characters allowed in the Tenant field on the /accounts/tenant/ page. This page is only needed when using Multi-Tenant SSO features. Defaults to "^[\\w\\s_-]+$".',

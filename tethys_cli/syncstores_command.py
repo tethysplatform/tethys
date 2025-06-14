@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 from tethys_cli.cli_helpers import get_manage_path
 from tethys_cli.cli_colors import TC_WARNING, TC_ENDC
@@ -51,7 +52,7 @@ def syncstores_command(args):
 
     # This command is a wrapper for a custom Django manage.py method called syncstores.
     # See tethys_apps.mangement.commands.syncstores
-    process = ["python", manage_path, "syncstores"]
+    process = [sys.executable, manage_path, "syncstores"]
 
     if args.refresh:
         valid_inputs = ("y", "n", "yes", "no")

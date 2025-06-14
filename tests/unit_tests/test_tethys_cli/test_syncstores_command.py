@@ -1,3 +1,4 @@
+import sys
 import unittest
 from unittest import mock
 
@@ -29,7 +30,7 @@ class SyncstoresCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "syncstores"]
+            [sys.executable, "/foo/manage.py", "syncstores"]
         )
 
     @mock.patch("tethys_cli.syncstores_command.subprocess.call")
@@ -50,7 +51,15 @@ class SyncstoresCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "syncstores", "-f", "-d", "foo_db", "foo_app"]
+            [
+                sys.executable,
+                "/foo/manage.py",
+                "syncstores",
+                "-f",
+                "-d",
+                "foo_db",
+                "foo_app",
+            ]
         )
 
     @mock.patch("tethys_cli.syncstores_command.subprocess.call")
@@ -71,7 +80,7 @@ class SyncstoresCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "syncstores"]
+            [sys.executable, "/foo/manage.py", "syncstores"]
         )
 
     @mock.patch("tethys_cli.syncstores_command.input")
@@ -94,7 +103,7 @@ class SyncstoresCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_called_once()
         mock_subprocess_call.assert_called_with(
-            ["python", "/foo/manage.py", "syncstores", "-r", "foo_app"]
+            [sys.executable, "/foo/manage.py", "syncstores", "-r", "foo_app"]
         )
         po_call_args = mock_input.call_args_list
         self.assertEqual(2, len(po_call_args))
