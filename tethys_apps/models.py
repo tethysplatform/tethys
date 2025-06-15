@@ -1127,7 +1127,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             create_db_statement = """
                                   CREATE DATABASE "{0}"
                                   WITH OWNER {1}
-                                  TEMPLATE template0
                                   ENCODING 'UTF8'
                                   """.format(
                 namespaced_ps_name, url.username

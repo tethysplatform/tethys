@@ -297,7 +297,6 @@ class TestCommandTests(unittest.TestCase):
             "-E",
             "utf-8",
             "-T",
-            "template0",
             "-p",
             self.options["port"],
             "-O",
