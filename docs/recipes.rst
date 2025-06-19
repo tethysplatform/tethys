@@ -25,6 +25,7 @@ multi-row
     recipes/example_recipe images/recipes/spatial_data.png [spatial, data, map, map_layout]
     recipes/example_recipe images/recipes/vector_layer.png [vector, layer, map, map_layout]
     recipes/example_recipe images/recipes/wms_layer.png [wms, layer, map, map_layout]
+    recipes/scaffolded_app_recipe images/recipes/vector_layer.png [scaffold, app, new_app]
 
 Carousel 
 -------- 
