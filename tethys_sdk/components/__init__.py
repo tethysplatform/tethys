@@ -10,4 +10,4 @@
 # flake8: noqa
 # DO NOT ERASE
 from . import utils
-from tethys_apps.base.reactpy_base import ReactPyBase
+from tethys_apps.base.component_base import ComponentBase
