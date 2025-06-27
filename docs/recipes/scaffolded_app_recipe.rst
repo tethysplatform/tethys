@@ -1,10 +1,9 @@
 .. _scaffolded_app_recipe :
 
-:orphan:
 
-************
-Scaffolded App Recipe
-************
+***************************
+Scaffold and Install an App
+***************************
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
@@ -14,9 +13,12 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
 
    Windows Users: Use the Anaconda Powershell Prompt to run Tethys commands.  Visit the Anaconda site for instructions on installing `Anaconda Powershell Prompt <https://docs.anaconda.com/anaconda/install/>`_ or `Miniconda Powershell Prompt <https://docs.anaconda.com/miniconda/miniconda-install/>`_.
 
+
+Recipe
+++++++
 1. Generate Scaffold
-====================
-To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` to stop the development server if it is still running, and execute the following commands:
+=====================
+To generate a new app using the scaffold, open a terminal, and execute the following commands:
 
 .. code-block:: bash
 
@@ -46,26 +48,4 @@ Now that you have a new Tethys app project, you need to install the app on your 
 3. View Your New App
 ====================
 
-Use the following commmand to start up the development server:
-
-.. code-block:: bash
-
-    tethys start
-
-
-Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login with the **default portal user**:
-
-* **username**: admin
-* **password**: pass
-
-
-If all has gone well, you should see your app listed on the app library page. Click on the app tile to launch it. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
-
-.. figure:: ../images/app_controls.png
-    :width: 650px
-
-**Parts of a Tethys app interface: (1) app navigation toggle and app branding; (2) exit button, settings, button, and custom buttons; (3) app navigation, (4) app content, and (5) app actions.**
-
-.. tip::
-
-    To stop the development server press :kbd:`CTRL-C`.
+.. include:: steps/start_tethys_step.rst
