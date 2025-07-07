@@ -223,9 +223,11 @@ def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=N
 
     if repeat_seconds:
         from threading import Timer
+
         def repeat_function():
             Thread(target=callable, args=args if args else []).start()
             Timer(repeat_seconds, repeat_function).start()
+
         repeat_function()
 
 

@@ -4,18 +4,26 @@
 Component App Project
 *********************
 
-In this section, you will create a new Tethys Component App project. This process involves using the Tethys command line interface to scaffold a new app, installing it into your Tethys Platform, and verifying that it runs correctly. Follow the steps below to get started.
+In this section, you will create a new Tethys Component App project using Tethys Platform's :ref:`tethys_cli`.
 
-.. note::
-    
-    Be sure to :ref:`activate_environment` before running any of the commands below.
+Let's get started!
 
-1. Scaffold a new Tethys app using the ``component`` project template
----------------------------------------------------------------------
+Open a terminal and :ref:`activate_environment`
+-----------------------------------------------
+
+All bash code blocks you will see throughout this tutorial must be entered via command line within the :ref:`virtual_environment` you created when installing Tethys Platform.
+Such code blocks will look like the following example:
 
 .. code-block:: bash
 
-    tethys app scaffold geoglows_tutorial -t component
+    echo "This example code block must be entered via command line"
+
+Scaffold a new Tethys app using the ``component`` project template
+------------------------------------------------------------------
+
+.. code-block:: bash
+
+    tethys scaffold geoglows_tutorial -t component
 
 This command will prompt you for input via the command line. For this tutorial, accept all of the defaults by simply hitting ``Enter`` with each prompt. 
 
@@ -35,15 +43,15 @@ The completed command will create all of the necessary files and directories for
             └── tests/ - Tests
                 └── ``test.py`` - Test
 
-2. Navigate to the newly created app project directory
-------------------------------------------------------
+Navigate to the newly created app project directory
+---------------------------------------------------
 
 .. code-block:: bash
 
     cd tethysapp-geoglows_tutorial
 
-3. Install the app into Tethys Platform:
-----------------------------------------
+Install the app into Tethys Platform:
+-------------------------------------
 
 .. code-block:: bash
 
@@ -51,35 +59,37 @@ The completed command will create all of the necessary files and directories for
 
 Include ``-d`` to install the app in development mode, which allows you to make changes without needing to reinstall the app each time. The Tethys server will automatically reload your app when you save changes to any Python files within the project.
 
-4. Apply migrations
--------------------
+Apply migrations
+----------------
 
 .. code-block:: bash
 
     tethys db migrate
 
-.. tip::
+.. note::
     
     This migration is only necessary if this is the first time you are creating a Component App. For subsequent Component Apps, this can be skipped.
 
 
-5. Start the Tethys server
---------------------------
+Start the Tethys server
+-----------------------
 
 .. code-block:: bash
 
     tethys start
 
-6. Open your application in the browser
----------------------------------------
+Open your application in the browser
+------------------------------------
 
-Navigate to http://localhost:8000/apps/geoglows-tutorial.
+Navigate to http://localhost:8000/apps/geoglows-tutorial and login using the default credentials:
 
-You should see a page that looks like this:
+|
+| **username:** admin
+| **password:** pass
+
+You should be redirected to a page that looks like this:
 
 .. note::
-
-    You may need to login first.
 
     The color of the header may be different than what is shown below, since we instructed you to accept the randomly generated default when scaffolding the app.
 

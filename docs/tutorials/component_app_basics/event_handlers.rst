@@ -6,12 +6,6 @@ Event Handlers
 
 Now we are ready to add custom interactivity to our application. 
 Remember that we want to allow a user to click on a feature on the map to pull open a chart that renders data associated with the clicked feature.
-
-We will break this task down into 3 main steps.
-
-Step 1: Add ``on_click`` event handler to ``Map``
-==================================================
-
 In this step we will configure the map with an event handler.
 
 What is an Event Handler?
@@ -49,6 +43,7 @@ Your ``home`` page function should now look like this:
 
     @App.page
     def home(lib):
+        # New function inserted here
         def handle_map_click(e):
             print(f"Getting data for coordinate {e.coordinate}")
             lon, lat = lib.utils.transform_coordinate(e.coordinate, "EPSG:3857", "EPSG:4326")
@@ -59,7 +54,7 @@ Your ``home`` page function should now look like this:
             print(data2)
 
         return lib.tethys.Display(
-            lib.tethys.Map(on_click=handle_map_click)(
+            lib.tethys.Map(on_click=handle_map_click)(  # <---- New on_click property added here
                 lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
                     lib.ol.source.ImageArcGISRest(
                         url="https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"
@@ -108,10 +103,18 @@ Save your changes, return to the browser, and refresh.
 
 Now click anywhere on the map. 
 Though nothing in the web page will appear to have changed, pull up your command-line terminal where your server is running (i.e. where you executed ``tethys start``).
-You should gradually and eventually see all of the print statements showing up.
+You should gradually see all of the print statements showing up.
+
+These print statements should look similar to the following:
+
+.. figure:: ../../images/tutorial/component_app_basics/add_interactivity_step1.png
+    :width: 800px
+    :align: center
+
+    Example Print Statements in Terminal from Map Click
 
 Key Takeaways
-=============
+-------------
 
 - Event handlers let you respond to user actions, such as clicking on the map.
 - You add an event handler by passing a function (e.g., handle_map_click) to the component's event keyword argument (e.g., on_click).

@@ -15,6 +15,7 @@ import logging
 from functools import partial
 from tethys_components import utils
 from tethys_components import custom as custom_components
+from importlib import import_module
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
@@ -301,6 +302,10 @@ class ComponentLibrary:
                     "https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css",
                 ],
             ),
+            "pl": Package(
+                name="plotly-chart.js",
+                host="/static/tethys_apps/js",
+            ),
             "ol": Package(
                 name="@planet/maps@11.2.0",
                 default_export="*",
@@ -342,9 +347,12 @@ class ComponentLibrary:
                 package=getattr(self.CURATED_PACKAGES, package_accessor).copy(),
             )
         else:
-            raise AttributeError(
-                f"No package is registered at accessor {package_accessor} on {self.name} ComponentLibrary."
-            )
+            try:
+                package = import_module(package_accessor)
+            except ModuleNotFoundError:
+                raise AttributeError(
+                    f"No package is registered at accessor {package_accessor} on {self.name} ComponentLibrary."
+                )
 
         setattr(self, package_accessor, package)
         return package
@@ -556,17 +564,10 @@ class DynamicPackageManager:
         _component = self.component
 
         if self.package.accessor == "ol":
-            if any(
-                _component.startswith(x) for x in ["source", "control"]
-            ) or _component in ["Map", "View"]:
-                _component += "." + component_parts[-1]
-            elif _component.startswith("layer"):
-                if "Group" in _component:
-                    _component += ".LayerGroup"
-                elif "Image" in _component:
-                    _component += ".ImageLayer"
-                else:
-                    _component += ".VectorLayer"
+            _component += "." + component_parts[-1]
+            if len(component_parts) > 1:
+                _component += component_parts[-2].capitalize()
+
             component_parts = _component.split(".")  # Recalc in case changed
 
         if self.package.treat_as_path:

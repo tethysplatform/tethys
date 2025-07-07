@@ -12,7 +12,7 @@ Current UX Issues
 Here are just a few examples of poor UX in our current app:
 
 - The app loads with the panel already open, overlaying almost half the map.
-- The panel's title is "Panel"... Very original...
+- The panel's title is "Panel", which could be more specific to our use case.
 - The empty chart is not even recognizable as a chart - and even if so, it's empty anyway.
 - When we click on the map, we get no feedback that anything is happening until at least 10 seconds later when the chart data suddenly renders.
 
@@ -117,19 +117,19 @@ This did change how they needed to be referenced when being passed to the ``Char
 
 ``set_chart_data(None)`` and ``set_show_panel(True)`` in ``handle_map_click``
 
-This updates the ``chart_data`` and ``show_panel`` state variables and adds a re-render to the processing queue. The re-render will only occur once every othered queued process has been complete.
+This updates the ``chart_data`` and ``show_panel`` state variables and adds a re-render to the processing queue. The re-render will only occur once every other queued process has been complete.
 
 .. important::
-    This is a common misunderstanding.
     
-    Again, when **state variable setter functions** return, they have only scheduled a re-render for when the processing queue is freed up - the re-render hasn't actually occurred!
+    When **state variable setter functions** return, they have only scheduled a re-render for when the processing queue is freed up - the re-render hasn't actually occurred!
+    This is a common misunderstanding.
 
 This principle is exactly why we moved the core data-fetching logic to its own function that can be executed in the background, as shown and discussed in the next code snippet analysis.
 
 ``lib.utils.background_execute(get_data_by_coordinate, [e.coordinate])``
 
 We moved the core data-fetching logic that was originally in ``handle_map_click`` to its own function so that it could be run in the background.
-This ensures that the re-render scheduled by the **state varaible setter functions** discussed above is able to occur aallowing the re-render to occur much sooner than it would have - nearly immediately!
+This ensures that the re-render scheduled by the **state varaible setter functions** discussed above is able to be executed much sooner than it would have been otherwise - nearly immediately!
 
 .. important::
     

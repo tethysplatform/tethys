@@ -54,12 +54,11 @@ The content tree for new app project you created in the past steps conceptually 
 The Page Component
 ------------------
 
-By decorating a function with the ``App.page`` decorator, you adding another Page component to your App. 
-Based on the settings in the ``App`` class, each Page comes pre-composed with a number of other components, such as a Header and a Navbar, and a Content component. 
+By decorating a function with the ``App.page`` decorator, you are adding another Page component to your App. 
+Based on the settings in the ``App`` class, each Page comes pre-composed with a number of other components, such as a Header and a Navbar, and a Content component.
 
-**This is where you come in. The Developer.**
-
-Whatever is returned by your page functions represents the components that will be rendered when a user navigates to that page. 
+**This is where you come in: the developer.** You determine what is displayed in your app.
+Whatever is returned by your page functions represents the component-based content that will be rendered when a user navigates to that page.
 
 .. note::
     
@@ -186,7 +185,7 @@ The next step toward that end will be to add a side panel to the app that can di
 Add a Panel with a Chart
 ========================
 
-We should be able to whip through this section now that we're getting the hang of component-based App development.
+We should be able to move quickly through this section now that we're getting the hang of component-based App development.
 
 In addition to the ``Display`` and ``Map`` components, the ``lib.tethys`` module also has both a ``Panel`` and ``Chart`` component that can quickly get us what we're looking for - a panel containing a chart!
 
@@ -203,7 +202,7 @@ Here's the new code:
                         url='https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer'
                     )
                 ),
-            ),
+            ),  # New code starts here
             lib.tethys.Panel(
                 lib.tethys.Chart()
             )

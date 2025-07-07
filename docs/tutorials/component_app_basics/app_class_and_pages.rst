@@ -1,5 +1,5 @@
 **********************************
-The `App` class and Page functions
+The `App` Class and Page Functions
 **********************************
 
 When you scaffolded a new app project in the previous step, a basic app structure was created for you, including an `app.py` file that defines the main class and pages for your app.
@@ -8,7 +8,8 @@ That file is located here, relative to the root app project directory:
 
 ``tethysapp-geoglows_tutorial/tethysapp/geoglows_tutorial/app.py``
 
-Go ahead and open it in your favorite editor. 
+Open this file in your favorite editor
+--------------------------------------
 
 It's content should look like this:
 
@@ -75,7 +76,7 @@ Each page of your app must be defined by a single function that:
 
 Accordingly, the ``home`` function is decorated with the ``@App.page`` decorator, accepts a single ``lib`` argument, and returns a single Display component that itself contains a Map component.
 
-Pretty simple, eh? But what exactly are components? Continue on to find out!
+While seemingly straightforward, what exactly are Components? Continue on to find out!
 
 Key Takeaways
 =============

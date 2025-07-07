@@ -10,12 +10,11 @@ Component App Basics (Beta)
 
    If you have not already installed Tethys Platform, follow the :ref:`quickstart` documentation and then return here.
 
+This tutorial will teach you the basics of Tethys Component App development by walking you through the creation and development of a simple Component App using Tethys Platform. The finished app will be a GeoGlows API data viewer that enables a user to click on a map feature representing a river and generate a chart of the flow data associated with the clicked feature.
+
 .. tip::
 
    You will need to use the command line/terminal to manage your app and run the development server. It is highly recommended that you read the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line before you get started.
-
-
-This tutorial will teach you the basics of Tethys Component App development by walking you through the creation and development of a simple Component App using Tethys Platform. The finished app will be a GeoGlows API data viewer that allows a user to click on a map feature representing a river and generate a chart of the flow data associated with the clicked feature.
 
 .. ## figure:: ../images/tutorial/advanced/key-concepts-advanced-screenshot.png
     :width: 800px

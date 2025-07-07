@@ -35,7 +35,7 @@ Applying State to Our App
 -------------------------
 
 We'll create and initialize a state variable and setter for the chart data using ``use_state``. 
-When the user clicks on the map, we'll fetch the data and update the state with the setter, which will automatically re-render the page with the new data.
+When the user clicks on the map, we'll fetch the data and update the state using the setter, which will automatically re-render the page with the new data.
 
 .. tip::
 
@@ -47,7 +47,7 @@ Here's how that should look:
 
     @App.page
     def home(lib):
-        chart_data, set_chart_data = lib.hooks.use_state(None)
+        chart_data, set_chart_data = lib.hooks.use_state(None)  # <--- New line
 
         def handle_map_click(e):
             print(f"Getting data for coordinate {e.coordinate}")
@@ -57,7 +57,7 @@ Here's how that should look:
             print(f"Getting hydroviewer data for {data1.river_id}")
             data2 = lib.utils.fetch_json(f"https://geoglows.ecmwf.int/api/v2/hydroviewer/{data1.river_id}")
             print(data2)
-            set_chart_data([{"x": x, "y": y} for x, y in zip(data2.datetime_forecast, data2.flow_median)])
+            set_chart_data([{"x": x, "y": y} for x, y in zip(data2.datetime_forecast, data2.flow_median)])  # <--- New line
 
         return lib.tethys.Display(
             lib.tethys.Map(on_click=handle_map_click)(
@@ -68,7 +68,7 @@ Here's how that should look:
                 ),
             ),
             lib.tethys.Panel(
-                lib.tethys.Chart(data=chart_data)
+                lib.tethys.Chart(data=chart_data)  # <--- New property
             )
         )
 
