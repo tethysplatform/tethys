@@ -1,6 +1,6 @@
 import sys
 from json import dumps
-from unittest import TestCase
+from unittest import TestCase, mock
 from pathlib import Path
 from tethys_components import library
 import reactpy
@@ -35,6 +35,8 @@ class TestComponentLibrary(TestCase):
                 )
 
                 lib = library.ComponentLibrary(test_page_name)
+                lib.hooks = mock.MagicMock()
+                lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
                 test_module = __import__(test_page_name, fromlist=["test"])
                 raw_vdom = test_module.test(lib)
                 js_string = lib.render_js_template()
