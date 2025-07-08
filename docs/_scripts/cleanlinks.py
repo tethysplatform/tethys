@@ -185,38 +185,19 @@ def fix_links(links_type, links, docs_dir):
                 new_link = link["info"] if links_type == "redirected" else ""
                 if links_type == "broken":
                     click.echo(
-                        f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")}"
+                        f"{os.linesep}  {click.style(original_link, bg="magenta")}"
                     )
                 elif links_type == "redirected":
                     click.echo(
-                        f"{os.linesep}  {click.style(link['lineno'], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}"
+                        f"{os.linesep}  {click.style(link["code"], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}"
                     )
 
                 try:
                     line_idx = link["lineno"] - 1
-                    line = lines[line_idx].strip()
-
-                    # Check if the link is in the line
-                    original_found = line.find(original_link)
-                    if not original_found:
-                        # Check for links that were already fixed in a previous session and skip them
-                        if links_type == "redirected":
-                            new_found = link.find(new_link)
-                            if new_found:
-                                link["unfixed_reason"] = "ALREADY_FIXED"
-                                progress_bar.update(1)
-                                click.secho(os.linesep)
-                                continue
-
-                        click.secho(
-                            "WARNING: Could not find link to replace in line:",
-                            fg="yellow",
-                        )
-                        click.echo(f"         {link["lineno"]}: {lines[line_idx]}")
-                        link["unfixed_reason"] = "Link not found in line."
-                        progress_bar.update(1)
-                        click.secho(os.linesep)
-                        continue
+                    try:
+                        line = lines[line_idx].strip()
+                    except IndexError:
+                        line = "WARNING: The line can't be found in RST file, probably in a Python docstring."
 
                     # Compute the similarity between the original and new link
                     similarity = calculate_similarity(original_link, new_link)
@@ -224,14 +205,12 @@ def fix_links(links_type, links, docs_dir):
 
                     # Handle cases when user input is required
                     if review_each or too_dissimilar:
-                        click.echo(f"  {click.style('Line', bold=True)}: {line}")
+                        click.echo(
+                            f"  {click.style(link['lineno'], bold=True)}: {line}"
+                        )
                         if links_type == "broken":
                             click.echo(
                                 f'  {click.style('Info', bold=True)}: {link["info"]}'
-                            )
-                        elif links_type == "redirected":
-                            click.echo(
-                                f'  {click.style('Code', bold=True)}: {link["code"]}'
                             )
 
                         if not review_each and too_dissimilar:
@@ -389,14 +368,28 @@ def clean_links(dry_run, similarity_threshold):
     docs_dir = Path(__file__).parents[1]
     project_root = docs_dir.parents[0]
     links, files = parse_linkcheck_output(docs_dir)
+    redirect_fixes = list()
+    broken_fixes = list()
 
     # Fix Redirected Links
-    redirect_fixes = fix_links("redirected", links["redirected"], docs_dir)
-    recursive_search_and_save(redirect_fixes, project_root, dry_run)
+    if len(links["redirected"]) > 0:
+        redirect_fixes = fix_links("redirected", links["redirected"], docs_dir)
+        recursive_search_and_save(redirect_fixes, project_root, dry_run)
+    else:
+        click.secho(
+            f"{os.linesep}Good news! No redirected links to fix.",
+            fg="green",
+        )
 
     # Fix Broken Links
-    broken_fixes = fix_links("broken", links["broken"], docs_dir)
-    recursive_search_and_save(broken_fixes, project_root, dry_run)
+    if len(links["broken"]) > 0:
+        broken_fixes = fix_links("broken", links["broken"], docs_dir)
+        recursive_search_and_save(broken_fixes, project_root, dry_run)
+    else:
+        click.secho(
+            f"{os.linesep}Good news! No redirected links to fix.",
+            fg="green",
+        )
 
     # Summary Report
     redirect_fixed = len(redirect_fixes)
@@ -408,7 +401,7 @@ def clean_links(dry_run, similarity_threshold):
     click.echo(f"  Ignored: {len(links['ignored'])}")
     click.echo(f"  Timeout: {len(links['timeout'])}")
     click.echo(f"  Other: {len(links['other'])}")
-    click.echo(f"  Total: {len(links)}")
+    click.echo(f"  Total: {sum([len(links[key]) for key in links])}")
     click.echo(f"  Files: {len(files)}")
 
     # Warning

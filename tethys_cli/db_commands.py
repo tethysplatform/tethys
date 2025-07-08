@@ -10,6 +10,7 @@
 
 from pathlib import Path
 import shutil
+import sys
 import argparse
 from functools import partial
 
@@ -315,8 +316,6 @@ def create_db_user(
         "postgres",
         "-E",
         "utf-8",
-        "-T",
-        "template0",
         "-p",
         f"{port}",
         "-O",
@@ -406,7 +405,7 @@ def migrate_tethys_db(db_alias=None, **kwargs):
     msg = "Running migrations for Tethys database..."
     manage_path = get_manage_path(None)
     db_alias = db_alias or "default"
-    args = ["python", manage_path, "migrate", "--database", db_alias]
+    args = [sys.executable, manage_path, "migrate", "--database", db_alias]
     return _run_process(args, msg, **kwargs)
 
 

@@ -184,7 +184,15 @@ var MAP_LAYOUT = (function() {
                     };
 
                     // Fetch the WMS GetCapabilities for each layer
-                    $.each(source.getUrls(), function(i, url) {
+                    // Handle different URL methods for TileWMS vs ImageWMS
+                    let urls = [];
+                    if (source instanceof ol.source.TileWMS) {
+                        urls = source.getUrls();
+                    } else if (source instanceof ol.source.ImageWMS) {
+                        urls = [source.getUrl()];
+                    }
+                    
+                    $.each(urls, function(i, url) {
                         let capabilities_url = `${url}?request=GetCapabilities`;
                         
                         // Use cache if layer on same server as previous lookup

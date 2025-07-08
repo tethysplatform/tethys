@@ -13,7 +13,7 @@ Shipping Analogy
 
 Prior to the advent of the shipping container, shipping goods to different parts of the world was a logistical nightmare. Goods came in all different sizes of containers and arranging them on ships was haphazard. The same was true with trains and trucks when it came time to ship them overland. The result was shipping was expensive and slow and goods were often misplaced, broken, or rotted because of the delays.
 
-The shipping container streamlined the shipping process because of its standard size. Merchants could put whatever they wanted in a shipping container. It didn't matter to the shipping companies if they were shipping bananas or cars. Loading the ship became a simple operation of stacking boxes and loading was reduced from days and weeks to hours. In addition containers could be easily transferred to trucks or trains for overland shipping. [#f1]_
+The shipping container streamlined the shipping process because of its standard size. Merchants could put whatever they wanted in a shipping container. It didn't matter to the shipping companies if they were shipping bananas or cars. Loading the ship became a simple operation of stacking boxes and loading was reduced from days and weeks to hours. In addition containers could be easily transferred to trucks or trains for overland shipping.
 
 .. raw:: html
 
@@ -68,7 +68,6 @@ Docker Hub
 
 .. rubric:: Footnotes
 
-.. [#f1] See `Docker and Shipping Containers: An Imperfect Analogy <https://www.ctl.io/developers/blog/post/docker-and-shipping-containers-a-useful-but-imperfect-analogy>`_
 .. [#f2] See `What is a container? | Docker <https://www.docker.com/resources/what-container>`_
 .. [#f3] See `Docker overview | Docker Documentation <https://docs.docker.com/get-started/docker-overview/>`_
 .. [#f4] See `Dockerfile reference | Docker Documentation <https://docs.docker.com/reference/dockerfile/>`_

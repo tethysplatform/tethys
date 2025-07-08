@@ -1,28 +1,30 @@
+:orphan:
+
 ********
 Features
 ********
 
 **Last Updated:** May 28, 2015
 
-Tethys is a platform that can be used to develop and host engaging, interactive water resources web applications or web apps. It includes a suite of free and open source software (FOSS) that has been carefully selected to address the unique development needs of water resources web apps. Tethys web apps are developed using a Python software development kit (SDK) which includes programmatic links to each software component. Tethys Platform is powered by the `Django <https://www.djangoproject.com/>`_ Python web framework giving it a solid web foundation with excellent security and performance.
+Tethys is a platform that can be used to develop and host engaging, interactive geoscientific web applications or web apps. It includes a suite of free and open source software (FOSS) that has been carefully selected to address the unique development needs of geoscientific web apps. Tethys web apps are developed using a Python software development kit (SDK) which includes programmatic links to each software component. Tethys Platform is powered by the `Django <https://www.djangoproject.com/>`_ Python web framework giving it a solid web foundation with excellent security and performance.
 
 .. figure:: images/features/example_app_page.png
     :width: 600px
     :align: center
 
-**Tethys platform can be used to create engaging, interactive web apps for water resources.**
+**Tethys platform can be used to create engaging, interactive web apps for the geosciences.**
 
 
 Software Suite
 ==============
 
-Tethys Platform provides a suite of free and open source software. Included in the :doc:`./software_suite` is `PostgreSQL <https://www.postgresql.org/>`_ with the `PostGIS <http://postgis.net/>`_ extension for spatial database storage, `GeoServer <https://geoserver.org/>`_ for spatial data publishing, and `52 North WPS <http://52north.org/communities/geoprocessing/wps/>`_ for geoprocessing. Tethys also provides Gizmos for inserting `OpenLayers <https://openlayers.org/>`_ and `Google Maps <https://developers.google.com/maps/documentation>`_ for interactive spatial data visualizations in your web apps. The :doc:`./software_suite` also includes `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ for managing distributed computing resources and scheduling computing jobs.
+Tethys Platform provides a suite of free and open source software. Included in the :doc:`./software_suite` is `PostgreSQL <https://www.postgresql.org/>`_ with the `PostGIS <http://postgis.net/>`_ extension for spatial database storage, `GeoServer <https://geoserver.org/>`_ for spatial data publishing, and `52 North WPS <https://52north.org/software/software-components/javaps/>`_ for geoprocessing. Tethys also provides Gizmos for inserting `OpenLayers <https://openlayers.org/>`_ and `Google Maps <https://developers.google.com/maps/documentation>`_ for interactive spatial data visualizations in your web apps. The :doc:`./software_suite` also includes `HTCondor <https://research.cs.wisc.edu/htcondor/>`_ for managing distributed computing resources and scheduling computing jobs.
 
 .. figure:: images/features/tethys_platform_diagram.png
     :width: 600px
     :align: center
 
-**Tethys Platform include software to meet water resources web app development needs.**
+**Tethys Platform include software to meet geoscientific web app development needs.**
 
 .. note::
 

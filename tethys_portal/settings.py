@@ -509,7 +509,7 @@ GRAVATAR_DEFAULT_RATING = "g"
 GRAVATAR_DEFAULT_SECURE = True
 
 # OAuth Settings
-# http://psa.matiasaguirre.net/docs/configuration/index.html
+# https://python-social-auth.readthedocs.io/en/latest/docs/configuration/index.html
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ["username", "first_name", "email"]
 SOCIAL_AUTH_SLUGIFY_USERNAMES = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/apps/"

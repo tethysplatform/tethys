@@ -12,11 +12,10 @@ This tutorial introduces ``Bokeh Server`` integration concepts for Tethys develo
 * Handler functions using Bokeh Widgets
 * Handler functions using Param and Panel
 
-Create and install a new Tethys app named bokeh_tutorial.
+Create and install a new Tethys app named bokeh_tutorial in your :ref:`virtual_environment`.
 
 ::
 
-    conda activate tethys
     tethys scaffold bokeh_tutorial
     cd tethysapp-bokeh_tutorial
     tethys install -d

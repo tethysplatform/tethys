@@ -59,7 +59,7 @@ After installing Docker Desktop, you should be able to use the ``docker`` comman
 
         docker run --name my_first_container -d -p 80:80 docker/getting-started
 
-The ``docker run`` command will automatically pull (download) the ``docker/getting-started`` image if it hasn't been pulled already and then create and start the container. The ``docker/getting-started`` image contains a website with a tutorial for Docker (Figure 2). To view the tutorial open a web browser and navigate to `<http:localhost>`_.
+The ``docker run`` command will automatically pull (download) the ``docker/getting-started`` image if it hasn't been pulled already and then create and start the container. The ``docker/getting-started`` image contains a website with a tutorial for Docker (Figure 2). To view the tutorial open a web browser and navigate to `<http://localhost>`_.
 
 .. figure:: images/install--getting-started.png
     :width: 800px
