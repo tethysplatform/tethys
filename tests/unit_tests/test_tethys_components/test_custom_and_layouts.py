@@ -55,7 +55,8 @@ class TestCustomComponents(TestCase):
                     cases = self.required_kwargs_mapping[attr]
                 for case_num, case in enumerate(cases, 1):
                     expected_vdom_json_fpath = (
-                        CUSTOM_EVAL_DIR / f"{module_name}__{attr}_{case_num}_expected.json"
+                        CUSTOM_EVAL_DIR
+                        / f"{module_name}__{attr}_{case_num}_expected.json"
                     )
                     kwargs = case
                     raw_vdom = component(self.lib, **kwargs)
@@ -76,7 +77,7 @@ class TestCustomComponents(TestCase):
     def test_panel_special_case_1(self):
         mock_lib = mock.MagicMock()
         mock_lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             custom.Panel(mock_lib, anchor="fail")
 
     def test_panel_special_case_2(self):

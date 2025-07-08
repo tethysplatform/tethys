@@ -200,7 +200,7 @@ class TestComponentUtils(TestCase):
         mock_import().Timer.assert_called_once_with(10, test_func, ["Hello"])
         mock_import().Timer().start.assert_called_once()
         mock.patch.stopall()
-    
+
     def test_background_execute_repeat(self):
         mock_import = mock.patch("builtins.__import__").start()
 
@@ -208,7 +208,9 @@ class TestComponentUtils(TestCase):
             pass
 
         utils.background_execute(test_func, ["Hello"], repeat_seconds=1)
-        mock_import().Thread.assert_has_calls([mock.call(target=test_func, args=["Hello"])])
+        mock_import().Thread.assert_has_calls(
+            [mock.call(target=test_func, args=["Hello"])]
+        )
         self.assertEqual(mock_import().Thread().start.call_count, 2)
         mock_import().Timer.assert_called_once()
         self.assertEqual(mock_import().Timer.call_args.args[0], 1)
