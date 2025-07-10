@@ -1,6 +1,7 @@
 .. _scaffolded_app_recipe :
 
 
+
 ***************************
 Scaffold and Install an App
 ***************************
@@ -49,3 +50,7 @@ Now that you have a new Tethys app project, you need to install the app on your 
 ====================
 
 .. include:: steps/start_tethys_step.rst
+
+.. figure:: ../../docs/images/recipes/scaffold.png
+    :width: 800px
+    :align: center    

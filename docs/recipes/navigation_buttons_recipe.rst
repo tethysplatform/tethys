@@ -1,5 +1,7 @@
 .. _navigation_buttons_recipe:
 
+
+
 ******************
 Navigation Buttons
 ******************
