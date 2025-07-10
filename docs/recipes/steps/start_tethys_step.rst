@@ -1,3 +1,11 @@
+.. _start_tethys_step:
+
+
+Open the terminal and enter the Tethys environment with the command:
+
+.. code-block:: bash
+
+    conda activate tethys
 
 Use the following commmand to start up the development server:
 
@@ -6,7 +14,7 @@ Use the following commmand to start up the development server:
     tethys start
 
 
-Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login with the **default portal user**:
+Browse to `<http://127.0.0.1:8000/apps/> <http://127.0.0.1:8000/apps/>`_ in a web browser and login with the **default portal user**:
 
 * **username**: admin
 * **password**: pass

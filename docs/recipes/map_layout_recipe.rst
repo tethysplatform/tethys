@@ -1,10 +1,13 @@
 .. _map_layout_recipe :
 
+
 **********
 Map Layout
 **********
 
 Optional prerequisite: Scaffold App
+
+The map layout is a fundamental feature of Tethys that can be added to your app with just a few lines of code.
 
 1. Swap default home controller with Map Layout
 When you scaffold a new app, by default the :file:`controllers.py` script contains a home function that controls the backend logic for the home screen of your app. It is possible to add a Map View and other map tools using Tethys Gizmos. 
@@ -18,7 +21,6 @@ This can be done by replacing the entire contents of :file:`controllers.py` with
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
     from .app import App
-
 
     @controller(name="home", app_workspace=True)
     class MapLayoutTutorialMap(MapLayout):
