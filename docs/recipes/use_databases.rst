@@ -1,8 +1,8 @@
-.. _persistent_storage_service :
+.. _use_databases :
 
-***********************************
-Making a Persistent Storage Service
-***********************************
+*************
+Use Databases
+*************
 
 In this recipe you will configure your Tethys installation to use a Postgre SQL database.  There are many ways to install PostgreSQL, but for this recipe you will install it using Docker.
 

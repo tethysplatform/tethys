@@ -1,4 +1,4 @@
-.. _start_tethys_recipe:
+.. _start_tethys:
 
 
 

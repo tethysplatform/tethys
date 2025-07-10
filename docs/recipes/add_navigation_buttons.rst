@@ -1,10 +1,10 @@
-.. _navigation_buttons_recipe:
+.. _add_navigation_buttons:
 
 
 
-******************
-Navigation Buttons
-******************
+**********************
+Add Navigation Buttons
+**********************
 
 Your app may contain multiple pages (i.e. map viewer, home page, disclaimer, etc.).  Navigation buttons provide a convinent way to switch between pages in your app.  To add navigation buttons:
 

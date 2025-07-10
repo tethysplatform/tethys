@@ -1,9 +1,9 @@
-.. _map_layout_recipe :
+.. _add_map_layout :
 
 
-**********
-Map Layout
-**********
+*****************
+Add a Map Layout
+*****************
 
 Optional prerequisite: Scaffold App
 

@@ -1,9 +1,9 @@
-.. _forms_input:
+.. _get_user_input:
 
 
-********************
-Forms and Data Input
-********************
+**************
+Get User Input
+**************
 
 HTML forms are the primary mechanism for obtaining input from users of your app.  
 

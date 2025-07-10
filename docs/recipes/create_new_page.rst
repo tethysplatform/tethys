@@ -1,4 +1,4 @@
-.. _create_new_page_recipe:
+.. _create_new_page:
 
 
 *****************
