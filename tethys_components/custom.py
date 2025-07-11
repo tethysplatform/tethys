@@ -1,6 +1,5 @@
 from tethys_portal.settings import STATIC_URL
 from pathlib import Path
-from pandas import DataFrame
 
 THIS_DIR = Path(__file__).parent
 RESOURCE_DIR = THIS_DIR / "resources"
@@ -188,6 +187,7 @@ def Chart(
         x_attr (str): The name of the attribute in the data to use for the x-axis. Defaults to "x".
         y_attr (str): The name of the attribute in the data to use for the y-axis. Defaults to "y".
     """
+    from pandas import DataFrame
     if data is None:
         data = DataFrame(columns=[x_attr, y_attr])
     elif not isinstance(data, DataFrame):
