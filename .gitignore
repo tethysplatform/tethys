@@ -37,3 +37,4 @@ tethys_portal/_version.py
 git-lfs-*/*
 conda.recipe/meta.yaml
 tethysapp-*
+_build
