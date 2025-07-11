@@ -1,3 +1,5 @@
+.. _templating_api:
+
 ******************
 App Templating API
 ******************
