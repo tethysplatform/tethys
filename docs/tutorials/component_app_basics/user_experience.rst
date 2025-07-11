@@ -53,7 +53,7 @@ We can address the above issues by doing the following:
         
         See the :ref:`lib.tethys API docs <tethys_components_custom>` for all possible keyword arguments to ``Panel`` and ``Chart``
         
-        See the :ref:`lib.utils API docs <tethys_components_custom>` for other functions that might be helpful.
+        See the :ref:`lib.utils API docs <tethys_components_utils>` for other functions that might be helpful.
 
 Solution
 --------
