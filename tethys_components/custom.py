@@ -188,6 +188,7 @@ def Chart(
         y_attr (str): The name of the attribute in the data to use for the y-axis. Defaults to "y".
     """
     from pandas import DataFrame
+
     if data is None:
         data = DataFrame(columns=[x_attr, y_attr])
     elif not isinstance(data, DataFrame):
