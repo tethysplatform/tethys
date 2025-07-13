@@ -26,10 +26,10 @@ class TestCustomComponents(TestCase):
         cls.lib.hooks.use_location.return_value = "MOCK"
         cls.lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
         cls.required_kwargs_mapping = {
-            "HeaderWithNavBar": {"app": cls.mock_all, "user": cls.mock_all},
-            "NavHeader": {"app": cls.mock_all, "user": cls.mock_all},
-            "PageLoader": {"content": "TEST"},
-            "Chart": {"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]},
+            "HeaderWithNavBar": [{"app": cls.mock_all, "user": cls.mock_all}],
+            "NavHeader": [{"app": cls.mock_all, "user": cls.mock_all}],
+            "PageLoader": [{"content": "TEST"}],
+            "Chart": [{"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]}, {"data": None}],
         }
 
     def json_serializer(self, obj):
@@ -50,22 +50,23 @@ class TestCustomComponents(TestCase):
                 if list(inspect.signature(component).parameters.items())[0][0] != "lib":
                     continue
 
-                expected_vdom_json_fpath = (
-                    CUSTOM_EVAL_DIR / f"{module_name}__{attr}_expected.json"
-                )
-                kwargs = {}
+                cases = [{}]
                 if attr in self.required_kwargs_mapping:
-                    kwargs = {
-                        k: v for k, v in self.required_kwargs_mapping[attr].items()
-                    }
-                raw_vdom = component(self.lib, **kwargs)
-                json_vdom = dumps(raw_vdom, default=self.json_serializer)
+                    cases = self.required_kwargs_mapping[attr]
+                for case_num, case in enumerate(cases, 1):
+                    expected_vdom_json_fpath = (
+                        CUSTOM_EVAL_DIR
+                        / f"{module_name}__{attr}_{case_num}_expected.json"
+                    )
+                    kwargs = case
+                    raw_vdom = component(self.lib, **kwargs)
+                    json_vdom = dumps(raw_vdom, default=self.json_serializer)
 
-                # # Uncomment to create expected files when writing new test
-                # expected_vdom_json_fpath.write_text(json_vdom)
+                    # # Uncomment to create expected files when writing new test
+                    # expected_vdom_json_fpath.write_text(json_vdom)
 
-                expected_json_vdom = expected_vdom_json_fpath.read_text()
-                self.assertEqual(json_vdom, expected_json_vdom)
+                    expected_json_vdom = expected_vdom_json_fpath.read_text()
+                    self.assertEqual(json_vdom, expected_json_vdom)
 
     def test_all_custom_components(self):
         self._do_test(custom)
@@ -75,14 +76,17 @@ class TestCustomComponents(TestCase):
 
     def test_panel_special_case_1(self):
         mock_lib = mock.MagicMock()
+        mock_lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
         with self.assertRaises(ValueError):
             custom.Panel(mock_lib, anchor="fail")
 
     def test_panel_special_case_2(self):
         mock_lib = mock.MagicMock()
+        mock_lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
         style = mock.MagicMock()
         custom.Panel(mock_lib, anchor="top", style=style)
         style.__setitem__.assert_called_once_with("height", "500px")
+        mock_lib.hooks.use_state.assert_called_once()
 
     def test_panel_special_case_3(self):
         proof = mock.MagicMock()

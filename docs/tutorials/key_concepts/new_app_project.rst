@@ -1,8 +1,8 @@
 .. _key_concepts_new_app_project_tutorial:
 
-**********************
-New Tethys App Project
-**********************
+************************
+New Standard App Project
+************************
 
 **Last Updated:** July 2024
 
