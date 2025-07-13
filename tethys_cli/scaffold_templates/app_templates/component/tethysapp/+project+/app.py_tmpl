@@ -1,0 +1,28 @@
+from tethys_sdk.components import ComponentBase
+
+
+class App(ComponentBase):
+    """
+    Tethys app class for {{proper_name}}.
+    """
+
+    name = "{{proper_name}}"
+    description = "{{description|default("Place a brief description of your app here.")}}"
+    package = "{{project}}"  # WARNING: Do not change this value
+    index = "home"
+    icon = f"{package}/images/icon.png"
+    root_url = "{{project_url}}"
+    color = "{{color}}"
+    tags = "{{tags}}"
+    enable_feedback = False
+    feedback_emails = []
+    exit_url = "/apps/"
+    default_layout = "NavHeader"
+    nav_links = "auto"
+
+
+@App.page
+def home(lib):
+    return lib.tethys.Display(
+        lib.tethys.Map()
+    )
