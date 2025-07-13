@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from pathlib import Path
 from shutil import get_unpack_formats
 
@@ -305,13 +306,22 @@ class AppImportForm(forms.Form):
         label="Archive File",
         required=False,
         validators=[
-            FileExtensionValidator(sum([extensions for name, extensions, _ in get_unpack_formats()], []))
-        ]
+            FileExtensionValidator(
+                [
+                    x[1:]
+                    for x in sum(
+                        [extensions for name, extensions, _ in get_unpack_formats()], []
+                    )
+                ]
+            )
+        ],
     )
 
     def clean(self):
         if self.cleaned_data.get("git_url") and self.cleaned_data.get("zip_file"):
-            raise forms.ValidationError("Input provided for both Git URL and Archive File. Please only specify one or the other.")
+            raise forms.ValidationError(
+                "Input provided for both Git URL and Archive File. Please only specify one or the other."
+            )
 
 
 class AppScaffoldForm(forms.Form):
@@ -321,7 +331,7 @@ class AppScaffoldForm(forms.Form):
 
     scaffold_template = forms.ChoiceField(
         choices=[
-            ("default", "Classic"),
+            ("default", "Standard"),
             ("reactpy", "ReactPy"),
             ("reactjs", "ReactJS"),
         ]
@@ -357,6 +367,12 @@ class AppScaffoldForm(forms.Form):
         widget=forms.TextInput(
             attrs={"placeholder": "My App", "class": "form-control"}
         ),
+        validators=[
+            RegexValidator(
+                r"^[a-zA-Z0-9\s]+$",
+                "The project name must contain only letters, numbers, and spaces.",
+            ),
+        ],
     )
 
     description = forms.CharField(

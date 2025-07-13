@@ -3,6 +3,7 @@
   let DISCONNECTED = false;
   let INTERVAL = null;
   const progressBar = document.querySelector('#progress');
+  const doNotLeave = document.querySelector('#do-not-leave');
   const message = document.querySelector('#message');
   const appLifeCycleSocket = new ReconnectingWebSocket(
     'ws://'
@@ -11,13 +12,14 @@
     + PROJECT_NAME
     + '/'
   );
+  let APP_PACKAGE = PROJECT_NAME;
   
   appLifeCycleSocket.onopen = function(e) {
     if (DISCONNECTED) {
       updateProgress({message: "Done", percentage: 100});
       let redirectUrl = window.location.protocol + "//" + window.location.host + '/apps/';
       if (APP_LIFECYCLE_ACTION != "Removing") {
-        redirectUrl += PROJECT_NAME.replace("_", "-") + "/"
+        redirectUrl += APP_PACKAGE.replaceAll("_", "-") + "/"
       }
       window.location.assign(redirectUrl);
     }
@@ -25,12 +27,25 @@
   
   appLifeCycleSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    updateProgress(data);
+    if (data.app_package) {
+      APP_PACKAGE = data.app_package;
+    }
+    if (data.error_code) {
+      reportError(data);
+    } else {
+      updateProgress(data);
+    }
   };
   
   appLifeCycleSocket.onclose = function(e) {
     DISCONNECTED = true;
   };
+
+  function reportError(data) {
+    progressBar.style.display = 'none';
+    doNotLeave.style.display = 'none';
+    message.innerHTML = 'ERROR ENCOUNTERED: ' + data.message;
+  }
   
   function updateProgress(data) {
     if (parseInt(data.percentage) > parseInt(progressBar.ariaValueNow)) {

@@ -1,10 +1,11 @@
 import json
 import os
 import platform
+import re
 
 from pathlib import Path
 from shutil import unpack_archive, rmtree
-from subprocess import run
+from subprocess import run, CalledProcessError
 from tempfile import mkdtemp
 from threading import Timer
 from time import sleep
@@ -12,7 +13,6 @@ from time import sleep
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
-from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -34,27 +34,52 @@ KILL_COMMAND = (
 
 def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=None):
     if cleanup and not callable(cleanup):
-        raise ValueError("The \"cleanup\" argument must be a function or callable.")
-    
+        raise ValueError('The "cleanup" argument must be a function or callable.')
+
+    revised_app_package = None
+
     channel_layer = get_channel_layer()
-    for index, (command, message) in enumerate(command_message_tuples):
+    try:
+        for index, (command, message) in enumerate(command_message_tuples):
+            async_to_sync(channel_layer.group_send)(
+                f"app_{app_package}",
+                {
+                    "type": "progress.message",
+                    "progress_metadata": {
+                        "app_package": revised_app_package or app_package,
+                        "error_code": 0,
+                        "percentage": int(100 * index / len(command_message_tuples)),
+                        "message": message,
+                    },
+                },
+            )
+            if message == "Restarting server...":
+                sleep(
+                    0.5
+                )  # So the websocket has time to send the message prior to killing the server
+            result = run(command, shell=True, check=True, capture_output=True)
+            output = str(result.stdout)
+            if "Successfully installed " in output:
+                revised_app_package = re.search(
+                    r"Successfully installed ([\w_]+)", output
+                ).group(1)
+
+    except CalledProcessError as e:
         async_to_sync(channel_layer.group_send)(
             f"app_{app_package}",
             {
                 "type": "progress.message",
                 "progress_metadata": {
-                    "percentage": int(100 * index / len(command_message_tuples)),
-                    "message": message,
+                    "error_code": 1,
+                    "message": str(e),
                 },
             },
         )
-        if message == "Restarting server...":
-            sleep(
-                0.5
-            )  # So the websocket has time to send the message prior to killing the server
-        run(command, shell=True, check=True)
     if cleanup:
-        cleanup()
+        try:
+            cleanup()
+        except Exception:
+            pass
 
 
 class AppLifeCycleConsumer(AsyncWebsocketConsumer):
@@ -82,26 +107,6 @@ class AppLifeCycleConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps(progress_metadata))
 
-# import os
-# import gzip
-# import shutil
-# import zipfile
-# def extract_archive(file_path, destination_folder):
-#     nested_folder = f"{destination_folder}/{Path(file_path).stem}"
-#     os.mkdir(nested_folder)
-#     destination_folder = nested_folder
-#     if file_path.endswith('.zip'):
-#         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-#             zip_ref.extractall(destination_folder)
-#     elif file_path.endswith('.gz'):
-#         file_name = os.path.basename(file_path)
-#         extracted_name = os.path.splitext(file_name)[0]
-#         extracted_path = os.path.join(destination_folder, extracted_name)
-#         with gzip.open(file_path, 'rb') as f_in:
-#             with open(extracted_path, 'wb') as f_out:
-#                 shutil.copyfileobj(f_in, f_out)
-#     else:
-#         print(f"Unsupported file format: {file_path}")
 
 @login_required
 @staff_member_required
@@ -118,6 +123,7 @@ def import_app(request):
             import_name = git_url or zip_file.name
             app_folder_name = Path(import_name).stem
             app_package = app_folder_name.replace(f"{APP_PREFIX}-", "")
+            abs_app_project_fpath = Path(tmpdir)
 
             command_message_tuples = [
                 (f"conda activate {CONDA_ENV}", "Activating environment..."),
@@ -131,11 +137,8 @@ def import_app(request):
                 unpack_archive(dest_fpath, tmpdir)
                 os.remove(dest_fpath)
                 unzipped_contents = os.listdir(tmpdir)
-                
                 if len(unzipped_contents) == 1:
-                    app_folder_name = Path(tmpdir) / unzipped_contents[0]
-                else:
-                    app_folder_name = tmpdir
+                    abs_app_project_fpath /= unzipped_contents[0]
 
             else:  # git_url
                 command_message_tuples.append(
@@ -144,17 +147,16 @@ def import_app(request):
                         f"Cloning source code from {git_url}",
                     ),
                 )
-            
+                abs_app_project_fpath /= app_folder_name
+
             command_message_tuples += [
                 (
-                    f"cd {app_folder_name} && tethys install -q",
+                    f"cd {abs_app_project_fpath} && tethys install -q",
                     "Installing into Tethys Portal...",
                 ),
                 (f"{KILL_COMMAND} && tethys start", "Restarting server..."),
             ]
-            print("************\n"*5)
-            print(tmpdir)
-            print("************\n"*5)
+            app_package = app_package.replace("-", "_")
 
             Timer(
                 1,
@@ -172,10 +174,15 @@ def import_app(request):
 @login_required
 @staff_member_required
 def create_app(request):
-    context = {}
+    initial = {
+        "author": request.user.get_full_name(),
+        "author_email": request.user.email,
+    }
+    context = {"form": AppScaffoldForm(initial=initial)}
 
     if request.method == "POST":
         form = AppScaffoldForm(request.POST)
+        context = {"form": form}
         if form.is_valid():
             # Form is valid
             template = form.cleaned_data["scaffold_template"]
@@ -210,15 +217,7 @@ def create_app(request):
 
             context["app_name"] = app_name
             context["app_package"] = project_name
-    else:
-        data = {
-            "author": request.user.get_full_name(),
-            "author_email": request.user.email,
-        }
-
-        form = AppScaffoldForm(initial=data)
-
-    context["form"] = form
+            del context["form"]
 
     return render(request, "tethys_portal/create_app.html", context)
 

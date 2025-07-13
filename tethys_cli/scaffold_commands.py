@@ -384,11 +384,7 @@ def scaffold_command(args):
     }
 
     for item in metadata_input:
-        if args.use_defaults:
-            default = item["defualt"]
-            context[item["name"]] = default() if callable(default) else default
-
-        elif getattr(args, item["name"]) is not None:
+        if getattr(args, item["name"]) is not None:
             provided_via_cli = getattr(args, item["name"])
             valid = True
             if callable(item["validator"]):
@@ -404,7 +400,11 @@ def scaffold_command(args):
                 exit(1)
 
             context[item["name"]] = provided_via_cli
+        elif args.use_defaults:
+            default = item["default"]
+            context[item["name"]] = default() if callable(default) else default
         else:
+            valid = False
             while not valid:
                 try:
                     response = (
