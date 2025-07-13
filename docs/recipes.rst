@@ -13,7 +13,8 @@ Recipes
 .. recipe-gallery::
     :layout: multi-row
     
-    recipes/scaffold_an_app images/recipes/scaffold_pic.png [scaffold, app, new_app]
+    recipes/scaffold_an_app_via_the_portal images/recipes/create_app_form.png [scaffold, app, new_app]
+    recipes/scaffold_an_app_via_command_line images/recipes/scaffold_pic.png [scaffold, app, new_app]
     recipes/add_map_layout images/recipes/map_layout.png [map, app, new_app]
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/create_new_page images/recipes/new_page.png [page, app, new_app]
