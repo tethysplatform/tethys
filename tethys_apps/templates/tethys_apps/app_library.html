@@ -117,12 +117,31 @@
               {% include 'tethys_apps/app_card.html' with app=app unconfigured=True %}
             </div>
           {% endfor %}
+          {% if request.user.is_staff %}
+            <div class="col">
+              {% include 'tethys_apps/add_app_card.html' with action_url='admin:create_app' action_title='Create' %}
+            </div>
+            <div class="col">
+              {% include 'tethys_apps/add_app_card.html' with action_url='admin:import_app' action_title='Import' %}
+            </div>
+          {% endif %}
         </div>
       </div>
     {% else %}
-      <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
-      <p><a class="btn btn-lg btn-primary" role="button" href="{% url 'admin:create_app' %}" title="Create App">Create App</a></p>
-      <p><a class="btn btn-lg btn-primary" role="button" href="{% url 'admin:import_app' %}" title="Import App">Import App</a></p>
+      {% if request.user.is_staff %}
+        <div class="container-xl">
+          <div class="row row-cols-auto justify-content-center mb-4 mx-4">
+            <div class="col">
+              {% include 'tethys_apps/add_app_card.html' with action_url='admin:create_app' action_title='Create' %}
+            </div>
+            <div class="col">
+              {% include 'tethys_apps/add_app_card.html' with action_url='admin:import_app' action_title='Import' %}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+      {% endif %}
     {% endif %}
   </div>
   <div id="app-library-curtain"></div>

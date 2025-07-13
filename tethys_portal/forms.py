@@ -332,8 +332,8 @@ class AppScaffoldForm(forms.Form):
     scaffold_template = forms.ChoiceField(
         choices=[
             ("default", "Standard"),
-            ("reactpy", "ReactPy"),
-            ("reactjs", "ReactJS"),
+            ("component", "Component (Beta)"),
+            ("reactjs", "ReactJS (Beta)"),
         ]
     )
 
