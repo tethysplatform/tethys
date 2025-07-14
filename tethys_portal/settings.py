@@ -25,6 +25,7 @@ import sys
 import yaml
 import logging
 import datetime as dt
+import mimetypes
 from os import getenv
 from pathlib import Path
 from importlib import import_module
@@ -43,6 +44,8 @@ bokeh_django = optional_import("bokeh_django")
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
+
+mimetypes.add_type("text/javascript", ".js", True)
 
 BASE_DIR = Path(__file__).parent
 
@@ -340,6 +343,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ),
 }
+
 
 # Terms and conditions settings
 ACCEPT_TERMS_PATH = "/terms/accept/"

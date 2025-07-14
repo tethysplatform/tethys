@@ -19,7 +19,7 @@ def test(lib):
                 lib.bs.Col(style=lib.Style(width="50vw"))(
                     lib.html.iframe(
                         style=lib.Style(height="100%", width="100%"),
-                        src="/apps/reactpy-playground/render",
+                        src="/apps/component-app-playground/render",
                         title="Result",
                     )
                 ),

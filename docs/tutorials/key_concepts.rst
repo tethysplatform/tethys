@@ -1,12 +1,12 @@
 .. _key_concepts_tutorial:
 
-************
-Key Concepts
-************
+*******************
+Standard App Basics
+*******************
 
-**Last Updated:** July 2024
+**Last Updated:** June 2025
 
-This tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform and teach you the key concepts of Tethys App development.
+This tutorial will teach you the basics of Standard Tethys App development by walking you through the creation and development of a simple Standard App.
 
 .. figure:: ../images/tutorial/advanced/key-concepts-advanced-screenshot.png
     :width: 800px
