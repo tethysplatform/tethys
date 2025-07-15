@@ -17,3 +17,5 @@ Tethys Platform
 Tethys Platform provides both a development environment and a hosting environment for geoscientific web apps.
 
 Documentation can be found here: `<http://docs.tethysplatform.org/>`_
+
+Hello from Tethys Summit 2025, Florida!
