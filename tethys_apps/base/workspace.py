@@ -299,7 +299,7 @@ def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorks
             f'Argument "user_or_request" must be of type HttpRequest or User: '
             f'"{type(user_or_request)}" given.'
         )
-    
+
     assert passes_quota(user, "user_workspace_quota")
 
     return _get_user_workspace(app, user)
