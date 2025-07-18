@@ -245,16 +245,13 @@ def _get_user_workspace(app_class, user_or_request):
     return TethysWorkspace(str(workspace_directory))
 
 
-def get_user_workspace_old(
-    app_class_or_request, user_or_request, bypass_quota=False
-) -> TethysWorkspace:
+def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorkspace:
     """
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
     Args:
         app_class_or_request (TethysAppBase or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
-        bypass_quota (bool): Whether to check the user's workspace quota
 
     Raises:
         ValueError: if app_class_or_request or user_or_request are not correct types.
@@ -302,8 +299,8 @@ def get_user_workspace_old(
             f'Argument "user_or_request" must be of type HttpRequest or User: '
             f'"{type(user_or_request)}" given.'
         )
-    if not bypass_quota:
-        assert passes_quota(user, "user_workspace_quota")
+    
+    assert passes_quota(user, "user_workspace_quota")
 
     return _get_user_workspace(app, user)
 
@@ -377,7 +374,7 @@ def _get_app_workspace(app_class):
     return TethysWorkspace(str(workspace_directory))
 
 
-def get_app_workspace_old(app_or_request, bypass_quota=False) -> TethysWorkspace:
+def get_app_workspace_old(app_or_request) -> TethysWorkspace:
     """
     Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
 
@@ -418,9 +415,8 @@ def get_app_workspace_old(app_or_request, bypass_quota=False) -> TethysWorkspace
             f'"{type(app_or_request)}" given.'
         )
 
-    if not bypass_quota:
-        # Accessed when uploading to workspace
-        assert passes_quota(app, "tethysapp_workspace_quota")
+    # Accessed when uploading to workspace
+    assert passes_quota(app, "tethysapp_workspace_quota")
 
     return _get_app_workspace(app)
 
