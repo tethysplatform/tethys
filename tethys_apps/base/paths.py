@@ -345,7 +345,7 @@ def _get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
 
     """
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
-        return get_app_workspace_old(app_or_request, bypass_quota)
+        return get_app_workspace_old(app_or_request)
 
     app = _resolve_app_class(app_or_request)
     if not bypass_quota:
@@ -353,7 +353,7 @@ def _get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
     return TethysPath(_get_app_workspace_root(app) / "app_workspace")
 
 
-def get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
+def get_app_workspace(app_or_request) -> TethysPath:
     """
 
     Args:
@@ -367,9 +367,9 @@ def get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
 
     """
     if settings.USE_OLD_WORKSPACES_API:
-        return get_app_workspace_old(app_or_request, bypass_quota)
+        return get_app_workspace_old(app_or_request)
 
-    return _get_app_workspace(app_or_request, bypass_quota)
+    return _get_app_workspace(app_or_request)
 
 
 def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
@@ -394,7 +394,7 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
         _check_user_quota(user_or_request)
 
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
-        return get_user_workspace_old(app, user_or_request, bypass_quota)
+        return get_user_workspace_old(app, user_or_request)
 
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
 
@@ -402,7 +402,6 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
 def get_user_workspace(
     app_or_request,
     user_or_request,
-    bypass_quota=False,
 ) -> TethysPath:
     """
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
@@ -410,7 +409,6 @@ def get_user_workspace(
     Args:
         app_or_request (TethysAppBase, TethysApp, or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
-        bypass_quota (bool): Whether to check the user's workspace/media quota.
 
     Raises:
         ValueError: if app_or_request or user_or_request are not correct types.
@@ -429,9 +427,9 @@ def get_user_workspace(
             ...
     """  # noqa: E501
     if settings.USE_OLD_WORKSPACES_API:
-        return get_user_workspace_old(app_or_request, user_or_request, bypass_quota)
+        return get_user_workspace_old(app_or_request, user_or_request)
 
-    return _get_user_workspace(app_or_request, user_or_request, bypass_quota)
+    return _get_user_workspace(app_or_request, user_or_request)
 
 
 def _get_app_media_root(app):
@@ -463,7 +461,7 @@ def _get_app_media(app_or_request, bypass_quota=False):
     return TethysPath(_get_app_media_root(app) / "app")
 
 
-def get_app_media(app_or_request, bypass_quota=False):
+def get_app_media(app_or_request):
     """
 
     Args:
@@ -477,7 +475,7 @@ def get_app_media(app_or_request, bypass_quota=False):
     Returns: TethysPath representing the media directory for the app.
 
     """
-    return _get_app_media(app_or_request, bypass_quota)
+    return _get_app_media(app_or_request)
 
 
 def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
@@ -506,14 +504,13 @@ def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
     return TethysPath(_get_app_media_root(app) / "user" / username)
 
 
-def get_user_media(app_or_request, username_or_request, bypass_quota=False):
+def get_user_media(app_or_request, username_or_request):
     """
 
     Args:
         app_or_request (TethysAppBase, TethysApp, or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
         username_or_request (User or HttpRequest):
             A User instance or an authenticated request to get the media directory for.
-        bypass_quota (bool): Whether to check the user's workspace/media quota.
 
     Raises:
         ValueError: if app_or_request or user_or_request are not correct types.
@@ -522,7 +519,7 @@ def get_user_media(app_or_request, username_or_request, bypass_quota=False):
     Returns: TethysPath representing the user's media directory for the app.
 
     """
-    return _get_user_media(app_or_request, username_or_request, bypass_quota)
+    return _get_user_media(app_or_request, username_or_request)
 
 
 def get_app_resources(app_or_request):
