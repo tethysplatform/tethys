@@ -12,6 +12,7 @@ import shutil
 import logging
 from pathlib import Path
 from os import walk
+import sys
 
 from django.conf import settings
 from django.utils.functional import wraps
@@ -221,17 +222,15 @@ class TethysPath:
         return total_size / conversion_factor
 
 
-def _resolve_app_class(app_or_request, bypass_quota=False):
+def _resolve_app_class(app_or_request):
     """
     Returns an app class
 
     Args:
         app_or_request (TethysAppBase, TethysApp, or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
-        bypass_quota (bool): Whether to check the app's workspace/media quota.
 
     Raises:
         ValueError: if app_or_request is not correct type.
-        AssertionError: if `bypass_quota` is False and quota for the app workspace/media directory has been exceeded.
 
 
     Returns: The TethysAppBase subclass from `app_or_request`
@@ -256,24 +255,35 @@ def _resolve_app_class(app_or_request, bypass_quota=False):
             f'"{type(app_or_request)}" given.'
         )
 
-    if not bypass_quota:
-        assert passes_quota(app, "app_workspace_quota")
-
     return app
 
 
-def _resolve_username(user_or_request, bypass_quota=False):
+def _check_app_quota(app_or_request):
+    """
+    Check if the app quota has been exceeded or not.
+
+    Args:
+        app_or_request (TethysAppBase, TethysApp, or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
+
+    Raises:
+        AssertionError: if quota for the app workspace/media directory has been exceeded.
+    """
+    from tethys_apps.utilities import get_active_app
+
+    app_model = get_active_app(app_or_request, get_class=False)
+    assert passes_quota(app_model, "tethysapp_workspace_quota")
+
+
+def _resolve_user(user_or_request):
     """
 
     Args:
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
-        bypass_quota (bool): Whether to check the user's workspace/media quota.
 
     Raises:
         ValueError: if user_or_request is not correct type.
-        AssertionError: if `bypass_quota` is False and quota for the user workspace/media directory has been exceeded.
 
-    Returns: username of user or request.user
+    Returns: request.user
 
     """
     from django.contrib.auth.models import User
@@ -291,16 +301,32 @@ def _resolve_username(user_or_request, bypass_quota=False):
             f'"{type(user_or_request)}" given.'
         )
 
-    if not bypass_quota:
-        assert passes_quota(user, "user_workspace_quota")
+    return user
 
-    return user.username
+
+def _check_user_quota(user_or_request):
+    """
+    Check if the user quota has been exceeded or not.
+
+    Args:
+        user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
+
+    Raises:
+        AssertionError: if quota for the user workspace/media directory has been exceeded.
+    """
+    user = _resolve_user(user_or_request)
+
+    assert passes_quota(user, "user_workspace_quota")
 
 
 def _get_app_workspace_root(app):
     """
     Gets the root workspace directory for an app. Uses TETHYS_WORKSPACES_ROOT setting.
     """
+    # If the old workspaces API is being used and the app is in debug mode, use the app's directory
+    if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
+        return Path(sys.modules[app.__module__].__file__).parent
+
     return Path(settings.TETHYS_WORKSPACES_ROOT) / app.package
 
 
@@ -318,7 +344,12 @@ def _get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
     Returns: TethysPath representing the app workspace.
 
     """
-    app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
+    if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
+        return get_app_workspace_old(app_or_request)
+
+    app = _resolve_app_class(app_or_request)
+    if not bypass_quota:
+        _check_app_quota(app_or_request)
     return TethysPath(_get_app_workspace_root(app) / "app_workspace")
 
 
@@ -356,8 +387,15 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
     Returns: TethysPath representing the user workspace.
 
     """
-    app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
-    username = _resolve_username(user_or_request, bypass_quota=bypass_quota)
+    app = _resolve_app_class(app_or_request)
+    username = _resolve_user(user_or_request).username
+
+    if not bypass_quota:
+        _check_user_quota(user_or_request)
+
+    if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
+        return get_user_workspace_old(app, user_or_request)
+
     return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
 
 
@@ -416,7 +454,10 @@ def _get_app_media(app_or_request, bypass_quota=False):
     Returns: TethysPath representing the media directory for the app.
 
     """
-    app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
+    app = _resolve_app_class(app_or_request)
+    if not bypass_quota:
+        _check_app_quota(app_or_request)
+
     return TethysPath(_get_app_media_root(app) / "app")
 
 
@@ -454,8 +495,12 @@ def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
     Returns: TethysPath representing the user's media directory for the app.
 
     """
-    app = _resolve_app_class(app_or_request, bypass_quota=bypass_quota)
-    username = _resolve_username(username_or_request, bypass_quota=bypass_quota)
+    app = _resolve_app_class(app_or_request)
+    username = _resolve_user(username_or_request).username
+
+    if not bypass_quota:
+        _check_user_quota(username_or_request)
+
     return TethysPath(_get_app_media_root(app) / "user" / username)
 
 
@@ -491,7 +536,7 @@ def get_app_resources(app_or_request):
     Returns: TethysPath representing the public directory of the app (or extension).
 
     """
-    app = _resolve_app_class(app_or_request, bypass_quota=True)
+    app = _resolve_app_class(app_or_request)
     return app.resources_path
 
 
@@ -509,7 +554,7 @@ def get_app_public(app_or_request):
     Returns: TethysPath representing the public directory of the app (or extension).
 
     """
-    app = _resolve_app_class(app_or_request, bypass_quota=True)
+    app = _resolve_app_class(app_or_request)
     return app.public_path
 
 
