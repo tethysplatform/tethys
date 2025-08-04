@@ -9,37 +9,15 @@ Recipes
         <input type="text" id="recipe-tag-search-bar" placeholder="Search..." />
     </div>
 
-multi-row
----------
 
 .. recipe-gallery::
     :layout: multi-row
     
-    recipes/example_recipe images/recipes/address_searching.png [search, address, location, map, geocoding]
-    recipes/example_recipe images/recipes/arcgis_layer.png [arcgis, layer, map, map_layout]
-    recipes/example_recipe images/recipes/forms.png [forms, input, user_input, data]
-    recipes/example_recipe images/recipes/geojson_layer.png [geojson, layer, map, map_layout]
-    recipes/example_recipe images/recipes/map_layout.png [map, layout, map_layout]
-    recipes/example_recipe images/recipes/plot_points.png [plot, points, map, map_layout, graph, data]
-    recipes/example_recipe images/recipes/popup.png [popup, map, map_layout]
-    recipes/example_recipe images/recipes/spatial_data.png [spatial, data, map, map_layout]
-    recipes/example_recipe images/recipes/vector_layer.png [vector, layer, map, map_layout]
-    recipes/example_recipe images/recipes/wms_layer.png [wms, layer, map, map_layout]
+    recipes/scaffold_an_app images/recipes/scaffold_pic.png [scaffold, app, new_app]
+    recipes/add_map_layout images/recipes/map_layout.png [map, app, new_app]
+    recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
+    recipes/create_new_page images/recipes/new_page.png [page, app, new_app]
+    recipes/add_navigation_buttons images/recipes/app_navigation_menu.png [navigation, app, new_app]
+    recipes/get_user_input images/recipes/arcgis_layer.png 
+    recipes/use_databases images/recipes/arcgis_layer.png
 
-Carousel 
--------- 
-
-.. recipe-gallery::
-    :layout: carousel
-      
-    recipes/example_recipe images/recipes/address_searching.png [search, address, location, map, geocoding]
-    recipes/example_recipe images/recipes/arcgis_layer.png [arcgis, layer, map, map_layout]
-    recipes/example_recipe images/recipes/forms.png [forms, input, user_input, data]+
-    recipes/example_recipe images/recipes/geojson_layer.png [geojson, layer, map, map_layout]
-    recipes/example_recipe images/recipes/map_layout.png [map, layout, map_layout]
-    recipes/example_recipe images/recipes/plot_points.png [plot, points, map, map_layout, graph, data]
-    recipes/example_recipe images/recipes/popup.png [popup, map, map_layout]
-    recipes/example_recipe images/recipes/spatial_data.png [spatial, data, map, map_layout]
-    recipes/example_recipe images/recipes/vector_layer.png [vector, layer, map, map_layout]
-    recipes/example_recipe images/recipes/wms_layer.png [wms, layer, map, map_layout]
-    

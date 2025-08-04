@@ -15,6 +15,7 @@ import logging
 from functools import partial
 from tethys_components import utils
 from tethys_components import custom as custom_components
+from importlib import import_module
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
@@ -74,7 +75,7 @@ class _ReactPyElementWrapper:
                     kwargs[k] = utils.args_to_dot_notation_dicts(v)
             # Custom ReactPy
             if self.component.startswith("ol") and any(
-                x in self.component for x in ["ol.source", "ol.layer"]
+                x in self.component for x in ["ol.source", "ol.layer", "ol.View"]
             ):
                 args = [{"options": utils.Props(**kwargs)}]
             else:
@@ -301,6 +302,10 @@ class ComponentLibrary:
                     "https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css",
                 ],
             ),
+            "pl": Package(
+                name="plotly-chart.js",
+                host="/static/tethys_apps/js",
+            ),
             "ol": Package(
                 name="@planet/maps@11.2.0",
                 default_export="*",
@@ -342,9 +347,12 @@ class ComponentLibrary:
                 package=getattr(self.CURATED_PACKAGES, package_accessor).copy(),
             )
         else:
-            raise AttributeError(
-                f"No package is registered at accessor {package_accessor} on {self.name} ComponentLibrary."
-            )
+            try:
+                package = import_module(package_accessor)
+            except ModuleNotFoundError:
+                raise AttributeError(
+                    f"No package is registered at accessor {package_accessor} on {self.name} ComponentLibrary."
+                )
 
         setattr(self, package_accessor, package)
         return package
@@ -378,34 +386,50 @@ class ComponentLibrary:
         Registers a new package to be used by the ComponentLibrary
 
         Args:
-            package(str): The name of the package to register. The version is optional, and if included
-                should be of the format "@X.Y.Z". The package must be found at https://esm.sh, and can
-                be verified there by checking https://esm.sh/<package_name>
-                (i.e. https://esm.sh/reactive-button@1.3.15)
-            accessor(str): The name that will be used to access the package on the ComponentLibrary
-                (i.e. the "X" in lib.X.ComponentName)
-            styles(list<str>): The full URL path to styles that are required for this new component
-                library to render correctly
+            package(str): The name of the package to register. The version is optional, and if included should be of the format "@X.Y.Z". The package must be found at https://esm.sh, and can be verified there by checking https://esm.sh/<package_name> (e.g. https://esm.sh/reactive-button)
+            accessor(str): The unique name that will be used to access the package on the ComponentLibrary (i.e. the "X" in lib.X.ComponentName)
+            styles(list<str>): The full URL path to styles that are required for this new component library to render correctly
             default_export(str): The name of the default export if it will be used directly
 
-        Example:
-            @App.page
-            def test_reactive_button(lib):
-                lib.register('reactive-button@1.3.15', 'rb', default_export="ReactiveButton")
-                state, set_state = hooks.use_state('idle');
+        **Examples:**
 
-                def on_click_handler(event=None):
-                    set_state('loading')
+            .. code-block:: python
 
-                return lib.rb.ReactiveButton(
-                    Props(
+                @App.page
+                def test_reactive_button(lib):
+                    lib.register(
+                        'reactive-button@1.3.15',
+                        'rb',
+                        default_export="ReactiveButton"
+                    )
+                    state, set_state = hooks.use_state('idle');
+
+                    def on_click_handler(event=None):
+                        set_state('loading')
+
+                    return lib.rb.ReactiveButton(
                         buttonState=state,
                         idleText="Submit",
                         loadingText="Loading",
                         successText="Done",
                         onClick=on_click_handler
                     )
-                )
+
+            .. code-block:: python
+
+                @App.page
+                def test_react_grid_layout(lib):
+                    lib.register(
+                        'react-grid-layout',
+                        'rgl',
+                        styles=[
+                            'https://esm.sh/react-resizable/css/styles.css',
+                            'https://esm.sh/react-grid-layout/css/styles.css'
+                        ],
+                        default_export="GridLayout"
+                    )
+
+                    return lib.rgl.GridLayout(...)
         """
         new_package = Package(
             name=package, styles=styles, default_export=default_export
@@ -441,7 +465,7 @@ class ComponentLibrary:
         Significant shortcoming: If someone has a custom component that itself has newly referenced
         library packages nested in conditional logic, these will not be picked up with this method.
         To solve this, we'd need to write a function crawler of sorts that is able to traverse the
-        entire
+        entire potential logic tree of a function and find all calls to the component library.
 
         Like the "refresh" function above, this is only called in on single place:
         tethys_apps/base/page_handler.py in the global_page_controller
@@ -540,17 +564,10 @@ class DynamicPackageManager:
         _component = self.component
 
         if self.package.accessor == "ol":
-            if any(
-                _component.startswith(x) for x in ["source", "control"]
-            ) or _component in ["Map", "View"]:
-                _component += "." + component_parts[-1]
-            elif _component.startswith("layer"):
-                if "Group" in _component:
-                    _component += ".LayerGroup"
-                elif "Image" in _component:
-                    _component += ".ImageLayer"
-                else:
-                    _component += ".VectorLayer"
+            _component += "." + component_parts[-1]
+            if len(component_parts) > 1:
+                _component += component_parts[-2].capitalize()
+
             component_parts = _component.split(".")  # Recalc in case changed
 
         if self.package.treat_as_path:
