@@ -22,7 +22,7 @@ Chown_Portal_Config_Post_App:
 
 Collect_Static:
   cmd.run:
-    - name: tethys manage collectstatic --noinput
+    - name: tethys manage collectstatic --noinput --clear
     - shell: /bin/bash
 
 Collect_Workspaces:
