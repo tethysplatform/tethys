@@ -37,5 +37,4 @@ include = ["*"]
     "templates/**/*",
     "public/**/*",
     "resources/**/*",
-    "workspaces/**/*"
 ]
