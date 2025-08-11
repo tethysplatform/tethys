@@ -6,19 +6,19 @@
 name: tethys-docs
 
 channels:
-  - conda-forge
+- conda-forge
 
 dependencies:
-  - python
-  - pip
-  - tethys_dataset_services >=2.0.0
-  - django =4.2.*
-  - sphinx
-  - sphinx-argparse
-  - make
-  - setuptools_scm
-  - pip:
-      - sphinxawesome-theme
-      - sphinx-autobuild
-      - sphinx_autodoc_typehints
-      - sphinx-tabs
+- python <3.13
+- pip
+- tethys_dataset_services >=2.0.0
+- django =4.2.*
+- sphinx
+- sphinx-argparse
+- make
+- setuptools_scm
+- pip:
+  - sphinxawesome-theme
+  - sphinx-autobuild
+  - sphinx_autodoc_typehints
+  - sphinx-tabs
