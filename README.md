@@ -1,5 +1,7 @@
-![Tethys Platform Logo](docs/images/features/tethys-on-white.svg#gh-light-mode-only)
-![Tethys Platform Logo](docs/images/features/tethys-on-blue.svg#gh-dark-mode-only)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tethysplatform/tethys/main/docs/images/features/tethys-on-blue.svg">
+  <img alt="Tethys Platform Logo" src="https://raw.githubusercontent.com/tethysplatform/tethys/main/docs/images/features/tethys-on-white.svg">
+</picture>
 
 [![Test Status](https://github.com/tethysplatform/tethys/actions/workflows/tethys.yml/badge.svg)](https://github.com/tethysplatform/tethys/actions)
 [![Coverage Status](https://coveralls.io/repos/github/tethysplatform/tethys/badge.svg?branch=main)](https://coveralls.io/github/tethysplatform/tethys?branch=main)
