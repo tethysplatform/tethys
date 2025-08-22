@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tethys-platform"
 description =  "Primary Tethys Platform Django Site Project"
-readme = "README.rst"
+readme = "README.md"
 license-files = ["LICENSE"]
 keywords = ["web app", "scientific", "geospatial"]
 authors = [
