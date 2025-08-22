@@ -13,6 +13,10 @@ on:
   schedule:
   - cron: "0 0 * * 0" # weekly
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   CONDA_BUILD_PIN_LEVEL: minor
   DOCKER_UPLOAD_URL: tethysplatform/tethys-core
