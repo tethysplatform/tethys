@@ -1,5 +1,4 @@
 import inspect
-import unittest
 from json import dumps
 from pathlib import Path
 from tethys_components import custom, layouts
