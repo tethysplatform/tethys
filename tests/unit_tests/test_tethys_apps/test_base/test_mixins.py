@@ -213,7 +213,7 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         self.consumer = tethys_mixins.TethysWebsocketConsumerMixin()
         self.consumer.accept = mock.MagicMock()
         self.consumer.permissions = ["test_permission"]
-        self.consumer.scope = {"user": UserFactory(), "path": "path/to/app"}
+        self.consumer.scope = {"user": UserFactory(), "path": "/apps/test-app/"}
 
     def tearDown(self):
         pass
@@ -253,13 +253,11 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         }
         self.assertFalse(self.consumer.authorized)
 
-    @unittest.skip("Tests stalls in CI")
     def test_authorized_permissions_and(self):
         self.consumer.permissions = ["test_permission"]
         with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
             self.assertTrue(self.consumer.authorized)
 
-    @unittest.skip("Tests stalls in CI")
     def test_authorized_inadequate_permissions_and(self):
         self.consumer.permissions = ["test_permission", "test_permission1"]
         with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
@@ -271,7 +269,6 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         with mock.patch("tethys_apps.base.mixins._has_permission", user_has_perms):
             self.assertTrue(self.consumer.authorized)
 
-    @unittest.skip("Tests stalls in CI")
     def test_authorized_inadequate_permissions_or(self):
         self.consumer.permissions = ["test_permission1"]
         self.consumer.permissions_use_or = True
