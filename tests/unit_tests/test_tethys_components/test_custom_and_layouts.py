@@ -80,7 +80,6 @@ class TestCustomComponents(TestCase):
         with self.assertRaises(ValueError):
             custom.Panel(mock_lib, anchor="fail")
 
-    # @unittest.skip("Tests stalls in CI")
     def test_panel_special_case_2(self):
         mock_lib = mock.MagicMock()
         mock_lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
@@ -89,7 +88,6 @@ class TestCustomComponents(TestCase):
         style.__setitem__.assert_called_once_with("height", "500px")
         mock_lib.hooks.use_state.assert_called_once()
 
-    # @unittest.skip("Tests stalls in CI")
     def test_panel_special_case_3(self):
         proof = mock.MagicMock()
 
