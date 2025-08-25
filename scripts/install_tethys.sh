@@ -371,7 +371,7 @@ then
         sudo sed -i.bak "s/django>=.*/django=${DJANGO_VERSION}/" "${TETHYS_SRC}/generated_environment.yml"
         conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/generated_environment.yml"
         conda activate ${CONDA_ENV_NAME}
-        pip install -e --no-deps ${TETHYS_SRC}
+        pip install --no-deps -e ${TETHYS_SRC}
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
         conda activate ${CONDA_ENV_NAME}
