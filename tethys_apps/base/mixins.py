@@ -1,4 +1,3 @@
-from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 
 from .permissions import _has_permission
@@ -161,7 +160,7 @@ class TethysWebsocketConsumerMixin(TethysAsyncWebsocketConsumerMixin):
     """
     Provides methods and properties common to Tethys websocket consumers.
     """
-    
+
     def _authorize_sync(self):
         """Sync version of authorization check"""
         if self.login_required and not self.scope["user"].is_authenticated:
@@ -169,8 +168,7 @@ class TethysWebsocketConsumerMixin(TethysAsyncWebsocketConsumerMixin):
         else:
             # Use sync permission check directly
             perm_values = [
-                _has_permission(self.active_app, self.user, perm)
-                for perm in self.perms
+                _has_permission(self.active_app, self.user, perm) for perm in self.perms
             ]
             self._authorized = (
                 any(perm_values) if self.permissions_use_or else all(perm_values)
