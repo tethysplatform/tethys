@@ -66,6 +66,9 @@ jobs:
           - platform: macos-latest
             python-version: 3.12
             django-version: 5.2
+        exclude:
+          - python-version: 3.13
+            django-version: 3.2
     steps:
     # Checkout the source
     - name: Checkout Source
