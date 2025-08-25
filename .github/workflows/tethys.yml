@@ -65,7 +65,10 @@ jobs:
         include:
           - platform: "macos-latest"
             python-version: "3.13"
-            django-version: ["4.2", "5.2"]
+            django-version: "4.2"
+          - platform: "macos-latest"
+            python-version: "3.13"
+            django-version: "5.2"
         exclude:
           - python-version: "3.13"
             django-version: "3.2"
