@@ -59,16 +59,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ ubuntu-latest]
+        platform: [ "ubuntu-latest" ]
         python-version: [ "3.10", "3.11", "3.12", "3.13" ]
         django-version: [ "3.2", "4.2", "5.2" ]
         include:
-          - platform: macos-latest
-            python-version: 3.12
-            django-version: 5.2
+          - platform: "macos-latest"
+            python-version: "3.12"
+            django-version: "5.2"
         exclude:
-          - python-version: 3.13
-            django-version: 3.2
+          - python-version: "3.13"
+            django-version: "3.2"
     steps:
     # Checkout the source
     - name: Checkout Source
