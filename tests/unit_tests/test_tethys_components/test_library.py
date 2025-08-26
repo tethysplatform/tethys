@@ -89,7 +89,19 @@ class TestComponentLibrary(TestCase):
 
     def test_load_dependencies_from_source_code_skips_bad_match(self):
         lib = library.ComponentLibrary("test456")
-        lib.load_dependencies_from_source_code("foo bar lib.does_not_exist(999)")
+        with mock.patch("builtins.print") as mock_print:
+            lib.load_dependencies_from_source_code("foo bar lib.does_not_exist(999)")
+            # Verify print was called twice (once for the match, once for the exception)
+            self.assertEqual(mock_print.call_count, 2)
+            # Check the expected print calls
+            mock_print.assert_any_call("Couldn't process match does_not_exist")
+            # The second call should be the exception, we'll just check it was called
+            call_args_list = mock_print.call_args_list
+            exception_printed = any(
+                "AttributeError" in str(call) or "does_not_exist" in str(call)
+                for call in call_args_list
+            )
+            self.assertTrue(exception_printed)
         self.assertFalse(hasattr(lib, "does_not_exist"))
 
     def test_attempt_at_incorrect_tethys_component(self):

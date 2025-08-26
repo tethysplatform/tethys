@@ -13,6 +13,10 @@ on:
   schedule:
   - cron: "0 0 * * 0" # weekly
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   CONDA_BUILD_PIN_LEVEL: minor
   DOCKER_UPLOAD_URL: tethysplatform/tethys-core
@@ -55,9 +59,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ ubuntu-latest, macos-latest ]
-        python-version: [ "3.10", "3.11", "3.12" ]
+        platform: [ "ubuntu-latest" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
         django-version: [ "3.2", "4.2", "5.2" ]
+        include:
+          - platform: "macos-latest"
+            python-version: "3.13"
+            django-version: "4.2"
+          - platform: "macos-latest"
+            python-version: "3.13"
+            django-version: "5.2"
+        exclude:
+          - python-version: "3.13"
+            django-version: "3.2"
     steps:
     # Checkout the source
     - name: Checkout Source
