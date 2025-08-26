@@ -37,7 +37,7 @@ class TethysPortalTethysAppTests(unittest.TestCase):
             expected_context,
         )
 
-    @mock.patch("tethys_portal.views.admin.get_app_media")
+    @mock.patch("tethys_portal.views.admin._get_app_media")
     @mock.patch("tethys_apps.base.paths._get_app_workspace")
     @mock.patch("tethys_portal.views.admin.get_app_class")
     @mock.patch("tethys_portal.views.admin.TethysApp")
