@@ -213,7 +213,7 @@ class TestTethysWebsocketConsumer(unittest.TestCase):
         self.consumer = tethys_mixins.TethysWebsocketConsumerMixin()
         self.consumer.accept = mock.MagicMock()
         self.consumer.permissions = ["test_permission"]
-        self.consumer.scope = {"user": UserFactory(), "path": "path/to/app"}
+        self.consumer.scope = {"user": UserFactory(), "path": "/apps/test-app/"}
 
     def tearDown(self):
         pass
