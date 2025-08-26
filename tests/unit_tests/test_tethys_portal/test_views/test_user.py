@@ -524,7 +524,7 @@ class TethysPortalUserTests(unittest.TestCase):
             mock_request, "tethys_portal/user/clear_workspace.html", expected_context
         )
 
-    @mock.patch("tethys_portal.views.user.get_user_media")
+    @mock.patch("tethys_portal.views.user._get_user_media")
     @mock.patch("tethys_portal.views.user._get_user_workspace")
     @mock.patch("tethys_portal.views.user.get_app_class")
     @mock.patch("tethys_portal.views.user.TethysApp")
