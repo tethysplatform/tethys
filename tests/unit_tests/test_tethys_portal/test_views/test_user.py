@@ -484,7 +484,7 @@ class TethysPortalUserTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_quotas.utilities.log")
-    @mock.patch("tethys_portal.views.user.get_user_workspace")
+    @mock.patch("tethys_portal.views.user._get_user_workspace")
     @mock.patch("tethys_portal.views.user._convert_storage_units")
     @mock.patch("tethys_portal.views.user.SingletonHarvester")
     @mock.patch("tethys_portal.views.user.render")
@@ -525,7 +525,7 @@ class TethysPortalUserTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_portal.views.user.get_user_media")
-    @mock.patch("tethys_portal.views.user.get_user_workspace")
+    @mock.patch("tethys_portal.views.user._get_user_workspace")
     @mock.patch("tethys_portal.views.user.get_app_class")
     @mock.patch("tethys_portal.views.user.TethysApp")
     @mock.patch("tethys_portal.views.user.messages.success")
