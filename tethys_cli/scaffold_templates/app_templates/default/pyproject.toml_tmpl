@@ -28,17 +28,13 @@ dynamic = ["version"]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["tethysapp*"]
+where = ["."]
+include = ["*"]
 
 [tool.setuptools.package-data]
-"*" = [
-    "*.js",
-    "*.png",
-    "*.gif",
-    "*.jpg",
-    "*.html",
-    "*.css",
-    "*.gltf",
-    "*.json",
-    "*.svg",
+"tethysapp.{{project}}" = [
+    "templates/**/*",
+    "public/**/*",
+    "resources/**/*",
+    "workspaces/**/*"
 ]
