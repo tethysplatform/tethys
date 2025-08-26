@@ -55,10 +55,13 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         mock_request = mock.MagicMock(method="POST", POST="clear-workspace-submit")
         app = mock.MagicMock()
         app.name = "app_name"
+
+        app = TethysApp(name="app_name")
+        
         mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
 
-        clear_workspace(mock_request, "myapp")
+        clear_workspace(mock_request, app.id)
 
         mock_message.assert_called_once_with(
             mock_request,
