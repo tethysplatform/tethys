@@ -177,15 +177,15 @@ def test_command(args):
         except Exception:
             webbrowser.open_new_tab(str(tests_path / report_dirname / index_fname))
 
-    # Removing Test App
-    try:
-        subprocess.run(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
-    except Exception:
-        pass
+    # # Removing Test App
+    # try:
+    #     subprocess.run(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
+    # except Exception:
+    #     pass
 
-    try:
-        subprocess.run(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
-    except Exception:
-        pass
+    # try:
+    #     subprocess.run(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
+    # except Exception:
+    #     pass
 
     exit(test_status)

@@ -34,6 +34,7 @@ from tethys_portal.views import (
     admin as tethys_portal_admin,
     psa as tethys_portal_psa,
     email as tethys_portal_email,
+    app_lifecycle,
 )
 from tethys_portal.optional_dependencies import has_module
 from tethys_apps import views as tethys_apps_views
@@ -84,6 +85,24 @@ admin_url_list.insert(
         tethys_portal_admin.clear_workspace,
         name="clear_workspace",
     ),
+)
+
+# Add build app
+admin_url_list.insert(
+    0,
+    re_path(
+        r"^remove_app/(?P<app_id>[0-9]+)/$",
+        app_lifecycle.remove_app,
+        name="remove_app",
+    ),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^create_app/$", app_lifecycle.create_app, name="create_app"),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^import_app/$", app_lifecycle.import_app, name="import_app"),
 )
 
 # Recreate admin.site.urls tuple
