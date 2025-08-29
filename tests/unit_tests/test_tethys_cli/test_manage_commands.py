@@ -74,7 +74,7 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual(sys.executable, process_call_args[1][0][0][0])
         self.assertIn("manage.py", process_call_args[1][0][0][1])
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
-        self.assertNotIn("--noinput", process_call_args[1][0][0])
+        self.assertIn("--noinput", process_call_args[1][0][0])
 
     @mock.patch("tethys_cli.manage_commands.run_process")
     def test_manage_command_manage_manage_collectstatic_with_no_input(
@@ -95,6 +95,33 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
+
+        # primary process
+        self.assertEqual(sys.executable, process_call_args[1][0][0][0])
+        self.assertIn("manage.py", process_call_args[1][0][0][1])
+        self.assertEqual("collectstatic", process_call_args[1][0][0][2])
+        self.assertEqual("--noinput", process_call_args[1][0][0][3])
+
+    @mock.patch("tethys_cli.manage_commands.run_process")
+    def test_manage_command_manage_manage_collectstatic_with_clear(
+        self, mock_run_process
+    ):
+        # mock the input args
+        args = mock.MagicMock(
+            manage="", command=MANAGE_COLLECTSTATIC, port="8080", clear=True, link=False
+        )
+
+        # call the testing method with the mock args
+        manage_commands.manage_command(args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # intermediate process
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
+        self.assertIn("manage.py", process_call_args[0][0][0][1])
+        self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
+        self.assertEqual("--clear", process_call_args[0][0][0][3])
 
         # primary process
         self.assertEqual(sys.executable, process_call_args[1][0][0][0])
@@ -165,7 +192,7 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual(sys.executable, process_call_args[1][0][0][0])
         self.assertIn("manage.py", process_call_args[1][0][0][1])
         self.assertEqual("collectstatic", process_call_args[1][0][0][2])
-        self.assertNotIn("--noinput", process_call_args[1][0][0])
+        self.assertIn("--noinput", process_call_args[1][0][0])
 
         # collectworkspaces
         self.assertEqual(sys.executable, process_call_args[2][0][0][0])
@@ -190,6 +217,37 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual(sys.executable, process_call_args[0][0][0][0])
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
+
+        # collectstatic
+        self.assertEqual(sys.executable, process_call_args[1][0][0][0])
+        self.assertIn("manage.py", process_call_args[1][0][0][1])
+        self.assertEqual("collectstatic", process_call_args[1][0][0][2])
+        self.assertEqual("--noinput", process_call_args[1][0][0][3])
+
+        # collectworkspaces
+        self.assertEqual(sys.executable, process_call_args[2][0][0][0])
+        self.assertIn("manage.py", process_call_args[2][0][0][1])
+        self.assertEqual("collectworkspaces", process_call_args[2][0][0][2])
+
+    @mock.patch("tethys_cli.manage_commands.deprecation_warning")
+    @mock.patch("tethys_cli.manage_commands.run_process")
+    def test_manage_command_manage_manage_collect_clear(self, mock_run_process, _):
+        # mock the input args
+        args = mock.MagicMock(
+            manage="", command=MANAGE_COLLECT, port="8080", clear=True
+        )
+
+        # call the testing method with the mock args
+        manage_commands.manage_command(args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # pre_collectstatic
+        self.assertEqual(sys.executable, process_call_args[0][0][0][0])
+        self.assertIn("manage.py", process_call_args[0][0][0][1])
+        self.assertEqual("pre_collectstatic", process_call_args[0][0][0][2])
+        self.assertEqual("--clear", process_call_args[0][0][0][3])
 
         # collectstatic
         self.assertEqual(sys.executable, process_call_args[1][0][0][0])
