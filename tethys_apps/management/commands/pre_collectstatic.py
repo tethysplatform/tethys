@@ -35,7 +35,7 @@ class Command(BaseCommand):
             "--clear",
             action="store_true",
             default=False,
-            help="Clear the STATIC_ROOT directory before collecting static files."
+            help="Clear the STATIC_ROOT directory before collecting static files.",
         )
 
     def handle(self, *args, **kwargs):
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                     shutil.rmtree(item)
                 else:
                     item.unlink()
-            print('INFO: Cleared STATIC_ROOT directory.')
+            print("INFO: Cleared STATIC_ROOT directory.")
 
         # Get a list of installed apps and extensions
         installed_apps_and_extensions = get_installed_tethys_items(
