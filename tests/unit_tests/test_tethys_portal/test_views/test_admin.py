@@ -37,9 +37,8 @@ class TethysPortalTethysAppTests(unittest.TestCase):
             expected_context,
         )
 
-    @mock.patch("tethys_portal.views.admin._get_app_media")
-    @mock.patch("tethys_apps.base.paths._get_app_workspace")
-    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_portal.views.admin.get_app_media")
+    @mock.patch("tethys_portal.views.admin.get_app_workspace")
     @mock.patch("tethys_portal.views.admin.get_app_class")
     @mock.patch("tethys_portal.views.admin.TethysApp")
     @mock.patch("tethys_portal.views.admin.messages.success")
@@ -50,17 +49,13 @@ class TethysPortalTethysAppTests(unittest.TestCase):
         mock_message,
         mock_app,
         mock_get_app_class,
-        mock_resolve_app_class,
         _,
         __,
     ):
         mock_request = mock.MagicMock(method="POST", POST="clear-workspace-submit")
-        app_class = mock.MagicMock()
-        app_class.name = "app_name"
-        app = TethysApp(name="app_name", package="myapp")
-
-        mock_get_app_class.return_value = app_class
-        mock_resolve_app_class.return_value = app
+        app = mock.MagicMock()
+        app.name = "app_name"
+        mock_get_app_class.return_value = app
         mock_app.objects.get.return_value = app
 
         clear_workspace(mock_request, "myapp")

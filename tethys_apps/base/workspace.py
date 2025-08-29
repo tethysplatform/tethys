@@ -366,10 +366,7 @@ def _get_app_workspace(app_class):
     Returns:
       tethys_apps.base.TethysWorkspace: An object representing the workspace.
     """
-    from tethys_apps.utilities import get_app_class
-
-    app = get_app_class(app_class)
-    project_directory = Path(sys.modules[app.__module__].__file__).parent
+    project_directory = Path(sys.modules[app_class.__module__].__file__).parent
     workspace_directory = project_directory / "workspaces" / "app_workspace"
     return TethysWorkspace(str(workspace_directory))
 
@@ -404,7 +401,7 @@ def get_app_workspace_old(app_or_request) -> TethysWorkspace:
 
     # Get the active app
     if isinstance(app_or_request, HttpRequest):
-        app = get_active_app(app_or_request, get_class=False)
+        app = get_active_app(app_or_request, get_class=True)
     elif isinstance(app_or_request, TethysAppBase) or (
         isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)
     ):
@@ -415,8 +412,7 @@ def get_app_workspace_old(app_or_request) -> TethysWorkspace:
             f'"{type(app_or_request)}" given.'
         )
 
-    # Accessed when uploading to workspace
-    assert passes_quota(app, "tethysapp_workspace_quota")
+    assert passes_quota(app, "app_workspace_quota")
 
     return _get_app_workspace(app)
 
