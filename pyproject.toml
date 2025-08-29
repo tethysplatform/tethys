@@ -42,6 +42,10 @@ dependencies = [
     "django-guardian",
 ]
 
+[project.optional-dependencies]
+test = ["pytest", "pytest-django"]
+lint = ["flake8", "black"]
+
 [project.urls]
 homepage = "http://tethysplatform.org/"
 documentation = "http://docs.tethysplatform.org/en/stable/"
