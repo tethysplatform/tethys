@@ -1,5 +1,4 @@
 {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
-{% set STATIC_RESET = salt['environ.get']('STATIC_RESET') %}
 {% set WORKSPACE_ROOT = salt['environ.get']('WORKSPACE_ROOT') %}
 {% set MEDIA_ROOT = salt['environ.get']('MEDIA_ROOT') %}
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
@@ -24,13 +23,9 @@ Create_Workspace_Root_On_Mounted_Pre_Tethys:
 
 Create_Media_Root_On_Mounted_Pre_Tethys:
   cmd.run:
-    - name: >
-        echo {{ STATIC_ROOT }}
-        ls -l {{ STATIC_ROOT }}
-        echo {{ STATIC_RESET }}
-        mkdir -p {{ MEDIA_ROOT }}
+    - name: mkdir -p {{ MEDIA_ROOT }}
     - shell: /bin/bash
-    - unless: /bin/bash -c "[[ ! -d \"${STATIC_ROOT}\" || \"${STATIC_RESET,,}\" != \"true\" ]]"
+    - unless: /bin/bash -c "[ -d "${MEDIA_ROOT}" ];"
 
 Chown_Static_Workspaces_On_Mounted_Pre_Tethys:
   cmd.run:
