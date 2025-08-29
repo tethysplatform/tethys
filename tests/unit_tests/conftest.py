@@ -68,11 +68,13 @@ def remove_prereqs():
 
 @pytest.fixture(scope="session")
 def test_dir():
+    """Get path to the 'tests' directory"""
     return Path(__file__).parents[1].resolve()
 
 
 @pytest.fixture(scope="session", autouse=True)
-def setup_test_apps(test_dir):
+def global_setup_and_teardown(test_dir):
+    """Install and remove test apps and extensions before and after tests run."""
     install_prereqs(test_dir)
     yield
     remove_prereqs()
