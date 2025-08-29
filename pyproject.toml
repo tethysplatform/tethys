@@ -45,7 +45,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-django"]
+test = ["pytest", "pytest-django", "pytest-cov", "requests_mock"]
 lint = ["flake8", "black"]
 
 [project.urls]
@@ -65,3 +65,11 @@ include = ["tethys_*"]
 
 [tool.setuptools]
 package-data = {"*" = ["*"]}
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tethys_portal.settings"
+addopts = "--cov"
+testpaths = ["tests/unit_tests/"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

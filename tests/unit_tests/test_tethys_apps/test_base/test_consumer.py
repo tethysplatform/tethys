@@ -4,13 +4,14 @@ from os import environ
 
 from tethys_sdk.testing import TethysTestCase
 from channels.testing import WebsocketCommunicator
-from tethysapp.test_app.controllers import TestWS
 
 from django.conf import settings
 
 
 class TestConsumer(TethysTestCase):
     def test_consumer(self):
+        from tethysapp.test_app.controllers import TestWS
+
         event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(event_loop)
 
