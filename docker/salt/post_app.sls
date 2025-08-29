@@ -24,11 +24,7 @@ Chown_Portal_Config_Post_App:
 
 Clear_Static:
   cmd.run:
-    - name: >
-        echo {{ STATIC_ROOT }}
-        ls -l {{ STATIC_ROOT }}
-        echo {{ STATIC_ROOT_RESET }}
-        rm -rf {{ STATIC_ROOT }}/*
+    - name: rm -rf {{ STATIC_ROOT }}/*
     - shell: /bin/bash
     - unless: /bin/bash -c "[[ ! -d \"${STATIC_ROOT}\" || \"${STATIC_ROOT_RESET,,}\" != \"true\" ]]"
 
