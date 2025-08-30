@@ -1,3 +1,4 @@
+import pytest
 import datetime as dt
 import unittest
 from unittest import mock
@@ -48,6 +49,7 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
     @override_settings(MULTIPLE_APP_MODE=False)
     @mock.patch("termsandconditions.models.TermsAndConditions")
     @mock.patch("tethys_config.models.Setting")
+    @pytest.mark.django_db
     def test_tethys_global_settings_context_single_app_mode(
         self, mock_setting, mock_terms
     ):

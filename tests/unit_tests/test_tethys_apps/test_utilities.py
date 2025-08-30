@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -32,6 +33,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates(self):
         # Get the templates directories for the test_app and test_extension
         result = utilities.get_directories_in_tethys(("templates",))
@@ -58,6 +60,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertTrue(test_app)
         self.assertTrue(test_ext)
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates_with_app_name(self):
         # Get the templates directories for the test_app and test_extension
         # Use the with_app_name argument, so that the app and extension names appear in the result
@@ -92,6 +95,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertTrue(test_ext)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates_extension_import_error(
         self, mock_harvester
     ):
@@ -149,6 +153,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_directories_in_tethys(("foo",))
         self.assertEqual(0, len(result))
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_foo_public(self):
         # Get the foo and public directories for the test_app and test_extension
         # foo doesn't exist, but public will
@@ -853,6 +858,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual("good_path", ret)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
+    @pytest.mark.django_db
     def test_get_app_class(self, mock_harvester):
         """"""
         from tethysapp.test_app.app import App
@@ -870,6 +876,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertTrue(ret is test_app)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
+    @pytest.mark.django_db
     def test_get_app_class__different_name(self, mock_harvester):
         """Test case when user changes name of app in DB (from app settings)."""
         from tethysapp.test_app.app import App
@@ -887,6 +894,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertTrue(ret is test_app)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
+    @pytest.mark.django_db
     def test_get_app_class__no_matching_class(self, mock_harvester):
         """Test case when no app class can be found for the app."""
         from tethysapp.test_app.app import App
@@ -916,6 +924,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         self.user.delete()
 
     @mock.patch("django.conf.settings")
+    @pytest.mark.django_db
     def test_user_can_access_app(self, mock_settings):
         mock_settings.ENABLE_RESTRICTED_APP_ACCESS = False
         mock_settings.ENABLE_OPEN_PORTAL = False
@@ -961,6 +970,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         result7 = utilities.user_can_access_app(user, app)
         self.assertTrue(result7)
 
+    @pytest.mark.django_db
     def test_get_installed_tethys_items_apps(self):
         # Get list of apps installed in the tethysapp directory
         result = utilities.get_installed_tethys_items(apps=True)
@@ -971,6 +981,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         result = utilities.get_installed_tethys_items(extensions=True)
         self.assertIn("test_extension", result)
 
+    @pytest.mark.django_db
     def test_get_installed_tethys_items_both(self):
         # Get list of apps installed in the tethysapp directory
         result = utilities.get_installed_tethys_items(apps=True, extensions=True)
@@ -1064,6 +1075,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             after_content, mock_open_file.return_value
         )
 
+    @pytest.mark.django_db
     def test_get_secret_custom_settings(self):
         app_target_name = "test_app"
 
@@ -1144,6 +1156,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
         self.assertEqual(unsigned_secret, mock_val)
 
     @override_settings(MULTIPLE_APP_MODE=False)
+    @pytest.mark.django_db
     def test_get_configured_standalone_app_no_app_name(self):
         from tethys_apps.models import TethysApp
 
@@ -1156,6 +1169,7 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
             mock_tethysapp.objects.first.assert_called_once()
 
     @override_settings(MULTIPLE_APP_MODE=False, STANDALONE_APP="test_app")
+    @pytest.mark.django_db
     def test_get_configured_standalone_app_given_app_name(self):
         from tethys_apps.models import TethysApp
 

@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from pathlib import Path
@@ -24,6 +25,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.Path.is_file", return_value=True)
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_no_coverage_file_path(
         self, mock_get_manage_path, mock_run_process, _
     ):
@@ -46,6 +48,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_no_coverage_file_dot_notation(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -69,6 +72,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_unit(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = True
@@ -99,6 +103,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_unit_file_app_package(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -130,6 +135,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_html_unit_file_app_package(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -169,6 +175,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_unit_file_extension_package(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -200,6 +207,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo/bar")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_html_gui_file(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -237,6 +245,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.webbrowser.open_new_tab")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_html_gui_file_exception(
         self, mock_get_manage_path, mock_run_process, mock_open_new_tab
     ):
@@ -278,6 +287,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_unit_no_file(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False
@@ -305,6 +315,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_gui_no_file(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False
@@ -332,6 +343,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.subprocess.run")
     @mock.patch("tethysapp.test_app", new=None)
     @mock.patch("tethysext.test_extension", new=None)
+    @pytest.mark.django_db
     def test_check_and_install_prereqs(self, mock_run_process, mock_write_warning):
         tests_path = Path(TETHYS_SRC_DIRECTORY) / "tests"
         check_and_install_prereqs(tests_path)
@@ -358,6 +370,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_verbosity(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False

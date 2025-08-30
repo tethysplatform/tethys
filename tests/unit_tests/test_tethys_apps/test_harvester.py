@@ -1,3 +1,4 @@
+import pytest
 import io
 import unittest
 from unittest import mock
@@ -70,6 +71,7 @@ class HarvesterTest(unittest.TestCase):
         self.assertNotIn("Tethys Apps Loaded:", mock_stdout.getvalue())
         self.assertNotIn("test_app", mock_stdout.getvalue())
 
+    @pytest.mark.django_db
     def test_harvest_get_url_patterns(self):
         """
         Test for SingletonHarvester.get_url_patterns
@@ -198,6 +200,7 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.exception")
     @mock.patch("tethys_apps.harvester.issubclass")
+    @pytest.mark.django_db
     def test_harvest_app_instances_TypeError(
         self, mock_subclass, mock_logexception, mock_stdout
     ):
@@ -230,6 +233,7 @@ class HarvesterTest(unittest.TestCase):
         "tethysapp.test_app.app.App.registered_url_maps",
         new_callable=mock.PropertyMock,
     )
+    @pytest.mark.django_db
     def test_harvest_app_instances_load_url_patterns_exception(
         self, mock_url_maps, mock_logexception, mock_stdout
     ):
@@ -258,6 +262,7 @@ class HarvesterTest(unittest.TestCase):
         "tethysapp.test_app.app.App.registered_url_maps",
         new_callable=mock.PropertyMock,
     )
+    @pytest.mark.django_db
     def test_harvest_app_instances_load_handler_patterns_exception(
         self, mock_url_maps, mock_logexception, mock_stdout
     ):
@@ -284,6 +289,7 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
     @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
+    @pytest.mark.django_db
     def test_harvest_app_instances_programming_error(
         self, mock_permissions, mock_logwarning, mock_stdout
     ):
@@ -313,6 +319,7 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
     @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
+    @pytest.mark.django_db
     def test_harvest_app_instances_sqlite_programming_error(
         self, mock_permissions, mock_logwarning, mock_stdout
     ):
@@ -342,6 +349,7 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")
     @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
+    @pytest.mark.django_db
     def test_harvest_app_instances_object_does_not_exist(
         self, mock_permissions, mock_logwarning, mock_stdout
     ):

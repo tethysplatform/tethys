@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import types
 import tethys_apps.base.function_extractor as tethys_function_extractor
@@ -29,6 +30,7 @@ class TestTethysFunctionExtractor(unittest.TestCase):
         self.assertIs(test_func, result.function)
         self.assertTrue(result.valid)
 
+    @pytest.mark.django_db
     def test_valid(self):
         path = "test_app.model.test_initializer"
         result = tethys_function_extractor.TethysFunctionExtractor(path=path).valid
@@ -36,6 +38,7 @@ class TestTethysFunctionExtractor(unittest.TestCase):
         # Check Result
         self.assertTrue(result)
 
+    @pytest.mark.django_db
     def test_function(self):
         path = "test_app.model.test_initializer"
         result = tethys_function_extractor.TethysFunctionExtractor(path=path).function

@@ -1,3 +1,4 @@
+import pytest
 import datetime as dt
 from importlib import reload
 from unittest import mock, TestCase
@@ -306,6 +307,7 @@ class TestSettings(TestCase):
             }
         },
     )
+    @pytest.mark.django_db
     def test_additional_settings_files(self, _):
         reload(settings)
         self.assertEqual(settings.TEST_SETTING, "Test Setting")

@@ -1,3 +1,4 @@
+import pytest
 from tethys_sdk.testing import TethysTestCase
 
 import tethys_portal.asgi as asgi
@@ -46,6 +47,7 @@ class TestAsgiApplicationWithURLPrefix(TethysTestCase):
         self.reload_urlconf("tethys_apps.urls")
         pass
 
+    @pytest.mark.django_db
     def test_websocket_path(self):
         expected_path = r"^test/prefix/apps/test-app/test-app-ws/ws/$"
 
@@ -63,6 +65,7 @@ class TestAsgiApplicationWithURLPrefix(TethysTestCase):
             )
         )
 
+    @pytest.mark.django_db
     def test_handlers_path(self):
         expected_path = r"^test/prefix/apps/test-app/"
 

@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 import tempfile
 import unittest
@@ -332,6 +333,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.base.paths._get_user_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
     @override_settings(USE_OLD_WORKSPACES_API=True)
+    @pytest.mark.django_db
     def test__get_user_workspace_old(
         self, mock_get_active_app, mock__get_user_workspace_old
     ):
@@ -403,6 +405,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.base.paths.passes_quota")
     @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths.TethysPath")
+    @pytest.mark.django_db
     def test_add_path_decorator(self, mock_TethysPath, mock_ru, mock_pq, _, __):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
@@ -423,6 +426,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths.TethysPath")
+    @pytest.mark.django_db
     def test_add_path_decorator_no_user(self, mock_TethysPath, _, __, ___):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
