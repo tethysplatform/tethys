@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import json
 from unittest import mock
@@ -242,6 +243,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.TethysApp")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @pytest.mark.django_db
     def test_app_settings_list_command_object_does_not_exist(
         self, mock_pretty_output, MockTethysApp
     ):
@@ -451,6 +453,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_str(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -470,6 +473,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_int(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -487,6 +491,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_float(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -508,6 +513,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_bool(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -529,6 +535,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_json_with_variable(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -566,6 +573,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_json_with_variable_error(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -597,6 +605,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_json_with_file(
         self,
         mock_exit,
@@ -630,6 +639,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_secret(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -764,6 +774,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_set_bad_value_json_with_file(
         self,
         mock_exit,
@@ -839,6 +850,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_reset_str(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -861,6 +873,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_reset_int(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -883,6 +896,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_reset_float(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -905,6 +919,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.app_settings_commands.write_error")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_reset_bool(
         self, mock_exit, mock_write_error, mock_write_success
     ):
@@ -1014,6 +1029,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_gen_salt_strings_command_only_app(
         self,
         mock_exit,
@@ -1050,6 +1066,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_gen_salt_strings_command_only_app_and_setting(
         self,
         mock_exit,
@@ -1086,6 +1103,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_gen_salt_strings_command_error_with_setting_and_app(
         self,
         mock_exit,
@@ -1122,6 +1140,7 @@ class TestCliAppSettingsCommandTethysTestCase(TethysTestCase):
     @mock.patch("tethys_cli.app_settings_commands.write_success")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("tethys_cli.app_settings_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_app_settings_gen_salt_strings_command_all_apps(
         self,
         mock_exit,

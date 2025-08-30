@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 import tethys_cli.cli_helpers as cli_helper
@@ -12,6 +13,7 @@ class TestCliHelper(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @pytest.mark.django_db
     def test_add_geoserver_rest_to_endpoint(self):
         endpoint = "http://localhost:8181/geoserver/rest/"
         ret = cli_helper.add_geoserver_rest_to_endpoint(endpoint)
@@ -19,6 +21,7 @@ class TestCliHelper(unittest.TestCase):
 
     @mock.patch("tethys_cli.cli_helpers.pretty_output")
     @mock.patch("tethys_cli.cli_helpers.exit")
+    @pytest.mark.django_db
     def test_get_manage_path_error(self, mock_exit, mock_pretty_output):
         # mock the system exit
         mock_exit.side_effect = SystemExit
@@ -32,6 +35,7 @@ class TestCliHelper(unittest.TestCase):
         mock_exit.assert_called_with(1)
         mock_pretty_output.assert_called()
 
+    @pytest.mark.django_db
     def test_get_manage_path(self):
         # mock the input args with manage attribute
         args = mock.MagicMock(manage="")
@@ -44,6 +48,7 @@ class TestCliHelper(unittest.TestCase):
 
     @mock.patch("tethys_cli.cli_helpers.subprocess.call")
     @mock.patch("tethys_cli.cli_helpers.set_testing_environment")
+    @pytest.mark.django_db
     def test_run_process(self, mock_te_call, mock_subprocess_call):
         # mock the process
         mock_process = ["test"]
@@ -56,6 +61,7 @@ class TestCliHelper(unittest.TestCase):
 
     @mock.patch("tethys_cli.cli_helpers.subprocess.call")
     @mock.patch("tethys_cli.cli_helpers.set_testing_environment")
+    @pytest.mark.django_db
     def test_run_process_keyboardinterrupt(self, mock_te_call, mock_subprocess_call):
         # mock the process
         mock_process = ["foo"]
@@ -67,16 +73,19 @@ class TestCliHelper(unittest.TestCase):
         mock_te_call.assert_called_once()
 
     @mock.patch("tethys_cli.cli_helpers.django.setup")
+    @pytest.mark.django_db
     def test_setup_django(self, mock_django_setup):
         cli_helper.setup_django()
         mock_django_setup.assert_called()
 
     @mock.patch("tethys_cli.cli_helpers.django.setup")
+    @pytest.mark.django_db
     def test_setup_django_supress_output(self, mock_django_setup):
         cli_helper.setup_django(supress_output=True)
         mock_django_setup.assert_called()
 
     @mock.patch("tethys_cli.cli_helpers.bcrypt.gensalt")
+    @pytest.mark.django_db
     def test_generate_salt_string(self, mock_bcrypt_gensalt):
         fake_salt = "my_random_encrypted_string"
         mock_bcrypt_gensalt.return_value = fake_salt
@@ -91,6 +100,7 @@ class TestCliHelper(unittest.TestCase):
         "tethys_cli.cli_helpers.Path.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
+    @pytest.mark.django_db
     def test_gen_salt_string_for_setting_with_no_previous_salt_strings(
         self,
         mock_open_file,
@@ -146,6 +156,7 @@ class TestCliHelper(unittest.TestCase):
         "tethys_cli.cli_helpers.Path.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
+    @pytest.mark.django_db
     def test_gen_salt_string_for_setting_with_previous_salt_strings(
         self,
         mock_open_file,
@@ -211,6 +222,7 @@ class TestCliHelper(unittest.TestCase):
         "tethys_cli.cli_helpers.Path.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
+    @pytest.mark.django_db
     def test_gen_salt_string_for_setting_with_empty_secrets(
         self,
         mock_open_file,
@@ -262,6 +274,7 @@ class TestCliHelper(unittest.TestCase):
         "tethys_cli.cli_helpers.Path.open",
         new_callable=lambda: mock.mock_open(read_data='{"secrets": "{}"}'),
     )
+    @pytest.mark.django_db
     def test_gen_salt_string_for_setting_with_secrets_deleted_or_changed(
         self,
         mock_open_file,
