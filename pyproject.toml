@@ -67,7 +67,7 @@ include = ["tethys_*"]
 package-data = {"*" = ["*"]}
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tethys_portal.settings"
-addopts = "--cov"
+addopts = "-s --cov"
 testpaths = ["tests/unit_tests/"]
 
 [tool.coverage.report]
