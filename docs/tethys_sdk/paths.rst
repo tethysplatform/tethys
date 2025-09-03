@@ -170,8 +170,8 @@ In some cases, it may be necessary (or more convenient) to use the :term:`app cl
     user_workspace = App.get_user_workspace(user)
     app_media = App.get_app_media()
     user_media = App.get_user_media(user)
-    app_public = App.public_path
-    app_resources App.resources_path
+    app_public = App().public_path
+    app_resources App().resources_path
     ...
 
 .. note::
