@@ -1,4 +1,6 @@
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
+{% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
+{% set STATIC_ROOT_CLEAR = salt['environ.get']('STATIC_ROOT_CLEAR') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
 {% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
@@ -22,7 +24,12 @@ Chown_Portal_Config_Post_App:
 
 Collect_Static:
   cmd.run:
-    - name: tethys manage collectstatic --noinput
+    - name: |
+        if [[ "${STATIC_ROOT_CLEAR,,}" = "true" ]]; then
+          tethys manage collectstatic --clear
+        else
+          tethys manage collectstatic
+        fi
     - shell: /bin/bash
 
 Collect_Workspaces:

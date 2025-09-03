@@ -56,7 +56,12 @@ def add_manage_parser(subparsers):
     manage_parser.add_argument(
         "--noinput",
         action="store_true",
-        help="Pass the --noinput argument to the manage.py command.",
+        help="Pass the --noinput argument to the manage.py command. Deprecated. This is now the default behavior.",
+    )
+    manage_parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Pass the --clear argument to the manage.py command.",
     )
     manage_parser.add_argument(
         "-f",
@@ -111,13 +116,16 @@ def manage_command(args, unknown_args=None):
         if args.link:
             intermediate_process.append("--link")
 
+        if args.clear:
+            intermediate_process.append("--clear")
+
         run_process(intermediate_process)
 
         # Setup for main collectstatic
         primary_process = [sys.executable, manage_path, "collectstatic"]
 
-        if args.noinput:
-            primary_process.append("--noinput")
+        # Prevent the overwrite files prompt every time
+        primary_process.append("--noinput")
 
     elif args.command == MANAGE_COLLECTWORKSPACES:
         # Run collectworkspaces command
@@ -155,13 +163,16 @@ def manage_command(args, unknown_args=None):
 
         # Run pre_collectstatic
         intermediate_process = [sys.executable, manage_path, "pre_collectstatic"]
+        if args.clear:
+            intermediate_process.append("--clear")
+
         run_process(intermediate_process)
 
         # Setup for main collectstatic
         intermediate_process = [sys.executable, manage_path, "collectstatic"]
 
-        if args.noinput:
-            intermediate_process.append("--noinput")
+        # Prevent the overwrite files prompt every time
+        intermediate_process.append("--noinput")
 
         run_process(intermediate_process)
 
