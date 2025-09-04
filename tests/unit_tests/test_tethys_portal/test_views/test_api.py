@@ -1,3 +1,4 @@
+import pytest
 import sys
 from importlib import reload, import_module
 from django.contrib.auth.models import User
@@ -84,6 +85,7 @@ class TethysPortalApiTests(TethysTestCase):
     @override_settings(STATIC_URL="/static")
     @override_settings(PREFIX_URL="/")
     @override_settings(LOGIN_URL="/accounts/login/")
+    @pytest.mark.django_db
     def test_get_app_valid_id(self):
         self.reload_urlconf()
 
@@ -122,6 +124,7 @@ class TethysPortalApiTests(TethysTestCase):
     @override_settings(PREFIX_URL="test/prefix")
     @override_settings(LOGIN_URL="/test/prefix/test/login/")
     @override_settings(STATIC_URL="/test/prefix/test/static/")
+    @pytest.mark.django_db
     def test_get_app_valid_id_with_prefix(self):
         self.reload_urlconf()
 
@@ -162,6 +165,7 @@ class TethysPortalApiTests(TethysTestCase):
     @override_settings(STATIC_URL="/static")
     @override_settings(PREFIX_URL="/")
     @override_settings(LOGIN_URL="/accounts/login/")
+    @pytest.mark.django_db
     def test_get_app_authenticated(self):
         self.client.force_login(self.user)
         self.reload_urlconf()

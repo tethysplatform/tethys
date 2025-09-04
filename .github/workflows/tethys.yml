@@ -91,13 +91,13 @@ jobs:
         conda activate tethys
         conda list
         tethys db start
-        pip install coveralls reactpy_django
+        pip install coveralls reactpy_django pytest pytest-django pytest-cov
     # Test Tethys
     - name: Test Tethys
       run: |
         . ~/miniconda/etc/profile.d/conda.sh
         conda activate tethys
-        tethys test -c -u -v 2
+        pytest
     # Generate Coverage Report
     - name: Generate Coverage Report
       if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.django-version == '4.2' }}

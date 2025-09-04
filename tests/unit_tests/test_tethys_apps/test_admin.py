@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 import unittest
 from unittest import mock
@@ -75,12 +76,14 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.perm_model.delete()
         self.group_model.delete()
 
+    @pytest.mark.django_db
     def test_TethysAppSettingInline(self):
         expected_template = "tethys_portal/admin/edit_inline/tabular.html"
         TethysAppSettingInline.model = mock.MagicMock()
         ret = TethysAppSettingInline(mock.MagicMock(), mock.MagicMock())
         self.assertEqual(expected_template, ret.template)
 
+    @pytest.mark.django_db
     def test_has_delete_permission(self):
         TethysAppSettingInline.model = mock.MagicMock()
         ret = TethysAppSettingInline(mock.MagicMock(), mock.MagicMock())
@@ -88,6 +91,7 @@ class TestTethysAppAdmin(unittest.TestCase):
             ret.has_delete_permission(request=mock.MagicMock(), obj=mock.MagicMock())
         )
 
+    @pytest.mark.django_db
     def test_has_add_permission(self):
         TethysAppSettingInline.model = mock.MagicMock()
         ret = TethysAppSettingInline(mock.MagicMock(), mock.MagicMock())
@@ -95,6 +99,7 @@ class TestTethysAppAdmin(unittest.TestCase):
             ret.has_add_permission(request=mock.MagicMock(), obj=mock.MagicMock())
         )
 
+    @pytest.mark.django_db
     def test_CustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "type", "required")
         expected_fields = (
@@ -113,6 +118,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_SecretCustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "required")
         expected_fields = ("name", "description", "value", "include_in_api", "required")
@@ -124,6 +130,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_JSONCustomSettingInline(self):
         expected_readonly_fields = ("name", "description", "required")
         expected_fields = ("name", "description", "value", "include_in_api", "required")
@@ -135,6 +142,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_DatasetServiceSettingInline(self):
         expected_readonly_fields = ("name", "description", "required", "engine")
         expected_fields = (
@@ -152,6 +160,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_SpatialDatasetServiceSettingInline(self):
         expected_readonly_fields = ("name", "description", "required", "engine")
         expected_fields = (
@@ -169,6 +178,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_WebProcessingServiceSettingInline(self):
         expected_readonly_fields = ("name", "description", "required")
         expected_fields = ("name", "description", "web_processing_service", "required")
@@ -180,6 +190,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_SchedulerSettingInline(self):
         expected_readonly_fields = ("name", "description", "required", "engine")
         expected_fields = (
@@ -197,6 +208,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_PersistentStoreConnectionSettingInline(self):
         expected_readonly_fields = ("name", "description", "required")
         expected_fields = (
@@ -213,6 +225,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
 
+    @pytest.mark.django_db
     def test_PersistentStoreDatabaseSettingInline(self):
         expected_readonly_fields = (
             "name",
@@ -238,11 +251,13 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_model, ret.model)
 
     # Need to check
+    @pytest.mark.django_db
     def test_PersistentStoreDatabaseSettingInline_get_queryset(self):
         obj = PersistentStoreDatabaseSettingInline(mock.MagicMock(), mock.MagicMock())
         mock_request = mock.MagicMock()
         obj.get_queryset(mock_request)
 
+    @pytest.mark.django_db
     def test_TethysAppQuotasSettingInline(self):
         expected_readonly_fields = ("name", "description", "default", "units")
         expected_fields = ("name", "description", "value", "default", "units")
@@ -260,6 +275,7 @@ class TestTethysAppAdmin(unittest.TestCase):
     #     mock_request = mock.MagicMock()
     #     obj.get_queryset(mock_request)
 
+    @pytest.mark.django_db
     def test_TethysAppAdmin(self):
         expected_readonly_fields = (
             "package",
@@ -298,16 +314,19 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_inlines, ret.inlines)
 
+    @pytest.mark.django_db
     def test_TethysAppAdmin_has_delete_permission(self):
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_delete_permission(mock.MagicMock()))
 
+    @pytest.mark.django_db
     def test_TethysAppAdmin_has_add_permission(self):
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
 
     @mock.patch("tethys_apps.admin.get_quota")
     @mock.patch("tethys_apps.admin._convert_storage_units")
+    @pytest.mark.django_db
     def test_TethysAppAdmin_manage_app_storage(self, mock_convert, mock_get_quota):
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
         app = mock.MagicMock()
@@ -348,6 +367,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
 
+    @pytest.mark.django_db
     def test_TethysExtensionAdmin(self):
         expected_readonly_fields = ("package", "name", "description")
         expected_fields = ("package", "name", "description", "enabled")
@@ -357,15 +377,18 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
 
+    @pytest.mark.django_db
     def test_TethysExtensionAdmin_has_delete_permission(self):
         ret = TethysExtensionAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_delete_permission(mock.MagicMock()))
 
+    @pytest.mark.django_db
     def test_TethysExtensionAdmin_has_add_permission(self):
         ret = TethysExtensionAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
 
     @mock.patch("django.contrib.auth.admin.UserAdmin.change_view")
+    @pytest.mark.django_db
     def test_admin_site_register_custom_user(self, mock_ua_change_view):
         from django.contrib import admin
 
@@ -383,6 +406,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertIn(User, registry)
         self.assertIsInstance(registry[User], CustomUser)
 
+    @pytest.mark.django_db
     def test_admin_site_register_tethys_app_admin(self):
         from django.contrib import admin
 
@@ -390,6 +414,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertIn(TethysApp, registry)
         self.assertIsInstance(registry[TethysApp], TethysAppAdmin)
 
+    @pytest.mark.django_db
     def test_admin_site_register_tethys_app_extension(self):
         from django.contrib import admin
 
@@ -397,6 +422,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertIn(TethysExtension, registry)
         self.assertIsInstance(registry[TethysExtension], TethysExtensionAdmin)
 
+    @pytest.mark.django_db
     def test_admin_site_register_proxy_app(self):
         from django.contrib import admin
 
@@ -405,6 +431,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     @mock.patch("tethys_apps.admin.GroupObjectPermission.objects")
     @mock.patch("tethys_apps.admin.TethysApp.objects.all")
+    @pytest.mark.django_db
     def test_make_gop_app_access_form(self, mock_all_apps, mock_gop):
         mock_all_apps.return_value = [self.app_model]
         mock_gop.filter().values().distinct.return_value = [{"group_id": 9999}]
@@ -418,6 +445,7 @@ class TestTethysAppAdmin(unittest.TestCase):
     @mock.patch("tethys_apps.admin.Permission.objects")
     @mock.patch("tethys_apps.admin.GroupObjectPermission.objects")
     @mock.patch("tethys_apps.admin.TethysApp.objects.all")
+    @pytest.mark.django_db
     def test_gop_form_init(self, mock_all_apps, mock_gop, mock_perms, mock_groups):
         mock_all_apps.return_value = [self.app_model]
         mock_obj = mock.MagicMock(pk=True)
@@ -450,6 +478,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(ret.fields["admin_test_app_groups"].initial, "_groups_test")
 
     @mock.patch("tethys_apps.admin.TethysApp.objects.all")
+    @pytest.mark.django_db
     def test_gop_form_clean(self, mock_all_apps):
         mock_all_apps.return_value = [self.app_model]
         mock_obj = mock.MagicMock(pk=True)
@@ -468,6 +497,7 @@ class TestTethysAppAdmin(unittest.TestCase):
     @mock.patch("tethys_apps.admin.remove_perm")
     @mock.patch("tethys_apps.admin.assign_perm")
     @mock.patch("tethys_apps.admin.TethysApp.objects.all")
+    @pytest.mark.django_db
     def test_gop_form_save_new(self, mock_all_apps, _, __):
         mock_all_apps.return_value = [self.app_model]
         mock_obj = mock.MagicMock(pk=False)
@@ -494,6 +524,7 @@ class TestTethysAppAdmin(unittest.TestCase):
     @mock.patch("tethys_apps.admin.assign_perm")
     @mock.patch("tethys_apps.admin.remove_perm")
     @mock.patch("tethys_apps.admin.TethysApp.objects")
+    @pytest.mark.django_db
     def test_gop_form_save_edit_apps(
         self, mock_apps, mock_remove_perm, mock_assign_perm
     ):
@@ -536,6 +567,7 @@ class TestTethysAppAdmin(unittest.TestCase):
     @mock.patch("tethys_apps.admin.assign_perm")
     @mock.patch("tethys_apps.admin.remove_perm")
     @mock.patch("tethys_apps.admin.TethysApp.objects")
+    @pytest.mark.django_db
     def test_gop_form_save_edit_permissions(
         self,
         mock_apps,
@@ -579,6 +611,7 @@ class TestTethysAppAdmin(unittest.TestCase):
     @mock.patch("tethys_apps.admin.remove_perm")
     @mock.patch("tethys_apps.admin.GroupObjectPermission.objects")
     @mock.patch("tethys_apps.admin.TethysApp.objects")
+    @pytest.mark.django_db
     def test_gop_form_save_edit_groups(
         self, mock_apps, mock_gop, mock_remove_perm, mock_assign_perm
     ):
@@ -628,6 +661,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     @mock.patch("tethys_apps.admin.tethys_log.warning")
     @mock.patch("tethys_apps.admin.make_gop_app_access_form")
+    @pytest.mark.django_db
     def test_admin_programming_error(self, mock_gop_form, mock_logwarning):
         mock_gop_form.side_effect = ProgrammingError
 
@@ -638,6 +672,7 @@ class TestTethysAppAdmin(unittest.TestCase):
 
     @mock.patch("tethys_apps.admin.tethys_log.warning")
     @mock.patch("tethys_apps.admin.admin.site.register")
+    @pytest.mark.django_db
     def test_admin_user_keys_programming_error(self, mock_register, mock_logwarning):
         mock_register.side_effect = ProgrammingError
 

@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 import unittest
 from unittest import mock
@@ -85,6 +86,7 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @override_settings(USE_OLD_WORKSPACES_API=False)
+    @pytest.mark.django_db
     def test_with_paths_decorator(
         self, username, rac, mock_gamr, mock_gaw, _, __, ___, ____
     ):
