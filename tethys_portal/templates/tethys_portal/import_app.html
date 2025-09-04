@@ -1,0 +1,24 @@
+{% extends "tethys_portal/accounts/base.html" %}
+
+{% load django_bootstrap5 %}
+
+{% block title %}Import App{% endblock %}
+
+{% bootstrap_messages %}
+
+{% block account_form_title %}Import App{% endblock %}
+
+{% block account_form_body %}
+  {% if form %}
+    <h3>Choose one</h3>
+    <form enctype="multipart/form-data" role="form" method="post">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <a href="{% url 'app_library' %}" class="btn btn-outline-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary" name="import-app-submit">Import</button>
+    </form>
+  {% else %}
+    {% include "./lifecycle_progress.html" with action="Importing" app_name=app_name app_package=app_package %}
+  {% endif %}
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "tethys_portal/accounts/base.html" %}
+
+{% block title %}Remove App{% endblock %}
+
+{% block account_form_title %}Remove App{% endblock %}
+
+{% block account_form_body %}
+  {% if not deleting %}
+  <strong>Are you sure you want to remove the following app from this portal?</strong>
+  <br><br>
+  "{{app_name}}" ({{app_package}})
+  <br><br>
+  <form role="form" method="post">
+      {% csrf_token %}
+      <a href="{{redirect_url }}" id="cancel-app-remove" class="btn btn-light">Cancel</a>
+      <button type="submit" id="do-app-remove" class="btn btn-danger" name="remove-app-submit">Remove</button>
+  </form>
+  {% else %}
+    {% include "./lifecycle_progress.html" with action="Removing" app_name=app_name app_package=app_package %}
+  {% endif %}
+
+{% endblock %}
