@@ -301,7 +301,7 @@ def _get_user_workspace_old(app_class_or_request, user_or_request, bypass_quota=
             f'"{type(user_or_request)}" given.'
         )
     
-    if user and user.is_anonymous:
+    if user.is_anonymous:
         raise PermissionDenied("User is not authenticated.")
     
     if not bypass_quota:
