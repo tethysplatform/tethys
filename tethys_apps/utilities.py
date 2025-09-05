@@ -20,6 +20,7 @@ from django.core.signing import Signer
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
+from django.http import HttpRequest
 from django.conf import settings
 from channels.consumer import SyncConsumer
 
@@ -126,6 +127,20 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
                         match_dirs.append((Path(potential_dir).name, match_dir))
 
     return match_dirs
+
+
+def get_app_model(app_or_request):
+    """
+    Get the TethysApp model instance for the given app or request.
+    """
+    from tethys_apps.models import TethysApp
+
+    if isinstance(app_or_request, HttpRequest):
+        app = get_active_app(app_or_request)
+    else:
+        app = TethysApp.objects.get(root_url=app_or_request.root_url)
+    
+    return app
 
 
 def get_active_app(request=None, url=None, get_class=False):

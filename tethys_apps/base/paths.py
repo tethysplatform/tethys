@@ -22,8 +22,8 @@ from django.utils.functional import SimpleLazyObject
 from tethys_quotas.utilities import passes_quota, _get_storage_units
 
 from .workspace import (
-    get_app_workspace_old,
-    get_user_workspace_old,
+    _get_app_workspace_old,
+    _get_user_workspace_old,
 )
 
 log = logging.getLogger(f"tethys.{__name__}")
@@ -268,10 +268,11 @@ def _check_app_quota(app_or_request):
     Raises:
         AssertionError: if quota for the app workspace/media directory has been exceeded.
     """
-    from tethys_apps.utilities import get_active_app
+    from tethys_apps.utilities import get_app_model
 
-    app_model = get_active_app(app_or_request, get_class=False)
-    assert passes_quota(app_model, "tethysapp_workspace_quota")
+    app = get_app_model(app_or_request)
+
+    assert passes_quota(app, "tethysapp_workspace_quota")
 
 
 def _resolve_user(user_or_request):
@@ -345,7 +346,7 @@ def _get_app_workspace(app_or_request, bypass_quota=False) -> TethysPath:
 
     """
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
-        return get_app_workspace_old(app_or_request)
+        return _get_app_workspace_old(app_or_request, bypass_quota)
 
     app = _resolve_app_class(app_or_request)
     if not bypass_quota:
@@ -367,7 +368,7 @@ def get_app_workspace(app_or_request) -> TethysPath:
 
     """
     if settings.USE_OLD_WORKSPACES_API:
-        return get_app_workspace_old(app_or_request)
+        return _get_app_workspace_old(app_or_request)
 
     return _get_app_workspace(app_or_request)
 
@@ -387,16 +388,21 @@ def _get_user_workspace(app_or_request, user_or_request, bypass_quota=False):
     Returns: TethysPath representing the user workspace.
 
     """
+    from django.core.exceptions import PermissionDenied
+
     app = _resolve_app_class(app_or_request)
-    username = _resolve_user(user_or_request).username
+    user = _resolve_user(user_or_request)
+
+    if user.is_anonymous:
+        raise PermissionDenied("User is not authenticated.")
 
     if not bypass_quota:
         _check_user_quota(user_or_request)
 
     if settings.USE_OLD_WORKSPACES_API and settings.DEBUG:
-        return get_user_workspace_old(app, user_or_request)
+        return _get_user_workspace_old(app, user_or_request, bypass_quota)
 
-    return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / username)
+    return TethysPath(_get_app_workspace_root(app) / "user_workspaces" / user.username)
 
 
 def get_user_workspace(
@@ -427,7 +433,7 @@ def get_user_workspace(
             ...
     """  # noqa: E501
     if settings.USE_OLD_WORKSPACES_API:
-        return get_user_workspace_old(app_or_request, user_or_request)
+        return _get_user_workspace_old(app_or_request, user_or_request)
 
     return _get_user_workspace(app_or_request, user_or_request)
 
@@ -495,13 +501,17 @@ def _get_user_media(app_or_request, username_or_request, bypass_quota=False):
     Returns: TethysPath representing the user's media directory for the app.
 
     """
+    from django.core.exceptions import PermissionDenied
+
     app = _resolve_app_class(app_or_request)
-    username = _resolve_user(username_or_request).username
+    user = _resolve_user(username_or_request)
+    if user.is_anonymous:
+        raise PermissionDenied("User is not authenticated.")
 
     if not bypass_quota:
         _check_user_quota(username_or_request)
 
-    return TethysPath(_get_app_media_root(app) / "user" / username)
+    return TethysPath(_get_app_media_root(app) / "user" / user.username)
 
 
 def get_user_media(app_or_request, username_or_request):

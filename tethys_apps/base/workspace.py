@@ -245,7 +245,7 @@ def _get_user_workspace(app_class, user_or_request):
     return TethysWorkspace(str(workspace_directory))
 
 
-def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorkspace:
+def _get_user_workspace_old(app_class_or_request, user_or_request, bypass_quota=False) -> TethysWorkspace:
     """
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
@@ -272,6 +272,7 @@ def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorks
     from tethys_apps.base.app_base import TethysAppBase
     from tethys_apps.utilities import get_active_app
     from django.contrib.auth.models import User
+    from django.core.exceptions import PermissionDenied
 
     # Get app
     if isinstance(app_class_or_request, TethysAppBase) or (
@@ -299,9 +300,12 @@ def get_user_workspace_old(app_class_or_request, user_or_request) -> TethysWorks
             f'Argument "user_or_request" must be of type HttpRequest or User: '
             f'"{type(user_or_request)}" given.'
         )
-
-    assert passes_quota(user, "user_workspace_quota")
-
+    
+    if user and user.is_anonymous:
+        raise PermissionDenied("User is not authenticated.")
+    
+    if not bypass_quota:
+        assert passes_quota(user, "user_workspace_quota")
     return _get_user_workspace(app, user)
 
 
@@ -349,7 +353,7 @@ def user_workspace(controller):
                 "No request given. The user_workspace decorator only works on controllers."
             )
 
-        the_workspace = get_user_workspace_old(request, request.user)
+        the_workspace = _get_user_workspace_old(request, request.user)
 
         return controller(*args, user_workspace=the_workspace, **kwargs)
 
@@ -374,7 +378,7 @@ def _get_app_workspace(app_class):
     return TethysWorkspace(str(workspace_directory))
 
 
-def get_app_workspace_old(app_or_request) -> TethysWorkspace:
+def _get_app_workspace_old(app_or_request, bypass_quota=False) -> TethysWorkspace:
     """
     Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
 
@@ -400,23 +404,13 @@ def get_app_workspace_old(app_or_request) -> TethysWorkspace:
             ...
     """
     from tethys_apps.base.app_base import TethysAppBase
-    from tethys_apps.utilities import get_active_app
+    from tethys_apps.utilities import get_active_app, get_app_model
 
-    # Get the active app
-    if isinstance(app_or_request, HttpRequest):
-        app = get_active_app(app_or_request, get_class=False)
-    elif isinstance(app_or_request, TethysAppBase) or (
-        isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)
-    ):
-        app = app_or_request
-    else:
-        raise ValueError(
-            f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '
-            f'"{type(app_or_request)}" given.'
-        )
 
-    # Accessed when uploading to workspace
-    assert passes_quota(app, "tethysapp_workspace_quota")
+    app = get_app_model(app_or_request)
+
+    if not bypass_quota:
+        assert passes_quota(app, "tethysapp_workspace_quota")
 
     return _get_app_workspace(app)
 
@@ -465,7 +459,7 @@ def app_workspace(controller):
                 "No request given. The app_workspace decorator only works on controllers."
             )
 
-        the_workspace = get_app_workspace_old(request)
+        the_workspace = _get_app_workspace_old(request)
 
         return controller(*args, app_workspace=the_workspace, **kwargs)
 

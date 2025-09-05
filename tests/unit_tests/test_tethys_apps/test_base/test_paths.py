@@ -273,7 +273,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(DEBUG=True)
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     @mock.patch("tethys_apps.utilities.get_app_class")
-    def test__get_app_workspace_old(self, mock_ac, mock_tw):
+    def test___get_app_workspace_old(self, mock_ac, mock_tw):
         import sys
 
         mock_ac.return_value = self.mock_app
@@ -286,23 +286,23 @@ class TestTethysPathHelpers(unittest.TestCase):
         self.assertEqual(p, expected_path)
 
     @override_settings(USE_OLD_WORKSPACES_API=True)
-    @mock.patch("tethys_apps.base.paths.get_app_workspace_old")
+    @mock.patch("tethys_apps.base.paths._get_app_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
-    def test_get_app_workspace_old(
-        self, mock_get_active_app, mock_get_app_workspace_old
+    def test__get_app_workspace_old(
+        self, mock_get_active_app, mock__get_app_workspace_old
     ):
         mock_get_active_app.return_value = self.mock_app
         mock_return = mock.MagicMock()
-        mock_get_app_workspace_old.return_value = mock_return
+        mock__get_app_workspace_old.return_value = mock_return
         ws = paths.get_app_workspace(self.mock_request)
 
-        mock_get_app_workspace_old.assert_called_once()
+        mock__get_app_workspace_old.assert_called_once()
         self.assertEqual(ws, mock_return)
 
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test__get_user_workspace_old(self, mock_tw):
+    def test___get_user_workspace_old(self, mock_tw):
         import sys
 
         p = paths._get_user_workspace(
@@ -315,18 +315,18 @@ class TestTethysPathHelpers(unittest.TestCase):
         )
         self.assertEqual(p, expected_path)
 
-    @mock.patch("tethys_apps.base.paths.get_user_workspace_old")
+    @mock.patch("tethys_apps.base.paths._get_user_workspace_old")
     @mock.patch("tethys_apps.utilities.get_active_app")
     @override_settings(USE_OLD_WORKSPACES_API=True)
-    def test_get_user_workspace_old(
-        self, mock_get_active_app, mock_get_user_workspace_old
+    def test__get_user_workspace_old(
+        self, mock_get_active_app, mock__get_user_workspace_old
     ):
         mock_get_active_app.return_value = self.mock_app
         mock_return = mock.MagicMock()
-        mock_get_user_workspace_old.return_value = mock_return
+        mock__get_user_workspace_old.return_value = mock_return
         ws = paths.get_user_workspace(self.mock_request, self.user)
 
-        mock_get_user_workspace_old.assert_called_once()
+        mock__get_user_workspace_old.assert_called_once()
         self.assertEqual(ws, mock_return)
 
     @override_settings(MEDIA_ROOT="media_root")

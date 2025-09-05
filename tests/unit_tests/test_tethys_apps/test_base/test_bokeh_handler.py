@@ -60,8 +60,8 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
     @mock.patch("tethys_apps.utilities.get_active_app")
-    @mock.patch("tethys_apps.base.bokeh_handler.get_user_workspace_old")
-    @mock.patch("tethys_apps.base.bokeh_handler.get_app_workspace_old")
+    @mock.patch("tethys_apps.base.bokeh_handler._get_user_workspace_old")
+    @mock.patch("tethys_apps.base.bokeh_handler._get_app_workspace_old")
     def test_with_workspaces_decorator(self, mock_gaw, mock_guw, _, __, ___, ____):
         mock_guw.return_value = "user-workspace"
         mock_gaw.return_value = "app-workspace"
