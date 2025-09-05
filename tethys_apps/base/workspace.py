@@ -245,7 +245,9 @@ def _get_user_workspace(app_class, user_or_request):
     return TethysWorkspace(str(workspace_directory))
 
 
-def _get_user_workspace_old(app_class_or_request, user_or_request, bypass_quota=False) -> TethysWorkspace:
+def _get_user_workspace_old(
+    app_class_or_request, user_or_request, bypass_quota=False
+) -> TethysWorkspace:
     """
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
@@ -300,10 +302,10 @@ def _get_user_workspace_old(app_class_or_request, user_or_request, bypass_quota=
             f'Argument "user_or_request" must be of type HttpRequest or User: '
             f'"{type(user_or_request)}" given.'
         )
-    
+
     if user.is_anonymous:
         raise PermissionDenied("User is not authenticated.")
-    
+
     if not bypass_quota:
         assert passes_quota(user, "user_workspace_quota")
     return _get_user_workspace(app, user)
@@ -403,9 +405,7 @@ def _get_app_workspace_old(app_or_request, bypass_quota=False) -> TethysWorkspac
             app_workspace = get_app_workspace(App)
             ...
     """
-    from tethys_apps.base.app_base import TethysAppBase
-    from tethys_apps.utilities import get_active_app, get_app_model
-
+    from tethys_apps.utilities import get_app_model
 
     app = get_app_model(app_or_request)
 

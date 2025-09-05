@@ -139,7 +139,7 @@ def get_app_model(app_or_request):
         app = get_active_app(app_or_request)
     else:
         app = TethysApp.objects.get(root_url=app_or_request.root_url)
-    
+
     return app
 
 
