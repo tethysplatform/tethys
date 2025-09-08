@@ -134,11 +134,20 @@ def get_app_model(app_or_request):
     Get the TethysApp model instance for the given app or request.
     """
     from tethys_apps.models import TethysApp
+    from tethys_apps.base.app_base import TethysAppBase
+
 
     if isinstance(app_or_request, HttpRequest):
         app = get_active_app(app_or_request)
-    else:
+    elif isinstance(app_or_request, TethysAppBase) or (
+        isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)
+    ):
         app = TethysApp.objects.get(root_url=app_or_request.root_url)
+    else:
+        raise ValueError(
+            f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '
+            f'"{type(app_or_request)}" given.'
+        )
 
     return app
 

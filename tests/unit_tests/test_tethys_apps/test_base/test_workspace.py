@@ -291,40 +291,46 @@ class TestUrlMap(unittest.TestCase):
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.workspace._get_app_workspace")
-    def test_get_app_workspace_app_instance(self, mock_gaw, mock_gaa, mock_pq):
+    def test_get_app_workspace_app_instance(self, mock_gaw, mock_gam, mock_gaa, mock_pq):
         mock_workspace = mock.MagicMock()
+        mock_app = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
+        mock_gam.return_value = mock_app
         ret = _get_app_workspace_old(self.app)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_not_called()
-        mock_pq.assert_called_with(self.app, "tethysapp_workspace_quota")
-        mock_gaw.assert_called_with(self.app)
+        mock_pq.assert_called_with(mock_app, "tethysapp_workspace_quota")
+        mock_gaw.assert_called_with(mock_app)
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.workspace._get_app_workspace")
-    def test_get_app_workspace_app_class(self, mock_gaw, mock_gaa, mock_pq):
+    def test_get_app_workspace_app_class(self, mock_gaw, mock_gam, mock_gaa, mock_pq):
         mock_workspace = mock.MagicMock()
+        mock_app = mock.MagicMock()
+        mock_gam.return_value = mock_app 
         mock_gaw.return_value = mock_workspace
         ret = _get_app_workspace_old(TethysAppChild)
         self.assertEqual(ret, mock_workspace)
         mock_gaa.assert_not_called()
-        mock_pq.assert_called_with(TethysAppChild, "tethysapp_workspace_quota")
-        mock_gaw.assert_called_with(TethysAppChild)
+        mock_pq.assert_called_with(mock_app, "tethysapp_workspace_quota")
+        mock_gaw.assert_called_with(mock_app)
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
-    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.workspace._get_app_workspace")
-    def test_get_app_workspace_http(self, mock_gaw, mock_gaa, mock_pq):
+    def test_get_app_workspace_http(self, mock_gaw, mock_gam, mock_pq):
         request = HttpRequest()
         mock_workspace = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
         mock_app = mock.MagicMock()
-        mock_gaa.return_value = mock_app
+        mock_gam.return_value = mock_app
         ret = _get_app_workspace_old(request)
         self.assertEqual(ret, mock_workspace)
-        mock_gaa.assert_called_with(request, get_class=False)
+        mock_gam.assert_called_with(request)
         mock_pq.assert_called_with(mock_app, "tethysapp_workspace_quota")
         mock_gaw.assert_called_with(mock_app)
 
