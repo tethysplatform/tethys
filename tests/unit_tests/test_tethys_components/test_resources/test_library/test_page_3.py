@@ -1,4 +1,4 @@
-def test(lib):
+def page(lib):
     """This comment is here as a test to ensure certain code gets executed"""
     # Register additional packages
     lib.register(

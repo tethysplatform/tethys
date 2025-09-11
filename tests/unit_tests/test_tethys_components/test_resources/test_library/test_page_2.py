@@ -1,4 +1,4 @@
-def test(lib):
+def page(lib):
     lib.register("react-plotly@1.0.0", "p")
     chart_data = {
         "river_id": "Test 123",
