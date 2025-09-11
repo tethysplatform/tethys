@@ -13,9 +13,11 @@ def a_controller(request):
 
 
 class DecoratorsTest(unittest.TestCase):
+    @pytest.mark.django_db
     def setUp(self):
         pass
 
+    @pytest.mark.django_db
     def tearDown(self):
         pass
 
