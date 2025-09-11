@@ -12,6 +12,7 @@ import unittest
 
 
 class TestProxyAppsCommand(unittest.TestCase):
+    @pytest.mark.django_db
     def setUp(self):
         self.app_name = "My_Proxy_App_for_Testing"
         self.endpoint = "http://foo.example.com/my-proxy-app"
@@ -40,6 +41,7 @@ class TestProxyAppsCommand(unittest.TestCase):
         )
         self.proxy_app.save()
 
+    @pytest.mark.django_db
     def tearDown(self):
         self.proxy_app.delete()
 
