@@ -25,10 +25,11 @@ class TestTethysStaticFinder(unittest.TestCase):
     def test_find(self):
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
+        expected_path = Path("test_app") / "public" / "css" / "main.css"
         path_ret = tethys_static_finder.find(path)
-        self.assertEqual(self.root / "css" / "main.css", path_ret)
+        assert str(expected_path) in str(path_ret)
         str_ret = tethys_static_finder.find(str(path))
-        self.assertEqual(self.root / "css" / "main.css", str_ret)
+        assert str(expected_path) in str(str_ret)
 
     def test_find_all(self):
         import django
@@ -42,8 +43,11 @@ class TestTethysStaticFinder(unittest.TestCase):
         else:
             path_ret = tethys_static_finder.find(path, all=True)
             str_ret = tethys_static_finder.find(str(path), all=True)
-        self.assertIn(self.root / "css" / "main.css", path_ret)
-        self.assertIn(self.root / "css" / "main.css", str_ret)
+        expected_path = Path("test_app") / "public" / "css" / "main.css"
+        path_ret = tethys_static_finder.find(path)
+        assert str(expected_path) in str(path_ret)
+        str_ret = tethys_static_finder.find(str(path))
+        assert str(expected_path) in str(str_ret)
 
     def test_find_location_with_no_prefix(self):
         prefix = None

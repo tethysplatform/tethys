@@ -29,16 +29,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "templates") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -64,13 +55,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
                 test_app = True
             if (
                 "test_extension" in r
-                and str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
+                and str(Path("/") / "tethysext" / "test_extension" / "templates")
                 in r[1]
             ):
                 test_ext = True
@@ -98,16 +83,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "templates") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -150,16 +126,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "public") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "public"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "public") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
