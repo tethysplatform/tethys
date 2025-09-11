@@ -7,9 +7,11 @@ from django.core.signing import Signer, BadSignature
 
 
 class TestCliHelper(unittest.TestCase):
+    @pytest.mark.django_db
     def setUp(self):
         self.test_app = TethysApp.objects.get(package="test_app")
 
+    @pytest.mark.django_db
     def tearDown(self):
         pass
 

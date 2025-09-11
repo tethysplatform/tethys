@@ -293,6 +293,7 @@ class TestTestAppHandoff(TethysTestCase):
         else:
             self.import_module(urlconf)
 
+    @pytest.mark.django_db
     def set_up(self):
         self.c = self.get_test_client()
         self.user = self.create_test_user(
@@ -301,6 +302,7 @@ class TestTestAppHandoff(TethysTestCase):
         self.c.force_login(self.user)
 
     @override_settings(PREFIX_URL="/")
+    @pytest.mark.django_db
     def tear_down(self):
         self.user.delete()
         self.reload_urlconf()
