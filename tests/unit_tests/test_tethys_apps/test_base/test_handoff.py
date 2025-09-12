@@ -1,15 +1,9 @@
-from importlib import reload, import_module
-import sys
 from types import FunctionType
 from unittest import mock
 
-from django.conf import settings
-from django.test import override_settings
-from django.urls import clear_url_caches
 import pytest
 
 import tethys_apps.base.handoff as tethys_handoff
-from tethys_sdk.testing import TethysTestCase
 
 
 def test_function(*args):
@@ -233,44 +227,29 @@ def test_gethandoffmanagerforapp_with_app(mock_ta):
     assert "test_manager" == result
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 @pytest.mark.django_db
-def test_app_handoff_client():
-    class ClientUser(TethysTestCase):
-        pass
-
-    c = ClientUser().get_test_client()
-    user = ClientUser().create_test_user(
+def test_app_handoff_client(client, django_user_model):
+    user = django_user_model.objects.create_user(
         username="joe", password="secret", email="joe@some_site.com"
     )
-    c.force_login(user)
-    yield c, user
+    client.force_login(user)
+    yield client, user
     user.delete()
 
 
-def reload_urlconf(urlconf=None):
-    clear_url_caches()
-    if urlconf is None:
-        urlconf = settings.ROOT_URLCONF
-    if urlconf in sys.modules:
-        reload(sys.modules[urlconf])
-    else:
-        import_module(urlconf)
-
-
-@override_settings(PREFIX_URL="/")
 @pytest.mark.django_db
-def test_app_handoff(test_app_handoff_client, test_app):
-    c, user = test_app_handoff_client
-    reload_urlconf()
+def test_app_handoff(test_app, test_app_handoff_client, settings):
+    settings.PREFIX_URL = "/"
+    c, _user = test_app_handoff_client
     response = c.get('/handoff/test-app/test_name/?csv_url=""')
     assert response.status_code == 302
 
 
-@override_settings(PREFIX_URL="test/prefix")
+# @override_settings(PREFIX_URL="test/prefix")
 @pytest.mark.django_db
-def test_app_handoff_with_prefix(test_app_handoff_client, test_app):
-    c, user = test_app_handoff_client
-    reload_urlconf()
+def test_app_handoff_with_prefix(test_app, test_app_handoff_client, settings):
+    settings.PREFIX_URL = "test/prefix"
+    c, _user = test_app_handoff_client
     response = c.get('/test/prefix/handoff/test-app/test_name/?csv_url=""')
     assert response.status_code == 302
