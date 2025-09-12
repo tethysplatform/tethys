@@ -70,6 +70,15 @@ DJANGO_SETTINGS_MODULE = "tethys_portal.settings"
 addopts = "-s --cov"
 testpaths = ["tests/unit_tests/"]
 
+[tool.coverage.run]
+omit = [
+    "docs/*",
+    "tests/*",
+    "tethys_portal/_version.py",
+    "tethys_portal/__init__.py",
+    "*/migrations/*",
+]
+
 [tool.coverage.report]
 show_missing = true
 skip_covered = true

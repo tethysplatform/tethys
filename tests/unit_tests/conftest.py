@@ -5,6 +5,7 @@ import sys
 
 import pytest
 
+from tethys_apps.models import TethysApp
 from tethys_cli.cli_colors import write_warning
 
 
@@ -26,6 +27,8 @@ def install_prereqs(tests_path):
             cwd=str(setup_path),
             check=True,
         )
+        import tethysapp.test_app  # noqa: F401
+
         write_warning("Test App installed successfully.")
 
     # Install the Test Extension if not Installed
@@ -44,6 +47,8 @@ def install_prereqs(tests_path):
             cwd=str(setup_path),
             check=True,
         )
+        import tethysext.test_extension  # noqa: F401
+
         write_warning("Test Extension installed successfully.")
 
 
@@ -73,7 +78,6 @@ def test_dir():
 
 
 @pytest.fixture(scope="session", autouse=True)
-@pytest.mark.django_db
 def global_setup_and_teardown(test_dir):
     """Install and remove test apps and extensions before and after tests run."""
     print("\n🚀 Starting global test setup...")
@@ -83,3 +87,27 @@ def global_setup_and_teardown(test_dir):
     print("\n🧹 Starting global test teardown...")
     remove_prereqs()
     print("✅ Global test teardown completed!")
+
+
+def reload_urlconf(urlconf=None):
+    from django.conf import settings
+    from django.urls import clear_url_caches
+    from importlib import reload, import_module
+
+    clear_url_caches()
+    if urlconf is None:
+        urlconf = settings.ROOT_URLCONF
+    if urlconf in sys.modules:
+        reload(sys.modules[urlconf])
+    else:
+        import_module(urlconf)
+
+
+@pytest.fixture(scope="function")
+def test_app():
+    from tethys_apps.harvester import SingletonHarvester
+
+    harvester = SingletonHarvester()
+    harvester.harvest()
+    reload_urlconf()
+    return TethysApp.objects.get(package="test_app")
