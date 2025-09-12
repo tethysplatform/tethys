@@ -260,7 +260,7 @@ def reload_urlconf(urlconf=None):
 
 @override_settings(PREFIX_URL="/")
 @pytest.mark.django_db
-def test_test_app_handoff(test_app_handoff_client):
+def test_app_handoff(test_app_handoff_client, test_app):
     c, user = test_app_handoff_client
     reload_urlconf()
     response = c.get('/handoff/test-app/test_name/?csv_url=""')
@@ -269,7 +269,7 @@ def test_test_app_handoff(test_app_handoff_client):
 
 @override_settings(PREFIX_URL="test/prefix")
 @pytest.mark.django_db
-def test_test_app_handoff_with_prefix(test_app_handoff_client):
+def test_app_handoff_with_prefix(test_app_handoff_client, test_app):
     c, user = test_app_handoff_client
     reload_urlconf()
     response = c.get('/test/prefix/handoff/test-app/test_name/?csv_url=""')

@@ -9,7 +9,8 @@ from tethys_config.context_processors import tethys_global_settings_context
 @override_settings(MULTIPLE_APP_MODE=True)
 @mock.patch("termsandconditions.models.TermsAndConditions")
 @mock.patch("tethys_config.models.Setting")
-def test_tethys_global_settings_context(mock_setting, mock_terms):
+@pytest.mark.django_db
+def test_tethys_global_settings_context(mock_setting, mock_terms, test_app):
     mock_request = mock.MagicMock()
     mock_setting.as_dict.return_value = dict()
     mock_terms.get_active_terms_list.return_value = ["active_terms"]
@@ -43,7 +44,9 @@ def test_tethys_global_settings_context(mock_setting, mock_terms):
 @mock.patch("termsandconditions.models.TermsAndConditions")
 @mock.patch("tethys_config.models.Setting")
 @pytest.mark.django_db
-def test_tethys_global_settings_context_single_app_mode(mock_setting, mock_terms):
+def test_tethys_global_settings_context_single_app_mode(
+    mock_setting, mock_terms, test_app
+):
     mock_request = mock.MagicMock()
     mock_setting.as_dict.return_value = dict()
     mock_terms.get_active_terms_list.return_value = ["active_terms"]
