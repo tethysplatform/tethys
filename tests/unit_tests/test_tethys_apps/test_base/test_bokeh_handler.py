@@ -130,6 +130,7 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(TethysPath("resources").path, ret_doc.app_resources_path.path)
         self.assertEqual(TethysPath("public").path, ret_doc.app_public_path.path)
 
+    @mock.patch("tethys_apps.base.paths.passes_quota")
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
@@ -140,7 +141,16 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @override_settings(USE_OLD_WORKSPACES_API=False)
     async def test_with_paths_decorator_async(
-        self, username, rac, mock_gamr, mock_gaw, _, __, ___, ____
+        self,
+        username,
+        rac,
+        mock_gamr,
+        mock_gaw,
+        _get_active_app,
+        _workspace_log,
+        _quotas_log,
+        _mkdir,
+        _passes_quota,
     ):
         mock_gaw.return_value = Path("workspaces")
         mock_gamr.return_value = Path("app-media-root/media")
