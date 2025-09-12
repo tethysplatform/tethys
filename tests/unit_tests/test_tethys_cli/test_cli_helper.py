@@ -1,14 +1,7 @@
 import pytest
 from unittest import mock
 import tethys_cli.cli_helpers as cli_helper
-from tethys_apps.models import TethysApp
 from django.core.signing import Signer, BadSignature
-
-
-# Pytest fixture to replace setUp/tearDown
-@pytest.fixture()
-def test_app():
-    return TethysApp.objects.get(package="test_app")
 
 
 @pytest.mark.django_db
