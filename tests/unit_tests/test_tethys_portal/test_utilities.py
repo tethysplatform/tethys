@@ -1,3 +1,4 @@
+import pytest
 import datetime
 import uuid
 import unittest
@@ -31,6 +32,7 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_portal.utilities.redirect")
+    @pytest.mark.django_db
     def test_utilities_no_user_username_does_not_exist(self, mock_redirect):
         mock_request = mock.MagicMock()
         mock_request.method = "POST"

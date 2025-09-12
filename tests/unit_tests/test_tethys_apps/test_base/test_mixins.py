@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 import unittest
 from unittest import mock
@@ -55,6 +56,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
+    @pytest.mark.django_db
     def test_app_workspace(self, gaw, _, __):
         gaw.return_value = Path("workspaces")
         self.assertEqual(
@@ -67,6 +69,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
+    @pytest.mark.django_db
     def test_user_workspace(self, gaw, ru, _, __):
         gaw.return_value = Path("workspaces")
         ru.return_value = "mock-username"
@@ -79,6 +82,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
+    @pytest.mark.django_db
     def test_app_media(self, gamr, _, __):
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
@@ -91,6 +95,7 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_username")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
+    @pytest.mark.django_db
     def test_user_media(self, gamr, ru, rac, __):
         mock_app = mock.MagicMock()
         rac.return_value = mock_app
