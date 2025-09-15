@@ -17,9 +17,9 @@ build:
       # Make LFS available in current repository
       - ./git-lfs-3.7.0/git-lfs install
       # Download content from remote
-      - git lfs fetch
+      - ./git-lfs-3.7.0/git-lfs fetch
       # Make local files to have the real content on them
-      - git lfs checkout
+      - ./git-lfs-3.7.0/git-lfs checkout
       # Cleanup
       - rm git-lfs-linux-amd64-v3.7.0.tar.gz
     pre_install:
