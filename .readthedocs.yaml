@@ -15,7 +15,7 @@ build:
       - git config filter.lfs.smudge  "`pwd`/git-lfs-3.7.0/git-lfs smudge -- %f"
       - git config filter.lfs.clean "`pwd`/git-lfs-3.7.0/git-lfs clean -- %f"
       # Make LFS available in current repository
-      - git lfs install
+      - ./git-lfs-3.7.0/git-lfs install
       # Download content from remote
       - git lfs fetch
       # Make local files to have the real content on them
