@@ -6,6 +6,10 @@ from unittest import mock
 from django.conf import settings
 from django.http import HttpRequest
 from django.test import override_settings
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
+
+
 
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base import paths
@@ -272,11 +276,13 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
+    @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.utilities.get_app_class")
-    def test___get_app_workspace_old(self, mock_ac, mock_tw):
+    def test___get_app_workspace_old(self, mock_ac, mock_am, mock_tw):
         import sys
 
         mock_ac.return_value = self.mock_app
+        mock_am.return_value = self.mock_app
         p = paths._get_app_workspace(self.mock_app_base_class, bypass_quota=True)
         expected_path = mock_tw(
             Path(sys.modules[self.mock_app.__module__].__file__).parent
@@ -287,11 +293,11 @@ class TestTethysPathHelpers(unittest.TestCase):
 
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @mock.patch("tethys_apps.base.paths._get_app_workspace_old")
-    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.utilities.get_app_model")
     def test__get_app_workspace_old(
-        self, mock_get_active_app, mock__get_app_workspace_old
+        self, mock_get_app_model, mock__get_app_workspace_old
     ):
-        mock_get_active_app.return_value = self.mock_app
+        mock_get_app_model.return_value = self.mock_app_base_class
         mock_return = mock.MagicMock()
         mock__get_app_workspace_old.return_value = mock_return
         ws = paths.get_app_workspace(self.mock_request)
@@ -334,12 +340,12 @@ class TestTethysPathHelpers(unittest.TestCase):
         p = paths._get_app_media_root(self.mock_app)
         self.assertEqual(p, Path(settings.MEDIA_ROOT + "/app_package"))
 
-    @mock.patch("tethys_apps.utilities.get_active_app")
+    @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
-    def test__check_app_quota_passes(self, mock_passes_quota, mock_get_active_app):
-        mock_get_active_app.return_value = self.mock_app
+    def test__check_app_quota_passes(self, mock_passes_quota, mock_get_app_model):
+        mock_get_app_model.return_value = self.mock_app_base_class
         try:
-            _check_app_quota(mock_get_active_app(self.mock_request))
+            _check_app_quota(mock_get_app_model(self.mock_request))
         except AssertionError:
             self.fail(
                 "_check_app_quota() raised AssertionError when it shouldn't have."
@@ -385,19 +391,25 @@ class TestTethysPathHelpers(unittest.TestCase):
             _check_user_quota(self.user)
 
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
-    @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    @mock.patch("tethys_apps.base.paths.passes_quota")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths.TethysPath")
-    def test_add_path_decorator(self, mock_TethysPath, _, __, ___):
+    def test_add_path_decorator(self, mock_TethysPath, mock_ru, mock_pq, _, __):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
+        
+        mock_TethysPath.return_value = "user_media_path"
 
-        mock_TethysPath.return_value = "user_media_return"
+        User = get_user_model()
+        user = User(username='test_user')
+        mock_ru.return_value = user
+
+        mock_pq.return_value = True
 
         wrapped_controller = paths._add_path_decorator("user_media")(fake_controller)
-
         user_media = wrapped_controller(self.mock_request)
-        self.assertEqual(user_media, "user_media_return")
+        self.assertEqual(user_media, "user_media_path")
 
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @mock.patch("tethys_apps.base.paths._resolve_user")
@@ -406,15 +418,12 @@ class TestTethysPathHelpers(unittest.TestCase):
     def test_add_path_decorator_no_user(self, mock_TethysPath, _, __, ___):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
-
         mock_TethysPath.return_value = "user_media_return"
 
-        wrapped_controller_no_user = paths._add_path_decorator("user_media")(
-            fake_controller
-        )
+        wrapped_controller = paths._add_path_decorator("user_media")(fake_controller)
 
-        user_media_no_user = wrapped_controller_no_user(self.mock_request)
-        self.assertEqual(user_media_no_user, "user_media_return")
+        with self.assertRaises(PermissionDenied):
+            wrapped_controller(self.mock_request)
 
     def test_add_path_decorator_no_request(self):
         def fake_controller(request, user_media, *args, **kwargs):
