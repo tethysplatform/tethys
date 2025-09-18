@@ -81,3 +81,18 @@ def test_enforce_quota_bad_applies_to():
             "ResourceQuota that applies_to not.valid.rq is not supported"
         )
         assert "Success" == ret
+
+
+def test_enforce_quota_app_not_found():
+    with (
+        mock.patch("tethys_quotas.decorators.log") as mock_log,
+        mock.patch("tethys_quotas.decorators.ResourceQuota") as mock_RQ,
+        mock.patch("tethys_quotas.decorators.get_active_app", return_value=None),
+    ):
+        mock_RQ.objects.get.return_value = mock.MagicMock(
+            codename="foo", applies_to="tethys_apps.models.TethysApp"
+        )
+        mock_request = mock.MagicMock(spec=HttpRequest)
+        ret = a_controller(mock_request)
+        mock_log.warning.assert_called_with("Request could not be used to find app")
+        assert "Success" == ret
