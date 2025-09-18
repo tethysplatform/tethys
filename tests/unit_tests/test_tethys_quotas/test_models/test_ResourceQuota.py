@@ -46,6 +46,9 @@ class ResourceQuotaTest(TestCase):
         rq_app = ResourceQuota.objects.get(codename="test_app_codename")
         self.assertEqual("tethys_apps.models.TethysApp", rq_app.applies_to)
 
+        for rq in resource_quotas:
+            self.assertEqual(str(rq), rq.name)
+
     def test_codename_unique(self):
         duplicate_rq = ResourceQuota(
             codename="test_user_codename",
