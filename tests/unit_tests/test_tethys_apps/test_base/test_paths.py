@@ -10,7 +10,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 
 
-
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base import paths
 from tethys_apps.base.paths import TethysPath, _check_app_quota, _check_user_quota
@@ -398,11 +397,11 @@ class TestTethysPathHelpers(unittest.TestCase):
     def test_add_path_decorator(self, mock_TethysPath, mock_ru, mock_pq, _, __):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
-        
+
         mock_TethysPath.return_value = "user_media_path"
 
         User = get_user_model()
-        user = User(username='test_user')
+        user = User(username="test_user")
         mock_ru.return_value = user
 
         mock_pq.return_value = True
@@ -418,6 +417,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     def test_add_path_decorator_no_user(self, mock_TethysPath, _, __, ___):
         def fake_controller(request, user_media, *args, **kwargs):
             return user_media
+
         mock_TethysPath.return_value = "user_media_return"
 
         wrapped_controller = paths._add_path_decorator("user_media")(fake_controller)

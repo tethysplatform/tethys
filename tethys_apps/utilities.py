@@ -136,7 +136,6 @@ def get_app_model(app_or_request):
     from tethys_apps.models import TethysApp
     from tethys_apps.base.app_base import TethysAppBase
 
-
     if isinstance(app_or_request, HttpRequest):
         app = get_active_app(app_or_request)
     elif isinstance(app_or_request, TethysAppBase) or (

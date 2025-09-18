@@ -293,7 +293,9 @@ class TestUrlMap(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.get_active_app")
     @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.workspace._get_app_workspace")
-    def test_get_app_workspace_app_instance(self, mock_gaw, mock_gam, mock_gaa, mock_pq):
+    def test_get_app_workspace_app_instance(
+        self, mock_gaw, mock_gam, mock_gaa, mock_pq
+    ):
         mock_workspace = mock.MagicMock()
         mock_app = mock.MagicMock()
         mock_gaw.return_value = mock_workspace
@@ -311,7 +313,7 @@ class TestUrlMap(unittest.TestCase):
     def test_get_app_workspace_app_class(self, mock_gaw, mock_gam, mock_gaa, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_app = mock.MagicMock()
-        mock_gam.return_value = mock_app 
+        mock_gam.return_value = mock_app
         mock_gaw.return_value = mock_workspace
         ret = _get_app_workspace_old(TethysAppChild)
         self.assertEqual(ret, mock_workspace)
