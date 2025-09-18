@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest import mock
 from ... import UserFactory
 from django.http import HttpRequest
+from django.core.exceptions import PermissionDenied
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.workspace import (
     _get_user_workspace,
@@ -182,6 +183,15 @@ class TestUrlMap(unittest.TestCase):
             str(context.exception),
             "Invalid type for argument 'user': must be either an User or HttpRequest object.",
         )
+
+    def test__get_user_workspace_old_not_authenticated(self):
+        request = HttpRequest()
+        request.user = mock.MagicMock()
+        request.user.is_anonymous = True
+        with self.assertRaises(PermissionDenied) as err:
+            _get_user_workspace_old(self.app, request)
+
+        self.assertEqual(str(err.exception), "User is not authenticated.")
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.workspace._get_user_workspace")

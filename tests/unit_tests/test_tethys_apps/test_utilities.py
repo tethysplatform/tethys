@@ -2,12 +2,27 @@ import unittest
 from pathlib import Path
 from unittest import mock
 from guardian.shortcuts import assign_perm
+from tethys_apps.models import TethysApp
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from django.core.signing import Signer
 from django.test import override_settings
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 
+import tethys_apps.base.app_base as tethys_app_base
+
+class TethysAppChild(tethys_app_base.TethysAppBase):
+    """
+    Tethys app class for Test App.
+    """
+
+    name = "Test App"
+    index = "home"
+    icon = "test_app/images/icon.gif"
+    package = "test_app"
+    root_url = "test-app"
+    color = "#2c3e50"
+    description = "Place a brief description of your app here."
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
     def setUp(self):
@@ -169,6 +184,19 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         # Try again with the defaults, which are a request of None and url of None
         result = utilities.get_active_app()
         self.assertEqual(None, result)
+
+    @override_settings(MULTIPLE_APP_MODE=True)
+    def test_get_app_model_request_app_base(self):
+        from tethys_apps.models import TethysApp
+        app = TethysApp.objects.create(
+            package="test_app", 
+            name="Test App", 
+            root_url="test-app"
+        )
+        app_base_instance = TethysAppChild()
+        app_model = utilities.get_app_model(app_base_instance)
+        self.assertIsNotNone(app_model)
+        self.assertEqual(app_model, app)
 
     @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_apps.models.TethysApp")

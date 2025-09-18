@@ -260,6 +260,17 @@ class TestTethysPathHelpers(unittest.TestCase):
         with self.assertRaises(ValueError):
             paths._resolve_user(None)
 
+    @mock.patch("tethys_apps.base.paths._resolve_user")
+    @mock.patch("tethys_apps.base.paths._resolve_app_class")
+    def test__get_user_workspace_unauthenticated(self, mock_ru, _):
+        fake_user = mock.Mock()
+        fake_user.is_anonymous = True
+        mock_ru.return_value = fake_user
+        with self.assertRaises(PermissionDenied) as err:
+            paths._get_user_workspace(self.mock_request, self.mock_request.user)
+
+        self.assertEqual(str(err.exception), "User is not authenticated.")
+
     def test_get_app_workspace_root(self):
         p = paths._get_app_workspace_root(self.mock_app)
         self.assertEqual(p, Path(settings.TETHYS_WORKSPACES_ROOT + "/app_package"))
