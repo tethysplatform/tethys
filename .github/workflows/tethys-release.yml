@@ -235,7 +235,7 @@ jobs:
 
   pypi-publish:
     name: >-
-      Publish Python 🐍 distribution 📦 to PyPI
+      Publish PyPI Distribution 📦
     needs:
     - pypi-build
     runs-on: ubuntu-latest
