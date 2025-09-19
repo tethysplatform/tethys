@@ -291,7 +291,7 @@ jobs:
         echo "Uploading is skipped for pull requests."
 
   test-pypi-build:
-    name: Build distribution 📦
+    name: Test Build PyPI Distribution 📦
     runs-on: ubuntu-latest
 
     steps:
