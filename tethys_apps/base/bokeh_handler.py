@@ -21,8 +21,8 @@ from django.shortcuts import render
 # Tethys Imports
 # TODO remove deprecated workspaces imports in 5.0
 from tethys_sdk.workspaces import (
-    get_user_workspace as get_user_workspace_old,
-    get_app_workspace as get_app_workspace_old,
+    get_user_workspace as _get_user_workspace_old,
+    get_app_workspace as _get_app_workspace_old,
 )
 
 from tethys_portal.optional_dependencies import optional_import
@@ -110,8 +110,8 @@ def with_workspaces(handler):
     @with_request
     @wraps(handler)
     def wrapper(doc: Document):
-        doc.user_workspace = get_user_workspace_old(doc.request, doc.request.user)
-        doc.app_workspace = get_app_workspace_old(doc.request)
+        doc.user_workspace = _get_user_workspace_old(doc.request, doc.request.user)
+        doc.app_workspace = _get_app_workspace_old(doc.request)
         return handler(doc)
 
     return wrapper
