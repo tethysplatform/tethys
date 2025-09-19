@@ -4,7 +4,7 @@
 Showcase Apps
 *************
 
-**Last Updated:** July 2022
+**Last Updated:** September 2025
 
 Starting in Tethys Platform 4.0, the Developer Tools pages were removed from the Tethys Portal including the Gizmo Showcase page. Two new Tethys Apps were developed to replace the Gizmo Showcase including the Gizmo Showcase App and the Layout Showcase App. These apps can easily be installed into any Tethys Portal and provide live demos and code examples of all of the Tethys Gizmos and Layouts, respectively. Use the instructions below to install each app and view the code.
 
@@ -18,6 +18,11 @@ The Gizmo Showcase App provides live demonstrations and code examples of every G
 .. figure:: ./resources/gizmo_showcase_app.png
     :width: 800px
     :align: center
+
+Live Demo
+---------
+
+You can try the Tethys Gizmos Showcase App online on the `Tethys Demo Portal <https://demo.tethysgeoscience.org/apps/gizmo-showcase/>`_.
 
 Source Code
 -----------
@@ -76,6 +81,11 @@ Source Code
 The source code can be viewed on GitHub:
 
 * https://github.com/tethysplatform/tethysapp-layout_showcase
+
+Live Demo
+---------
+
+You can try the app Tethys Layout Showcase App online on the `Tethys Demo Portal <https://demo.tethysgeoscience.org/apps/layout-showcase/>`_.
 
 Installation
 ------------

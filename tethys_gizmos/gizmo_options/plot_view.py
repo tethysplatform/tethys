@@ -552,7 +552,7 @@ class PiePlot(PlotViewBase):
 
     ::
 
-        from tethys_sdk.gizmos import PieChart
+        from tethys_sdk.gizmos import PiePlot
 
         pie_plot_view = PiePlot(
             height='500px',
