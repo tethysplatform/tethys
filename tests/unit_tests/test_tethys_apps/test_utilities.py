@@ -189,11 +189,14 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_app_model_request_app_base(self):
         from tethys_apps.models import TethysApp
         app = TethysApp.objects.create(
-            package="test_app", 
-            name="Test App", 
-            root_url="test-app"
+            package="app_model_test_app", 
+            name="App Model Test App", 
+            root_url="app-model-test-app"
         )
         app_base_instance = TethysAppChild()
+        app_base_instance.package = "app_model_test_app"
+        app_base_instance.root_url = "app-model-test-app"
+        app_base_instance.name = "App Model Test App"
         app_model = utilities.get_app_model(app_base_instance)
         self.assertIsNotNone(app_model)
         self.assertEqual(app_model, app)
