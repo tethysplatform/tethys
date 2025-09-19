@@ -11,6 +11,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 
 import tethys_apps.base.app_base as tethys_app_base
 
+
 class TethysAppChild(tethys_app_base.TethysAppBase):
     """
     Tethys app class for Test App.
@@ -23,6 +24,7 @@ class TethysAppChild(tethys_app_base.TethysAppBase):
     root_url = "test-app"
     color = "#2c3e50"
     description = "Place a brief description of your app here."
+
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
     def setUp(self):
@@ -188,10 +190,11 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     @override_settings(MULTIPLE_APP_MODE=True)
     def test_get_app_model_request_app_base(self):
         from tethys_apps.models import TethysApp
+
         app = TethysApp.objects.create(
-            package="app_model_test_app", 
-            name="App Model Test App", 
-            root_url="app-model-test-app"
+            package="app_model_test_app",
+            name="App Model Test App",
+            root_url="app-model-test-app",
         )
         app_base_instance = TethysAppChild()
         app_base_instance.package = "app_model_test_app"
