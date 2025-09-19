@@ -317,7 +317,7 @@ jobs:
         path: dist/
 
   publish-to-testpypi:
-    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    name: Test Publish PyPI Distribution 📦 
     needs:
     - test-pypi-build
     runs-on: ubuntu-latest
