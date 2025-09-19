@@ -53,3 +53,9 @@ tethys = "tethys_cli:tethys_command"
 [tool.setuptools_scm]
 write_to = "tethys_portal/_version.py"
 local_scheme = "no-local-version"
+
+[tool.setuptools.packages.find]
+include = ["tethys_*"]
+
+[tool.setuptools]
+package-data = {"*" = ["*"]}
