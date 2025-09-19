@@ -2,7 +2,6 @@ import unittest
 from pathlib import Path
 from unittest import mock
 from guardian.shortcuts import assign_perm
-from tethys_apps.models import TethysApp
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps import utilities
 from django.core.signing import Signer
