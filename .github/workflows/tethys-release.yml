@@ -208,7 +208,7 @@ jobs:
         anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
   
   pypi-build:
-    name: Build distribution 📦
+    name: Build PyPI Distribution 📦
     runs-on: ubuntu-latest
 
     steps:
