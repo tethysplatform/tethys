@@ -546,7 +546,12 @@ def get_app_resources(app_or_request):
     Returns: TethysPath representing the public directory of the app (or extension).
 
     """
+    from tethys_apps.base.app_base import TethysAppBase
+
     app = _resolve_app_class(app_or_request)
+    if isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase):
+        return app().resources_path
+
     return app.resources_path
 
 
@@ -564,7 +569,12 @@ def get_app_public(app_or_request):
     Returns: TethysPath representing the public directory of the app (or extension).
 
     """
+    from tethys_apps.base.app_base import TethysAppBase
+
     app = _resolve_app_class(app_or_request)
+    if isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase):
+        return app().public_path
+
     return app.public_path
 
 
