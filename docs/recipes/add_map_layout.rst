@@ -1,11 +1,13 @@
-.. _add_map_layout :
+.. _add_map_layout_recipe :
 
 
 *****************
 Add a Map Layout
 *****************
 
-Optional prerequisite: Scaffold App
+**Last Updated:** June 2025
+
+Optional prerequisite: :ref:`Scaffold App<scaffold_an_app_recipe>`
 
 The map layout is a fundamental feature of Tethys that can be added to your app with just a few lines of code.
 
@@ -31,7 +33,7 @@ This can be done by replacing the entire contents of :file:`controllers.py` with
 
 .. tip:: MapLayout will override much of the base template you provide it as an argument, including the app_content and app_navigation_items blocks
 
-.. include:: steps/start_tethys_step.rst
+.. include:: steps/start_tethys_recipe_step.rst
 
 It is that simple! Return to your tethys server and open your app, refresh if needed, and confirm the change. Your map layout should look like the figure below.
 
@@ -41,4 +43,4 @@ It is that simple! Return to your tethys server and open your app, refresh if ne
 
 With under a dozen lines of code, you now have a fully interactive map with extent controls, basemap layer change, full screen mode, and a layers panel.
 
-.. tip:: For more details on map layouts see the :ref:`map_layout` API.
+.. tip:: For more details on map layouts see the :ref:`Map Layout API <map_layout>` 

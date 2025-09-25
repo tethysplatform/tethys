@@ -4,6 +4,8 @@
 Use Databases
 *************
 
+**Last Updated:** September 2025
+
 In this recipe you will configure your Tethys installation to use a Postgre SQL database.  There are many ways to install PostgreSQL, but for this recipe you will install it using Docker.
 
 a. Install PostgreSQL database with the PostGIS extension using Docker:

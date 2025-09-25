@@ -1,12 +1,12 @@
-.. _scaffold_an_app :
-
-
+.. _scaffold_an_app_recipe :
 
 ***************************
 Scaffold and Install an App
 ***************************
 
-Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
+**Last Updated:** June 2025
+
+Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :ref:`App Project Structure<app_project_structure>`).
 
 .. tip::
 
@@ -49,7 +49,7 @@ Now that you have a new Tethys app project, you need to install the app on your 
 3. View Your New App
 ====================
 
-.. include:: steps/start_tethys_step.rst
+.. include:: steps/start_tethys_recipe_step.rst
 
 .. figure:: ../../docs/images/recipes/scaffold_pic.png
     :width: 800px

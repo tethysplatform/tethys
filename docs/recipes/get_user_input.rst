@@ -1,9 +1,11 @@
-.. _get_user_input:
+.. _get_user_input_recipe :
 
 
 **************
 Get User Input
 **************
+
+**Last Updated:** September 2025
 
 HTML forms are the primary mechanism for obtaining input from users of your app.  
 
@@ -13,13 +15,14 @@ First, you will need to configure your inputs using Tethys Gizmos by adding them
 
 .. code-block:: python
 
+    from tethys_sdk.routing import controller
     from tethys_sdk.gizmos import TextInput, DatePicker, SelectInput, Button
     from .app import App
     
-    @controller(url='users/add')
-    def add_user(request):
+    @controller
+    def home(request):
         """
-        Controller for the Add User page.
+        Controller for the app home page.
         """
         # Define form gizmos
         name_input = TextInput(
@@ -27,17 +30,23 @@ First, you will need to configure your inputs using Tethys Gizmos by adding them
             name='name'
         )
 
-        title_input = SelectInput(
-            display_text='Title',
-            name='title',
-            multiple=False,
-            options=[('Mr.', 'Mr.'), ('Mrs.', 'Mrs.'), ('Ms.', 'Ms.')],
-            initial=['Mr.']
+        owner_name_input = TextInput(
+            display_text='Owner Name',
+            name='owner_name'
+        )        
+
+        measurement_type_input = SelectInput(
+            display_text = 'Measurement Type',
+            name='measurement_type',
+            options=[('Streamflow', 'streamflow'), 
+                    ('Temperature', 'temperature'), 
+                    ('Water Level', 'water_level')]
+            select2_options={'placeholder': 'Select a measurement type'}
         )
 
-        birthday_input = DatePicker(
-            name='birthday',
-            display_text='Birthday',
+        date_added_input = DatePicker(
+            name='date_added',
+            display_text='Date Added',
             autoclose=True,
             format='MM d, yyyy',
             start_view='decade',
@@ -49,33 +58,36 @@ First, you will need to configure your inputs using Tethys Gizmos by adding them
             name='submit-button',
             icon='plus-square',
             style='success',
-            attributes={'form': 'add-user-form'},
+            attributes={'form': 'add-gauge-form'},
             submit=True
         )
 
         context = {
             'name_input': name_input,
-            'title_input': title_input,
-            'birthday_input': birthday_input,
+            'owner_name_input': owner_name_input,
+            'measurement_type_input', measurement_type,
+            'date_added_input': date_added_input,
             'submit_button': submit_button,
         }
 
-        return App.render(request, 'add_user.html', context)
+        return App.render(request, 'home.html', context)
 
 
-2. Add a form to `add_user.html` file with the following: 
+2. Add a form to `home.html` file by replacing the contents of the app_content block with the following: 
 
 .. code-block:: HTML+django
-
+    :emphasize-lines: 2-10
+    
     {% block app_content %}
-    <h1>Add New User</h1>
-    <form id="add-user-form" method="post">
-        {% csrf_token %}
-        {% gizmo name_input %}
-        {% gizmo title_input %}
-        {% gizmo birthday_input %}
-        {% gizmo submit_button %}
-    </form>
+        <h1>Add New Gauge</h1>
+        <form id="add-gauge-form" method="post">
+            {% csrf_token %}
+            {% gizmo name_input %}
+            {% gizmo owner_name_input %}
+            {% gizmo measurement_type_input %}
+            {% gizmo date_added_input %}
+            {% gizmo submit_button %}
+        </form>
     {% endblock %}
 
 
@@ -83,73 +95,108 @@ The form is composed of the the HTML ``<form>`` tag and various input gizmos ins
 Also note that the ``method`` attribute of the ``<form>`` element is set to ``post``. This means the form will use the POST HTTP method to submit and transmit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <https://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
 
 .. note:: In this code block the form is being added to the main content area of the page.  Forms can be added anywhere you need them in your app by changing the template.
-.. check with Nathan on this note.  Also add link to extending templates
+.. TODO check with Nathan on this note.  Also add link to extending templates
 
-3. update your controller to handle form submissions by adding the highlighted dependency and updating the `add_user` controller.
+3. update your controller to handle form submissions by adding the highlighted dependency and updating the `home` controller.
 
 .. code-block:: python
-    :emphasize-lines: 1
+    :emphasize-lines: 1, 10-13, 16-41
 
     from django.contrib import messages
     ...
     
-    @controller(url='users/add')
-    def add_user(request):
+    @controller
+    def home(request):
         """
-        Controller for the Add User page.
+        Controller for the Add Gauge page.
         """
 
         name_error = ''
-        title_error = ''
-        birthday_error = ''
+        owner_name_error = ''
+        measurement_type_error = ''
+        date_added_error = ''
 
         # Handle form submission
         if request.POST and 'submit-button' in request.POST:
             # Get values
             has_errors = False
             name = request.POST.get('name', None)
-            title = request.POST.get('title', None)
-            birthday = request.POST.get('birthday', None)
+            owner_name = request.POST.get('owner_name', None)
+            measurement_type = request.POST.get('measurement_type', None)
+            date_added = request.POST.get('date_added', None)
 
             if not name:   
                 has_errors = True
                 name_error = 'Name is required'
 
-            if not title:
+            if not owner_name:
                 has_errors = True
-                title_error = 'Title is required'
+                owner_name_error = 'Owner name is required'
 
-            if not birthday:
+            if not measurement_type:
                 has_errors = True
-                birthday_error = 'Birthday is required'
+                measurement_type_error = 'Measurement type is required'
+
+            if not date_added:
+                has_errors = True
+                date_added_error = 'Date added is required'
 
             if not has_errors:
-                messages.success(request, f"Welcome, {title} {name}!")
+                messages.success(request, f"Added gauge {name}!")
         
         name_input = TextInput(
             display_text='Name',
-            name='name',
-            error=name_error
+            name='name'
         )
 
-        title_input = SelectInput(
-            display_text='Title',
-            name='title',
-            multiple=False,
-            options=[('Mr.', 'Mr.'), ('Mrs.', 'Mrs.'), ('Ms.', 'Ms.')],
-            initial=['Mr.'],
-            error=title_error
+        owner_name_input = TextInput(
+            display_text='Owner Name',
+            name='owner_name'
+        )        
+
+        measurement_type_input = SelectInput(
+            display_text = 'Measurement Type',
+            name='measurement_type',
+            options=[('Streamflow', 'streamflow'), 
+                    ('Temperature', 'temperature'), 
+                    ('Water Level', 'water_level')]
+            select2_options={'placeholder': 'Select a measurement type'}
         )
 
-        birthday_input = DatePicker(
-            name='birthday',
-            display_text='Birthday',
+        date_added_input = DatePicker(
+            name='date_added',
+            display_text='Date Added',
             autoclose=True,
             format='MM d, yyyy',
             start_view='decade',
             today_button=False,
-            error=birthday_error
         )
+
+        submit_button = Button(
+            display_text='Submit',
+            name='submit-button',
+            icon='plus-square',
+            style='success',
+            attributes={'form': 'add-gauge-form'},
+            submit=True
+        )
+
+        context = {
+            "name_input": name_input,
+            "owner_name_input": owner_name_input,
+            "measurement_type_input": measurement_type_input,
+            "date_added_input": date_added_input,
+            "submit_button": submit_button
+        }
+
+        return App.render(request, "home.html", context)
+
+The final product should look something like this:
+
+.. figure:: ../../docs/images/recipes/user_input.png
+    :width: 800px
+    :align: center
+
 
 .. tip::
 
@@ -168,4 +215,4 @@ Also note that the ``method`` attribute of the ``<form>`` element is set to ``po
     5. **Render the page, passing all gizmos to the template through the context**
 
         
-.. tip:: For more details on form Gizmos see the :ref:`gizmos_api`.
+.. tip:: For more details on form Gizmos see the :ref:`Gizmos Documentation<gizmos_api>`.
