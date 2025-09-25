@@ -18,7 +18,6 @@ import tethys_sdk.paths as paths
 from ... import UserFactory
 
 
-
 class TethysAppChild(tethys_app_base.TethysAppBase):
     """
     Tethys app class for Test App.
