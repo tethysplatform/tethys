@@ -2,7 +2,7 @@
 version: 1.1
 # This should be greater or equal to your tethys-platform in your environment
 tethys_version: ">=4.0.0"
-# This should match the app name in your pyproject.toml without the "tethysapp-" prefix.
+# This should match the extension name in your pyproject.toml without the "tethysext-" prefix.
 name: {{ project }}
 
 requirements:
@@ -13,4 +13,7 @@ requirements:
     packages:
 
   pip:
-    - reactpy-django
+
+  npm:
+
+post:
