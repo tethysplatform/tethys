@@ -6,6 +6,7 @@ import bokeh.application.application as baa
 from bokeh.document import Document
 
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.test import override_settings
 from tethys_apps.base.bokeh_handler import (
@@ -60,8 +61,8 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
     @mock.patch("tethys_apps.utilities.get_active_app")
-    @mock.patch("tethys_apps.base.bokeh_handler.get_user_workspace_old")
-    @mock.patch("tethys_apps.base.bokeh_handler.get_app_workspace_old")
+    @mock.patch("tethys_apps.base.bokeh_handler._get_user_workspace_old")
+    @mock.patch("tethys_apps.base.bokeh_handler._get_app_workspace_old")
     def test_with_workspaces_decorator(self, mock_gaw, mock_guw, _, __, ___, ____):
         mock_guw.return_value = "user-workspace"
         mock_gaw.return_value = "app-workspace"
@@ -76,6 +77,8 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
         self.assertEqual("user-workspace", ret_doc.user_workspace)
         self.assertEqual("app-workspace", ret_doc.app_workspace)
 
+    @mock.patch("tethys_apps.base.paths._check_app_quota")
+    @mock.patch("tethys_apps.base.paths._check_user_quota")
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
@@ -83,10 +86,10 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
-    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @override_settings(USE_OLD_WORKSPACES_API=False)
     def test_with_paths_decorator(
-        self, username, rac, mock_gamr, mock_gaw, _, __, ___, ____
+        self, mock_ru, rac, mock_gamr, mock_gaw, _, __, ___, ____, _____, ______
     ):
         mock_gaw.return_value = Path("workspaces")
         mock_gamr.return_value = Path("app-media-root/media")
@@ -97,7 +100,10 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
         mock_app.public_path = TethysPath("public")
         rac.return_value = mock_app
 
-        username.return_value = "mock-username"
+        User = get_user_model()
+        user = User(username="test_user")
+        mock_ru.return_value = user
+        mock_ru.return_value.username = "mock-username"
 
         @with_paths
         def with_paths_decorated(doc: Document):
@@ -128,6 +134,8 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(TethysPath("resources").path, ret_doc.app_resources_path.path)
         self.assertEqual(TethysPath("public").path, ret_doc.app_public_path.path)
 
+    @mock.patch("tethys_apps.base.paths._check_app_quota")
+    @mock.patch("tethys_apps.base.paths._check_user_quota")
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_quotas.utilities.log")
     @mock.patch("tethys_apps.base.workspace.log")
@@ -135,10 +143,10 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
-    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @override_settings(USE_OLD_WORKSPACES_API=False)
     async def test_with_paths_decorator_async(
-        self, username, rac, mock_gamr, mock_gaw, _, __, ___, ____
+        self, mock_ru, rac, mock_gamr, mock_gaw, _, __, ___, ____, _____, ______
     ):
         mock_gaw.return_value = Path("workspaces")
         mock_gamr.return_value = Path("app-media-root/media")
@@ -149,7 +157,10 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
         mock_app.public_path = TethysPath("public")
         rac.return_value = mock_app
 
-        username.return_value = "mock-username"
+        User = get_user_model()
+        user = User(username="test_user")
+        mock_ru.return_value = user
+        mock_ru.return_value.username = "mock-username"
 
         @with_paths
         async def with_paths_decorated(doc: Document):
