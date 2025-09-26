@@ -1,5 +1,6 @@
 .. _add_navigation_buttons_recipe:
 
+
 **********************
 Add Navigation Buttons
 **********************

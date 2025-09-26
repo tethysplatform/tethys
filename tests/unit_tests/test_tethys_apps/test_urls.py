@@ -69,7 +69,7 @@ class TestUrls(TethysTestCase):
 
     @mock.patch("django.urls.include")
     @mock.patch("tethys_portal.optional_dependencies.has_module")
-    def test_reactpy_urls(self, mock_has_module, mock_include):
+    def test_reactpy_django_urls(self, mock_has_module, mock_include):
         mock_has_module.return_value = True
         from tethys_portal import urls
         from importlib import reload

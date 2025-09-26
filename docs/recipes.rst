@@ -8,7 +8,7 @@ Recipes
     <div id="search-container">
         <input type="text" id="recipe-tag-search-bar" placeholder="Search..." />
     </div>
-
+    
 .. recipe-gallery::
     :layout: multi-row
     

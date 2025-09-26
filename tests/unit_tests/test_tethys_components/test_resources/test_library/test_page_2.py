@@ -1,5 +1,5 @@
 def test(lib):
-    lib.register("react-plotly@1.0.0", "plotly")
+    lib.register("react-plotly@1.0.0", "p")
     chart_data = {
         "river_id": "Test 123",
         "series": [{"x": 1, "y": 100}, {"x": 2, "y": 200}],

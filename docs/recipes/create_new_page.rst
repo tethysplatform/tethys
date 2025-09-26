@@ -25,7 +25,6 @@ You may need to create a new page to display various types of data, include expl
 .. code-block:: python
 
     from tethys_sdk.routing import controller
-
     @controller(name='new_page', url='new_page')
     def new_page(request):
         """
@@ -43,6 +42,7 @@ You may need to create a new page to display various types of data, include expl
 .. tip::  
     
     For more details on navigating between pages in your app see the :ref:`Add Navigation Buttons Recipe <add_navigation_buttons_recipe>` recipe and :ref:`templating_api`.
+
 
     For more details templating a new page see the :ref:`templating_api`.
 

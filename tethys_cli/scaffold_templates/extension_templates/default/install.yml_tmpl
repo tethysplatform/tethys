@@ -1,0 +1,19 @@
+# This file should be committed to your app code.
+version: 1.1
+# This should be greater or equal to your tethys-platform in your environment
+tethys_version: ">=4.0.0"
+# This should match the extension name in your pyproject.toml without the "tethysext-" prefix.
+name: {{ project }}
+
+requirements:
+  # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+  skip: false
+  conda:
+    channels:
+    packages:
+
+  pip:
+
+  npm:
+
+post:

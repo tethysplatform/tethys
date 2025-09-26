@@ -43,7 +43,7 @@ class TestPageHandler(TestCase):
         mock_get_layout.assert_called_once_with(mock_app, layout)
         render_called_with_args = mock_render.call_args.args
         self.assertEqual(render_called_with_args[0], request)
-        self.assertEqual(render_called_with_args[1], "tethys_apps/reactpy_base.html")
+        self.assertEqual(render_called_with_args[1], "tethys_apps/component_base.html")
         render_context = render_called_with_args[2]
         self.assertListEqual(
             list(render_context.keys()),

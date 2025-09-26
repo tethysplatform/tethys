@@ -197,7 +197,6 @@ The final product should look something like this:
     :width: 800px
     :align: center
 
-
 .. tip::
 
     **Form Validation Pattern**: The example above implements a common pattern for handling and validating form input. Generally, the steps are:

@@ -14,6 +14,6 @@ from tethys_apps.base.workspace import (
     TethysWorkspace,
     user_workspace,
     app_workspace,
-    get_app_workspace_old as get_app_workspace,
-    get_user_workspace_old as get_user_workspace,
+    _get_app_workspace_old as get_app_workspace,
+    _get_user_workspace_old as get_user_workspace,
 )

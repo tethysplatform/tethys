@@ -9,6 +9,7 @@ Add a Map Layout
 
 Optional prerequisite: :ref:`Scaffold App<scaffold_an_app_recipe>`
 
+
 The map layout is a fundamental feature of Tethys that can be added to your app with just a few lines of code.
 
 1. Swap default home controller with Map Layout
@@ -34,6 +35,7 @@ This can be done by replacing the entire contents of :file:`controllers.py` with
 .. tip:: MapLayout will override much of the base template you provide it as an argument, including the app_content and app_navigation_items blocks
 
 .. include:: steps/start_tethys_recipe_step.rst
+
 
 It is that simple! Return to your tethys server and open your app, refresh if needed, and confirm the change. Your map layout should look like the figure below.
 

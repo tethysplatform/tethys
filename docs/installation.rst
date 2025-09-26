@@ -6,7 +6,7 @@
 Detailed Installation
 *********************
 
-**Last Updated:** April 2025
+**Last Updated:** August 2025
 
 This section describes how to get Tethys Platform up and running as a fresh installation for app development.
 The steps within this section are what is executed behind the scenes when using ``tethys quickstart`` (see :ref:`quickstart`).
@@ -26,10 +26,10 @@ Be sure that the system you are using meets the minimum :ref:`system_reqs`.
 
 .. _getting_started_install_tethys:
 
-1. Install the ``tethys-platform`` package
-------------------------------------------
+1. Download and Install the ``tethys-platform`` package
+-------------------------------------------------------
 
-First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands:
+First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands to download and install the Tethys Platform package:
 
 |
 
@@ -71,7 +71,7 @@ First create a :ref:`virtual_environment` with the tool of your choice and then 
 
             pip install tethys-platform django=<DJANGO_VERSION>
 
-Alternatively, to install from source refer to the :ref:`setup_dev_environment` docs
+Alternatively, to download and install from source refer to the :ref:`setup_dev_environment` docs
 
 .. important::
 
