@@ -14,6 +14,7 @@ from tethys_apps.exceptions import (
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base.paths import TethysPath
 from tethys_apps.base.permissions import Permission, PermissionGroup
+import tethys_sdk.paths as paths
 from ... import UserFactory
 
 
@@ -563,12 +564,20 @@ class TestTethysAppBase(unittest.TestCase):
         ret = tethys_app_base.TethysAppBase().public_path
         self.assertEqual(TethysPath("tethysapp/public").path, ret.path)
 
+    def test_get_app_public(self):
+        ret = paths.get_app_public(TethysAppChild)
+        self.assertEqual(TethysAppChild().public_path.path, ret.path)
+
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.app_base.files")
-    def test_resrouces_path(self, mock_files, __):
+    def test_resources_path(self, mock_files, __):
         mock_files.return_value = Path("tethysapp")
         ret = tethys_app_base.TethysAppBase().resources_path
         self.assertEqual(TethysPath("tethysapp/resources").path, ret.path)
+
+    def test_get_app_resources(self):
+        ret = paths.get_app_resources(TethysAppChild)
+        self.assertEqual(TethysAppChild().resources_path.path, ret.path)
 
     def test_db_model(self):
         from tethys_apps.models import TethysApp
