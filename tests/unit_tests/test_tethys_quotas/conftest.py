@@ -1,8 +1,8 @@
 import pytest
-from tethys_quotas.apps import TethysQuotasConfig
+import tethys_quotas.apps as tqa
 
 
 @pytest.fixture(scope="function")
 def load_quotas(test_app):
-    c = TethysQuotasConfig(TethysQuotasConfig.name, "tethys_quotas")
+    c = tqa.TethysQuotasConfig(tqa.TethysQuotasConfig.name, tqa)
     c.ready()
