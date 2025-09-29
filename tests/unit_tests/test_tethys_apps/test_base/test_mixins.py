@@ -2,6 +2,7 @@ from pathlib import Path
 import unittest
 from unittest import mock
 from django.test import override_settings
+from django.contrib.auth import get_user_model
 import tethys_apps.base.mixins as tethys_mixins
 from tethys_apps.base.paths import TethysPath
 from ... import UserFactory
@@ -51,50 +52,61 @@ class TestTethysAsyncWebsocketConsumer(unittest.IsolatedAsyncioTestCase):
             == "permissions must be a list, tuple, or comma separated string"
         )
 
+    @mock.patch("tethys_apps.base.paths._check_app_quota")
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_app_workspace(self, gaw, _, __):
+    def test_app_workspace(self, gaw, _, __, ___):
         gaw.return_value = Path("workspaces")
         self.assertEqual(
             TethysPath("workspaces/app_workspace").path,
             self.consumer.app_workspace.path,
         )
 
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
-    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths._get_app_workspace_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_user_workspace(self, gaw, ru, _, __):
+    def test_user_workspace(self, gaw, ru, _, __, ___):
         gaw.return_value = Path("workspaces")
-        ru.return_value = "mock-username"
+        User = get_user_model()
+        user = User(username="test_user")
+        ru.return_value = user
+        ru.return_value.username = "mock-username"
+
         self.assertEqual(
             TethysPath("workspaces/user_workspaces/mock-username").path,
             self.consumer.user_workspace.path,
         )
 
+    @mock.patch("tethys_apps.base.paths._check_app_quota")
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_app_media(self, gamr, _, __):
+    def test_app_media(self, gamr, _, __, ___):
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
             TethysPath("app-media-root/media/app").path,
             self.consumer.app_media.path,
         )
 
+    @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.paths.Path.mkdir")
     @mock.patch("tethys_apps.base.paths._resolve_app_class")
-    @mock.patch("tethys_apps.base.paths._resolve_username")
+    @mock.patch("tethys_apps.base.paths._resolve_user")
     @mock.patch("tethys_apps.base.paths._get_app_media_root")
     @override_settings(USE_OLD_WORKSPACES_API=False)
-    def test_user_media(self, gamr, ru, rac, __):
+    def test_user_media(self, gamr, ru, rac, _, __):
         mock_app = mock.MagicMock()
         rac.return_value = mock_app
-        ru.return_value = "mock-username"
+        User = get_user_model()
+        user = User(username="test_user")
+        ru.return_value = user
+        ru.return_value.username = "mock-username"
         gamr.return_value = Path("app-media-root/media")
         self.assertEqual(
             TethysPath("app-media-root/media/user/mock-username").path,
