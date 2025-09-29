@@ -15,6 +15,7 @@
       </a>
     </li>
     {% if user.is_staff %}
+      {% if debug_mode %}
       <li><hr class="dropdown-divider"></li>
       <li>
         <a class="dropdown-item" href="{% url 'admin:create_app' %}" title="Create App">
@@ -23,9 +24,10 @@
       </li>
       <li>
         <a class="dropdown-item" href="{% url 'admin:import_app' %}" title="Import App">
-          <i class="bi bi-box-arrow-in-down"></i><span class="ms-2">Import App</span>
+          <i class="bi bi-upload"></i><span class="ms-2">Import App</span>
         </a>
       </li>
+      {% endif %}
       <li><hr class="dropdown-divider"></li>
       <li>
         <a class="dropdown-item" href="{% url 'admin:index' %}" title="System Admin Settings">

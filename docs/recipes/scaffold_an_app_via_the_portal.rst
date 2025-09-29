@@ -8,34 +8,53 @@ Scaffold and Install an App via the Portal
 
 .. important::
 
-    This feature is only available to **staff/admin users**.
+    This feature is only available to **staff/admin users** when the ``DEBUG`` portal setting is set to ``True``.
 
     This recipe assumes that you have already started your Tethys server (see :ref:`start_tethys`).
 
-Tethys Platform provides an easy way for **staff/admin users** to create new app projects via the Tethys Portal itself, rather than via command line.
+Tethys Platform provides an easy way for developers to create new app projects via the Tethys Portal itself, rather than via command line.
 
 .. note::
 
-    See :ref:`scaffold_an_app_via_command_line` if you need to automate an install or otherwise want to use the command line.
+    See :ref:`scaffold_an_app_via_command_line` if you need to automate an install or otherwise want/need to use the command line.
 
 Recipe
 ++++++
 
-1. Browse to your Tethys Portal and Log in as a Staff User
-==========================================================
+1. Browse to your Tethys Portal App Page
+========================================
 
-This is just a normal login with staff user credentials. If you are not a staff user, you will need to speak with your Tethys Portal administrator to determine if you can become a staff user.
+With standard, local development, this is at http://localhost:8000/apps/. You will be temporarily redirected to the Log In page if you are not already logged in.
 
-2. Click the "Create App" Card on the Apps Library page
-=======================================================
+2. Click the "Add App" Card on the Apps Library page
+====================================================
 
-This will not show up if you are not a staff user.
+This will ONLY show up if you are an **admin/staff user** and your Portal's ``DEBUG`` setting is set to ``True``.
 
 .. figure:: ../../docs/images/recipes/create_app_via_gui.png
     :width: 800px
     :align: center
 
-    Create App Icon on Apps Library Page as Staff User  
+    Add App card on Apps Library Page as Staff User
+
+2. Click the "Create" button on the Add App Modal
+=================================================
+
+.. figure:: ../../docs/images/recipes/create_app_via_gui_2.png
+    :width: 800px
+    :align: center
+
+    Add App Modal
+
+.. tip::
+
+    This options can also be found in the user dropdown menu in the upper right corner of the portal if logged in as a **staff/admin user** and your Portal's ``DEBUG`` setting is set to ``True``.
+
+    .. figure:: ../../docs/images/recipes/create_app_via_gui_dropdown.png
+        :width: 200px
+        :align: center
+
+        Create App option in user dropdown menu
 
 3. Fill Out the Form
 ====================
