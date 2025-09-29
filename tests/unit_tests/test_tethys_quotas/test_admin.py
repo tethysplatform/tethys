@@ -4,20 +4,20 @@ from tethys_apps.models import TethysApp
 from tethys_quotas.utilities import sync_resource_quota_handlers
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def setup_resource_quotas():
     sync_resource_quota_handlers()
 
 
 @pytest.mark.django_db
-def test_admin_resource_quotas_list(admin_client, setup_resource_quotas):
+def test_admin_resource_quotas_list(admin_client):
     assert ResourceQuota.objects.count() == 2
     response = admin_client.get("/admin/tethys_quotas/resourcequota/")
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_admin_resource_quotas_change(admin_client, setup_resource_quotas):
+def test_admin_resource_quotas_change(admin_client):
     assert ResourceQuota.objects.count() == 2
     user_quota = ResourceQuota.objects.get(applies_to="django.contrib.auth.models.User")
     response = admin_client.get(
@@ -27,7 +27,7 @@ def test_admin_resource_quotas_change(admin_client, setup_resource_quotas):
 
 
 @pytest.mark.django_db
-def test_admin_tethys_app_quotas_inline_inactive(admin_client, setup_resource_quotas):
+def test_admin_tethys_app_quotas_inline_inactive(admin_client):
     assert ResourceQuota.objects.count() == 2
     arq = ResourceQuota.objects.get(applies_to="tethys_apps.models.TethysApp")
     arq.active = False
@@ -40,7 +40,7 @@ def test_admin_tethys_app_quotas_inline_inactive(admin_client, setup_resource_qu
 
 
 @pytest.mark.django_db
-def test_admin_tethys_app_quotas_inline_active(admin_client, setup_resource_quotas):
+def test_admin_tethys_app_quotas_inline_active(admin_client):
     assert ResourceQuota.objects.count() == 2
     arq = ResourceQuota.objects.get(applies_to="tethys_apps.models.TethysApp")
     arq.active = True
@@ -55,9 +55,7 @@ def test_admin_tethys_app_quotas_inline_active(admin_client, setup_resource_quot
 
 
 @pytest.mark.django_db
-def test_admin_tethys_app_quotas_inline_active_impose_default(
-    admin_client, setup_resource_quotas
-):
+def test_admin_tethys_app_quotas_inline_active_impose_default(admin_client):
     assert ResourceQuota.objects.count() == 2
     arq = ResourceQuota.objects.get(applies_to="tethys_apps.models.TethysApp")
     arq.active = True
@@ -74,9 +72,7 @@ def test_admin_tethys_app_quotas_inline_active_impose_default(
 
 
 @pytest.mark.django_db
-def test_admin_user_quotas_inline_inactive(
-    admin_client, admin_user, setup_resource_quotas
-):
+def test_admin_user_quotas_inline_inactive(admin_client, admin_user):
     assert ResourceQuota.objects.count() == 2
     urq = ResourceQuota.objects.get(applies_to="django.contrib.auth.models.User")
     urq.active = False
@@ -88,9 +84,7 @@ def test_admin_user_quotas_inline_inactive(
 
 
 @pytest.mark.django_db
-def test_admin_user_quotas_inline_active(
-    admin_client, admin_user, setup_resource_quotas
-):
+def test_admin_user_quotas_inline_active(admin_client, admin_user):
     assert ResourceQuota.objects.count() == 2
     urq = ResourceQuota.objects.get(applies_to="django.contrib.auth.models.User")
     urq.active = True
@@ -104,9 +98,7 @@ def test_admin_user_quotas_inline_active(
 
 
 @pytest.mark.django_db
-def test_admin_user_quotas_inline_active_impose_default(
-    admin_client, admin_user, setup_resource_quotas
-):
+def test_admin_user_quotas_inline_active_impose_default(admin_client, admin_user):
     assert ResourceQuota.objects.count() == 2
     urq = ResourceQuota.objects.get(applies_to="django.contrib.auth.models.User")
     urq.active = True
@@ -122,7 +114,7 @@ def test_admin_user_quotas_inline_active_impose_default(
 
 
 @pytest.mark.django_db
-def test_admin_user_quotas_inline_add_user(admin_client, setup_resource_quotas):
+def test_admin_user_quotas_inline_add_user(admin_client):
     assert ResourceQuota.objects.count() == 2
     urq = ResourceQuota.objects.get(applies_to="django.contrib.auth.models.User")
     urq.active = True
