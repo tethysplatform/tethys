@@ -4,7 +4,7 @@
 Tethys Platform |version|
 *************************
 
-**Last Updated:** April 2025
+**Last Updated:** August 2025
 
 Tethys is a platform that can be used to develop and host geoscientific web apps. It includes a suite of free and open source software (FOSS) that has been carefully selected to address the unique development needs of geoscientific web apps. Tethys web apps are developed using a Python software development kit (SDK) which includes programmatic links to each software component. Tethys Platform is powered by the Django Python web framework giving it a solid web foundation with excellent security and performance. Refer to the :doc:`./features` article for an overview of the features of Tethys Platform.
 
@@ -17,7 +17,7 @@ Tethys is a platform that can be used to develop and host geoscientific web apps
 Quick Start
 ===========
 
-First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands:
+First create a :ref:`virtual_environment` with the tool of your choice and then run the following commands to download and install the Tethys Platform package:
 
 |
 
