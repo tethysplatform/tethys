@@ -50,9 +50,7 @@ def sync_resource_quota_handlers():
 
                     if not ResourceQuota.objects.filter(codename=codename).exists():
                         resource_quota = ResourceQuota(
-                            codename="{}_{}".format(
-                                entity_type.lower(), class_obj.codename
-                            ),
+                            codename=codename,
                             name="{} {}".format(entity_type, class_obj.name),
                             description=class_obj.description,
                             default=class_obj.default,
@@ -191,7 +189,7 @@ def get_quota(entity, codename):
             return result
 
     except (UserQuota.DoesNotExist, TethysAppQuota.DoesNotExist):
-        pass
+        pass  # TODO: missing coverage
 
     if rq.impose_default:
         result["quota"] = rq.default
@@ -225,9 +223,9 @@ def _convert_storage_units(units, amount):
     if isinstance(suffix, tuple):
         singular, multiple = suffix
         if amount == 1:
-            suffix = singular
+            suffix = singular.lower()
         else:
-            suffix = multiple
+            suffix = multiple.lower()
     return str(amount) + suffix
 
 
@@ -238,7 +236,7 @@ def _get_storage_units():
         (1024**3, " GB"),
         (1024**2, " MB"),
         (1024**1, " KB"),
-        (1024**0, (" byte", " bytes")),
+        (1024**0, (" BYTE", " BYTES")),
     ]
 
 
