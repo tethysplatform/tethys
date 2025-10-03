@@ -143,7 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cards.forEach(card => {
                 // Check if the tags of the card contain the search value
                 let tags = card.querySelector(".recipe-tags").textContent.toLowerCase();
-                if (tags.includes(searchValue)) {
+                let title = card.querySelector(".recipe-title").textContent.toLowerCase();
+                if (tags.includes(searchValue) || title.includes(searchValue)) {
                     card.classList.remove("hidden");
                 } else {
                     card.classList.add("hidden");
