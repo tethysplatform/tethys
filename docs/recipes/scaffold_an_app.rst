@@ -15,8 +15,6 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
    Windows Users: Use the Anaconda Powershell Prompt to run Tethys commands.  Visit the Anaconda site for instructions on installing `Anaconda Powershell Prompt <https://docs.anaconda.com/anaconda/install/>`_ or `Miniconda Powershell Prompt <https://docs.anaconda.com/miniconda/miniconda-install/>`_.
 
 
-Recipe
-++++++
 1. Generate Scaffold
 =====================
 To generate a new app using the scaffold, open a terminal, and execute the following commands:
@@ -49,7 +47,7 @@ Now that you have a new Tethys app project, you need to install the app on your 
 3. View Your New App
 ====================
 
-.. include:: steps/start_tethys_recipe_step.rst
+.. include:: steps/start_tethys_step.rst
 
 .. figure:: ../../docs/images/recipes/scaffold_pic.png
     :width: 800px

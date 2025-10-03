@@ -7,7 +7,7 @@ Create a New Page
 
 **Last Updated:** June 2025
 
-You may need to create a new page to display various types of data, include explanatory text, or have a home page separate from a map viewer.
+This recipe will show you how to add additional pages to your Tethys app. You may need to create a new page to display various types of data, include explanatory text, or have a home page separate from a map viewer.
 
 1. Create a new :file:`templates/new_app/new_page.html` with the following contents:
 

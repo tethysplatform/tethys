@@ -17,10 +17,10 @@ Recipes
     recipes/add_map_layout images/recipes/map_layout.png [map, app, new_app]
     recipes/create_new_page images/recipes/new_page.png [page, app, new_app]
     recipes/add_navigation_buttons images/recipes/app_navigation_menu.png [navigation, app, new_app]
-    recipes/get_user_input images/recipes/get_user_input.png 
-    recipes/click_to_plot images/recipes/click_to_plot_graph.png
-    recipes/gizmos images/recipes/get_user_input.png
-    recipes/file_upload images/recipes/file_upload_icon.png
+    recipes/get_user_input images/recipes/get_user_input.png [forms, form, input, gizmo]
+    recipes/click_to_plot images/recipes/click_to_plot_graph.png [plot, graph, map, gizmo]
+    recipes/gizmos images/recipes/gizmos_icon.png [gizmo]
+    recipes/file_upload images/recipes/file_upload_icon.png [gizmo, form, forms, input]
     
     
 Paths API
@@ -29,13 +29,13 @@ Paths API
 .. recipe-gallery::
     :layout: multi-row
 
-    recipes/paths_api/paths_api images/recipes/paths_icon.png
-    recipes/paths_api/user_workspace images/recipes/user_workspace_icon.png
-    recipes/paths_api/app_workspace images/recipes/app_workspace_icon.png
-    recipes/paths_api/app_media images/recipes/app_media_icon.png
-    recipes/paths_api/user_media images/recipes/user_media_icon.png
-    recipes/paths_api/app_public images/recipes/app_public_icon.png
-    recipes/paths_api/app_resources images/recipes/app_resources_icon.png
+    recipes/paths_api/paths_api images/recipes/paths_icon.png [paths, files]
+    recipes/paths_api/user_workspace images/recipes/user_workspace_icon.png [paths, user workspace, user_workspace, user, workspace, files]
+    recipes/paths_api/app_workspace images/recipes/app_workspace_icon.png [paths, app workspace, app_workspace, app, workspace, files]
+    recipes/paths_api/app_media images/recipes/app_media_icon.png [paths, app media, app_media, app, media, files]
+    recipes/paths_api/user_media images/recipes/user_media_icon.png [paths, user media, user_media, user, media, files]
+    recipes/paths_api/app_public images/recipes/app_public_icon.png [paths, app public, app_public, app, public, files]
+    recipes/paths_api/app_resources images/recipes/app_resources_icon.png [paths, app resources, app_public, app, resources, files]
 
 Quotas
 ++++++
@@ -43,9 +43,9 @@ Quotas
 .. recipe-gallery:: 
     :layout: multi-row 
 
-    recipes/quotas/app_quotas images/recipes/app_quotas_icon.png
-    recipes/quotas/user_quotas images/recipes/user_quotas_icon.png
-    recipes/quotas/custom_quotas images/recipes/custom_quotas_icon.png
+    recipes/quotas/app_quotas images/recipes/app_quotas_icon.png [quotas, app]
+    recipes/quotas/user_quotas images/recipes/user_quotas_icon.png [quotas, user]
+    recipes/quotas/custom_quotas images/recipes/custom_quotas_icon.png [quotas, custom]
 
 Databases
 +++++++++
@@ -53,7 +53,7 @@ Databases
 .. recipe-gallery::
     :layout: multi-row
     
-    recipes/databases/use_databases images/recipes/use_databases_icon.png
-    recipes/databases/persistent_service images/recipes/persistent_storage_icon.png
-    recipes/databases/create_database_models images/recipes/database_model_icon.png
-    recipes/databases/working_with_database_models images/recipes/working_with_database_icon.png
+    recipes/databases/use_databases images/recipes/use_databases_icon.png [database, docker]
+    recipes/databases/persistent_service images/recipes/persistent_store_icon.png [database, persistent store, service]
+    recipes/databases/create_database_models images/recipes/database_model_icon.png [database, models, persistent store]
+    recipes/databases/working_with_database_models images/recipes/working_with_database_icon.png [database, models, persistent store]

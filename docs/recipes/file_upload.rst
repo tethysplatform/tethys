@@ -7,26 +7,22 @@ Upload a File
 
 **Last Updated:** September 2025
 
-Prerequisite: :ref:`Get User Input Recipe<_recipe>`
+Prerequisite: :ref:`Get User Input Recipe<get_user_input_recipe>`
 
 This recipe will show you how to enable users to upload files to use in your app.
 
 Add a File Input to Your Form
 #############################
 
-Begin by adding an `input` line to your form:
+Begin by adding a file input line to your form:
 
 .. code-block:: html+django
     :emphasize-lines: 7
 
     <form id="add-gauge-form" method="post">
-        {% csrf_token %}
-        {% gizmo name_input %}
-        {% gizmo owner_name_input %}
-        {% gizmo measurement_type_input %}
-        {% gizmo date_added_input %}
+        ...
         <input type="file" name='measurements'>
-        {% gizmo submit_button %}
+        ...
     </form>
     {% endblock %}
 
@@ -54,28 +50,7 @@ Next, update your controller that handles the add-guage-form's input:
 
         # Handle form submission
         if request.POST and 'submit-button' in request.POST:
-            # Get values
-            has_errors = False
-            name = request.POST.get('name', None)
-            owner_name = request.POST.get('owner_name', None)
-            measurement_type = request.POST.get('measurement_type', None)
-            date_added = request.POST.get('date_added', None)
-
-            if not name:   
-                has_errors = True
-                name_error = 'Name is required'
-
-            if not owner_name:
-                has_errors = True
-                owner_name_error = 'Owner name is required'
-
-            if not measurement_type:
-                has_errors = True
-                measurement_type_error = 'Measurement type is required'
-
-            if not date_added:
-                has_errors = True
-                date_added_error = 'Date added is required'
+            ...
 
             if request.FILES and 'measurements' in request.FILES:
                 measurements_file = request.FILES.getlist('measurements')
@@ -85,12 +60,9 @@ Next, update your controller that handles the add-guage-form's input:
                     date = sline[0]
                     value = sline[1]
                     print(f"{date}, {value}")
-            else:
-                has_errors = True
-                measurements_error = 'Measurements are required'
 
-            if not has_errors:
-                messages.success(request, f"Added gauge {name}!")
+                ...
+            
 
 These new lines enter the file and print out each line of the file to the console. This example assumes a CSV file has been uploaded. 
 You can download an example CSV file for testing :download:`here <../_static/example_files/recipes/stream_height_measurements.csv>`
