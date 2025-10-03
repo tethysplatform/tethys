@@ -4,11 +4,11 @@ Recipes
 =======
 
 .. raw:: html
-    
-    <div id="search-container">
-        <input type="text" id="recipe-tag-search-bar" placeholder="Search..." />
-    </div>
 
+    <div id="search-container">
+        <input type="text" class="inline-flex items-center font-medium transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background border border-input hover:bg-accent focus:bg-accent hover:text-accent-foreground focus:text-accent-foreground hover:placeholder-accent-foreground py-2 px-4 relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64" id="recipe-tag-search-bar" placeholder="Search Recipes..." />
+    </div>
+    
 .. recipe-gallery::
     :layout: multi-row
     

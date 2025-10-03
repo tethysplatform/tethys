@@ -5,7 +5,7 @@ function prepareCarousel(carouselContainer) {
 
     function getCards() {
         // Function to get all visible cards in the carousel that are not cloned
-        return Array.from(carousel.querySelectorAll(".recipe-card")).filter(card => !card.classList.contains("hidden") && !card.classList.contains("cloned"));
+        return Array.from(carousel.querySelectorAll(".recipe-card")).filter(card => !card.classList.contains("recipe-hidden") && !card.classList.contains("cloned"));
     }
 
     function getNumOfCards() {
@@ -34,8 +34,8 @@ function prepareCarousel(carouselContainer) {
 
     // Only show and prepare buttons if there are more than 4 cards
     if (getNumOfCards() > 3) {
-        leftButton.classList.remove("hidden");
-        rightButton.classList.remove("hidden");
+        leftButton.classList.remove("recipe-hidden");
+        rightButton.classList.remove("recipe-hidden");
 
         // Clone the first and last 5 cards to the opposite end of the carousel to create the illusion of infinite scrolling
         let lastSlideClones = cards.slice(-4).map(card => { 
@@ -61,8 +61,8 @@ function prepareCarousel(carouselContainer) {
             updateCarousel(3);
         }); 
     } else {
-        leftButton.classList.add("hidden");
-        rightButton.classList.add("hidden");
+        leftButton.classList.add("recipe-hidden");
+        rightButton.classList.add("recipe-hidden");
         setTimeout(() => {
             carousel.style.transition = "none";
             carousel.style.transform = `translateX(${0}px)`;
@@ -143,7 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cards.forEach(card => {
                 // Check if the tags of the card contain the search value
                 let tags = card.querySelector(".recipe-tags").textContent.toLowerCase();
-                if (tags.includes(searchValue)) {
+                let title = card.querySelector(".recipe-title").textContent.toLowerCase();
+                if (tags.includes(searchValue) || title.includes(searchValue)) {
                     card.classList.remove("hidden");
                 } else {
                     card.classList.add("hidden");

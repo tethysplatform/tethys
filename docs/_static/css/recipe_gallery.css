@@ -1,13 +1,20 @@
 /* Recipe Gallery */
 
-.hidden {
+.recipe-hidden {
     display: none;
 }
 
-/* Style used in recipes.rst file only for testing */
-#recipe-tag-search-bar {
-    border: 1px solid black;
+#search-container {
+    position: relative;
 }
+
+#recipe-tag-search-bar {
+    position: absolute;
+    top: -40px;
+    right: 12px;
+}
+
+
 
 /* Shared styles for both styles of recipe gallery */
 .recipe-gallery-container {

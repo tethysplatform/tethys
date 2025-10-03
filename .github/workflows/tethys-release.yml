@@ -19,8 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
         django-version: [ "3.2", "4.2", "5.2" ]
+        exclude:
+          - python-version: "3.13"
+            django-version: "3.2"
     steps:
     # Checkout the source
     - name: Checkout Source
@@ -203,3 +206,46 @@ jobs:
         conda activate conda-build;
         echo "Publishing to dev channel...";
         anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
+  
+  pypi-build:
+    name: Build PyPI Distribution 📦
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  pypi-publish:
+    name: >-
+      Publish PyPI Distribution 📦
+    needs:
+    - pypi-build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

@@ -7,7 +7,6 @@ Scaffold and Install an App
 **Last Updated:** June 2025
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :ref:`App Project Structure<app_project_structure>`).
-
 .. tip::
 
    You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
