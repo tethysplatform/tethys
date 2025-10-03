@@ -7,7 +7,6 @@ Click to Plot
 
 **Last Updated:** September 2025
 
-
 Start with the :ref:`Map Layout Recipe <add_map_layout_recipe>`
 
 Add the following attribute to your map layout class.

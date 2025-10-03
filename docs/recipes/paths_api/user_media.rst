@@ -1,4 +1,4 @@
-.. _user_media :
+.. _user_media_recipe :
 
 User Media
 **********

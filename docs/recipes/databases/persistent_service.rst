@@ -1,4 +1,4 @@
-.. _persistent_service:
+.. _persistent_service_recipe:
 
 
 *************************************************

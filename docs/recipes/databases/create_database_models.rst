@@ -1,4 +1,4 @@
-.. _create_database_models :
+.. _create_database_models_recipe :
 
 
 *************************
@@ -161,5 +161,5 @@ The `dam_id` attribute in the Hydorgraph model and the `hydrograph_id` attribute
             session.close()
 
 
-Now that you've learned how to create your own database models, it may be useful to look at how to work with database models in other ways: :ref:`Working with Database Models <working_with_database_models>`
+Now that you've learned how to create your own database models, it may be useful to look at how to work with database models in other ways: :ref:`Working with Database Models <working_with_database_models_recipe>`
 

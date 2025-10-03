@@ -1,4 +1,4 @@
-.. _user_quotas:
+.. _user_quotas_recipe:
 
 
 ***********
@@ -71,4 +71,4 @@ You can clear out this workspace by pressing "edit" towards the top of the page 
    :align: center
 
 
-For more information on using the Paths API to access the user workspace path, check out the :ref:`User Workspace Path Recipe <user_workspace>`, or the :ref:`Paths API documentation <tethys_paths_api>`
+For more information on using the Paths API to access the user workspace path, check out the :ref:`User Workspace Path Recipe <user_workspace_recipe>`, or the :ref:`Paths API documentation <tethys_paths_api>`

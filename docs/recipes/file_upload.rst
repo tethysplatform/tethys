@@ -97,4 +97,4 @@ You can download an example CSV file for testing :download:`here <../_static/exa
 
 That's it! That's all you need to do to begin accepting file uploads from users in your very own Tethys App. 
 
-A good next step for an app like this would be to save these measurements to a database. If you need help setting up a database to store this information you can find instructions :ref:`here<create_database_models>`
+A good next step for an app like this would be to save these measurements to a database. If you need help setting up a database to store this information you can find instructions :ref:`here<create_database_models_recipe>`

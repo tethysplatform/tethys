@@ -1,4 +1,4 @@
-.. _app_media :
+.. _app_media_recipe :
 
 App Media
 *********

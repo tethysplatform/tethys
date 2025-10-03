@@ -1,11 +1,11 @@
-.. _working_with_database_models:
+.. _working_with_database_models_recipe:
 
 Working with Database models
 #############################
 
 **Last Updated:** September 2025
 
-This recipe will show you how to interact and work with database models. For more information on how to create database models, check out :ref:`Creating Database Models <create_database_models>`
+This recipe will show you how to interact and work with database models. For more information on how to create database models, check out :ref:`Creating Database Models <create_database_models_recipe>`
 
 There are a few different ways to interact with data from the database:
 
@@ -16,7 +16,7 @@ There are a few different ways to interact with data from the database:
 
 Below are examples for each of these interactions.
 
-For these examples, we'll use the Dam model defined in the :ref:`Creating Database Models <create_database_models>` recipe.
+For these examples, we'll use the Dam model defined in the :ref:`Creating Database Models <create_database_models_recipe>` recipe.
 
 In order to interact with the database in any way, you'll need to initiate a session to connect to it
 

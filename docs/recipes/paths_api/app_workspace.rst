@@ -1,4 +1,4 @@
-.. _app_workspace :
+.. _app_workspace_recipe :
 
 App Workspace
 #############

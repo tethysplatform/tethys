@@ -1,4 +1,4 @@
-.. _custom_quotas:
+.. _custom_quotas_recipe:
 
 
 *************
@@ -26,7 +26,7 @@ Inside `station_quota_handler.py` add the following:
 
     class StationQuotaHandler(ResourceQuotaHandler):
         """
-        Defines qutoas for measurement station storage for the persistent store._custom_quotas
+        Defines quotas for measurement station storage for the persistent store._custom_quotas
         
         inherits from ResourceQuotaHandler
         """

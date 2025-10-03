@@ -1,4 +1,4 @@
-.. _use_databases :
+.. _use_databases_recipe :
 
 *************
 Use Databases

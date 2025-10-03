@@ -1,4 +1,4 @@
-.. _app_quotas:
+.. _app_quotas_reicpe:
 
 
 **********
@@ -73,5 +73,5 @@ You can clear out this workspace by logging back into your admin account and acc
    :align: center
 
 
-For more information on using the Paths API to access the app workspace path, check out the :ref:`App Workspace Path Recipe <app_workspace>`
+For more information on using the Paths API to access the app workspace path, check out the :ref:`App Workspace Path Recipe <app_workspace_recipe>`
 , or the :ref:`Paths API documentation <tethys_paths_api>`

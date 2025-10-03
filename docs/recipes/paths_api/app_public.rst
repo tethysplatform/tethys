@@ -1,4 +1,4 @@
-.. _app_public :
+.. _app_public_recipe :
 
 App Public
 ##########

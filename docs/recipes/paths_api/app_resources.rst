@@ -1,4 +1,4 @@
-.. _app_resources :
+.. _app_resources_recipe :
 
 
 App Resources
@@ -23,12 +23,12 @@ Here is a common example of a Tethys MapLayout using the App Resources Path to o
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
 
-    @controller(name="home", app_public=True)
+    @controller(name="home", app_resources=True)
     class ExampleMapLayout(MapLayout):
         ...
 
-        def compose_layers(self, request, map_view, app_public, *args, **kwargs):
-            geojson_path = app_public.path / "example_file.geojson"
+        def compose_layers(self, request, map_view, app_resources, *args, **kwargs):
+            geojson_path = app_resources.path / "example_file.geojson"
             with open(geojson_path) as f:
                 geojson_contents = json.loads(f.read())
 

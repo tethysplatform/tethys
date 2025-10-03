@@ -1,4 +1,4 @@
-.. _user_workspace :
+.. _user_workspace_recipe :
 
 User Workspace
 ##############

@@ -1,4 +1,4 @@
-.. _web_sockets:
+.. _web_sockets_recipe:
 
 ***********
 Web Sockets

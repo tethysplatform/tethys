@@ -1,4 +1,4 @@
-.. _paths_api :
+.. _paths_api_recipe :
 
 
 *********
