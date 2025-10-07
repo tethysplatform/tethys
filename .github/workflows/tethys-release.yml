@@ -26,7 +26,7 @@ jobs:
       matrix:
         platform: [ ubuntu-latest ]
         python-version: [ "3.10.18", "3.11.13", "3.12.11", "3.13.7" ]
-        django-version: [ "3.2.25", "4.2.24", "5.2.7" ]
+        django-version: [ "3.2.24", "4.2.24", "5.2.7" ]
         exclude:
           - python-version: "3.13"
             django-version: "3.2"
