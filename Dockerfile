@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:bookworm
+FROM mambaorg/micromamba:debian13-slim
 ###################
 # BUILD ARGUMENTS #
 ###################
@@ -125,7 +125,8 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 RUN rm -rf /var/lib/apt/lists/*\
   && apt-get clean \
   && apt-get update \
-  && apt-get -y install curl \
+  && apt-get -y install curl gnupg2 ca-certificates lsb-release debian-archive-keyring \
+  && apt-get -y install --only-upgrade libpcre2-8-0 \
   && mkdir -p /etc/apt/keyrings \
   && curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | tee /etc/apt/keyrings/salt-archive-keyring.pgp \
   && curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.sources | tee /etc/apt/sources.list.d/salt.sources \

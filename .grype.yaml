@@ -1,0 +1,18 @@
+# Global configuration for Anchore Grype scans.
+# This keeps suppressions and path exclusions versioned alongside the codebase
+# so both local scans and the GitHub Action behave the same way.
+
+fail-on-severity: medium
+
+exclude:
+  # Salt’s vendored Python tree contains known CVEs that we do not ship.
+  - /opt/saltstack/**
+
+ignore:
+  # We intentionally pin an older CPython in the conda environment while we
+  # wait on conda-build support for the latest release. Track the waiver here
+  # so the justification is audited and easy to revisit.
+  - package:
+      name: python
+      type: binary
+    reason: "Pinned to an older CPython until conda-build grows support for the latest version."
