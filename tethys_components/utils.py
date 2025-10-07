@@ -198,8 +198,12 @@ def use_public():
     app = _infer_app_from_stack_trace()
     return app.public_path
 
+def _background_execute_wrapper(callable, args, callback=None):
+    result = callable(*args)
+    if callable(callback):
+        callback(result)
 
-def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=None):
+def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=None, callback=None):
     """
     Kick off a task in the background, optionally with a delay
 
@@ -213,11 +217,11 @@ def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=N
     if delay_seconds:
         from threading import Timer
 
-        t = Timer(delay_seconds, callable, args if args else [])
+        t = Timer(delay_seconds, _background_execute_wrapper, [callable, args if args else [], callback])
     else:
         from threading import Thread
 
-        t = Thread(target=callable, args=args if args else [])
+        t = Thread(target=_background_execute_wrapper, callable=callable, args=args if args else [], callback=callback)
 
     t.start()
 
@@ -225,7 +229,7 @@ def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=N
         from threading import Timer
 
         def repeat_function():
-            Thread(target=callable, args=args if args else []).start()
+            Thread(target=_background_execute_wrapper, callable=callable, args=args if args else [], callback=callback).start()
             Timer(repeat_seconds, repeat_function).start()
 
         repeat_function()
