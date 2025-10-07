@@ -4,6 +4,8 @@ name: Tethys-CI
 # Only run on tags.
 on:
   push:
+    branches:
+    - "*"
     tags:
     - "*"
 
