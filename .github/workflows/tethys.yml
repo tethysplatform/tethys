@@ -5,9 +5,8 @@ name: Tethys-CI
 on:
   push:
     branches:
-    - "*"
-    # - "main"
-    # - "release*"
+    - "main"
+    - "release*"
   pull_request:
     branches:
     - "*"
@@ -61,18 +60,18 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "ubuntu-latest" ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
-        django-version: [ "3.2.*", "4.2.*", "5.2.*" ]
+        python-version: [ "3.10.18", "3.11.13", "3.12.11", "3.13.7" ]
+        django-version: [ "3.2.24", "4.2.24", "5.2.7" ]
         include:
           - platform: "macos-latest"
-            python-version: "3.13"
-            django-version: "4.2.*"
+            python-version: "3.13.7"
+            django-version: "4.2.24"
           - platform: "macos-latest"
-            python-version: "3.13"
-            django-version: "5.2.*"
+            python-version: "3.13.7"
+            django-version: "5.2.7"
         exclude:
-          - python-version: "3.13"
-            django-version: "3.2.*"
+          - python-version: "3.13.7"
+            django-version: "3.2.24"
     steps:
     # Checkout the source
     - name: Checkout Source
@@ -101,7 +100,7 @@ jobs:
         tethys test -c -u -v 2
     # Generate Coverage Report
     - name: Generate Coverage Report
-      if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.django-version == '4.2' }}
+      if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.10.18' && matrix.django-version == '4.2.24' }}
       run: |
         pip install coveralls
         . ~/miniconda/etc/profile.d/conda.sh
@@ -115,8 +114,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
-        django-version: [ "3.2.*", "4.2.*", "5.2.*" ]
+        python-version: [ "3.10.18", "3.11.13", "3.12.11" ]
+        django-version: [ "3.2.24", "4.2.24", "5.2.7" ]
     steps:
     # Checkout the source
     - name: Checkout Source
@@ -155,8 +154,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
-        django-version: [ "3.2.*", "4.2.*", "5.2.*" ]
+        python-version: [ "3.10.18", "3.11.13", "3.12.11" ]
+        django-version: [ "3.2.24", "4.2.24", "5.2.7" ]
     services:
       tethys-postgis:
         image: postgis/postgis:14-3.3
