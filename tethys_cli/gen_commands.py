@@ -12,6 +12,7 @@ import json
 import string
 import sys
 import random
+import warnings
 from os import environ
 from datetime import datetime
 from pathlib import Path
@@ -36,11 +37,18 @@ from tethys_cli.cli_helpers import setup_django
 from .site_commands import SITE_SETTING_CATEGORIES
 
 from tethys_portal.optional_dependencies import optional_import, has_module
+from .cli_helpers import select_conda_cli_module
 
-# optional imports
-run_command, Commands = optional_import(
-    ("run_command", "Commands"), from_module="conda.cli.python_api"
-)
+
+with warnings.catch_warnings():
+    warnings.filterwarnings(
+        "ignore",
+        message=".*conda.cli.python_api.*",
+        category=DeprecationWarning,
+    )
+    run_command, Commands = optional_import(
+        ("run_command", "Commands"), from_module=select_conda_cli_module()
+    )
 
 environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 

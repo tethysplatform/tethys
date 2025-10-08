@@ -1,5 +1,6 @@
 import sys
 import subprocess
+from importlib import import_module
 from os import devnull
 from pathlib import Path
 from functools import wraps
@@ -123,3 +124,45 @@ def gen_salt_string_for_setting(app_name, setting):
         setting.value = secret_unsigned
         setting.clean()
         setting.save()
+
+
+def _parse_version_component(part: str) -> int:
+    digits = "".join(ch for ch in part if ch.isdigit())
+    return int(digits) if digits else 0
+
+
+def select_conda_cli_module() -> str:
+    """
+    Return the import path for the Conda CLI module that should be used.
+
+    Conda 25.9 moved the public API to ``conda.testing.conda_cli``. Earlier
+    versions still expose ``conda.cli.python_api``. We try the preferred module
+    first (based on the currently installed conda version) and fall back to the
+    classic location if needed.
+    """
+
+    try:
+        from conda import __version__ as conda_version
+    except Exception:
+        conda_version = "0.0"
+
+    parts = conda_version.split(".")
+    major = _parse_version_component(parts[0]) if parts else 0
+    minor = _parse_version_component(parts[1]) if len(parts) > 1 else 0
+
+    preferred = "conda.testing.conda_cli" if (major, minor) >= (25, 9) else "conda.cli.python_api"
+    candidates = [preferred]
+
+    for fallback in ("conda.cli.python_api", "conda.testing.conda_cli"):
+        if fallback not in candidates:
+            candidates.append(fallback)
+
+    for module_name in candidates:
+        try:
+            import_module(module_name)
+        except (ImportError, ModuleNotFoundError):
+            continue
+        else:
+            return module_name
+
+    return candidates[-1]
