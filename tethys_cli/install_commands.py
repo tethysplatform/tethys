@@ -21,6 +21,7 @@ from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
     setup_django,
     generate_salt_string,
+    select_conda_cli_module,
 )
 from tethys_apps.utilities import (
     link_service_to_app_setting,
@@ -30,7 +31,6 @@ from tethys_apps.utilities import (
 )
 
 from .gen_commands import download_vendor_static_files
-from .cli_helpers import select_conda_cli_module
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 

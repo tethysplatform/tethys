@@ -52,6 +52,8 @@ MOCK_MODULES = [
     "conda",
     "conda.cli",
     "conda.cli.python_api",
+    "conda.testing",
+    "conda.testing.conda_cli",
     "condorpy",
     "dask",
     "dask.delayed",

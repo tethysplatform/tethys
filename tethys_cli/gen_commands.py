@@ -32,12 +32,11 @@ from tethys_apps.utilities import (
 )
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
-from tethys_cli.cli_helpers import setup_django
+from tethys_cli.cli_helpers import setup_django, select_conda_cli_module
 
 from .site_commands import SITE_SETTING_CATEGORIES
 
 from tethys_portal.optional_dependencies import optional_import, has_module
-from .cli_helpers import select_conda_cli_module
 
 
 with warnings.catch_warnings():

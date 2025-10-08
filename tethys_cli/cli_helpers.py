@@ -1,9 +1,9 @@
 import sys
 import subprocess
-from importlib import import_module
 from os import devnull
 from pathlib import Path
 from functools import wraps
+from importlib import import_module
 
 import bcrypt
 import django
@@ -133,17 +133,16 @@ def _parse_version_component(part: str) -> int:
 
 def select_conda_cli_module() -> str:
     """
-    Return the import path for the Conda CLI module that should be used.
+    Return the import path for the Conda CLI helper module to use.
 
-    Conda 25.9 moved the public API to ``conda.testing.conda_cli``. Earlier
-    versions still expose ``conda.cli.python_api``. We try the preferred module
-    first (based on the currently installed conda version) and fall back to the
-    classic location if needed.
+    Conda 25.9 promotes ``conda.testing.conda_cli``; earlier versions still
+    expose ``conda.cli.python_api``. Attempt the preferred module first and
+    fall back gracefully when it is not available.
     """
 
     try:
         from conda import __version__ as conda_version
-    except Exception:
+    except Exception:  # pragma: no cover - conda not installed
         conda_version = "0.0"
 
     parts = conda_version.split(".")
@@ -160,7 +159,7 @@ def select_conda_cli_module() -> str:
     for module_name in candidates:
         try:
             import_module(module_name)
-        except (ImportError, ModuleNotFoundError):
+        except ImportError:
             continue
         else:
             return module_name

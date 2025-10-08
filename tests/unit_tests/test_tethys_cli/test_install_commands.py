@@ -3,12 +3,21 @@ from os import chdir, devnull
 from pathlib import Path
 from unittest import mock
 
-from conda.cli.python_api import Commands
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.test import TestCase
 
 from tethys_cli import install_commands
+from tethys_portal.optional_dependencies import FailedImport
+
+
+if isinstance(install_commands.Commands, FailedImport):
+    class _CondaCommandStub:
+        INSTALL = "install"
+
+    install_commands.Commands = _CondaCommandStub
+
+Commands = install_commands.Commands
 
 
 FNULL = open(devnull, "w")
