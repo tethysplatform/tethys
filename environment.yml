@@ -51,7 +51,8 @@ dependencies:
   - django-simple-captcha
   - django-mfa2
   - django-recaptcha
-  - social-auth-app-django
+  - social-auth-app-django>=5.0,<5.5
+  - social-auth-core>=4.5,<4.8
   - hs_restclient  # Used with HydroShare Social backend
   - python-jose # required by django-mfa2  - used for onelogin backend
   - django-oauth-toolkit
@@ -73,7 +74,7 @@ dependencies:
   - docker-py
 
   # Conda to allow Python API access to Conda Install
-  - conda
+  - conda<25.9
   - conda-libmamba-solver
 
   # database dependencies
