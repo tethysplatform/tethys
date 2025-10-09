@@ -3,7 +3,8 @@ import subprocess
 from os import devnull
 from pathlib import Path
 from functools import wraps
-import os, shutil
+import os
+import shutil
 from importlib import import_module
 import bcrypt
 import django
@@ -24,6 +25,7 @@ from tethys_cli.cli_colors import (
 
 
 TETHYS_HOME = Path(get_tethys_home_dir())
+
 
 class _LocalCondaCommands:
     COMPARE = "compare"
@@ -81,6 +83,7 @@ def run_process(process):
     finally:
         set_testing_environment(False)
 
+
 def load_conda_commands():
     """
     Try new location first, then old, then a local stub.
@@ -95,6 +98,7 @@ def load_conda_commands():
             pass
     return _LocalCondaCommands
 
+
 def conda_run_command():
     """
     Use python_api.run_command if present; otherwise our shell fallback.
@@ -103,6 +107,7 @@ def conda_run_command():
         return import_module("conda.cli.python_api").run_command
     except (ImportError, AttributeError):
         return _shell_run_command
+
 
 def _shell_run_command(command, *args, use_exception_handler=False, stdout=None, stderr=None):
     exe = (
@@ -118,6 +123,7 @@ def _shell_run_command(command, *args, use_exception_handler=False, stdout=None,
     cmd = [exe, str(command), *args]
     cp = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return (cp.stdout, cp.stderr, cp.returncode)
+
 
 def supress_stdout(func):
     @wraps(func)

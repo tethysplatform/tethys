@@ -151,13 +151,14 @@ class HydroShareBackendTest(unittest.TestCase):
             scope="scope",
         )
         mock_details = dict(name="", alias="")
-        
+
         # Create a call counter to track which call we're on
         call_count = 0
+
         def mock_extra_data_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
-            
+
             if call_count == 1:
                 # First call (with *args, **kwargs) should fail
                 raise TypeError("Invalid signature")
@@ -166,19 +167,19 @@ class HydroShareBackendTest(unittest.TestCase):
                 return mock_response.copy()
             else:
                 raise TypeError("Unexpected call")
-        
+
         mock_super_extra_data.side_effect = mock_extra_data_side_effect
-        
+
         hydro_share_auth2_obj = HydroShareOAuth2()
         hydro_share_auth2_obj.set_expires_in_to = 100
-        
+
         ret = hydro_share_auth2_obj.extra_data(
             "user1", "0001-009", mock_response, mock_details
         )
-        
+
         # Verify the method was called 2 times
         self.assertEqual(mock_super_extra_data.call_count, 2)
-        
+
         # Verify the result contains expected data
         self.assertEqual("foo@gmail.com", ret["email"])
         self.assertEqual("token1", ret["access_token"])
@@ -189,7 +190,7 @@ class HydroShareBackendTest(unittest.TestCase):
         """Test extra_data when parent method requires pipeline_kwargs as empty dict"""
         mock_response = dict(
             email="foo@gmail.com",
-            username="user1", 
+            username="user1",
             access_token="token1",
             token_type="type1",
             expires_in=500,
@@ -197,13 +198,14 @@ class HydroShareBackendTest(unittest.TestCase):
             scope="scope",
         )
         mock_details = dict(name="", alias="")
-        
+
         # Create a call counter to track which call we're on
         call_count = 0
+
         def mock_extra_data_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
-            
+
             if call_count == 1:
                 # First call (with *args, **kwargs) should fail
                 raise TypeError("Invalid signature")
@@ -215,19 +217,19 @@ class HydroShareBackendTest(unittest.TestCase):
                 return mock_response.copy()
             else:
                 raise TypeError("Unexpected call")
-        
+
         mock_super_extra_data.side_effect = mock_extra_data_side_effect
-        
+
         hydro_share_auth2_obj = HydroShareOAuth2()
         hydro_share_auth2_obj.set_expires_in_to = 200
-        
+
         ret = hydro_share_auth2_obj.extra_data(
             "user1", "0001-009", mock_response, mock_details
         )
-        
+
         # Verify the method was called 3 times
         self.assertEqual(mock_super_extra_data.call_count, 3)
-        
+
         # Verify the result
         self.assertEqual("foo@gmail.com", ret["email"])
         self.assertEqual(200, ret["expires_in"])
@@ -246,21 +248,21 @@ class HydroShareBackendTest(unittest.TestCase):
         )
         mock_details = dict(name="Test User", alias="test")
         mock_pipeline_kwargs = {"some": "data"}
-        
+
         mock_super_extra_data.return_value = mock_response.copy()
-        
+
         hydro_share_auth2_obj = HydroShareOAuth2()
-        
+
         ret = hydro_share_auth2_obj.extra_data(
-            "testuser", "test-uid", mock_response, mock_details, 
+            "testuser", "test-uid", mock_response, mock_details,
             pipeline_kwargs=mock_pipeline_kwargs
         )
-        
+
         # Verify the parent method was called with pipeline_kwargs
         mock_super_extra_data.assert_called_once_with(
             "testuser", "test-uid", mock_response, mock_details, mock_pipeline_kwargs
         )
-        
+
         # Verify additional data was added
         self.assertIn("updated_at", ret)
         self.assertIn("expires_at", ret)

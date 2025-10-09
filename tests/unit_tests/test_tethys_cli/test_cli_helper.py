@@ -296,7 +296,7 @@ class TestCliHelper(unittest.TestCase):
     def test_new_conda_run_command(self, mock_import_module , mock_shutil_which, mock_os_environ_get, mock_subprocess_run):
         mock_import_module.return_value = ImportError
         mock_shutil_which.side_effect = ["conda", None , None]
-        mock_os_environ_get.side_effect = [None, None ]
+        mock_os_environ_get.side_effect = [None, None]
         exe = "conda"
         command = "list"
         args = [""]
@@ -317,7 +317,7 @@ class TestCliHelper(unittest.TestCase):
     def test_new_conda_run_command_with_error(self, mock_import_module, mock_shutil_which, mock_os_environ_get):
         mock_import_module.return_value = ImportError
         mock_shutil_which.side_effect = [None, None, None]
-        mock_os_environ_get.side_effect = [None, None ]
+        mock_os_environ_get.side_effect = [None, None]
         exe = "conda"
         command = "list"
         args = [""]
@@ -327,7 +327,6 @@ class TestCliHelper(unittest.TestCase):
         self.assertEqual(stderr, "conda executable not found on PATH")
         self.assertEqual(returncode, 1)
 
-    
     @mock.patch("tethys_cli.cli_helpers.import_module")
     def test_legacy_conda_run_command(self, mock_import_module):
         mock_import_module.return_value = mock.MagicMock(run_command=lambda command, *args: ("stdout", "stderr", 0))
@@ -344,9 +343,9 @@ class TestCliHelper(unittest.TestCase):
         mock_module = mock.MagicMock()
         mock_module.Commands = mock_commands
         mock_import_module.return_value = mock_module
-        
+
         result = cli_helper.load_conda_commands()
-        
+
         mock_import_module.assert_called_once_with("conda.cli.python_api")
         self.assertEqual(result, mock_commands)
 
@@ -356,12 +355,12 @@ class TestCliHelper(unittest.TestCase):
         mock_commands = mock.MagicMock()
         mock_module = mock.MagicMock()
         mock_module.Commands = mock_commands
-        
+
         # First call raises ImportError, second call succeeds
         mock_import_module.side_effect = [ImportError("Module not found"), mock_module]
-        
+
         result = cli_helper.load_conda_commands()
-        
+
         # Should have tried both modules
         expected_calls = [
             mock.call("conda.cli.python_api"),
@@ -375,12 +374,12 @@ class TestCliHelper(unittest.TestCase):
         """Test load_conda_commands when modules exist but don't have Commands attribute"""
         mock_module = mock.MagicMock()
         del mock_module.Commands  # Remove Commands attribute to trigger AttributeError
-        
+
         # First call raises AttributeError, second call raises ImportError
         mock_import_module.side_effect = [mock_module, ImportError("Module not found")]
-        
+
         result = cli_helper.load_conda_commands()
-        
+
         # Should have tried both modules and fallen back to local commands
         expected_calls = [
             mock.call("conda.cli.python_api"),
@@ -397,9 +396,9 @@ class TestCliHelper(unittest.TestCase):
             ImportError("conda.cli.python_api not found"),
             ImportError("conda.testing.integration not found")
         ]
-        
+
         result = cli_helper.load_conda_commands()
-        
+
         # Should have tried both modules
         expected_calls = [
             mock.call("conda.cli.python_api"),
@@ -411,13 +410,13 @@ class TestCliHelper(unittest.TestCase):
     def test_local_conda_commands_attributes(self):
         """Test that _LocalCondaCommands has expected attributes"""
         commands = cli_helper._LocalCondaCommands
-        
+
         # Test that all expected command attributes exist
         expected_commands = [
             "COMPARE", "CONFIG", "CLEAN", "CREATE", "INFO", "INSTALL",
             "LIST", "REMOVE", "SEARCH", "UPDATE", "RUN"
         ]
-        
+
         for command in expected_commands:
             self.assertTrue(hasattr(commands, command))
             self.assertEqual(getattr(commands, command), command.lower())

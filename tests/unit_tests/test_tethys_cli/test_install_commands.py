@@ -12,6 +12,7 @@ Commands = load_conda_commands()
 
 FNULL = open(devnull, "w")
 
+
 class TestServiceInstallHelpers(TestCase):
     def setUp(self):
         from tethys_apps.models import TethysApp
