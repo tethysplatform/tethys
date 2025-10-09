@@ -2,26 +2,15 @@ import sys
 from os import chdir, devnull
 from pathlib import Path
 from unittest import mock
-
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.test import TestCase
-
 from tethys_cli import install_commands
-from tethys_portal.optional_dependencies import FailedImport
+from tethys_cli.cli_helpers import load_conda_commands
 
-
-if isinstance(install_commands.Commands, FailedImport):
-    class _CondaCommandStub:
-        INSTALL = "install"
-
-    install_commands.Commands = _CondaCommandStub
-
-Commands = install_commands.Commands
-
+Commands = load_conda_commands()
 
 FNULL = open(devnull, "w")
-
 
 class TestServiceInstallHelpers(TestCase):
     def setUp(self):
