@@ -183,10 +183,14 @@ class HydroShareBackendTest(unittest.TestCase):
         # Verify the result contains expected data
         self.assertEqual("foo@gmail.com", ret["email"])
         self.assertEqual("token1", ret["access_token"])
-        self.assertEqual(100, ret["expires_in"])  # Should be overridden by set_expires_in_to
+        self.assertEqual(
+            100, ret["expires_in"]
+        )  # Should be overridden by set_expires_in_to
 
     @mock.patch("tethys_services.backends.hydroshare.BaseOAuth2.extra_data")
-    def test_extra_data_type_error_fallback_with_empty_pipeline(self, mock_super_extra_data):
+    def test_extra_data_type_error_fallback_with_empty_pipeline(
+        self, mock_super_extra_data
+    ):
         """Test extra_data when parent method requires pipeline_kwargs as empty dict"""
         mock_response = dict(
             email="foo@gmail.com",
@@ -254,8 +258,11 @@ class HydroShareBackendTest(unittest.TestCase):
         hydro_share_auth2_obj = HydroShareOAuth2()
 
         ret = hydro_share_auth2_obj.extra_data(
-            "testuser", "test-uid", mock_response, mock_details,
-            pipeline_kwargs=mock_pipeline_kwargs
+            "testuser",
+            "test-uid",
+            mock_response,
+            mock_details,
+            pipeline_kwargs=mock_pipeline_kwargs,
         )
 
         # Verify the parent method was called with pipeline_kwargs

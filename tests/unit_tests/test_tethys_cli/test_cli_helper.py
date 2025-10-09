@@ -293,17 +293,21 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
     @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_new_conda_run_command(self, mock_import_module , mock_shutil_which, mock_os_environ_get, mock_subprocess_run):
+    def test_new_conda_run_command(
+        self,
+        mock_import_module,
+        mock_shutil_which,
+        mock_os_environ_get,
+        mock_subprocess_run,
+    ):
         mock_import_module.return_value = ImportError
-        mock_shutil_which.side_effect = ["conda", None , None]
+        mock_shutil_which.side_effect = ["conda", None, None]
         mock_os_environ_get.side_effect = [None, None]
         exe = "conda"
         command = "list"
         args = [""]
         mock_subprocess_run.return_value = mock.MagicMock(
-            stdout="conda list output",
-            stderr="",
-            returncode=0
+            stdout="conda list output", stderr="", returncode=0
         )
         conda_run_func = cli_helper.conda_run_command()
         (stdout, stderr, returncode) = conda_run_func(exe, command, *args)
@@ -314,7 +318,9 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
     @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_new_conda_run_command_with_error(self, mock_import_module, mock_shutil_which, mock_os_environ_get):
+    def test_new_conda_run_command_with_error(
+        self, mock_import_module, mock_shutil_which, mock_os_environ_get
+    ):
         mock_import_module.return_value = ImportError
         mock_shutil_which.side_effect = [None, None, None]
         mock_os_environ_get.side_effect = [None, None]
@@ -329,7 +335,9 @@ class TestCliHelper(unittest.TestCase):
 
     @mock.patch("tethys_cli.cli_helpers.import_module")
     def test_legacy_conda_run_command(self, mock_import_module):
-        mock_import_module.return_value = mock.MagicMock(run_command=lambda command, *args: ("stdout", "stderr", 0))
+        mock_import_module.return_value = mock.MagicMock(
+            run_command=lambda command, *args: ("stdout", "stderr", 0)
+        )
         conda_run_func = cli_helper.conda_run_command()
         (stdout, stderr, returncode) = conda_run_func("list", "")
         self.assertEqual(stdout, "stdout")
@@ -364,7 +372,7 @@ class TestCliHelper(unittest.TestCase):
         # Should have tried both modules
         expected_calls = [
             mock.call("conda.cli.python_api"),
-            mock.call("conda.testing.integration")
+            mock.call("conda.testing.integration"),
         ]
         mock_import_module.assert_has_calls(expected_calls)
         self.assertEqual(result, mock_commands)
@@ -383,7 +391,7 @@ class TestCliHelper(unittest.TestCase):
         # Should have tried both modules and fallen back to local commands
         expected_calls = [
             mock.call("conda.cli.python_api"),
-            mock.call("conda.testing.integration")
+            mock.call("conda.testing.integration"),
         ]
         mock_import_module.assert_has_calls(expected_calls)
         self.assertEqual(result, cli_helper._LocalCondaCommands)
@@ -394,7 +402,7 @@ class TestCliHelper(unittest.TestCase):
         # Both import attempts fail
         mock_import_module.side_effect = [
             ImportError("conda.cli.python_api not found"),
-            ImportError("conda.testing.integration not found")
+            ImportError("conda.testing.integration not found"),
         ]
 
         result = cli_helper.load_conda_commands()
@@ -402,7 +410,7 @@ class TestCliHelper(unittest.TestCase):
         # Should have tried both modules
         expected_calls = [
             mock.call("conda.cli.python_api"),
-            mock.call("conda.testing.integration")
+            mock.call("conda.testing.integration"),
         ]
         mock_import_module.assert_has_calls(expected_calls)
         self.assertEqual(result, cli_helper._LocalCondaCommands)
@@ -413,8 +421,17 @@ class TestCliHelper(unittest.TestCase):
 
         # Test that all expected command attributes exist
         expected_commands = [
-            "COMPARE", "CONFIG", "CLEAN", "CREATE", "INFO", "INSTALL",
-            "LIST", "REMOVE", "SEARCH", "UPDATE", "RUN"
+            "COMPARE",
+            "CONFIG",
+            "CLEAN",
+            "CREATE",
+            "INFO",
+            "INSTALL",
+            "LIST",
+            "REMOVE",
+            "SEARCH",
+            "UPDATE",
+            "RUN",
         ]
 
         for command in expected_commands:

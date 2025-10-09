@@ -89,8 +89,8 @@ def load_conda_commands():
     Try new location first, then old, then a local stub.
     """
     for mod in (
-        "conda.cli.python_api",        # old
-        "conda.testing.integration",   # new verison has commands here
+        "conda.cli.python_api",  # old
+        "conda.testing.integration",  # new verison has commands here
     ):
         try:
             return import_module(mod).Commands
@@ -109,7 +109,9 @@ def conda_run_command():
         return _shell_run_command
 
 
-def _shell_run_command(command, *args, use_exception_handler=False, stdout=None, stderr=None):
+def _shell_run_command(
+    command, *args, use_exception_handler=False, stdout=None, stderr=None
+):
     exe = (
         shutil.which("conda")
         or os.environ.get("CONDA_EXE")

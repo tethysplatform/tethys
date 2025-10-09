@@ -21,7 +21,7 @@ from tethys_cli.cli_helpers import (
     setup_django,
     generate_salt_string,
     load_conda_commands,
-    conda_run_command
+    conda_run_command,
 )
 from tethys_apps.utilities import (
     link_service_to_app_setting,
