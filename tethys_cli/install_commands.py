@@ -1,7 +1,6 @@
 import yaml
 import json
 import getpass
-import warnings
 from os import devnull
 from pathlib import Path
 from subprocess import call, Popen, PIPE, STDOUT
@@ -21,7 +20,8 @@ from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
     setup_django,
     generate_salt_string,
-    select_conda_cli_module,
+    load_conda_commands,
+    conda_run_command
 )
 from tethys_apps.utilities import (
     link_service_to_app_setting,
@@ -31,18 +31,12 @@ from tethys_apps.utilities import (
 )
 
 from .gen_commands import download_vendor_static_files
-from tethys_portal.optional_dependencies import optional_import, has_module
+from tethys_portal.optional_dependencies import has_module
 
+# optional imports
+conda_run = conda_run_command()
+Commands = load_conda_commands()
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        "ignore",
-        message=".*conda.cli.python_api.*",
-        category=DeprecationWarning,
-    )
-    conda_run, Commands = optional_import(
-        ("run_command", "Commands"), from_module=select_conda_cli_module()
-    )
 
 FNULL = open(devnull, "w")
 

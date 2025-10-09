@@ -3,8 +3,8 @@ import subprocess
 from os import devnull
 from pathlib import Path
 from functools import wraps
+import os, shutil
 from importlib import import_module
-
 import bcrypt
 import django
 import yaml
@@ -24,6 +24,19 @@ from tethys_cli.cli_colors import (
 
 
 TETHYS_HOME = Path(get_tethys_home_dir())
+
+class _LocalCondaCommands:
+    COMPARE = "compare"
+    CONFIG = "config"
+    CLEAN = "clean"
+    CREATE = "create"
+    INFO = "info"
+    INSTALL = "install"
+    LIST = "list"
+    REMOVE = "remove"
+    SEARCH = "search"
+    UPDATE = "update"
+    RUN = "run"
 
 
 def add_geoserver_rest_to_endpoint(endpoint):
@@ -68,6 +81,43 @@ def run_process(process):
     finally:
         set_testing_environment(False)
 
+def load_conda_commands():
+    """
+    Try new location first, then old, then a local stub.
+    """
+    for mod in (
+        "conda.cli.python_api",        # old
+        "conda.testing.integration",   # new verison has commands here
+    ):
+        try:
+            return import_module(mod).Commands
+        except (ImportError, AttributeError):
+            pass
+    return _LocalCondaCommands
+
+def conda_run_command():
+    """
+    Use python_api.run_command if present; otherwise our shell fallback.
+    """
+    try:
+        return import_module("conda.cli.python_api").run_command
+    except (ImportError, AttributeError):
+        return _shell_run_command
+
+def _shell_run_command(command, *args, use_exception_handler=False, stdout=None, stderr=None):
+    exe = (
+        shutil.which("conda")
+        or os.environ.get("CONDA_EXE")
+        or shutil.which("mamba")
+        or shutil.which("micromamba")
+        or os.environ.get("MAMBA_EXE")
+    )
+    if not exe:
+        return ("", "conda executable not found on PATH", 1)
+
+    cmd = [exe, str(command), *args]
+    cp = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return (cp.stdout, cp.stderr, cp.returncode)
 
 def supress_stdout(func):
     @wraps(func)
@@ -124,44 +174,3 @@ def gen_salt_string_for_setting(app_name, setting):
         setting.value = secret_unsigned
         setting.clean()
         setting.save()
-
-
-def _parse_version_component(part: str) -> int:
-    digits = "".join(ch for ch in part if ch.isdigit())
-    return int(digits) if digits else 0
-
-
-def select_conda_cli_module() -> str:
-    """
-    Return the import path for the Conda CLI helper module to use.
-
-    Conda 25.9 promotes ``conda.testing.conda_cli``; earlier versions still
-    expose ``conda.cli.python_api``. Attempt the preferred module first and
-    fall back gracefully when it is not available.
-    """
-
-    try:
-        from conda import __version__ as conda_version
-    except Exception:  # pragma: no cover - conda not installed
-        conda_version = "0.0"
-
-    parts = conda_version.split(".")
-    major = _parse_version_component(parts[0]) if parts else 0
-    minor = _parse_version_component(parts[1]) if len(parts) > 1 else 0
-
-    preferred = "conda.testing.conda_cli" if (major, minor) >= (25, 9) else "conda.cli.python_api"
-    candidates = [preferred]
-
-    for fallback in ("conda.cli.python_api", "conda.testing.conda_cli"):
-        if fallback not in candidates:
-            candidates.append(fallback)
-
-    for module_name in candidates:
-        try:
-            import_module(module_name)
-        except ImportError:
-            continue
-        else:
-            return module_name
-
-    return candidates[-1]
