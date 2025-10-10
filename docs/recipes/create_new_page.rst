@@ -1,11 +1,13 @@
-.. _create_new_page:
+.. _create_new_page_recipe :
 
 
 *****************
 Create a New Page
 *****************
 
-You may need to create a new page to display various types of data, include explanatory text, or have a home page separate from a map viewer.
+**Last Updated:** June 2025
+
+This recipe will show you how to add additional pages to your Tethys app. You may need to create a new page to display various types of data, include explanatory text, or have a home page separate from a map viewer.
 
 1. Create a new :file:`templates/new_app/new_page.html` with the following contents:
 
@@ -22,6 +24,7 @@ You may need to create a new page to display various types of data, include expl
 
 .. code-block:: python
 
+    from tethys_sdk.routing import controller
     @controller(name='new_page', url='new_page')
     def new_page(request):
         """
@@ -38,7 +41,8 @@ You may need to create a new page to display various types of data, include expl
 
 .. tip::  
     
-    For more details on navigating between pages in your app see the :ref:`navigation_buttons_recipe` recipe and :ref:`templating_api`.
+    For more details on navigating between pages in your app see the :ref:`Add Navigation Buttons Recipe <add_navigation_buttons_recipe>` recipe and :ref:`templating_api`.
+
 
     For more details templating a new page see the :ref:`templating_api`.
 
