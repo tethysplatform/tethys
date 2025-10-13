@@ -18,6 +18,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
+            "has_cookieconsent": False,
             "has_terms": True,
             "has_mfa": True,
             "has_gravatar": True,
@@ -39,6 +40,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
+            "has_cookieconsent": False,
             "has_terms": False,
             "has_mfa": True,
             "has_gravatar": True,
@@ -64,6 +66,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
+            "has_cookieconsent": False,
             "has_terms": True,
             "has_mfa": True,
             "has_gravatar": True,
