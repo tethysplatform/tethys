@@ -30,7 +30,7 @@ def add_cookie_parser(subparsers):
     # ######### PURGE COOKIES COMMAND #########
     # #########################################
     purge_cookies_parser = cookie_subparsers.add_parser(
-        PURGE_COOKIES_COMMAND, help="List existing cookie groups and cookies."
+        PURGE_COOKIES_COMMAND, help="Purge existing cookie groups and cookies."
     )
 
     purge_cookies_parser.set_defaults(func=cli_purge_cookies)
