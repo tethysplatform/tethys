@@ -1,0 +1,5 @@
+invalid_group:
+  ga:
+    description: "desc"
+    path: "/"
+    domain: "example.com"

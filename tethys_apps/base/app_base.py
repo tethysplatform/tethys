@@ -18,6 +18,8 @@ from django.utils.functional import classproperty
 from django.shortcuts import render, redirect, reverse
 from django.template.loader import render_to_string
 
+from tethys_portal.optional_dependencies import has_module
+from tethys_portal.cookies import sync_cookies_from_yaml
 from .testing.environment import (
     is_testing_environment,
     get_test_db_name,
@@ -58,6 +60,7 @@ class TethysBase(TethysBaseMixin):
     root_url = ""
     index = None
     controller_modules = []
+    cookie_config = "cookies.yaml"
 
     def __init__(self):
         self._url_patterns = None
@@ -91,6 +94,16 @@ class TethysBase(TethysBaseMixin):
 
         """
         return TethysPath(self._package_files / "resources")
+
+    @property
+    def cookie_config_path(self):
+        """
+        Property to access the cookie configuration file path.
+
+        Returns: TethysPath: path object bound to the cookie configuration file.
+
+        """
+        return self.resources_path.path / self.cookie_config
 
     @classproperty
     def db_model(cls):
@@ -1932,6 +1945,9 @@ class TethysAppBase(TethysBase):
             # More than one instance of the app in db... (what to do here?)
             elif len(db_apps) >= 2:
                 pass
+
+            if has_module("cookie_consent") and self.cookie_config_path.exists():
+                sync_cookies_from_yaml(self.cookie_config_path, self.package, self.name)
         except ProgrammingError:
             tethys_log.warning(
                 "Unable to sync app with database. tethys_apps_tethysapp "
