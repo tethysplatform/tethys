@@ -1,13 +1,12 @@
-.. _scaffold_an_app :
-
-
+.. _scaffold_an_app_recipe :
 
 ***************************
 Scaffold and Install an App
 ***************************
 
-Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
+**Last Updated:** June 2025
 
+Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :ref:`App Project Structure<app_project_structure>`).
 .. tip::
 
    You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
@@ -15,8 +14,6 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
    Windows Users: Use the Anaconda Powershell Prompt to run Tethys commands.  Visit the Anaconda site for instructions on installing `Anaconda Powershell Prompt <https://docs.anaconda.com/anaconda/install/>`_ or `Miniconda Powershell Prompt <https://docs.anaconda.com/miniconda/miniconda-install/>`_.
 
 
-Recipe
-++++++
 1. Generate Scaffold
 =====================
 To generate a new app using the scaffold, open a terminal, and execute the following commands:
