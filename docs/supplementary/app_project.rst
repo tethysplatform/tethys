@@ -1,3 +1,5 @@
+.. _app_project_structure:
+
 *********************
 App Project Structure
 *********************
