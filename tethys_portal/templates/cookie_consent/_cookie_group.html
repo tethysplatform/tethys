@@ -1,0 +1,60 @@
+{% load i18n %}
+{% load cookie_consent_tags %}
+
+
+<div class="cookie-group" style="margin: 2em;">
+  <div class="cookie-group-title">
+    <h3>{{ cookie_group.name }}</h3>
+
+    <p>
+    {{ cookie_group.description }}
+    </p>
+
+    {% if not cookie_group.is_required %}
+      <div class="cookie-group-form" style="display: flex; justify-content: flex-start;">
+       {% if not request|cookie_group_accepted:cookie_group.varname and not request|cookie_group_declined:cookie_group.varname %}
+       <form style="margin: 1em;" class="cookie-consent-accept" action="{% url "cookie_consent_accept" cookie_group.varname %}" method="POST">
+           {% csrf_token %}
+           <input class="btn-sm btn-outline-success" type="submit" value="{% trans "Accept" %}">
+         </form>
+        <form style="margin: 1em;" class="cookie-consent-decline" action="{% url "cookie_consent_decline" cookie_group.varname %}" method="POST">
+           {% csrf_token %}
+           <input class="btn btn-sm btn-outline-danger" type="submit" value="{% trans "Decline" %}">
+         </form>
+       {% elif request|cookie_group_accepted:cookie_group.varname %}
+         <span style="margin: 1em; font-size: 14pt;" class="bi-check text-success cookie-consent-accepted">{% trans "Accepted" %}</span>
+         <form style="margin: 1em;" class="cookie-consent-decline" action="{% url "cookie_consent_decline" cookie_group.varname %}" method="POST">
+           {% csrf_token %}
+           <input class="btn btn-sm btn-outline-danger" type="submit" value="{% trans "Decline Instead" %}">
+         </form>
+       {% else %}
+         <span style="margin: 1em; font-size: 14pt;" class="bi-x text-danger cookie-consent-declined">{% trans "Declined" %}</span>
+         <form style="margin: 1em;" class="cookie-consent-accept" action="{% url "cookie_consent_accept" cookie_group.varname %}" method="POST">
+           {% csrf_token %}
+           <input class="btn-sm btn-outline-success" type="submit" value="{% trans "Accept Instead" %}">
+         </form>
+       {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+
+  <table>
+  {% for cookie in cookie_group.cookie_set.all %}
+   <tr>
+     <th style="padding: 1em;">
+        {{ cookie.name }}
+        {% if cookie.domain %}
+          ({{ cookie.domain }})
+        {% endif %}
+     </th>
+     <td style="padding: 1em;">
+       {% if cookie.description %}
+        {{ cookie.description }}
+       {% endif %}
+     </td>
+   </tr>
+  {% endfor %}
+  </table>
+
+</div>

@@ -349,5 +349,11 @@
     {% if has_analytical %}
     {% include "analytical_body_bottom.html" %}
     {% endif %}
+
+    {% block cookie_consent %}
+    {% if has_cookieconsent %}
+    {% include "cookie_consent.html" %}
+    {% endif %}
+    {% endblock %}
   </body>
 </html>
