@@ -46,6 +46,7 @@ def _get_cookie_config(cookie_yaml_path, formal_namespace):
 
     Args:
         cookie_yaml_path (str or Path): Path to the YAML file containing cookie definitions.
+        formal_namespace (str): Human-readable app name used when formatting group descriptions.
     Returns:
         dict: Merged and validated cookie configuration.
     """
@@ -76,6 +77,18 @@ def _get_cookie_config(cookie_yaml_path, formal_namespace):
 
 
 def sync_cookies_from_yaml(yaml_path, namespace, name):
+    """Load cookie definitions from a YAML file and synchronize them.
+
+    This is a thin wrapper that loads the YAML cookie configuration using
+    :func:`_get_cookie_config` and then applies the configuration to the
+    database by calling :func:`_sync_cookies_from_dict`.
+
+    Args:
+        yaml_path (str or Path): Path to the YAML file containing cookie definitions.
+        namespace (str): A short namespace to prefix cookie group varnames in the DB
+            (typically the app package or "tethys_portal").
+        name (str): Human-readable app name used when building group display names.
+    """
     cookie_config_dict = _get_cookie_config(yaml_path, name)
     _sync_cookies_from_dict(cookie_config_dict, namespace, name)
 
@@ -93,6 +106,25 @@ def sync_portal_cookies():
 
 
 def _sync_cookies_from_dict(cookie_config_dict, namespace, name):
+    """Synchronize cookie groups and cookies with the database.
+
+    Given a cookie configuration dictionary (as returned by
+    :func:`_get_cookie_config`), ensure the database reflects the
+    configuration for the provided namespace. The function will:
+
+    - Delete cookie groups (and their cookies) that exist in the DB but are
+      not present in the configuration for the namespace.
+    - Delete individual cookies from groups when a cookie exists in the DB
+      but not in the configuration.
+    - Create new cookie groups and cookies when they are present in the
+      configuration but missing from the DB.
+    - Update existing cookie groups and cookies when properties differ.
+
+    Args:
+        cookie_config_dict (dict): Merged cookie configuration dictionary.
+        namespace (str): Namespace used as a prefix for DB cookie group varnames.
+        name (str): Human-readable app name used when building group display names.
+    """
     from cookie_consent.models import CookieGroup, Cookie
 
     db_cookie_groups = CookieGroup.objects.filter(
