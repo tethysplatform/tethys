@@ -17,6 +17,7 @@ Command Line Interface
 
    tethys_cli/version
    tethys_cli/app_settings
+   tethys_cli/cookies
    tethys_cli/db
    tethys_cli/docker
    tethys_cli/gen
