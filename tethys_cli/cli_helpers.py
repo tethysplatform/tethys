@@ -110,7 +110,7 @@ def conda_run_command():
 
 
 def _shell_run_command(
-    command, *args, use_exception_handler=False, stdout=None, stderr=None
+    command, *args, use_exception_handler=False, stdout=None, stderr=None, **kwargs
 ):
     exe = (
         shutil.which("conda")
@@ -123,8 +123,26 @@ def _shell_run_command(
         return ("", "conda executable not found on PATH", 1)
 
     cmd = [exe, str(command), *args]
-    cp = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return (cp.stdout, cp.stderr, cp.returncode)
+    auto_yes_commands = {_LocalCondaCommands.INSTALL}
+    if str(command) in auto_yes_commands and not any(
+        arg in ("--yes", "-y") for arg in args
+    ):
+        cmd.append("--yes")
+
+    proc = subprocess.Popen(
+        cmd,
+        stdin=None,
+        stdout=stdout or subprocess.PIPE,
+        stderr=stderr or subprocess.PIPE,
+        text=True,
+    )
+    try:
+        out, err = proc.communicate()
+    except KeyboardInterrupt:
+        proc.terminate()
+        out, err = proc.communicate()
+
+    return out, err, proc.returncode
 
 
 def supress_stdout(func):

@@ -289,7 +289,7 @@ class TestCliHelper(unittest.TestCase):
 
         self.assertEqual(mock_write_warning.call_count, 0)
 
-    @mock.patch("tethys_cli.cli_helpers.subprocess.run")
+    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
     @mock.patch("tethys_cli.cli_helpers.import_module")
@@ -298,51 +298,131 @@ class TestCliHelper(unittest.TestCase):
         mock_import_module,
         mock_shutil_which,
         mock_os_environ_get,
-        mock_subprocess_run,
+        mock_popen,
     ):
-        mock_import_module.return_value = ImportError
-        mock_shutil_which.side_effect = ["conda", None, None]
+        # Force fallback to shell implementation (import fails)
+        mock_import_module.side_effect = ImportError
+
+        mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
         mock_os_environ_get.side_effect = [None, None]
-        exe = "conda"
-        command = "list"
-        args = [""]
-        mock_subprocess_run.return_value = mock.MagicMock(
-            stdout="conda list output", stderr="", returncode=0
-        )
+
+        # Proc mock: communicate() tuple + returncode
+        proc = mock.MagicMock()
+        proc.communicate.return_value = ("conda list output", "")
+        proc.returncode = 0
+        mock_popen.return_value = proc
+
         conda_run_func = cli_helper.conda_run_command()
-        (stdout, stderr, returncode) = conda_run_func(exe, command, *args)
+        stdout, stderr, returncode = conda_run_func("list", "")
+
         self.assertEqual(stdout, "conda list output")
         self.assertEqual(stderr, "")
         self.assertEqual(returncode, 0)
 
+        # Ensure Popen was called with the resolved exe and command
+        called_cmd = mock_popen.call_args[0][0]
+        self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
+        # stdout/stderr default to PIPE when not provided
+        self.assertEqual(mock_popen.call_args.kwargs.get("stdout"), -1)  # passed positionally
+        self.assertEqual(mock_popen.call_args.kwargs.get("stderr"), -1)  # passed positionally
+
+
+    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
     @mock.patch("tethys_cli.cli_helpers.import_module")
     def test_new_conda_run_command_with_error(
-        self, mock_import_module, mock_shutil_which, mock_os_environ_get
+        self,
+        mock_import_module,
+        mock_shutil_which,
+        mock_os_environ_get,
+        mock_popen,
     ):
-        mock_import_module.return_value = ImportError
+        mock_import_module.side_effect = ImportError
+        # No executables discovered
         mock_shutil_which.side_effect = [None, None, None]
         mock_os_environ_get.side_effect = [None, None]
-        exe = "conda"
-        command = "list"
-        args = [""]
+
         conda_run_func = cli_helper.conda_run_command()
-        (stdout, stderr, returncode) = conda_run_func(exe, command, *args)
+        stdout, stderr, returncode = conda_run_func("list", "")
+
         self.assertEqual(stdout, "")
         self.assertEqual(stderr, "conda executable not found on PATH")
         self.assertEqual(returncode, 1)
+        mock_popen.assert_not_called()
+
+
+    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
+    @mock.patch("tethys_cli.cli_helpers.os.environ.get")
+    @mock.patch("tethys_cli.cli_helpers.shutil.which")
+    @mock.patch("tethys_cli.cli_helpers.import_module")
+    def test_new_conda_run_command_keyboard_interrupt(
+        self, mock_import_module, mock_which, mock_env_get, mock_popen
+    ):
+        # Force fallback to _shell_run_command
+        mock_import_module.side_effect = ImportError
+
+        # Make exe discovery succeed
+        mock_which.side_effect = ["/usr/bin/conda", None, None]
+        mock_env_get.side_effect = [None, None]
+
+        # Configure the Popen instance
+        proc = mock.MagicMock()
+        # First communicate raises KeyboardInterrupt; second returns empty output
+        proc.communicate.side_effect = [KeyboardInterrupt, ("", "")]
+        proc.returncode = 0
+        mock_popen.return_value = proc
+
+        conda_run_func = cli_helper.conda_run_command()
+        stdout, stderr, rc = conda_run_func("list", "")
+
+        self.assertEqual((stdout, stderr, rc), ("", "", 0))
+        proc.terminate.assert_called_once()
+
+        # sanity: check command used
+        called_cmd = mock_popen.call_args[0][0]
+        self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
+
 
     @mock.patch("tethys_cli.cli_helpers.import_module")
     def test_legacy_conda_run_command(self, mock_import_module):
         mock_import_module.return_value = mock.MagicMock(
-            run_command=lambda command, *args: ("stdout", "stderr", 0)
+            run_command=lambda command, *args, **kwargs: ("stdout", "stderr", 0)
         )
         conda_run_func = cli_helper.conda_run_command()
-        (stdout, stderr, returncode) = conda_run_func("list", "")
+        stdout, stderr, returncode = conda_run_func("list", "")
         self.assertEqual(stdout, "stdout")
         self.assertEqual(stderr, "stderr")
         self.assertEqual(returncode, 0)
+
+
+    # Optional: verify --yes auto-append for install
+    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
+    @mock.patch("tethys_cli.cli_helpers.os.environ.get")
+    @mock.patch("tethys_cli.cli_helpers.shutil.which")
+    @mock.patch("tethys_cli.cli_helpers.import_module")
+    def test_shell_run_command_auto_yes_for_install(
+        self,
+        mock_import_module,
+        mock_shutil_which,
+        mock_os_environ_get,
+        mock_popen,
+    ):
+        mock_import_module.side_effect = ImportError
+        mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
+        mock_os_environ_get.side_effect = [None, None]
+
+        proc = mock.MagicMock()
+        proc.communicate.return_value = ("", "")
+        proc.returncode = 0
+        mock_popen.return_value = proc
+
+        conda_run_func = cli_helper.conda_run_command()
+        conda_run_func("install", "numpy")
+
+        called_cmd = mock_popen.call_args[0][0]
+        self.assertEqual(called_cmd[0:2], ["/usr/bin/conda", "install"])
+        self.assertIn("--yes", called_cmd)
 
     @mock.patch("tethys_cli.cli_helpers.import_module")
     def test_load_conda_commands_first_module_success(self, mock_import_module):
