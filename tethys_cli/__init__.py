@@ -10,6 +10,7 @@
 
 # Commandline interface for Tethys
 import argparse
+import sys
 
 from tethys_cli.version_command import add_version_parser
 from tethys_cli.app_settings_commands import add_app_settings_parser
@@ -64,7 +65,7 @@ def tethys_command_parser():
     add_quickstart_parser(subparsers)
     add_test_parser(subparsers)
     add_proxyapps_parser(subparsers)
-    if has_module("cookie_consent"):
+    if has_module("cookie_consent") or "sphinx-build" in sys.argv[0]:
         add_cookie_parser(subparsers)
     return parser
 
