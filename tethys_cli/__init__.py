@@ -30,6 +30,9 @@ from tethys_cli.test_command import add_test_parser
 from tethys_cli.install_commands import add_install_parser
 from tethys_cli.uninstall_command import add_uninstall_parser
 from tethys_cli.proxyapps_commands import add_proxyapps_parser
+from tethys_cli.cookie_commands import add_cookie_parser
+
+from tethys_portal.optional_dependencies import has_module
 
 
 def tethys_command_parser():
@@ -61,6 +64,8 @@ def tethys_command_parser():
     add_quickstart_parser(subparsers)
     add_test_parser(subparsers)
     add_proxyapps_parser(subparsers)
+    if has_module("cookie_consent"):
+        add_cookie_parser(subparsers)
     return parser
 
 
