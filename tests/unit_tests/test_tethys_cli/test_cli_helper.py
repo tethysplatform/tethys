@@ -323,9 +323,12 @@ class TestCliHelper(unittest.TestCase):
         called_cmd = mock_popen.call_args[0][0]
         self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
         # stdout/stderr default to PIPE when not provided
-        self.assertEqual(mock_popen.call_args.kwargs.get("stdout"), -1)  # passed positionally
-        self.assertEqual(mock_popen.call_args.kwargs.get("stderr"), -1)  # passed positionally
-
+        self.assertEqual(
+            mock_popen.call_args.kwargs.get("stdout"), -1
+        )  # passed positionally
+        self.assertEqual(
+            mock_popen.call_args.kwargs.get("stderr"), -1
+        )  # passed positionally
 
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
@@ -350,7 +353,6 @@ class TestCliHelper(unittest.TestCase):
         self.assertEqual(stderr, "conda executable not found on PATH")
         self.assertEqual(returncode, 1)
         mock_popen.assert_not_called()
-
 
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
@@ -383,7 +385,6 @@ class TestCliHelper(unittest.TestCase):
         called_cmd = mock_popen.call_args[0][0]
         self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
 
-
     @mock.patch("tethys_cli.cli_helpers.import_module")
     def test_legacy_conda_run_command(self, mock_import_module):
         mock_import_module.return_value = mock.MagicMock(
@@ -395,8 +396,6 @@ class TestCliHelper(unittest.TestCase):
         self.assertEqual(stderr, "stderr")
         self.assertEqual(returncode, 0)
 
-
-    # Optional: verify --yes auto-append for install
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
