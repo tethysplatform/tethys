@@ -51,7 +51,23 @@ class HydroShareOAuth2(BaseOAuth2):
     set_expires_in_to = None
 
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):
-        data = super().extra_data(user, uid, response, details, *args, **kwargs)
+        pipeline_kwargs = kwargs.pop("pipeline_kwargs", None)
+
+        # Try the most specific cases first, then gracefully fall back.
+        try:
+            if pipeline_kwargs is not None:
+                # New-style signature (preferred when provided)
+                data = super().extra_data(user, uid, response, details, pipeline_kwargs)
+            else:
+                # Try whatever the parent accepts without pipeline_kwargs
+                data = super().extra_data(user, uid, response, details, *args, **kwargs)
+        except TypeError:
+            # Parent didn't like that call; try old signature, then new with {}
+            try:
+                data = super().extra_data(user, uid, response, details)
+            except TypeError:
+                # Some versions require a pipeline_kwargs arg; pass empty dict.
+                data = super().extra_data(user, uid, response, details, {})
 
         # testing purpose
         if self.set_expires_in_to is not None:
