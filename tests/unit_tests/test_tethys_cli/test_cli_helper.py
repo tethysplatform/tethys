@@ -385,10 +385,12 @@ class TestCliHelper(unittest.TestCase):
         called_cmd = mock_popen.call_args[0][0]
         self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
 
-    @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_legacy_conda_run_command(self, mock_import_module):
-        mock_import_module.return_value = mock.MagicMock(
-            run_command=lambda command, *args, **kwargs: ("stdout", "stderr", 0)
+    @mock.patch("tethys_cli.cli_helpers.optional_import")  # CHANGED
+    def test_legacy_conda_run_command(self, mock_optional_import):
+        mock_optional_import.return_value = lambda command, *args, **kwargs: (
+            "stdout",
+            "stderr",
+            0,
         )
         conda_run_func = cli_helper.conda_run_command()
         stdout, stderr, returncode = conda_run_func("list", "")

@@ -22,6 +22,7 @@ from tethys_cli.cli_colors import (
     write_success,
     write_warning,
 )
+from tethys_portal.optional_dependencies import optional_import, FailedImport
 
 
 TETHYS_HOME = Path(get_tethys_home_dir())
@@ -84,6 +85,16 @@ def run_process(process):
         set_testing_environment(False)
 
 
+def conda_available() -> bool:
+    return bool(
+        shutil.which("conda")
+        or os.environ.get("CONDA_EXE")
+        or shutil.which("mamba")
+        or shutil.which("micromamba")
+        or os.environ.get("MAMBA_EXE")
+    )
+
+
 def load_conda_commands():
     """
     Try new location first, then old, then a local stub.
@@ -101,12 +112,13 @@ def load_conda_commands():
 
 def conda_run_command():
     """
-    Use python_api.run_command if present; otherwise our shell fallback.
+    Prefer Conda's Python API when available; otherwise use our shell fallback.
     """
-    try:
-        return import_module("conda.cli.python_api").run_command
-    except (ImportError, AttributeError):
-        return _shell_run_command
+    run_api = optional_import("run_command", from_module="conda.cli.python_api")
+    if not isinstance(run_api, FailedImport):
+        return run_api
+    # Fall back to shell implementation
+    return _shell_run_command
 
 
 def _shell_run_command(
@@ -125,7 +137,7 @@ def _shell_run_command(
     cmd = [exe, str(command), *args]
     auto_yes_commands = {_LocalCondaCommands.INSTALL}
     if str(command) in auto_yes_commands and not any(
-        arg in ("--yes", "-y") for arg in args
+        a in ("--yes", "-y") for a in args
     ):
         cmd.append("--yes")
 
@@ -141,7 +153,6 @@ def _shell_run_command(
     except KeyboardInterrupt:
         proc.terminate()
         out, err = proc.communicate()
-
     return out, err, proc.returncode
 
 

@@ -31,14 +31,29 @@ from tethys_apps.utilities import (
 )
 from tethys_portal.dependencies import vendor_static_dependencies
 from tethys_cli.cli_colors import write_error, write_info, write_warning
-from tethys_cli.cli_helpers import setup_django, load_conda_commands, conda_run_command
+from tethys_cli.cli_helpers import (
+    setup_django,
+    load_conda_commands,
+    conda_run_command,
+)
 
 from .site_commands import SITE_SETTING_CATEGORIES
 
-from tethys_portal.optional_dependencies import has_module
+from tethys_portal.optional_dependencies import (
+    has_module,
+    optional_import,
+    FailedImport,
+)
 
 # optional imports
-run_command = conda_run_command()
+_conda_python_run_command = optional_import(
+    "run_command", from_module="conda.cli.python_api"
+)
+run_command = (
+    _conda_python_run_command
+    if not isinstance(_conda_python_run_command, FailedImport)
+    else conda_run_command()
+)
 Commands = load_conda_commands()
 
 environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
@@ -480,7 +495,7 @@ def download_vendor_static_files(args, cwd=None):
         install_instructions = (
             "To get npm you must install nodejs. Run the following command to install nodejs:"
             "\n\n\tconda install -c conda-forge nodejs\n"
-            if has_module(run_command)
+            if has_module(_conda_python_run_command)
             else "For help installing npm see: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm"
         )
         msg = (
