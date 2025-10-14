@@ -20,6 +20,9 @@ from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
     setup_django,
     generate_salt_string,
+    load_conda_commands,
+    conda_run_command,
+    conda_available,
 )
 from tethys_apps.utilities import (
     link_service_to_app_setting,
@@ -29,12 +32,15 @@ from tethys_apps.utilities import (
 )
 
 from .gen_commands import download_vendor_static_files
-from tethys_portal.optional_dependencies import optional_import, has_module
+from tethys_portal.optional_dependencies import has_module, optional_import
 
 # optional imports
-conda_run, Commands = optional_import(
-    ("run_command", "Commands"), from_module="conda.cli.python_api"
-)
+run_api = optional_import("run_command", from_module="conda.cli.python_api")
+if not has_module(run_api):
+    run_api = conda_run_command()
+conda_run = run_api
+Commands = load_conda_commands()
+
 
 FNULL = open(devnull, "w")
 
@@ -756,7 +762,7 @@ def install_command(args):
                 if "conda" in requirements_config and validate_schema(
                     "packages", requirements_config["conda"]
                 ):  # noqa: E501
-                    if has_module(conda_run):
+                    if conda_available() and has_module(run_api):
                         conda_config = requirements_config["conda"]
                         install_packages(
                             conda_config,
