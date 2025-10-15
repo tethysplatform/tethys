@@ -95,6 +95,8 @@ jobs:
     - name: Install Optional Packages
       if: ${{ matrix.django-version != '3.2' }}
       run: |
+        . ~/miniconda/etc/profile.d/conda.sh
+        conda activate tethys
         pip install reactpy_django
     # Test Tethys
     - name: Test Tethys
