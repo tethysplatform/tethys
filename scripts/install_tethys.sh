@@ -373,6 +373,8 @@ then
         # If DJANGO_VERSION is not "3.2", update environment with environment_django_gte_4_2.yml
         if [ "${DJANGO_VERSION}" != "3.2" ]; then
             conda env update -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment_django_gte_4_2.yml"
+        else
+            sudo rm -rf "${TETHYS_SRC}/tests/unit_tests/test_tethys_components"
         fi
         conda activate ${CONDA_ENV_NAME}
         pip install --no-deps -e ${TETHYS_SRC}
