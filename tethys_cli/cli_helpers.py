@@ -3,7 +3,9 @@ import subprocess
 from os import devnull
 from pathlib import Path
 from functools import wraps
-
+import os
+import shutil
+from importlib import import_module
 import bcrypt
 import django
 import yaml
@@ -20,9 +22,24 @@ from tethys_cli.cli_colors import (
     write_success,
     write_warning,
 )
+from tethys_portal.optional_dependencies import optional_import, FailedImport
 
 
 TETHYS_HOME = Path(get_tethys_home_dir())
+
+
+class _LocalCondaCommands:
+    COMPARE = "compare"
+    CONFIG = "config"
+    CLEAN = "clean"
+    CREATE = "create"
+    INFO = "info"
+    INSTALL = "install"
+    LIST = "list"
+    REMOVE = "remove"
+    SEARCH = "search"
+    UPDATE = "update"
+    RUN = "run"
 
 
 def add_geoserver_rest_to_endpoint(endpoint):
@@ -66,6 +83,77 @@ def run_process(process):
         pass
     finally:
         set_testing_environment(False)
+
+
+def conda_available() -> bool:
+    return bool(
+        shutil.which("conda")
+        or os.environ.get("CONDA_EXE")
+        or shutil.which("mamba")
+        or shutil.which("micromamba")
+        or os.environ.get("MAMBA_EXE")
+    )
+
+
+def load_conda_commands():
+    """
+    Try new location first, then old, then a local stub.
+    """
+    for mod in (
+        "conda.cli.python_api",  # old
+        "conda.testing.integration",  # new verison has commands here
+    ):
+        try:
+            return import_module(mod).Commands
+        except (ImportError, AttributeError):
+            pass
+    return _LocalCondaCommands
+
+
+def conda_run_command():
+    """
+    Prefer Conda's Python API when available; otherwise use our shell fallback.
+    """
+    run_api = optional_import("run_command", from_module="conda.cli.python_api")
+    if not isinstance(run_api, FailedImport):
+        return run_api
+    # Fall back to shell implementation
+    return _shell_run_command
+
+
+def _shell_run_command(
+    command, *args, use_exception_handler=False, stdout=None, stderr=None, **kwargs
+):
+    exe = (
+        shutil.which("conda")
+        or os.environ.get("CONDA_EXE")
+        or shutil.which("mamba")
+        or shutil.which("micromamba")
+        or os.environ.get("MAMBA_EXE")
+    )
+    if not exe:
+        return ("", "conda executable not found on PATH", 1)
+
+    cmd = [exe, str(command), *args]
+    auto_yes_commands = {_LocalCondaCommands.INSTALL}
+    if str(command) in auto_yes_commands and not any(
+        a in ("--yes", "-y") for a in args
+    ):
+        cmd.append("--yes")
+
+    proc = subprocess.Popen(
+        cmd,
+        stdin=None,
+        stdout=stdout or subprocess.PIPE,
+        stderr=stderr or subprocess.PIPE,
+        text=True,
+    )
+    try:
+        out, err = proc.communicate()
+    except KeyboardInterrupt:
+        proc.terminate()
+        out, err = proc.communicate()
+    return out, err, proc.returncode
 
 
 def supress_stdout(func):
