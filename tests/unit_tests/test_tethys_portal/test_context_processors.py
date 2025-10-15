@@ -19,7 +19,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
-            "has_cookieconsent": DJANGO_VERSION > (3, 2),
+            "has_cookieconsent": DJANGO_VERSION >= (4, 2),
             "has_terms": True,
             "has_mfa": True,
             "has_gravatar": True,
@@ -41,7 +41,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
-            "has_cookieconsent": DJANGO_VERSION > (3, 2),
+            "has_cookieconsent": DJANGO_VERSION >= (4, 2),
             "has_terms": False,
             "has_mfa": True,
             "has_gravatar": True,
@@ -67,7 +67,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
-            "has_cookieconsent": DJANGO_VERSION > (3, 2),
+            "has_cookieconsent": DJANGO_VERSION >= (4, 2),
             "has_terms": True,
             "has_mfa": True,
             "has_gravatar": True,
