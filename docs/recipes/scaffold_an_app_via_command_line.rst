@@ -8,6 +8,8 @@ Scaffold and Install an App via Command Line
 
 Tethys Platform provides an easy way to create new app projects via command line with the ``scaffold`` command. This command generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
+**Last Updated:** October 2025
+
 .. tip::
 
    You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
@@ -18,8 +20,6 @@ Tethys Platform provides an easy way to create new app projects via command line
 
     See :ref:`scaffold_an_app_via_the_portal` if you would rather avoid using the command line.
 
-Recipe
-++++++
 1. Generate Scaffold
 =====================
 To generate a new app using the ``scaffold`` command, open a terminal, :ref:`activate_environment`, and execute the following commands:
