@@ -238,10 +238,12 @@ class TestAppLifeCycle(TestCase):
                 ],
             ],
         )
-    
+
     def test_unpatched_run(self):
         mock_proof = MagicMock()
+
         async def test_func():
             mock_proof()
+
         app_lifecycle.unpatched_run(test_func())
         mock_proof.assert_called_once()

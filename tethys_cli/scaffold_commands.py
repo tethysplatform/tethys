@@ -390,9 +390,7 @@ def scaffold_command(args):
             provided_via_cli = getattr(args, item["name"])
             valid = True
             if validator_func:
-                valid, provided_via_cli = validator_func(
-                    provided_via_cli, default
-                )
+                valid, provided_via_cli = validator_func(provided_via_cli, default)
 
             if not valid:
                 write_pretty_output(

@@ -31,17 +31,18 @@ TOUCH_COMMAND = (
     else f"touch {settings.__file__}"
 )
 
+
 def unpatched_run(main):
-    """ An "unpatched" version of asyncio.run (see below)
-    
+    """An "unpatched" version of asyncio.run (see below)
+
     The reactpy-django package depends upon nest-asyncio, which patches
     the call to asyncio.run to redirect those calls to itself. The
     nest-asyncio package hasn't been updated in a couple of years, and in
-    the meantime, asyncio.get_event_loop was updated to no longer 
+    the meantime, asyncio.get_event_loop was updated to no longer
     automatically create the loop if missing. The code here in app_lifecycle.py
-    was originally written to use asgiref.async_to_sync, which under the covers 
+    was originally written to use asgiref.async_to_sync, which under the covers
     would call asyncio.get_event_loop and automatically create a loop for use
-    in the new thread. Due to asyncio's update, it became necessary to 
+    in the new thread. Due to asyncio's update, it became necessary to
     self-manage the event loop in the thread. The best practice for this is to
     use asyncio.run, which will create and manage an event loop for the duration
     of the process, closing it at the end. Circling back to where this started
@@ -62,18 +63,22 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
     channel_layer = get_channel_layer()
     try:
         for index, (command, message) in enumerate(command_message_tuples):
-            unpatched_run(channel_layer.group_send(
-                f"app_{app_package}",
-                {
-                    "type": "progress.message",
-                    "progress_metadata": {
-                        "app_package": revised_app_package or app_package,
-                        "error_code": 0,
-                        "percentage": int(100 * index / len(command_message_tuples)),
-                        "message": message,
+            unpatched_run(
+                channel_layer.group_send(
+                    f"app_{app_package}",
+                    {
+                        "type": "progress.message",
+                        "progress_metadata": {
+                            "app_package": revised_app_package or app_package,
+                            "error_code": 0,
+                            "percentage": int(
+                                100 * index / len(command_message_tuples)
+                            ),
+                            "message": message,
+                        },
                     },
-                },
-            ))
+                )
+            )
             if message == "Restarting server...":
                 sleep(
                     0.5
@@ -81,22 +86,22 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
             result = run(command, shell=True, check=True, capture_output=True)
             output = str(result.stdout)
             if "Successfully installed " in output:
-                match = re.search(
-                    r"Successfully installed ([\w_]+)", output
-                )
+                match = re.search(r"Successfully installed ([\w_]+)", output)
                 revised_app_package = match.group(match.lastindex)
 
     except CalledProcessError as e:
-        unpatched_run(channel_layer.group_send(
-            f"app_{app_package}",
-            {
-                "type": "progress.message",
-                "progress_metadata": {
-                    "error_code": 1,
-                    "message": str(e),
+        unpatched_run(
+            channel_layer.group_send(
+                f"app_{app_package}",
+                {
+                    "type": "progress.message",
+                    "progress_metadata": {
+                        "error_code": 1,
+                        "message": str(e),
+                    },
                 },
-            },
-        ))
+            )
+        )
     if cleanup:
         try:
             cleanup()
@@ -262,7 +267,7 @@ def remove_app(request, app_id):
             ),
             (TOUCH_COMMAND, "Restarting server..."),
         ]
-        
+
         Timer(
             1, _execute_lifecycle_commands, args=[app_package, command_message_tuples]
         ).start()

@@ -404,7 +404,7 @@ class AppScaffoldForm(forms.Form):
         ),
         validators=[
             RegexValidator(
-                regex='([^,]+,? ?)+',
+                regex="([^,]+,? ?)+",
                 message="Tags must be a comma-separated list of strings.",
             ),
         ],

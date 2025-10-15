@@ -320,6 +320,7 @@ class TestCliHelper(unittest.TestCase):
         test_val = cli_helper.prompt_yes_or_no(question, default="n")
         self.assertIsNone(test_val)
         mock_input.assert_called_once()
+
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
