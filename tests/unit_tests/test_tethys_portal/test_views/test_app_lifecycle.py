@@ -239,11 +239,21 @@ class TestAppLifeCycle(TestCase):
             ],
         )
 
-    def test_unpatched_run(self):
-        mock_proof = MagicMock()
+    @patch("tethys_portal.views.app_lifecycle.asyncio")
+    @patch("tethys_portal.views.app_lifecycle.hasattr")
+    def test_unpatched_run_asyncio_has_runner(self, mock_hasattr, mock_asyncio):
+        mock_hasattr.return_value = True
+        mock_main = MagicMock()
+        app_lifecycle.unpatched_run(mock_main)
+        mock_asyncio.Runner.assert_called_once()
+        mock_asyncio.Runner.return_value.__enter__.return_value.run.assert_called_once_with(
+            mock_main
+        )
 
-        async def test_func():
-            mock_proof()
-
-        app_lifecycle.unpatched_run(test_func())
-        mock_proof.assert_called_once()
+    @patch("tethys_portal.views.app_lifecycle.asyncio")
+    @patch("tethys_portal.views.app_lifecycle.hasattr")
+    def test_unpatched_asyncio_missing_runner(self, mock_hasattr, mock_asyncio):
+        mock_hasattr.return_value = False
+        mock_main = MagicMock()
+        app_lifecycle.unpatched_run(mock_main)
+        mock_asyncio.run.assert_called_once_with(mock_main)
