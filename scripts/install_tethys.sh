@@ -370,6 +370,10 @@ then
         sudo sed "s/python>=.*/python=${PYTHON_VERSION}/" "${TETHYS_SRC}/environment.yml" > "${TETHYS_SRC}/generated_environment.yml"
         sudo sed -i.bak "s/django>=.*/django=${DJANGO_VERSION}/" "${TETHYS_SRC}/generated_environment.yml"
         conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/generated_environment.yml"
+        # If DJANGO_VERSION is not "3.2", update environment with environment_django_gte_4_2.yml
+        if [ "${DJANGO_VERSION}" != "3.2" ]; then
+            conda env update -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment_django_gte_4_2.yml"
+        fi
         conda activate ${CONDA_ENV_NAME}
         pip install --no-deps -e ${TETHYS_SRC}
     else

@@ -1,0 +1,13 @@
+# environment_django_gte_4_2.yml
+# Configuration file for updating a Conda Environment with dependencies of Tethys Platform
+# that require Django >= 4.2.
+# Update the environment by running the following command (after creating the base environment.yml):
+#   $ mamba env update -f environment_django_gte_4_2.yml
+
+name: tethys
+
+channels:
+  - conda-forge
+
+dependencies:
+   - django-cookie-consent  # requires users to accept cookie usage
