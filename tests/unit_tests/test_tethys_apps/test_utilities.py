@@ -755,7 +755,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         env_tethys_home = None
         active_conda_env = "tethys"  # Default Tethys environment name
         expand_user_path = "/home/tethys"
-        active_venv = None
+        active_venv = ""
 
         mock_environ.get.side_effect = [
             env_tethys_home,
@@ -769,7 +769,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(mock_environ.get.call_count, 3)
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "()")
 
         # Returns default tethys home environment
         self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
@@ -782,7 +782,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         env_tethys_home = None
         active_conda_env = "foo"  # Non-default Tethys environment name
         expand_user_path = "/home/tethys"
-        active_venv = None
+        active_venv = ""
 
         mock_environ.get.side_effect = [
             env_tethys_home,
@@ -795,7 +795,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "()")
 
         # Returns joined path of default tethys home path and environment name
         self.assertEqual(
@@ -807,7 +807,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_tethys_home_dir__tethys_home_defined(self, mock_home, mock_environ):
         env_tethys_home = "/foo/.bar"
         active_conda_env = "foo"
-        active_venv = None
+        active_venv = ""
         mock_environ.get.side_effect = [
             env_tethys_home,
             active_conda_env,
@@ -830,7 +830,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     ):
         env_tethys_home = None
         active_conda_env = None
-        active_venv = None
+        active_venv = ""
         expand_user_path = "/home/tethys"
 
         mock_environ.get.side_effect = [
@@ -838,18 +838,20 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
             active_conda_env,
             active_venv,
         ]  # [TETHYS_HOME, CONDA_DEFAULT_ENV, VIRTUAL_ENV_PROMPT]
-        mock_home.return_value = Path(expand_user_path)
+        mock_home_path = mock.MagicMock()
+        mock_home_path.__truediv__.side_effect = ["good_path", Exception]
+        mock_home.return_value = mock_home_path
 
         ret = utilities.get_tethys_home_dir()
 
         self.assertEqual(mock_environ.get.call_count, 3)
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "()")
         mock_tethys_log.warning.assert_called()
 
         # Returns default tethys home environment path
-        self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
+        self.assertEqual("good_path", ret)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     def test_get_app_class(self, mock_harvester):

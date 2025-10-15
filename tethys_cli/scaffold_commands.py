@@ -384,12 +384,14 @@ def scaffold_command(args):
     }
 
     for item in metadata_input:
+        validator_func = item["validator"] if callable(item["validator"]) else None
+        default = item["default"]() if callable(item["default"]) else item["default"]
         if getattr(args, item["name"]) is not None:
             provided_via_cli = getattr(args, item["name"])
             valid = True
-            if callable(item["validator"]):
-                valid, provided_via_cli = item["validator"](
-                    provided_via_cli, item["default"]
+            if validator_func:
+                valid, provided_via_cli = validator_func(
+                    provided_via_cli, default
                 )
 
             if not valid:
@@ -401,22 +403,21 @@ def scaffold_command(args):
 
             context[item["name"]] = provided_via_cli
         elif args.use_defaults:
-            default = item["default"]
-            context[item["name"]] = default() if callable(default) else default
+            context[item["name"]] = default
         else:
             valid = False
             while not valid:
                 try:
                     response = (
-                        input('{0} ["{1}"]: '.format(item["prompt"], item["default"]))
-                        or item["default"]
+                        input('{0} ["{1}"]: '.format(item["prompt"], default))
+                        or default
                     )
                 except (KeyboardInterrupt, SystemExit):
                     write_pretty_output("\nScaffolding cancelled.", FG_YELLOW)
                     exit(1)
 
-                if callable(item["validator"]):
-                    valid, response = item["validator"](response, item["default"])
+                if validator_func:
+                    valid, response = validator_func(response, default)
                 else:
                     valid = True
 

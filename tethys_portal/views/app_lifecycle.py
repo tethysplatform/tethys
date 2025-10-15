@@ -3,6 +3,7 @@ import os
 import platform
 import re
 
+import asyncio
 from pathlib import Path
 from shutil import unpack_archive, rmtree
 from subprocess import run, CalledProcessError
@@ -10,7 +11,6 @@ from tempfile import mkdtemp
 from threading import Timer
 from time import sleep
 
-from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from django.contrib.admin.views.decorators import staff_member_required
@@ -22,14 +22,35 @@ from tethys_apps.models import TethysApp
 from tethys_apps.utilities import get_app_class
 from tethys_cli.scaffold_commands import APP_PREFIX
 from tethys_portal.forms import AppScaffoldForm, AppImportForm
+from tethys_portal import settings
 
 
-CONDA_ENV = os.environ["CONDA_DEFAULT_ENV"]
-KILL_COMMAND = (
-    f"taskkill /F /PID {os.getpid()}"
+TOUCH_COMMAND = (
+    f"copy /b {settings.__file__}+,, {settings.__file__}"
     if platform.system() == "Windows"
-    else f"kill -9 {os.getpid()}"
+    else f"touch {settings.__file__}"
 )
+
+def unpatched_run(main):
+    """ An "unpatched" version of asyncio.run (see below)
+    
+    The reactpy-django package depends upon nest-asyncio, which patches
+    the call to asyncio.run to redirect those calls to itself. The
+    nest-asyncio package hasn't been updated in a couple of years, and in
+    the meantime, asyncio.get_event_loop was updated to no longer 
+    automatically create the loop if missing. The code here in app_lifecycle.py
+    was originally written to use asgiref.async_to_sync, which under the covers 
+    would call asyncio.get_event_loop and automatically create a loop for use
+    in the new thread. Due to asyncio's update, it became necessary to 
+    self-manage the event loop in the thread. The best practice for this is to
+    use asyncio.run, which will create and manage an event loop for the duration
+    of the process, closing it at the end. Circling back to where this started
+    above, asyncio.run is patched by nest-asyncio, and their version of "run"
+    doesn't manage the event loop, but relies on one already being there or
+    being auto-created by the old behavior of "asyncio.get_event_loop".
+    """
+    with asyncio.Runner() as runner:
+        return runner.run(main)
 
 
 def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=None):
@@ -41,7 +62,7 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
     channel_layer = get_channel_layer()
     try:
         for index, (command, message) in enumerate(command_message_tuples):
-            async_to_sync(channel_layer.group_send)(
+            unpatched_run(channel_layer.group_send(
                 f"app_{app_package}",
                 {
                     "type": "progress.message",
@@ -52,7 +73,7 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
                         "message": message,
                     },
                 },
-            )
+            ))
             if message == "Restarting server...":
                 sleep(
                     0.5
@@ -60,12 +81,13 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
             result = run(command, shell=True, check=True, capture_output=True)
             output = str(result.stdout)
             if "Successfully installed " in output:
-                revised_app_package = re.search(
+                match = re.search(
                     r"Successfully installed ([\w_]+)", output
-                ).group(1)
+                )
+                revised_app_package = match.group(match.lastindex)
 
     except CalledProcessError as e:
-        async_to_sync(channel_layer.group_send)(
+        unpatched_run(channel_layer.group_send(
             f"app_{app_package}",
             {
                 "type": "progress.message",
@@ -74,7 +96,7 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
                     "message": str(e),
                 },
             },
-        )
+        ))
     if cleanup:
         try:
             cleanup()
@@ -112,7 +134,7 @@ class AppLifeCycleConsumer(AsyncWebsocketConsumer):
 @staff_member_required
 def import_app(request):
     context = {"form": AppImportForm()}  # form key removed below if valid POST request
-
+    command_message_tuples = []
     if request.method == "POST":
         form = AppImportForm(request.POST, request.FILES)
         context["form"] = form
@@ -124,10 +146,6 @@ def import_app(request):
             app_folder_name = Path(import_name).stem
             app_package = app_folder_name.replace(f"{APP_PREFIX}-", "")
             abs_app_project_fpath = Path(tmpdir)
-
-            command_message_tuples = [
-                (f"conda activate {CONDA_ENV}", "Activating environment..."),
-            ]
 
             if zip_file:
                 dest_fpath = f"{tmpdir}/{zip_file.name}"
@@ -154,7 +172,7 @@ def import_app(request):
                     f"cd {abs_app_project_fpath} && tethys install -q",
                     "Installing into Tethys Portal...",
                 ),
-                (f"{KILL_COMMAND} && tethys start", "Restarting server..."),
+                (TOUCH_COMMAND, "Restarting server..."),
             ]
             app_package = app_package.replace("-", "_")
 
@@ -179,6 +197,7 @@ def create_app(request):
         "author_email": request.user.email,
     }
     context = {"form": AppScaffoldForm(initial=initial)}
+    command_message_tuples = []
 
     if request.method == "POST":
         form = AppScaffoldForm(request.POST)
@@ -194,10 +213,9 @@ def create_app(request):
             author = form.cleaned_data["author"]
             author_email = form.cleaned_data["author_email"]
             license = form.cleaned_data["license"]
-            migrate_cmd = "&& tethys db migrate" if template == "reactpy" else ""
+            migrate_cmd = "&& tethys db migrate" if template == "component" else ""
 
-            command_message_tuples = [
-                (f"conda activate {CONDA_ENV}", "Activating environment..."),
+            command_message_tuples += [
                 (
                     f'tethys scaffold {project_name} -t {template} --proper-name "{app_name}" --description "{description}" --color "{theme_color}" --tags "{tags}" --author "{author}" --author-email "{author_email}" --license "{license}"',
                     "Generating files...",
@@ -206,7 +224,7 @@ def create_app(request):
                     f"cd {TethysAppBase.package_namespace}-{project_name} && tethys install -q -d {migrate_cmd}",
                     "Installing into Tethys Portal...",
                 ),
-                (f"{KILL_COMMAND} && tethys start", "Restarting server..."),
+                (TOUCH_COMMAND, "Restarting server..."),
             ]
 
             Timer(
@@ -234,16 +252,17 @@ def remove_app(request, app_id):
         "deleting": False,
         "redirect_url": reverse("admin:tethys_apps_tethysapp_change", args=(app_id,)),
     }
+    command_message_tuples = []
+
     if request.method == "POST":
-        command_message_tuples = [
-            (f"conda activate {CONDA_ENV}", "Activating environment..."),
+        command_message_tuples += [
             (
                 f"tethys uninstall -f {app_package}",
                 "Removing app from Tethys Portal...",
             ),
-            (f"{KILL_COMMAND} && tethys start", "Restarting server..."),
+            (TOUCH_COMMAND, "Restarting server..."),
         ]
-
+        
         Timer(
             1, _execute_lifecycle_commands, args=[app_package, command_message_tuples]
         ).start()

@@ -62,6 +62,7 @@
       updateProgress({percentage: parseInt(progressBar.ariaValueNow) + 1});
     } else {
       window.clearInterval(INTERVAL);
+      progressBar.classList.add("progress-bar-animated");
     }
-  }, 1000);
+  }, 1500);
 }())

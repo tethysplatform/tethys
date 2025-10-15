@@ -17,27 +17,27 @@ class TestAppLifeCycle(TestCase):
         self.user.save()
 
     @patch("tethys_portal.views.app_lifecycle.get_channel_layer")
-    @patch("tethys_portal.views.app_lifecycle.async_to_sync")
+    @patch("tethys_portal.views.app_lifecycle.unpatched_run")
     @patch("tethys_portal.views.app_lifecycle.run")
     @patch("tethys_portal.views.app_lifecycle.sleep")
     def test__execute_lifecycle_commands_success(
-        self, mock_sleep, mock_run, mock_async_to_sync, mock_get_channel_layer
+        self, mock_sleep, mock_run, mock_unpatched_run, mock_get_channel_layer
     ):
         mock_channel_layer = MagicMock()
         mock_get_channel_layer.return_value = mock_channel_layer
         mock_run.return_value.stdout = b"Successfully installed test_app"
         commands = [("echo test", "Restarting server...")]
         app_lifecycle._execute_lifecycle_commands("test_app", commands)
-        self.assertTrue(mock_async_to_sync.called)
+        self.assertTrue(mock_unpatched_run.called)
         mock_run.assert_called_once()
         mock_sleep.assert_called_once()
 
     @patch("tethys_portal.views.app_lifecycle.get_channel_layer")
-    @patch("tethys_portal.views.app_lifecycle.async_to_sync")
+    @patch("tethys_portal.views.app_lifecycle.unpatched_run")
     @patch("tethys_portal.views.app_lifecycle.run")
     @patch("tethys_portal.views.app_lifecycle.sleep")
     def test__execute_lifecycle_commands_called_process_error(
-        self, mock_sleep, mock_run, mock_async_to_sync, mock_get_channel_layer
+        self, mock_sleep, mock_run, mock_unpatched_run, mock_get_channel_layer
     ):
         mock_channel_layer = MagicMock()
         mock_get_channel_layer.return_value = mock_channel_layer
@@ -45,7 +45,7 @@ class TestAppLifeCycle(TestCase):
         commands = [("echo test", "Whatever...")]
         app_lifecycle._execute_lifecycle_commands("test_app", commands)
         mock_run.assert_called_once()
-        self.assertEqual(mock_async_to_sync.call_count, 2)
+        self.assertEqual(mock_unpatched_run.call_count, 2)
         mock_sleep.assert_not_called()
 
     def test__execute_lifecycle_commands_cleanup_fails(self):
@@ -53,7 +53,7 @@ class TestAppLifeCycle(TestCase):
         cleanup.side_effect = Exception()
         with (
             patch("tethys_portal.views.app_lifecycle.get_channel_layer"),
-            patch("tethys_portal.views.app_lifecycle.async_to_sync"),
+            patch("tethys_portal.views.app_lifecycle.unpatched_run"),
             patch("tethys_portal.views.app_lifecycle.run"),
         ):
             app_lifecycle._execute_lifecycle_commands(
@@ -212,7 +212,6 @@ class TestAppLifeCycle(TestCase):
     def test_remove_app_post(
         self, mock_timer, mock_tethysapp, mock_get_app_class, mock_render
     ):
-        app_lifecycle.CONDA_ENV = "test_env"
         mock_app = MagicMock()
         mock_app.name = "App"
         mock_app.package = "app_pkg"
@@ -228,15 +227,21 @@ class TestAppLifeCycle(TestCase):
             args=[
                 mock_app.package,
                 [
-                    ("conda activate test_env", "Activating environment..."),
                     (
                         "tethys uninstall -f app_pkg",
                         "Removing app from Tethys Portal...",
                     ),
                     (
-                        f"{app_lifecycle.KILL_COMMAND} && tethys start",
+                        app_lifecycle.TOUCH_COMMAND,
                         "Restarting server...",
                     ),
                 ],
             ],
         )
+    
+    def test_unpatched_run(self):
+        mock_proof = MagicMock()
+        async def test_func():
+            mock_proof()
+        app_lifecycle.unpatched_run(test_func())
+        mock_proof.assert_called_once()

@@ -404,8 +404,8 @@ class AppScaffoldForm(forms.Form):
         ),
         validators=[
             RegexValidator(
-                regex='(".*",?)+',
-                message="The package name must contain only letters, numbers, and underscores.",
+                regex='([^,]+,? ?)+',
+                message="Tags must be a comma-separated list of strings.",
             ),
         ],
     )
