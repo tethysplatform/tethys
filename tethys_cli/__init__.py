@@ -65,7 +65,7 @@ def tethys_command_parser():
     add_quickstart_parser(subparsers)
     add_test_parser(subparsers)
     add_proxyapps_parser(subparsers)
-    if has_module("cookie_consent") or "sphinx-build" in sys.argv[0]:
+    if has_module("cookie_consent") or "sphinx" in " ".join(sys.argv):
         add_cookie_parser(subparsers)
     return parser
 
