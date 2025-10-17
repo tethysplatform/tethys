@@ -135,7 +135,7 @@ jobs:
     # Scan image with Anchore (Grype)
     - name: Scan Image with Anchore (Grype)
       id: anchore_scan
-      uses: anchore/scan-action@v5
+      uses: anchore/scan-action@v7.0.2
       with:
         image: ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
         fail-build: true
