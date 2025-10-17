@@ -53,7 +53,7 @@ dependencies:
   - django-simple-captcha
   - django-mfa2
   - django-recaptcha
-  - social-auth-app-django>=5.6.0,<5.7
+  - social-auth-app-django
   - hs_restclient  # Used with HydroShare Social backend
   - python-jose # required by django-mfa2  - used for onelogin backend
   - django-oauth-toolkit
