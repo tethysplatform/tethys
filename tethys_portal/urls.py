@@ -183,47 +183,36 @@ developer_urls = [
 # ]
 # developer_urls.extend(development_error_urls)
 
-if settings.MULTIPLE_APP_MODE:
-    urlpatterns = [
-        re_path(r"^$", tethys_portal_home.home, name="home"),
-        re_path(r"^apps/", include("tethys_apps.urls")),
-    ]
-else:
-    urlpatterns = []
+urlpatterns = [
+    re_path(r"^admin/", admin_urls),
+    re_path(r"^accounts/", include((account_urls, "accounts"), namespace="accounts")),
+    re_path(r"^user/", include((user_urls, "user"), namespace="user")),
+    re_path(r"^extensions/", include(extension_urls)),
+    re_path(r"^developer/", include(developer_urls)),
+    re_path(
+        r"^handoff/(?P<app_name>[\w-]+)/$",
+        tethys_apps_views.handoff_capabilities,
+        name="handoff_capabilities",
+    ),
+    re_path(
+        r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
+        tethys_apps_views.handoff,
+        name="handoff",
+    ),
+    re_path(
+        r"^update-job-status/(?P<job_id>[\w-]+)/$",
+        tethys_compute_views.update_job_status,
+        name="update_job_status",
+    ),
+    re_path(
+        r"^update-dask-job-status/(?P<key>[\w-]+)/$",
+        tethys_compute_views.update_dask_job_status,
+        name="update_dask_job_status",
+    ),
+    re_path(r"^api/", include((api_urls, "api"), namespace="api")),
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+]
 
-urlpatterns.extend(
-    [
-        re_path(r"^admin/", admin_urls),
-        re_path(
-            r"^accounts/", include((account_urls, "accounts"), namespace="accounts")
-        ),
-        re_path(r"^user/", include((user_urls, "user"), namespace="user")),
-        re_path(r"^extensions/", include(extension_urls)),
-        re_path(r"^developer/", include(developer_urls)),
-        re_path(
-            r"^handoff/(?P<app_name>[\w-]+)/$",
-            tethys_apps_views.handoff_capabilities,
-            name="handoff_capabilities",
-        ),
-        re_path(
-            r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
-            tethys_apps_views.handoff,
-            name="handoff",
-        ),
-        re_path(
-            r"^update-job-status/(?P<job_id>[\w-]+)/$",
-            tethys_compute_views.update_job_status,
-            name="update_job_status",
-        ),
-        re_path(
-            r"^update-dask-job-status/(?P<key>[\w-]+)/$",
-            tethys_compute_views.update_dask_job_status,
-            name="update_dask_job_status",
-        ),
-        re_path(r"^api/", include((api_urls, "api"), namespace="api")),
-        *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-    ]
-)
 
 if has_module(psa_views):
     oauth2_urls = [
@@ -293,6 +282,19 @@ for url_pattern_path in additional_url_pattern_paths:
 
 urlpatterns = additional_url_patterns + urlpatterns
 
+if has_module("reactpy_django"):
+    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+
+if settings.MULTIPLE_APP_MODE:
+    urlpatterns.extend(
+        [
+            re_path(r"^$", tethys_portal_home.home, name="home"),
+            re_path(r"^apps/", include("tethys_apps.urls")),
+        ]
+    )
+else:
+    urlpatterns.append(re_path(r"^", include("tethys_apps.urls")))
+
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403
 handler404 = tethys_portal_error.handler_404
@@ -318,10 +320,3 @@ if (
             name="login_prefix",
         )
     )
-
-if has_module("reactpy_django"):
-    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
-
-
-if not settings.MULTIPLE_APP_MODE:
-    urlpatterns.append(re_path(r"^", include("tethys_apps.urls")))
