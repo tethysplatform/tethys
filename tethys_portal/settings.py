@@ -617,6 +617,7 @@ PREFIX_URL = portal_config_settings.pop("PREFIX_URL", "/")
 if PREFIX_URL is not None and PREFIX_URL != "/":
     PREFIX_URL = f"{PREFIX_URL.strip('/')}"
     STATIC_URL = f"/{PREFIX_URL}/{STATIC_URL.strip('/')}/"
+    MEDIA_URL = f"/{PREFIX_URL}/{MEDIA_URL.strip('/')}/"
     LOGIN_URL = f"/{PREFIX_URL}/{LOGIN_URL.strip('/')}/"
     FIDO_LOGIN_URL = f"/{PREFIX_URL}/{FIDO_LOGIN_URL.strip('/')}/"
 
