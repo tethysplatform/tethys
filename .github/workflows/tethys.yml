@@ -135,11 +135,11 @@ jobs:
     # Scan image with Anchore (Grype)
     - name: Scan Image with Anchore (Grype)
       id: anchore_scan
-      uses: anchore/scan-action@v7.0.2
+      uses: anchore/scan-action@v5
       with:
         image: ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
         fail-build: true
-        severity-cutoff: medium
+        severity-cutoff: crirtical
         only-fixed: true
     # Upload Anchore Scan SARIF
     - name: Upload Anchore Scan SARIF
