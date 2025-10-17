@@ -189,9 +189,7 @@ if settings.MULTIPLE_APP_MODE:
         re_path(r"^apps/", include("tethys_apps.urls")),
     ]
 else:
-    urlpatterns = [
-        re_path(r"^", include("tethys_apps.urls")),
-    ]
+    urlpatterns = []
 
 urlpatterns.extend(
     [
@@ -323,3 +321,7 @@ if (
 
 if has_module("reactpy_django"):
     urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+
+
+if not settings.MULTIPLE_APP_MODE:
+    urlpatterns.append(re_path(r"^", include("tethys_apps.urls")))
