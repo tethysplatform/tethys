@@ -139,7 +139,7 @@ jobs:
       with:
         image: ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
         fail-build: true
-        severity-cutoff: critical
+        severity-cutoff: medium
         only-fixed: true
     # Upload Anchore Scan SARIF
     - name: Upload Anchore Scan SARIF
