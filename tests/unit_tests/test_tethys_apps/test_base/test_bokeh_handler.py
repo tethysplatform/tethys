@@ -148,16 +148,7 @@ class TestBokehHandler(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_apps.base.paths._resolve_user")
     @override_settings(USE_OLD_WORKSPACES_API=False)
     async def test_with_paths_decorator_async(
-        self,
-        username,
-        rac,
-        mock_gamr,
-        mock_gaw,
-        _get_active_app,
-        _workspace_log,
-        _quotas_log,
-        _mkdir,
-        _passes_quota,
+        self, mock_ru, rac, mock_gamr, mock_gaw, _, __, ___, ____, _____, ______
     ):
         mock_gaw.return_value = Path("workspaces")
         mock_gamr.return_value = Path("app-media-root/media")
