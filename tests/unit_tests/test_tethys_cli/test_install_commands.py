@@ -2,11 +2,12 @@ import sys
 from os import chdir, devnull
 from pathlib import Path
 from unittest import mock
+from importlib import reload
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.test import TestCase
 from tethys_cli import install_commands
-from tethys_cli.cli_helpers import load_conda_commands
+from tethys_cli.cli_helpers import conda_run_command, load_conda_commands
 
 Commands = load_conda_commands()
 
@@ -929,10 +930,10 @@ class TestInstallCommands(TestCase):
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
+    @mock.patch("tethys_cli.install_commands.get_conda_run")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install(
-        self, mock_pretty_output, mock_conda_run, mock_call, _
+        self, mock_pretty_output, mock_get_conda_run, mock_call, _
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -945,6 +946,9 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
+        mock_conda_run = mock.MagicMock(return_value=["", "", 1])
+        mock_get_conda_run.return_value = mock_conda_run
+
         install_commands.install_command(args)
 
         mock_conda_run.assert_called_with(
@@ -1193,10 +1197,10 @@ class TestInstallCommands(TestCase):
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
+    @mock.patch("tethys_cli.install_commands.get_conda_run")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_without_dependencies(
-        self, mock_pretty_output, mock_conda_run, mock_call, _
+        self, mock_pretty_output, mock_get_conda_run, mock_call, _
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -1209,6 +1213,9 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=True,
         )
+        mock_conda_run = mock.MagicMock(return_value=["", "", 1])
+        mock_get_conda_run.return_value = mock_conda_run
+
         install_commands.install_command(args)
 
         # Ensure conda command wasn't called to install dependencies
@@ -1240,12 +1247,38 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual(["tethys", "db", "sync"], mock_call.mock_calls[1][1][0])
 
+    @mock.patch("tethys_cli.install_commands.conda_run_command")
+    @mock.patch("tethys_cli.install_commands.has_module")
+    @mock.patch("tethys_cli.install_commands.optional_import")
+    def test_get_conda_run_has_conda_cli_python_api(self, mock_optional_import, mock_has_module, mock_conda_run_command):
+        mock_conda_run = mock.MagicMock()
+        mock_optional_import.return_value = mock_conda_run
+        mock_has_module.return_value = True
+
+        conda_run = install_commands.get_conda_run()
+
+        mock_optional_import.assert_called_with("run_command", from_module="conda.cli.python_api")
+        self.assertEqual(mock_conda_run, conda_run)
+        self.assertNotEqual(mock_conda_run_command(), conda_run)
+
+    @mock.patch("tethys_cli.install_commands.conda_run_command")
+    @mock.patch("tethys_cli.install_commands.has_module")
+    @mock.patch("tethys_cli.install_commands.optional_import")
+    def test_get_conda_run_no_conda_cli_python_api(self, mock_optional_import, mock_has_module, mock_conda_run_command):
+        mock_optional_import.return_value = None
+        mock_has_module.return_value = False
+
+        conda_run = install_commands.get_conda_run()
+
+        mock_optional_import.assert_called_with("run_command", from_module="conda.cli.python_api")
+        self.assertEqual(mock_conda_run_command(), conda_run)
+
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
+    @mock.patch("tethys_cli.install_commands.get_conda_run")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install_only_dependencies(
-        self, mock_pretty_output, mock_conda_run, mock_call, _
+        self, mock_pretty_output, mock_get_conda_run, mock_call, _
     ):
         chdir("..")
         file_path = self.root_app_path / "install-dep.yml"
@@ -1259,6 +1292,9 @@ class TestInstallCommands(TestCase):
             only_dependencies=True,
             without_dependencies=False,
         )
+        mock_conda_run = mock.MagicMock(return_value=["", "", 1])
+        mock_get_conda_run.return_value = mock_conda_run
+
         install_commands.install_command(args)
 
         mock_conda_run.assert_called_with(
@@ -1298,10 +1334,10 @@ class TestInstallCommands(TestCase):
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
-    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
+    @mock.patch("tethys_cli.install_commands.get_conda_run")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_conda_and_pip_package_install_update_installed(
-        self, mock_pretty_output, mock_conda_run, mock_call, _
+        self, mock_pretty_output, mock_get_conda_run, mock_call, _
     ):
         file_path = self.root_app_path / "install-dep.yml"
         args = mock.MagicMock(
@@ -1314,6 +1350,9 @@ class TestInstallCommands(TestCase):
             only_dependencies=False,
             without_dependencies=False,
         )
+        mock_conda_run = mock.MagicMock(return_value=["", "", 1])
+        mock_get_conda_run.return_value = mock_conda_run
+
         install_commands.install_command(args)
 
         mock_conda_run.assert_called_with(

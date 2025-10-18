@@ -34,15 +34,18 @@ from tethys_apps.utilities import (
 from .gen_commands import download_vendor_static_files
 from tethys_portal.optional_dependencies import has_module, optional_import
 
-# optional imports
-run_api = optional_import("run_command", from_module="conda.cli.python_api")
-if not has_module(run_api):
-    run_api = conda_run_command()
-conda_run = run_api
+
 Commands = load_conda_commands()
-
-
 FNULL = open(devnull, "w")
+
+
+# TODO: can we call conda_run_command() directly here?
+def get_conda_run():
+    # optional imports
+    conda_run = optional_import("run_command", from_module="conda.cli.python_api")
+    if not has_module(conda_run):
+        conda_run = conda_run_command()
+    return conda_run
 
 
 def add_install_parser(subparsers):
@@ -692,6 +695,7 @@ def install_packages(conda_config, update_installed=False):
             )
         install_args.extend(conda_config["packages"])
         write_msg("Running conda installation tasks...")
+        conda_run = get_conda_run()
         [resp, err, code] = conda_run(
             Commands.INSTALL,
             *install_args,
@@ -762,7 +766,8 @@ def install_command(args):
                 if "conda" in requirements_config and validate_schema(
                     "packages", requirements_config["conda"]
                 ):  # noqa: E501
-                    if conda_available() and has_module(run_api):
+                    conda_run = get_conda_run()
+                    if conda_available() and has_module(conda_run):
                         conda_config = requirements_config["conda"]
                         install_packages(
                             conda_config,
