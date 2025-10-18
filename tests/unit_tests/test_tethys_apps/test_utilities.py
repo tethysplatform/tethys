@@ -159,6 +159,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(None, result)
 
     @override_settings(MULTIPLE_APP_MODE=True)
+    @pytest.mark.django_db
     def test_get_app_model_request_app_base(self):
         from tethys_apps.models import TethysApp
 
