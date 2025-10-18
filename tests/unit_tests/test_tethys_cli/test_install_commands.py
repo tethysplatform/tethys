@@ -2,12 +2,11 @@ import sys
 from os import chdir, devnull
 from pathlib import Path
 from unittest import mock
-from importlib import reload
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.test import TestCase
 from tethys_cli import install_commands
-from tethys_cli.cli_helpers import conda_run_command, load_conda_commands
+from tethys_cli.cli_helpers import load_conda_commands
 
 Commands = load_conda_commands()
 
@@ -1250,27 +1249,35 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.conda_run_command")
     @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.optional_import")
-    def test_get_conda_run_has_conda_cli_python_api(self, mock_optional_import, mock_has_module, mock_conda_run_command):
+    def test_get_conda_run_has_conda_cli_python_api(
+        self, mock_optional_import, mock_has_module, mock_conda_run_command
+    ):
         mock_conda_run = mock.MagicMock()
         mock_optional_import.return_value = mock_conda_run
         mock_has_module.return_value = True
 
         conda_run = install_commands.get_conda_run()
 
-        mock_optional_import.assert_called_with("run_command", from_module="conda.cli.python_api")
+        mock_optional_import.assert_called_with(
+            "run_command", from_module="conda.cli.python_api"
+        )
         self.assertEqual(mock_conda_run, conda_run)
         self.assertNotEqual(mock_conda_run_command(), conda_run)
 
     @mock.patch("tethys_cli.install_commands.conda_run_command")
     @mock.patch("tethys_cli.install_commands.has_module")
     @mock.patch("tethys_cli.install_commands.optional_import")
-    def test_get_conda_run_no_conda_cli_python_api(self, mock_optional_import, mock_has_module, mock_conda_run_command):
+    def test_get_conda_run_no_conda_cli_python_api(
+        self, mock_optional_import, mock_has_module, mock_conda_run_command
+    ):
         mock_optional_import.return_value = None
         mock_has_module.return_value = False
 
         conda_run = install_commands.get_conda_run()
 
-        mock_optional_import.assert_called_with("run_command", from_module="conda.cli.python_api")
+        mock_optional_import.assert_called_with(
+            "run_command", from_module="conda.cli.python_api"
+        )
         self.assertEqual(mock_conda_run_command(), conda_run)
 
     @mock.patch("tethys_cli.install_commands.run_services")
