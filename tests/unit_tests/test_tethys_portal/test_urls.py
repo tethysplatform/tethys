@@ -164,6 +164,12 @@ class TestUrls(TethysTestCase):
             resolver._func_path,
         )
 
+    def test_urlpatterns_media(self):
+        url = reverse("media")
+        resolver = resolve(url)
+        self.assertEqual("/media", url)
+        self.assertEqual("django.views.static.serve", resolver._func_path)
+
     @override_settings(REGISTER_CONTROLLER="test")
     @mock.patch("django.urls.re_path")
     @mock.patch("tethys_apps.base.function_extractor.TethysFunctionExtractor")
@@ -377,6 +383,12 @@ class TestUrlsWithPrefix(TethysTestCase):
             "tethys_compute.views.update_status.update_dask_job_status",
             resolver._func_path,
         )
+
+    def test_urlpatterns_media(self):
+        url = reverse("media")
+        resolver = resolve(url)
+        self.assertEqual("/test/prefix/media", url)
+        self.assertEqual("django.views.static.serve", resolver._func_path)
 
     @override_settings(REGISTER_CONTROLLER="test")
     @mock.patch("django.urls.re_path")
