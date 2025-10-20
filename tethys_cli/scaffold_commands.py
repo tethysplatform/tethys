@@ -340,7 +340,7 @@ def scaffold_command(args):
         "project": project_name,
         "project_dir": project_dir,
         "project_url": project_name.replace("_", "-"),
-        "prefix_url": settings.TETHYS_PREFIX_URL.strip("/"),
+        "prefix_url": settings.PREFIX_URL.strip("/"),
         "class_name": class_name,
         "proper_name": default_proper_name,
         "description": "",
