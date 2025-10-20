@@ -10,8 +10,11 @@ export function getTethysPortalHost() {
     let url = new URL(currLocation);
     tethys_portal_host = url.origin;
   }
-  // return tethys_portal_host;
-  return `${tethys_portal_host}/${tethys_prefix_url}`;
+
+  if (tethys_prefix_url) {
+    return `${tethys_portal_host}/${tethys_prefix_url}`;
+  }
+  return tethys_portal_host;
 }
 
 export const getPublicUrl = (uuid) => {
