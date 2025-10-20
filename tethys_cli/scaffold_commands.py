@@ -4,7 +4,7 @@ import random
 import shutil
 from os import walk
 from pathlib import Path
-
+from django.conf import settings
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
 from tethys_apps.base.app_base import TethysAppBase, TethysExtensionBase
@@ -340,6 +340,7 @@ def scaffold_command(args):
         "project": project_name,
         "project_dir": project_dir,
         "project_url": project_name.replace("_", "-"),
+        "prefix_url": settings.TETHYS_PREFIX_URL.strip("/"),
         "class_name": class_name,
         "proper_name": default_proper_name,
         "description": "",
