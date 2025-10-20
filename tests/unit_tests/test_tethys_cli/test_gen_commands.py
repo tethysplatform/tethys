@@ -113,7 +113,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_settings.assert_any_call("TETHYS_WORKSPACES_ROOT")
-        mock_settings.assert_called_with("MEDIA_ROOT")
+        mock_settings.assert_any_call("MEDIA_ROOT")
         mock_settings.assert_called_with("PREFIX_URL")
 
         mock_write_info.assert_called_once()
