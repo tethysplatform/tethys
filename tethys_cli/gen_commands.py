@@ -268,6 +268,7 @@ def proxy_server_context(args):
     workspaces_root = get_settings_value("TETHYS_WORKSPACES_ROOT")
     static_root = get_settings_value("STATIC_ROOT")
     media_root = get_settings_value("MEDIA_ROOT")
+    prefix_url = f'/{get_settings_value("PREFIX_URL").strip("/")}' if get_settings_value("PREFIX_URL") else ""
 
     context = {
         "ssl": args.ssl,
@@ -278,6 +279,7 @@ def proxy_server_context(args):
         "static_root": static_root,
         "workspaces_root": workspaces_root,
         "media_root": media_root,
+        "prefix_url": prefix_url,
         "client_max_body_size": args.client_max_body_size,
         "port": args.tethys_port,
         "server_port": args.server_port,
