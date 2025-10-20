@@ -73,7 +73,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_APACHE_OPTION
         mock_args.directory = None
         mock_is_file.return_value = False
-        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media", "/foo/prefix"]
+        mock_settings.side_effect = [
+            "/foo/workspace",
+            "/foo/static",
+            "/foo/media",
+            "/foo/prefix",
+        ]
 
         generate_command(args=mock_args)
 
@@ -96,7 +101,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_NGINX_OPTION
         mock_args.directory = None
         mock_is_file.return_value = False
-        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media", "/foo/prefix"]
+        mock_settings.side_effect = [
+            "/foo/workspace",
+            "/foo/static",
+            "/foo/media",
+            "/foo/prefix",
+        ]
 
         generate_command(args=mock_args)
 
