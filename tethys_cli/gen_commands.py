@@ -268,7 +268,11 @@ def proxy_server_context(args):
     workspaces_root = get_settings_value("TETHYS_WORKSPACES_ROOT")
     static_root = get_settings_value("STATIC_ROOT")
     media_root = get_settings_value("MEDIA_ROOT")
-    prefix_url = f'/{get_settings_value("PREFIX_URL").strip("/")}' if get_settings_value("PREFIX_URL") else ""
+    prefix_url = (
+        f'/{get_settings_value("PREFIX_URL").strip("/")}'
+        if get_settings_value("PREFIX_URL")
+        else ""
+    )
 
     context = {
         "ssl": args.ssl,
