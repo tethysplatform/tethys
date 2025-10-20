@@ -211,7 +211,7 @@ urlpatterns = [
     ),
     re_path(r"^api/", include((api_urls, "api"), namespace="api")),
     re_path(
-        r"^media/(?P<path>.*)$",
+        rf"^{settings.MEDIA_URL.strip('/')}(/(?P<path>.*))?$",
         serve,
         {"document_root": settings.MEDIA_ROOT},
         name="media",
