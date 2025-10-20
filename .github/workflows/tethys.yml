@@ -192,6 +192,24 @@ jobs:
       uses: ishworkh/container-image-artifact-download@v2.0.0
       with:
         image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
+    - name: Verify Python and Django Versions
+      run: |
+        set -euo pipefail
+        docker run --rm \
+          ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} \
+          /bin/bash -c '
+            set -euo pipefail
+            PY_VERSION=$(python -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
+            DJANGO_VERSION=$(python -c "import django; print(django.get_version())")
+            if [[ "$PY_VERSION" != "${{ matrix.python-version }}" ]]; then
+              echo "Python version mismatch: expected ${{ matrix.python-version }}, got $PY_VERSION"
+              exit 1
+            fi
+            if [[ "$DJANGO_VERSION" != "${{ matrix.django-version }}"* ]]; then
+              echo "Django version mismatch: expected prefix ${{ matrix.django-version }}, got $DJANGO_VERSION"
+              exit 1
+            fi
+          '
     - name: Run Salt Test
       run: |
         docker run --rm \
