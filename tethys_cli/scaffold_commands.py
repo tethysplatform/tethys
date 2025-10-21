@@ -297,7 +297,7 @@ def scaffold_command(args):
         is_extension = True
         template_name = args.template
         template_root = EXTENSION_PATH / args.template
-        keyword = "extenstion"
+        keyword = "extension"
     else:
         template_name = args.template
         template_root = APP_PATH / args.template
