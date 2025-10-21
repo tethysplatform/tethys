@@ -224,6 +224,7 @@ def _get_user_workspace(app_class, user_or_request):
     username = ""
 
     from django.contrib.auth.models import User
+    from tethys_apps.utilities import get_app_class
 
     if isinstance(user_or_request, User) or isinstance(
         user_or_request, SimpleLazyObject
@@ -238,7 +239,8 @@ def _get_user_workspace(app_class, user_or_request):
             "Invalid type for argument 'user': must be either an User or HttpRequest object."
         )
 
-    project_directory = Path(sys.modules[app_class.__module__].__file__).parent
+    app = get_app_class(app_class)
+    project_directory = Path(sys.modules[app.__module__].__file__).parent
     workspace_directory = (
         project_directory / "workspaces" / "user_workspaces" / username
     )
@@ -252,7 +254,7 @@ def _get_user_workspace_old(
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
     Args:
-        app_class_or_request (TethysAppBase or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
+        app_class_or_request (TethysAppBase or HttpRequest or TethysApp): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
 
     Raises:
@@ -272,23 +274,13 @@ def _get_user_workspace_old(
             ...
     """  # noqa: E501
     from tethys_apps.base.app_base import TethysAppBase
-    from tethys_apps.utilities import get_active_app
+    from tethys_apps.models import TethysApp
+    from tethys_apps.utilities import get_app_model
     from django.contrib.auth.models import User
     from django.core.exceptions import PermissionDenied
 
     # Get app
-    if isinstance(app_class_or_request, TethysAppBase) or (
-        isinstance(app_class_or_request, type)
-        and issubclass(app_class_or_request, TethysAppBase)
-    ):
-        app = app_class_or_request
-    elif isinstance(app_class_or_request, HttpRequest):
-        app = get_active_app(app_class_or_request, get_class=True)
-    else:
-        raise ValueError(
-            f'Argument "app_class_or_request" must be of type TethysAppBase or HttpRequest: '
-            f'"{type(app_class_or_request)}" given.'
-        )
+    app = get_app_model(app_class_or_request)
 
     # Get user
     if isinstance(user_or_request, User) or isinstance(
@@ -385,7 +377,7 @@ def _get_app_workspace_old(app_or_request, bypass_quota=False) -> TethysWorkspac
     Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
 
     Args:
-        app_or_request (TethysAppBase | HttpRequest): The Tethys App class or an HttpRequest to an app endpoint.
+        app_or_request (TethysAppBase | HttpRequest | TethysApp): The Tethys App class or TethysApp or an HttpRequest to an app endpoint.
 
     Raises:
         ValueError: if object of type other than HttpRequest or TethysAppBase given.
