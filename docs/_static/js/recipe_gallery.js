@@ -126,6 +126,7 @@ function prepareCarousel(carouselContainer) {
 
 document.addEventListener("DOMContentLoaded", () => {
     let carouselContainers = document.querySelectorAll(".carousel-container");
+
     // Initialize all carousel containers
     carouselContainers.forEach(carouselContainer => {
         prepareCarousel(carouselContainer);
@@ -137,24 +138,25 @@ document.addEventListener("DOMContentLoaded", () => {
         searchBar.addEventListener("input", () => {
             let searchValue = searchBar.value.toLowerCase();
 
+            // Hide all cards without tags that match the search terms
+            let cards = document.querySelectorAll(".recipe-card");
+            cards.forEach(card => {
+                // Check if the tags of the card contain the search value
+                let tags = card.querySelector(".recipe-tags").textContent.toLowerCase();
+                let title = card.querySelector(".recipe-title").textContent.toLowerCase();
+                if (tags.includes(searchValue) || title.includes(searchValue)) {
+                    card.classList.remove("hidden");
+                } else {
+                    card.classList.add("hidden");
+                }
+            });
+
             carouselContainers.forEach(carouselContainer => {
                 let carousel = carouselContainer.querySelector(".carousel");
 
                 // Remove all cloned cards in preparation to re-initialize the carousel
                 let clonedCards = carousel.querySelectorAll(".recipe-card.cloned");
                 clonedCards.forEach(clone => clone.remove());
-                
-                // Hide all cards without tags that match the search terms
-                let cards = document.querySelectorAll(".recipe-card");
-                cards.forEach(card => {
-                    // Check if the tags of the card contain the search value
-                    let tags = card.querySelector(".recipe-tags").textContent.toLowerCase();
-                    if (tags.includes(searchValue)) {
-                        card.classList.remove("recipe-hidden");
-                    } else {
-                        card.classList.add("recipe-hidden");
-                    }
-                });
 
                 // Re-initialize the carousel container
                 prepareCarousel(carouselContainer);

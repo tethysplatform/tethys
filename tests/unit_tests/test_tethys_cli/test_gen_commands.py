@@ -527,7 +527,6 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.gen_commands.run_command")
     def test_derive_version_from_conda_environment_minor(self, mock_run_command):
-        # More than three version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -535,12 +534,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3.4.5                 py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "minor")
-
         self.assertEqual("foo=1.2.*", ret)
 
-        # Three version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -548,12 +544,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3                     py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "minor")
-
         self.assertEqual("foo=1.2.*", ret)
 
-        # Two version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -561,12 +554,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2                       py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "minor")
-
         self.assertEqual("foo=1.2", ret)
 
-        # Less than two version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -574,9 +564,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1                         py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "minor")
-
         self.assertEqual("foo", ret)
 
     @mock.patch("tethys_cli.gen_commands.run_command")
@@ -591,7 +579,6 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_run_command.return_value = (stdout, "", 0)
 
         ret = derive_version_from_conda_environment("foo", "major")
-
         self.assertEqual("foo=1.*", ret)
 
         # Three version numbers
@@ -602,9 +589,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3                     py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "major")
-
         self.assertEqual("foo=1.*", ret)
 
         # Two version numbers
@@ -615,9 +600,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2                       py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "major")
-
         self.assertEqual("foo=1.*", ret)
 
         # Less than two version numbers
@@ -628,14 +611,11 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1                         py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "major")
-
         self.assertEqual("foo=1", ret)
 
     @mock.patch("tethys_cli.gen_commands.run_command")
     def test_derive_version_from_conda_environment_patch(self, mock_run_command):
-        # More than three version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -643,12 +623,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3.4.5                 py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "patch")
-
         self.assertEqual("foo=1.2.3.*", ret)
 
-        # Three version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -656,12 +633,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3                     py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "patch")
-
         self.assertEqual("foo=1.2.3", ret)
 
-        # Two version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -669,12 +643,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2                       py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "patch")
-
         self.assertEqual("foo=1.2", ret)
 
-        # Less than two version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -682,14 +653,11 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1                         py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "patch")
-
         self.assertEqual("foo=1", ret)
 
     @mock.patch("tethys_cli.gen_commands.run_command")
     def test_derive_version_from_conda_environment_none(self, mock_run_command):
-        # More than three version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -697,12 +665,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3.4.5                 py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "none")
-
         self.assertEqual("foo", ret)
 
-        # Three version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -710,12 +675,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2.3                     py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "none")
-
         self.assertEqual("foo", ret)
 
-        # Two version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -723,12 +685,9 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1.2                       py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "none")
-
         self.assertEqual("foo", ret)
 
-        # Less than two version numbers
         stdout = (
             "# packages in environment at /home/nswain/miniconda/envs/tethys:\n"
             "#\n"
@@ -736,9 +695,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             "foo                       1                         py37_0    conda-forge"
         )
         mock_run_command.return_value = (stdout, "", 0)
-
         ret = derive_version_from_conda_environment("foo", "none")
-
         self.assertEqual("foo", ret)
 
     @mock.patch("tethys_cli.gen_commands.print")
@@ -746,7 +703,6 @@ class CLIGenCommandsTest(unittest.TestCase):
     def test_derive_version_from_conda_environment_conda_list_error(
         self, mock_run_command, mock_print
     ):
-        # More than three version numbers
         mock_run_command.return_value = ("", "Some error", 1)
 
         ret = derive_version_from_conda_environment("foo", "minor")

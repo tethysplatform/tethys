@@ -1,5 +1,4 @@
-.. _start_tethys_step:
-
+.. _start_tethys_recipe_step:
 
 Open the terminal and enter the Tethys environment with the command:
 
