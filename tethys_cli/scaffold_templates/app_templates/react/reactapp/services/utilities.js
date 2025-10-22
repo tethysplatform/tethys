@@ -11,8 +11,11 @@ export function getTethysPortalHost() {
   return tethys_portal_host;
 }
 
-export function getTethysPortalHostWithPrefix() {
-  return `${getTethysPortalHost()}/${tethys_prefix_url}`;
+export function getTethysPortalBase() {
+  let tethys_portal_host = getTethysPortalHost();
+  let tethys_prefix_url = process.env.TETHYS_PREFIX_URL.replace(/^\/|\/$/g, "");
+  tethys_prefix_url = `/${tethys_prefix_url}`;
+  return tethys_portal_host + tethys_prefix_url.replace(/\/{2,}/g, "/");
 }
 
 export function getTethysAppRoot() {
