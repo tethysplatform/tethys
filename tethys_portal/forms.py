@@ -15,6 +15,7 @@ from django import forms
 from django.core.validators import RegexValidator, FileExtensionValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.utils.safestring import mark_safe
 
 from django.conf import settings
 
@@ -426,7 +427,7 @@ class AppScaffoldForm(forms.Form):
 
     license = forms.CharField(
         max_length=30,
-        label="License:",
+        label=mark_safe("License: (View valid license identifiers <a target='_page' href='https://spdx.org/licenses/'>here</a>)"),
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
     )

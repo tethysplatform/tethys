@@ -50,6 +50,7 @@ from tethys_portal.optional_dependencies import optional_import
 TrustedDevice = optional_import("mfa.TrustedDevice")
 psa_views = optional_import("views", from_module="social_django")
 psa_urls = optional_import("social_django.urls")
+REACTPY_WEBSOCKET_ROUTE = optional_import("REACTPY_WEBSOCKET_ROUTE", from_module="reactpy_django")
 
 logger = logging.getLogger(f"tethys.{__name__}")
 
@@ -340,5 +341,10 @@ if (
         )
     )
 
+websocket_urlpatterns = [
+    re_path(r"ws/app-lifecycle/(?P<app_name>\w+)/", app_lifecycle.AppLifeCycleConsumer.as_asgi()),
+]
+
 if has_module("reactpy_django"):
     urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+    websocket_urlpatterns += [REACTPY_WEBSOCKET_ROUTE]
