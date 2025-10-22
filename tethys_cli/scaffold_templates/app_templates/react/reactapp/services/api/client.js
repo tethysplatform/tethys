@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-import { getTethysPortalHost } from 'services/utilities';
+import { getTethysPortalHostWithPrefix } from 'services/utilities';
 
-const TETHYS_PORTAL_HOST = getTethysPortalHost();
+const TETHYS_PORTAL_HOST = getTethysPortalHostWithPrefix();
 
 const apiClient = axios.create({
   baseURL: `${TETHYS_PORTAL_HOST}`,
