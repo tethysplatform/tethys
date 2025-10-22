@@ -24,7 +24,9 @@ dependencies:
   - daphne
   - setuptools_scm
   - pip
-  - requests # required by lots of things
+  - requests>=2.32.4,<3  # required by lots of things
+  - tornado>=6.5,<7
+  - cryptography>=44.0.1,<45
   - bcrypt  # also required by channels, docker, daphne, condorpy
 
   # Gen CLI commands

@@ -21,7 +21,7 @@ fi
 
 # Verify Python version in conda matches PYTHON_VERSION build arg
 if [ -n "$PYTHON_VERSION" ]; then
-    INSTALLED_PYTHON=$(micromamba run -n "$CONDA_ENV_NAME" python -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+    INSTALLED_PYTHON=$(micromamba run -n "$CONDA_ENV_NAME" python -c 'import sys; print("%d.%d.%d" % sys.version_info[:3])')
     PYTHON_VERSION_CLEAN=$(echo "$PYTHON_VERSION" | sed 's/\.[*]$//')
     if ! echo "$INSTALLED_PYTHON" | grep -q "^$PYTHON_VERSION_CLEAN"; then
         PYTHON_STATUS="ERROR: Installed Python version $INSTALLED_PYTHON does not match PYTHON_VERSION build arg $PYTHON_VERSION"
