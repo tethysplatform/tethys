@@ -4,7 +4,6 @@ import random
 import shutil
 from os import walk
 from pathlib import Path
-from django.conf import settings
 from jinja2 import Template
 from tethys_cli.cli_colors import write_pretty_output, FG_RED, FG_YELLOW, FG_WHITE
 from tethys_apps.base.app_base import TethysAppBase, TethysExtensionBase
