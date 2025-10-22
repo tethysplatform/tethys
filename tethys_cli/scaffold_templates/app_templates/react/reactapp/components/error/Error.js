@@ -1,10 +1,15 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-import { getTethysPortalHost, getTethysAppRoot } from "services/utilities";
+import {
+  getTethysPortalHost,
+  getTethysAppRoot,
+  getTethysPortalBase,
+} from "services/utilities";
 
 const TETHYS_PORTAL_HOST = getTethysPortalHost();
 const APP_ROOT_URL = getTethysAppRoot();
+const TETHYS_PORTAL_BASE = getTethysPortalBase();
 
 const ErrorWhiteout = styled.div`
   position: absolute;
@@ -61,7 +66,7 @@ const Error = ({ title, image, children }) => {
             <ErrorMessage className="mb-0">{children}</ErrorMessage>
             <ErrorMessage className="text-faded">
               <a href={TETHYS_PORTAL_HOST + APP_ROOT_URL}>Reload App</a> or{" "}
-              <a href={TETHYS_PORTAL_HOST}>Exit the App</a>
+              <a href={TETHYS_PORTAL_BASE}>Exit the App</a>
             </ErrorMessage>
           </ErrorMessageBox>
         </ErrorMessageContainer>
