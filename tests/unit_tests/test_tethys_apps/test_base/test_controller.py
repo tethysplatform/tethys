@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 import tethys_apps.base.controller as tethys_controller
@@ -130,6 +131,7 @@ class TestController(unittest.TestCase):
         self.assertEqual(handler, kwargs["handler"])
         self.assertEqual(handler_type, kwargs["handler_type"])
 
+    @pytest.mark.django_db
     def test_handler_controller_as_string(self):
         function = mock.MagicMock(__name__="test")
         tethys_controller.handler(controller="test_app.controllers.home_controller")(

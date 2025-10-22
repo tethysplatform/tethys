@@ -74,7 +74,7 @@ def tethys_global_settings_context(request):
     context = {
         "site_globals": site_globals,
         "site_defaults": {
-            "copyright": f"Copyright © {dt.datetime.utcnow():%Y} Your Organization",
+            "copyright": f"Copyright © {dt.datetime.now(dt.UTC):%Y} Your Organization",
         },
     }
 

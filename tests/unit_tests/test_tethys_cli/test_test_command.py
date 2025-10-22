@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from pathlib import Path
@@ -6,7 +7,7 @@ from os import devnull
 from unittest import mock
 
 from tethys_apps.utilities import get_tethys_src_dir
-from tethys_cli.test_command import test_command, check_and_install_prereqs
+from tethys_cli.test_command import _test_command, check_and_install_prereqs
 
 FNULL = open(devnull, "w")
 TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
@@ -24,6 +25,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.Path.is_file", return_value=True)
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_no_coverage_file_path(
         self, mock_get_manage_path, mock_run_process, _
     ):
@@ -37,7 +39,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
@@ -46,6 +48,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_no_coverage_file_dot_notation(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -59,7 +62,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
@@ -69,6 +72,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_unit(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = True
@@ -80,7 +84,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -99,6 +103,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_unit_file_app_package(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -112,7 +117,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -130,6 +135,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_html_unit_file_app_package(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -143,7 +149,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -169,6 +175,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_unit_file_extension_package(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -182,7 +189,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -200,6 +207,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo/bar")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_html_gui_file(
         self, mock_get_manage_path, mock_run_process
     ):
@@ -213,7 +221,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -237,6 +245,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.webbrowser.open_new_tab")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_coverage_html_gui_file_exception(
         self, mock_get_manage_path, mock_run_process, mock_open_new_tab
     ):
@@ -251,7 +260,7 @@ class TestCommandTests(unittest.TestCase):
         mock_run_process.side_effect = [0, 0, 1]
         mock_open_new_tab.return_value = 1
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -278,6 +287,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_unit_no_file(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False
@@ -289,7 +299,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
 
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
@@ -305,6 +315,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.TETHYS_SRC_DIRECTORY", "/foo")
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_gui_no_file(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False
@@ -316,7 +327,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
@@ -332,6 +343,7 @@ class TestCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.test_command.subprocess.run")
     @mock.patch("tethysapp.test_app", new=None)
     @mock.patch("tethysext.test_extension", new=None)
+    @pytest.mark.django_db
     def test_check_and_install_prereqs(self, mock_run_process, mock_write_warning):
         tests_path = Path(TETHYS_SRC_DIRECTORY) / "tests"
         check_and_install_prereqs(tests_path)
@@ -358,6 +370,7 @@ class TestCommandTests(unittest.TestCase):
 
     @mock.patch("tethys_cli.test_command.run_process")
     @mock.patch("tethys_cli.test_command.get_manage_path")
+    @pytest.mark.django_db
     def test_test_command_verbosity(self, mock_get_manage_path, mock_run_process):
         mock_args = mock.MagicMock()
         mock_args.coverage = False
@@ -369,7 +382,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_with(
             [sys.executable, "/foo/manage.py", "test", "-v", "2"]
@@ -394,5 +407,5 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_check_and_install_prereqs.side_effect = FileNotFoundError
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_write_error.assert_called()

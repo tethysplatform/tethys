@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 import tethys_apps
@@ -16,7 +17,9 @@ class TestApps(unittest.TestCase):
         self.assertEqual("Tethys Apps", TethysAppsConfig.verbose_name)
 
     @mock.patch("tethys_apps.apps.SingletonHarvester")
+    @pytest.mark.django_db
     def test_ready(self, mock_singleton_harvester):
-        tethys_app_config_obj = TethysAppsConfig("tethys_apps", tethys_apps)
-        tethys_app_config_obj.ready()
-        mock_singleton_harvester().harvest.assert_called()
+        with mock.patch("sys.argv", ["manage.py", "runserver"]):
+            tethys_app_config_obj = TethysAppsConfig("tethys_apps", tethys_apps)
+            tethys_app_config_obj.ready()
+            mock_singleton_harvester().harvest.assert_called()
