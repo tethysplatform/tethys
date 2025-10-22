@@ -32,6 +32,10 @@ env:
   TETHYS_DB_SUPERUSER: tethys_super
   TETHYS_DB_SUPERUSER_PASS: please_dont_use_default_passwords
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   lint:
     name: Lint with Flake8
@@ -126,6 +130,21 @@ jobs:
       run: |
         docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} .;
         docker tag ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }};
+    # Scan image with Anchore (Grype)
+    - name: Scan Image with Anchore (Grype)
+      id: anchore_scan
+      uses: anchore/scan-action@v5
+      with:
+        image: ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
+        fail-build: true
+        severity-cutoff: medium
+        only-fixed: true
+    # Upload Anchore Scan SARIF
+    - name: Upload Anchore Scan SARIF
+      if: ${{ steps.anchore_scan.outputs.sarif != '' }}
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: ${{ steps.anchore_scan.outputs.sarif }}
     # Upload docker if pull request no tag
     - name: Upload Docker No Tag
       if: ${{ github.event_name != 'pull_request' }}
@@ -172,6 +191,24 @@ jobs:
       uses: ishworkh/container-image-artifact-download@v2.0.0
       with:
         image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
+    - name: Verify Python and Django Versions
+      run: |
+        set -euo pipefail
+        docker run --rm \
+          ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} \
+          /bin/bash -c '
+            set -euo pipefail
+            PY_VERSION=$(python -c "import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")")
+            DJANGO_VERSION=$(python -c "import django; print(django.get_version())")
+            if [[ "$PY_VERSION" != "${{ matrix.python-version }}" ]]; then
+              echo "Python version mismatch: expected ${{ matrix.python-version }}, got $PY_VERSION"
+              exit 1
+            fi
+            if [[ "$DJANGO_VERSION" != "${{ matrix.django-version }}"* ]]; then
+              echo "Django version mismatch: expected prefix ${{ matrix.django-version }}, got $DJANGO_VERSION"
+              exit 1
+            fi
+          '
     - name: Run Salt Test
       run: |
         docker run --rm \
