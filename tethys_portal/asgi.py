@@ -18,6 +18,7 @@ def build_application(asgi_app):
     websocket_urlpatterns += app_websocket_urls
     if has_module("reactpy_django"):
         from reactpy_django.utils import register_component
+
         register_component("tethys_apps.base.page_handler.page_component_wrapper")
 
     application = ProtocolTypeRouter(

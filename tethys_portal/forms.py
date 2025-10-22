@@ -427,7 +427,9 @@ class AppScaffoldForm(forms.Form):
 
     license = forms.CharField(
         max_length=30,
-        label=mark_safe("License: (View valid license identifiers <a target='_page' href='https://spdx.org/licenses/'>here</a>)"),
+        label=mark_safe(
+            "License: (View valid license identifiers <a target='_page' href='https://spdx.org/licenses/'>here</a>)"
+        ),
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
     )
