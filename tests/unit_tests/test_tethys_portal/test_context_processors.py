@@ -95,6 +95,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
+            "has_cookieconsent": True,
             "has_terms": False,
             "has_mfa": True,
             "has_gravatar": True,
