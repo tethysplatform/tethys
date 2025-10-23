@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "{{project_dir}}"
-description =  "{{description|default('')}}"
+description =  {{description|default('')|tojson}}
 readme = "README.rst"
 {% if license_name %}license = {text = "{{license_name|default('')}}"}{% endif %}
 keywords = [{{', '.join(tags.split(','))}}]

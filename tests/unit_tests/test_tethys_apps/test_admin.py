@@ -264,6 +264,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         expected_readonly_fields = (
             "package",
             "manage_app_storage",
+            "remove_app",
         )
         expected_fields = (
             "package",
@@ -278,6 +279,7 @@ class TestTethysAppAdmin(unittest.TestCase):
             "show_in_apps_library",
             "enable_feedback",
             "manage_app_storage",
+            "remove_app",
         )
         expected_inlines = [
             CustomSettingInline,
@@ -345,6 +347,25 @@ class TestTethysAppAdmin(unittest.TestCase):
             )
         )
         actual_html = ret.manage_app_storage(app)
+
+        self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
+
+    def test_TethysAppAdmin_remove_app(self):
+        ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
+        app = mock.MagicMock()
+        app.id = 1
+
+        expected_html = format_html(
+            """
+            <a
+                id="remove-app" class="btn btn-danger btn-sm"
+                href="/admin/remove_app/1/"
+            >
+                Remove App
+            </a>
+        """
+        )
+        actual_html = ret.remove_app(app)
 
         self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
 
