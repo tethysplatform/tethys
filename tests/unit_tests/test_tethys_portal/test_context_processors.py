@@ -1,7 +1,6 @@
 from unittest import TestCase, mock
 from django.test import override_settings
 from tethys_portal import context_processors
-from django import VERSION as DJANGO_VERSION
 
 
 class TestTethysPortalContext(TestCase):
@@ -19,7 +18,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
-            "has_cookieconsent": DJANGO_VERSION >= (4, 2),
+            "has_cookieconsent": True,
             "has_terms": True,
             "has_mfa": True,
             "has_gravatar": True,
@@ -42,7 +41,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
-            "has_cookieconsent": DJANGO_VERSION >= (4, 2),
+            "has_cookieconsent": True,
             "has_terms": False,
             "has_mfa": True,
             "has_gravatar": True,
@@ -69,7 +68,7 @@ class TestTethysPortalContext(TestCase):
 
         expected_context = {
             "has_analytical": True,
-            "has_cookieconsent": DJANGO_VERSION >= (4, 2),
+            "has_cookieconsent": True,
             "has_terms": True,
             "has_mfa": True,
             "has_gravatar": True,
