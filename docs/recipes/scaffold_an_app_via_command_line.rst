@@ -1,29 +1,32 @@
-.. _scaffold_an_app_recipe :
+.. _scaffold_an_app_via_command_line :
 
-***************************
-Scaffold and Install an App
-***************************
 
-**Last Updated:** June 2025
 
-Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :ref:`App Project Structure<app_project_structure>`).
+********************************************
+Scaffold and Install an App via Command Line
+********************************************
+
+Tethys Platform provides an easy way to create new app projects via command line with the ``scaffold`` command. This command generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
+
+**Last Updated:** October 2025
+
 .. tip::
 
    You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
 
    Windows Users: Use the Anaconda Powershell Prompt to run Tethys commands.  Visit the Anaconda site for instructions on installing `Anaconda Powershell Prompt <https://docs.anaconda.com/anaconda/install/>`_ or `Miniconda Powershell Prompt <https://docs.anaconda.com/miniconda/miniconda-install/>`_.
 
+.. note::
+
+    See :ref:`scaffold_an_app_via_the_portal` if you would rather avoid using the command line.
 
 1. Generate Scaffold
 =====================
-To generate a new app using the scaffold, open a terminal, and execute the following commands:
+To generate a new app using the ``scaffold`` command, open a terminal, :ref:`activate_environment`, and execute the following commands:
 
 .. code-block:: bash
 
-    conda activate tethys
-    tethys scaffold new_app
-
-   
+    tethys scaffold new_app   
 
 You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default value that is shown in the square brackets by pressing enter.
 
