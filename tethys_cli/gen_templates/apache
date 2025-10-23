@@ -10,10 +10,10 @@ Listen {% if ip_address %}{{ ip_address }}:{%- endif %}{{ server_port }}{% if ss
     SSLCertificateKeyFile {{ ssl_key }}
 {%- endif %}
 
-    ProxyPass /static !
-    Alias /static {{ static_root }}
-    ProxyPass /media !
-    Alias /media {{ media_root }}
+    ProxyPass {{ prefix_url }}/static !
+    Alias {{ prefix_url }}/static {{ static_root }}
+    ProxyPass {{ prefix_url }}/media !
+    Alias {{ prefix_url }}/media {{ media_root }}
 
     <Directory {{ static_root }}>
         Require all granted

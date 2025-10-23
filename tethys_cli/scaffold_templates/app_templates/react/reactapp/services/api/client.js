@@ -1,15 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
-import { getTethysPortalHost } from 'services/utilities';
+import { getTethysPortalBase } from "services/utilities";
 
-const TETHYS_PORTAL_HOST = getTethysPortalHost();
+const TETHYS_PORTAL_BASE = getTethysPortalBase();
 
 const apiClient = axios.create({
-  baseURL: `${TETHYS_PORTAL_HOST}`,
+  baseURL: `${TETHYS_PORTAL_BASE}`,
   withCredentials: true,
   headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
@@ -21,7 +21,9 @@ function handleError(error) {
   let res = error.response;
   if (res.status === 401) {
     // Redirect to Tethys Portal login
-    window.location.assign(`${TETHYS_PORTAL_HOST}/accounts/login?next=${window.location.pathname}`);
+    window.location.assign(
+      `${TETHYS_PORTAL_BASE}/accounts/login?next=${window.location.pathname}`
+    );
   }
   return Promise.reject(error);
 }
