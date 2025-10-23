@@ -1,4 +1,5 @@
 from django.urls import reverse, resolve
+from tethys_portal import urls
 from tethys_sdk.testing import TethysTestCase
 from django.test import override_settings
 from django.urls.exceptions import NoReverseMatch
@@ -65,6 +66,11 @@ class TestUrls(TethysTestCase):
         self.assertEqual("/extensions/test-extension/foo/bar/", url)
         self.assertEqual(
             "tethysext.test_extension.controllers.home", resolver._func_path
+        )
+
+        # ensure app urls are at the end
+        self.assertEqual(
+            urls.urlpatterns[-2].urlconf_module.__name__, "tethys_apps.urls"
         )
 
     @mock.patch("django.urls.include")
@@ -192,6 +198,11 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
             "tethysext.test_extension.controllers", resolver.func.__module__
+        )
+
+        # ensure app urls are at the end
+        self.assertEqual(
+            urls.urlpatterns[-2].urlconf_module.__name__, "tethys_apps.urls"
         )
 
 
