@@ -64,6 +64,7 @@ dependencies:
 
    # Misc Plugins
   - django-termsandconditions  # require users to accept terms and conditions
+  - django-cookie-consent  # requires users to accept cookie usage
   - django-analytical  # track usage analytics
   - django-json-widget  # enable json widget for app settings
   - djangorestframework  # enable REST API framework
