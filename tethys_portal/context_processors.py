@@ -57,6 +57,7 @@ def tethys_portal_context(request):
         "single_app_mode": not settings.MULTIPLE_APP_MODE,
         "configured_single_app": configured_single_app,
         "idp_backends": idps.keys(),
+        "debug_mode": settings.DEBUG,
     }
 
     return context

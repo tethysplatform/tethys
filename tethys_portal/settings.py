@@ -14,10 +14,10 @@ Settings for Tethys Platform
 This file contains default Django and other settings for the Tethys Platform.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/3.2/topics/settings/
+https://docs.djangoproject.com/en/5.2/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/3.2/ref/settings/
+https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
@@ -181,7 +181,7 @@ else:
     DEFAULT_DB.setdefault("PORT", 5436)
 
 
-# See https://docs.djangoproject.com/en/3.2/ref/settings/#logging-config for more logging configuration options.
+# See https://docs.djangoproject.com/en/5.2/ref/settings/#logging-config for more logging configuration options.
 LOGGING = portal_config_settings.pop("LOGGING", {})
 LOGGING.setdefault("version", 1)
 LOGGING.setdefault("disable_existing_loggers", False)
