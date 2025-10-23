@@ -49,14 +49,35 @@
       opacity: 0.6;
     }
     .app-card {
-        width: 200px;
+      width: 200px;
     }
     .app-card:hover {
-        background: #dddddd;
+      background: #dddddd;
+    }
+    .add-app-card {
+      background: none !important;
+      border: 2px gray dashed;
+    }
+    .add-app-card:hover {
+        background: lightgray !important;
+    }
+    .add-app-card .card-body {
+      font-size: 5em;
+    }
+    .add-app-card .app-title {
+      color: gray !important;
+    }
+    #modal-add-app .modal-body {
+      display: flex;
+      justify-content: space-around;
+    }
+    #modal-add-app .modal-body .btn {
+      width: 10em;
     }
 
     /* App Card Description */
     .app-help-icon,
+    .app-settings-icon,
     .redirect-icon{
       border-radius: 50%;
       font-size: 10pt;
@@ -66,7 +87,7 @@
       background: white;
     }
 
-    .app-help-icon:hover{
+    .app-help-icon:hover,.app-settings-icon:hover{
         background: #dddddd;
         cursor: pointer;
     }
@@ -106,6 +127,11 @@
       {# App List #}
       <div class="container-xl">
         <div class="row row-cols-auto justify-content-center mb-4 mx-4">
+          {% if request.user.is_staff and debug_mode %}
+            <div class="col">
+              {% include 'tethys_apps/add_app_card.html' %}
+            </div>
+          {% endif %}
           {% for app in apps.configured %}
             <div class="col">
               {% include 'tethys_apps/app_card.html' with app=app unconfigured=False %}
@@ -119,10 +145,46 @@
         </div>
       </div>
     {% else %}
-      <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+      {% if request.user.is_staff and debug_mode %}
+        <div class="container-xl">
+          <div class="row row-cols-auto justify-content-center mb-4 mx-4">
+            <div class="col">
+              {% include 'tethys_apps/add_app_card.html' %}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+      {% endif %}
     {% endif %}
   </div>
   <div id="app-library-curtain"></div>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="modal-add-app" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-label">Add App</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <a class="btn btn-primary mb-3" href="{% url 'admin:create_app' %}">
+          <div class="bi bi-hammer"></div>
+          <div class="d-inline">Create</div>
+        </a>
+        <a class="btn btn-primary mb-3" href="{% url 'admin:import_app' %}">
+          <div class="bi bi-upload"></div>
+          <div class="d-inline">Import</div>
+        </a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

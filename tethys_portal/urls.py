@@ -34,6 +34,7 @@ from tethys_portal.views import (
     admin as tethys_portal_admin,
     psa as tethys_portal_psa,
     email as tethys_portal_email,
+    app_lifecycle,
 )
 from tethys_portal.optional_dependencies import has_module
 from tethys_apps import views as tethys_apps_views
@@ -49,6 +50,9 @@ from tethys_portal.optional_dependencies import optional_import
 TrustedDevice = optional_import("mfa.TrustedDevice")
 psa_views = optional_import("views", from_module="social_django")
 psa_urls = optional_import("social_django.urls")
+REACTPY_WEBSOCKET_ROUTE = optional_import(
+    "REACTPY_WEBSOCKET_ROUTE", from_module="reactpy_django"
+)
 
 logger = logging.getLogger(f"tethys.{__name__}")
 
@@ -84,6 +88,24 @@ admin_url_list.insert(
         tethys_portal_admin.clear_workspace,
         name="clear_workspace",
     ),
+)
+
+# Add build app
+admin_url_list.insert(
+    0,
+    re_path(
+        r"^remove_app/(?P<app_id>[0-9]+)/$",
+        app_lifecycle.remove_app,
+        name="remove_app",
+    ),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^create_app/$", app_lifecycle.create_app, name="create_app"),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^import_app/$", app_lifecycle.import_app, name="import_app"),
 )
 
 # Recreate admin.site.urls tuple
@@ -282,8 +304,16 @@ for url_pattern_path in additional_url_pattern_paths:
 
 urlpatterns = additional_url_patterns + urlpatterns
 
+websocket_urlpatterns = [
+    re_path(
+        r"ws/app-lifecycle/(?P<app_name>\w+)/",
+        app_lifecycle.AppLifeCycleConsumer.as_asgi(),
+    ),
+]
+
 if has_module("reactpy_django"):
     urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+    websocket_urlpatterns += [REACTPY_WEBSOCKET_ROUTE]
 
 if settings.MULTIPLE_APP_MODE:
     urlpatterns.extend(

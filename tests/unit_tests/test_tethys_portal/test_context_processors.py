@@ -27,6 +27,7 @@ class TestTethysPortalContext(TestCase):
             "single_app_mode": False,
             "configured_single_app": None,
             "idp_backends": {}.keys(),
+            "debug_mode": False,
         }
         self.assertDictEqual(context, expected_context)
 
@@ -48,6 +49,7 @@ class TestTethysPortalContext(TestCase):
             "single_app_mode": False,
             "configured_single_app": None,
             "idp_backends": {}.keys(),
+            "debug_mode": False,
         }
         self.assertDictEqual(context, expected_context)
 
@@ -73,9 +75,32 @@ class TestTethysPortalContext(TestCase):
             "single_app_mode": True,
             "configured_single_app": None,
             "idp_backends": {}.keys(),
+            "debug_mode": False,
         }
         self.assertDictEqual(context, expected_context)
         mock_messages.warning.assert_called_with(
             mock_request,
             "MULTIPLE_APP_MODE is disabled but there is no Tethys application installed.",
         )
+
+    @override_settings(DEBUG=True)
+    def test_context_processors_debug_mode_true(self):
+        mock_request = mock.MagicMock()
+        del mock_request.user
+        assert not hasattr(mock_request, "user")
+        context = context_processors.tethys_portal_context(mock_request)
+
+        expected_context = {
+            "has_analytical": True,
+            "has_terms": False,
+            "has_mfa": True,
+            "has_gravatar": True,
+            "has_session_security": True,
+            "has_oauth2_provider": True,
+            "show_app_library_button": False,
+            "single_app_mode": False,
+            "configured_single_app": None,
+            "idp_backends": {}.keys(),
+            "debug_mode": True,
+        }
+        self.assertDictEqual(context, expected_context)
