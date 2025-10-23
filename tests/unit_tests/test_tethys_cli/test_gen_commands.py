@@ -73,7 +73,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_APACHE_OPTION
         mock_args.directory = None
         mock_is_file.return_value = False
-        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]
+        mock_settings.side_effect = [
+            "/foo/workspace",
+            "/foo/static",
+            "/foo/media",
+            "/foo/prefix",
+        ]
 
         generate_command(args=mock_args)
 
@@ -81,6 +86,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_settings.assert_any_call("MEDIA_ROOT")
         mock_settings.assert_any_call("STATIC_ROOT")
+        mock_settings.assert_called_with("PREFIX_URL")
 
         mock_write_info.assert_called_once()
 
@@ -95,14 +101,20 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_NGINX_OPTION
         mock_args.directory = None
         mock_is_file.return_value = False
-        mock_settings.side_effect = ["/foo/workspace", "/foo/static", "/foo/media"]
+        mock_settings.side_effect = [
+            "/foo/workspace",
+            "/foo/static",
+            "/foo/media",
+            "/foo/prefix",
+        ]
 
         generate_command(args=mock_args)
 
         mock_is_file.assert_called_once()
         mock_file.assert_called()
         mock_settings.assert_any_call("TETHYS_WORKSPACES_ROOT")
-        mock_settings.assert_called_with("MEDIA_ROOT")
+        mock_settings.assert_any_call("MEDIA_ROOT")
+        mock_settings.assert_called_with("PREFIX_URL")
 
         mock_write_info.assert_called_once()
 

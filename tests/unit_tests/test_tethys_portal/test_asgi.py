@@ -58,7 +58,7 @@ class TestAsgiApplicationWithURLPrefix(TethysTestCase):
         self.assertTrue(
             any(
                 isinstance(url_pattern, URLPattern)
-                and url_pattern.pattern._regex == expected_path
+                and url_pattern.pattern.regex.pattern == expected_path
                 for url_pattern in url_router.routes
             )
         )
