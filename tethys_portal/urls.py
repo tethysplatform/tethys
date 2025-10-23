@@ -304,9 +304,6 @@ for url_pattern_path in additional_url_pattern_paths:
 
 urlpatterns = additional_url_patterns + urlpatterns
 
-if has_module("reactpy_django"):
-    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
-
 if settings.MULTIPLE_APP_MODE:
     urlpatterns.extend(
         [
