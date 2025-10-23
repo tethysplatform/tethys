@@ -304,6 +304,17 @@ for url_pattern_path in additional_url_pattern_paths:
 
 urlpatterns = additional_url_patterns + urlpatterns
 
+websocket_urlpatterns = [
+    re_path(
+        r"ws/app-lifecycle/(?P<app_name>\w+)/",
+        app_lifecycle.AppLifeCycleConsumer.as_asgi(),
+    ),
+]
+
+if has_module("reactpy_django"):
+    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+    websocket_urlpatterns += [REACTPY_WEBSOCKET_ROUTE]
+
 if settings.MULTIPLE_APP_MODE:
     urlpatterns.extend(
         [
@@ -339,14 +350,3 @@ if (
             name="login_prefix",
         )
     )
-
-websocket_urlpatterns = [
-    re_path(
-        r"ws/app-lifecycle/(?P<app_name>\w+)/",
-        app_lifecycle.AppLifeCycleConsumer.as_asgi(),
-    ),
-]
-
-if has_module("reactpy_django"):
-    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
-    websocket_urlpatterns += [REACTPY_WEBSOCKET_ROUTE]
