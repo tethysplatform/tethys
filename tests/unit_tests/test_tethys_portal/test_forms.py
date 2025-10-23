@@ -3,6 +3,7 @@ from django.test import TestCase
 from captcha.models import CaptchaStore
 import tethys_portal.forms as tp_forms
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django import forms
 from unittest import mock
@@ -578,3 +579,18 @@ class TethysPortalFormsTests(TestCase):
 
         self.assertTrue(form.is_valid())
         self.assertEqual("Company", form.fields["tenant"].widget.attrs["placeholder"])
+
+    def test_AppImportForm_clean(self):
+        mock_zip_file = SimpleUploadedFile("test.zip", b"test file contents")
+        form_data = {
+            "git_url": "https://github.com/test.git",
+        }
+        file_data = {
+            "zip_file": mock_zip_file,
+        }
+
+        app_import_form = tp_forms.AppImportForm(data=form_data, files=file_data)
+
+        self.assertFalse(app_import_form.is_valid())
+
+        self.assertRaises(forms.ValidationError, app_import_form.clean)

@@ -289,6 +289,38 @@ class TestCliHelper(unittest.TestCase):
 
         self.assertEqual(mock_write_warning.call_count, 0)
 
+    @mock.patch("tethys_cli.cli_helpers.input")
+    def test_prompt_yes_or_no__accept_default_yes(self, mock_input):
+        question = "How are you?"
+        mock_input.return_value = None
+        test_val = cli_helper.prompt_yes_or_no(question)
+        self.assertTrue(test_val)
+        mock_input.assert_called_once()
+
+    @mock.patch("tethys_cli.cli_helpers.input")
+    def test_prompt_yes_or_no__accept_default_no(self, mock_input):
+        question = "How are you?"
+        mock_input.return_value = None
+        test_val = cli_helper.prompt_yes_or_no(question, default="n")
+        self.assertFalse(test_val)
+        mock_input.assert_called_once()
+
+    @mock.patch("tethys_cli.cli_helpers.input")
+    def test_prompt_yes_or_no__invalid_first(self, mock_input):
+        question = "How are you?"
+        mock_input.side_effect = ["invalid", "y"]
+        test_val = cli_helper.prompt_yes_or_no(question, default="n")
+        self.assertTrue(test_val)
+        self.assertEqual(mock_input.call_count, 2)
+
+    @mock.patch("tethys_cli.cli_helpers.input")
+    def test_prompt_yes_or_no__system_exit(self, mock_input):
+        question = "How are you?"
+        mock_input.side_effect = SystemExit
+        test_val = cli_helper.prompt_yes_or_no(question, default="n")
+        self.assertIsNone(test_val)
+        mock_input.assert_called_once()
+
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")

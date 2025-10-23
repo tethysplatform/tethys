@@ -1,8 +1,11 @@
 import unittest
 from unittest import mock
 from pathlib import Path
+from argparse import Namespace
 
 from tethys_cli.scaffold_commands import (
+    description_validator,
+    tags_validator,
     proper_name_validator,
     get_random_color,
     theme_color_validator,
@@ -30,6 +33,53 @@ class TestScaffoldCommands(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    @staticmethod
+    def _get_default_args():
+        args = Namespace()
+        args.extension = ".ext"
+        args.name = "project_name"
+        args.template = "default"
+        args.use_defaults = True
+        args.overwrite = True
+        args.prefix = "cwd"
+        args.proper_name = None
+        args.description = None
+        args.color = None
+        args.tags = None
+        args.author = None
+        args.author_email = None
+        args.license_name = None
+
+        return args
+
+    def test_description_validator(self):
+        expected_value = "foo's"
+        expected_default = "bar"
+        ret = description_validator(expected_value, expected_default)
+        self.assertTrue(ret[0])
+        self.assertEqual("foo\\'s", ret[1])
+
+    def test_description_validator_value_as_default(self):
+        expected_value = "bar"
+        expected_default = "bar"
+        ret = description_validator(expected_value, expected_default)
+        self.assertTrue(ret[0])
+        self.assertEqual("bar", ret[1])
+
+    def test_tags_validator(self):
+        expected_value = "foo,bar,baz"
+        expected_default = "none"
+        ret = tags_validator(expected_value, expected_default)
+        self.assertTrue(ret[0])
+        self.assertEqual('"foo","bar","baz"', ret[1])
+
+    def test_tags_validator_value_as_default(self):
+        expected_value = "bar"
+        expected_default = "bar"
+        ret = tags_validator(expected_value, expected_default)
+        self.assertTrue(ret[0])
+        self.assertEqual("bar", ret[1])
 
     def test_proper_name_validator(self):
         expected_value = "foo"
@@ -117,7 +167,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -138,19 +187,11 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
-        mock_args.name = "project_name"
-        mock_args.use_defaults = True
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
+        mock_args = self._get_default_args()
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -173,8 +214,6 @@ class TestScaffoldCommands(unittest.TestCase):
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -205,18 +244,6 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template root directory", mock_log_call_args[3][0][0])
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
@@ -226,13 +253,9 @@ class TestScaffoldCommands(unittest.TestCase):
         self, mock_is_dir, mock_pretty_output, mock_logger, mock_exit
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "@@"
-        mock_args.use_defaults = True
-        mock_args.overwrite = True
+        mock_args.template = "template_name"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -262,7 +285,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -283,19 +305,12 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
+        mock_args = self._get_default_args()
         mock_args.extension = None
-        mock_args.template = "template_name"
-        mock_args.name = "project_name"
-        mock_args.use_defaults = True
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -317,8 +332,6 @@ class TestScaffoldCommands(unittest.TestCase):
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -349,22 +362,9 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template root directory", mock_log_call_args[3][0][0])
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -385,19 +385,12 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "PROJECT_NAME"
-        mock_args.use_defaults = True
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -420,8 +413,6 @@ class TestScaffoldCommands(unittest.TestCase):
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -457,18 +448,6 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template root directory", mock_log_call_args[3][0][0])
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
@@ -478,13 +457,8 @@ class TestScaffoldCommands(unittest.TestCase):
         self, mock_is_dir, mock_pretty_output, mock_logger, mock_exit
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "@@"
-        mock_args.use_defaults = True
-        mock_args.overwrite = True
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -514,7 +488,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -535,19 +508,12 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
-        mock_args.use_defaults = True
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -569,8 +535,6 @@ class TestScaffoldCommands(unittest.TestCase):
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -606,24 +570,11 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template root directory", mock_log_call_args[3][0][0])
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
     @mock.patch("tethys_cli.scaffold_commands.proper_name_validator")
     @mock.patch("tethys_cli.scaffold_commands.input")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -644,21 +595,15 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_input,
         mock_proper_name_validator,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
         mock_args.use_defaults = False
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -683,8 +628,6 @@ class TestScaffoldCommands(unittest.TestCase):
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -725,23 +668,10 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("test4", mock_log_call_args[4][0][0])
         self.assertIn("test5", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.proper_name_validator")
     @mock.patch("tethys_cli.scaffold_commands.input")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -762,20 +692,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_input,
         mock_proper_name_validator,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
         mock_args.use_defaults = False
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -802,8 +726,6 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_proper_name_validator.return_value = True, "foo"
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_not_called()
@@ -836,7 +758,6 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch("tethys_cli.scaffold_commands.proper_name_validator")
     @mock.patch("tethys_cli.scaffold_commands.input")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -857,21 +778,15 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_input,
         mock_proper_name_validator,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
         mock_args.use_defaults = False
-        mock_args.overwrite = True
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -904,8 +819,6 @@ class TestScaffoldCommands(unittest.TestCase):
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -947,23 +860,10 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("test4", mock_log_call_args[4][0][0])
         self.assertIn("test5", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
-    @mock.patch("tethys_cli.scaffold_commands.input")
+    @mock.patch("tethys_cli.scaffold_commands.prompt_yes_or_no")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -984,20 +884,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
-        mock_input,
+        mock_prompt_yes_or_no,
         mock_copy,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
-        mock_args.use_defaults = True
         mock_args.overwrite = False
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1017,13 +911,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_mkdir.return_value = True
 
-        mock_input.side_effect = ["y"]
+        mock_prompt_yes_or_no.return_value = True
 
         scaffold_command(args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
@@ -1060,117 +952,10 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template root directory", mock_log_call_args[3][0][0])
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "baz")}"',
-            mock_log_call_args[6][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "spam")}"',
-            mock_log_call_args[7][0][0],
-        )
-        self.assertEqual(
-            f'Loading template: "{str(Path("/").absolute() / "foo" / "bar" / "eggs_tmpl")}"',
-            mock_log_call_args[8][0][0],
-        )
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
-    @mock.patch("tethys_cli.scaffold_commands.input")
+    @mock.patch("tethys_cli.scaffold_commands.prompt_yes_or_no")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
-    @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
-    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
-    @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
-    @mock.patch("tethys_cli.scaffold_commands.render_path")
-    @mock.patch("tethys_cli.scaffold_commands.walk")
-    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
-    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
-    @mock.patch("tethys_cli.scaffold_commands.Template")
-    def test_scaffold_command_with_no_overwrite_keyboard_interrupt(
-        self,
-        _,
-        __,
-        mock_mkdir,
-        mock_os_walk,
-        mock_render_path,
-        mock_rmt,
-        mock_is_dir,
-        mock_pretty_output,
-        mock_random_color,
-        mock_logger,
-        mock_input,
-        mock_exit,
-    ):
-        # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
-        mock_args.name = "project-name"
-        mock_args.use_defaults = True
-        mock_args.overwrite = False
-        mock_args.prefix = "cwd"
-
-        # mock the log
-        mock_log = mock.MagicMock()
-
-        # mock the getlogger from logging
-        mock_logger.return_value = mock_log
-
-        # mocking the validate template call return value
-        mock_is_dir.return_value = [True, True]
-
-        mock_render_path.return_value = ""
-
-        mock_os_walk.return_value = [
-            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
-            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs")),
-        ]
-
-        mock_mkdir.return_value = True
-
-        mock_exit.side_effect = SystemExit
-
-        mock_input.side_effect = KeyboardInterrupt
-
-        self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-
-        mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
-
-        # check shutil.rmtree call
-        mock_rmt.assert_not_called()
-
-        mock_render_path.assert_not_called()
-
-        # mock the create root directory
-        mock_mkdir.assert_not_called()
-
-        po_call_args = mock_pretty_output.call_args_list
-
-        self.assertEqual(
-            'Warning: Dashes in project name "project-name" have been replaced with underscores '
-            '"project_name"',
-            po_call_args[0][0][0],
-        )
-        self.assertEqual(
-            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
-            po_call_args[1][0][0],
-        )
-        self.assertIn("Scaffolding cancelled.", po_call_args[2][0][0])
-
-        mock_log_call_args = mock_log.debug.call_args_list
-        self.assertIn("Command args", mock_log_call_args[0][0][0])
-        self.assertIn("APP_PATH", mock_log_call_args[1][0][0])
-        self.assertIn("EXTENSION_PATH", mock_log_call_args[2][0][0])
-        self.assertIn("Template root directory", mock_log_call_args[3][0][0])
-        self.assertIn("Template context", mock_log_call_args[4][0][0])
-        self.assertIn("Project root path", mock_log_call_args[5][0][0])
-
-    @mock.patch("tethys_cli.scaffold_commands.exit")
-    @mock.patch("tethys_cli.scaffold_commands.input")
-    @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -1189,20 +974,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_input,
         mock_exit,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
-        mock_args.use_defaults = True
         mock_args.overwrite = False
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1224,13 +1003,11 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_exit.side_effect = SystemExit
 
-        mock_input.side_effect = ["n"]
+        mock_input.return_value = None
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
 
         mock_pretty_output.assert_called()
-
-        mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_not_called()
@@ -1262,9 +1039,8 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
 
     @mock.patch("tethys_cli.scaffold_commands.exit")
-    @mock.patch("tethys_cli.scaffold_commands.input")
+    @mock.patch("tethys_cli.scaffold_commands.prompt_yes_or_no")
     @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
-    @mock.patch("tethys_cli.scaffold_commands.get_random_color")
     @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
     @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
     @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
@@ -1283,20 +1059,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt,
         mock_is_dir,
         mock_pretty_output,
-        mock_random_color,
         mock_logger,
         mock_input,
         mock_exit,
     ):
         # mock the input args
-        mock_args = mock.MagicMock()
-
-        mock_args.extension = ".ext"
-        mock_args.template = "template_name"
+        mock_args = self._get_default_args()
         mock_args.name = "project-name"
-        mock_args.use_defaults = True
         mock_args.overwrite = False
-        mock_args.prefix = "cwd"
 
         # mock the log
         mock_log = mock.MagicMock()
@@ -1326,8 +1096,6 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_pretty_output.assert_called()
 
-        mock_random_color.assert_called()
-
         # check shutil.rmtree call
         mock_rmt.assert_called_once()
 
@@ -1356,3 +1124,133 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn("Template root directory", mock_log_call_args[3][0][0])
         self.assertIn("Template context", mock_log_call_args[4][0][0])
         self.assertIn("Project root path", mock_log_call_args[5][0][0])
+
+    @mock.patch("tethys_cli.scaffold_commands.shutil.copy")
+    @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
+    @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
+    @mock.patch("tethys_cli.scaffold_commands.shutil.rmtree")
+    @mock.patch("tethys_cli.scaffold_commands.render_path")
+    @mock.patch("tethys_cli.scaffold_commands.walk")
+    @mock.patch("tethys_cli.scaffold_commands.Path.mkdir")
+    @mock.patch("tethys_cli.scaffold_commands.Path.read_text")
+    @mock.patch("tethys_cli.scaffold_commands.Path.write_text")
+    @mock.patch("tethys_cli.scaffold_commands.Template")
+    def test_scaffold_command_all_optional_args(
+        self,
+        _,
+        __,
+        ___,
+        mock_mkdir,
+        mock_os_walk,
+        mock_render_path,
+        mock_rmt,
+        mock_is_dir,
+        mock_pretty_output,
+        mock_logger,
+        mock_copy,
+    ):
+        # mock the input args
+        mock_args = self._get_default_args()
+        mock_args.use_defaults = False
+        mock_args.proper_name = "Test Proper Name"
+        mock_args.description = "Test description."
+        mock_args.color = "#ff1233"
+        mock_args.tags = "test,app"
+        mock_args.author = "Test Author"
+        mock_args.author_email = "test@email.com"
+        mock_args.license_name = "MIT"
+
+        # mock the log
+        mock_log = mock.MagicMock()
+
+        # mock the getlogger from logging
+        mock_logger.return_value = mock_log
+
+        # mocking the validate template call return value
+        mock_is_dir.return_value = [True, True]
+
+        mock_render_path.return_value = ""
+
+        mock_os_walk.return_value = [
+            (str(Path("/").absolute() / "foo"), ("bar",), ("baz",)),
+            (str(Path("/").absolute() / "foo" / "bar"), (), ("spam", "eggs_tmpl")),
+        ]
+
+        mock_mkdir.return_value = True
+
+        scaffold_command(args=mock_args)
+
+        mock_pretty_output.assert_called()
+
+        # check shutil.rmtree call
+        mock_rmt.assert_called()
+
+        mock_render_path.assert_called()
+
+        self.assertEqual(mock_mkdir.call_count, 2)
+
+        po_call_args = mock_pretty_output.call_args_list
+
+        self.assertEqual(
+            f'Creating new Tethys project at "cwd{Path("/") / "tethysext-project_name"}".',
+            po_call_args[0][0][0],
+        )
+        self.assertIn("Created:", po_call_args[1][0][0])
+        self.assertIn("Created:", po_call_args[2][0][0])
+        self.assertIn("Created:", po_call_args[3][0][0])
+        self.assertIn("Created:", po_call_args[4][0][0])
+        self.assertIn("Created:", po_call_args[5][0][0])
+        self.assertEqual(
+            'Successfully scaffolded new project "project_name"', po_call_args[6][0][0]
+        )
+
+        mock_log_call_args = mock_log.debug.call_args_list
+        self.assertIn("Command args", mock_log_call_args[0][0][0])
+        self.assertIn("APP_PATH", mock_log_call_args[1][0][0])
+        self.assertIn("EXTENSION_PATH", mock_log_call_args[2][0][0])
+        self.assertIn("Template root directory", mock_log_call_args[3][0][0])
+        self.assertIn("Template context", mock_log_call_args[4][0][0])
+        self.assertIn("Project root path", mock_log_call_args[5][0][0])
+
+    @mock.patch("tethys_cli.scaffold_commands.exit")
+    @mock.patch("tethys_cli.scaffold_commands.logging.getLogger")
+    @mock.patch("tethys_cli.scaffold_commands.write_pretty_output")
+    @mock.patch("tethys_cli.scaffold_commands.Path.is_dir")
+    def test_scaffold_command_invalid_optional_arg(
+        self, mock_is_dir, mock_pretty_output, mock_logger, mock_exit
+    ):
+        # mock the input args
+        mock_args = self._get_default_args()
+        mock_args.use_defaults = False
+        mock_args.proper_name = "#@!@#$"
+        mock_args.description = "Test 123"
+        mock_args.color = "#ff1233"
+        mock_args.tags = "test,app"
+        mock_args.author = "Test Author"
+        mock_args.author_email = "test@email.com"
+        mock_args.license_name = "MIT"
+
+        # mock the log
+        mock_log = mock.MagicMock()
+
+        # mock the getlogger from logging
+        mock_logger.return_value = mock_log
+
+        mock_is_dir.return_value = True
+
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, scaffold_command, args=mock_args)
+
+        mock_pretty_output.assert_called()
+
+        po_call_args = mock_pretty_output.call_args_list
+
+        self.assertIn("Invalid value provided", po_call_args[2][0][0])
+
+        mock_log_call_args = mock_log.debug.call_args_list
+        self.assertIn("Command args", mock_log_call_args[0][0][0])
+        self.assertIn("APP_PATH", mock_log_call_args[1][0][0])
+        self.assertIn("EXTENSION_PATH", mock_log_call_args[2][0][0])
+        self.assertIn("Template root directory", mock_log_call_args[3][0][0])
