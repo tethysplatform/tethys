@@ -1553,7 +1553,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch("sys.stdout", new_callable=StringIO)
     @mock.patch("tethys_cli.argparse._sys.exit")
-    @mock.patch("tethys_cli.has_module", return_value=True)
+    @mock.patch("tethys_cli.cookie_command.has_module", return_value=True)
     def test_cookies_command_when_module_present(self, _, mock_exit, mock_stdout):
         # When has_module returns True the cookie parser should be added
         mock_exit.side_effect = SystemExit
@@ -1571,7 +1571,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch("sys.stderr", new_callable=StringIO)
     @mock.patch("tethys_cli.argparse._sys.exit")
-    @mock.patch("tethys_cli.has_module", return_value=False)
+    @mock.patch("tethys_cli.cookie_command.has_module", return_value=True)
     def test_cookies_command_when_module_absent(self, _, mock_exit, mock_stderr):
         # When has_module returns True the cookie parser should be added
         mock_exit.side_effect = SystemExit
