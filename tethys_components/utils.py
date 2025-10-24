@@ -199,25 +199,45 @@ def use_public():
     return app.public_path
 
 
-def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=None):
+def _background_execute_wrapper(func, args, callback=None):
+    result = func(*args)
+    if callable(callback):
+        callback(result)
+
+
+def background_execute(
+    func, args=None, delay_seconds=None, repeat_seconds=None, callback=None
+):
     """
     Kick off a task in the background, optionally with a delay
 
     Args:
-        callable (Callable): The callable that will be executed on a thread in the background
-        args (list): A list of arguments that should be passed to the callable when executed
-        delay_seconds (int|float): The number of seconds after which the callable should be executed
+        func (Callable): The function that will be executed on a thread in the background
+        args (list): A list of arguments that should be passed to the provided function when executed
+        delay_seconds (int|float): The number of seconds after which the provided function should be executed
+        repeat_seconds (int|float): Will re-execute the provided function every X seconds
+        callback (Callable): A function that will be called when the provided function has completed.
 
     Returns: None
     """
+
     if delay_seconds:
         from threading import Timer
 
-        t = Timer(delay_seconds, callable, args if args else [])
+        t = Timer(
+            delay_seconds,
+            _background_execute_wrapper,
+            [func, args if args else [], callback],
+        )
     else:
         from threading import Thread
 
-        t = Thread(target=callable, args=args if args else [])
+        t = Thread(
+            target=_background_execute_wrapper,
+            func=func,
+            args=args if args else [],
+            callback=callback,
+        )
 
     t.start()
 
@@ -225,7 +245,12 @@ def background_execute(callable, args=None, delay_seconds=None, repeat_seconds=N
         from threading import Timer
 
         def repeat_function():
-            Thread(target=callable, args=args if args else []).start()
+            Thread(
+                target=_background_execute_wrapper,
+                func=func,
+                args=args if args else [],
+                callback=callback,
+            ).start()
             Timer(repeat_seconds, repeat_function).start()
 
         repeat_function()
