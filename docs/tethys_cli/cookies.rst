@@ -3,13 +3,21 @@
 cookies command
 ****************
 
+.. important::
+
+    This feature requires the ``django-cookie-consent`` library to be installed. Starting with Tethys 5.0 or if you are using ``micro-tethys-platform``, you will need to install ``django-cookie-consent`` using conda or pip as follows:
+
+    .. code-block:: bash
+
+        # conda: conda-forge channel strongly recommended
+        conda install -c conda-forge django-cookie-consent
+
+        # pip
+        pip install django-cookie-consent
+
 .. warning::
     These commands are for development use only. Cookies are officially managed via ``cookies.yml`` 
     files stored in the code base of both Tethys Portal and its installed apps. See :ref:`cookie_consent`.
-
-.. important::
-    This command is only available if the ``django-cookie-consent`` Python module is installed.
-    Otherwise, the ``tethys`` command will behave as if it does not exist.
 
 List, create and purge both cookie groups and their respective cookies.
 
