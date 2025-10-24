@@ -3,8 +3,10 @@ import unittest
 from unittest import mock
 from io import StringIO
 from pathlib import Path
+from importlib import reload
 
 from tethys_cli import tethys_command
+from tethys_portal.optional_dependencies import has_module
 
 
 class TethysCommandTests(unittest.TestCase):
@@ -1553,11 +1555,9 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch("sys.stderr", new_callable=StringIO)
     @mock.patch("tethys_cli.argparse._sys.exit")
-    def test_cookies_command_when_module_present(self, mock_exit, mock_stderr):
+    @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=True)
+    def test_cookies_command_when_module_present(self, _, mock_exit, mock_stderr):
         # When has_module returns True the cookie parser should be added
-        og_cookie_module = sys.modules.get("cookie_consent", None)
-        if not og_cookie_module:
-            sys.modules["cookie_consent"] = mock.MagicMock()
         mock_exit.side_effect = SystemExit
         testargs = ["tethys", "cookies", "--help"]
 
@@ -1566,16 +1566,11 @@ class TethysCommandTests(unittest.TestCase):
 
         self.assertIn("invalid choice: 'cookies'", mock_stderr.getvalue())
 
-        if not og_cookie_module:
-            del sys.modules["cookie_consent"]
-
     @mock.patch("sys.stderr", new_callable=StringIO)
     @mock.patch("tethys_cli.argparse._sys.exit")
-    def test_cookies_command_when_module_absent(self, mock_exit, mock_stderr):
-        # When has_module returns True the cookie parser should be added
-        og_cookie_module = sys.modules.get("cookie_consent", None)
-        if og_cookie_module:
-            del sys.modules["cookie_consent"]
+    @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
+    def test_cookies_command_when_module_absent(self, _, mock_exit, mock_stderr):
+        # When has_module returns False the cookie parser should not be added        
         mock_exit.side_effect = SystemExit
         testargs = ["tethys", "cookies", "--help"]
 
@@ -1583,6 +1578,3 @@ class TethysCommandTests(unittest.TestCase):
             self.assertRaises(SystemExit, tethys_command)
 
         self.assert_returns_help(mock_stderr.getvalue())
-
-        if og_cookie_module:
-            sys.modules["cookie_consent"] = og_cookie_module
