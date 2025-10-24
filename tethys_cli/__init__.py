@@ -10,7 +10,6 @@
 
 # Commandline interface for Tethys
 import argparse
-import sys
 
 from tethys_cli.version_command import add_version_parser
 from tethys_cli.app_settings_commands import add_app_settings_parser
@@ -32,8 +31,6 @@ from tethys_cli.install_commands import add_install_parser
 from tethys_cli.uninstall_command import add_uninstall_parser
 from tethys_cli.proxyapps_commands import add_proxyapps_parser
 from tethys_cli.cookie_commands import add_cookie_parser
-
-from tethys_portal.optional_dependencies import has_module
 
 
 def tethys_command_parser():

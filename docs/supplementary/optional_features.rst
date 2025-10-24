@@ -127,12 +127,6 @@ Allows users to opt in or out of the cookies used by Tethys Portal and its insta
 
 See :ref:`cookie_consent` for usage.
 
-.. figure:: ../images/supplementary/cookie_consent_banner.png
-    :width: 800px
-    :align: center
-    
-    Cookie consent banner showing on bottom of screen when visiting an app
-
 Web Analytics Tracking
 ----------------------
 
