@@ -215,6 +215,8 @@ def background_execute(
         func (Callable): The function that will be executed on a thread in the background
         args (list): A list of arguments that should be passed to the provided function when executed
         delay_seconds (int|float): The number of seconds after which the provided function should be executed
+        repeat_seconds (int|float): Will re-execute the provided function every X seconds
+        callback (Callable): A function that will be called when the provided function has completed.
 
     Returns: None
     """
