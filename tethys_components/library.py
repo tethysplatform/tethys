@@ -201,7 +201,7 @@ class Package:
                 import_statements.append(
                     f"""import {self.default_export} from "{self.host}/{self.name}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
                 )
-            else:
+            if non_default_components:
                 import_statements.append(
                     f"""import {{{', '.join(non_default_components)}}} from "{self.host}/{self.name}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}&exports={','.join(non_default_components)}";"""
                 )
@@ -277,17 +277,12 @@ class ComponentLibrary:
             ),
             "pm": Package(name="pigeon-maps@0.21.6"),
             "rc": Package(name="recharts@2.12.7"),
-            "ag": Package(
-                name="ag-grid-react@32.2.0",
-                styles=[
-                    "https://unpkg.com/@ag-grid-community/styles@32.2.0/ag-grid.css",
-                    "https://unpkg.com/@ag-grid-community/styles@32.2.0/ag-theme-quartz.css",
-                ],
-            ),
+            "ag": Package(name="react-grid-wrapper.js", host="/static/tethys_apps/js"),
             "rp": Package(name="react-player@2.16.0", default_export="ReactPlayer"),
             "lo": Package(name="react-loading-overlay-ts@2.0.2"),
             "mapgl": Package(
-                name="react-map-gl@7.1.7/maplibre",
+                name="react-map-gl/maplibre",
+                version="7.1.7",
                 default_export="Map",
                 styles=["https://unpkg.com/maplibre-gl@4.7.0/dist/maplibre-gl.css"],
             ),
