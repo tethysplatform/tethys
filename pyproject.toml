@@ -28,11 +28,13 @@ requires-python = ">= 3.10"
 dependencies = [
     "pyopenssl",
   # core dependencies
-    "django>=3.2,<6",
+    "django>=4.2,<6",
+    "tornado>=6.5,<7",
     "channels",
     "daphne",
-    "requests",
+    "requests>=2.32.4,<3",
     "bcrypt",
+    "cryptography>=44.0.1,<45",
   # Gen CLI commands
     "pyyaml",
     "jinja2",

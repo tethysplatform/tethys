@@ -17,7 +17,7 @@ Major Features
 Django 4/5 Support
 ..................
 
-* Tethys Platform 4.3 is compatible with Django versions 3.2 - 5.x. It is now recommended to explicitly specify the version of Django that you want when you create your tethys environment.
+* Tethys Platform 4.3 is compatible with Django versions 4.2 - 5.x. It is now recommended to explicitly specify the version of Django that you want when you create your tethys environment.
 
 See: :ref:`development_installation`
 

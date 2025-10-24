@@ -233,6 +233,7 @@
 
   {# Allows custom attributes to be added to the body tag #}
   <body class="d-flex flex-column h-100"{% block bodytag %}{% endblock %}>
+    {% block modals %}{% endblock %}
     {% if has_analytical %}
     {% include "analytical_body_top.html" %}
     {% endif %}

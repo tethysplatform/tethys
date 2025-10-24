@@ -33,4 +33,11 @@
         <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
     </div>
     {% endif %}
+    {% if request.user.is_staff %}
+    <a 
+        class="app-settings-icon d-none position-absolute top-0 start-0 p-1 m-2 border border-dark"
+        href="{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/">
+        <i class="bi bi-gear"></i></a>
+    </a>
+    {% endif %}
 </div>
