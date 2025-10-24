@@ -1563,7 +1563,7 @@ class TethysCommandTests(unittest.TestCase):
 
         with mock.patch.object(sys, "argv", testargs):
             self.assertRaises(SystemExit, tethys_command)
-        
+
         self.assertIn("invalid choice: 'cookies'", mock_stderr.getvalue())
 
         if not og_cookie_module:
