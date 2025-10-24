@@ -3,10 +3,8 @@ import unittest
 from unittest import mock
 from io import StringIO
 from pathlib import Path
-from importlib import reload
 
 from tethys_cli import tethys_command
-from tethys_portal.optional_dependencies import has_module
 
 
 class TethysCommandTests(unittest.TestCase):
@@ -1570,7 +1568,7 @@ class TethysCommandTests(unittest.TestCase):
     @mock.patch("tethys_cli.argparse._sys.exit")
     @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
     def test_cookies_command_when_module_absent(self, _, mock_exit, mock_stderr):
-        # When has_module returns False the cookie parser should not be added        
+        # When has_module returns False the cookie parser should not be added
         mock_exit.side_effect = SystemExit
         testargs = ["tethys", "cookies", "--help"]
 
