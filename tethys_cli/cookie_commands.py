@@ -16,6 +16,8 @@ def add_cookie_parser(subparsers):
     cookie_parser = subparsers.add_parser(
         "cookies", help="Cookie consent management commands for Tethys Platform."
     )
+    cookie_parser.set_defaults(func=lambda args: cookie_parser.print_help())
+
     cookie_subparsers = cookie_parser.add_subparsers(
         title="Cookie Commands", dest="cookie-command"
     )
