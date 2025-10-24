@@ -1,8 +1,11 @@
 from tethys_cli.cli_colors import write_error, write_success, write_info
 from tethys_cli.cli_helpers import setup_django
+from tethys_portal.optional_dependencies import has_module
 
 
 def add_cookie_parser(subparsers):
+    if not has_module("cookie_consent"):
+        return
     PURGE_COOKIES_COMMAND = "purge"
     LIST_COOKIES_COMMAND = "list"
     ADD_COOKIE_GROUP_COMMAND = "add_group"
