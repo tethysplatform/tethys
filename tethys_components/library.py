@@ -277,10 +277,7 @@ class ComponentLibrary:
             ),
             "pm": Package(name="pigeon-maps@0.21.6"),
             "rc": Package(name="recharts@2.12.7"),
-            "ag": Package(
-                name="react-grid-wrapper.js",
-                host="/static/tethys_apps/js"
-            ),
+            "ag": Package(name="react-grid-wrapper.js", host="/static/tethys_apps/js"),
             "rp": Package(name="react-player@2.16.0", default_export="ReactPlayer"),
             "lo": Package(name="react-loading-overlay-ts@2.0.2"),
             "mapgl": Package(
