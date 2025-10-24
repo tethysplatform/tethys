@@ -324,16 +324,16 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.import_module")
+    @mock.patch("tethys_cli.cli_helpers.optional_import")
     def test_new_conda_run_command(
         self,
-        mock_import_module,
+        mock_optional_import,
         mock_shutil_which,
         mock_os_environ_get,
         mock_popen,
     ):
         # Force fallback to shell implementation (import fails)
-        mock_import_module.side_effect = ImportError
+        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
 
         mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
         mock_os_environ_get.side_effect = [None, None]
@@ -365,15 +365,15 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.import_module")
+    @mock.patch("tethys_cli.cli_helpers.optional_import")
     def test_new_conda_run_command_with_error(
         self,
-        mock_import_module,
+        mock_optional_import,
         mock_shutil_which,
         mock_os_environ_get,
         mock_popen,
     ):
-        mock_import_module.side_effect = ImportError
+        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
         # No executables discovered
         mock_shutil_which.side_effect = [None, None, None]
         mock_os_environ_get.side_effect = [None, None]
@@ -389,12 +389,12 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.import_module")
+    @mock.patch("tethys_cli.cli_helpers.optional_import")
     def test_new_conda_run_command_keyboard_interrupt(
-        self, mock_import_module, mock_which, mock_env_get, mock_popen
+        self, mock_optional_import, mock_which, mock_env_get, mock_popen
     ):
         # Force fallback to _shell_run_command
-        mock_import_module.side_effect = ImportError
+        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
 
         # Make exe discovery succeed
         mock_which.side_effect = ["/usr/bin/conda", None, None]
@@ -433,15 +433,15 @@ class TestCliHelper(unittest.TestCase):
     @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
     @mock.patch("tethys_cli.cli_helpers.os.environ.get")
     @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.import_module")
+    @mock.patch("tethys_cli.cli_helpers.optional_import")
     def test_shell_run_command_auto_yes_for_install(
         self,
-        mock_import_module,
+        mock_optional_import,
         mock_shutil_which,
         mock_os_environ_get,
         mock_popen,
     ):
-        mock_import_module.side_effect = ImportError
+        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
         mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
         mock_os_environ_get.side_effect = [None, None]
 
