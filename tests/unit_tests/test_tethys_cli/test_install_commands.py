@@ -7,8 +7,6 @@ from django.db import transaction
 from django.test import TestCase
 from tethys_cli import install_commands
 from tethys_cli.cli_helpers import load_conda_commands
-from importlib import reload
-import sys
 
 Commands = load_conda_commands()
 
