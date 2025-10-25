@@ -1,0 +1,21 @@
+{% extends "tethys_portal/accounts/base.html" %}
+
+{% block title %}Customize Cookie Consent{% endblock %}
+
+{% block account_form_title %}Customize Cookie Consent{% endblock %}
+
+{% block account_form_body %}
+  <p>
+    This is a list of the categories of cookies used across this site and why we use them.
+  </p>
+  <hr>
+  {% for cookie_group in object_list  %}
+    {% include "cookie_consent/_cookie_group.html" %}
+    {% if not forloop.last %}
+    <hr>
+    {% endif %}
+  {% endfor %}
+  
+{% endblock %}
+
+{% block cookie_consent %}{% endblock %}

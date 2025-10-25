@@ -117,6 +117,16 @@ Enables portal administrators to define terms and conditions that users must acc
 **dependencies**
     - ``django-termsandconditions``
 
+Cookie Consent
+--------------
+
+Allows users to opt in or out of the cookies used by Tethys Portal and its installed apps.
+
+**dependencies**
+    - ``django-cookie-consent``
+
+See :ref:`cookie_consent` for usage.
+
 Web Analytics Tracking
 ----------------------
 
