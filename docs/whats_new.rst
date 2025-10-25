@@ -4,50 +4,79 @@
 What's New
 **********
 
-**Last Updated:** November 2024
+**Last Updated:** October 2025
 
 Refer to this article for information about each new release of Tethys Platform.
 
 Release |version|
-==================
+=================
 
-Major Features
+Drop Django 3.2
+---------------
+
+* Tethys Platform has dropped support for Django 3.2 due to its end-of-life status.
+* Users are encouraged to upgrade to Django 4.2 or later to take advantage of the latest features and security updates.
+
+See: :ref:`development_installation` and `PR 1202 <https://github.com/tethysplatform/tethys/pull/1202>`_
+
+Component Apps
 --------------
 
-Django 4/5 Support
-..................
+* Build dynamic, pure-Python Tethys Apps using ReactPy--no JavaScript required.
 
-* Tethys Platform 4.3 is compatible with Django versions 4.2 - 5.x. It is now recommended to explicitly specify the version of Django that you want when you create your tethys environment.
+See: :ref:`tethys_components`
 
-See: :ref:`development_installation`
+Scaffold Apps Graphically
+-------------------------
 
-New Logo
-........
+* https://github.com/tethysplatform/tethys/pull/1180
 
-* The new logo design that is on the `Tethys Platform <https://www.tethysplatform.org/>`_ website is now in the default configuration of the Tethys Portal.
+See: :ref:`scaffold_an_app_via_the_portal`
 
-Single App Mode
-...............
+Cookie Consent
+--------------
 
-* Tethys can now be used to deploy just a single app by setting the new `MULTIPLE_APP_MODE` setting to `False`.
+* https://github.com/tethysplatform/tethys/pull/1199
 
-See: :ref:`tethys_portal_config_settings`
+See: :ref:`cookie_consent`
 
-Paths API
-.........
+Recipes
+-------
 
-* The new Paths API replaces the Workspaces API (which will still be supported until version 5.0) and provides access to the new Media directories and the App Resources directory. It also makes better use of the Python `pathlib` library.
+* https://github.com/tethysplatform/tethys/pull/1195
+* https://github.com/tethysplatform/tethys/pull/1178
 
-See: :ref:`tethys_paths_api`
+See: :ref:`recipes`
 
-Async Support for the Jobs Table Gizmo
-......................................
+Automated PyPI Package Uploads
+------------------------------
 
-* Jobs Table actions callbacks are now asynchronous enabling them to run without blocking the webserver. Custom actions can also be `async`.
+* https://github.com/tethysplatform/tethys/pull/1193
 
-See: :ref:`jobs-table`
+See: TODO
 
-For a full list of changes in version 4.3 refer to `<https://github.com/tethysplatform/tethys/releases/tag/4.3.0>`_
+Container Scanning
+------------------
+
+* https://github.com/tethysplatform/tethys/pull/1197
+
+See: TODO
+
+Clear Option for Collectstatic
+------------------------------
+
+* `Clear static files and recollect on every start-up <https://github.com/tethysplatform/tethys/pull/1188>`_
+
+See: TODO
+
+Bug Fixes
+---------
+
+* `Component App fixes <https://github.com/tethysplatform/tethys/pull/1206>`_
+* `SINGLE_APP_MODE Url Fix with React App <https://github.com/tethysplatform/tethys/pull/1204>`_
+* `Fix Conda Deprecation for failing tests: conda.cli.python_api -> conda.testing.conda_cli <https://github.com/tethysplatform/tethys/pull/1198>`_
+* `Quotas bug fix <https://github.com/tethysplatform/tethys/pull/1192>`_
+* `Scaffold fixes <https://github.com/tethysplatform/tethys/pull/1182>`_
 
 Prior Release Notes
 ===================
