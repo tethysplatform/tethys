@@ -256,264 +256,267 @@ def test_gen_salt_string_for_setting_with_secrets_deleted_or_changed(
         cli_helper.gen_salt_string_for_setting("test_app", custom_secret_setting)
     assert mock_write_warning.call_count == 0
 
-    @mock.patch("tethys_cli.cli_helpers.input")
-    def test_prompt_yes_or_no__accept_default_yes(self, mock_input):
-        question = "How are you?"
-        mock_input.return_value = None
-        test_val = cli_helper.prompt_yes_or_no(question)
-        self.assertTrue(test_val)
-        mock_input.assert_called_once()
+@mock.patch("tethys_cli.cli_helpers.input")
+def test_prompt_yes_or_no__accept_default_yes(self, mock_input):
+    question = "How are you?"
+    mock_input.return_value = None
+    test_val = cli_helper.prompt_yes_or_no(question)
+    self.assertTrue(test_val)
+    mock_input.assert_called_once()
 
-    @mock.patch("tethys_cli.cli_helpers.input")
-    def test_prompt_yes_or_no__accept_default_no(self, mock_input):
-        question = "How are you?"
-        mock_input.return_value = None
-        test_val = cli_helper.prompt_yes_or_no(question, default="n")
-        self.assertFalse(test_val)
-        mock_input.assert_called_once()
+@mock.patch("tethys_cli.cli_helpers.input")
+def test_prompt_yes_or_no__accept_default_no(self, mock_input):
+    question = "How are you?"
+    mock_input.return_value = None
+    test_val = cli_helper.prompt_yes_or_no(question, default="n")
+    self.assertFalse(test_val)
+    mock_input.assert_called_once()
 
-    @mock.patch("tethys_cli.cli_helpers.input")
-    def test_prompt_yes_or_no__invalid_first(self, mock_input):
-        question = "How are you?"
-        mock_input.side_effect = ["invalid", "y"]
-        test_val = cli_helper.prompt_yes_or_no(question, default="n")
-        self.assertTrue(test_val)
-        self.assertEqual(mock_input.call_count, 2)
+@mock.patch("tethys_cli.cli_helpers.input")
+def test_prompt_yes_or_no__invalid_first(self, mock_input):
+    question = "How are you?"
+    mock_input.side_effect = ["invalid", "y"]
+    test_val = cli_helper.prompt_yes_or_no(question, default="n")
+    self.assertTrue(test_val)
+    self.assertEqual(mock_input.call_count, 2)
 
-    @mock.patch("tethys_cli.cli_helpers.input")
-    def test_prompt_yes_or_no__system_exit(self, mock_input):
-        question = "How are you?"
-        mock_input.side_effect = SystemExit
-        test_val = cli_helper.prompt_yes_or_no(question, default="n")
-        self.assertIsNone(test_val)
-        mock_input.assert_called_once()
+@mock.patch("tethys_cli.cli_helpers.input")
+def test_prompt_yes_or_no__system_exit(self, mock_input):
+    question = "How are you?"
+    mock_input.side_effect = SystemExit
+    test_val = cli_helper.prompt_yes_or_no(question, default="n")
+    self.assertIsNone(test_val)
+    mock_input.assert_called_once()
 
-    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
-    @mock.patch("tethys_cli.cli_helpers.os.environ.get")
-    @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.optional_import")
-    def test_new_conda_run_command(
-        self,
-        mock_optional_import,
-        mock_shutil_which,
-        mock_os_environ_get,
-        mock_popen,
-    ):
-        # Force fallback to shell implementation (import fails)
-        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
 
-        mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
-        mock_os_environ_get.side_effect = [None, None]
+@mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
+@mock.patch("tethys_cli.cli_helpers.os.environ.get")
+@mock.patch("tethys_cli.cli_helpers.shutil.which")
+@mock.patch("tethys_cli.cli_helpers.optional_import")
+def test_new_conda_run_command(
+    mock_optional_import,
+    mock_shutil_which,
+    mock_os_environ_get,
+    mock_popen,
+):
+    # Force fallback to shell implementation (import fails)
+    mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
 
-        # Proc mock: communicate() tuple + returncode
-        proc = mock.MagicMock()
-        proc.communicate.return_value = ("conda list output", "")
-        proc.returncode = 0
-        mock_popen.return_value = proc
+    mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
+    mock_os_environ_get.side_effect = [None, None]
 
-        conda_run_func = cli_helper.conda_run_command()
-        stdout, stderr, returncode = conda_run_func("list", "")
+    # Proc mock: communicate() tuple + returncode
+    proc = mock.MagicMock()
+    proc.communicate.return_value = ("conda list output", "")
+    proc.returncode = 0
+    mock_popen.return_value = proc
 
-        self.assertEqual(stdout, "conda list output")
-        self.assertEqual(stderr, "")
-        self.assertEqual(returncode, 0)
+    conda_run_func = cli_helper.conda_run_command()
+    stdout, stderr, returncode = conda_run_func("list", "")
 
-        # Ensure Popen was called with the resolved exe and command
-        called_cmd = mock_popen.call_args[0][0]
-        self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
-        # stdout/stderr default to PIPE when not provided
-        self.assertEqual(
-            mock_popen.call_args.kwargs.get("stdout"), -1
-        )  # passed positionally
-        self.assertEqual(
-            mock_popen.call_args.kwargs.get("stderr"), -1
-        )  # passed positionally
+    assert stdout == "conda list output"
+    assert stderr == ""
+    assert returncode == 0
 
-    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
-    @mock.patch("tethys_cli.cli_helpers.os.environ.get")
-    @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.optional_import")
-    def test_new_conda_run_command_with_error(
-        self,
-        mock_optional_import,
-        mock_shutil_which,
-        mock_os_environ_get,
-        mock_popen,
-    ):
-        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
-        # No executables discovered
-        mock_shutil_which.side_effect = [None, None, None]
-        mock_os_environ_get.side_effect = [None, None]
+    # Ensure Popen was called with the resolved exe and command
+    called_cmd = mock_popen.call_args[0][0]
+    assert called_cmd[:2] == ["/usr/bin/conda", "list"]
+    # stdout/stderr default to PIPE when not provided
+    assert mock_popen.call_args.kwargs.get("stdout") == -1  # passed positionally
+    assert mock_popen.call_args.kwargs.get("stderr") == -1  # passed positionally
 
-        conda_run_func = cli_helper.conda_run_command()
-        stdout, stderr, returncode = conda_run_func("list", "")
 
-        self.assertEqual(stdout, "")
-        self.assertEqual(stderr, "conda executable not found on PATH")
-        self.assertEqual(returncode, 1)
-        mock_popen.assert_not_called()
+@mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
+@mock.patch("tethys_cli.cli_helpers.os.environ.get")
+@mock.patch("tethys_cli.cli_helpers.shutil.which")
+@mock.patch("tethys_cli.cli_helpers.optional_import")
+def test_new_conda_run_command_with_error(
+    mock_optional_import,
+    mock_shutil_which,
+    mock_os_environ_get,
+    mock_popen,
+):
+    mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
+    # No executables discovered
+    mock_shutil_which.side_effect = [None, None, None]
+    mock_os_environ_get.side_effect = [None, None]
 
-    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
-    @mock.patch("tethys_cli.cli_helpers.os.environ.get")
-    @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.optional_import")
-    def test_new_conda_run_command_keyboard_interrupt(
-        self, mock_optional_import, mock_which, mock_env_get, mock_popen
-    ):
-        # Force fallback to _shell_run_command
-        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
+    conda_run_func = cli_helper.conda_run_command()
+    stdout, stderr, returncode = conda_run_func("list", "")
 
-        # Make exe discovery succeed
-        mock_which.side_effect = ["/usr/bin/conda", None, None]
-        mock_env_get.side_effect = [None, None]
+    assert stdout == ""
+    assert stderr == "conda executable not found on PATH"
+    assert returncode == 1
+    mock_popen.assert_not_called()
 
-        # Configure the Popen instance
-        proc = mock.MagicMock()
-        # First communicate raises KeyboardInterrupt; second returns empty output
-        proc.communicate.side_effect = [KeyboardInterrupt, ("", "")]
-        proc.returncode = 0
-        mock_popen.return_value = proc
 
-        conda_run_func = cli_helper.conda_run_command()
-        stdout, stderr, rc = conda_run_func("list", "")
+@mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
+@mock.patch("tethys_cli.cli_helpers.os.environ.get")
+@mock.patch("tethys_cli.cli_helpers.shutil.which")
+@mock.patch("tethys_cli.cli_helpers.optional_import")
+def test_new_conda_run_command_keyboard_interrupt(
+    mock_optional_import, mock_which, mock_env_get, mock_popen
+):
+    # Force fallback to _shell_run_command
+    mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
 
-        self.assertEqual((stdout, stderr, rc), ("", "", 0))
-        proc.terminate.assert_called_once()
+    # Make exe discovery succeed
+    mock_which.side_effect = ["/usr/bin/conda", None, None]
+    mock_env_get.side_effect = [None, None]
 
-        # sanity: check command used
-        called_cmd = mock_popen.call_args[0][0]
-        self.assertEqual(called_cmd[:2], ["/usr/bin/conda", "list"])
+    # Configure the Popen instance
+    proc = mock.MagicMock()
+    # First communicate raises KeyboardInterrupt; second returns empty output
+    proc.communicate.side_effect = [KeyboardInterrupt, ("", "")]
+    proc.returncode = 0
+    mock_popen.return_value = proc
 
-    @mock.patch("tethys_cli.cli_helpers.optional_import")  # CHANGED
-    def test_legacy_conda_run_command(self, mock_optional_import):
-        mock_optional_import.return_value = lambda command, *args, **kwargs: (
-            "stdout",
-            "stderr",
-            0,
-        )
-        conda_run_func = cli_helper.conda_run_command()
-        stdout, stderr, returncode = conda_run_func("list", "")
-        self.assertEqual(stdout, "stdout")
-        self.assertEqual(stderr, "stderr")
-        self.assertEqual(returncode, 0)
+    conda_run_func = cli_helper.conda_run_command()
+    stdout, stderr, rc = conda_run_func("list", "")
 
-    @mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
-    @mock.patch("tethys_cli.cli_helpers.os.environ.get")
-    @mock.patch("tethys_cli.cli_helpers.shutil.which")
-    @mock.patch("tethys_cli.cli_helpers.optional_import")
-    def test_shell_run_command_auto_yes_for_install(
-        self,
-        mock_optional_import,
-        mock_shutil_which,
-        mock_os_environ_get,
-        mock_popen,
-    ):
-        mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
-        mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
-        mock_os_environ_get.side_effect = [None, None]
+    assert (stdout, stderr, rc) == ("", "", 0)
+    proc.terminate.assert_called_once()
 
-        proc = mock.MagicMock()
-        proc.communicate.return_value = ("", "")
-        proc.returncode = 0
-        mock_popen.return_value = proc
+    # sanity: check command used
+    called_cmd = mock_popen.call_args[0][0]
+    assert called_cmd[:2] == ["/usr/bin/conda", "list"]
 
-        conda_run_func = cli_helper.conda_run_command()
-        conda_run_func("install", "numpy")
 
-        called_cmd = mock_popen.call_args[0][0]
-        self.assertEqual(called_cmd[0:2], ["/usr/bin/conda", "install"])
-        self.assertIn("--yes", called_cmd)
+@mock.patch("tethys_cli.cli_helpers.optional_import")  # CHANGED
+def test_legacy_conda_run_command(mock_optional_import):
+    mock_optional_import.return_value = lambda command, *args, **kwargs: (
+        "stdout",
+        "stderr",
+        0,
+    )
+    conda_run_func = cli_helper.conda_run_command()
+    stdout, stderr, returncode = conda_run_func("list", "")
+    assert stdout == "stdout"
+    assert stderr == "stderr"
+    assert returncode == 0
 
-    @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_load_conda_commands_first_module_success(self, mock_import_module):
-        """Test load_conda_commands when first module (conda.cli.python_api) is available"""
-        mock_commands = mock.MagicMock()
-        mock_module = mock.MagicMock()
-        mock_module.Commands = mock_commands
-        mock_import_module.return_value = mock_module
 
-        result = cli_helper.load_conda_commands()
+@mock.patch("tethys_cli.cli_helpers.subprocess.Popen")
+@mock.patch("tethys_cli.cli_helpers.os.environ.get")
+@mock.patch("tethys_cli.cli_helpers.shutil.which")
+@mock.patch("tethys_cli.cli_helpers.optional_import")
+def test_shell_run_command_auto_yes_for_install(
+    mock_optional_import,
+    mock_shutil_which,
+    mock_os_environ_get,
+    mock_popen,
+):
+    mock_optional_import.return_value = cli_helper.FailedImport("module", "error")
+    mock_shutil_which.side_effect = ["/usr/bin/conda", None, None]
+    mock_os_environ_get.side_effect = [None, None]
 
-        mock_import_module.assert_called_once_with("conda.cli.python_api")
-        self.assertEqual(result, mock_commands)
+    proc = mock.MagicMock()
+    proc.communicate.return_value = ("", "")
+    proc.returncode = 0
+    mock_popen.return_value = proc
 
-    @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_load_conda_commands_second_module_success(self, mock_import_module):
-        """Test load_conda_commands when second module (conda.testing.integration) is available"""
-        mock_commands = mock.MagicMock()
-        mock_module = mock.MagicMock()
-        mock_module.Commands = mock_commands
+    conda_run_func = cli_helper.conda_run_command()
+    conda_run_func("install", "numpy")
 
-        # First call raises ImportError, second call succeeds
-        mock_import_module.side_effect = [ImportError("Module not found"), mock_module]
+    called_cmd = mock_popen.call_args[0][0]
+    assert called_cmd[0:2] == ["/usr/bin/conda", "install"]
+    assert "--yes" in called_cmd
 
-        result = cli_helper.load_conda_commands()
 
-        # Should have tried both modules
-        expected_calls = [
-            mock.call("conda.cli.python_api"),
-            mock.call("conda.testing.integration"),
-        ]
-        mock_import_module.assert_has_calls(expected_calls)
-        self.assertEqual(result, mock_commands)
+@mock.patch("tethys_cli.cli_helpers.import_module")
+def test_load_conda_commands_first_module_success(mock_import_module):
+    """Test load_conda_commands when first module (conda.cli.python_api) is available"""
+    mock_commands = mock.MagicMock()
+    mock_module = mock.MagicMock()
+    mock_module.Commands = mock_commands
+    mock_import_module.return_value = mock_module
 
-    @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_load_conda_commands_attribute_error(self, mock_import_module):
-        """Test load_conda_commands when modules exist but don't have Commands attribute"""
-        mock_module = mock.MagicMock()
-        del mock_module.Commands  # Remove Commands attribute to trigger AttributeError
+    result = cli_helper.load_conda_commands()
 
-        # First call raises AttributeError, second call raises ImportError
-        mock_import_module.side_effect = [mock_module, ImportError("Module not found")]
+    mock_import_module.assert_called_once_with("conda.cli.python_api")
+    assert result == mock_commands
 
-        result = cli_helper.load_conda_commands()
 
-        # Should have tried both modules and fallen back to local commands
-        expected_calls = [
-            mock.call("conda.cli.python_api"),
-            mock.call("conda.testing.integration"),
-        ]
-        mock_import_module.assert_has_calls(expected_calls)
-        self.assertEqual(result, cli_helper._LocalCondaCommands)
+@mock.patch("tethys_cli.cli_helpers.import_module")
+def test_load_conda_commands_second_module_success(mock_import_module):
+    """Test load_conda_commands when second module (conda.testing.integration) is available"""
+    mock_commands = mock.MagicMock()
+    mock_module = mock.MagicMock()
+    mock_module.Commands = mock_commands
 
-    @mock.patch("tethys_cli.cli_helpers.import_module")
-    def test_load_conda_commands_fallback_to_local(self, mock_import_module):
-        """Test load_conda_commands falls back to _LocalCondaCommands when all modules fail"""
-        # Both import attempts fail
-        mock_import_module.side_effect = [
-            ImportError("conda.cli.python_api not found"),
-            ImportError("conda.testing.integration not found"),
-        ]
+    # First call raises ImportError, second call succeeds
+    mock_import_module.side_effect = [ImportError("Module not found"), mock_module]
 
-        result = cli_helper.load_conda_commands()
+    result = cli_helper.load_conda_commands()
 
-        # Should have tried both modules
-        expected_calls = [
-            mock.call("conda.cli.python_api"),
-            mock.call("conda.testing.integration"),
-        ]
-        mock_import_module.assert_has_calls(expected_calls)
-        self.assertEqual(result, cli_helper._LocalCondaCommands)
+    # Should have tried both modules
+    expected_calls = [
+        mock.call("conda.cli.python_api"),
+        mock.call("conda.testing.integration"),
+    ]
+    mock_import_module.assert_has_calls(expected_calls)
+    assert result == mock_commands
 
-    def test_local_conda_commands_attributes(self):
-        """Test that _LocalCondaCommands has expected attributes"""
-        commands = cli_helper._LocalCondaCommands
 
-        # Test that all expected command attributes exist
-        expected_commands = [
-            "COMPARE",
-            "CONFIG",
-            "CLEAN",
-            "CREATE",
-            "INFO",
-            "INSTALL",
-            "LIST",
-            "REMOVE",
-            "SEARCH",
-            "UPDATE",
-            "RUN",
-        ]
+@mock.patch("tethys_cli.cli_helpers.import_module")
+def test_load_conda_commands_attribute_error(mock_import_module):
+    """Test load_conda_commands when modules exist but don't have Commands attribute"""
+    mock_module = mock.MagicMock()
+    del mock_module.Commands  # Remove Commands attribute to trigger AttributeError
 
-        for command in expected_commands:
-            self.assertTrue(hasattr(commands, command))
-            self.assertEqual(getattr(commands, command), command.lower())
+    # First call raises AttributeError, second call raises ImportError
+    mock_import_module.side_effect = [mock_module, ImportError("Module not found")]
+
+    result = cli_helper.load_conda_commands()
+
+    # Should have tried both modules and fallen back to local commands
+    expected_calls = [
+        mock.call("conda.cli.python_api"),
+        mock.call("conda.testing.integration"),
+    ]
+    mock_import_module.assert_has_calls(expected_calls)
+    assert result == cli_helper._LocalCondaCommands
+
+
+@mock.patch("tethys_cli.cli_helpers.import_module")
+def test_load_conda_commands_fallback_to_local(mock_import_module):
+    """Test load_conda_commands falls back to _LocalCondaCommands when all modules fail"""
+    # Both import attempts fail
+    mock_import_module.side_effect = [
+        ImportError("conda.cli.python_api not found"),
+        ImportError("conda.testing.integration not found"),
+    ]
+
+    result = cli_helper.load_conda_commands()
+
+    # Should have tried both modules
+    expected_calls = [
+        mock.call("conda.cli.python_api"),
+        mock.call("conda.testing.integration"),
+    ]
+    mock_import_module.assert_has_calls(expected_calls)
+    assert result == cli_helper._LocalCondaCommands
+
+
+def test_local_conda_commands_attributes():
+    """Test that _LocalCondaCommands has expected attributes"""
+    commands = cli_helper._LocalCondaCommands
+
+    # Test that all expected command attributes exist
+    expected_commands = [
+        "COMPARE",
+        "CONFIG",
+        "CLEAN",
+        "CREATE",
+        "INFO",
+        "INSTALL",
+        "LIST",
+        "REMOVE",
+        "SEARCH",
+        "UPDATE",
+        "RUN",
+    ]
+
+    for command in expected_commands:
+        assert hasattr(commands, command)
+        assert getattr(commands, command) == command.lower()
