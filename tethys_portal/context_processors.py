@@ -48,6 +48,7 @@ def tethys_portal_context(request):
         "has_analytical": has_module("analytical"),
         "has_terms": has_module("termsandconditions")
         and getattr(request, "user", None) is not None,
+        "has_cookieconsent": has_module("cookie_consent"),
         "has_mfa": has_module("mfa"),
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
