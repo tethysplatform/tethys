@@ -327,6 +327,12 @@
       <script type="text/javascript" src="{% static 'tethys_portal/js/header.js' %}"></script>
     {% endblock %}
 
+    {% block cookie_consent %}
+      {% if has_cookieconsent %}
+        {% include "cookie_consent.html" %}
+      {% endif %}
+    {% endblock %}
+
     {% if has_analytical %}
     {% include "analytical_body_bottom.html" %}
     {% endif %}

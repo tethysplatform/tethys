@@ -1,0 +1,42 @@
+{% load static cookie_consent_tags %}
+{% url "cookie_consent_cookie_group_list" as url_cookies %}
+{% url 'cookie_consent_status' as status_url %}
+{% static "cookie_consent/cookiebar.module.js" as cookiebar_src %}
+<style>
+    .cookie-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: {{ site_globals.secondary_color }};
+        color: {{ site_globals.secondary_text_color }};
+        text-align: center;
+        padding: 1em;
+        z-index: 1000;
+    }
+    .cookie-bar button {
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+</style>
+<template id="cookie-consent__cookie-bar">
+    <div class="cookie-bar">
+        Tethys Portal uses cookies for better performance and user experience.
+        Do you agree to use these cookies?
+        <button type="button" class="btn btn-outline-primary cookie-consent__accept">Accept All</button>
+        <button type="button" style="text-decoration: none;" class="btn btn-link cookie-consent__decline">Reject All</button>
+        <a style="text-decoration: none;" class="btn btn-link" href="{{ url_cookies }}">Customize Consent</a>
+    </div>
+</template>
+{% all_cookie_groups 'cookie-consent__cookie-groups' %}
+<script type="module">
+    import {showCookieBar} from '{{ cookiebar_src }}';
+    showCookieBar({
+        statusUrl: '{{ status_url|escapejs }}',
+        templateSelector: '#cookie-consent__cookie-bar',
+        cookieGroupsSelector: '#cookie-consent__cookie-groups',
+        onShow: () => document.querySelector('body').classList.add('with-cookie-bar'),
+        onAccept: () => document.querySelector('body').classList.remove('with-cookie-bar'),
+        onDecline: () => document.querySelector('body').classList.remove('with-cookie-bar'),
+    });
+</script>
