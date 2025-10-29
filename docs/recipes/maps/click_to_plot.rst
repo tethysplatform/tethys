@@ -9,6 +9,9 @@ Click to Plot
 
 Start with the :ref:`Map Layout Recipe <add_map_layout_recipe>`
 
+Update Map Layout Class
+#######################
+
 Add the following attribute to your map layout class.
 
 .. code-block:: python
@@ -21,6 +24,9 @@ Add the following attribute to your map layout class.
         map_title = 'Map Layout Recipe'
         map_subtitle = 'Map Subtitle'
         plot_slide_sheet = True
+
+Add get_plot_for_layer_feature Method
+#####################################
 
 Now add the following method to your map layout class.
 
@@ -40,7 +46,7 @@ Now add the following method to your map layout class.
             str, list<dict>, dict: plot title, data series, and layout options, respectively.
         """
 
-Your implementation of `get_plot_for_layer_feature needs` to return three things: a graph title, a data list, and a layout dictionary.
+Your implementation of `get_plot_for_layer_feature` needs to return three things: a graph title, a data list, and a layout dictionary.
 
 Your data list should be in the following format:
 

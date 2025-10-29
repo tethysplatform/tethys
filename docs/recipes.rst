@@ -14,28 +14,54 @@ Recipes
     
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/scaffold_an_app images/recipes/scaffold_pic.png [scaffold, app, new_app]
-    recipes/add_map_layout images/recipes/map_layout.png [map, app, new_app]
     recipes/create_new_page images/recipes/new_page.png [page, app, new_app]
     recipes/add_navigation_buttons images/recipes/app_navigation_menu.png [navigation, app, new_app]
     recipes/get_user_input images/recipes/get_user_input.png [forms, form, input, gizmo]
-    recipes/click_to_plot images/recipes/click_to_plot_graph.png [plot, graph, map, gizmo]
-    recipes/gizmos images/recipes/gizmos_icon.png [gizmo]
-    recipes/file_upload images/recipes/file_upload_icon.png [gizmo, form, forms, input]
+    recipes/gizmos images/recipes/icons/gizmos_icon.png [gizmo]
+    recipes/file_upload images/recipes/icons/file_upload_icon.png [gizmo, form, forms, input]
+    recipes/add_new_user images/recipes/icons/create_user_icon.png [new_user, user]
+
+Maps
+++++
+
+.. recipe-gallery::
+    :layout: multi-row
+
+    recipes/maps/add_map_layout images/recipes/map_layout.png [map, app, new_app]
+    recipes/maps/add_map_view images/recipes/add_map_view_screenshot.png [map, map_view, view]
+    recipes/maps/click_to_plot images/recipes/click_to_plot_graph.png [plot, graph, map, gizmo, click]
+    recipes/maps/click_to_plot_javascript images/recipes/javascript_click_to_plot.png [map, plot, graph, javascript, click]
+    recipes/maps/geojson_layer_map_layout images/recipes/geojson_layer.png [geojson, map, layout, map_layout]
+    recipes/maps/geojson_layer_map_view images/recipes/geojson_layer_screenshot.png [geojson, map_view, map, view]
+    recipes/maps/wms_layer_map_layout images/recipes/wms_map_layout_screenshot.png [wms, map_layout, map, layout]
+    recipes/maps/wms_layer_map_view images/recipes/wms_map_view_screenshot.png [wms, map, view, map_view]
+    recipes/maps/arcgis_layer_map_view images/recipes/arcgis_layer_map_view_screenshot.png [arcgis, arc_gis, arc, gis map, view, map_view]
+    recipes/maps/arcgis_layer_map_layout images/recipes/arcgis_layer_map_layout_screenshot.png [arcgis, arc_gis, arc, gis, map, layout, map_layout]
+    recipes/maps/map_view_feature_popup images/recipes/feature_popup.png [map, popup, feature, click]
     
+GeoServer
++++++++++
+.. recipe-gallery::
+    :layout: multi-row
     
+    recipes/geoserver/spatial_dataset_service images/recipes/icons/spatial_dataset_service_icon.png [geoserver, spatial, dataset, service]
+    recipes/geoserver/geoserver_shape_file_upload images/recipes/icons/uploading_shapefiles_to_geoserver_icon.png [geoserver, upload, shapefile, form]
+
+
+
 Paths API
 +++++++++
 
 .. recipe-gallery::
     :layout: multi-row
 
-    recipes/paths_api/paths_api images/recipes/paths_icon.png [paths, files]
-    recipes/paths_api/user_workspace images/recipes/user_workspace_icon.png [paths, user workspace, user_workspace, user, workspace, files]
-    recipes/paths_api/app_workspace images/recipes/app_workspace_icon.png [paths, app workspace, app_workspace, app, workspace, files]
-    recipes/paths_api/app_media images/recipes/app_media_icon.png [paths, app media, app_media, app, media, files]
-    recipes/paths_api/user_media images/recipes/user_media_icon.png [paths, user media, user_media, user, media, files]
-    recipes/paths_api/app_public images/recipes/app_public_icon.png [paths, app public, app_public, app, public, files]
-    recipes/paths_api/app_resources images/recipes/app_resources_icon.png [paths, app resources, app_public, app, resources, files]
+    recipes/paths_api/paths_api images/recipes/icons/paths_icon.png [paths, files]
+    recipes/paths_api/user_workspace images/recipes/icons/user_workspace_icon.png [paths, user workspace, user_workspace, user, workspace, files]
+    recipes/paths_api/app_workspace images/recipes/icons/app_workspace_icon.png [paths, app workspace, app_workspace, app, workspace, files]
+    recipes/paths_api/app_media images/recipes/icons/app_media_icon.png [paths, app media, app_media, app, media, files]
+    recipes/paths_api/user_media images/recipes/icons/user_media_icon.png [paths, user media, user_media, user, media, files]
+    recipes/paths_api/app_public images/recipes/icons/app_public_icon.png [paths, app public, app_public, app, public, files]
+    recipes/paths_api/app_resources images/recipes/icons/app_resources_icon.png [paths, app resources, app_public, app, resources, files]
 
 Quotas
 ++++++
@@ -43,9 +69,9 @@ Quotas
 .. recipe-gallery:: 
     :layout: multi-row 
 
-    recipes/quotas/app_quotas images/recipes/app_quotas_icon.png [quotas, app]
-    recipes/quotas/user_quotas images/recipes/user_quotas_icon.png [quotas, user]
-    recipes/quotas/custom_quotas images/recipes/custom_quotas_icon.png [quotas, custom]
+    recipes/quotas/app_quotas images/recipes/icons/app_quotas_icon.png [quotas, app]
+    recipes/quotas/user_quotas images/recipes/icons/user_quotas_icon.png [quotas, user]
+    recipes/quotas/custom_quotas images/recipes/icons/custom_quotas_icon.png [quotas, custom]
 
 Databases
 +++++++++
@@ -53,7 +79,7 @@ Databases
 .. recipe-gallery::
     :layout: multi-row
     
-    recipes/databases/use_databases images/recipes/use_databases_icon.png [database, docker]
-    recipes/databases/persistent_service images/recipes/persistent_store_icon.png [database, persistent store, service]
-    recipes/databases/create_database_models images/recipes/database_model_icon.png [database, models, persistent store]
-    recipes/databases/working_with_database_models images/recipes/working_with_database_icon.png [database, models, persistent store]
+    recipes/databases/use_databases images/recipes/icons/use_databases_icon.png [database, docker]
+    recipes/databases/persistent_service images/recipes/icons/persistent_store_icon.png [database, persistent store, service]
+    recipes/databases/create_database_models images/recipes/icons/database_model_icon.png [database, models, persistent store]
+    recipes/databases/working_with_database_models images/recipes/icons/working_with_database_icon.png [database, models, persistent store]

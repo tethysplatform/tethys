@@ -1,17 +1,14 @@
-.. _click_to_plot_javascript_recipe :
+.. _add_map_view_recipe:
 
-******************************
-Click to Plot Using JavaScript
-******************************
 
-**Last Updated:** September 2025
-
-While it can be convenient to use the Tethys Map Layout to add an interactive map to your Tethys App, you may also want to add a map in other places in your app, and allow for plotting data from that map's features.
-
-This recipe will demonstrate how to implement click to plot features using JavaScript, allowing you to place your map wherever you'd like in your page. We'll be using the MapView Gizmo and the Plotly Gizmo to do this.
-
+**********************
 Adding a MapView Gizmo
-######################
+**********************
+
+This recipe will demonstrate how to add a MapView Gizmo to your app. In contrast with the MapLayout, a MapView Gizmo allows you to choose where to put your interactive map on the page. 
+
+Creating the MapView Gizmo
+##########################
 We'll begin by adding a MapView Gizmo to a page in your app. First open your :file:`controllers.py` file and add the following:
 
 .. code-block:: python
@@ -43,7 +40,7 @@ Next, in your controller function, you'll need to create a MapView Gizmo like so
             ],
             view=MVView(
                 projection='EPSG:4326',
-                center=[37.880859, 0.219726],
+                center=[0,0],
                 zoom=7,
                 maxZoom=18,
                 minZoom=2
@@ -54,16 +51,20 @@ Next, in your controller function, you'll need to create a MapView Gizmo like so
             'map_view': map_view
         }
 
+Adding the MapView Gizmo to your Page
+#####################################
+
 Next, add your Gizmo to your page template:
 
 .. code-block:: html+django
 
     {% block app_content %}
-        <h1>This is a MapView Gizmo:</h1>
         {% gizmo map_view %}
     {% endblock %}
 
-Now open to this page in your app and you should see a label above an interactive map. 
+Now open your app, and you should find an interactive map that looks like this: 
 
-Add Features to Map
-###################
+.. figure:: ../../images/recipes/add_map_view_screenshot.png
+    :width: 500px
+    :align: center
+
