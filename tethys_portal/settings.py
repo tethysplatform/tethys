@@ -121,6 +121,29 @@ DATABASES = portal_config_settings.pop("DATABASES", {})
 DATABASES.setdefault("default", {})
 DEFAULT_DB = DATABASES["default"]
 
+# Django Tenants db settings
+if has_module("django_tenants"):
+    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+    TENANT_MODEL = "tethys_tenants.Tenant"  # app.Model
+    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"  # app.Model
+
+    TENANT_APPS = portal_config_settings.pop(
+        "TENANT_APPS_OVERRIDE",
+        [
+            "django.contrib.admin",
+            "django.contrib.auth",
+            "django.contrib.contenttypes",
+            "django.contrib.sessions",
+            "django.contrib.messages",
+            "django.contrib.staticfiles",
+            "tethys_tenants.tenant_models"
+        ],
+    )
+
+    TENANT_APPS = tuple(TENANT_APPS + portal_config_settings.pop("TENANT_APPS", []))
+
 # ###########
 # backwards compatibility logic
 # TODO remove compatibility code with Tethys 5.0
@@ -240,11 +263,13 @@ default_installed_apps = [
     "tethys_layouts",
     "tethys_sdk",
     "tethys_services",
+    "tethys_tenants",
     "tethys_quotas",
     "guardian",
 ]
 
 for module in [
+    "django_tenants",
     "analytical",
     "axes",
     "captcha",
@@ -265,14 +290,19 @@ for module in [
         default_installed_apps.append(module)
 
 
-INSTALLED_APPS = portal_config_settings.pop(
+SHARED_APPS = portal_config_settings.pop(
     "INSTALLED_APPS_OVERRIDE",
     default_installed_apps,
 )
 
-INSTALLED_APPS = tuple(
-    INSTALLED_APPS + portal_config_settings.pop("INSTALLED_APPS", [])
-)
+SHARED_APPS = tuple(SHARED_APPS + portal_config_settings.pop("INSTALLED_APPS", []))
+
+if has_module("django_tenants"):
+    INSTALLED_APPS = tuple(
+        list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+    )
+else:
+    INSTALLED_APPS = SHARED_APPS
 
 MIDDLEWARE = portal_config_settings.pop(
     "MIDDLEWARE_OVERRIDE",
@@ -302,6 +332,10 @@ if has_module("session_security"):
     )  # TODO: Templates need to be upgraded
 if has_module("axes"):
     MIDDLEWARE.append("axes.middleware.AxesMiddleware")
+if has_module("django_tenants"):
+    MIDDLEWARE.insert(
+        0, "django_tenants.middleware.main.TenantMainMiddleware"
+    )  # Must be first in the list
 
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop("MIDDLEWARE", []))
 
@@ -403,6 +437,12 @@ CONTEXT_PROCESSORS = tuple(
     CONTEXT_PROCESSORS + portal_config_settings.pop("CONTEXT_PROCESSORS", [])
 )
 
+if has_module("django_tenants"):
+    CONTEXT_PROCESSORS = (
+        "django.template.context_processors.request",
+        *CONTEXT_PROCESSORS,
+    )
+
 # Templates
 
 ADDITIONAL_TEMPLATE_DIRS = [
@@ -428,7 +468,6 @@ TEMPLATES = [
         },
     }
 ]
-
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = portal_config_settings.pop("STATIC_URL", "/static/")
