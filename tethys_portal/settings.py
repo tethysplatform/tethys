@@ -121,29 +121,6 @@ DATABASES = portal_config_settings.pop("DATABASES", {})
 DATABASES.setdefault("default", {})
 DEFAULT_DB = DATABASES["default"]
 
-# Django Tenants db settings
-if has_module("django_tenants"):
-    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
-    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
-
-    TENANT_MODEL = "tethys_tenants.Tenant"  # app.Model
-    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"  # app.Model
-
-    TENANT_APPS = portal_config_settings.pop(
-        "TENANT_APPS_OVERRIDE",
-        [
-            "django.contrib.admin",
-            "django.contrib.auth",
-            "django.contrib.contenttypes",
-            "django.contrib.sessions",
-            "django.contrib.messages",
-            "django.contrib.staticfiles",
-            "tethys_tenants.tenant_models"
-        ],
-    )
-
-    TENANT_APPS = tuple(TENANT_APPS + portal_config_settings.pop("TENANT_APPS", []))
-
 # ###########
 # backwards compatibility logic
 # TODO remove compatibility code with Tethys 5.0
@@ -290,19 +267,38 @@ for module in [
         default_installed_apps.append(module)
 
 
-SHARED_APPS = portal_config_settings.pop(
+INSTALLED_APPS = portal_config_settings.pop(
     "INSTALLED_APPS_OVERRIDE",
     default_installed_apps,
 )
 
-SHARED_APPS = tuple(SHARED_APPS + portal_config_settings.pop("INSTALLED_APPS", []))
-
+# Django Tenants settings
 if has_module("django_tenants"):
+    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+    TENANT_MODEL = "tethys_tenants.Tenant"
+    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
+
+    TENANT_APPS = portal_config_settings.pop(
+        "TENANT_APPS_OVERRIDE",
+        [
+            "django.contrib.admin",
+            "django.contrib.auth",
+            "django.contrib.contenttypes",
+            "django.contrib.sessions",
+            "django.contrib.messages",
+            "django.contrib.staticfiles",
+            "tethys_tenants",
+        ],
+    )
+
+    SHARED_APPS = INSTALLED_APPS
+    TENANT_APPS = tuple(TENANT_APPS + portal_config_settings.pop("TENANT_APPS", []))
+
     INSTALLED_APPS = tuple(
         list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
     )
-else:
-    INSTALLED_APPS = SHARED_APPS
 
 MIDDLEWARE = portal_config_settings.pop(
     "MIDDLEWARE_OVERRIDE",
@@ -333,9 +329,7 @@ if has_module("session_security"):
 if has_module("axes"):
     MIDDLEWARE.append("axes.middleware.AxesMiddleware")
 if has_module("django_tenants"):
-    MIDDLEWARE.insert(
-        0, "django_tenants.middleware.main.TenantMainMiddleware"
-    )  # Must be first in the list
+    MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
 
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop("MIDDLEWARE", []))
 
