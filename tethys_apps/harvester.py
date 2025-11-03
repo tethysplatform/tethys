@@ -108,7 +108,7 @@ class SingletonHarvester:
         """
         try:
             from tethys_tenants.models import Tenant
-            from tethys_tenants.tenant_models.models import App as TenantApp
+            from tethys_tenants.models import App as TenantApp
             
             # Get the current tenant
             tenant = Tenant.objects.get(schema_name=tenant_schema)
