@@ -53,7 +53,7 @@ def tethys_command_parser():
     add_link_parser(subparsers)
     add_list_parser(subparsers)
     add_manage_parser(subparsers)
-    add_paths_parser(subparsers) 
+    add_paths_parser(subparsers)
     add_scaffold_parser(subparsers)
     add_scheduler_parser(subparsers)
     add_services_parser(subparsers)
