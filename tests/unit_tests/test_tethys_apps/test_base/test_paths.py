@@ -218,12 +218,10 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         self.mock_app_base_class = tethys_app_base.TethysAppBase()
         self.mock_request = mock.Mock(spec=HttpRequest)
-        self.mock_app_class = TethysApp(name="test_app", package="test_app")
-        self.mock_app = mock.MagicMock()
+        self.mock_app = TethysApp(name="test_app", package="test_app")
         self.user = User(username="tester")
 
         self.mock_request.user = self.user
-        self.mock_app.package = "app_package"
 
     def tearDown(self):
         pass
@@ -243,9 +241,9 @@ class TestTethysPathHelpers(unittest.TestCase):
         self.assertEqual(a2, self.mock_app)
         mock_get_active_app.assert_called_with(self.mock_request, get_class=True)
 
-        a3 = paths._resolve_app_class(self.mock_app_class)
+        a3 = paths._resolve_app_class(self.mock_app)
         self.assertEqual(a3, self.mock_app)
-        mock_get_app_class.assert_called_with(self.mock_app_class)
+        mock_get_app_class.assert_called_with(self.mock_app)
 
         with self.assertRaises(ValueError):
             paths._resolve_app_class(None)
@@ -318,12 +316,14 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test___get_user_workspace_old(self, mock_tw):
+    @mock.patch("tethys_apps.utilities.get_app_model")
+    def test___get_user_workspace_old(self, mock_tw, mock_am):
+        breakpoint()
         import sys
 
-        p = paths._get_user_workspace(
-            self.mock_app_class, self.user, bypass_quota=True
-        )
+        mock_am.return_value = self.mock_app
+
+        p = paths._get_user_workspace(self.mock_app, self.user, bypass_quota=True)
         expected_path = mock_tw(
             Path(sys.modules[self.mock_app.__module__].__file__).parent
             / "workspaces"
