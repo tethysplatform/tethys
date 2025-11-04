@@ -218,7 +218,7 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         self.mock_app_base_class = tethys_app_base.TethysAppBase()
         self.mock_request = mock.Mock(spec=HttpRequest)
-        self.mock_app = TethysApp(name="test_app", package="test_app")
+        self.mock_app = TethysApp(name="test_app", package="test_app_package")
         self.user = User(username="tester")
 
         self.mock_request.user = self.user
@@ -271,7 +271,7 @@ class TestTethysPathHelpers(unittest.TestCase):
 
     def test_get_app_workspace_root(self):
         p = paths._get_app_workspace_root(self.mock_app)
-        self.assertEqual(p, Path(settings.TETHYS_WORKSPACES_ROOT + "/app_package"))
+        self.assertEqual(p, Path(settings.TETHYS_WORKSPACES_ROOT + "/test_app_package"))
 
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
@@ -318,7 +318,6 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     @mock.patch("tethys_apps.utilities.get_app_model")
     def test___get_user_workspace_old(self, mock_tw, mock_am):
-        breakpoint()
         import sys
 
         mock_am.return_value = self.mock_app
@@ -348,7 +347,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(MEDIA_ROOT="media_root")
     def test_get_app_media_root(self):
         p = paths._get_app_media_root(self.mock_app)
-        self.assertEqual(p, Path(settings.MEDIA_ROOT + "/app_package"))
+        self.assertEqual(p, Path(settings.MEDIA_ROOT + "/test_app_package"))
 
     @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)
