@@ -146,7 +146,7 @@ def get_app_model(app_or_request):
         app = app_or_request
     else:
         raise ValueError(
-            f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase or TethysApp: '
+            f'Argument "app_or_request" must be of type HttpRequest, TethysAppBase, or TethysApp: '
             f'"{type(app_or_request)}" given.'
         )
 

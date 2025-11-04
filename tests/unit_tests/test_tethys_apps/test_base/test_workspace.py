@@ -230,12 +230,13 @@ class TestUrlMap(unittest.TestCase):
         mock_guw.assert_called_with(mock_app, self.user)
 
     def test_get_user_workspace_aor_error(self):
+        breakpoint()
         with self.assertRaises(ValueError) as context:
             _get_user_workspace_old("not_app_or_request", self.user)
 
         self.assertEqual(
             str(context.exception),
-            'Argument "app_or_request" must be of type TethysAppBase or HttpRequest or TethysApp: "<class \'str\'>" given.',
+            'Argument "app_or_request" must be of type HttpRequest, TethysAppBase, or TethysApp: "<class \'str\'>" given.',
         )
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
@@ -352,7 +353,7 @@ class TestUrlMap(unittest.TestCase):
 
         self.assertEqual(
             str(context.exception),
-            'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: "<class \'str\'>" given.',
+            'Argument "app_or_request" must be of type HttpRequest, TethysAppBase, or TethysApp: "<class \'str\'>" given.',
         )
 
     @mock.patch("tethys_apps.utilities.get_active_app")
