@@ -273,8 +273,6 @@ def _get_user_workspace_old(
             user_workspace = get_user_workspace(App, user)
             ...
     """  # noqa: E501
-    from tethys_apps.base.app_base import TethysAppBase
-    from tethys_apps.models import TethysApp
     from tethys_apps.utilities import get_app_model
     from django.contrib.auth.models import User
     from django.core.exceptions import PermissionDenied
