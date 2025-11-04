@@ -1,4 +1,5 @@
 import unittest
+from tethys.tethys_apps.models import TethysApp
 import tethys_apps.base.workspace as base_workspace
 import shutil
 from pathlib import Path
@@ -48,6 +49,8 @@ class TestUrlMap(unittest.TestCase):
         self.test_root_a = self.test_root / "test_workspace_a"
         self.test_root2 = self.root / "test_workspace2"
         self.app = tethys_app_base.TethysAppBase()
+        self.app_class = TethysApp(name="test_app", package="test_app")
+
         self.user = UserFactory()
 
     def tearDown(self):
@@ -230,7 +233,6 @@ class TestUrlMap(unittest.TestCase):
         mock_guw.assert_called_with(mock_app, self.user)
 
     def test_get_user_workspace_aor_error(self):
-        breakpoint()
         with self.assertRaises(ValueError) as context:
             _get_user_workspace_old("not_app_or_request", self.user)
 
@@ -244,10 +246,10 @@ class TestUrlMap(unittest.TestCase):
     def test_get_user_workspace_uor_user(self, mock_guw, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
-        ret = _get_user_workspace_old(self.app, self.user)
+        ret = _get_user_workspace_old(self.app_class, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
-        mock_guw.assert_called_with(self.app, self.user)
+        mock_guw.assert_called_with(self.app_class, self.user)
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.workspace._get_user_workspace")

@@ -322,7 +322,7 @@ class TestTethysPathHelpers(unittest.TestCase):
         import sys
 
         p = paths._get_user_workspace(
-            self.mock_app_base_class, self.user, bypass_quota=True
+            self.mock_app_class, self.user, bypass_quota=True
         )
         expected_path = mock_tw(
             Path(sys.modules[self.mock_app.__module__].__file__).parent
