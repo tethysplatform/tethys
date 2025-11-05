@@ -3,6 +3,9 @@ import tempfile
 import unittest
 from unittest import mock
 
+import sys
+import types
+
 from django.conf import settings
 from django.http import HttpRequest
 from django.test import override_settings
@@ -276,8 +279,6 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
     def test_old_get_app_workspace_root(self):
-        import sys
-
         p = paths._get_app_workspace_root(self.mock_app)
         self.assertEqual(p, Path(sys.modules[self.mock_app.__module__].__file__).parent)
 
@@ -287,8 +288,6 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.utilities.get_app_class")
     def test___get_app_workspace_old(self, mock_ac, mock_am, mock_tw):
-        import sys
-
         mock_ac.return_value = self.mock_app
         mock_am.return_value = self.mock_app
         p = paths._get_app_workspace(self.mock_app_base_class, bypass_quota=True)
@@ -317,12 +316,12 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(DEBUG=True)
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
     @mock.patch("tethys_apps.utilities.get_app_model")
-    def test___get_user_workspace_old(self, mock_tw, mock_am):
-        import sys
-
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test___get_user_workspace_old(self, mock_ac, mock_am, mock_tw):
         mock_am.return_value = self.mock_app
+        mock_ac.return_value = self.mock_app
 
-        p = paths._get_user_workspace(self.mock_app, self.user, bypass_quota=True)
+        p = paths._get_user_workspace(self.mock_app_base_class, self.user, bypass_quota=True)
         expected_path = mock_tw(
             Path(sys.modules[self.mock_app.__module__].__file__).parent
             / "workspaces"
