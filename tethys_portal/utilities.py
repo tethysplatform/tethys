@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 def log_user_in(request, user=None, username=None):
@@ -50,13 +51,16 @@ def log_user_in(request, user=None, username=None):
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
     # Redirect after logged in using next parameter or default to user profile
+    breakpoint()
     if "next" in request.GET:
-        return redirect(request.GET["next"])
+        next_url = sanitize_next_url(request.GET["next"], request)
+        if next_url:
+            return redirect(next_url)
+        
+    if settings.MULTIPLE_APP_MODE:
+        return redirect("app_library")
     else:
-        if settings.MULTIPLE_APP_MODE:
-            return redirect("app_library")
-        else:
-            return redirect("/")
+        return redirect("/")
 
 
 def json_serializer(obj):
@@ -67,3 +71,27 @@ def json_serializer(obj):
     raise TypeError(
         f'Object of type "{obj.__class__.__name__}" is not JSON serializable'
     )
+
+def sanitize_next_url(next_url, request):
+    """
+    Sanitize the "next" URL parameter to prevent open redirect vulnerabilities.
+
+    Args:
+        next_url (str): The next URL parameter to sanitize.
+
+    Returns:
+        str: The sanitized next URL or None if invalid.
+    """
+    if settings.ALLOWED_HOSTS:
+        allowed_hosts = set(settings.ALLOWED_HOSTS)
+    
+    else:
+        # Default if ALLOWED_HOSTS is not set (for development)
+        allowed_hosts = {"localhost", "127.0.0.1"}
+
+    if next_url and url_has_allowed_host_and_scheme(
+        url=next_url, 
+        allowed_hosts=allowed_hosts
+    ):
+        return next_url
+    return None
