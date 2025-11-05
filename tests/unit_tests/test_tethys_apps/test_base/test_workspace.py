@@ -153,7 +153,9 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(str(self.test_root), workspace.path)
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test__get_user_workspace_user(self, mock_tws):
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test__get_user_workspace_user(self, mock_gac, mock_tws):
+        mock_gac.return_value = self.app
         ret = _get_user_workspace(self.app_base, self.user)
         expected_path = Path("workspaces") / "user_workspaces" / self.user.username
         rts_call_args = mock_tws.call_args_list
@@ -161,9 +163,11 @@ class TestUrlMap(unittest.TestCase):
         self.assertIn(str(expected_path), rts_call_args[0][0][0])
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test__get_user_workspace_http(self, mock_tws):
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test__get_user_workspace_http(self, mock_gac, mock_tws):
         request = HttpRequest()
         request.user = self.user
+        mock_gac.return_value = self.app
         ret = _get_user_workspace(self.app_base, request)
         expected_path = Path("workspaces") / "user_workspaces" / self.user.username
         rts_call_args = mock_tws.call_args_list
@@ -171,7 +175,9 @@ class TestUrlMap(unittest.TestCase):
         self.assertIn(str(expected_path), rts_call_args[0][0][0])
 
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test__get_user_workspace_none(self, mock_tws):
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test__get_user_workspace_none(self, mock_gac, mock_tws):
+        mock_gac.return_value = self.app
         ret = _get_user_workspace(self.app_base, None)
         expected_path = Path("workspaces") / "user_workspaces" / "anonymous_user"
         rts_call_args = mock_tws.call_args_list
@@ -201,26 +207,26 @@ class TestUrlMap(unittest.TestCase):
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.workspace._get_user_workspace")
     @mock.patch("tethys_apps.utilities.get_app_model")
-    def test_get_user_workspace_aor_app_instance(self, mock_guw, mock_pq, mock_gam):
+    def test_get_user_workspace_aor_app_instance(self, mock_gam, mock_guw, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
         mock_gam.return_value = self.app
         ret = _get_user_workspace_old(self.app_base, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
-        mock_guw.assert_called_with(self.app_base, self.user)
+        mock_guw.assert_called_with(self.app, self.user)
 
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.workspace._get_user_workspace")
     @mock.patch("tethys_apps.utilities.get_app_model")
-    def test_get_user_workspace_aor_app_class(self, mock_guw, mock_pq, mock_gam):
+    def test_get_user_workspace_aor_app_class(self, mock_gam, mock_guw, mock_pq):
         mock_workspace = mock.MagicMock()
         mock_guw.return_value = mock_workspace
         mock_gam.return_value = self.app
         ret = _get_user_workspace_old(TethysAppChild, self.user)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
-        mock_guw.assert_called_with(TethysAppChild, self.user)
+        mock_guw.assert_called_with(self.app, self.user)
 
     @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
@@ -260,7 +266,7 @@ class TestUrlMap(unittest.TestCase):
     @mock.patch("tethys_apps.base.workspace.passes_quota", return_value=True)
     @mock.patch("tethys_apps.base.workspace._get_user_workspace")
     @mock.patch("tethys_apps.utilities.get_app_model")
-    def test_get_user_workspace_uor_request(self, mock_guw, mock_pq, mock_gam):
+    def test_get_user_workspace_uor_request(self, mock_gam, mock_guw, mock_pq):
         request = HttpRequest()
         request.user = self.user
         mock_workspace = mock.MagicMock()
@@ -269,7 +275,7 @@ class TestUrlMap(unittest.TestCase):
         ret = _get_user_workspace_old(self.app_base, request)
         self.assertEqual(ret, mock_workspace)
         mock_pq.assert_called_with(self.user, "user_workspace_quota")
-        mock_guw.assert_called_with(self.app_base, self.user)
+        mock_guw.assert_called_with(self.app, self.user)
 
     @mock.patch("tethys_apps.utilities.get_app_model")
     def test_get_user_workspace_uor_error(self, mock_gam):
