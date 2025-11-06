@@ -200,3 +200,13 @@ class TethysPortalUtilitiesTests(unittest.TestCase):
     def test_sanitize_next_url_no_allowed_hosts_invalid(self):
         test_next_url = utilities.sanitize_next_url("http://malicious_site.com/")
         self.assertIsNone(test_next_url)
+
+    @override_settings(ALLOWED_HOSTS=["test_host.com"])
+    def test_sanitize_next_url_absolute_path(self):
+        test_next_url = utilities.sanitize_next_url("/absolute-path/")
+        self.assertEqual("/absolute-path/", test_next_url)
+
+    @override_settings(ALLOWED_HOSTS=["test_host.com"])
+    def test_sanitize_next_url_relative_path(self):
+        test_next_url = utilities.sanitize_next_url("relative-path/")
+        self.assertEqual("relative-path/", test_next_url)
