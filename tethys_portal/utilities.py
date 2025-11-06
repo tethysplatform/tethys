@@ -51,9 +51,8 @@ def log_user_in(request, user=None, username=None):
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
     # Redirect after logged in using next parameter or default to user profile
-    breakpoint()
     if "next" in request.GET:
-        next_url = sanitize_next_url(request.GET["next"], request)
+        next_url = sanitize_next_url(request.GET["next"])
         if next_url:
             return redirect(next_url)
         
@@ -72,7 +71,7 @@ def json_serializer(obj):
         f'Object of type "{obj.__class__.__name__}" is not JSON serializable'
     )
 
-def sanitize_next_url(next_url, request):
+def sanitize_next_url(next_url):
     """
     Sanitize the "next" URL parameter to prevent open redirect vulnerabilities.
 
