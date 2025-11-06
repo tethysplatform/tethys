@@ -132,7 +132,7 @@ def register(request):
 
                     # Redirect after logged in using next parameter or default to user profile
                     if "next" in request.GET:
-                        next_url = sanitize_next_url(request.GET["next"], request)
+                        next_url = sanitize_next_url(request.GET["next"])
                         if next_url:
                             return redirect(next_url)
                     
