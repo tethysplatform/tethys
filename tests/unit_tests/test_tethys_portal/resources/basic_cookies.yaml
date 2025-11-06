@@ -1,0 +1,5 @@
+analytics:
+  ga:
+    description: "desc"
+    path: "/"
+    domain: "example.com"

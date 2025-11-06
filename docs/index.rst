@@ -41,11 +41,13 @@ First create a :ref:`virtual_environment` with the tool of your choice and then 
     
     To learn what goes on behind the scenes during ``tethys quickstart`` see :ref:`development_installation`.
     
-Your browser will automatically open to http://127.0.0.1:8000/. 
+Your browser should automatically open to http://127.0.0.1:8000/. If not, we apologize! Please open it up yourself.
 
-.. figure:: images/getting_started/hello_world_login.png
+.. figure:: images/getting_started/new_portal.png
     :width: 600px
     :align: center
+    
+Voilá! Your very own Tethys Portal!
 
 .. admonition:: Log in with:
 
@@ -53,19 +55,15 @@ Your browser will automatically open to http://127.0.0.1:8000/.
    
    **Password**: pass
 
-Voilá! Your very own Hello World application!
-
-.. figure:: images/getting_started/hello_world_app.png
-    :width: 600px
-    :align: center
-
-Time to develop! The code behind your Hello World app can be found in your current working directory in the newly-created ``tethysapp-hello_world`` folder.
+Now to get some apps loaded...
 
 Next Steps
 ----------
 
 There are several directions that you may want to go from here.
 
+* Learn how to :ref:`scaffold_an_app_via_the_portal`.
+* Learn how to :ref:`scaffold_an_app_via_command_line`.
 * Install an app you have already developed using the :ref:`app_installation` guide.
 * Complete one or more :ref:`tutorials` to learn how to develop apps using Tethys Platform.
 * Install one or both of the :ref:`installation_showcase_apps` to see live demos and code examples of Gizmos and Layouts.

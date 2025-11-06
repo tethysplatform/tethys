@@ -19,7 +19,7 @@ dependencies:
   - openssl
 
   # core dependencies
-  - django>=3.2,<6
+  - django>=4.2,<6
   - channels
   - daphne
   - setuptools_scm

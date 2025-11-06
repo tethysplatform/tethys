@@ -575,6 +575,13 @@ class TestTethysAppBase(unittest.TestCase):
         ret = tethys_app_base.TethysAppBase().resources_path
         self.assertEqual(TethysPath("tethysapp/resources").path, ret.path)
 
+    @mock.patch("tethys_apps.base.paths.Path.mkdir")
+    @mock.patch("tethys_apps.base.app_base.files")
+    def test_cookie_config_path(self, mock_files, __):
+        mock_files.return_value = Path("tethysapp")
+        ret = tethys_app_base.TethysAppBase().cookie_config_path
+        self.assertEqual(TethysPath("tethysapp/resources/cookies.yaml").path, ret)
+
     def test_get_app_resources(self):
         ret = paths.get_app_resources(TethysAppChild)
         self.assertEqual(TethysAppChild().resources_path.path, ret.path)
@@ -1417,9 +1424,15 @@ class TestTethysAppBase(unittest.TestCase):
         # Check if result False
         self.assertFalse(result)
 
+    @mock.patch("tethys_apps.base.app_base.files")
+    @mock.patch("tethys_apps.base.app_base.TethysPath")
+    @mock.patch("tethys_apps.base.app_base.sync_cookies_from_yaml")
+    @mock.patch("tethys_apps.base.app_base.has_module", return_value=True)
     @mock.patch("django.conf.settings")
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_sync_with_tethys_db(self, mock_ta, _):
+    def test_sync_with_tethys_db(
+        self, mock_ta, _, __, mock_sync_cookies, mock_path, ____
+    ):
         mock_ta.objects.filter().all.return_value = []
         self.app.name = "n"
         self.app.package = "p"
@@ -1433,6 +1446,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.app.tags = "t"
         self.app.show_in_apps_library = False
         self.app.enabled = False
+
         self.app.sync_with_tethys_db()
 
         # Check if TethysApp.objects.filter is called
@@ -1459,6 +1473,9 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check if add_settings is called 6 times
         self.assertTrue(mock_ta().sync_settings.call_count == 6)
+        mock_sync_cookies.assert_called_once_with(
+            mock_path().path.__truediv__(), "p", "n"
+        )
 
     @mock.patch("django.conf.settings")
     @mock.patch("tethys_apps.models.TethysApp")

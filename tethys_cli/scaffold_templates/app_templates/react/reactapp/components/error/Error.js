@@ -1,10 +1,15 @@
-import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import styled from "styled-components";
+import PropTypes from "prop-types";
 
-import { getTethysPortalHost } from 'services/utilities';
+import {
+  getTethysPortalHost,
+  getTethysAppRoot,
+  getTethysPortalBase,
+} from "services/utilities";
 
 const TETHYS_PORTAL_HOST = getTethysPortalHost();
-const APP_ROOT_URL = process.env.TETHYS_APP_ROOT_URL;
+const APP_ROOT_URL = getTethysAppRoot();
+const TETHYS_PORTAL_BASE = getTethysPortalBase();
 
 const ErrorWhiteout = styled.div`
   position: absolute;
@@ -50,16 +55,19 @@ const ErrorTitle = styled.h1`
   font-size: 40pt;
 `;
 
-const Error = ({title, image, children}) => {
+const Error = ({ title, image, children }) => {
   return (
     <>
       <ErrorWhiteout>
-        <ErrorBackgroundImage style={{ backgroundImage: `url(${image})` }}/>
+        <ErrorBackgroundImage style={{ backgroundImage: `url(${image})` }} />
         <ErrorMessageContainer>
           <ErrorMessageBox className="px-5 py-3 shadow rounded">
             <ErrorTitle>{title}</ErrorTitle>
             <ErrorMessage className="mb-0">{children}</ErrorMessage>
-            <ErrorMessage className="text-faded"><a href={TETHYS_PORTAL_HOST + APP_ROOT_URL}>Reload App</a> or <a href={TETHYS_PORTAL_HOST + '/apps/'}>Exit the App</a></ErrorMessage>
+            <ErrorMessage className="text-faded">
+              <a href={TETHYS_PORTAL_HOST + APP_ROOT_URL}>Reload App</a> or{" "}
+              <a href={TETHYS_PORTAL_BASE}>Exit the App</a>
+            </ErrorMessage>
           </ErrorMessageBox>
         </ErrorMessageContainer>
       </ErrorWhiteout>

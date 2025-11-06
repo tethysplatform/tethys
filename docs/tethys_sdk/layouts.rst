@@ -32,7 +32,7 @@ The Layout Showcase App is a Tethys App can be installed in any Tethys Portal an
 Tethys Layouts
 ==============
 
-Layouts are implemented using `Django class-based views / contollers <https://docs.djangoproject.com/en/3.2/topics/class-based-views/>`_ in a novel way that allows all the logic of complex views to be encapsulated in a single class. This makes them easy to implement, customize, and maintain. All Layouts inherit much of their core functionality from the ``TethysLayout`` class.
+Layouts are implemented using `Django class-based views / contollers <https://docs.djangoproject.com/en/5.2/topics/class-based-views/>`_ in a novel way that allows all the logic of complex views to be encapsulated in a single class. This makes them easy to implement, customize, and maintain. All Layouts inherit much of their core functionality from the ``TethysLayout`` class.
 
 Class Based Views
 -----------------

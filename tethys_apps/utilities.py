@@ -62,7 +62,7 @@ def get_tethys_home_dir():
     # Initialize to default TETHYS_HOME
     tethys_home = Path.home() / ".tethys"
     active_conda_env = environ.get("CONDA_DEFAULT_ENV")
-    active_venv = environ.get("VIRTUAL_ENV_PROMPT")
+    active_venv = environ.get("VIRTUAL_ENV_PROMPT", "()").strip()[1:-1]
     active_env = active_conda_env or active_venv
     if active_env != "tethys":
         try:

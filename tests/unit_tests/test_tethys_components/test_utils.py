@@ -186,7 +186,12 @@ class TestComponentUtils(TestCase):
             pass
 
         utils.background_execute(test_func, ["Hello"])
-        mock_import().Thread.assert_called_once_with(target=test_func, args=["Hello"])
+        mock_import().Thread.assert_called_once_with(
+            target=utils._background_execute_wrapper,
+            func=test_func,
+            args=["Hello"],
+            callback=None,
+        )
         mock_import().Thread().start.assert_called_once()
         mock.patch.stopall()
 
@@ -197,7 +202,9 @@ class TestComponentUtils(TestCase):
             pass
 
         utils.background_execute(test_func, ["Hello"], delay_seconds=10)
-        mock_import().Timer.assert_called_once_with(10, test_func, ["Hello"])
+        mock_import().Timer.assert_called_once_with(
+            10, utils._background_execute_wrapper, [test_func, ["Hello"], None]
+        )
         mock_import().Timer().start.assert_called_once()
         mock.patch.stopall()
 
@@ -209,7 +216,22 @@ class TestComponentUtils(TestCase):
 
         utils.background_execute(test_func, ["Hello"], repeat_seconds=1)
         mock_import().Thread.assert_has_calls(
-            [mock.call(target=test_func, args=["Hello"])]
+            [
+                mock.call(
+                    target=utils._background_execute_wrapper,
+                    func=test_func,
+                    args=["Hello"],
+                    callback=None,
+                ),
+                mock.call().start(),
+                mock.call(
+                    target=utils._background_execute_wrapper,
+                    func=test_func,
+                    args=["Hello"],
+                    callback=None,
+                ),
+                mock.call().start(),
+            ]
         )
         self.assertEqual(mock_import().Thread().start.call_count, 2)
         mock_import().Timer.assert_called_once()
@@ -368,3 +390,12 @@ class TestComponentUtils(TestCase):
         app = mock.MagicMock(db_object="expected")
         val = utils._get_db_object(app)
         self.assertEqual(val, "expected")
+
+    def test_background_execute_wrapper(self):
+        test_func = mock.MagicMock()
+        test_func.return_value = "Test"
+        callback = mock.MagicMock()
+
+        utils._background_execute_wrapper(test_func, ["Hello"], callback)
+        test_func.assert_called_once_with("Hello")
+        callback.assert_called_once_with("Test")

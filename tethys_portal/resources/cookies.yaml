@@ -1,0 +1,15 @@
+necessary:
+  cookie_consent:
+    description: "Maintains your cookie consent preferences."
+    path: "/"
+    domain: ""
+
+  csrftoken:
+    description: "Prevents Cross-Site Request Forgery (CSRF) attacks."
+    path: "/"
+    domain: ""
+
+  sessionid:
+    description: "Keeps you logged in as you navigate the site."
+    path: "/"
+    domain: ""

@@ -4,14 +4,21 @@ const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => {
 	const dotEnvPath = `./reactapp/config/${argv.mode}.env`;
+	require("dotenv").config({ path: dotEnvPath });
+  	if (process.env.TETHYS_PREFIX_URL) {
+    	tethys_prefix_url = `/${process.env.TETHYS_PREFIX_URL}`;
+  	} else {
+    	tethys_prefix_url = "";
+  	}
 	console.log(`Building in ${argv.mode} mode...`);
 	console.log(`=> Using .env config at "${dotEnvPath}"`);
+	console.log(`=> Using prefix "${tethys_prefix_url}"`);
 	return {
 		entry: ['./reactapp'],
 		output: {
 			path: path.resolve(__dirname, '../../tethysapp/{{project}}/public/frontend'),
 			filename: '[name].js',
-			publicPath: '/static/{{project}}/frontend/',
+			publicPath: `${tethys_prefix_url}/static/{{project}}/frontend/`,
 		},
 		resolve: {
 			modules: [

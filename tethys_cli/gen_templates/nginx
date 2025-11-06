@@ -26,16 +26,16 @@ server {
     {%- endfor %}
 
     # Tethys Workspaces
-    location /workspaces  {
+    location {{ prefix_url }}/workspaces  {
     internal;
         alias {{ workspaces_root }};  # your Tethys workspaces files - amend as required
     }
 
-    location /static {
+    location {{ prefix_url }}/static {
         alias {{ static_root }}; # your Tethys static files - amend as required
     }
 
-    location /media {
+    location {{ prefix_url }}/media {
         alias {{ media_root }}; # your Tethys media files - amend as required
     }
 

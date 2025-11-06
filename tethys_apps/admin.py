@@ -168,6 +168,7 @@ class TethysAppAdmin(GuardedModelAdmin):
     readonly_fields = (
         "package",
         "manage_app_storage",
+        "remove_app",
     )
     fields = (
         "package",
@@ -182,6 +183,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         "show_in_apps_library",
         "enable_feedback",
         "manage_app_storage",
+        "remove_app",
     )
     inlines = [
         CustomSettingInline,
@@ -223,6 +225,19 @@ class TethysAppAdmin(GuardedModelAdmin):
         """.format(
                 current_use, quota, url=url
             )
+        )
+
+    def remove_app(self, app):
+        url = reverse("admin:remove_app", kwargs={"app_id": app.id})
+        return format_html(
+            f"""
+            <a
+                id="remove-app" class="btn btn-danger btn-sm"
+                href="{url}"
+            >
+                Remove App
+            </a>
+        """
         )
 
 
