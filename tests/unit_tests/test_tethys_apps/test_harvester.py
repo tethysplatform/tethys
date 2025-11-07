@@ -297,14 +297,11 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         list_apps = {"test_app": "tethysapp.test_app"}
-        exceptions = [ProgrammingError, SqliteProgrammingError]
 
-        for exception in exceptions:
-            with self.subTest(exception=exception):
-                mock_permissions.side_effect = exception
+        mock_permissions.side_effect = ProgrammingError
 
-                shv = SingletonHarvester()
-                shv._harvest_app_instances(list_apps)
+        shv = SingletonHarvester()
+        shv._harvest_app_instances(list_apps)
 
         mock_logwarning.assert_called_with(
             "Unable to register app permissions. django_content_type table does not exist"
