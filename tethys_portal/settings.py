@@ -272,33 +272,9 @@ INSTALLED_APPS = portal_config_settings.pop(
     default_installed_apps,
 )
 
-# Django Tenants settings
-if has_module("django_tenants"):
-    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
-    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
-
-    TENANT_MODEL = "tethys_tenants.Tenant"
-    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
-
-    TENANT_APPS = portal_config_settings.pop(
-        "TENANT_APPS_OVERRIDE",
-        [
-            "django.contrib.admin",
-            "django.contrib.auth",
-            "django.contrib.contenttypes",
-            "django.contrib.sessions",
-            "django.contrib.messages",
-            "django.contrib.staticfiles",
-            "tethys_tenants.tenant_models",
-        ],
-    )
-
-    SHARED_APPS = INSTALLED_APPS
-    TENANT_APPS = tuple(TENANT_APPS + portal_config_settings.pop("TENANT_APPS", []))
-
-    INSTALLED_APPS = tuple(
-        list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
-    )
+INSTALLED_APPS = tuple(
+    INSTALLED_APPS + portal_config_settings.pop("INSTALLED_APPS", [])
+)
 
 MIDDLEWARE = portal_config_settings.pop(
     "MIDDLEWARE_OVERRIDE",
@@ -328,8 +304,6 @@ if has_module("session_security"):
     )  # TODO: Templates need to be upgraded
 if has_module("axes"):
     MIDDLEWARE.append("axes.middleware.AxesMiddleware")
-if has_module("django_tenants"):
-    MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
 
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop("MIDDLEWARE", []))
 
@@ -386,6 +360,47 @@ TERMS_EXCLUDE_URL_LIST = {"/"}
 TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 
 ROOT_URLCONF = "tethys_portal.urls"
+
+# Django Tenants settings
+if has_module("django_tenants"):
+    TENANTS_CONFIG = portal_config_settings.pop("TENANTS", {})
+
+    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+    TENANT_MODEL = "tethys_tenants.Tenant"
+    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
+
+    TENANT_APPS = TENANTS_CONFIG.pop(
+        "TENANT_APPS_OVERRIDE",
+        [
+            "django.contrib.admin",
+            "django.contrib.auth",
+            "django.contrib.contenttypes",
+            "django.contrib.sessions",
+            "django.contrib.messages",
+            "django.contrib.staticfiles",
+        ],
+    )
+
+    SHARED_APPS = INSTALLED_APPS
+    TENANT_APPS = tuple(TENANT_APPS + TENANTS_CONFIG.pop("TENANT_APPS", []))
+
+    INSTALLED_APPS = tuple(
+        list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+    )
+
+    MIDDLEWARE = list(MIDDLEWARE)
+    MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
+    MIDDLEWARE = tuple(MIDDLEWARE)
+
+    # ROOT_URLCONF = "tethys_tenants.urls"
+    # PUBLIC_SCHEMA_URLCONF = "tethys_portal.urls"
+
+    SHOW_PUBLIC_IF_NO_TENANT_FOUND = TENANTS_CONFIG.pop(
+        "SHOW_PUBLIC_IF_NO_TENANT_FOUND",
+        False,
+    )
 
 # Internationalization
 LANGUAGE_CODE = "en-us"

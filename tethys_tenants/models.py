@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: admin.py
+* Author: Michael Souffront
+* Created On: 2025
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 from django.db import models
 from tethys_portal.optional_dependencies import optional_import, has_module
 
