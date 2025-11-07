@@ -394,9 +394,6 @@ if has_module("django_tenants"):
     MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
     MIDDLEWARE = tuple(MIDDLEWARE)
 
-    # ROOT_URLCONF = "tethys_tenants.urls"
-    # PUBLIC_SCHEMA_URLCONF = "tethys_portal.urls"
-
     SHOW_PUBLIC_IF_NO_TENANT_FOUND = TENANTS_CONFIG.pop(
         "SHOW_PUBLIC_IF_NO_TENANT_FOUND",
         False,
