@@ -217,6 +217,28 @@ class TestSettings(TestCase):
                 "PORT": 5436,
             },
         )
+        
+    @mock.patch(
+        "tethys_portal.settings.yaml.safe_load",
+        return_value={
+            "settings": {
+                "DATABASES": {"default": {"ENGINE": "django_tenants.postgresql_backend"}}
+            }
+        },
+    )
+    def test_db_config_tenants_postgres(self, _):
+        reload(settings)
+        self.assertDictEqual(
+            settings.DATABASES["default"],
+            {
+                "ENGINE": "django_tenants.postgresql_backend",
+                "NAME": "tethys_platform",
+                "USER": "tethys_default",
+                "PASSWORD": "pass",
+                "HOST": "localhost",
+                "PORT": 5436,
+            },
+        )
 
     # TODO remove compatibility code tests with Tethys5.0 (or 4.2?)
     @mock.patch(
