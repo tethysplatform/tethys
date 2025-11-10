@@ -362,10 +362,15 @@ TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 ROOT_URLCONF = "tethys_portal.urls"
 
 # Django Tenants settings
-if has_module("django_tenants"):
+if has_module("django_tenants") and "TENANTS" in portal_config_settings:
     TENANTS_CONFIG = portal_config_settings.pop("TENANTS", {})
 
-    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+    # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
+    # Set up in portal_config.yml
+    DATABASES["default"]["ENGINE"] = TENANTS_CONFIG.pop(
+        "DATABASE_ENGINE", "django.db.backends.sqlite3"
+    )
+
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
     TENANT_MODEL = "tethys_tenants.Tenant"
