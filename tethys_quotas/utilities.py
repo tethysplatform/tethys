@@ -203,11 +203,20 @@ def get_quota(entity, codename):
 def _convert_storage_units(units, amount):
     base_units = _get_storage_units()
 
-    base_conversion = [item[0] for item in base_units if units.upper() in item[1]]
+    for item in base_units:
+        if isinstance(item[1], str):
+            if units.strip().lower() == item[1].strip().lower():
+                base_conversion = item[0]
+                break
+        elif isinstance(item[1], tuple):
+            if units.strip().lower() in [s.strip().lower() for s in item[1]]:
+                base_conversion = item[0]
+                break
+
     if not base_conversion:
         return None
 
-    amount = amount * base_conversion[0]
+    amount = amount * base_conversion
 
     for factor, suffix in base_units:  # noqa: B007
         if amount >= factor:
@@ -231,3 +240,49 @@ def _get_storage_units():
         (1024**1, " KB"),
         (1024**0, (" byte", " bytes")),
     ]
+
+
+def can_add_file_to_path(app_or_user, codename, source_file):
+    """
+    Checks if a file can be added to a path based on the quota for that path.
+
+    Args:
+        app_or_user (User or TethysApp): the entity on which to perform quota check.
+        codename (str): codename of the path to check.
+        path_dict (dict): A dictionary containing information about the path.
+        source_file (Path): The file being added.
+    Returns:
+        bool: True if the file can be added, False otherwise.
+    """
+    from tethys_quotas.utilities import get_resource_available
+
+    from django.contrib.auth.models import User
+    from tethys_apps.models import TethysApp
+
+    entity_types = {
+        "tethysapp_workspace_quota": TethysApp,
+        "user_workspace_quota": User,
+    }
+
+    if codename not in entity_types.keys():
+        raise ValueError(f"Invalid codename: {codename}")
+
+    if not isinstance(app_or_user, entity_types[codename]):
+        raise ValueError(
+            f"Invalid entity type for codename {codename}, expected {entity_types[codename].__name__}, got {type(app_or_user).__name__}"
+        )
+
+    resource_available = get_resource_available(app_or_user, codename)
+
+    if resource_available is not None:
+        if (
+            resource_available["resource_available"]
+            and resource_available["resource_available"] == 0
+        ):
+            return False
+
+        file_size = source_file.stat().st_size
+        if file_size > resource_available["resource_available"]:
+            return False
+
+    return True

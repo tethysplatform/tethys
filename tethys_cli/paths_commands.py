@@ -1,22 +1,65 @@
 import argparse
+from django.conf import settings
+
 from tethys_cli.cli_colors import write_warning, write_success, write_error
+from tethys_quotas.utilities import _convert_storage_units, can_add_file_to_path
 from tethys_apps.base.paths import (
-    get_app_workspace,
-    get_user_workspace,
-    get_app_media,
-    get_user_media,
+    _get_app_workspace,
+    _get_user_workspace,
+    _get_app_media,
+    _get_user_media,
     get_app_public,
     get_app_resources,
 )
+from tethys_apps.base.workspace import _get_app_workspace_old, _get_user_workspace_old
 
-PATH_TYPES = {
-    "app_workspace": {"function": get_app_workspace, "path_name": "App Workspace"},
-    "user_workspace": {"function": get_user_workspace, "path_name": "User Workspace"},
-    "app_media": {"function": get_app_media, "path_name": "App Media"},
-    "user_media": {"function": get_user_media, "path_name": "User Media"},
-    "app_public": {"function": get_app_public, "path_name": "App Public"},
-    "app_resources": {"function": get_app_resources, "path_name": "App Resources"},
-}
+
+def get_path_config(path_type):
+    from tethys_cli.cli_helpers import setup_django
+
+    setup_django()
+
+    if settings.USE_OLD_WORKSPACES_API:
+        app_workspace_func = _get_app_workspace_old
+        user_workspace_func = _get_user_workspace_old
+    else:
+        app_workspace_func = _get_app_workspace
+        user_workspace_func = _get_user_workspace
+
+    path_types = {
+        "app_workspace": {
+            "function": app_workspace_func,
+            "path_name": "App Workspace",
+            "quota": True,
+        },
+        "user_workspace": {
+            "function": user_workspace_func,
+            "path_name": "User Workspace",
+            "quota": True,
+        },
+        "app_media": {
+            "function": _get_app_media,
+            "path_name": "App Media",
+            "quota": True,
+        },
+        "user_media": {
+            "function": _get_user_media,
+            "path_name": "User Media",
+            "quota": True,
+        },
+        "app_public": {
+            "function": get_app_public,
+            "path_name": "App Public",
+            "quota": False,
+        },
+        "app_resources": {
+            "function": get_app_resources,
+            "path_name": "App Resources",
+            "quota": False,
+        },
+    }
+
+    return path_types.get(path_type, None)
 
 
 def add_paths_parser(subparsers):
@@ -96,12 +139,10 @@ def get_path(args):
         write_error(f"The '--user' argument is required for path type '{args.type}'.")
         return
 
-    path_dict = PATH_TYPES.get(args.type)
-    if not path_dict:
+    path_config = get_path_config(args.type)
+    if not path_config:
         write_error(f"Invalid path type: {args.type}")
         return
-
-    func = path_dict.get("function")
 
     is_user_path = args.type in ["user_workspace", "user_media"]
 
@@ -118,15 +159,15 @@ def get_path(args):
         return
 
     if is_user_path:
-        path = func(app, user)
+        path = resolve_path(path_config, app, user)
     else:
-        path = func(app)
+        path = resolve_path(path_config, app)
 
     if not path:
-        write_error(f"Could not find {path_dict.get('path_name')}.")
+        write_error(f"Could not find {path_config.get('path_name')}.")
         return
 
-    print(f"{path_dict.get('path_name')} for app '{args.app}':")
+    print(f"{path_config.get('path_name')} for app '{args.app}':")
     print(path.path)
 
 
@@ -141,12 +182,10 @@ def add_file_to_path(args):
         write_error(f"The '--user' argument is required for path type '{args.type}'.")
         return
 
-    path_dict = PATH_TYPES.get(args.type)
-    if not path_dict:
+    path_config = get_path_config(args.type)
+    if not path_config:
         write_error(f"Invalid path type: {args.type}")
         return
-
-    func = path_dict.get("function")
 
     is_user_path = args.type in ["user_workspace", "user_media"]
 
@@ -163,12 +202,12 @@ def add_file_to_path(args):
         return
 
     if is_user_path:
-        path = func(app, user)
+        path = resolve_path(path_config, app, user)
     else:
-        path = func(app)
+        path = resolve_path(path_config, app)
 
     if not path:
-        write_error(f"Could not find {path_dict.get('path_name')}.")
+        write_error(f"Could not find {path_config.get('path_name')}.")
         return
 
     source_file = Path(args.file)
@@ -181,14 +220,67 @@ def add_file_to_path(args):
     destination_file = path.path / source_file.name
     if Path(destination_file).exists():
         write_warning(
-            f"The file '{source_file.name}' already exists in the intended {path_dict.get('path_name')}."
+            f"The file '{source_file.name}' already exists in the intended {path_config.get('path_name')}."
         )
         return
 
-    shutil.copy(source_file, destination_file)
-    write_success(
-        f"File '{source_file}' has been added to the {path_dict.get('path_name')} at '{destination_file}'."
-    )
+    if path_config.get("quota"):
+        from tethys_quotas.utilities import get_resource_available
+
+    if is_user_path:
+        codename = "user_workspace_quota"
+        can_add_file = can_add_file_to_path(user, codename, source_file)
+        resource_available = get_resource_available(user, codename)
+
+        if resource_available == 0:
+            write_error(
+                f"Cannot add file to {path_config.get('path_name')}. Quota has already been exceeded."
+            )
+            return
+
+        elif not can_add_file:
+            file_size = _convert_storage_units("bytes", source_file.stat().st_size)
+            resource_available = _convert_storage_units(
+                "GB", resource_available["resource_available"]
+            )
+            write_error(
+                f"Cannot add file to {path_config.get('path_name')}. File size ({file_size}) exceeds available quota of ({resource_available})."
+            )
+            return
+
+        else:
+            shutil.copy(source_file, destination_file)
+            write_success(
+                f"File '{source_file}' has been added to the {path_config.get('path_name')} at '{destination_file}'."
+            )
+            return
+
+    else:
+        codename = "tethysapp_workspace_quota"
+        can_add_file = can_add_file_to_path(app, codename, source_file)
+        resource_available = get_resource_available(app, codename)
+        if resource_available == 0:
+            write_error(
+                f"Cannot add file to {path_config.get('path_name')}. Quota has already been exceeded."
+            )
+            return
+
+        elif not can_add_file:
+            file_size = _convert_storage_units("bytes", source_file.stat().st_size)
+            resource_available = _convert_storage_units(
+                "GB", resource_available["resource_available"]
+            )
+            write_error(
+                f"Cannot add file to {path_config.get('path_name')}. File size ({file_size}) exceeds available quota ({resource_available})."
+            )
+            return
+
+        else:
+            shutil.copy(source_file, destination_file)
+            write_success(
+                f"File '{source_file}' has been added to the {path_config.get('path_name')} at '{destination_file}'."
+            )
+            return
 
 
 def get_tethys_app(app_name):
@@ -215,3 +307,20 @@ def get_user(username):
 
     user = User.objects.filter(username=username).first()
     return user
+
+
+def resolve_path(path_config, app, user=None):
+    """
+    Resolve the path using a path config, app, and user.
+    """
+    func = path_config["function"]
+    has_quota = path_config["quota"]
+
+    args = {}
+    if has_quota:
+        args["bypass_quota"] = True
+
+    if user:
+        return func(app, user, **args)
+
+    return func(app, **args)
