@@ -370,8 +370,13 @@ if has_module("django_tenants") and "TENANTS" in portal_config_settings:
     DATABASES["default"]["ENGINE"] = TENANTS_CONFIG.pop(
         "DATABASE_ENGINE", "django.db.backends.sqlite3"
     )
+    
+    if TENANTS_CONFIG.pop("POSTGIS_ENABLED", False):
+        ORIGINAL_BACKEND = "django.contrib.gis.db.backends.postgis"
 
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+    TENANT_LIMIT_SET_CALLS = TENANTS_CONFIG.pop("TENANT_LIMIT_SET_CALLS", False)
 
     TENANT_MODEL = "tethys_tenants.Tenant"
     TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
@@ -447,12 +452,6 @@ CONTEXT_PROCESSORS = portal_config_settings.pop(
 CONTEXT_PROCESSORS = tuple(
     CONTEXT_PROCESSORS + portal_config_settings.pop("CONTEXT_PROCESSORS", [])
 )
-
-if has_module("django_tenants"):
-    CONTEXT_PROCESSORS = (
-        "django.template.context_processors.request",
-        *CONTEXT_PROCESSORS,
-    )
 
 # Templates
 
