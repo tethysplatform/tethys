@@ -217,12 +217,14 @@ class TestSettings(TestCase):
                 "PORT": 5436,
             },
         )
-        
+
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
         return_value={
             "settings": {
-                "DATABASES": {"default": {"ENGINE": "django_tenants.postgresql_backend"}}
+                "DATABASES": {
+                    "default": {"ENGINE": "django_tenants.postgresql_backend"}
+                }
             }
         },
     )
