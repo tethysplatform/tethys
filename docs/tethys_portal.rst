@@ -10,9 +10,9 @@ Tethys Portal is the Django web site provided by Tethys Platform that acts as th
    :maxdepth: 1
 
    tethys_portal/configuration
-   tethys_portal/admin_pages
+   tethys_portal/admin_pages/admin_pages
    tethys_portal/tethys_users
    tethys_portal/feedback
-
+   
 
 
