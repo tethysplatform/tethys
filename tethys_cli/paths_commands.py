@@ -1,8 +1,11 @@
 import argparse
 from django.conf import settings
+from pathlib import Path
+import shutil
 
-from tethys_cli.cli_colors import write_warning, write_success, write_error
-from tethys_quotas.utilities import _convert_storage_units, can_add_file_to_path
+from tethys_cli.cli_colors import write_msg, write_info, write_warning, write_success, write_error
+from tethys_quotas.utilities import _convert_storage_units, can_add_file_to_path, get_resource_available
+
 from tethys_apps.base.paths import (
     _get_app_workspace,
     _get_user_workspace,
@@ -141,7 +144,7 @@ def get_path(args):
 
     path_config = get_path_config(args.type)
     if not path_config:
-        write_error(f"Invalid path type: {args.type}")
+        write_error(f"Invalid path type: '{args.type}'.")
         return
 
     is_user_path = args.type in ["user_workspace", "user_media"]
@@ -149,7 +152,7 @@ def get_path(args):
     if is_user_path:
         user = get_user(args.user)
         if not user:
-            write_warning(f"User '{args.user}' does not exist.")
+            write_warning(f"User '{args.user}' was not found.")
 
     app = get_tethys_app(args.app)
     if not app:
@@ -167,24 +170,21 @@ def get_path(args):
         write_error(f"Could not find {path_config.get('path_name')}.")
         return
 
-    print(f"{path_config.get('path_name')} for app '{args.app}':")
-    print(path.path)
+    write_info(f"{path_config.get('path_name')} for app '{args.app}':")
+    write_msg(path.path)
 
 
 def add_file_to_path(args):
     """
     Add file to Tethys path based on command line arguments.
     """
-    from pathlib import Path
-    import shutil
-
     if args.type in ["user_workspace", "user_media"] and not args.user:
         write_error(f"The '--user' argument is required for path type '{args.type}'.")
         return
 
     path_config = get_path_config(args.type)
     if not path_config:
-        write_error(f"Invalid path type: {args.type}")
+        write_error(f"Invalid path type: '{args.type}'.")
         return
 
     is_user_path = args.type in ["user_workspace", "user_media"]
@@ -192,7 +192,7 @@ def add_file_to_path(args):
     if is_user_path:
         user = get_user(args.user)
         if not user:
-            write_warning(f"User '{args.user}' does not exist.")
+            write_warning(f"User '{args.user}' was not found.")
 
     app = get_tethys_app(args.app)
     if not app:
@@ -224,17 +224,14 @@ def add_file_to_path(args):
         )
         return
 
-    if path_config.get("quota"):
-        from tethys_quotas.utilities import get_resource_available
-
     if is_user_path:
         codename = "user_workspace_quota"
         can_add_file = can_add_file_to_path(user, codename, source_file)
         resource_available = get_resource_available(user, codename)
 
-        if resource_available == 0:
+        if resource_available["resource_available"] <= 0:
             write_error(
-                f"Cannot add file to {path_config.get('path_name')}. Quota has already been exceeded."
+                f"Cannot add file to {path_config.get('path_name')}. Quota has already been met."
             )
             return
 
@@ -244,7 +241,7 @@ def add_file_to_path(args):
                 "GB", resource_available["resource_available"]
             )
             write_error(
-                f"Cannot add file to {path_config.get('path_name')}. File size ({file_size}) exceeds available quota of ({resource_available})."
+                f"Cannot add file to {path_config.get('path_name')}. File size ({file_size}) exceeds available quota ({resource_available})."
             )
             return
 
@@ -259,9 +256,9 @@ def add_file_to_path(args):
         codename = "tethysapp_workspace_quota"
         can_add_file = can_add_file_to_path(app, codename, source_file)
         resource_available = get_resource_available(app, codename)
-        if resource_available == 0:
+        if resource_available["resource_available"] <= 0:
             write_error(
-                f"Cannot add file to {path_config.get('path_name')}. Quota has already been exceeded."
+                f"Cannot add file to {path_config.get('path_name')}. Quota has already been met."
             )
             return
 

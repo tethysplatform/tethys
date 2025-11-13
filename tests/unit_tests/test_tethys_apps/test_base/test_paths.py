@@ -4,14 +4,12 @@ import unittest
 from unittest import mock
 
 import sys
-import types
 
 from django.conf import settings
 from django.http import HttpRequest
 from django.test import override_settings
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
-
 
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base import paths
@@ -321,7 +319,9 @@ class TestTethysPathHelpers(unittest.TestCase):
         mock_am.return_value = self.mock_app
         mock_ac.return_value = self.mock_app
 
-        p = paths._get_user_workspace(self.mock_app_base_class, self.user, bypass_quota=True)
+        p = paths._get_user_workspace(
+            self.mock_app_base_class, self.user, bypass_quota=True
+        )
         expected_path = mock_tw(
             Path(sys.modules[self.mock_app.__module__].__file__).parent
             / "workspaces"
