@@ -246,7 +246,6 @@ default_installed_apps = [
 ]
 
 for module in [
-    "django_tenants",
     "analytical",
     "axes",
     "captcha",
@@ -362,13 +361,13 @@ TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 ROOT_URLCONF = "tethys_portal.urls"
 
 # Django Tenants settings
-if has_module("django_tenants") and "TENANTS" in portal_config_settings:
+if has_module("django_tenants"):
     TENANTS_CONFIG = portal_config_settings.pop("TENANTS", {})
 
     # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
     # Set up in portal_config.yml
     DATABASES["default"]["ENGINE"] = TENANTS_CONFIG.pop(
-        "DATABASE_ENGINE", "django.db.backends.sqlite3"
+        "DATABASE_ENGINE", "django_tenants.postgresql_backend"
     )
 
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
@@ -390,7 +389,7 @@ if has_module("django_tenants") and "TENANTS" in portal_config_settings:
         ],
     )
 
-    SHARED_APPS = INSTALLED_APPS
+    SHARED_APPS = ("django_tenants",) + INSTALLED_APPS
     TENANT_APPS = tuple(TENANT_APPS + TENANTS_CONFIG.pop("TENANT_APPS", []))
 
     INSTALLED_APPS = tuple(

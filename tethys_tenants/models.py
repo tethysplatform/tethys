@@ -8,13 +8,12 @@
 """
 
 from django.db import models
-from tethys_portal.optional_dependencies import optional_import, has_module
-
-TenantMixin = optional_import("TenantMixin", from_module="django_tenants.models")
-DomainMixin = optional_import("DomainMixin", from_module="django_tenants.models")
+from tethys_portal.optional_dependencies import has_module
 
 
-if has_module(TenantMixin):
+if has_module("django_tenants"):
+
+    from django_tenants.models import TenantMixin, DomainMixin
 
     class Tenant(TenantMixin):
         name = models.CharField(max_length=100)
@@ -22,9 +21,6 @@ if has_module(TenantMixin):
 
         # Schema will be automatically created and synced on save when True
         auto_create_schema = True
-
-
-if has_module(DomainMixin):
 
     class Domain(DomainMixin):
         pass
