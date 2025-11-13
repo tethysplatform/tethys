@@ -11,14 +11,22 @@ from functools import wraps
 from django.contrib import admin
 from django.http import Http404
 from tethys_portal.optional_dependencies import has_module
-from tethys_tenants.models import Tenant, Domain
 
 
 if has_module("django_tenants"):
 
+    from tethys_tenants.models import Tenant, Domain
+
     def is_public_schema(request):
         """Check if current request is from public schema"""
-        return getattr(request.tenant, "schema_name", None) == "public"
+        is_public_schema = False
+        if (
+            not hasattr(request, "tenant")
+            or request.tenant is None
+            or request.tenant.schema_name == "public"
+        ):
+            is_public_schema = True
+        return is_public_schema
 
     def public_schema_only(view_func):
         """Decorator to ensure view is only accessible from public schema"""
