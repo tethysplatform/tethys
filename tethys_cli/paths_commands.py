@@ -3,8 +3,18 @@ from django.conf import settings
 from pathlib import Path
 import shutil
 
-from tethys_cli.cli_colors import write_msg, write_info, write_warning, write_success, write_error
-from tethys_quotas.utilities import _convert_storage_units, can_add_file_to_path, get_resource_available
+from tethys_cli.cli_colors import (
+    write_msg,
+    write_info,
+    write_warning,
+    write_success,
+    write_error,
+)
+from tethys_quotas.utilities import (
+    _convert_storage_units,
+    can_add_file_to_path,
+    get_resource_available,
+)
 
 from tethys_apps.base.paths import (
     _get_app_workspace,
