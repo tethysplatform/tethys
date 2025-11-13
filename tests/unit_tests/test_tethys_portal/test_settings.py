@@ -178,12 +178,13 @@ class TestSettings(TestCase):
         reload(settings)
         self.assertListEqual(settings.CORS_ALLOWED_ORIGINS, ["http://example.com"])
 
+    @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
         return_value={"settings": {}},
     )
     @mock.patch("tethys_apps.utilities.relative_to_tethys_home")
-    def test_db_config_default(self, mock_home, _):
+    def test_db_config_default(self, mock_home, _, __):
         name = mock.MagicMock()
         name.exists.return_value = False
         mock_home.return_value = name
@@ -196,6 +197,7 @@ class TestSettings(TestCase):
             },
         )
 
+    @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
     @mock.patch(
         "tethys_portal.settings.yaml.safe_load",
         return_value={
@@ -204,7 +206,7 @@ class TestSettings(TestCase):
             }
         },
     )
-    def test_db_config_postgres(self, _):
+    def test_db_config_postgres(self, _, __):
         reload(settings)
         self.assertDictEqual(
             settings.DATABASES["default"],
