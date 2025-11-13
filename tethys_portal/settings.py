@@ -240,7 +240,6 @@ default_installed_apps = [
     "tethys_layouts",
     "tethys_sdk",
     "tethys_services",
-    "tethys_tenants",
     "tethys_quotas",
     "guardian",
 ]
@@ -389,7 +388,7 @@ if has_module("django_tenants"):
         ],
     )
 
-    SHARED_APPS = ("django_tenants",) + INSTALLED_APPS
+    SHARED_APPS = ("django_tenants", "tethys_tenants") + INSTALLED_APPS
     TENANT_APPS = tuple(TENANT_APPS + TENANTS_CONFIG.pop("TENANT_APPS", []))
 
     INSTALLED_APPS = tuple(
