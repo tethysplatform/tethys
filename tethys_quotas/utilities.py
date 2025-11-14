@@ -241,6 +241,7 @@ def _get_storage_units():
         (1024**0, (" byte", " bytes")),
     ]
 
+
 def _convert_to_bytes(units, amount):
     conversion = {
         "gb": 1024**3,
@@ -252,6 +253,7 @@ def _convert_to_bytes(units, amount):
         return amount * conversion[units.strip().lower()]
     else:
         return None
+
 
 def can_add_file_to_path(app_or_user, codename, source_file):
     """
@@ -289,7 +291,9 @@ def can_add_file_to_path(app_or_user, codename, source_file):
         if resource_available["resource_available"] == 0:
             return False
 
-        resource_available_bytes = _convert_to_bytes("gb", resource_available["resource_available"])
+        resource_available_bytes = _convert_to_bytes(
+            "gb", resource_available["resource_available"]
+        )
 
         file_size = source_file.stat().st_size
         if file_size > resource_available_bytes:
