@@ -360,7 +360,7 @@ TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 ROOT_URLCONF = "tethys_portal.urls"
 
 # Django Tenants settings
-if has_module("django_tenants"):
+if has_module("django_tenants") and "TENANTS" in portal_config_settings:
     TENANTS_CONFIG = portal_config_settings.pop("TENANTS", {})
 
     # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
@@ -372,6 +372,16 @@ if has_module("django_tenants"):
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
     TENANT_LIMIT_SET_CALLS = TENANTS_CONFIG.pop("TENANT_LIMIT_SET_CALLS", False)
+
+    TENANT_COLOR_ADMIN_APPS = TENANTS_CONFIG.pop(
+        "TENANT_COLOR_ADMIN_APPS",
+        True,
+    )
+
+    SHOW_PUBLIC_IF_NO_TENANT_FOUND = TENANTS_CONFIG.pop(
+        "SHOW_PUBLIC_IF_NO_TENANT_FOUND",
+        False,
+    )
 
     TENANT_MODEL = "tethys_tenants.Tenant"
     TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
@@ -398,11 +408,6 @@ if has_module("django_tenants"):
     MIDDLEWARE = list(MIDDLEWARE)
     MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
     MIDDLEWARE = tuple(MIDDLEWARE)
-
-    SHOW_PUBLIC_IF_NO_TENANT_FOUND = TENANTS_CONFIG.pop(
-        "SHOW_PUBLIC_IF_NO_TENANT_FOUND",
-        False,
-    )
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
