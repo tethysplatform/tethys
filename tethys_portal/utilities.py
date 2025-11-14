@@ -55,7 +55,7 @@ def log_user_in(request, user=None, username=None):
         next_url = sanitize_next_url(request.GET["next"])
         if next_url:
             return redirect(next_url)
-        
+
     if settings.MULTIPLE_APP_MODE:
         return redirect("app_library")
     else:
@@ -71,6 +71,7 @@ def json_serializer(obj):
         f'Object of type "{obj.__class__.__name__}" is not JSON serializable'
     )
 
+
 def sanitize_next_url(next_url):
     """
     Sanitize the "next" URL parameter to prevent open redirect vulnerabilities.
@@ -83,14 +84,13 @@ def sanitize_next_url(next_url):
     """
     if settings.ALLOWED_HOSTS:
         allowed_hosts = set(settings.ALLOWED_HOSTS)
-    
+
     else:
         # Default if ALLOWED_HOSTS is not set (for development)
         allowed_hosts = {"localhost", "127.0.0.1"}
 
     if next_url and url_has_allowed_host_and_scheme(
-        url=next_url, 
-        allowed_hosts=allowed_hosts
+        url=next_url, allowed_hosts=allowed_hosts
     ):
         return next_url
     return None
