@@ -40,5 +40,6 @@ These guides describe additional configuration that you can perform to add more 
     configuration/advanced/self_hosted_js_deps
     configuration/advanced/social_auth
     configuration/advanced/multi_factor_auth
+    configuration/advanced/multi_tenancy
     configuration/advanced/webanalytics
     configuration/advanced/django_channels_layer
