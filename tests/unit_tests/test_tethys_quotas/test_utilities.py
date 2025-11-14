@@ -197,40 +197,61 @@ class TethysQuotasUtilitiesTest(TestCase):
 
     def test_can_add_file_invalid_not_app(self):
         with self.assertRaises(ValueError) as context:
-            utilities.can_add_file_to_path("not an app or user", "tethysapp_workspace_quota", 100)
+            utilities.can_add_file_to_path(
+                "not an app or user", "tethysapp_workspace_quota", 100
+            )
 
         self.assertEqual(
-            str(context.exception), "Invalid entity type for codename tethysapp_workspace_quota, expected TethysApp, got str"
+            str(context.exception),
+            "Invalid entity type for codename tethysapp_workspace_quota, expected TethysApp, got str",
         )
 
     def test_can_add_file_invalid_not_user(self):
         with self.assertRaises(ValueError) as context:
-            utilities.can_add_file_to_path("not an app or user", "user_workspace_quota", 100)
+            utilities.can_add_file_to_path(
+                "not an app or user", "user_workspace_quota", 100
+            )
 
         self.assertEqual(
-            str(context.exception), "Invalid entity type for codename user_workspace_quota, expected User, got str"
+            str(context.exception),
+            "Invalid entity type for codename user_workspace_quota, expected User, got str",
         )
 
     @mock.patch("tethys_quotas.utilities.get_resource_available")
     def test_can_add_file_quota_met(self, mock_get_resource_available):
-        mock_get_resource_available.return_value = {"resource_available": 0, "units": "GB"}
-        result = utilities.can_add_file_to_path(TethysApp(), "tethysapp_workspace_quota", "file.txt")
+        mock_get_resource_available.return_value = {
+            "resource_available": 0,
+            "units": "GB",
+        }
+        result = utilities.can_add_file_to_path(
+            TethysApp(), "tethysapp_workspace_quota", "file.txt"
+        )
         self.assertFalse(result)
 
     @mock.patch("tethys_quotas.utilities.get_resource_available")
     def test_can_add_file_exceeds_quota(self, mock_get_resource_available):
-        mock_get_resource_available.return_value = {"resource_available": 1, "units": "GB"}
+        mock_get_resource_available.return_value = {
+            "resource_available": 1,
+            "units": "GB",
+        }
         mock_file = mock.MagicMock()
-        mock_file.stat.return_value.st_size = 2147483648 # 2 GB
-        result = utilities.can_add_file_to_path(TethysApp(), "tethysapp_workspace_quota", mock_file)
+        mock_file.stat.return_value.st_size = 2147483648  # 2 GB
+        result = utilities.can_add_file_to_path(
+            TethysApp(), "tethysapp_workspace_quota", mock_file
+        )
         self.assertFalse(result)
-        
+
     @mock.patch("tethys_quotas.utilities.get_resource_available")
     def test_can_add_file_within_quota(self, mock_get_resource_available):
-        mock_get_resource_available.return_value = {"resource_available": 2, "units": "GB"}
+        mock_get_resource_available.return_value = {
+            "resource_available": 2,
+            "units": "GB",
+        }
         mock_file = mock.MagicMock()
-        mock_file.stat.return_value.st_size = 1073741824 # 1 GB
-        result = utilities.can_add_file_to_path(TethysApp(), "tethysapp_workspace_quota", mock_file)
+        mock_file.stat.return_value.st_size = 1073741824  # 1 GB
+        result = utilities.can_add_file_to_path(
+            TethysApp(), "tethysapp_workspace_quota", mock_file
+        )
         self.assertTrue(result)
 
     def test__convert_to_bytes(self):
@@ -238,4 +259,3 @@ class TethysQuotasUtilitiesTest(TestCase):
         self.assertEqual(1048576, utilities._convert_to_bytes("mb", 1))
         self.assertEqual(1024, utilities._convert_to_bytes("kb", 1))
         self.assertIsNone(utilities._convert_to_bytes("tb", 1))
-    
