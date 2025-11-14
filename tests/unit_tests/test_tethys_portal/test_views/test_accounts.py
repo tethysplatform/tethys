@@ -468,6 +468,59 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_redirect.assert_called_once_with(mock_request.GET["next"])
 
     @override_settings(ENABLE_OPEN_SIGNUP=True)
+    @mock.patch("tethys_portal.views.accounts.login")
+    @mock.patch("tethys_portal.views.accounts.authenticate")
+    @mock.patch("tethys_portal.views.accounts.RegisterForm")
+    @mock.patch("tethys_portal.views.accounts.redirect")
+    def test_register_post_request_invalid_next(
+        self, mock_redirect, mock_register_form, mock_authenticate, mock_login
+    ):
+        mock_request = mock.MagicMock()
+        mock_request.method = "POST"
+        mock_request.POST = "register-submit"
+        mock_request.user.is_anonymous = True
+        mock_request.user.username = "sam"
+        mock_request.GET = {"next": "http://malicious_site.com/"}
+
+        mock_form = mock.MagicMock()
+        mock_register_form.return_value = mock_form
+
+        # mock validate the form
+        mock_form.is_valid.return_value = True
+
+        mock_username = mock.MagicMock()
+        mock_email = mock.MagicMock()
+        mock_password = mock.MagicMock()
+        mock_form.clean_username.return_value = mock_username
+        mock_form.clean_email.return_value = mock_email
+        mock_form.clean_password2.return_value = mock_password
+
+        # mock authenticate
+        mock_user = mock.MagicMock()
+        mock_authenticate.return_value = mock_user
+
+        # mock the password has been verified for the user
+        mock_user.is_active = True
+
+        # call the login function with mock args
+        register(mock_request)
+
+        mock_form.save.assert_called_once()
+
+        mock_register_form.assert_called_with(mock_request.POST)
+
+        # mock authenticate call
+        mock_authenticate.asset_called_with(
+            username=mock_username, password=mock_password
+        )
+
+        # mock the user is valid, active, and authenticated, so login in the user
+        mock_login.assert_called_with(mock_request, mock_user)
+
+        # mock redirect after logged in using next parameter or default to user profile
+        mock_redirect.assert_called_once_with("user:profile")
+
+    @override_settings(ENABLE_OPEN_SIGNUP=True)
     @mock.patch(
         "tethys_portal.views.accounts.get_custom_template", return_value="mock_template"
     )
