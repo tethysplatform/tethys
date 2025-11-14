@@ -135,7 +135,7 @@ def register(request):
                         next_url = sanitize_next_url(request.GET["next"])
                         if next_url:
                             return redirect(next_url)
-                    
+
                     return redirect("user:profile")
                 else:
                     # The password is valid, but the user account has been disabled
