@@ -559,6 +559,7 @@ class TestPathsCommandAddFileToPath(TestCase):
         add_file_to_path(args)
         mock_we.assert_called_with("Could not find App Workspace.")
 
+    @override_settings(USE_OLD_WORKSPACES_API=False)
     @mock.patch("tethys_cli.paths_commands.Path")
     @mock.patch("tethys_cli.paths_commands._get_app_workspace")
     @mock.patch("tethys_cli.paths_commands.write_error")
@@ -588,6 +589,7 @@ class TestPathsCommandAddFileToPath(TestCase):
             f"The specified file '{file_name}' does not exist or is not a file."
         )
 
+    @override_settings(USE_OLD_WORKSPACES_API=False)
     @mock.patch("tethys_cli.paths_commands.Path")
     @mock.patch("tethys_cli.paths_commands._get_app_workspace")
     @mock.patch("tethys_cli.paths_commands.write_warning")
@@ -621,6 +623,7 @@ class TestPathsCommandAddFileToPath(TestCase):
             f"The file '{file_name}' already exists in the intended App Workspace."
         )
 
+    @override_settings(USE_OLD_WORKSPACES_API=False)
     @mock.patch("tethys_cli.paths_commands.can_add_file_to_path")
     @mock.patch("tethys_cli.paths_commands.get_resource_available")
     @mock.patch("tethys_cli.paths_commands.Path")
@@ -703,6 +706,7 @@ class TestPathsCommandAddFileToPath(TestCase):
             "Cannot add file to User Workspace. File size (1 KB) exceeds available quota (300 bytes)."
         )
 
+    @override_settings(USE_OLD_WORKSPACES_API=False)
     @mock.patch("tethys_cli.paths_commands.can_add_file_to_path")
     @mock.patch("tethys_cli.paths_commands.get_resource_available")
     @mock.patch("tethys_cli.paths_commands.Path")
@@ -743,6 +747,7 @@ class TestPathsCommandAddFileToPath(TestCase):
             "Cannot add file to App Workspace. Quota has already been met."
         )
 
+    @override_settings(USE_OLD_WORKSPACES_API=False)
     @mock.patch("tethys_cli.paths_commands.can_add_file_to_path")
     @mock.patch("tethys_cli.paths_commands.get_resource_available")
     @mock.patch("tethys_cli.paths_commands.Path")
