@@ -661,6 +661,7 @@ class TestPathsCommandAddFileToPath(TestCase):
             "Cannot add file to User Workspace. Quota has already been met."
         )
 
+    @override_settings(USE_OLD_WORKSPACES_API=False)
     @mock.patch("tethys_cli.paths_commands.can_add_file_to_path")
     @mock.patch("tethys_cli.paths_commands.get_resource_available")
     @mock.patch("tethys_cli.paths_commands.Path")
