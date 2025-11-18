@@ -236,6 +236,8 @@ For the ``workspace`` and ``media`` paths the location of the paths from all app
 
     The ``public`` and the ``resources`` directories are relative to the source code of the app (i.e. not centralized). Even when the ``collectstatic`` command is used to copy all static files to a central location the :ref:`tethys_paths_api` will return the the public directory that is relative to the app source code.
 
+.. _tethys_paths_cli:
+
 Command Line Interface
 ==========================
 The Paths API can be accessed through the command line interface (CLI) using the ``paths`` command. This command provides a way to list paths for specific apps or users and add files to those destinations.
