@@ -51,6 +51,8 @@ Paths API CLI
 * Use the Paths CLI to find the location of the various workspaces and media directories associated with Tethys apps.
 * Add files to app and user workspaces and media directories directly from the command line.
 
+See: :ref:`paths_cmd` and :ref:`tethys_paths_cli`
+
 Recipes
 -------
 
