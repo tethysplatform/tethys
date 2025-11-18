@@ -63,7 +63,9 @@ class TestPathsCommandGetPath(TestCase):
         )
         get_path(args)
         mock_guw.assert_called_with(self.app, self.user, bypass_quota=True)
-        mock_wi.assert_called_with(f"User Workspace for user '{self.user.username}' and app '{self.app.package}':")
+        mock_wi.assert_called_with(
+            f"User Workspace for user '{self.user.username}' and app '{self.app.package}':"
+        )
         mock_wm.assert_called_with("test_user_workspace_path")
 
     @override_settings(USE_OLD_WORKSPACES_API=False)
@@ -79,7 +81,9 @@ class TestPathsCommandGetPath(TestCase):
         )
         get_path(args)
         mock_guw.assert_called_with(self.app, self.user, bypass_quota=True)
-        mock_wi.assert_called_with(f"User Workspace for user '{self.user.username}' and app '{self.app.package}':")
+        mock_wi.assert_called_with(
+            f"User Workspace for user '{self.user.username}' and app '{self.app.package}':"
+        )
         mock_wm.assert_called_with("test_user_workspace_path")
 
     @mock.patch("tethys_cli.paths_commands.write_info")
@@ -105,7 +109,9 @@ class TestPathsCommandGetPath(TestCase):
         args = mock.MagicMock(type="user_media", app=self.app.package, user=self.user)
         get_path(args)
         mock_gum.assert_called_with(self.app, self.user, bypass_quota=True)
-        mock_wi.assert_called_with(f"User Media for user '{self.user.username}' and app '{self.app.package}':")
+        mock_wi.assert_called_with(
+            f"User Media for user '{self.user.username}' and app '{self.app.package}':"
+        )
         mock_wm.assert_called_with("test_user_media_path")
 
     @mock.patch("tethys_cli.paths_commands.write_info")
