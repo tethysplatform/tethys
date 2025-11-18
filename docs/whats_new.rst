@@ -67,7 +67,7 @@ Automated PyPI Package Uploads
 * Tethys Platform now features automated uploads to PyPI for new releases.
 * This enables support for installing Tethys Platform with pip and other PyPI-based package managers.
 
-See: The "Pip" tab on :ref:`quick_start` and :ref:`getting_started_install_tethys`
+See: The "Pip" tab on :ref:`quickstart` and :ref:`getting_started_install_tethys`
 
 Container Scanning
 ------------------
