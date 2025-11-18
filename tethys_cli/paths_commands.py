@@ -180,7 +180,13 @@ def get_path(args):
         write_error(f"Could not find {path_config.get('path_name')}.")
         return
 
-    write_info(f"{path_config.get('path_name')} for app '{args.app}':")
+    if is_user_path:
+        write_info(
+            f"{path_config.get('path_name')} for user '{args.user}' and app '{args.app}':"
+        )
+    else:
+        write_info(f"{path_config.get('path_name')} for app '{args.app}':")
+
     write_msg(path.path)
 
 
