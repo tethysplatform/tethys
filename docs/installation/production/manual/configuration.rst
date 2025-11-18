@@ -35,6 +35,12 @@ These guides describe additional configuration that you can perform to add more 
 
     configuration/advanced/https_config
     configuration/advanced/customize
+
+**Optional Configuration**
+
+.. toctree::
+    :maxdepth: 1
+
     configuration/advanced/email_config
     configuration/advanced/lockout
     configuration/advanced/self_hosted_js_deps
