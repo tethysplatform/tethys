@@ -19,6 +19,7 @@ from tethys_cli.gen_commands import add_gen_parser
 from tethys_cli.link_commands import add_link_parser
 from tethys_cli.list_command import add_list_parser
 from tethys_cli.manage_commands import add_manage_parser
+from tethys_cli.paths_commands import add_paths_parser
 from tethys_cli.scaffold_commands import add_scaffold_parser
 from tethys_cli.scheduler_commands import add_scheduler_parser
 from tethys_cli.services_commands import add_services_parser
@@ -52,6 +53,7 @@ def tethys_command_parser():
     add_link_parser(subparsers)
     add_list_parser(subparsers)
     add_manage_parser(subparsers)
+    add_paths_parser(subparsers)
     add_scaffold_parser(subparsers)
     add_scheduler_parser(subparsers)
     add_services_parser(subparsers)
