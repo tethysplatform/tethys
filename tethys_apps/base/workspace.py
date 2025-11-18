@@ -254,7 +254,7 @@ def _get_user_workspace_old(
     Get the dedicated user workspace for the given app. If an HttpRequest is given, the workspace of the logged-in user will be returned (i.e. request.user).
 
     Args:
-        app_class_or_request (TethysAppBase or HttpRequest or TethysApp): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
+        app_class_or_request (TethysAppBase, TethysApp, or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to app endpoint.
         user_or_request (User or HttpRequest): Either an HttpRequest with active user session or Django User object.
 
     Raises:
@@ -306,7 +306,7 @@ def user_workspace(controller):
     **Decorator:** Get the file workspace (directory) for the given User. Add an argument named "user_workspace" to your controller. The TethysWorkspace will be passed to via this argument.
 
     Returns:
-      TethysWorkspace: An object representing the workspace.
+        TethysWorkspace: An object representing the workspace.
 
     **Example:**
 
@@ -375,10 +375,10 @@ def _get_app_workspace_old(app_or_request, bypass_quota=False) -> TethysWorkspac
     Get the app workspace for the active app of the given HttpRequest or the given Tethys App class.
 
     Args:
-        app_or_request (TethysAppBase | HttpRequest | TethysApp): The Tethys App class or TethysApp or an HttpRequest to an app endpoint.
+        app_or_request (TethysAppBase, TethysApp, or HttpRequest): The Tethys app class that is defined in app.py or HttpRequest to an app endpoint.
 
     Raises:
-        ValueError: if object of type other than HttpRequest or TethysAppBase given.
+        ValueError: if object of type other than HttpRequest, TethysAppBase, or TethysApp given.
         AssertionError: if quota for the app workspace has been exceeded.
 
     Returns:
