@@ -245,7 +245,7 @@ def add_file_to_path(args):
         can_add_file = can_add_file_to_path(user, codename, source_file)
         resource_available = get_resource_available(user, codename)
 
-        if resource_available["resource_available"] <= 0:
+        if resource_available and resource_available["resource_available"] <= 0:
             write_error(
                 f"Cannot add file to {path_config.get('path_name')}. Quota has already been met."
             )
@@ -272,7 +272,7 @@ def add_file_to_path(args):
         codename = "tethysapp_workspace_quota"
         can_add_file = can_add_file_to_path(app, codename, source_file)
         resource_available = get_resource_available(app, codename)
-        if resource_available["resource_available"] <= 0:
+        if resource_available and resource_available["resource_available"] <= 0:
             write_error(
                 f"Cannot add file to {path_config.get('path_name')}. Quota has already been met."
             )
