@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
@@ -253,6 +254,7 @@ class TestGetHandoffManagerFroApp(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @pytest.mark.django_db
     def test_not_app_name(self):
         app = mock.MagicMock()
         result = tethys_handoff.HandoffManager(app=app)._get_handoff_manager_for_app(
@@ -262,6 +264,7 @@ class TestGetHandoffManagerFroApp(unittest.TestCase):
         self.assertEqual(app, result.app)
 
     @mock.patch("tethys_apps.base.handoff.tethys_apps")
+    @pytest.mark.django_db
     def test_with_app(self, mock_ta):
         app = mock.MagicMock(package="test_app")
         app.get_handoff_manager.return_value = "test_manager"
@@ -303,6 +306,7 @@ class TestTestAppHandoff(TethysTestCase):
         self.reload_urlconf()
 
     @override_settings(PREFIX_URL="/")
+    @pytest.mark.django_db
     def test_test_app_handoff(self):
         self.reload_urlconf()
         response = self.c.get('/handoff/test-app/test_name/?csv_url=""')
@@ -310,6 +314,7 @@ class TestTestAppHandoff(TethysTestCase):
         self.assertEqual(302, response.status_code)
 
     @override_settings(PREFIX_URL="test/prefix")
+    @pytest.mark.django_db
     def test_test_app_handoff_with_prefix(self):
         self.reload_urlconf()
         response = self.c.get('/test/prefix/handoff/test-app/test_name/?csv_url=""')
