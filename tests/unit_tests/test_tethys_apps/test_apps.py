@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 import tethys_apps
@@ -18,6 +19,7 @@ class TestApps(unittest.TestCase):
     @mock.patch("tethys_apps.apps.sync_portal_cookies")
     @mock.patch("tethys_apps.apps.has_module", return_value=True)
     @mock.patch("tethys_apps.apps.SingletonHarvester")
+    @pytest.mark.django_db
     def test_ready(self, mock_singleton_harvester, _, mock_sync_portal_cookies):
         tethys_app_config_obj = TethysAppsConfig("tethys_apps", tethys_apps)
         tethys_app_config_obj.ready()

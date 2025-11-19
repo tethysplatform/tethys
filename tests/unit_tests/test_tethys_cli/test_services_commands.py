@@ -1,3 +1,4 @@
+import pytest
 try:
     from StringIO import StringIO
 except ImportError:
@@ -597,6 +598,7 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_services.models.PersistentStoreService")
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
+    @pytest.mark.django_db
     def test_services_list_command_not_spatial_not_persistent(
         self, mock_mtd, mock_spatial, mock_persistent, mock_pretty_output, mock_print
     ):
