@@ -1,4 +1,5 @@
 import pytest
+
 try:
     from StringIO import StringIO
 except ImportError:
