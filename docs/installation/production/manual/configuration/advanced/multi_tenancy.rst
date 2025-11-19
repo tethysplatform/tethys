@@ -78,19 +78,19 @@ Working with Tenants
 
 **Run migrations**:
 
-If the Tethys database is been create for the first time, new tenant tables are created as part by detecting and applying migrations in the following way.
+If the Tethys database is being created for the first time, new tenant tables are created as part of it by detecting and applying migrations in the following way.
 
    .. code-block:: bash
 
        tethys manage makemigrations <app_label>
        tethys manage migrate_schemas
 
-If existing django-apps become tenant aware (are moved to the `TENANT_APPS` list), django will not recognize that new migrations need to be applied. Add the `--fake-initial` flag to the `migrate_schemas` so the these tables are create on the tenant schemas.
+If existing django-apps become tenant aware (are moved to the `TENANT_APPS` list) later on, django will not recognize that new migrations need to be applied by default. Use the ``migrate`` command to first unapply the migrations at the tenant level and then reapply them properly using the ``zero`` parameter and the ``--tenant``` flag in the following way.
 
    .. code-block:: bash
 
-       tethys manage makemigrations <app_label>
-       tethys manage migrate_schemas --fake-initial
+       tethys manage migrate <app_label> zero --fake --tenant
+       tethys manage migrate <app_label> --tenant
 
 After updating your :file:`portal_config.yml` file:
 
@@ -128,3 +128,10 @@ Django-tenants includes two very useful commands to help manage database schemas
 
 - `tenant_command <https://django-tenants.readthedocs.io/en/latest/use.html#tenant-command>`_: Runs any django manage command on an individual schema
 - `all_tenants_command <https://django-tenants.readthedocs.io/en/latest/use.html#all-tenants-command>`_: Runs any django manage command on all schemas
+
+For example, to show the applied migrations for a specific tenant schema or for all tenant schemas, use the following commands:
+
+   .. code-block:: bash
+
+       tethys manage tenant_command showmigrations <app_label> --schema <schema_name>
+       tethys manage all_tenants_command showmigrations <app_label>
