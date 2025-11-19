@@ -72,6 +72,14 @@ Allows users to enable multi-factor authentication for their Tethys Portal accou
     - ``arrow``
     - ``isodate``
 
+Multi Tenancy
+-------------
+
+Enable multiple tenants with a single portal deployment and customize resources based on tenant.
+
+**dependencies**
+    - ``django-tenants``
+
 Single Sign On with Social Accounts
 -----------------------------------
 
