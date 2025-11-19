@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 from tethys_quotas.decorators import enforce_quota
@@ -21,6 +22,7 @@ class DecoratorsTest(unittest.TestCase):
     @mock.patch("tethys_quotas.decorators.passes_quota")
     @mock.patch("tethys_quotas.decorators.get_active_app")
     @mock.patch("tethys_quotas.decorators.ResourceQuota")
+    @pytest.mark.django_db
     def test_enforce_quota_applies_to_app(
         self, mock_RQ, mock_active_app, mock_passes_quota
     ):

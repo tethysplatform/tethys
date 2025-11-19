@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 import unittest
 from tethys_apps.static_finders import TethysStaticFinder
@@ -22,6 +23,7 @@ class TestTethysStaticFinder(unittest.TestCase):
     def test_init(self):
         pass
 
+    @pytest.mark.django_db
     def test_find(self):
         tethys_static_finder = TethysStaticFinder()
         path = Path("test_app") / "css" / "main.css"
@@ -30,6 +32,7 @@ class TestTethysStaticFinder(unittest.TestCase):
         str_ret = tethys_static_finder.find(str(path))
         self.assertEqual(self.root / "css" / "main.css", str_ret)
 
+    @pytest.mark.django_db
     def test_find_all(self):
         import django
 
@@ -75,6 +78,7 @@ class TestTethysStaticFinder(unittest.TestCase):
         str_ret = tethys_static_finder.find_location(str(self.root), path, prefix)
         self.assertEqual(self.root / "css" / "main.css", str_ret)
 
+    @pytest.mark.django_db
     def test_list(self):
         tethys_static_finder = TethysStaticFinder()
         expected_ignore_patterns = ""

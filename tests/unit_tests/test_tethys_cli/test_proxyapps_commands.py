@@ -1,3 +1,4 @@
+import pytest
 from tethys_apps.models import ProxyApp
 
 from unittest import mock
@@ -44,6 +45,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_info")
     @mock.patch("tethys_cli.proxyapps_commands.print")
+    @pytest.mark.django_db
     def test_list_proxy_apps(self, mock_print, mock_write_info):
         mock_args = mock.Mock()
         mock_args.verbose = False
@@ -59,6 +61,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_info")
     @mock.patch("tethys_cli.proxyapps_commands.print")
+    @pytest.mark.django_db
     def test_list_proxy_apps_verbose(self, mock_print, mock_write_info):
         mock_args = mock.Mock()
         mock_args.verbose = True
@@ -84,6 +87,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_error")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_update_proxy_apps_no_app(self, mock_exit, mock_write_error):
         mock_args = mock.Mock()
         mock_args.name = "non_existing_proxy_app"
@@ -103,6 +107,7 @@ class TestProxyAppsCommand(unittest.TestCase):
     @mock.patch("tethys_cli.proxyapps_commands.write_success")
     @mock.patch("tethys_cli.proxyapps_commands.write_warning")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_update_proxy_apps_no_correct_key(
         self, mock_exit, mock_write_warning, mock_write_success
     ):
@@ -129,6 +134,7 @@ class TestProxyAppsCommand(unittest.TestCase):
     @mock.patch("tethys_cli.proxyapps_commands.write_info")
     @mock.patch("tethys_cli.proxyapps_commands.write_success")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_update_proxy_apps(self, mock_exit, mock_write_success, mock_write_info):
         mock_args = mock.Mock()
         mock_args.name = self.app_name
@@ -160,6 +166,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_error")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_add_proxy_apps_with_existing_proxy_app(self, mock_exit, mock_write_error):
         mock_args = mock.Mock()
         mock_args.name = self.app_name
@@ -177,6 +184,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_error")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_add_proxyapp_integrity_error(self, mock_exit, mock_write_error):
         app_name_mock = "My_Proxy_App_for_Testing_2"
         mock_args = mock.Mock()
@@ -204,6 +212,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_success")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_add_proxyapp_success(self, mock_exit, mock_write_success):
         app_name_mock = "My_Proxy_App_for_Testing_2"
         mock_args = mock.Mock()
@@ -240,6 +249,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_success")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_add_proxyapp_non_default_values_success(
         self, mock_exit, mock_write_success
     ):
@@ -314,6 +324,7 @@ class TestProxyAppsCommand(unittest.TestCase):
 
     @mock.patch("tethys_cli.proxyapps_commands.write_success")
     @mock.patch("tethys_cli.proxyapps_commands.exit", side_effect=SystemExit)
+    @pytest.mark.django_db
     def test_add_proxyapp_one_tag_success(self, mock_exit, mock_write_success):
         app_name_mock = "My_Proxy_App_for_Testing_non_default"
         app_endpoint_mock = "http://foo.example.com/my-proxy-app"
