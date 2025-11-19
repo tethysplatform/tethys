@@ -264,7 +264,6 @@ for module in [
     if has_module(module):
         default_installed_apps.append(module)
 
-
 INSTALLED_APPS = portal_config_settings.pop(
     "INSTALLED_APPS_OVERRIDE",
     default_installed_apps,
@@ -360,7 +359,7 @@ TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 ROOT_URLCONF = "tethys_portal.urls"
 
 # Django Tenants settings
-if has_module("django_tenants") and "TENANTS" in portal_config_settings:
+if has_module("django_tenants"):
     TENANTS_CONFIG = portal_config_settings.pop("TENANTS", {})
 
     # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
@@ -386,17 +385,28 @@ if has_module("django_tenants") and "TENANTS" in portal_config_settings:
     TENANT_MODEL = "tethys_tenants.Tenant"
     TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
 
-    TENANT_APPS = TENANTS_CONFIG.pop(
-        "TENANT_APPS_OVERRIDE",
-        [
-            "django.contrib.admin",
-            "django.contrib.auth",
-            "django.contrib.contenttypes",
-            "django.contrib.sessions",
-            "django.contrib.messages",
-            "django.contrib.staticfiles",
-        ],
-    )
+    default_tenant_apps = [
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+    ]
+
+    for module in [
+        "axes",
+        "captcha",
+        "mfa",
+        "oauth2_provider",
+        "rest_framework.authtoken",
+        "social_django",
+        "termsandconditions",
+    ]:
+        if has_module(module):
+            default_tenant_apps.append(module)
+
+    TENANT_APPS = TENANTS_CONFIG.pop("TENANT_APPS_OVERRIDE", default_tenant_apps)
 
     SHARED_APPS = ("django_tenants", "tethys_tenants") + INSTALLED_APPS
     TENANT_APPS = tuple(TENANT_APPS + TENANTS_CONFIG.pop("TENANT_APPS", []))
