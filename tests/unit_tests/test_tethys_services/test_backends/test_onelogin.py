@@ -24,7 +24,7 @@ class OneLoginOIDCBackendTest(test.SimpleTestCase):
         alphanumeric = string.ascii_letters + numbers
         self.nounce = "".join(random.choices(alphanumeric, k=64))
         self.sub = "".join(random.choices(numbers, k=8))
-        self.iat = dt.datetime.utcnow()
+        self.iat = dt.datetime.now(dt.UTC)
         self.id_exp = self.iat + dt.timedelta(hours=3)
         self.access_exp = self.iat + dt.timedelta(hours=1)
         self.sid = str(uuid.uuid4())
