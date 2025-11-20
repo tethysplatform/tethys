@@ -54,24 +54,26 @@ const Header = ({ onNavChange }) => {
                 <BsGear size="1.5rem" />
               </HeaderButton>
             )}
-            {user.isAuthenticated ? (
-              <UserHeaderMenu
-                user={user}
-                gravatarUrl={user.gravatarUrl}
-                isStaff={user.isStaff}
-              />
-            ) : TETHYS_SINGLE_APP_MODE ? (
-              <HeaderButton
-                onClick={() => {
-                  window.location.assign(
-                    `${TETHYS_PORTAL_BASE}/accounts/login?next=${window.location.pathname}`
-                  );
-                }}
-                tooltipPlacement="bottom"
-                tooltipText="Log In"
-              >
-                Log In
-              </HeaderButton>
+            {TETHYS_SINGLE_APP_MODE ? (
+              user.isAuthenticated ? (
+                <UserHeaderMenu
+                  user={user}
+                  gravatarUrl={user.gravatarUrl}
+                  isStaff={user.isStaff}
+                />
+              ) : (
+                <HeaderButton
+                  onClick={() => {
+                    window.location.assign(
+                      `${TETHYS_PORTAL_BASE}/accounts/login?next=${window.location.pathname}`
+                    );
+                  }}
+                  tooltipPlacement="bottom"
+                  tooltipText="Log In"
+                >
+                  Log In
+                </HeaderButton>
+              )
             ) : (
               <HeaderButton
                 href={tethysApp.exitUrl}
