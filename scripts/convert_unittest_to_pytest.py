@@ -229,11 +229,13 @@ class TestConverter:
 
         # Generate fixture for setUp/tearDown
         fixture_name = None
+        instance_properties = set()
         if setup_method or teardown_method:
             fixture_name = "setup_test"
-            fixture = self._generate_setup_fixture(
+            fixture, instance_props = self._generate_setup_fixture(
                 setup_method, teardown_method, class_indent
             )
+            instance_properties.update(instance_props)
             result.extend(fixture)
             result.append("")
             result.append("")
@@ -260,6 +262,7 @@ class TestConverter:
                 helper_fixtures,
                 class_fixture_name,
                 class_properties,
+                instance_properties,
             )
             result.extend(converted)
             result.append("")
@@ -366,42 +369,75 @@ class TestConverter:
         setup_method: Optional[List[str]],
         teardown_method: Optional[List[str]],
         base_indent: int,
-    ) -> List[str]:
+    ) -> Tuple[List[str], set]:
         """Generate a pytest fixture from setUp/tearDown."""
         result = ["@pytest.fixture", "def setup_test():"]
+        instance_properties = set()
 
         has_setup_code = False
         has_teardown_code = False
 
-        # Add setup code
+        # Add setup code and track self.property assignments
         if setup_method:
-            for line in setup_method[1:]:  # Skip def line
-                if line.strip() and not line.strip().startswith("pass"):
+            for line in setup_method:
+                stripped = line.strip()
+                # Skip decorators and def line
+                if stripped.startswith("@") or stripped.startswith("def "):
+                    continue
+                if stripped and not stripped.startswith("pass"):
                     has_setup_code = True
                     # Dedent from method level (base_indent + 8) to function body (4)
                     dedented = self._dedent_line(line, base_indent + 8, target_indent=4)
-                    converted = self._remove_self_references(dedented)
+                    # Convert self. references to local variables
+                    converted = re.sub(r"\bself\.(\w+)", r"\1", dedented)
                     result.append(converted)
+
+                    # Track property assignments (self.property = ...)
+                    match = re.search(r"\bself\.(\w+)\s*=", line)
+                    if match:
+                        instance_properties.add(match.group(1))
 
         if not has_setup_code:
             result.append("    pass")
 
+        # Create a class to hold the properties if any
+        if instance_properties:
+            result.append("")
+            result.append("    # Create object to hold instance properties")
+            result.append("    class InstanceProperties:")
+            result.append("        pass")
+            result.append("")
+            result.append("    props = InstanceProperties()")
+            for prop in sorted(instance_properties):
+                result.append(f"    props.{prop} = {prop}")
+
         # Add yield
-        result.append("    yield")
+        if instance_properties:
+            result.append("    yield props")
+        else:
+            result.append("    yield")
 
         # Add teardown code
         if teardown_method:
-            for line in teardown_method[1:]:  # Skip def line
-                if line.strip() and not line.strip().startswith("pass"):
+            for line in teardown_method:
+                stripped = line.strip()
+                # Skip decorators and def line
+                if stripped.startswith("@") or stripped.startswith("def "):
+                    continue
+                if stripped and not stripped.startswith("pass"):
                     has_teardown_code = True
                     dedented = self._dedent_line(line, base_indent + 8, target_indent=4)
-                    converted = self._remove_self_references(dedented)
+                    # Convert self. references to use props if available
+                    if instance_properties:
+                        converted = re.sub(r"\bself\.(\w+)", r"props.\1", dedented)
+                    else:
+                        converted = re.sub(r"\bself\.(\w+)", r"\1", dedented)
                     result.append(converted)
 
         if not has_teardown_code:
             result.append("    pass")
 
-        return result
+        return result, instance_properties
 
     def _generate_class_fixture(
         self,
@@ -518,6 +554,7 @@ class TestConverter:
         helper_fixtures: Dict[str, str],
         class_fixture_name: Optional[str] = None,
         class_properties: Optional[set] = None,
+        instance_properties: Optional[set] = None,
     ) -> List[str]:
         """Convert a test method to a pytest function."""
         result = []
@@ -615,11 +652,24 @@ class TestConverter:
             # Convert assertRaises
             converted = self._convert_assert_raises(converted)
 
+            # Convert self.assertRaises to pytest.raises
+            converted = re.sub(r"\bself\.assertRaises\(", r"pytest.raises(", converted)
+
+            # Convert self.fail to pytest.fail
+            converted = re.sub(r"\bself\.fail\(", r"pytest.fail(", converted)
+
             # Convert self.<class_property> to setup_class.<property> BEFORE removing self references
             if class_properties and class_fixture_name:
                 for prop in class_properties:
                     converted = re.sub(
                         rf"\bself\.{prop}\b", f"{class_fixture_name}.{prop}", converted
+                    )
+
+            # Convert self.<instance_property> to setup_test.<property> BEFORE removing self references
+            if instance_properties and fixture_name:
+                for prop in instance_properties:
+                    converted = re.sub(
+                        rf"\bself\.{prop}\b", f"{fixture_name}.{prop}", converted
                     )
 
             # Remove remaining self references
