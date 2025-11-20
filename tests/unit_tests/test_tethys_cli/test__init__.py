@@ -1165,7 +1165,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn("service", mock_stdout.getvalue())
         self.assertIn("setting", mock_stdout.getvalue())
 
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
     @pytest.mark.django_db
     def test_test_command(self, mock_test_command):
         testargs = ["tethys", "test"]
@@ -1181,7 +1181,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].gui)
         self.assertEqual(False, call_args[0][0][0].unit)
 
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
     @pytest.mark.django_db
     def test_test_command_options(self, mock_test_command):
         testargs = ["tethys", "test", "-c", "-C", "-u", "-g", "-f", "foo.bar"]
@@ -1197,7 +1197,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].gui)
         self.assertEqual(True, call_args[0][0][0].unit)
 
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
     @pytest.mark.django_db
     def test_test_command_options_verbose(self, mock_test_command):
         testargs = [
@@ -1224,7 +1224,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch("sys.stdout", new_callable=StringIO)
     @mock.patch("tethys_cli.argparse._sys.exit")
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
     @pytest.mark.django_db
     def test_test_command_help(self, mock_test_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
