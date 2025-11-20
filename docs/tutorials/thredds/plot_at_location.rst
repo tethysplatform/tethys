@@ -194,7 +194,7 @@ In this step you will create a new controller that will query the dataset at the
             geometry(geojson): A geojson object representing the location.
             dataset(str): Name of the dataset to query.
             variable(str): Name of the variable to query.
-            start_time(datetime): Start of time range to query. Defaults to datetime.utcnow().
+            start_time(datetime): Start of time range to query. Defaults to datetime.datetime.now(datetime.UTC).
             end_time(datetime): End of time range to query. Defaults to 7 days after start_time.
             vertical_level(number): The vertical level to query. Defaults to 100000.
 
@@ -212,7 +212,7 @@ In this step you will create a new controller that will query the dataset at the
 
             # Filter by time
             if start_time is None:
-                start_time = datetime.utcnow()
+                start_time = datetime.datetime.now(datetime.UTC)
 
             if end_time is None:
                 end_time = start_time + timedelta(days=7)
