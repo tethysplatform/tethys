@@ -303,6 +303,7 @@ class TestTestAppHandoff(TethysTestCase):
         self.reload_urlconf()
 
     @override_settings(PREFIX_URL="/")
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_test_app_handoff(self):
         self.reload_urlconf()
         response = self.c.get('/handoff/test-app/test_name/?csv_url=""')
@@ -310,6 +311,7 @@ class TestTestAppHandoff(TethysTestCase):
         self.assertEqual(302, response.status_code)
 
     @override_settings(PREFIX_URL="test/prefix")
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_test_app_handoff_with_prefix(self):
         self.reload_urlconf()
         response = self.c.get('/test/prefix/handoff/test-app/test_name/?csv_url=""')
