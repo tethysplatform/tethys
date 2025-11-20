@@ -1,7 +1,6 @@
 import pytest
 from unittest import mock
 import tethys_cli.cli_helpers as cli_helper
-from tethys_apps.models import TethysApp
 from django.core.signing import Signer, BadSignature
 
 
