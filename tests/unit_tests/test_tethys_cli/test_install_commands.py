@@ -2034,3 +2034,44 @@ class TestInstallCommands(TestCase):
             "Successfully installed dependencies for test_app.",
             po_call_args[2][0][0],
         )
+
+    @mock.patch("tethys_cli.install_commands.Path")
+    @mock.patch("tethys_cli.install_commands.run_services")
+    @mock.patch("tethys_cli.install_commands.call")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_setup_py_deprecation_warning(self, mock_pretty_output, mock_call, _, mock_path):
+        """Test that a warning is displayed when setup.py file is detected."""
+        file_path = self.root_app_path / "install-no-dep.yml"
+        
+        mock_path.return_value = file_path
+        mock_setup_py = mock.MagicMock()
+        mock_setup_py.exists.return_value = True
+        
+        mock_parent = mock.MagicMock()
+        mock_parent.__truediv__.return_value = mock_setup_py
+        file_path_mock = mock.MagicMock()
+        file_path_mock.parent = mock_parent
+        file_path_mock.exists.return_value = True
+        mock_path.return_value = file_path_mock
+        
+        args = mock.MagicMock(
+            file=None,
+            verbose=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=False,
+        )
+
+        install_commands.install_command(args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        warning_messages = [call[0][0] for call in po_call_args]
+        # Check that the deprecation warnings are present
+        self.assertIn(
+            "WARNING: setup.py file detected. The use of setup.py is deprecated and may cause installation issues.",
+            warning_messages,
+        )
+        self.assertIn(
+            "Please migrate to pyproject.toml for defining your app's metadata and dependencies.",
+            warning_messages,
+        )
