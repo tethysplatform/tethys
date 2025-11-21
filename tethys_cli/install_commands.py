@@ -907,6 +907,17 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
+
+    # Check for deprecated setup.py file in the same directory as install.yml
+    setup_py_path = file_path.parent / "setup.py"
+    if setup_py_path.exists():
+        write_warning(
+            "WARNING: setup.py file detected. The use of setup.py is deprecated and may cause installation issues."
+        )
+        write_warning(
+            "Please migrate to pyproject.toml for defining your app's metadata and dependencies."
+        )
+
     write_success(f"Successfully installed {app_name}.")
 
 
