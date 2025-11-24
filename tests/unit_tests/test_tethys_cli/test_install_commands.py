@@ -2058,9 +2058,12 @@ class TestInstallCommands(TestCase):
 
         args = mock.MagicMock(
             file=None,
+            develop=False,
             verbose=False,
+            services_file=None,
+            update_installed=False,
             no_db_sync=False,
-            only_dependencies=False,
+            only_dependencies=True,
             without_dependencies=False,
         )
 
