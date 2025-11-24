@@ -2039,21 +2039,23 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
-    def test_setup_py_deprecation_warning(self, mock_pretty_output, mock_call, _, mock_path):
+    def test_setup_py_deprecation_warning(
+        self, mock_pretty_output, mock_call, _, mock_path
+    ):
         """Test that a warning is displayed when setup.py file is detected."""
         file_path = self.root_app_path / "install-no-dep.yml"
-        
+
         mock_path.return_value = file_path
         mock_setup_py = mock.MagicMock()
         mock_setup_py.exists.return_value = True
-        
+
         mock_parent = mock.MagicMock()
         mock_parent.__truediv__.return_value = mock_setup_py
         file_path_mock = mock.MagicMock()
         file_path_mock.parent = mock_parent
         file_path_mock.exists.return_value = True
         mock_path.return_value = file_path_mock
-        
+
         args = mock.MagicMock(
             file=None,
             verbose=False,
