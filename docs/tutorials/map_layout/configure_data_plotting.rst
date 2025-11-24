@@ -385,7 +385,7 @@ This concludes the Configure Data Plotting portion of the Map Layout Tutorial. Y
 
     git clone https://github.com/tethysplatform/tethysapp-map_layout_tutorial
     cd tethysapp-map_layout_tutorial
-    git checkout -b configure-data-plotting configure-data-plotting-|version|
+    git checkout -b configure-data-plotting-solution configure-data-plotting-solution-|version|
 
 You'll also need to do the following:
 
