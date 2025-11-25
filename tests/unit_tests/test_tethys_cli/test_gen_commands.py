@@ -55,6 +55,13 @@ def test_get_settings_value_bad():
         get_settings_value(value_name="foo_bar_baz_bad_setting_foo_bar_baz")
 
 
+def run_generate_command(args):
+    try:
+        generate_command(args=args)
+    except SystemExit:
+        raise AssertionError("generate_command raised SystemExit unexpectedly!")
+
+
 @mock.patch("tethys_cli.gen_commands.write_info")
 @mock.patch("tethys_cli.gen_commands.get_settings_value")
 @mock.patch("tethys_cli.gen_commands.Path.open", new_callable=mock.mock_open)
@@ -73,7 +80,7 @@ def test_generate_command_apache_option(
         "/foo/prefix",
     ]
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -102,7 +109,7 @@ def test_generate_command_nginx_option(
         "/foo/prefix",
     ]
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -122,7 +129,7 @@ def test_generate_command_nginx_service(mock_is_file, mock_file, mock_write_info
     mock_args.directory = None
     mock_is_file.return_value = False
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -139,7 +146,7 @@ def test_generate_command_apache_service(mock_is_file, mock_file, mock_write_inf
     mock_args.directory = None
     mock_is_file.return_value = False
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -164,7 +171,7 @@ def test_generate_command_portal_yaml__tethys_home_not_exists(
         True,
     ]  # TETHYS_HOME dir exists, computed dir exists
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -197,7 +204,7 @@ def test_generate_command_asgi_service_option_nginx_conf(
     mock_path_exists.return_value = True
     mock_file.return_value = mock.mock_open(read_data="user foo_user").return_value
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -222,7 +229,7 @@ def test_generate_command_asgi_service_option(
     mock_is_file.return_value = False
     mock_env.side_effect = ["/foo/conda", "conda_env"]
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called()
     mock_file.assert_called()
@@ -244,7 +251,7 @@ def test_generate_command_asgi_service_option_distro(
     mock_is_file.return_value = False
     mock_env.side_effect = ["/foo/conda", "conda_env"]
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -271,7 +278,7 @@ def test_generate_command_asgi_settings_option_directory(
         True,
     ]  # TETHYS_HOME exists, computed directory exists
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -363,7 +370,7 @@ def test_generate_command_asgi_settings_pre_existing_overwrite(
     mock_is_file.return_value = True
     mock_env.side_effect = ["/foo/conda", "conda_env"]
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -381,7 +388,7 @@ def test_generate_command_services_option(mock_is_file, mock_file, mock_write_in
     mock_args.directory = None
     mock_is_file.return_value = False
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
@@ -396,7 +403,7 @@ def test_generate_command_install_option(mock_write_info, mock_is_file, mock_fil
     mock_args.directory = None
     mock_is_file.return_value = False
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     rts_call_args = mock_write_info.call_args_list[0]
     assert "Please review the generated install.yml" in rts_call_args.args[0]
@@ -418,7 +425,7 @@ def test_generate_requirements_option(
     mock_args.directory = None
     mock_is_file.return_value = False
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_write_warn.assert_called_once()
     mock_write_info.assert_called_once()
@@ -453,7 +460,7 @@ def test_generate_command_metayaml(
     mock_run_command.return_value = (stdout, "", 0)
     mock_load.return_value = {"dependencies": ["foo", "bar=4.5", "goo"]}
     mock_Template().render.return_value = "out"
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_run_command.assert_any_call("list", "foo")
     mock_run_command.assert_any_call("list", "goo")
@@ -811,7 +818,7 @@ def test_generate_commmand_post_process_func(
     mock_args = mock.MagicMock(
         type="test",
     )
-    generate_command(mock_args)
+    run_generate_command(mock_args)
     mock_get_path.assert_called_once_with(mock_args)
     mock_render.assert_called_once()
     mock_write_path.assert_called_once()
@@ -843,7 +850,7 @@ def test_generate_command_secrets_yaml_tethys_home_not_exists(
         True,
     ]  # TETHYS_HOME dir exists, computed dir exists
 
-    generate_command(args=mock_args)
+    run_generate_command(args=mock_args)
 
     mock_is_file.assert_called_once()
     mock_file.assert_called()
