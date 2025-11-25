@@ -89,7 +89,7 @@ def global_setup_and_teardown(test_dir):
     print("✅ Global test teardown completed!")
 
 
-def reload_urlconf(urlconf=None):
+def _reload_urlconf(urlconf=None):
     from django.conf import settings
     from django.urls import clear_url_caches
     from importlib import reload, import_module
@@ -103,11 +103,25 @@ def reload_urlconf(urlconf=None):
         import_module(urlconf)
 
 
-@pytest.fixture(scope="function")
-def test_app():
+@pytest.fixture
+def reload_urls():
+    return _reload_urlconf
+
+
+def _test_app():
     from tethys_apps.harvester import SingletonHarvester
 
     harvester = SingletonHarvester()
     harvester.harvest()
-    reload_urlconf()
+    _reload_urlconf()
     return TethysApp.objects.get(package="test_app")
+
+
+@pytest.fixture(scope="function")
+def lazy_test_app():
+    return _test_app
+
+
+@pytest.fixture(scope="function")
+def test_app():
+    return _test_app()
