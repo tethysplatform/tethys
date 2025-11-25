@@ -870,6 +870,9 @@ def install_command(args):
             write_warning(
                 "Please migrate to pyproject.toml for defining your app's metadata and dependencies."
             )
+            write_warning(
+                "You can use 'tethys gen pyproject' to help migrate to pyproject.toml."
+            )
         else:
             write_error(
                 f"ERROR: Application installation failed with exit code {return_code}."
