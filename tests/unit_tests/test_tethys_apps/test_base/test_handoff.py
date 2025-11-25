@@ -6,7 +6,7 @@ import pytest
 import tethys_apps.base.handoff as tethys_handoff
 
 
-def test_handoffmanager_init():
+def test_HandoffManager_init():
     app = mock.MagicMock()
     handlers = mock.MagicMock(name="handler_name")
     app.handoff_handlers.return_value = handlers
@@ -20,7 +20,7 @@ def test_handoffmanager_init():
     assert ["valid_handler"] == result.valid_handlers
 
 
-def test_handoffmanager_repr():
+def test_HandoffManager_repr():
     app = mock.MagicMock()
     handlers = mock.MagicMock()
     handlers.name = "test_handler"
@@ -34,7 +34,7 @@ def test_handoffmanager_repr():
     assert check_string == result
 
 
-def test_handoffmanager_get_capabilities():
+def test_HandoffManager_get_capabilities():
     app = mock.MagicMock()
     manager = mock.MagicMock(valid_handlers="test_handlers")
     with mock.patch(
@@ -47,7 +47,7 @@ def test_handoffmanager_get_capabilities():
     assert "test_handlers" == result
 
 
-def test_handoffmanager_get_capabilities_external():
+def test_HandoffManager_get_capabilities_external():
     app = mock.MagicMock()
     handler1 = mock.MagicMock()
     handler1.internal = False
@@ -64,23 +64,23 @@ def test_handoffmanager_get_capabilities_external():
     assert [handler1] == result
 
 
-@mock.patch("tethys_apps.base.handoff.json")
-def test_handoffmanager_get_capabilities_json(mock_json):
+def test_HandoffManager_get_capabilities_json():
     app = mock.MagicMock()
-    handler1 = mock.MagicMock(name="test_name")
+    handler1 = tethys_handoff.HandoffHandler(
+        name="test_name", handler="test_app.handoff.csv", internal=False
+    )
     manager = mock.MagicMock(valid_handlers=[handler1])
     with mock.patch(
         "tethys_apps.base.handoff.HandoffManager._get_handoff_manager_for_app",
         return_value=manager,
     ):
-        tethys_handoff.HandoffManager(app=app).get_capabilities(
+        ret = tethys_handoff.HandoffManager(app=app).get_capabilities(
             app_name="test_app", jsonify=True
         )
-    rts_call_args = mock_json.dumps.call_args_list
-    assert "test_name" == rts_call_args[0][0][0][0]["_mock_name"]
+    assert ret == '[{"name": "test_name", "arguments": ["csv_url"]}]'
 
 
-def test_handoffmanager_get_handler():
+def test_HandoffManager_get_handler():
     app = mock.MagicMock()
     handler1 = mock.MagicMock()
     handler1.name = "handler1"
@@ -96,7 +96,7 @@ def test_handoffmanager_get_handler():
 
 
 @mock.patch("tethys_apps.base.handoff.HttpResponseBadRequest")
-def test_handoffmanager_handoff_type_error(mock_hrbr):
+def test_HandoffManager_handoff_type_error(mock_hrbr):
     from django.http import HttpRequest
 
     request = HttpRequest()
@@ -118,7 +118,7 @@ def test_handoffmanager_handoff_type_error(mock_hrbr):
 
 
 @mock.patch("tethys_apps.base.handoff.HttpResponseBadRequest")
-def test_handoffmanager_handoff_error(mock_hrbr):
+def test_HandoffManager_handoff_error(mock_hrbr):
     from django.http import HttpRequest
 
     request = HttpRequest()
@@ -146,7 +146,7 @@ def test_handoffmanager_handoff_error(mock_hrbr):
     assert check_message in rts_call_args[0][0][0]
 
 
-def test_handoffmanager_get_valid_handlers():
+def test_HandoffManager_get_valid_handlers():
     app = mock.MagicMock(package="test_app")
     handler1 = mock.MagicMock(handler="controllers.home", valid=True)
     app.handoff_handlers.return_value = [handler1]
@@ -155,7 +155,7 @@ def test_handoffmanager_get_valid_handlers():
 
 
 # --- Pytest refactor for HandoffHandler tests ---
-def test_handoffhandler_init():
+def test_HandoffHandler_init():
     result = tethys_handoff.HandoffHandler(
         name="test_name", handler="test_app.handoff.csv", internal=True
     )
@@ -165,7 +165,7 @@ def test_handoffhandler_init():
     assert isinstance(result.function, FunctionType)
 
 
-def test_handoffhandler_repr():
+def test_HandoffHandler_repr():
     result = tethys_handoff.HandoffHandler(
         name="test_name", handler="test_app.handoff.csv", internal=True
     ).__repr__()
@@ -173,7 +173,7 @@ def test_handoffhandler_repr():
     assert check_string == result
 
 
-def test_handoffhandler_dict_json_arguments():
+def test_HandoffHandler_dict_json_arguments():
     with mock.patch(
         "tethys_apps.base.handoff.HandoffHandler.arguments",
         new_callable=mock.PropertyMock,
@@ -187,7 +187,7 @@ def test_handoffhandler_dict_json_arguments():
     assert check_dict == result
 
 
-def test_handoffhandler_arguments():
+def test_HandoffHandler_arguments():
     hh = tethys_handoff.HandoffHandler(
         name="test_name", handler="test_app.handoff.csv", internal=True
     )
@@ -197,7 +197,7 @@ def test_handoffhandler_arguments():
 
 # --- Pytest refactor for GetHandoffManagerForApp tests ---
 @pytest.mark.django_db
-def test_gethandoffmanagerforapp_not_app_name():
+def test_get_handoff_manager_for_app_not_app_name():
     app = mock.MagicMock()
     result = tethys_handoff.HandoffManager(app=app)._get_handoff_manager_for_app(
         app_name=None
@@ -207,7 +207,7 @@ def test_gethandoffmanagerforapp_not_app_name():
 
 @mock.patch("tethys_apps.base.handoff.tethys_apps")
 @pytest.mark.django_db
-def test_gethandoffmanagerforapp_with_app(mock_ta):
+def test_get_handoff_manager_for_app_with_app(mock_ta):
     app = mock.MagicMock(package="test_app")
     app.get_handoff_manager.return_value = "test_manager"
     mock_ta.harvester.SingletonHarvester().apps = [app]
@@ -227,19 +227,25 @@ def test_app_handoff_client(client, django_user_model):
     user.delete()
 
 
-@pytest.mark.xfail(reason="Can't find the app URLs during test")
+@pytest.mark.xfail(
+    reason="Can't find the app URLs during test - tried debugging for HOURS - don't open this can of worms again"
+)
 @pytest.mark.django_db
-def test_app_handoff(test_app, test_app_handoff_client, settings):
+def test_app_handoff(lazy_test_app, test_app_handoff_client, settings):
     settings.PREFIX_URL = "/"
+    _ = lazy_test_app()
     c, _user = test_app_handoff_client
     response = c.get('/handoff/test-app/test_name/?csv_url=""')
     assert response.status_code == 302
 
 
-@pytest.mark.xfail(reason="Can't find the app URLs during test")
+@pytest.mark.xfail(
+    reason="Can't find the app URLs during test - tried debugging for HOURS - don't open this can of worms again"
+)
 @pytest.mark.django_db
-def test_app_handoff_with_prefix(test_app, test_app_handoff_client, settings):
-    settings.PREFIX_URL = "test/prefix"
+def test_app_handoff_with_prefix(lazy_test_app, test_app_handoff_client, settings):
+    settings.PREFIX_URL = "/test/prefix/"
+    _ = lazy_test_app()
     c, _user = test_app_handoff_client
     response = c.get('/test/prefix/handoff/test-app/test_name/?csv_url=""')
     assert response.status_code == 302
