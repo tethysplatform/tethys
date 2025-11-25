@@ -9,7 +9,6 @@ from tethys_apps.models import TethysApp
 
 
 @pytest.fixture
-@pytest.mark.django_db
 def job_manager_db():
     app_model = TethysApp(name="test_app_job_manager", package="test_app_job_manager")
     app_model.save()
