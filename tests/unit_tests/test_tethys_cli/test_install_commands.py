@@ -2043,7 +2043,12 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.Path")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_setup_py_deprecation_warning(
-        self, mock_pretty_output, mock_path, _, __, ___,
+        self,
+        mock_pretty_output,
+        mock_path,
+        _,
+        __,
+        ___,
     ):
         """Test that a warning is displayed when setup.py file is detected."""
         file_path = self.root_app_path / "install-no-dep.yml"
@@ -2083,7 +2088,7 @@ class TestInstallCommands(TestCase):
             "Please migrate to pyproject.toml for defining your app's metadata and dependencies.",
             warning_messages,
         )
-    
+
     @mock.patch(
         "tethys_cli.install_commands.open_file",
         return_value={
@@ -2096,13 +2101,17 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.Path")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     def test_pip_error(
-        self, mock_pretty_output, mock_path, _, __, ___,
+        self,
+        mock_pretty_output,
+        mock_path,
+        _,
+        __,
+        ___,
     ):
         """Test that a warning is displayed when setup.py file is detected."""
         file_path = self.root_app_path / "install-no-dep.yml"
 
         mock_path.return_value = file_path
-        
 
         args = mock.MagicMock(
             file=None,
@@ -2119,7 +2128,7 @@ class TestInstallCommands(TestCase):
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         warning_messages = [call[0][0] for call in po_call_args]
-        
+
         # Check that the pip error message is displayed
         self.assertIn(
             "ERROR: Application installation failed with exit code 1.",
