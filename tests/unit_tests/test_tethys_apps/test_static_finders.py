@@ -19,21 +19,25 @@ def static_finder_root():
 
 
 @pytest.mark.django_db
-def test_find(static_finder_root):
+def test_find():
     tethys_static_finder = TethysStaticFinder()
     path = Path("test_app") / "css" / "main.css"
+    expected_path = "test_app/public/css/main.css"
     path_ret = tethys_static_finder.find(path)
-    assert static_finder_root / "css" / "main.css" == path_ret
+    assert isinstance(path_ret, Path)
+    assert expected_path in str(path_ret)
     str_ret = tethys_static_finder.find(str(path))
-    assert static_finder_root / "css" / "main.css" == str_ret
+    assert isinstance(str_ret, Path)
+    assert expected_path in str(str_ret)
 
 
 @pytest.mark.django_db
-def test_find_all(static_finder_root):
+def test_find_all():
     import django
 
     tethys_static_finder = TethysStaticFinder()
     path = Path("test_app") / "css" / "main.css"
+    expected_path = "test_app/public/css/main.css"
     use_find_all = django.VERSION >= (5, 2)
     if use_find_all:
         path_ret = tethys_static_finder.find(path, find_all=True)
@@ -41,8 +45,12 @@ def test_find_all(static_finder_root):
     else:
         path_ret = tethys_static_finder.find(path, all=True)
         str_ret = tethys_static_finder.find(str(path), all=True)
-    assert static_finder_root / "css" / "main.css" in path_ret
-    assert static_finder_root / "css" / "main.css" in str_ret
+    assert len(path_ret) == 1
+    assert isinstance(path_ret[0], Path)
+    assert len(str_ret) == 1
+    assert isinstance(str_ret[0], Path)
+    assert expected_path in str(path_ret[0])
+    assert expected_path in str(str_ret[0])
 
 
 def test_find_location_with_no_prefix(static_finder_root):
