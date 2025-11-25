@@ -859,7 +859,7 @@ def install_command(args):
         return_code = call(cmd, stderr=STDOUT)
     else:
         return_code = call(cmd, stdout=FNULL, stderr=STDOUT)
-    
+
     if return_code != 0:
         # Check for deprecated setup.py file in the same directory as install.yml
         setup_py_path = file_path.parent / "setup.py"
@@ -874,7 +874,7 @@ def install_command(args):
             write_error(
                 f"ERROR: Application installation failed with exit code {return_code}."
             )
-        
+
         return
 
     if args.no_db_sync:
