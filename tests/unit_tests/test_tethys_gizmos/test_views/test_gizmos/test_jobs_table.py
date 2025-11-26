@@ -1,3 +1,4 @@
+import pytest
 from unittest import mock
 import unittest
 import json
@@ -667,5 +668,6 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             " for job test_id: test_error_message"
         )
 
+    @pytest.mark.django_db
     def test_permission_exists(self):
         Permission.objects.get(codename="jobs_table_actions")

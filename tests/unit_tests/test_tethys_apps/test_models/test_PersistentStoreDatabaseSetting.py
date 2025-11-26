@@ -1,3 +1,4 @@
+import pytest
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import (
     TethysApp,
@@ -279,6 +280,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     @mock.patch(
         "tethys_apps.models.PersistentStoreDatabaseSetting.persistent_store_database_exists"
     )
+    @pytest.mark.django_db
     def test_drop_persistent_store_database(self, mock_psd, mock_get, mock_log):
         mock_psd.return_value = True
 

@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from unittest import mock
@@ -30,6 +31,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch("tethys_portal.views.accounts.log_user_in")
     @mock.patch("tethys_portal.views.accounts.authenticate")
     @mock.patch("tethys_portal.views.accounts.LoginForm")
+    @pytest.mark.django_db
     def test_login_view_post_request(
         self, mock_login_form, mock_authenticate, mock_login
     ):
@@ -74,6 +76,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch("tethys_portal.views.accounts.log_user_in")
     @mock.patch("tethys_portal.views.accounts.authenticate")
     @mock.patch("tethys_portal.views.accounts.LoginForm")
+    @pytest.mark.django_db
     def test_login_view_get_method_next(
         self, mock_login_form, mock_authenticate, mock_login
     ):

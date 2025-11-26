@@ -1,3 +1,4 @@
+import pytest
 from unittest import TestCase, mock
 from tethys_components import utils
 from pathlib import Path
@@ -15,6 +16,7 @@ class TestComponentUtils(TestCase):
         cls.app = mock.MagicMock()
 
     @mock.patch("tethys_components.utils.inspect")
+    @pytest.mark.django_db
     def test_infer_app_from_stack_trace_works(self, mock_inspect):
         mock_stack_item_1 = mock.MagicMock()
         mock_stack_item_1.__getitem__().f_code.co_filename = str(TEST_APP_DIR)
