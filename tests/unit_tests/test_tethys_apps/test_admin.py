@@ -681,6 +681,14 @@ class TestTethysAppAdmin(unittest.TestCase):
             "test_perm:test", mock_obj, mock_apps.filter()
         )
 
+    @mock.patch("tethys_apps.admin.make_gop_app_access_form")
+    @pytest.mark.django_db
+    def test_register_custom_group(self, mock_gop_form):
+
+        register_custom_group()
+
+        mock_gop_form.assert_called()
+
     @mock.patch("tethys_apps.admin.tethys_log.warning")
     @mock.patch("tethys_apps.admin.make_gop_app_access_form")
     @pytest.mark.django_db
