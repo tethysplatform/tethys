@@ -225,6 +225,12 @@ Code Style
 
 The Python code in Tethys Platform is developed following the `PEP8 style guide <https://peps.python.org/pep-0008/>`_. The code is linted using flake8 and formatted using the Black code formatter.
 
+Install the codes style dependencies by running the following command in the root of the Tethys Platform repository:
+
+.. code-block:: bash
+
+    pip install -e .[lint]
+
 flake8
 ------
 
