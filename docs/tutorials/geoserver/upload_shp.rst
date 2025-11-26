@@ -15,7 +15,7 @@ Replace the contents of the existing :file:`home.html` template with:
 
     {% block app_content %}
       <h1>Upload a Shapefile</h1>
-      <form action="" method="post" enctype="multipart/form-data">.
+      <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
             <label for="fileInput" class="form-label">Shapefiles</label>
