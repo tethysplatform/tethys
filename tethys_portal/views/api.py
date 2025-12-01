@@ -1,13 +1,14 @@
-from django.http import HttpResponse, JsonResponse
-from django.middleware.csrf import get_token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
 from django.templatetags.static import static
 from django.shortcuts import reverse
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from tethys_portal.optional_dependencies import optional_import
-from tethys_portal.utilities import json_serializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Optional dependencies
 get_gravatar_url = optional_import(
@@ -15,86 +16,88 @@ get_gravatar_url = optional_import(
 )
 
 
-def get_csrf(request):
-    if not request.user.is_authenticated and not settings.ENABLE_OPEN_PORTAL:
-        return HttpResponse("Unauthorized", status=401)
-    return HttpResponse(headers={"X-CSRFToken": get_token(request)})
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_token(request):
+    user = request.user
+    if not user.is_authenticated:
+        return Response(
+            {
+                "access": None,
+                "refresh": None,
+            }
+        )
+
+    refresh = RefreshToken.for_user(user)
+    return Response(
+        {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+        }
+    )
 
 
-@ensure_csrf_cookie
-def get_session(request):
-    if not request.user.is_authenticated and not settings.ENABLE_OPEN_PORTAL:
-        return HttpResponse("Unauthorized", status=401)
-    return JsonResponse({"isAuthenticated": True})
-
-
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def get_whoami(request):
-    if not request.user.is_authenticated:
-        if settings.ENABLE_OPEN_PORTAL:
-            return JsonResponse({})
-
-        return HttpResponse("Unauthorized", status=401)
-
+    user = request.user
     response_data = {
-        "username": request.user.username,
-        "firstName": request.user.first_name,
-        "lastName": request.user.last_name,
-        "email": request.user.email,
-        "isAuthenticated": request.user.is_authenticated,
-        "isStaff": request.user.is_staff,
+        "username": user.username,
+        "isAuthenticated": user.is_authenticated,
+        "isStaff": user.is_staff,
     }
+    if not user.is_anonymous:
+        response_data["firstName"] = user.first_name
+        response_data["lastName"] = user.last_name
+        response_data["email"] = user.email
+        try:
+            email = user.email if user.email else "tethys@example.com"
+            gravatar_url = get_gravatar_url(email, size=80)
+            response_data["gravatarUrl"] = gravatar_url
+        except Exception:
+            pass
+    return Response(response_data)
 
-    # Generate gravatar URL if django_gravatar is available
-    try:
-        email = request.user.email if request.user.email else "tethys@example.com"
-        gravatar_url = get_gravatar_url(email, size=80)
-        response_data["gravatarUrl"] = gravatar_url
-    except Exception:
-        # If django_gravatar is not installed or fails, just skip adding gravatar URL
-        pass
 
-    return JsonResponse(response_data)
-
-
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def get_app(request, app):
     from tethys_apps.models import TethysApp
 
     package = app.replace("-", "_")
 
     try:
-        app = TethysApp.objects.get(package=package)
+        app_obj = TethysApp.objects.get(package=package)
     except TethysApp.DoesNotExist:
-        return JsonResponse({"error": f'Could not find app "{app}".'})
+        return Response({"error": f'Could not find app "{app}".'})
 
     metadata = {
-        "title": app.name,
-        "description": app.description,
-        "tags": app.tags,
-        "package": app.package,
-        "urlNamespace": app.url_namespace,
-        "color": app.color,
-        "icon": static(app.icon),
+        "title": app_obj.name,
+        "description": app_obj.description,
+        "tags": app_obj.tags,
+        "package": app_obj.package,
+        "urlNamespace": app_obj.url_namespace,
+        "color": app_obj.color,
+        "icon": static(app_obj.icon),
         "exitUrl": (
             reverse("app_library")
             if settings.MULTIPLE_APP_MODE
-            else reverse(app.index_url)
+            else reverse(app_obj.index_url)
         ),
-        "rootUrl": reverse(app.index_url),
-        "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{app.id}/change/',
+        "rootUrl": reverse(app_obj.index_url),
+        "settingsUrl": f'{reverse("admin:index")}tethys_apps/tethysapp/{app_obj.id}/change/',
     }
 
     if request.user.is_authenticated:
         metadata["customSettings"] = dict()
-        for s in app.custom_settings:
+        for s in app_obj.custom_settings:
             if not s.include_in_api:
                 continue
-
             v = None
             try:
                 v = s.get_value()
             except TethysAppSettingNotAssigned:
                 pass
-
             metadata["customSettings"][s.name] = {
                 "type": (
                     s.type
@@ -104,4 +107,4 @@ def get_app(request, app):
                 "value": v,
             }
 
-    return JsonResponse(metadata, json_dumps_params={"default": json_serializer})
+    return Response(metadata)
