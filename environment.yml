@@ -25,10 +25,10 @@ dependencies:
   - daphne
   - setuptools_scm
   - pip
-  - requests>=2.32.4,<3  # required by lots of things
+  - requests>=2.32.4,<3 # required by lots of things
   - tornado>=6.5,<7
   - cryptography>=44.0.1,<45
-  - bcrypt  # also required by channels, docker, daphne, condorpy
+  - bcrypt # also required by channels, docker, daphne, condorpy
 
   # Gen CLI commands
   - pyyaml
@@ -39,14 +39,14 @@ dependencies:
   - django-model-utils
   - django-guardian
 
-######################################
-#   Optional Dependencies
-######################################
+  ######################################
+  #   Optional Dependencies
+  ######################################
 
   # Security Plugins
-  - django-cors-headers  # enable cors?
-  - django-session-security  # session timeouts
-  - django-axes   # tracked failed login attempts
+  - django-cors-headers # enable cors?
+  - django-session-security # session timeouts
+  - django-axes # tracked failed login attempts
 
   # Login/Account Plugins
   - django-gravatar2
@@ -54,7 +54,7 @@ dependencies:
   - django-mfa2
   - django-recaptcha
   - social-auth-app-django
-  - hs_restclient  # Used with HydroShare Social backend
+  - hs_restclient # Used with HydroShare Social backend
   - python-jose # required by django-mfa2  - used for onelogin backend
   - django-oauth-toolkit
 
@@ -62,12 +62,14 @@ dependencies:
   - arrow
   - isodate
 
-   # Misc Plugins
-  - django-termsandconditions  # require users to accept terms and conditions
-  - django-cookie-consent  # requires users to accept cookie usage
-  - django-analytical  # track usage analytics
-  - django-json-widget  # enable json widget for app settings
-  - djangorestframework  # enable REST API framework
+    # Misc Plugins
+  - django-termsandconditions # require users to accept terms and conditions
+  - django-cookie-consent # requires users to accept cookie usage
+  - django-analytical # track usage analytics
+  - django-json-widget # enable json widget for app settings
+  - djangorestframework # enable REST API framework
+  - djangorestframework_simplejwt # JWT authentication for REST API
+  - djangorestframework_simplejwt[crypto] # JWT authentication with cryptography support
 
   # Map Layout
   - PyShp
@@ -81,9 +83,9 @@ dependencies:
 
   # database dependencies
   - postgresql
-  - psycopg2  # required by tethys_dataset_services
-  - sqlalchemy=1.*  # TODO: what will it take to support sqlalchemy 2.0?
-  - geoalchemy2  # requires sqlalchemy
+  - psycopg2 # required by tethys_dataset_services
+  - sqlalchemy=1.* # TODO: what will it take to support sqlalchemy 2.0?
+  - geoalchemy2 # requires sqlalchemy
 
   # plotting Gizmo dependencies
   - plotly
@@ -95,11 +97,12 @@ dependencies:
   - tethys_dask_scheduler>=1.0.2
 
   # external services dependencies
-  - tethys_dataset_services>=2.0.0  # used with all data services
-  - owslib  # used for creating WPS services
-  - siphon  # used with Threads
+  - tethys_dataset_services>=2.0.0 # used with all data services
+  - owslib # used for creating WPS services
+  - siphon # used with Threads
 
-   # Docs
+
+    # Docs
   - git
 
   # tests/style dependencies
