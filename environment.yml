@@ -10,101 +10,99 @@
 name: tethys
 
 channels:
-  - conda-forge
+- conda-forge
 
 dependencies:
-  - python>=3.8
+- python>=3.8
 
-  # system dependencies
-  - pyopenssl
-  - openssl
+# system dependencies
+- pyopenssl
+- openssl
 
-  # core dependencies
-  - django>=4.2,<6
-  - channels
-  - daphne
-  - setuptools_scm
-  - pip
-  - requests>=2.32.4,<3  # required by lots of things
-  - tornado>=6.5,<7
-  - cryptography>=44.0.1,<45
-  - bcrypt  # also required by channels, docker, daphne, condorpy
+# core dependencies
+- django>=4.2,<6
+- channels
+- daphne
+- setuptools_scm
+- pip
+- requests>=2.32.4,<3 # required by lots of things
+- tornado>=6.5,<7
+- cryptography>=44.0.1,<45
+- bcrypt # also required by channels, docker, daphne, condorpy
 
-  # Gen CLI commands
-  - pyyaml
-  - jinja2
+# Gen CLI commands
+- pyyaml
+- jinja2
 
-  # django plugin dependencies
-  - django-bootstrap5
-  - django-model-utils
-  - django-guardian
+# django plugin dependencies
+- django-bootstrap5
+- django-model-utils
+- django-guardian
 
 ######################################
 #   Optional Dependencies
 ######################################
 
-  # Security Plugins
-  - django-cors-headers  # enable cors?
-  - django-session-security  # session timeouts
-  - django-axes   # tracked failed login attempts
+# Security Plugins
+- django-cors-headers # enable cors?
+- django-session-security # session timeouts
+- django-axes # tracked failed login attempts
 
-  # Login/Account Plugins
-  - django-gravatar2
-  - django-simple-captcha
-  - django-mfa2
-  - django-recaptcha
-  - social-auth-app-django
-  - hs_restclient  # Used with HydroShare Social backend
-  - python-jose # required by django-mfa2  - used for onelogin backend
-  - django-oauth-toolkit
+# Login/Account Plugins
+- django-gravatar2
+- django-simple-captcha
+- django-mfa2
+- django-recaptcha
+- social-auth-app-django
+- hs_restclient # Used with HydroShare Social backend
+- python-jose # required by django-mfa2  - used for onelogin backend
+- django-oauth-toolkit
 
-  # datetime dependencies for "humanize" template filter (used with MFA2)
-  - arrow
-  - isodate
+# datetime dependencies for "humanize" template filter (used with MFA2)
+- arrow
+- isodate # Misc Plugins
+- django-termsandconditions # require users to accept terms and conditions
+- django-cookie-consent # requires users to accept cookie usage
+- django-analytical # track usage analytics
+- django-json-widget # enable json widget for app settings
+- djangorestframework # enable REST API framework
 
-   # Misc Plugins
-  - django-termsandconditions  # require users to accept terms and conditions
-  - django-cookie-consent  # requires users to accept cookie usage
-  - django-analytical  # track usage analytics
-  - django-json-widget  # enable json widget for app settings
-  - djangorestframework  # enable REST API framework
+# Map Layout
+- PyShp
 
-  # Map Layout
-  - PyShp
+# Docker CLI
+- docker-py
 
-  # Docker CLI
-  - docker-py
+# Conda to allow Python API access to Conda Install
+- conda
+- conda-libmamba-solver
 
-  # Conda to allow Python API access to Conda Install
-  - conda
-  - conda-libmamba-solver
+# database dependencies
+- postgresql
+- psycopg2 # required by tethys_dataset_services
+- sqlalchemy=1.* # TODO: what will it take to support sqlalchemy 2.0?
+- geoalchemy2 # requires sqlalchemy
 
-  # database dependencies
-  - postgresql
-  - psycopg2  # required by tethys_dataset_services
-  - sqlalchemy=1.*  # TODO: what will it take to support sqlalchemy 2.0?
-  - geoalchemy2  # requires sqlalchemy
+# plotting Gizmo dependencies
+- plotly
+- bokeh
 
-  # plotting Gizmo dependencies
-  - plotly
-  - bokeh
+# TethysJob Types
+- dask
+- condorpy
+- tethys_dask_scheduler>=1.0.2
 
-  # TethysJob Types
-  - dask
-  - condorpy
-  - tethys_dask_scheduler>=1.0.2
+# external services dependencies
+- tethys_dataset_services>=2.0.0 # used with all data services
+- owslib # used for creating WPS services
+- siphon
+  # used with Threads
 
-  # external services dependencies
-  - tethys_dataset_services>=2.0.0  # used with all data services
-  - owslib  # used for creating WPS services
-  - siphon  # used with Threads
+  # Docs
+- git
 
-   # Docs
-  - git
-
-  # tests/style dependencies
-  - selenium
-  - coverage
-  - factory_boy
-  - flake8
-  - flake8-bugbear
+# tests/style dependencies
+- coverage
+- factory_boy
+- flake8
+- flake8-bugbear
