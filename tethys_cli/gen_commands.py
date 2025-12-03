@@ -211,12 +211,6 @@ def add_gen_parser(subparsers):
         dest="run_as_user",
         help="The user to run the Supervisor Apache service as. Defaults to 'root'.",
     )
-    gen_parser.add_argument(
-        "-f",
-        "--tethys-app-directory",
-        dest="tethys_app_directory",
-        help="Path to the Tethys app directory with a setup.py file to generate the pyproject.toml for",
-    )
     gen_parser.set_defaults(
         func=generate_command,
         client_max_body_size="75M",
@@ -549,7 +543,9 @@ def parse_setup_py(setup_file_path):
                 try:
                     metadata["app_package"] = ast.literal_eval(node.value)
                 except Exception:
-                    pass
+                    write_warning(f"Found invalid 'app_package' in setup.py: '{ast.unparse(node.value)}'")
+                    exit(1)
+                    return None
 
         # setup function
         if (
@@ -565,8 +561,13 @@ def parse_setup_py(setup_file_path):
                             val = ", ".join(val)
                         metadata[kw.arg] = val
                     except Exception:
-                        pass
-
+                        write_warning(f"Found invalid '{kw.arg}' in setup.py: '{ast.unparse(kw.value)}'")
+                        exit(1)
+            
+    if not metadata["app_package"]:
+        write_warning("Could not find 'app_package' in setup.py.")
+        exit(1)
+    
     return metadata
 
 
@@ -584,6 +585,33 @@ def gen_pyproject(args):
         setup_py_metadata = parse_setup_py(setup_py_path)
 
         return setup_py_metadata
+    
+
+def pyproject_post_process(args):
+    file_path = get_destination_path(args, check_existence=False)
+    app_folder_path = Path(file_path).parent
+    if args.type == GEN_PYPROJECT_OPTION:
+        valid_options = ("y", "n", "yes", "no")
+        yes_options = ("y", "yes")
+
+        remove_setup_file = input(
+            "Would you like to remove the old setup.py file? (y/n):"
+        ).lower()
+
+        while remove_setup_file not in valid_options:
+            remove_setup_file = input(
+                "Invalid option. Remove setup.py file? (y/n): "
+            ).lower()
+
+        if remove_setup_file in yes_options:
+            setup_py_path = app_folder_path / "setup.py"
+            if not setup_py_path.is_file():
+                write_error(
+                    f'The specified Tethys app directory "{app_folder_path}" does not contain a setup.py file.'
+                )
+            else:
+                setup_py_path.unlink()
+                write_info(f'Removed setup.py file at "{setup_py_path}".')
 
 
 def gen_install(args):
@@ -638,10 +666,7 @@ def get_destination_path(args, check_existence=True):
         destination_dir = Path.cwd()
 
     if args.type == GEN_PYPROJECT_OPTION:
-        if args.tethys_app_directory:
-            destination_dir = Path(args.tethys_app_directory).absolute()
-        else:
-            destination_dir = Path.cwd()
+        destination_dir = get_target_tethys_app_dir(args)
 
     elif args.type == GEN_META_YAML_OPTION:
         destination_dir = Path(TETHYS_SRC) / "conda.recipe"
@@ -703,36 +728,12 @@ def render_template(file_type, context, destination_path):
 
 def write_path_to_console(file_path, args):
     write_info(f'File generated at "{file_path}".')
-    if args.type == GEN_PYPROJECT_OPTION:
-        valid_options = ("y", "n", "yes", "no")
-        yes_options = ("y", "yes")
-
-        remove_setup_file = input(
-            "Would you like to remove the old setup.py file? (y/n):"
-        ).lower()
-
-        while remove_setup_file not in valid_options:
-            remove_setup_file = input(
-                "Invalid option. Remove setup.py file? (y/n): "
-            ).lower()
-
-        if remove_setup_file in yes_options:
-            app_dir = get_target_tethys_app_dir(args)
-            setup_py_path = app_dir / "setup.py"
-            if not setup_py_path.is_file():
-                write_error(
-                    f'The specified Tethys app directory "{app_dir}" does not contain a setup.py file.'
-                )
-            else:
-                setup_py_path.unlink()
-                write_info(f'Removed setup.py file at "{setup_py_path}".')
-
 
 def get_target_tethys_app_dir(args):
-    if args.tethys_app_directory:
-        app_dir = Path(args.tethys_app_directory)
+    if args.directory:
+        app_dir = Path(args.directory)
         if not app_dir.is_dir():
-            write_error(f'The specified Tethys app directory "{app_dir}" is not valid.')
+            write_error(f'The specified directory "{app_dir}" is not valid.')
             exit(1)
     else:
         app_dir = Path.cwd()
@@ -752,7 +753,7 @@ GEN_COMMANDS = {
     GEN_INSTALL_OPTION: gen_install,
     GEN_META_YAML_OPTION: gen_meta_yaml,
     GEN_PACKAGE_JSON_OPTION: (gen_vendor_static_files, download_vendor_static_files),
-    GEN_PYPROJECT_OPTION: gen_pyproject,
+    GEN_PYPROJECT_OPTION: (gen_pyproject, pyproject_post_process),
     GEN_REQUIREMENTS_OPTION: gen_requirements_txt,
 }
 
