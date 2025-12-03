@@ -855,28 +855,28 @@ def install_command(args):
     else:
         cmd.append(".")
 
+    # Check for deprecated setup.py file in the same directory as install.yml
+    setup_py_path = file_path.parent / "setup.py"
+    if setup_py_path.exists():
+        write_warning(
+            "WARNING: setup.py file detected. The use of setup.py is deprecated and may cause installation issues."
+        )
+        write_warning(
+            "Please migrate to pyproject.toml for defining your app's metadata and dependencies."
+        )
+        write_warning(
+            "You can use 'tethys gen pyproject' to help migrate to pyproject.toml."
+        )
+
     if args.verbose:
         return_code = call(cmd, stderr=STDOUT)
     else:
         return_code = call(cmd, stdout=FNULL, stderr=STDOUT)
 
     if return_code != 0:
-        # Check for deprecated setup.py file in the same directory as install.yml
-        setup_py_path = file_path.parent / "setup.py"
-        if setup_py_path.exists():
-            write_warning(
-                "WARNING: setup.py file detected. The use of setup.py is deprecated and may cause installation issues."
-            )
-            write_warning(
-                "Please migrate to pyproject.toml for defining your app's metadata and dependencies."
-            )
-            write_warning(
-                "You can use 'tethys gen pyproject' to help migrate to pyproject.toml."
-            )
-        else:
-            write_error(
-                f"ERROR: Application installation failed with exit code {return_code}."
-            )
+        write_error(
+            f"ERROR: Application installation failed with exit code {return_code}."
+        )
 
         return
 
