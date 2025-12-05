@@ -543,7 +543,9 @@ def parse_setup_py(setup_file_path):
                 try:
                     metadata["app_package"] = ast.literal_eval(node.value)
                 except Exception:
-                    write_warning(f"Found invalid 'app_package' in setup.py: '{ast.unparse(node.value)}'")
+                    write_warning(
+                        f"Found invalid 'app_package' in setup.py: '{ast.unparse(node.value)}'"
+                    )
                     exit(1)
                     return None
 
@@ -561,13 +563,15 @@ def parse_setup_py(setup_file_path):
                             val = ", ".join(val)
                         metadata[kw.arg] = val
                     except Exception:
-                        write_warning(f"Found invalid '{kw.arg}' in setup.py: '{ast.unparse(kw.value)}'")
+                        write_warning(
+                            f"Found invalid '{kw.arg}' in setup.py: '{ast.unparse(kw.value)}'"
+                        )
                         exit(1)
-            
+
     if not metadata["app_package"]:
         write_warning("Could not find 'app_package' in setup.py.")
         exit(1)
-    
+
     return metadata
 
 
@@ -585,7 +589,7 @@ def gen_pyproject(args):
         setup_py_metadata = parse_setup_py(setup_py_path)
 
         return setup_py_metadata
-    
+
 
 def pyproject_post_process(args):
     file_path = get_destination_path(args, check_existence=False)
@@ -728,6 +732,7 @@ def render_template(file_type, context, destination_path):
 
 def write_path_to_console(file_path, args):
     write_info(f'File generated at "{file_path}".')
+
 
 def get_target_tethys_app_dir(args):
     if args.directory:
