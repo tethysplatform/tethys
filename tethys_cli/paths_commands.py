@@ -187,7 +187,7 @@ def get_path(args):
     else:
         write_info(f"{path_config.get('path_name')} for app '{args.app}':")
 
-    write_msg(path.path)
+    write_msg(str(path))
 
 
 def add_file_to_path(args):
@@ -233,8 +233,8 @@ def add_file_to_path(args):
         )
         return
 
-    destination_file = path.path / source_file.name
-    if Path(destination_file).exists():
+    destination_file = path / source_file.name
+    if destination_file.exists():
         write_warning(
             f"The file '{source_file.name}' already exists in the intended {path_config.get('path_name')}."
         )
@@ -334,6 +334,6 @@ def resolve_path(path_config, app, user=None):
         args["bypass_quota"] = True
 
     if user:
-        return func(app, user, **args)
+        return Path(func(app, user, **args).path)
 
-    return func(app, **args)
+    return Path(func(app, **args).path)
