@@ -1,6 +1,8 @@
 import unittest
 from unittest import mock
 from pathlib import Path
+import tempfile
+
 
 from tethys_cli.gen_commands import (
     get_environment_value,
@@ -10,6 +12,9 @@ from tethys_cli.gen_commands import (
     generate_command,
     gen_vendor_static_files,
     download_vendor_static_files,
+    parse_setup_py,
+    gen_pyproject,
+    pyproject_post_process,
     get_destination_path,
     GEN_APACHE_OPTION,
     GEN_APACHE_SERVICE_OPTION,
@@ -22,6 +27,7 @@ from tethys_cli.gen_commands import (
     GEN_SECRETS_OPTION,
     GEN_META_YAML_OPTION,
     GEN_PACKAGE_JSON_OPTION,
+    GEN_PYPROJECT_OPTION,
     GEN_REQUIREMENTS_OPTION,
     VALID_GEN_OBJECTS,
 )
@@ -777,14 +783,14 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.gen_commands.render_template")
     @mock.patch("tethys_cli.gen_commands.get_destination_path")
     def test_generate_commmand_post_process_func(
-        self, mock_get_path, mock_render, mock_write_path, mock_commands
+        self, mock_gdp, mock_render, mock_write_path, mock_commands
     ):
         mock_commands.__getitem__.return_value = (mock.MagicMock(), mock.MagicMock())
         mock_args = mock.MagicMock(
             type="test",
         )
         generate_command(mock_args)
-        mock_get_path.assert_called_once_with(mock_args)
+        mock_gdp.assert_called_once_with(mock_args)
         mock_render.assert_called_once()
         mock_write_path.assert_called_once()
         mock_commands.__getitem__.assert_called_once()
@@ -821,3 +827,274 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_mkdir.assert_called()
         rts_call_args = mock_write_info.call_args_list[0]
         self.assertIn("A Tethys Secrets file", rts_call_args.args[0])
+
+    @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
+    @mock.patch("tethys_cli.gen_commands.get_target_tethys_app_dir")
+    @mock.patch("tethys_cli.gen_commands.write_error")
+    def test_generate_command_pyproject_no_setup_py(
+        self, mock_write_error, mock_gttad, mock_exit
+    ):
+        mock_args = mock.MagicMock(
+            type=GEN_PYPROJECT_OPTION,
+            directory=None,
+            spec=["overwrite"],
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            app_dir = Path(temp_dir)
+            mock_gttad.return_value = app_dir
+
+            with self.assertRaises(SystemExit):
+                gen_pyproject(mock_args)
+
+            error_msg = mock_write_error.call_args.args[0]
+
+            expected = f'The specified Tethys app directory "{app_dir}" does not contain a setup.py file.'
+            self.assertIn(expected, error_msg)
+
+            # exit should be called once
+            mock_exit.assert_called_once()
+
+    def test_parse_setup_py(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            import textwrap
+
+            # Write a fake setup.py into the temp folder
+            setup_path.write_text(
+                textwrap.dedent(
+                    """
+                    app_package = 'test_app'
+
+                    from setuptools import setup
+
+                    setup(
+                        description='A test description',
+                        author='Test Author',
+                        author_email='test@example.com',
+                        keywords=['alpha', 'beta'],
+                        license='MIT',
+                    )
+                    """
+                )
+            )
+
+            metadata = parse_setup_py(setup_path)
+
+            assert metadata["app_package"] == "test_app"
+            assert metadata["description"] == "A test description"
+            assert metadata["author"] == "Test Author"
+            assert metadata["author_email"] == "test@example.com"
+            assert metadata["keywords"] == "alpha, beta"
+            assert metadata["license"] == "MIT"
+
+    @mock.patch("tethys_cli.gen_commands.write_error")
+    def test_parse_setup_py_no_setup(self, mock_write_error):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            metadata = parse_setup_py(setup_path)
+
+            self.assertIsNone(metadata)
+
+            error_msg = mock_write_error.call_args.args[0]
+
+            expected = f"Failed to parse setup.py: [Errno 2] No such file or directory: '{setup_path}'"
+            self.assertIn(expected, error_msg)
+
+    @mock.patch("tethys_cli.gen_commands.write_warning")
+    @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
+    def test_parse_setup_py_invalid_package_name(self, mock_exit, mock_write_warning):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            import textwrap
+
+            # Write a fake setup.py into the temp folder
+            setup_path.write_text(
+                textwrap.dedent(
+                    """
+                    app_package = fake_function()
+
+                    from setuptools import setup
+
+                    setup(
+                        description='A test description',
+                        author='Test Author',
+                        author_email='test@example.com',
+                        keywords=['alpha', 'beta'],
+                        license='MIT',
+                    )
+                    """
+                )
+            )
+            with self.assertRaises(SystemExit):
+                parse_setup_py(setup_path)
+
+            warning_msg = mock_write_warning.call_args.args[0]
+
+            expected = "Found invalid 'app_package' in setup.py: 'fake_function()'"
+
+            self.assertIn(expected, warning_msg)
+
+            mock_exit.assert_called_once()
+
+    @mock.patch("tethys_cli.gen_commands.write_warning")
+    @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
+    def test_parse_setup_py_no_app_package(self, mock_exit, mock_write_warning):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            import textwrap
+
+            # Write a fake setup.py into the temp folder
+            setup_path.write_text(
+                textwrap.dedent(
+                    """
+                    from setuptools import setup
+
+                    setup(
+                        description='A test description',
+                        author='Test Author',
+                        author_email='test@example.com',
+                        keywords=['alpha', 'beta'],
+                        license='MIT',
+                    )
+                    """
+                )
+            )
+            with self.assertRaises(SystemExit):
+                parse_setup_py(setup_path)
+
+            warning_msg = mock_write_warning.call_args.args[0]
+            expected = "Could not find 'app_package' in setup.py."
+            self.assertIn(expected, warning_msg)
+
+            mock_exit.assert_called_once()
+
+    @mock.patch("tethys_cli.gen_commands.write_warning")
+    @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
+    def test_parse_setup_py_invalid_setup_attr(self, mock_exit, mock_write_warning):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            import textwrap
+
+            # Write a fake setup.py into the temp folder
+            setup_path.write_text(
+                textwrap.dedent(
+                    """
+                    from setuptools import setup
+
+                    app_package = 'test_app'
+
+                    setup(
+                        description='A test description',
+                        author=fake_function(),
+                        author_email='test@example.com',
+                        keywords=['alpha', 'beta'],
+                        license='MIT',
+                    )
+                    """
+                )
+            )
+            with self.assertRaises(SystemExit):
+                parse_setup_py(setup_path)
+
+            warning_msg = mock_write_warning.call_args.args[0]
+            expected = "Found invalid 'author' in setup.py: 'fake_function()'"
+            self.assertIn(expected, warning_msg)
+
+            mock_exit.assert_called_once()
+
+    @mock.patch("tethys_cli.gen_commands.input", return_value="yes")
+    @mock.patch("tethys_cli.gen_commands.write_info")
+    @mock.patch("tethys_cli.gen_commands.get_destination_path")
+    def test_pyproject_post_process_remove_setup_yes(
+        self, mock_gdp, mock_write_info, _
+    ):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            setup_path.write_text("fake content")
+
+            mock_gdp.return_value = temp_dir / "pyproject.toml"
+
+            mock_args = mock.MagicMock(type=GEN_PYPROJECT_OPTION)
+            pyproject_post_process(mock_args)
+
+            # Verify setup.py was removed
+            self.assertFalse(setup_path.exists())
+
+            mock_write_info.assert_called_once()
+            info_msg = mock_write_info.call_args.args[0]
+            self.assertIn(f'Removed setup.py file at "{setup_path}".', info_msg)
+
+    @mock.patch("tethys_cli.gen_commands.input", return_value="no")
+    @mock.patch("tethys_cli.gen_commands.get_destination_path")
+    def test_pyproject_post_process_remove_setup_no(self, mock_gdp, _):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            setup_path.write_text("fake content")
+
+            mock_gdp.return_value = temp_dir / "pyproject.toml"
+
+            mock_args = mock.MagicMock(type=GEN_PYPROJECT_OPTION)
+
+            pyproject_post_process(mock_args)
+
+            # Verify setup.py still exists
+            self.assertTrue(setup_path.exists())
+
+    @mock.patch("tethys_cli.gen_commands.input", return_value="yes")
+    @mock.patch("tethys_cli.gen_commands.write_error")
+    @mock.patch("tethys_cli.gen_commands.get_destination_path")
+    def test_pyproject_post_process_setup_not_found(
+        self, mock_gdp, mock_write_error, _
+    ):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+
+            mock_gdp.return_value = temp_dir / "pyproject.toml"
+
+            mock_args = mock.MagicMock(type=GEN_PYPROJECT_OPTION)
+
+            pyproject_post_process(mock_args)
+
+            mock_write_error.assert_called_once()
+            error_msg = mock_write_error.call_args.args[0]
+            self.assertIn(
+                f'The specified Tethys app directory "{temp_dir}" does not contain a setup.py file',
+                error_msg,
+            )
+
+    @mock.patch("tethys_cli.gen_commands.write_info")
+    @mock.patch("tethys_cli.gen_commands.get_destination_path")
+    @mock.patch("tethys_cli.gen_commands.input", side_effect=["invalid", "maybe", "y"])
+    def test_pyproject_post_process_invalid_input_retry(self, mock_input, mock_gdp, _):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            setup_path.write_text("fake content")
+
+            mock_gdp.return_value = temp_dir / "pyproject.toml"
+
+            mock_args = mock.MagicMock(type=GEN_PYPROJECT_OPTION)
+
+            pyproject_post_process(mock_args)
+
+            # Verify setup.py was removed
+            self.assertFalse(setup_path.exists())
+
+            # Verify input was called 3 times
+            self.assertEqual(mock_input.call_count, 3)
