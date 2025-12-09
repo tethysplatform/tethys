@@ -16,6 +16,7 @@ from tethys_cli.gen_commands import (
     gen_pyproject,
     pyproject_post_process,
     get_destination_path,
+    get_target_tethys_app_dir,
     GEN_APACHE_OPTION,
     GEN_APACHE_SERVICE_OPTION,
     GEN_NGINX_OPTION,
@@ -828,6 +829,74 @@ class CLIGenCommandsTest(unittest.TestCase):
         rts_call_args = mock_write_info.call_args_list[0]
         self.assertIn("A Tethys Secrets file", rts_call_args.args[0])
 
+    @mock.patch("tethys_cli.gen_commands.Path.cwd")
+    def test_get_target_tethys_app_dir_no_directory(self, mock_cwd):
+        mock_args = mock.MagicMock(directory=None)
+        mock_cwd.return_value = Path("/current/working/dir")
+        
+        result = get_target_tethys_app_dir(mock_args)
+        
+        self.assertEqual(result, Path("/current/working/dir"))
+        mock_cwd.assert_called_once()
+
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir")
+    def test_get_target_tethys_app_dir_with_valid_directory(self, mock_is_dir):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            mock_args = mock.MagicMock(directory=temp_dir)
+            mock_is_dir.return_value = True
+            
+            result = get_target_tethys_app_dir(mock_args)
+            
+            self.assertEqual(result, Path(temp_dir))
+            mock_is_dir.assert_called_once()
+
+    @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
+    @mock.patch("tethys_cli.gen_commands.write_error")
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir")
+    def test_get_target_tethys_app_dir_with_invalid_directory(
+        self, mock_is_dir, mock_write_error, mock_exit
+    ):
+        mock_args = mock.MagicMock(directory="/invalid/directory")
+        mock_is_dir.return_value = False
+        
+        with self.assertRaises(SystemExit):
+            get_target_tethys_app_dir(mock_args)
+        
+        mock_is_dir.assert_called_once()
+        error_msg = mock_write_error.call_args.args[0]
+        self.assertIn('The specified directory "/invalid/directory" is not valid.', error_msg)
+        mock_exit.assert_called_once_with(1)
+
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir", return_value=True)
+    @mock.patch("tethys_cli.gen_commands.get_target_tethys_app_dir")
+    def test_get_destination_path_pyproject(self, mock_gttad, _):
+        args = mock.MagicMock(
+            type=GEN_PYPROJECT_OPTION,
+            directory=Path("/test_dir"),
+        )
+
+        expected_result = "/test_dir/pyproject.toml"
+        mock_gttad.return_value = expected_result
+
+        actual_result = get_destination_path(args)
+        mock_gttad.assert_called_once_with(args)
+        self.assertEqual(actual_result, expected_result)
+
+
+    @mock.patch("tethys_cli.gen_commands.check_for_existing_file")
+    @mock.patch("tethys_cli.gen_commands.Path.is_dir", return_value=True)
+    def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
+        mock_args = mock.MagicMock(
+            type=GEN_PACKAGE_JSON_OPTION,
+            directory=False,
+        )
+        result = get_destination_path(mock_args)
+        mock_isdir.assert_called()
+        mock_check_file.assert_called_once()
+        self.assertEqual(
+            result, str(Path(TETHYS_SRC) / "tethys_portal" / "static" / "package.json")
+        )
+    
     @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
     @mock.patch("tethys_cli.gen_commands.get_target_tethys_app_dir")
     @mock.patch("tethys_cli.gen_commands.write_error")
@@ -852,8 +921,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             expected = f'The specified Tethys app directory "{app_dir}" does not contain a setup.py file.'
             self.assertIn(expected, error_msg)
 
-            # exit should be called once
-            mock_exit.assert_called_once()
+            mock_exit.assert_called_once_with(1)
 
     def test_parse_setup_py(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -941,7 +1009,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
             self.assertIn(expected, warning_msg)
 
-            mock_exit.assert_called_once()
+            mock_exit.assert_called_once_with(1)
 
     @mock.patch("tethys_cli.gen_commands.write_warning")
     @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
@@ -975,7 +1043,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             expected = "Could not find 'app_package' in setup.py."
             self.assertIn(expected, warning_msg)
 
-            mock_exit.assert_called_once()
+            mock_exit.assert_called_once_with(1)
 
     @mock.patch("tethys_cli.gen_commands.write_warning")
     @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
@@ -1011,7 +1079,7 @@ class CLIGenCommandsTest(unittest.TestCase):
             expected = "Found invalid 'author' in setup.py: 'fake_function()'"
             self.assertIn(expected, warning_msg)
 
-            mock_exit.assert_called_once()
+            mock_exit.assert_called_once_with(1)
 
     @mock.patch("tethys_cli.gen_commands.input", return_value="yes")
     @mock.patch("tethys_cli.gen_commands.write_info")
@@ -1098,3 +1166,53 @@ class CLIGenCommandsTest(unittest.TestCase):
 
             # Verify input was called 3 times
             self.assertEqual(mock_input.call_count, 3)
+
+    @mock.patch("tethys_cli.gen_commands.parse_setup_py")
+    def test_gen_pyproject(self, mock_sp):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            expected_value = {
+                "app_package": "test_app",
+                "description": "A test description",
+                "author": "Test Author",
+                "author_email": "test@example.com",
+            }
+            mock_sp.return_value = expected_value
+
+            temp_dir = Path(temp_dir)
+            setup_path = temp_dir / "setup.py"
+
+            setup_path.write_text("fake content")
+
+            mock_args = mock.MagicMock(
+                type=GEN_PYPROJECT_OPTION,
+                directory=temp_dir,
+                spec=["overwrite"],
+            )
+
+            result = gen_pyproject(mock_args)
+
+            self.assertEqual(result, expected_value)
+
+    @mock.patch("tethys_cli.gen_commands.write_error")
+    @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
+    def test_gen_pyproject_no_setup(self, mock_exit, mock_write_error):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir = Path(temp_dir)
+            mock_args = mock.MagicMock(
+                type=GEN_PYPROJECT_OPTION,
+                directory=temp_dir,
+                spec=["overwrite"],
+            )
+            with self.assertRaises(SystemExit):
+                gen_pyproject(mock_args)  
+
+            mock_write_error.assert_called_once()
+            error_msg = mock_write_error.call_args.args[0]
+            expected = f'The specified Tethys app directory "{temp_dir}" does not contain a setup.py file.'
+            self.assertIn(expected, error_msg)
+
+            mock_exit.assert_called_once_with(1)
+
+
+
+
