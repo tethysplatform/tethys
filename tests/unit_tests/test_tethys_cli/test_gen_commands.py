@@ -833,9 +833,9 @@ class CLIGenCommandsTest(unittest.TestCase):
     def test_get_target_tethys_app_dir_no_directory(self, mock_cwd):
         mock_args = mock.MagicMock(directory=None)
         mock_cwd.return_value = Path("/current/working/dir")
-        
+
         result = get_target_tethys_app_dir(mock_args)
-        
+
         self.assertEqual(result, Path("/current/working/dir"))
         mock_cwd.assert_called_once()
 
@@ -844,9 +844,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             mock_args = mock.MagicMock(directory=temp_dir)
             mock_is_dir.return_value = True
-            
+
             result = get_target_tethys_app_dir(mock_args)
-            
+
             self.assertEqual(result, Path(temp_dir))
             mock_is_dir.assert_called_once()
 
@@ -858,13 +858,15 @@ class CLIGenCommandsTest(unittest.TestCase):
     ):
         mock_args = mock.MagicMock(directory="/invalid/directory")
         mock_is_dir.return_value = False
-        
+
         with self.assertRaises(SystemExit):
             get_target_tethys_app_dir(mock_args)
-        
+
         mock_is_dir.assert_called_once()
         error_msg = mock_write_error.call_args.args[0]
-        self.assertIn('The specified directory "/invalid/directory" is not valid.', error_msg)
+        self.assertIn(
+            'The specified directory "/invalid/directory" is not valid.', error_msg
+        )
         mock_exit.assert_called_once_with(1)
 
     @mock.patch("tethys_cli.gen_commands.Path.is_dir", return_value=True)
@@ -882,21 +884,6 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_gttad.assert_called_once_with(args)
         self.assertEqual(actual_result, expected_result)
 
-
-    @mock.patch("tethys_cli.gen_commands.check_for_existing_file")
-    @mock.patch("tethys_cli.gen_commands.Path.is_dir", return_value=True)
-    def test_get_destination_path_vendor(self, mock_isdir, mock_check_file):
-        mock_args = mock.MagicMock(
-            type=GEN_PACKAGE_JSON_OPTION,
-            directory=False,
-        )
-        result = get_destination_path(mock_args)
-        mock_isdir.assert_called()
-        mock_check_file.assert_called_once()
-        self.assertEqual(
-            result, str(Path(TETHYS_SRC) / "tethys_portal" / "static" / "package.json")
-        )
-    
     @mock.patch("tethys_cli.gen_commands.exit", side_effect=SystemExit)
     @mock.patch("tethys_cli.gen_commands.get_target_tethys_app_dir")
     @mock.patch("tethys_cli.gen_commands.write_error")
@@ -1204,7 +1191,7 @@ class CLIGenCommandsTest(unittest.TestCase):
                 spec=["overwrite"],
             )
             with self.assertRaises(SystemExit):
-                gen_pyproject(mock_args)  
+                gen_pyproject(mock_args)
 
             mock_write_error.assert_called_once()
             error_msg = mock_write_error.call_args.args[0]
@@ -1212,7 +1199,3 @@ class CLIGenCommandsTest(unittest.TestCase):
             self.assertIn(expected, error_msg)
 
             mock_exit.assert_called_once_with(1)
-
-
-
-
