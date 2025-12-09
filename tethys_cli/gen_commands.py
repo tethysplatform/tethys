@@ -547,7 +547,6 @@ def parse_setup_py(setup_file_path):
                         f"Found invalid 'app_package' in setup.py: '{ast.unparse(node.value)}'"
                     )
                     exit(1)
-                    return None
 
         # setup function
         if (
@@ -735,6 +734,7 @@ def write_path_to_console(file_path, args):
 
 
 def get_target_tethys_app_dir(args):
+    """Get the target directory for a Tethys app provided in args."""
     if args.directory:
         app_dir = Path(args.directory)
         if not app_dir.is_dir():
