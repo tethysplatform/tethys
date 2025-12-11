@@ -88,3 +88,14 @@ class ResourceQuotaHandlerTest(TestCase):
         resource_quota_handler = WorkspaceQuotaHandler(self.app_model)
 
         self.assertTrue(resource_quota_handler.check())
+
+    def test_rqh_check_resource_unavailable(self):
+        class DummyEntity:
+            pass
+
+        handler = WorkspaceQuotaHandler(DummyEntity())
+        with mock.patch(
+            "tethys_quotas.handlers.base.get_resource_available",
+            return_value={"resource_available": 0},
+        ):
+            assert handler.check() is False
