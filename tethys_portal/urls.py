@@ -162,10 +162,12 @@ account_urls = [
 ]
 
 api_urls = [
+    re_path(r"^csrf/$", tethys_portal_api.get_csrf, name="get_csrf"),
+    re_path(r"^session/$", tethys_portal_api.get_session, name="get_session"),
     re_path(r"^whoami/$", tethys_portal_api.get_whoami, name="get_whoami"),
     re_path(
         r"^token/$",
-        tethys_portal_api.get_token,
+        tethys_portal_api.get_jwt_token,
         name="token_obtain_pair",
     ),
     re_path(r"^token/refresh/$", TokenRefreshView.as_view(), name="token_refresh"),

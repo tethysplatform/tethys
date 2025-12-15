@@ -1,15 +1,21 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from django.http import HttpResponse, JsonResponse
 from django.templatetags.static import static
 from django.shortcuts import reverse
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from tethys_portal.optional_dependencies import optional_import
-from rest_framework_simplejwt.tokens import RefreshToken
+from tethys_portal.utilities import json_serializer
+
+import warnings
 
 # Optional dependencies
 get_gravatar_url = optional_import(
@@ -17,9 +23,32 @@ get_gravatar_url = optional_import(
 )
 
 
+def get_csrf(request):
+    warnings.warn(
+        "get_csrf will be deprecated. Use the get_token endpoint instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    if not request.user.is_authenticated and not settings.ENABLE_OPEN_PORTAL:
+        return HttpResponse("Unauthorized", status=401)
+    return HttpResponse(headers={"X-CSRFToken": get_token(request)})
+
+
+@ensure_csrf_cookie
+def get_session(request):
+    warnings.warn(
+        "get_session will be deprecated. Use the get_token endpoint instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    if not request.user.is_authenticated and not settings.ENABLE_OPEN_PORTAL:
+        return HttpResponse("Unauthorized", status=401)
+    return JsonResponse({"isAuthenticated": True})
+
+
 @api_view(["POST", "GET"])
 @permission_classes([AllowAny])
-def get_token(request):
+def get_jwt_token(request):
     # If POST and username/password provided, authenticate
     if request.method == "POST":
         username = request.data.get("username")
@@ -72,7 +101,7 @@ def get_whoami(request):
             response_data["gravatarUrl"] = gravatar_url
         except Exception:
             pass
-    return Response(response_data)
+    return JsonResponse(response_data)
 
 
 @api_view(["GET"])
@@ -85,7 +114,7 @@ def get_app(request, app):
     try:
         app_obj = TethysApp.objects.get(package=package)
     except TethysApp.DoesNotExist:
-        return Response({"error": f'Could not find app "{app}".'})
+        return JsonResponse({"error": f'Could not find app "{app}".'})
 
     metadata = {
         "title": app_obj.name,
@@ -123,4 +152,4 @@ def get_app(request, app):
                 "value": v,
             }
 
-    return Response(metadata)
+    return JsonResponse(metadata, json_dumps_params={"default": json_serializer})
