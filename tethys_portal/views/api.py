@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.templatetags.static import static
 from django.shortcuts import reverse
 from django.conf import settings
+from django.contrib.auth import authenticate
 
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from tethys_portal.optional_dependencies import optional_import
@@ -16,18 +17,33 @@ get_gravatar_url = optional_import(
 )
 
 
-@api_view(["GET"])
+@api_view(["POST", "GET"])
 @permission_classes([AllowAny])
 def get_token(request):
+    # If POST and username/password provided, authenticate
+    if request.method == "POST":
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if username and password:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                refresh = RefreshToken.for_user(user)
+                return Response(
+                    {
+                        "access": str(refresh.access_token),
+                        "refresh": str(refresh),
+                    }
+                )
+            else:
+                return Response(
+                    {"access": None, "refresh": None, "error": "Invalid credentials."},
+                    status=401,
+                )
+
+    # Otherwise, use session user
     user = request.user
     if not user.is_authenticated:
-        return Response(
-            {
-                "access": None,
-                "refresh": None,
-            }
-        )
-
+        return Response({"access": None, "refresh": None})
     refresh = RefreshToken.for_user(user)
     return Response(
         {
