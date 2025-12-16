@@ -83,8 +83,8 @@ For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Serve
 
     * Name: Global_0p5deg
     * Engine: THREDDS
-    * Endpoint: https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html
-    * Public Endpoint: https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html
+    * Endpoint: https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/
+    * Public Endpoint: https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/
     * ApiKey: (LEAVE BLANK)
     * Username: (LEAVE BLANK)
     * Password: (LEAVE BLANK)
