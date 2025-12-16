@@ -1,9 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponseNotAllowed, HttpResponse, JsonResponse
 from django.templatetags.static import static
 from django.shortcuts import reverse
 from django.conf import settings
@@ -49,32 +48,42 @@ def get_session(request):
 @api_view(["POST", "GET"])
 @permission_classes([AllowAny])
 def get_jwt_token(request):
-    # If POST and username/password provided, authenticate
     if request.method == "POST":
+        if not getattr(settings, "ALLOW_JWT_BASIC_AUTHENTICATION", False):
+            return HttpResponseNotAllowed(
+                ["GET"], "JWT basic authentication is disabled."
+            )
         username = request.data.get("username")
         password = request.data.get("password")
         if username and password:
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 refresh = RefreshToken.for_user(user)
-                return Response(
+                return JsonResponse(
                     {
                         "access": str(refresh.access_token),
                         "refresh": str(refresh),
                     }
                 )
             else:
-                return Response(
+                return JsonResponse(
                     {"access": None, "refresh": None, "error": "Invalid credentials."},
-                    status=401,
                 )
+
+        return JsonResponse(
+            {
+                "access": None,
+                "refresh": None,
+                "error": "Username and password are required for authentication.",
+            },
+        )
 
     # Otherwise, use session user
     user = request.user
     if not user.is_authenticated:
-        return Response({"access": None, "refresh": None})
+        return JsonResponse({"access": None, "refresh": None})
     refresh = RefreshToken.for_user(user)
-    return Response(
+    return JsonResponse(
         {
             "access": str(refresh.access_token),
             "refresh": str(refresh),
