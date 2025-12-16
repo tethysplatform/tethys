@@ -321,6 +321,9 @@ AUTHENTICATION_BACKENDS = portal_config_settings.pop(
 AUTHENTICATION_BACKENDS = tuple(
     portal_config_settings.pop("AUTHENTICATION_BACKENDS", []) + AUTHENTICATION_BACKENDS
 )
+ALLOW_JWT_BASIC_AUTHENTICATION = portal_config_settings.pop(
+    "ALLOW_JWT_BASIC_AUTHENTICATION", False
+)
 
 RESOURCE_QUOTA_HANDLERS = portal_config_settings.pop(
     "RESOURCE_QUOTA_HANDLERS_OVERRIDE",

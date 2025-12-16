@@ -7,6 +7,7 @@ from django.test import override_settings
 from django.conf import settings
 import warnings
 
+from unittest.mock import patch, MagicMock
 from tethys_apps.base.testing.testing import TethysTestCase
 
 
@@ -301,3 +302,83 @@ class TethysPortalApiTests(TethysTestCase):
         json = response.json()
         self.assertIn("error", json)
         self.assertEqual('Could not find app "foo-bar".', json["error"])
+
+    def test_get_jwt_token_GET_not_authenticated(self):
+        """Test get_jwt_token API endpoint with GET method."""
+        response = self.client.get(reverse("api:token_obtain_pair"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+        self.assertDictEqual({"access": None, "refresh": None}, response.json())
+
+    def test_get_jwt_token_GET_authenticated(self):
+        """Test get_jwt_token API endpoint with GET method."""
+
+        self.client.force_login(self.user)
+        with patch("tethys_portal.views.api.RefreshToken") as mock_refresh_token:
+            mock_refresh = MagicMock()
+            mock_refresh.access_token = "mock_access"
+            mock_refresh.__str__.return_value = "mock_refresh"
+            mock_refresh_token.for_user.return_value = mock_refresh
+
+            response = self.client.get(reverse("api:token_obtain_pair"))
+            self.assertEqual(response.status_code, 200)
+            self.assertIsInstance(response, JsonResponse)
+            self.assertDictEqual(
+                {"access": "mock_access", "refresh": "mock_refresh"}, response.json()
+            )
+
+    @override_settings(ALLOW_JWT_BASIC_AUTHENTICATION=False)
+    def test_get_jwt_token_POST_not_allowed(self):
+        """Test get_jwt_token API endpoint with POST method when POST is not allowed."""
+        response = self.client.post(reverse("api:token_obtain_pair"))
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.reason_phrase, "Method Not Allowed")
+        self.assertIn(
+            "JWT basic authentication is disabled.", response.content.decode()
+        )
+
+    @override_settings(ALLOW_JWT_BASIC_AUTHENTICATION=True)
+    def test_get_jwt_token_POST_not_authenticated(self):
+        """Test get_jwt_token API endpoint with POST method."""
+        response = self.client.post(reverse("api:token_obtain_pair"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+        self.assertDictEqual(
+            {
+                "access": None,
+                "refresh": None,
+                "error": "Username and password are required for authentication.",
+            },
+            response.json(),
+        )
+
+    @override_settings(ALLOW_JWT_BASIC_AUTHENTICATION=True)
+    def test_get_jwt_token_POST_invalid_user(self):
+        """Test get_jwt_token API endpoint with POST method and invalid credentials."""
+        data = {"username": "invalid_user", "password": "wrong_password"}
+        response = self.client.post(reverse("api:token_obtain_pair"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+        self.assertDictEqual(
+            {"access": None, "refresh": None, "error": "Invalid credentials."},
+            response.json(),
+        )
+
+    @override_settings(ALLOW_JWT_BASIC_AUTHENTICATION=True)
+    def test_get_jwt_token_POST_valid_user(self):
+        """Test get_jwt_token API endpoint with POST method and valid credentials."""
+        data = {"username": self.user.username, "password": "password"}
+        self.user.set_password("password")
+        self.user.save()
+        with patch("tethys_portal.views.api.RefreshToken") as mock_refresh_token:
+            mock_refresh = MagicMock()
+            mock_refresh.access_token = "mock_access"
+            mock_refresh.__str__.return_value = "mock_refresh"
+            mock_refresh_token.for_user.return_value = mock_refresh
+
+            response = self.client.post(reverse("api:token_obtain_pair"), data)
+            self.assertEqual(response.status_code, 200)
+            self.assertIsInstance(response, JsonResponse)
+            self.assertDictEqual(
+                {"access": "mock_access", "refresh": "mock_refresh"}, response.json()
+            )
