@@ -47,7 +47,13 @@ Async Support for the Jobs Table Gizmo
 
 See: :ref:`jobs-table`
 
-For a full list of changes in version 4.3 refer to `<https://github.com/tethysplatform/tethys/releases/tag/4.3.0>`_
+Multi-Tenancy Support
+.....................
+
+* Tethys Platform now supports multi-tenancy using the third-party `django-tenants` library. This allows you to run multiple isolated configurations of Tethys Portal within a single portal.
+See: :ref:`Multi Tenancy <multi_tenancy_config>`
+
+For a full list of changes in version 4.4 refer to `<https://github.com/tethysplatform/tethys/releases/tag/4.4.0>`_
 
 Prior Release Notes
 ===================
