@@ -150,11 +150,15 @@ class TestTethysPortalContext(TestCase):
             "debug_mode": True,
         }
         self.assertDictEqual(context, expected_context)
-    
+
+    @mock.patch(
+        "tethys_portal.context_processors.get_configured_standalone_app",
+        return_value=None,
+    )
     @mock.patch("tethys_portal.context_processors.has_module", return_value=False)
     @override_settings(DEBUG=True)
     @override_settings(MULTIPLE_APP_MODE=False)
-    def test_context_processors_no_optional_modules(self, _):
+    def test_context_processors_no_optional_modules(self, _, __):
         mock_user = mock.MagicMock(is_authenticated=True, is_active=True)
         mock_request = mock.MagicMock(user=mock_user)
         context = context_processors.tethys_portal_context(mock_request)
@@ -168,7 +172,7 @@ class TestTethysPortalContext(TestCase):
             "has_session_security": False,
             "has_oauth2_provider": False,
             "show_app_library_button": False,
-            "single_app_mode": False,
+            "single_app_mode": True,
             "configured_single_app": None,
             "idp_backends": {}.keys(),
             "debug_mode": True,

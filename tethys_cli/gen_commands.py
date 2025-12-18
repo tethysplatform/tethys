@@ -783,7 +783,7 @@ def generate_command(args):
     destination_path = get_destination_path(args)
 
     render_template(args.type, context, destination_path)
-    
+
     write_path_to_console(destination_path, args)
 
     post_process_func(args)

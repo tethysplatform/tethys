@@ -887,7 +887,9 @@ def install_command(args):
     multiple_app_mode_check(app_name, quiet_mode=args.quiet)
 
     if args.no_db_sync:
-        write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
+        write_success(
+            f"Successfully installed {app_name} into the active Tethys Portal."
+        )
         return
 
     call(["tethys", "db", "sync"])
@@ -968,19 +970,6 @@ def assign_json_value(value):
         write_error(f"The current value: {value} is not a dict or a valid file path")
         return None
 
-def do_pip_install(develop_mode=False, verbose_mode=False):
-    """
-    Install the current package using pip.
-    """
-    cmd = [sys.executable, "-m", "pip", "install", "."]
-    
-    if develop_mode:
-        cmd.insert(4, "-e")
-
-    if verbose_mode:
-        call(cmd, stderr=STDOUT)
-    else:
-        call(cmd, stdout=FNULL, stderr=STDOUT)
 
 def multiple_app_mode_check(new_app_name, quiet_mode=False):
     """
@@ -1004,7 +993,9 @@ def multiple_app_mode_check(new_app_name, quiet_mode=False):
         settings_command(update_settings_args)
         write_msg(f"STANDALONE_APP set to {new_app_name}.")
     elif len(get_installed_tethys_items(apps=True)) > 1:
-        response = prompt_yes_or_no("Your portal has multiple apps installed, but MULTIPLE_APP_MODE is set to False. Would you like to change that to True now?")
+        response = prompt_yes_or_no(
+            "Your portal has multiple apps installed, but MULTIPLE_APP_MODE is set to False. Would you like to change that to True now?"
+        )
         if response is True:
             update_settings_args = Namespace(
                 set_kwargs=[
@@ -1020,7 +1011,9 @@ def multiple_app_mode_check(new_app_name, quiet_mode=False):
             write_msg("MULTIPLE_APP_MODE set to True.")
         elif response is False:
             write_msg("MULTIPLE_APP_MODE left unchanged as False.")
-            response = prompt_yes_or_no(f"Would you like to set the STANDALONE_APP to the newly installed app: {new_app_name}?")
+            response = prompt_yes_or_no(
+                f"Would you like to set the STANDALONE_APP to the newly installed app: {new_app_name}?"
+            )
             if response is True:
                 update_settings_args = Namespace(
                     set_kwargs=[
@@ -1037,4 +1030,3 @@ def multiple_app_mode_check(new_app_name, quiet_mode=False):
                 write_msg(f"STANDALONE_APP set to {new_app_name}.")
             elif response is False:
                 write_msg("STANDALONE_APP left unchanged.")
-        
