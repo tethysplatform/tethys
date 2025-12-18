@@ -36,8 +36,8 @@ class TestTethysPortalContext(TestCase):
         }
         return modules.get(module_name, False)
 
-    @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_portal.context_processors.has_module")
+    @override_settings(MULTIPLE_APP_MODE=True)
     def test_context_processors_multiple_app_mode(self, mock_has_module):
         mock_user = mock.MagicMock(is_authenticated=True, is_active=True)
         mock_request = mock.MagicMock(user=mock_user)
@@ -92,10 +92,10 @@ class TestTethysPortalContext(TestCase):
         }
         self.assertDictEqual(context, expected_context)
 
-    @override_settings(MULTIPLE_APP_MODE=False)
     @mock.patch("tethys_portal.context_processors.has_module")
     @mock.patch("tethys_portal.context_processors.messages")
     @mock.patch("tethys_portal.context_processors.get_configured_standalone_app")
+    @override_settings(MULTIPLE_APP_MODE=False)
     def test_context_processors_single_app_mode(
         self, mock_get_configured_standalone_app, mock_messages, mock_has_module
     ):
@@ -143,6 +143,30 @@ class TestTethysPortalContext(TestCase):
             "has_gravatar": True,
             "has_session_security": True,
             "has_oauth2_provider": True,
+            "show_app_library_button": False,
+            "single_app_mode": False,
+            "configured_single_app": None,
+            "idp_backends": {}.keys(),
+            "debug_mode": True,
+        }
+        self.assertDictEqual(context, expected_context)
+    
+    @mock.patch("tethys_portal.context_processors.has_module", return_value=False)
+    @override_settings(DEBUG=True)
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_context_processors_no_optional_modules(self, _):
+        mock_user = mock.MagicMock(is_authenticated=True, is_active=True)
+        mock_request = mock.MagicMock(user=mock_user)
+        context = context_processors.tethys_portal_context(mock_request)
+
+        expected_context = {
+            "has_analytical": False,
+            "has_cookieconsent": False,
+            "has_terms": False,
+            "has_mfa": False,
+            "has_gravatar": False,
+            "has_session_security": False,
+            "has_oauth2_provider": False,
             "show_app_library_button": False,
             "single_app_mode": False,
             "configured_single_app": None,
