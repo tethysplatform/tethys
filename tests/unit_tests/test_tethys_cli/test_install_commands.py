@@ -799,7 +799,10 @@ class TestInstallCommands(TestCase):
             "Continuing install without configuration.", po_call_args[2][0][0]
         )
         self.assertEqual("Running application install....", po_call_args[3][0][0])
-        self.assertEqual("Successfully installed None into the active Tethys Portal.", po_call_args[4][0][0])
+        self.assertEqual(
+            "Successfully installed None into the active Tethys Portal.",
+            po_call_args[4][0][0],
+        )
 
     @mock.patch("tethys_cli.cli_colors.pretty_output")
     @mock.patch("builtins.input", side_effect=["y"])
@@ -848,7 +851,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertIn("Services Configuration Completed.", po_call_args[3][0][0])
         self.assertIn("Skipping syncstores.", po_call_args[4][0][0])
-        self.assertIn("Successfully installed test_app into the active Tethys Portal.", po_call_args[5][0][0])
+        self.assertIn(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[5][0][0],
+        )
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.call", return_value=0)
@@ -881,7 +887,10 @@ class TestInstallCommands(TestCase):
         self.assertIn("Skipping syncstores.", po_call_args[5][0][0])
         self.assertIn("Running post installation tasks...", po_call_args[6][0][0])
         self.assertIn("Post Script Result: b'test", po_call_args[7][0][0])
-        self.assertIn("Successfully installed test_app into the active Tethys Portal.", po_call_args[8][0][0])
+        self.assertIn(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[8][0][0],
+        )
 
     @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.run_sync_stores")
@@ -978,7 +987,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[7][0][0])
-        self.assertEqual("Successfully installed test_app into the active Tethys Portal.", po_call_args[8][0][0])
+        self.assertEqual(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[8][0][0],
+        )
 
         self.assertEqual(
             [sys.executable, "-m", "pip", "install", "see"],
@@ -1027,7 +1039,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[6][0][0])
-        self.assertEqual("Successfully installed test_app into the active Tethys Portal.", po_call_args[7][0][0])
+        self.assertEqual(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[7][0][0],
+        )
 
         self.assertEqual(
             [sys.executable, "-m", "pip", "install", "geojson"],
@@ -1086,7 +1101,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
-        self.assertEqual("Successfully installed test_app into the active Tethys Portal.", po_call_args[6][0][0])
+        self.assertEqual(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[6][0][0],
+        )
 
         self.assertEqual(
             [sys.executable, "-m", "pip", "install", "geojson"],
@@ -1183,7 +1201,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[6][0][0])
-        self.assertEqual("Successfully installed test_app into the active Tethys Portal.", po_call_args[7][0][0])
+        self.assertEqual(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[7][0][0],
+        )
 
         self.assertEqual(
             [sys.executable, "-m", "pip", "install", "geojson"],
@@ -1240,7 +1261,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
         self.assertEqual("Skipping syncstores.", po_call_args[5][0][0])
-        self.assertEqual("Successfully installed test_app into the active Tethys Portal.", po_call_args[6][0][0])
+        self.assertEqual(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[6][0][0],
+        )
 
         # Verify that the application install still happens
         self.assertEqual(
@@ -1351,7 +1375,10 @@ class TestInstallCommands(TestCase):
         )
         self.assertEqual("Running pip installation tasks...", po_call_args[4][0][0])
         self.assertEqual("Running application install....", po_call_args[5][0][0])
-        self.assertEqual("Successfully installed test_app into the active Tethys Portal.", po_call_args[6][0][0])
+        self.assertEqual(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[6][0][0],
+        )
 
         self.assertEqual(
             [sys.executable, "-m", "pip", "install", "see"],
@@ -2146,31 +2173,43 @@ class TestInstallCommands(TestCase):
             "ERROR: Application installation failed with exit code 1.",
             warning_messages,
         )
+
     @mock.patch("tethys_cli.install_commands.setup_django")
     @override_settings(MULTIPLE_APP_MODE=True)
     def test_multiple_app_mode_check__is_true(self, mock_setup_django):
         install_commands.multiple_app_mode_check("test_app")
         mock_setup_django.assert_not_called()
-    
+
     @mock.patch("tethys_cli.install_commands.write_msg")
     @mock.patch("tethys_cli.install_commands.settings_command")
     @mock.patch("tethys_cli.install_commands.setup_django")
     @override_settings(MULTIPLE_APP_MODE=False)
-    def test_multiple_app_mode_check__is_false_quiet_mode(self, mock_setup_django, mock_sc, mock_wm):
+    def test_multiple_app_mode_check__is_false_quiet_mode(
+        self, mock_setup_django, mock_sc, mock_wm
+    ):
         install_commands.multiple_app_mode_check("test_app", quiet_mode=True)
         mock_setup_django.assert_called_once()
         self.assertTrue(hasattr(mock_sc.call_args_list[0][0][0], "set_kwargs"))
-        self.assertEqual(mock_sc.call_args_list[0][0][0].set_kwargs[0][0], "TETHYS_PORTAL_CONFIG")
-        self.assertTrue(all(m in mock_sc.call_args_list[0][0][0].set_kwargs[0][1] for m in ["MULTIPLE_APP_MODE: False", "STANDALONE_APP: test_app"]))
+        self.assertEqual(
+            mock_sc.call_args_list[0][0][0].set_kwargs[0][0], "TETHYS_PORTAL_CONFIG"
+        )
+        self.assertTrue(
+            all(
+                m in mock_sc.call_args_list[0][0][0].set_kwargs[0][1]
+                for m in ["MULTIPLE_APP_MODE: False", "STANDALONE_APP: test_app"]
+            )
+        )
         mock_wm.assert_called_once_with("STANDALONE_APP set to test_app.")
-    
+
     @mock.patch("tethys_cli.install_commands.prompt_yes_or_no")
     @mock.patch("tethys_cli.install_commands.write_msg")
     @mock.patch("tethys_cli.install_commands.settings_command")
     @mock.patch("tethys_cli.install_commands.get_installed_tethys_items")
     @mock.patch("tethys_cli.install_commands.setup_django")
     @override_settings(MULTIPLE_APP_MODE=False)
-    def test_multiple_app_mode_check__is_false_first_app(self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon):
+    def test_multiple_app_mode_check__is_false_first_app(
+        self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon
+    ):
         mock_pyon.return_value = True
         mock_giti.return_value = ["test_app"]
         install_commands.multiple_app_mode_check("test_app", quiet_mode=False)
@@ -2186,7 +2225,9 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.get_installed_tethys_items")
     @mock.patch("tethys_cli.install_commands.setup_django")
     @override_settings(MULTIPLE_APP_MODE=False)
-    def test_multiple_app_mode_check__is_false_prompt_yes(self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon):
+    def test_multiple_app_mode_check__is_false_prompt_yes(
+        self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon
+    ):
         mock_pyon.return_value = True
         mock_giti.return_value = ["test_app", "another_app"]
         install_commands.multiple_app_mode_check("test_app", quiet_mode=False)
@@ -2194,26 +2235,13 @@ class TestInstallCommands(TestCase):
         mock_giti.assert_called_once()
         mock_pyon.assert_called_once()
         self.assertTrue(hasattr(mock_sc.call_args_list[0][0][0], "set_kwargs"))
-        self.assertEqual(mock_sc.call_args_list[0][0][0].set_kwargs[0][0], "TETHYS_PORTAL_CONFIG")
-        self.assertIn("MULTIPLE_APP_MODE: True", mock_sc.call_args_list[0][0][0].set_kwargs[0][1])
+        self.assertEqual(
+            mock_sc.call_args_list[0][0][0].set_kwargs[0][0], "TETHYS_PORTAL_CONFIG"
+        )
+        self.assertIn(
+            "MULTIPLE_APP_MODE: True", mock_sc.call_args_list[0][0][0].set_kwargs[0][1]
+        )
         mock_wm.assert_called_once_with("MULTIPLE_APP_MODE set to True.")
-    
-    @mock.patch("tethys_cli.install_commands.prompt_yes_or_no")
-    @mock.patch("tethys_cli.install_commands.write_msg")
-    @mock.patch("tethys_cli.install_commands.settings_command")
-    @mock.patch("tethys_cli.install_commands.get_installed_tethys_items")
-    @mock.patch("tethys_cli.install_commands.setup_django")
-    @override_settings(MULTIPLE_APP_MODE=False)
-    def test_multiple_app_mode_check__is_false_prompt_no_then_yes(self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon):
-        mock_pyon.side_effect = [False, True]
-        mock_giti.return_value = ["test_app", "another_app"]
-        install_commands.multiple_app_mode_check("test_app", quiet_mode=False)
-        mock_setup_django.assert_called_once()
-        mock_giti.assert_called_once()
-        self.assertTrue(hasattr(mock_sc.call_args_list[0][0][0], "set_kwargs"))
-        self.assertEqual(mock_sc.call_args_list[0][0][0].set_kwargs[0][0], "TETHYS_PORTAL_CONFIG")
-        self.assertTrue(all(m in mock_sc.call_args_list[0][0][0].set_kwargs[0][1] for m in ["MULTIPLE_APP_MODE: False", "STANDALONE_APP: test_app"]))
-        mock_wm.assert_has_calls([mock.call("MULTIPLE_APP_MODE left unchanged as False."), mock.call("STANDALONE_APP set to test_app.")])
 
     @mock.patch("tethys_cli.install_commands.prompt_yes_or_no")
     @mock.patch("tethys_cli.install_commands.write_msg")
@@ -2221,11 +2249,49 @@ class TestInstallCommands(TestCase):
     @mock.patch("tethys_cli.install_commands.get_installed_tethys_items")
     @mock.patch("tethys_cli.install_commands.setup_django")
     @override_settings(MULTIPLE_APP_MODE=False)
-    def test_multiple_app_mode_check__is_false_prompt_no_then_no(self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon):
+    def test_multiple_app_mode_check__is_false_prompt_no_then_yes(
+        self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon
+    ):
+        mock_pyon.side_effect = [False, True]
+        mock_giti.return_value = ["test_app", "another_app"]
+        install_commands.multiple_app_mode_check("test_app", quiet_mode=False)
+        mock_setup_django.assert_called_once()
+        mock_giti.assert_called_once()
+        self.assertTrue(hasattr(mock_sc.call_args_list[0][0][0], "set_kwargs"))
+        self.assertEqual(
+            mock_sc.call_args_list[0][0][0].set_kwargs[0][0], "TETHYS_PORTAL_CONFIG"
+        )
+        self.assertTrue(
+            all(
+                m in mock_sc.call_args_list[0][0][0].set_kwargs[0][1]
+                for m in ["MULTIPLE_APP_MODE: False", "STANDALONE_APP: test_app"]
+            )
+        )
+        mock_wm.assert_has_calls(
+            [
+                mock.call("MULTIPLE_APP_MODE left unchanged as False."),
+                mock.call("STANDALONE_APP set to test_app."),
+            ]
+        )
+
+    @mock.patch("tethys_cli.install_commands.prompt_yes_or_no")
+    @mock.patch("tethys_cli.install_commands.write_msg")
+    @mock.patch("tethys_cli.install_commands.settings_command")
+    @mock.patch("tethys_cli.install_commands.get_installed_tethys_items")
+    @mock.patch("tethys_cli.install_commands.setup_django")
+    @override_settings(MULTIPLE_APP_MODE=False)
+    def test_multiple_app_mode_check__is_false_prompt_no_then_no(
+        self, mock_setup_django, mock_giti, mock_sc, mock_wm, mock_pyon
+    ):
         mock_pyon.side_effect = [False, False]
         mock_giti.return_value = ["test_app", "another_app"]
         install_commands.multiple_app_mode_check("test_app", quiet_mode=False)
         mock_setup_django.assert_called_once()
         mock_giti.assert_called_once()
         mock_sc.assert_not_called()
-        mock_wm.assert_has_calls([mock.call("MULTIPLE_APP_MODE left unchanged as False."), mock.call("STANDALONE_APP left unchanged.")])
+        mock_wm.assert_has_calls(
+            [
+                mock.call("MULTIPLE_APP_MODE left unchanged as False."),
+                mock.call("STANDALONE_APP left unchanged."),
+            ]
+        )
