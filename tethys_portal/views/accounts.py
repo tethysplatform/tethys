@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from tethys_portal.forms import LoginForm, RegisterForm
-from tethys_portal.utilities import log_user_in
+from tethys_portal.utilities import log_user_in, sanitize_next_url
 from tethys_config.models import get_custom_template
 
 from tethys_portal.optional_dependencies import optional_import, has_module
@@ -132,9 +132,11 @@ def register(request):
 
                     # Redirect after logged in using next parameter or default to user profile
                     if "next" in request.GET:
-                        return redirect(request.GET["next"])
-                    else:
-                        return redirect("user:profile")
+                        next_url = sanitize_next_url(request.GET["next"])
+                        if next_url:
+                            return redirect(next_url)
+
+                    return redirect("user:profile")
                 else:
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
