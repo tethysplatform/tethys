@@ -48,6 +48,33 @@ class TestAppLifeCycle(TestCase):
         self.assertEqual(mock_unpatched_run.call_count, 2)
         mock_sleep.assert_not_called()
 
+    @patch("tethys_portal.views.app_lifecycle.re")
+    @patch("tethys_portal.views.app_lifecycle.get_channel_layer")
+    @patch("tethys_portal.views.app_lifecycle.unpatched_run")
+    @patch("tethys_portal.views.app_lifecycle.run")
+    @patch("tethys_portal.views.app_lifecycle.sleep")
+    def test__execute_lifecycle_commands_from_import(
+        self, mock_sleep, mock_run, mock_unpatched_run, mock_get_channel_layer, mock_re
+    ):
+        mock_channel_layer = MagicMock()
+        mock_get_channel_layer.return_value = mock_channel_layer
+        mock_run.return_value.stdout = b"Successfully installed test_app"
+        commands = [("echo test", "Restarting server...")]
+        output = MagicMock(
+            stdout="Successfully installed test_app into your active Tethys Portal."
+        )
+        mock_unpatched_run.return_value = output
+        mock_match = MagicMock()
+        mock_re.search.return_value = mock_match
+        app_lifecycle._execute_lifecycle_commands(
+            "test_app", commands, from_import=True
+        )
+        self.assertTrue(mock_unpatched_run.called)
+        mock_run.assert_called_once()
+        mock_sleep.assert_called_once()
+        mock_re.search.assert_called_once()
+        mock_match.group.assert_called_once_with(mock_match.lastindex)
+
     def test__execute_lifecycle_commands_cleanup_fails(self):
         cleanup = MagicMock()
         cleanup.side_effect = Exception()
