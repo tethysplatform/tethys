@@ -18,7 +18,7 @@ Multi Tenancy (Optional)
       # pip
       pip install django-tenants
 
-.. warning::
+.. important::
 
     Multi-tenancy requires PostgreSQL as the database backend. SQLite is not supported.
 
@@ -33,20 +33,20 @@ Use the following instructions to setup multi-tenancy for your Tethys Portal dep
 Configuration
 -------------
 
-Enable multi-tenancy by adding a ``TENANTS`` section to your :file:`portal_config.yml` file and override the database engine to use the ``django-tenants`` backend:
+Enable multi-tenancy by adding a ``TENANTS_CONFIG`` section to your :file:`portal_config.yml` file and override the database engine to use the ``django-tenants`` backend:
 
 .. code-block:: yaml
 
     settings:
-      TENANTS:
+      TENANTS_CONFIG:
         DATABASE_ENGINE: django_tenants.postgresql_backend
 
-You can customize the multi-tenancy behavior with additional settings. :
+You can customize the multi-tenancy behavior with additional settings:
 
 .. code-block:: yaml
 
     settings:
-      TENANTS:
+      TENANTS_CONFIG:
         DATABASE_ENGINE: django_tenants.postgresql_backend
         TENANT_APPS:
           - "tethys_apps"
