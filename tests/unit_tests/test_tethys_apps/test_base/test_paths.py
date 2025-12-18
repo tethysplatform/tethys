@@ -3,12 +3,13 @@ import tempfile
 import unittest
 from unittest import mock
 
+import sys
+
 from django.conf import settings
 from django.http import HttpRequest
 from django.test import override_settings
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
-
 
 import tethys_apps.base.app_base as tethys_app_base
 from tethys_apps.base import paths
@@ -218,12 +219,10 @@ class TestTethysPathHelpers(unittest.TestCase):
 
         self.mock_app_base_class = tethys_app_base.TethysAppBase()
         self.mock_request = mock.Mock(spec=HttpRequest)
-        self.mock_app_class = TethysApp(name="test_app", package="test_app")
-        self.mock_app = mock.MagicMock()
+        self.mock_app = TethysApp(name="test_app", package="test_app_package")
         self.user = User(username="tester")
 
         self.mock_request.user = self.user
-        self.mock_app.package = "app_package"
 
     def tearDown(self):
         pass
@@ -243,9 +242,9 @@ class TestTethysPathHelpers(unittest.TestCase):
         self.assertEqual(a2, self.mock_app)
         mock_get_active_app.assert_called_with(self.mock_request, get_class=True)
 
-        a3 = paths._resolve_app_class(self.mock_app_class)
+        a3 = paths._resolve_app_class(self.mock_app)
         self.assertEqual(a3, self.mock_app)
-        mock_get_app_class.assert_called_with(self.mock_app_class)
+        mock_get_app_class.assert_called_with(self.mock_app)
 
         with self.assertRaises(ValueError):
             paths._resolve_app_class(None)
@@ -273,13 +272,11 @@ class TestTethysPathHelpers(unittest.TestCase):
 
     def test_get_app_workspace_root(self):
         p = paths._get_app_workspace_root(self.mock_app)
-        self.assertEqual(p, Path(settings.TETHYS_WORKSPACES_ROOT + "/app_package"))
+        self.assertEqual(p, Path(settings.TETHYS_WORKSPACES_ROOT + "/test_app_package"))
 
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
     def test_old_get_app_workspace_root(self):
-        import sys
-
         p = paths._get_app_workspace_root(self.mock_app)
         self.assertEqual(p, Path(sys.modules[self.mock_app.__module__].__file__).parent)
 
@@ -289,8 +286,6 @@ class TestTethysPathHelpers(unittest.TestCase):
     @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.utilities.get_app_class")
     def test___get_app_workspace_old(self, mock_ac, mock_am, mock_tw):
-        import sys
-
         mock_ac.return_value = self.mock_app
         mock_am.return_value = self.mock_app
         p = paths._get_app_workspace(self.mock_app_base_class, bypass_quota=True)
@@ -318,8 +313,11 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(USE_OLD_WORKSPACES_API=True)
     @override_settings(DEBUG=True)
     @mock.patch("tethys_apps.base.workspace.TethysWorkspace")
-    def test___get_user_workspace_old(self, mock_tw):
-        import sys
+    @mock.patch("tethys_apps.utilities.get_app_model")
+    @mock.patch("tethys_apps.utilities.get_app_class")
+    def test___get_user_workspace_old(self, mock_ac, mock_am, mock_tw):
+        mock_am.return_value = self.mock_app
+        mock_ac.return_value = self.mock_app
 
         p = paths._get_user_workspace(
             self.mock_app_base_class, self.user, bypass_quota=True
@@ -348,7 +346,7 @@ class TestTethysPathHelpers(unittest.TestCase):
     @override_settings(MEDIA_ROOT="media_root")
     def test_get_app_media_root(self):
         p = paths._get_app_media_root(self.mock_app)
-        self.assertEqual(p, Path(settings.MEDIA_ROOT + "/app_package"))
+        self.assertEqual(p, Path(settings.MEDIA_ROOT + "/test_app_package"))
 
     @mock.patch("tethys_apps.utilities.get_app_model")
     @mock.patch("tethys_apps.base.paths.passes_quota", return_value=True)

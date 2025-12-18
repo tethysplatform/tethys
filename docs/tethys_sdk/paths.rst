@@ -236,6 +236,65 @@ For the ``workspace`` and ``media`` paths the location of the paths from all app
 
     The ``public`` and the ``resources`` directories are relative to the source code of the app (i.e. not centralized). Even when the ``collectstatic`` command is used to copy all static files to a central location the :ref:`tethys_paths_api` will return the the public directory that is relative to the app source code.
 
+.. _tethys_paths_cli:
+
+Command Line Interface
+==========================
+The Paths API can be accessed through the command line interface (CLI) using the ``paths`` command. This command provides a way to list paths for specific apps or users and add files to those destinations.
+
+Examples
+--------
+
+**Command:**
+
+.. code-block:: bash
+
+    tethys paths get -t app_workspace -a my_app
+
+**Output:**
+
+.. code-block:: console
+
+    App Workspace for app 'my_app':
+    /home/user/.tethys/tethys/workspaces/my_app/app_workspace
+
+**Command:**
+
+.. code-block:: bash
+
+    tethys paths get -t user_workspace -a my_app -u my_user
+
+**Output:**
+
+.. code-block:: console
+
+    User Workspace for user 'my_user' and app 'my_app':
+    /home/user/.tethys/tethys/workspaces/my_app/user_workspaces/my_user
+
+**Command:**
+
+.. code-block:: bash
+
+    tethys paths add -t user_media -a my_app -u my_user -f /path/to/file.txt
+
+**Output:**
+
+.. code-block:: console
+
+    File 'file.txt' has been added to the User Media at '/home/user/.tethys/tethys/media/my_app/user/my_user/file.txt'
+
+**Command:**
+
+.. code-block:: bash
+
+    tethys paths add -t app_media -a my_app -f /path/to/file.txt
+
+**Output:**
+
+.. code-block:: console
+
+    File 'file.txt' has been added to the App Media at '/home/user/.tethys/tethys/media/my_app/app/file.txt'`
+
 .. _tethys_quotas_workspace_manage:
 
 Handling Workspace/Media Clearing

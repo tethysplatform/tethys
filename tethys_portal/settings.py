@@ -260,6 +260,7 @@ for module in [
     "django_recaptcha",
     "social_django",
     "termsandconditions",
+    "cookie_consent",
     "reactpy_django",
 ]:
     if has_module(module):

@@ -278,6 +278,8 @@ if has_module("django_recaptcha"):
     urlpatterns.append(re_path(r"^captcha/", include("captcha.urls")))
 if has_module("termsandconditions"):
     urlpatterns.append(re_path(r"^terms/", include("termsandconditions.urls")))
+if has_module("cookie_consent"):
+    urlpatterns.append(re_path(r"^cookies/", include("cookie_consent.urls")))
 if has_module("session_security"):
     urlpatterns.append(re_path(r"session_security/", include("session_security.urls")))
 if has_module("mfa"):

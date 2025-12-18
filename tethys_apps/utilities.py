@@ -142,9 +142,11 @@ def get_app_model(app_or_request):
         isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)
     ):
         app = TethysApp.objects.get(root_url=app_or_request.root_url)
+    elif isinstance(app_or_request, TethysApp):
+        app = app_or_request
     else:
         raise ValueError(
-            f'Argument "app_or_request" must be of type HttpRequest or TethysAppBase: '
+            f'Argument "app_or_request" must be of type HttpRequest, TethysAppBase, or TethysApp: '
             f'"{type(app_or_request)}" given.'
         )
 

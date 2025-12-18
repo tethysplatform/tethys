@@ -46,6 +46,7 @@ from tethys_portal.optional_dependencies import (
 )
 
 # optional imports
+MFAApp = optional_import("myAppNameConfig", from_module="mfa.apps")
 User_Keys = optional_import("User_Keys", from_module="mfa.models")
 JSONEditorWidget = optional_import(
     "JSONEditorWidget", from_module="django_json_widget.widgets"
@@ -553,6 +554,7 @@ def register_custom_group():
 
 def register_user_keys_admin():
     try:
+        MFAApp.verbose_name = "Multi-Factor Authentication"
         User_Keys._meta.verbose_name = "Users MFA Key"
         User_Keys._meta.verbose_name_plural = "Users MFA Keys"
         admin.site.register(User_Keys, UserKeyAdmin)
