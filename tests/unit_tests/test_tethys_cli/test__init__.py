@@ -1550,3 +1550,35 @@ class TethysCommandTests(unittest.TestCase):
 
         mock_quickstart_command.assert_not_called()
         mock_exit.assert_called_with(0)
+
+    @mock.patch("sys.stdout", new_callable=StringIO)
+    @mock.patch("tethys_cli.argparse._sys.exit")
+    @mock.patch("tethys_cli.cookie_commands.has_module", return_value=True)
+    def test_cookies_command_when_module_present(self, _, mock_exit, mock_stdout):
+        # When has_module returns True the cookie parser should be added
+        mock_exit.side_effect = SystemExit
+        testargs = ["tethys", "cookies", "--help"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        self.assertIn("list", mock_stdout.getvalue())
+        self.assertIn("purge", mock_stdout.getvalue())
+        self.assertIn("add_group", mock_stdout.getvalue())
+        self.assertIn("add_cookie", mock_stdout.getvalue())
+        self.assertIn("delete_group", mock_stdout.getvalue())
+        self.assertIn("delete_cookie", mock_stdout.getvalue())
+
+    @mock.patch("sys.stderr", new_callable=StringIO)
+    @mock.patch("tethys_cli.argparse._sys.exit")
+    @mock.patch("tethys_cli.cookie_commands.has_module", return_value=False)
+    def test_cookies_command_when_module_absent(self, _, mock_exit, mock_stderr):
+        # When has_module returns False the cookie parser should not be added
+        mock_exit.side_effect = SystemExit
+        testargs = ["tethys", "cookies", "--help"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        self.assert_returns_help(mock_stderr.getvalue())
+        self.assertIn("invalid choice: 'cookies'", mock_stderr.getvalue())

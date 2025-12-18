@@ -1,4 +1,4 @@
-.. _scaffold_an_app_via_the_portal :
+.. _scaffold_an_app_via_the_portal:
 
 
 

@@ -64,7 +64,7 @@ In this step you will stub out a new GEE method called ``upload_shapefile_to_gee
 
         Args:
             request (django.Request): the request object.
-            user_workspace (tethys_sdk.workspaces.Workspace): the User workspace object.
+            user_media (tethys_sdk.paths.TethysPath): the User media object.
 
         Returns:
             str: Error string if errors occurred.
@@ -197,7 +197,7 @@ The first step to uploading the shapefile as an asset is to convert it to an ``e
 3. Export the New ee.FeatureCollection to an Asset
 ==================================================
 
-Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can be exported as a Google Earth Engine table asset (see:  `Importing Table Data - Uploading a Shapefile <https://developers.google.com/earth-engine/guides/table_upload>`_). Remember that ``ee`` objects are server objects, which means the features are already on the server. Exporting the ``ee.FeatureCollection`` as an asset persists it to storage in the GEE cloud infrastructure so that you can use it again later without needing to upload it again. Similar to when the shapefile was written to the user's workspace, several helper functions will also be created to manage the folder where the asset will be written.
+Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can be exported as a Google Earth Engine table asset (see:  `Importing Table Data - Uploading a Shapefile <https://developers.google.com/earth-engine/guides/table_upload>`_). Remember that ``ee`` objects are server objects, which means the features are already on the server. Exporting the ``ee.FeatureCollection`` as an asset persists it to storage in the GEE cloud infrastructure so that you can use it again later without needing to upload it again. Similar to when the shapefile was written to the user's media directory, several helper functions will also be created to manage the folder where the asset will be written.
 
 1. The ``get_asset_dir_for_user`` function will create a folder for the user and return the path. It will make use of the ``get_earth_engine_credentials_path`` function to find the credentials file with information on your Earth Engine account and project. 
 Create two new functions: ``get_earth_engine_credentials_path``, and  ``get_asset_dir_for_user``, both in :file:`gee/methods.py` with the following contents:

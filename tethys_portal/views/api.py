@@ -6,36 +6,54 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
+from tethys_portal.optional_dependencies import optional_import
 from tethys_portal.utilities import json_serializer
+
+# Optional dependencies
+get_gravatar_url = optional_import(
+    "get_gravatar_url", from_module="django_gravatar.helpers"
+)
 
 
 def get_csrf(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated and not settings.ENABLE_OPEN_PORTAL:
         return HttpResponse("Unauthorized", status=401)
     return HttpResponse(headers={"X-CSRFToken": get_token(request)})
 
 
 @ensure_csrf_cookie
 def get_session(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated and not settings.ENABLE_OPEN_PORTAL:
         return HttpResponse("Unauthorized", status=401)
     return JsonResponse({"isAuthenticated": True})
 
 
 def get_whoami(request):
     if not request.user.is_authenticated:
+        if settings.ENABLE_OPEN_PORTAL:
+            return JsonResponse({})
+
         return HttpResponse("Unauthorized", status=401)
 
-    return JsonResponse(
-        {
-            "username": request.user.username,
-            "firstName": request.user.first_name,
-            "lastName": request.user.last_name,
-            "email": request.user.email,
-            "isAuthenticated": request.user.is_authenticated,
-            "isStaff": request.user.is_staff,
-        }
-    )
+    response_data = {
+        "username": request.user.username,
+        "firstName": request.user.first_name,
+        "lastName": request.user.last_name,
+        "email": request.user.email,
+        "isAuthenticated": request.user.is_authenticated,
+        "isStaff": request.user.is_staff,
+    }
+
+    # Generate gravatar URL if django_gravatar is available
+    try:
+        email = request.user.email if request.user.email else "tethys@example.com"
+        gravatar_url = get_gravatar_url(email, size=80)
+        response_data["gravatarUrl"] = gravatar_url
+    except Exception:
+        # If django_gravatar is not installed or fails, just skip adding gravatar URL
+        pass
+
+    return JsonResponse(response_data)
 
 
 def get_app(request, app):
