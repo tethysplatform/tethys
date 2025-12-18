@@ -4,6 +4,7 @@ export {Col, Row, Container};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
 import ImageLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Image?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
 import ImageArcGISRestSource from "https://esm.sh/@planet/maps@11.2.0/source/ImageArcGISRest?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
+import VectorLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Vector?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
 import Map from "https://esm.sh/@planet/maps@11.2.0/Map?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
 import View from "https://esm.sh/@planet/maps@11.2.0/View?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
 import XYZSource from "https://esm.sh/@planet/maps@11.2.0/source/XYZ?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
@@ -11,12 +12,14 @@ import OSMSource from "https://esm.sh/@planet/maps@11.2.0/source/OSM?deps=react@
 import GroupLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Group?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
 import TileLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Tile?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
 import ScaleLineControl from "https://esm.sh/@planet/maps@11.2.0/control/ScaleLine?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.4.0";
-export {ImageLayer, ImageArcGISRestSource, Map, View, XYZSource, OSMSource, GroupLayer, TileLayer, ScaleLineControl};
+export {ImageLayer, ImageArcGISRestSource, VectorLayer, Map, View, XYZSource, OSMSource, GroupLayer, TileLayer, ScaleLineControl};
 loadCSS("https://esm.sh/ol@10.4.0/ol.css");
 import {LayerPanel} from "/static/tethys_apps/js/layer-panel.js/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LayerPanel";
 export {LayerPanel};
 loadCSS("https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css");
 loadCSS("https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css");
+import {VectorSource} from "/static/tethys_apps/js/ol-mods.js/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=VectorSource";
+export {VectorSource};
 import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
 export {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line};
 
@@ -56,22 +59,70 @@ function wrapEventHandlers(props) {
     return newProps;
 }
 
-function stringifyToDepth(val, depth, replacer, space) {
-    depth = isNaN(+depth) ? 1 : depth;
-    function _build(key, val, depth, o, a) { // (JSON.stringify() has it's own rules, which we respect here by using it for property iteration)
-        return !val || typeof val != 'object' ? val : (a=Array.isArray(val), JSON.stringify(val, function(k,v){ if (a || depth > 0) { if (replacer) v=replacer(k,v); if (!k) return (a=Array.isArray(v),val=v); !o && (o=a?[]:{}); o[k] = _build(k, v, a?depth:depth-1); } }), o||(a?[]:{}));
-    }
-    return JSON.stringify(_build('', val, depth), null, space);
+/**
+ * Converts an HTML element and its children into a structured JavaScript object.
+ * @param {HTMLElement} element The HTML element to convert.
+ * @return {object} The structured object.
+ */
+function htmlToJsonObject(element) {
+  if (!element) return null;
+
+  const obj = {
+    tagName: element.tagName.toLowerCase(),
+    attributes: {}
+  };
+
+  // Get attributes
+  for (let i = 0; i < element.attributes.length; i++) {
+    const attr = element.attributes[i];
+    obj.attributes[attr.name] = attr.value;
+  }
+
+  return obj;
 }
 
-function stringifyReplacer (key, value) {
-    if (key === '') return value;
-    try {
-        JSON.stringify(value);
-        return value;
-    } catch (err) {
-        return (typeof value === 'object') ? value : undefined;
+function jsonSanitizeObject(obj, maxDepth, refs, depth) {
+    if (!maxDepth) {
+        maxDepth = 4;
     }
+    if (!depth) {
+        depth = 0;
+    }
+    if (!refs) {
+        refs = [];
+    }
+    if (typeof obj === 'string' || typeof obj === 'number' || obj == null || typeof obj === 'boolean') {
+        return obj;
+    }
+    if (typeof obj === 'function') {
+        return undefined;
+    }
+    if (obj.constructor === Window) {
+        return undefined;
+    }
+    if (refs.includes(obj)) {
+        return undefined;
+    }
+    refs.push(obj);
+    delete obj.nativeEvent;
+    let newObj = Array.isArray(obj) ? [] : {};
+    if (depth > maxDepth) {
+        newObj = "BEYOND MAX DEPTH";
+    } else {
+        for (const [key, value] of Object.entries(obj)) {
+            if (refs.includes(value)) continue;
+            newObj[key] = jsonSanitizeObject(value, maxDepth, refs, depth+1);
+        }
+        if (obj.__proto__) {
+            Object.getOwnPropertyNames(obj.__proto__).forEach(function (propName) {
+                newObj[propName] = jsonSanitizeObject(obj[propName], maxDepth, refs, depth+1);
+            });
+        }
+        if (obj instanceof Element) {
+            newObj = {...newObj, ...htmlToJsonObject(obj)}
+        }
+    }
+    return newObj;
 }
 
 function makeJsonSafeEventHandler(oldHandler) {
@@ -79,31 +130,6 @@ function makeJsonSafeEventHandler(oldHandler) {
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-
-        var filteredArguments = [];
-        Array.from(arguments).forEach(function (arg) {
-            let filteredArg = arg;
-            if (typeof arg === "object") {
-                if (arg.nativeEvent) {
-                    // this is probably a standard React synthetic event
-                    filteredArg = arg;
-                } else {
-                    filteredArg = JSON.parse(stringifyToDepth(arg, 3, stringifyReplacer));
-                }
-                
-                if (arg.__proto__) {
-                    Object.getOwnPropertyNames(arg.__proto__).forEach(function (propName) {
-                        if (propName == 'constructor') return;
-                        if (!arg.hasOwnProperty(propName) && arg[propName]) {
-                            filteredArg[propName] = arg[propName];
-                            delete filteredArg[propName + '_'];
-                        }
-                    });
-                }
-            }
-            // Add non-enumerable properties 
-            filteredArguments.push(filteredArg);
-        });
-        oldHandler(...Array.from(filteredArguments));
+        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 2)));
     };
 }

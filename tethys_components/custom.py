@@ -5,10 +5,13 @@ THIS_DIR = Path(__file__).parent
 RESOURCE_DIR = THIS_DIR / "resources"
 
 
-def Display(lib, children=None):
+def Display(lib, **kwargs):
     """A full screen container for nesting content within."""
-    return lib.bs.Container(fluid=True, style=lib.Style(height="100%"))(
-        *(children or [])
+    style = lib.Style(height="100%")
+    if "style" in kwargs:
+        style |= kwargs["style"]
+    return lib.bs.Container(fluid=True, style=style)(
+        *kwargs.get("children", []),
     )
 
 
@@ -19,19 +22,11 @@ def LayerPanel(lib):
 def PageLoader(lib, content):
     hide_loading, set_hide_loading = lib.hooks.use_state(True)
     hide_content, set_hide_content = lib.hooks.use_state(True)
-
     lib.hooks.use_effect(
-        # Delay the content load so it doesn't flash at all
+        # This None if ... else None is a weird pattern used to ensure that nothing is returned by this
+        # lambda, since if anything besided None is returned, it is assumed to be a cleanup function
         lambda: (
-            None
-            if all(
-                [
-                    set_hide_loading(False),
-                    lib.utils.background_execute(set_hide_content, [False], 0.5),
-                    lib.utils.background_execute(set_hide_loading, [True], 2),
-                ]
-            )
-            else None
+            None if any([set_hide_loading(False), set_hide_content(False)]) else None
         ),
         dependencies=[],
     )
@@ -49,7 +44,31 @@ def PageLoader(lib, content):
             style=lib.Style(
                 display=None if hide_content else "unset", height="100%", width="100%"
             ),
-        )(content),
+        )(
+            content,
+            (
+                lib.html.div(style=lib.Style(display="none"))(
+                    lib.html.div(
+                        id_="trigger-loaded", onClick=lambda _: set_hide_loading(True)
+                    ),
+                    lib.html.script(
+                        """
+                    window.onload = function () {
+                        window.setTimeout(function () {
+                            try {
+                                document.getElementById('trigger-loaded').click();
+                            } catch (e) {
+                                'pass';
+                            }
+                        }, 1000)
+                    }
+                """
+                    ),
+                )
+                if not hide_loading
+                else None
+            ),
+        ),
     )
 
 
@@ -106,17 +125,21 @@ def BaseMapSuite(lib, default="OpenStreetMap"):
         "OpenStreetMap": lib.ol.source.OSM(),
         # "Bing": lib.ol.source.BingMaps(),
         "XYZ": lib.ol.source.XYZ(
-            url="https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+            options=lib.Props(url="https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png")
         ),
         **{
             " ".join(esri_basemap.split("_")): lib.ol.source.XYZ(
-                url=f"https://server.arcgisonline.com/ArcGIS/rest/services/{esri_basemap}/MapServer/tile/{{z}}/{{y}}/{{x}}"
+                options=lib.Props(
+                    url=f"https://server.arcgisonline.com/ArcGIS/rest/services/{esri_basemap}/MapServer/tile/{{z}}/{{y}}/{{x}}"
+                )
             )
             for esri_basemap in ESRI_BASEMAP_NAMES
         },
         **{
             f"CartoDB ({style}_{label})": lib.ol.source.XYZ(
-                url=f"http://{{1-4}}.basemaps.cartocdn.com/{style}_{label}/{{z}}/{{x}}/{{y}}.png"
+                options=lib.Props(
+                    url=f"http://{{1-4}}.basemaps.cartocdn.com/{style}_{label}/{{z}}/{{x}}/{{y}}.png"
+                )
             )
             for style, label in [
                 (style, label)
@@ -125,11 +148,11 @@ def BaseMapSuite(lib, default="OpenStreetMap"):
             ]
         },
     }
-    return lib.ol.layer.Group(title="Basemap", fold="close")(
+    return lib.ol.layer.Group(options=lib.Props(title="Basemap", fold="close"))(
         *[
-            lib.ol.layer.Tile(visible=default == title, type="base", title=title)(
-                source
-            )
+            lib.ol.layer.Tile(
+                options=lib.Props(visible=default == title, type="base", title=title)
+            )(source)
             for title, source in SUPPORTED_BASEMAPS.items()
         ]
     )
@@ -152,10 +175,12 @@ def Map(
         if projection == "EPSG:3857"
         else lib.utils.transform_coordinate([-100, 40], "EPSG:3857", projection)
     )
-    return lib.ol.Map(**({"onClick": on_click} if on_click else {}))(
-        lib.ol.View(projection=projection, center=center, zoom=zoom),
+    return lib.ol.Map(**(lib.Props(onClick=on_click) if on_click else {}))(
+        lib.ol.View(options=lib.Props(projection=projection, center=center, zoom=zoom)),
         lib.tethys.BaseMapSuite(),
-        lib.ol.layer.Group(title="Overlays", fold="open")(*children or []),
+        lib.ol.layer.Group(options=lib.Props(title="Overlays", fold="open"))(
+            *children or []
+        ),
         lib.ol.control.ScaleLine(),
         lib.tethys.LayerPanel(),
     )
@@ -218,6 +243,7 @@ def Panel(
     lib,
     show=True,
     set_show=None,
+    handle_close=None,
     anchor="right",
     extent="500px",
     title="Panel",
@@ -248,7 +274,7 @@ def Panel(
         anchor = {"right": "end", "left": "start"}[anchor]
         style["width"] = extent
 
-    def handle_close(_):
+    def _handle_close(_):
         set_show(False) if set_show is not None else _set_show(False)
 
     return lib.html.div(
@@ -264,7 +290,7 @@ def Panel(
                 type="button",
                 class_name="btn-close",
                 **{"aria-label": "true"},
-                onClick=handle_close,
+                onClick=handle_close if handle_close else _handle_close,
             ),
         ),
         lib.html.div(class_name="offcanvas-body")(*children or []),
@@ -346,9 +372,13 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
             ),
         )(
             lib.bs.Container(as_="header", fluid=True, class_name="px-4")(
-                lib.bs.NavbarToggle(
-                    aria_controls="offcanvasNavbar",
-                    class_name="styled-header-button",
+                (
+                    lib.bs.NavbarToggle(
+                        aria_controls="offcanvasNavbar",
+                        class_name="styled-header-button",
+                    )
+                    if len(nav_links) > 1
+                    else lib.html.span()
                 ),
                 lib.bs.NavbarBrand(
                     href=f"/apps/{app.root_url}/",
