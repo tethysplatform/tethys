@@ -30,6 +30,8 @@ Advanced Configuration
 
 These guides describe additional configuration that you can perform to add more capabilities to your Tethys Portal.
 
+**Recommended Configuration**
+
 .. toctree::
     :maxdepth: 1
 
