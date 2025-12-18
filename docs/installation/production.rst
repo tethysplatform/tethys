@@ -58,14 +58,14 @@ The following sections provide information on configuring advanced and optional 
 
 * :doc:`Configure HTTPS <production/manual/configuration/advanced/https_config>`: For setting up a secured connection for your portal.
 * :doc:`Customize Portal Theme <production/manual/configuration/advanced/customize>`: Customize the Tethys Portal to reflect your organization's branding.
+* :doc:`Django Channels Layer <production/manual/configuration/advanced/django_channels_layer>`: For production installations that use the WebSockets and/or Bokeh Server functionality that comes with Tethys Platform.
 * :doc:`Forgotten Password Recovery <production/manual/configuration/advanced/email_config>`: Set up email capabilities to allow users to recover forgotten passwords.
 * :doc:`Lockout <production/manual/configuration/advanced/lockout>`: Prevent brute-force login attempts
-* :doc:`Self Hosted Dependency Mode <production/manual/configuration/advanced/self_hosted_js_deps>`: Configure Tethys Portal to host JavaScript dependencies locally.
-* :doc:`Single Sign On <production/manual/configuration/advanced/social_auth>`: Set up social authentication and single sign-on with providers including Google, Facebook, or LinkedIn.
 * :doc:`Multi Factor Authentication <production/manual/configuration/advanced/multi_factor_auth>`: Enable and enforce multi-factor authentication through apps such as LastPass Authenticator or Google Authenticator.
 * :doc:`Multi Tenancy <production/manual/configuration/advanced/multi_tenancy>`: Enable multiple tenants with a single portal deployment, and customize resources based on tenant.
+* :doc:`Self Hosted Dependency Mode <production/manual/configuration/advanced/self_hosted_js_deps>`: Configure Tethys Portal to host JavaScript dependencies locally.
+* :doc:`Single Sign On <production/manual/configuration/advanced/social_auth>`: Set up social authentication and single sign-on with providers including Google, Facebook, or LinkedIn.
 * :doc:`Web Analytics <production/manual/configuration/advanced/webanalytics>`: Track how users interact with the Tethys portal and its applications using web-based analytical services.
-* :doc:`Django Channels Layer <production/manual/configuration/advanced/django_channels_layer>`: For production installations that use the WebSockets and/or Bokeh Server functionality that comes with Tethys Platform.
 
 References
 ==========
