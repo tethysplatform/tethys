@@ -30,6 +30,7 @@ class TestCustomComponents(TestCase):
             "NavHeader": [{"app": cls.mock_all, "user": cls.mock_all}],
             "PageLoader": [{"content": "TEST"}],
             "Chart": [{"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]}, {"data": None}],
+            "Display": [{"style": {"color": "black"}}],
         }
 
     def json_serializer(self, obj):
