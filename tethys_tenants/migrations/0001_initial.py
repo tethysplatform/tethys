@@ -6,16 +6,13 @@ from django.db import migrations, models
 
 from tethys_portal.optional_dependencies import has_module
 
+if has_module("django_tenants"):
+    import django_tenants.postgresql_backend.base
+    class Migration(migrations.Migration):
 
-class Migration(migrations.Migration):
+        initial = True
 
-    initial = True
-
-    dependencies = []
-
-    if has_module("django_tenants"):
-        import django_tenants.postgresql_backend.base
-
+        dependencies = []
         operations = [
             migrations.CreateModel(
                 name="Tenant",
@@ -78,5 +75,3 @@ class Migration(migrations.Migration):
                 },
             ),
         ]
-    else:
-        operations = []
