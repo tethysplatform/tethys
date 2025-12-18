@@ -33,21 +33,21 @@ Use the following instructions to setup multi-tenancy for your Tethys Portal dep
 Configuration
 -------------
 
-Enable multi-tenancy by adding a ``TENANTS_CONFIG`` section to your :file:`portal_config.yml` file and override the database engine to use the ``django-tenants`` backend:
+Enable multi-tenancy by overriding the database engine to use the ``django-tenants`` backend:
+
+.. code-block:: yaml
+
+    settings:
+        DATABASES:
+          default:
+            ENGINE: django_tenants.postgresql_backend
+
+You can customize the multi-tenancy behavior with the following settings:
 
 .. code-block:: yaml
 
     settings:
       TENANTS_CONFIG:
-        DATABASE_ENGINE: django_tenants.postgresql_backend
-
-You can customize the multi-tenancy behavior with additional settings:
-
-.. code-block:: yaml
-
-    settings:
-      TENANTS_CONFIG:
-        DATABASE_ENGINE: django_tenants.postgresql_backend
         TENANT_APPS:
           - "tethys_apps"
           - "tethys_config"
@@ -57,9 +57,6 @@ You can customize the multi-tenancy behavior with additional settings:
 
 Configuration Options
 =====================
-
-**DATABASE_ENGINE**
-    Required. Must be set to ``django_tenants.postgresql_backend`` to enable schema-based multi-tenancy. The default behavior when django-tenants and the TENANTS setting is in :file:`portal_config.yml` is to override the database engine; however, we recommend explicitly setting it in :file:`portal_config.yml` to avoid confusion.
 
 **TENANT_APPS**
     List of Django apps that should be isolated per tenant. These apps will have their database tables created in each tenant's schema.
