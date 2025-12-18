@@ -36,6 +36,7 @@ These guides describe additional configuration that you can perform to add more 
     :maxdepth: 1
 
     configuration/advanced/https_config
+    configuration/advanced/cookie_consent
     configuration/advanced/customize
 
 **Optional Configuration**
