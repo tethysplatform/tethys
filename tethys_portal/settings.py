@@ -36,6 +36,7 @@ from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import relative_to_tethys_home
 from tethys_utils import deprecation_warning
 from tethys_cli.gen_commands import generate_secret_key
+from tethys_cli.cli_colors import write_warning
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
@@ -360,13 +361,17 @@ ROOT_URLCONF = "tethys_portal.urls"
 
 # Django Tenants settings
 if has_module("django_tenants"):
-    TENANTS_CONFIG = portal_config_settings.pop("TENANTS", {})
+    TENANTS_CONFIG = portal_config_settings.pop("TENANTS_CONFIG", {})
 
     # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
     # Set up in portal_config.yml
-    DATABASES["default"]["ENGINE"] = TENANTS_CONFIG.pop(
-        "DATABASE_ENGINE", "django_tenants.postgresql_backend"
-    )
+    if DATABASES["default"]["ENGINE"] != "django_tenants.postgresql_backend":
+        print("")
+        write_warning("The database engine for the default database must be set to "
+        "'django_tenants.postgresql_backend' to use multi-tenancy features. "
+        "Please update your portal_config.yml file accordingly." \
+        "You can use the following command to do so:\n\n" \
+        "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n")
 
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
