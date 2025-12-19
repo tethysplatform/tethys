@@ -36,7 +36,7 @@ class TethysPortalApiTests(TethysTestCase):
         response = self.client.get(reverse("api:get_csrf"))
         self.assertEqual(response.status_code, 401)
 
-    @override_settings(ENABLE_OPEN_PORTAL=True)
+    @override_settings(ENABLE_OPEN_PORTAL=True, SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_csrf_not_authenticated_but_open_portal(self):
         """Test get_csrf API endpoint not authenticated."""
         self.client.force_login(self.user)
@@ -60,7 +60,7 @@ class TethysPortalApiTests(TethysTestCase):
         response = self.client.get(reverse("api:get_session"))
         self.assertEqual(response.status_code, 401)
 
-    @override_settings(ENABLE_OPEN_PORTAL=True)
+    @override_settings(ENABLE_OPEN_PORTAL=True, SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_session_not_authenticated_but_open_portal(self):
         """Test get_session API endpoint not authenticated."""
         response = self.client.get(reverse("api:get_session"))
@@ -89,7 +89,7 @@ class TethysPortalApiTests(TethysTestCase):
         response = self.client.get(reverse("api:get_whoami"))
         self.assertEqual(response.status_code, 401)
 
-    @override_settings(ENABLE_OPEN_PORTAL=True)
+    @override_settings(ENABLE_OPEN_PORTAL=True, SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_whoami_not_authenticated_but_open_portal(self):
         """Test get_whoami API endpoint not authenticated."""
         response = self.client.get(reverse("api:get_whoami"))
@@ -116,6 +116,7 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("foo", json["username"])
         self.assertTrue(json["isAuthenticated"])
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_whoami_authenticated_gravatar_exception(self):
         """Test get_whoami API endpoint when gravatar fails."""
         from unittest.mock import patch
