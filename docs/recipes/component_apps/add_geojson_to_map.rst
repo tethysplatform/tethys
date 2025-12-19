@@ -1,10 +1,10 @@
-.. _component_app__mapping_with_geojson :
+.. _component_app__add_geojson_to_map :
 
 
 
-************************************
-Component Apps: Mapping with GeoJSON
-************************************
+***************************************
+Component Apps: Adding GeoJSON to a Map
+***************************************
 
 .. important::
 
@@ -34,13 +34,8 @@ GeoJSON from a URL
             )
         )
 
-GeoJSON from inline features
-============================
-
-If providing your GeoJSON features inline, you can do so by explicitly creating the GeoJSON inline, or by creating the GeoJSON from another source, such as a Pandas DataFrame.
-
 GeoJSON from explicit inline
-----------------------------
+============================
 
 .. code-block:: python
 
@@ -200,10 +195,12 @@ GeoJSON from explicit inline
             )
         )
 
-GeoJSON from Pandas Dataframe
------------------------------
+
+GeoJSON from File / Pandas Dataframe
+====================================
 
 .. code-block:: python
+
     import pandas as pd
     import geopandas as gpd
     from shapely.geometry import Point
