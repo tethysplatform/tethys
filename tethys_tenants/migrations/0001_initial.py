@@ -8,6 +8,7 @@ from tethys_portal.optional_dependencies import has_module
 
 if has_module("django_tenants"):
     import django_tenants.postgresql_backend.base
+
     class Migration(migrations.Migration):
 
         initial = True

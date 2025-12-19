@@ -368,11 +368,13 @@ if has_module("django_tenants"):
     # Set up in portal_config.yml
     if DATABASES["default"]["ENGINE"] != "django_tenants.postgresql_backend":
         print("")
-        write_warning("The database engine for the default database must be set to "
-        "'django_tenants.postgresql_backend' to use multi-tenancy features. "
-        "Please update your portal_config.yml file accordingly." \
-        "You can use the following command to do so:\n\n" \
-        "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n")
+        write_warning(
+            "The database engine for the default database must be set to "
+            "'django_tenants.postgresql_backend' to use multi-tenancy features. "
+            "Please update your portal_config.yml file accordingly."
+            "You can use the following command to do so:\n\n"
+            "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n"
+        )
 
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
