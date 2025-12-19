@@ -158,9 +158,7 @@ def BaseMapSuite(lib, default="OpenStreetMap"):
     )
 
 
-def Map(
-    lib, projection="EPSG:3857", center=None, zoom=1, on_click=None, children=None
-):
+def Map(lib, projection="EPSG:3857", center=None, zoom=1, on_click=None, children=None):
     """A Map for displaying geospatial data. Fixed to the EPSG:3857 projection.
 
     Args:
