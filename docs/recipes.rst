@@ -65,4 +65,4 @@ Component Apps
 .. recipe-gallery::
     :layout: multi-row
     
-    recipes/component_apps/add_geojson_to_map images/recipes/component_app_icon.png [component app, component, app, geojson, map]
+    recipes/component_apps/add_geojson_to_map images/recipes/component_apps/add_geojson_to_map/geojson_from_csv.png [component app, component, app, geojson, map]
