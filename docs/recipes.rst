@@ -58,3 +58,11 @@ Databases
     recipes/databases/persistent_service images/recipes/persistent_store_icon.png [database, persistent store, service]
     recipes/databases/create_database_models images/recipes/database_model_icon.png [database, models, persistent store]
     recipes/databases/working_with_database_models images/recipes/working_with_database_icon.png [database, models, persistent store]
+
+Component Apps
+++++++++++++++
+
+.. recipe-gallery::
+    :layout: multi-row
+    
+    recipes/component_apps/add_geojson_to_map images/recipes/component_app_icon.png [component app, component, app, geojson, map]
