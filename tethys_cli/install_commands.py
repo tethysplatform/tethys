@@ -855,10 +855,30 @@ def install_command(args):
     else:
         cmd.append(".")
 
+    # Check for deprecated setup.py file in the same directory as install.yml
+    setup_py_path = file_path.parent / "setup.py"
+    if setup_py_path.exists():
+        write_warning(
+            "WARNING: setup.py file detected. The use of setup.py is deprecated and may cause installation issues."
+        )
+        write_warning(
+            "Please migrate to pyproject.toml for defining your app's metadata and dependencies."
+        )
+        write_warning(
+            "You can use 'tethys gen pyproject' to help migrate to pyproject.toml."
+        )
+
     if args.verbose:
-        call(cmd, stderr=STDOUT)
+        return_code = call(cmd, stderr=STDOUT)
     else:
-        call(cmd, stdout=FNULL, stderr=STDOUT)
+        return_code = call(cmd, stdout=FNULL, stderr=STDOUT)
+
+    if return_code != 0:
+        write_error(
+            f"ERROR: Application installation failed with exit code {return_code}."
+        )
+
+        return
 
     if args.no_db_sync:
         write_success(f"Successfully installed {app_name}.")
@@ -907,6 +927,7 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
+
     write_success(f"Successfully installed {app_name}.")
 
 
