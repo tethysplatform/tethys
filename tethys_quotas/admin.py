@@ -177,7 +177,6 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
                 else:
                     return "--"
 
-
     def units(*args):
         for arg in args:
             if isinstance(arg, TethysAppQuota):
