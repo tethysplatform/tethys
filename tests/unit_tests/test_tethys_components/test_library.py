@@ -38,12 +38,12 @@ class TestComponentLibrary(TestCase):
                 lib.hooks = mock.MagicMock()
                 lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
                 test_module = __import__(test_page_name, fromlist=["test"])
-                raw_vdom = test_module.test(lib)
+                raw_vdom = test_module.page_test(lib)
                 js_string = lib.render_js_template()
                 json_vdom = dumps(raw_vdom, default=self.json_serializer)
 
                 alternate_lib = library.ComponentLibrary(f"{test_page_name}_alternate")
-                alternate_lib.load_dependencies_from_source_code(test_module.test)
+                alternate_lib.load_dependencies_from_source_code(test_module.page_test)
                 alternate_lib_js_string = lib.render_js_template()
                 self.assertEqual(js_string, alternate_lib_js_string)
 
