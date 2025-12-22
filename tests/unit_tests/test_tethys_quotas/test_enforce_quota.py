@@ -58,6 +58,7 @@ def test_enforce_quota_rq_does_not_exist(mock_RQ, mock_log):
     )
     assert "Success" == ret
 
+
 @mock.patch("tethys_quotas.decorators.log")
 @mock.patch("tethys_quotas.decorators.get_active_app")
 @mock.patch("tethys_quotas.decorators.ResourceQuota")
@@ -71,6 +72,7 @@ def test_enforce_quota_no_app_request(mock_RQ, mock_active_app, mock_log):
     a_controller(mock_request)
 
     mock_log.warning.assert_called_with("Request could not be used to find app")
+
 
 @mock.patch("tethys_quotas.decorators.log")
 def test_enforce_quota_no_HttpRequest(mock_log):
