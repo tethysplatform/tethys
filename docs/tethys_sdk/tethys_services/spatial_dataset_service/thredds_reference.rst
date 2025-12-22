@@ -51,7 +51,7 @@ This example is adapted from the `Siphon NCSS Time Series Example <https://unida
 
     # Construct a query at a location specified by the latitude and longitude and time range
     # and return it in the NetCDF4 format
-    now = datetime.utcnow()
+    now = datetime.datetime.now(datetime.UTC)
     query.lonlat_point(-105, 40).time_range(now, now + timedelta(days=7))
     query.variables('streamflow').accept('netcdf')
 

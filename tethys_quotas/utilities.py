@@ -202,22 +202,22 @@ def get_quota(entity, codename):
 # Adapted from https://pypi.org/project/hurry.filesize/
 def _convert_storage_units(units, amount):
     base_units = _get_storage_units()
+    base_conversion = None
 
     for item in base_units:
         if isinstance(item[1], str):
-            if units.strip().lower() == item[1].strip().lower():
+            if units.strip().lower() == item[1].lower():
                 base_conversion = item[0]
                 break
         elif isinstance(item[1], tuple):
-            if units.strip().lower() in [s.strip().lower() for s in item[1]]:
+            if units.strip().lower() in [s.lower() for s in item[1]]:
                 base_conversion = item[0]
                 break
 
-    if not base_conversion:
+    if base_conversion is None:
         return None
 
     amount = amount * base_conversion
-
     for factor, suffix in base_units:  # noqa: B007
         if amount >= factor:
             break
@@ -228,17 +228,17 @@ def _convert_storage_units(units, amount):
             suffix = singular
         else:
             suffix = multiple
-    return str(amount) + suffix
+    return f"{str(amount)} {suffix}"
 
 
 def _get_storage_units():
     return [
-        (1024**5, " PB"),
-        (1024**4, " TB"),
-        (1024**3, " GB"),
-        (1024**2, " MB"),
-        (1024**1, " KB"),
-        (1024**0, (" byte", " bytes")),
+        (1024**5, "PB"),
+        (1024**4, "TB"),
+        (1024**3, "GB"),
+        (1024**2, "MB"),
+        (1024**1, "KB"),
+        (1024**0, ("byte", "bytes")),
     ]
 
 

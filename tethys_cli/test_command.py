@@ -46,7 +46,7 @@ def add_test_parser(subparsers):
     test_parser.add_argument(
         "-f", "--file", type=str, help="File to run tests in. Overrides -g and -u."
     )
-    test_parser.set_defaults(func=test_command)
+    test_parser.set_defaults(func=_test_command)
 
 
 def check_and_install_prereqs(tests_path):
@@ -83,7 +83,7 @@ def check_and_install_prereqs(tests_path):
         )
 
 
-def test_command(args):
+def _test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
