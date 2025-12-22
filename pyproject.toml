@@ -44,6 +44,10 @@ dependencies = [
     "django-guardian",
 ]
 
+[project.optional-dependencies]
+test = ["pytest", "pytest-django", "pytest-cov", "requests_mock"]
+lint = ["flake8", "black"]
+
 [project.urls]
 homepage = "http://tethysplatform.org/"
 documentation = "http://docs.tethysplatform.org/en/stable/"
@@ -61,3 +65,21 @@ include = ["tethys_*"]
 
 [tool.setuptools]
 package-data = {"*" = ["*"]}
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tethys_portal.settings"
+addopts = "-s --cov"
+testpaths = ["tests/unit_tests/"]
+
+[tool.coverage.run]
+omit = [
+    "docs/*",
+    "tests/*",
+    "tethys_portal/_version.py",
+    "tethys_portal/__init__.py",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
