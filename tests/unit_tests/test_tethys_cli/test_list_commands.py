@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 from django.test.utils import override_settings
@@ -86,6 +87,7 @@ class ListCommandTests(unittest.TestCase):
 
     @override_settings(MULTIPLE_APP_MODE=True)
     @mock.patch("tethys_cli.list_command.write_msg")
+    @pytest.mark.django_db
     def test_list_command_urls(self, mock_msg):
         mock_args = mock.MagicMock(urls=True)
 

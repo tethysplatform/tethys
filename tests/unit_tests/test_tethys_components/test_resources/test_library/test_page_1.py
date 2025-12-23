@@ -1,4 +1,4 @@
-def test(lib):
+def page_test(lib):
     lib.register("@monaco-editor/react", "me", default_export="Editor")
 
     return lib.html.div()(

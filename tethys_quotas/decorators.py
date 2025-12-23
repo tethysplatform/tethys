@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: apps.py
+* Name: tethys_quotas/decorators.py
 * Author: tbayer, mlebaron
 * Created On: February 22, 2019
 * Copyright: (c) Aquaveo 2018

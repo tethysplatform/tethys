@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -32,6 +33,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates(self):
         # Get the templates directories for the test_app and test_extension
         result = utilities.get_directories_in_tethys(("templates",))
@@ -43,21 +45,13 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "templates") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
         self.assertTrue(test_ext)
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates_with_app_name(self):
         # Get the templates directories for the test_app and test_extension
         # Use the with_app_name argument, so that the app and extension names appear in the result
@@ -77,13 +71,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
                 test_app = True
             if (
                 "test_extension" in r
-                and str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
+                and str(Path("/") / "tethysext" / "test_extension" / "templates")
                 in r[1]
             ):
                 test_ext = True
@@ -110,16 +98,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "templates") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -149,6 +128,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_directories_in_tethys(("foo",))
         self.assertEqual(0, len(result))
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_foo_public(self):
         # Get the foo and public directories for the test_app and test_extension
         # foo doesn't exist, but public will
@@ -161,16 +141,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "public") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "public"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "public") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -187,6 +158,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(None, result)
 
     @override_settings(MULTIPLE_APP_MODE=True)
+    @pytest.mark.django_db
     def test_get_app_model_request_app_base(self):
         from tethys_apps.models import TethysApp
 
