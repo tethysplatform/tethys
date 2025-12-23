@@ -40,7 +40,7 @@ class TethysPortalApiTests(TethysTestCase):
             self.assertEqual(response.status_code, 401)
             self.assertTrue(any(item.category == DeprecationWarning for item in w))
             self.assertTrue(
-                any("get_csrf will be deprecated" in str(item.message) for item in w)
+                any("get_csrf is deprecated and will be removed in a future tethys version" in str(item.message) for item in w)
             )
 
     @override_settings(ENABLE_OPEN_PORTAL=True)
@@ -55,7 +55,7 @@ class TethysPortalApiTests(TethysTestCase):
             self.assertIn("X-CSRFToken", response.headers)
             self.assertTrue(any(item.category == DeprecationWarning for item in w))
             self.assertTrue(
-                any("get_csrf will be deprecated" in str(item.message) for item in w)
+                any("get_csrf is deprecated and will be removed in a future tethys version" in str(item.message) for item in w)
             )
 
     def test_get_csrf_authenticated(self):
@@ -69,7 +69,7 @@ class TethysPortalApiTests(TethysTestCase):
             self.assertIn("X-CSRFToken", response.headers)
             self.assertTrue(any(item.category == DeprecationWarning for item in w))
             self.assertTrue(
-                any("get_csrf will be deprecated" in str(item.message) for item in w)
+                any("get_csrf is deprecated and will be removed in a future tethys version" in str(item.message) for item in w)
             )
 
     def test_get_session_not_authenticated(self):
@@ -80,7 +80,7 @@ class TethysPortalApiTests(TethysTestCase):
             self.assertEqual(response.status_code, 401)
             self.assertTrue(any(item.category == DeprecationWarning for item in w))
             self.assertTrue(
-                any("get_session will be deprecated" in str(item.message) for item in w)
+                any("get_session is deprecated and will be removed in a future tethys version" in str(item.message) for item in w)
             )
 
     @override_settings(ENABLE_OPEN_PORTAL=True)
@@ -96,7 +96,7 @@ class TethysPortalApiTests(TethysTestCase):
             self.assertTrue(json["isAuthenticated"])
             self.assertTrue(any(item.category == DeprecationWarning for item in w))
             self.assertTrue(
-                any("get_session will be deprecated" in str(item.message) for item in w)
+                any("get_session is deprecated and will be removed in a future tethys version" in str(item.message) for item in w)
             )
 
     def test_get_session_authenticated(self):
@@ -112,7 +112,7 @@ class TethysPortalApiTests(TethysTestCase):
             self.assertTrue(json["isAuthenticated"])
             self.assertTrue(any(item.category == DeprecationWarning for item in w))
             self.assertTrue(
-                any("get_session will be deprecated" in str(item.message) for item in w)
+                any("get_session is deprecated and will be removed in a future tethys version" in str(item.message) for item in w)
             )
 
     def test_get_whoami_not_authenticated(self):
