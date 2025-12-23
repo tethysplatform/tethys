@@ -1,3 +1,4 @@
+import pytest
 import io
 import unittest
 from unittest import mock
@@ -70,6 +71,7 @@ class HarvesterTest(unittest.TestCase):
         self.assertNotIn("Tethys Apps Loaded:", mock_stdout.getvalue())
         self.assertNotIn("test_app", mock_stdout.getvalue())
 
+    @pytest.mark.django_db
     def test_harvest_get_url_patterns(self):
         """
         Test for SingletonHarvester.get_url_patterns

@@ -6,7 +6,7 @@ from os import devnull
 from unittest import mock
 
 from tethys_apps.utilities import get_tethys_src_dir
-from tethys_cli.test_command import test_command, check_and_install_prereqs
+from tethys_cli.test_command import _test_command, check_and_install_prereqs
 
 FNULL = open(devnull, "w")
 TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
@@ -37,7 +37,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
@@ -59,7 +59,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
@@ -80,7 +80,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -112,7 +112,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -143,7 +143,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -182,7 +182,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -213,7 +213,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -251,7 +251,7 @@ class TestCommandTests(unittest.TestCase):
         mock_run_process.side_effect = [0, 0, 1]
         mock_open_new_tab.return_value = 1
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called()
         mock_run_process.assert_any_call(
@@ -289,7 +289,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
 
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
@@ -316,7 +316,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(
@@ -369,7 +369,7 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_run_process.return_value = 0
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_run_process.assert_called_with(
             [sys.executable, "/foo/manage.py", "test", "-v", "2"]
@@ -394,5 +394,5 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.return_value = "/foo/manage.py"
         mock_check_and_install_prereqs.side_effect = FileNotFoundError
 
-        self.assertRaises(SystemExit, test_command, mock_args)
+        self.assertRaises(SystemExit, _test_command, mock_args)
         mock_write_error.assert_called()

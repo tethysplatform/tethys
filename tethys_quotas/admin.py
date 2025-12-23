@@ -67,10 +67,6 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
 
             user_id = request.resolver_match.kwargs.get("object_id")
 
-            # new user form case
-            if not user_id:
-                return None
-
             user = User.objects.get(id=user_id)
 
             qs = qs.filter(entity=user)
@@ -180,13 +176,6 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
                     return rq.default
                 else:
                     return "--"
-
-        content_type = ContentType.objects.get_for_model(rq.__class__)
-        admin_url = reverse(
-            "admin:{}_{}_change".format(content_type.app_label, content_type.model),
-            args=(rq.id,),
-        )
-        return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def units(*args):
         for arg in args:
