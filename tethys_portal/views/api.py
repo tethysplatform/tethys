@@ -24,7 +24,7 @@ get_gravatar_url = optional_import(
 
 def get_csrf(request):
     warnings.warn(
-        "get_csrf will be deprecated. Use the get_token endpoint instead.",
+        "get_csrf is deprecated and will be removed in a future tethys version. Use the get_jwt_token GET endpoint instead.",
         DeprecationWarning,
         stacklevel=2,
     )
@@ -36,7 +36,7 @@ def get_csrf(request):
 @ensure_csrf_cookie
 def get_session(request):
     warnings.warn(
-        "get_session will be deprecated. Use the get_token endpoint instead.",
+        "get_session is deprecated and will be removed in a future tethys version. Use the get_jwt_token GET endpoint instead.",
         DeprecationWarning,
         stacklevel=2,
     )
