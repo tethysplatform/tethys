@@ -1,8 +1,8 @@
-import Vector from 'https://esm.sh/ol@10.4.0/source/Vector';
-import Feature from 'https://esm.sh/ol@10.4.0/Feature';
-import * as FormatLib from 'https://esm.sh/ol@10.4.0/format';
+import _VectorSource from 'https://esm.sh/ol@10.7.0/source/Vector';
+import * as FormatLib from 'https://esm.sh/ol@10.7.0/format';
+import Feature from 'https://esm.sh/ol@10.7.0/Feature';
 
-export function VectorSource (...props) {
+export default function VectorSource (...props) {
     let format, features;
     props = props[0];
     if (!props.options) props.options = {};
@@ -35,5 +35,5 @@ export function VectorSource (...props) {
             props.options.features = features;
         }
     }
-    return React.createElement('source', {cls: Vector, ...props});
+    return React.createElement('source', {cls: _VectorSource, ...props});
 }

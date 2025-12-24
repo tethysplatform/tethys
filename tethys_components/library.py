@@ -21,8 +21,30 @@ logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
+CUSTOM_VDOM_FUNCS = {
+    "get_feature_info_url": {
+        "tags": ["ImageWMSSource", "TileWMSSource"],
+        "function": utils.get_feature_info_url,
+    }
+}
+
 
 class _CallableVdom(dict):
+    def as_dict(self):
+        return dict(self)
+
+    def __getattribute__(self, name):
+        if (
+            not name.startswith("__")
+            and hasattr(utils, name)
+            and callable(getattr(utils, name))
+        ):
+            func = partial(getattr(utils, name), self)
+            setattr(self, name, func)
+            return func
+        else:
+            return super().__getattribute__(name)
+
     def __call__(self, *args):
         self["children"] = list(args)
         return self
@@ -150,7 +172,6 @@ class Package:
         self._components_by_path = {}
 
     def add_component(self, module_path, component):
-
         added = False
         if module_path not in self._components_by_path:
             self._components_by_path[module_path] = []
@@ -180,6 +201,7 @@ class Package:
         for i, (module_path, components) in enumerate(
             self.get_components_by_path().items()
         ):
+            module_path = f"{module_path}.js" if self.treat_as_path else module_path
             if i == 0:
                 exports_statement += "export {"
             non_default_components = [
@@ -297,20 +319,28 @@ class ComponentLibrary:
                 host="/static/tethys_apps/js",
             ),
             "olmod": Package(
-                name="ol-mods.js",
+                name="ol-mods",
                 host="/static/tethys_apps/js",
+                default_export="*",
+                treat_as_path=True,
             ),
             "ol": Package(
                 name="@planet/maps@11.2.0",
                 default_export="*",
                 treat_as_path=True,
-                dependencies=["ol@10.4.0"],
-                styles=["https://esm.sh/ol@10.4.0/ol.css"],
+                dependencies=["ol@10.7.0"],
+                styles=["https://esm.sh/ol@10.7.0/ol.css"],
             ),
         }
     )
 
-    OVERRIDES = {"ol.source.Vector": "olmod.VectorSource"}
+    OVERRIDES = {
+        "ol.source.Vector": "olmod.source.Vector",
+        "ol.source.Image": "olmod.source.Image",
+        "ol.source.TileWMS": "olmod.source.TileWMS",
+        "ol.View": "olmod.View",
+        "ol.Overlay": "olmod.Overlay",
+    }
 
     def __init__(self, name):
         self.name = name
@@ -567,15 +597,12 @@ class DynamicPackageManager:
             override_accessor, override_component = self.library.OVERRIDES[
                 override_key
             ].split(".", 1)
-            override_package = getattr(
-                self.library.CURATED_PACKAGES, override_accessor
-            ).copy()
-            new_instance = DynamicPackageManager(
-                library=self.library,
-                package=override_package,
-                component=override_component,
-            )
-            setattr(self.library, override_accessor, new_instance)
+            new_instance_base = getattr(
+                self.library, override_accessor
+            )  # Get or create the new instance of the override package if it does not exist
+            new_instance = getattr(
+                new_instance_base, override_component
+            )  # Create the new instance of the override component (a recursive call to this same __getattr__ method)
         else:
             new_instance = DynamicPackageManager(
                 library=self.library, package=self.package, component=component
@@ -587,7 +614,7 @@ class DynamicPackageManager:
         component_parts = self.component.split(".")
         _component = self.component
 
-        if self.package.accessor == "ol":
+        if self.package.accessor in ["ol", "olmod"]:
             _component += "." + component_parts[-1]
             if len(component_parts) > 1:
                 _component += component_parts[-2].capitalize()
