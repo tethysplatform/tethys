@@ -151,14 +151,24 @@ def BaseMapSuite(lib, default="OpenStreetMap"):
     return lib.ol.layer.Group(options=lib.Props(title="Basemap", fold="close"))(
         *[
             lib.ol.layer.Tile(
-                options=lib.Props(visible=default == title, type="base", title=title)
+                options=lib.Props(
+                    visible=str(default) == str(title), type="base", title=str(title)
+                )
             )(source)
             for title, source in SUPPORTED_BASEMAPS.items()
         ]
     )
 
 
-def Map(lib, projection="EPSG:3857", center=None, zoom=1, on_click=None, children=None):
+def Map(
+    lib,
+    default_basemap="OpenStreetMap",
+    projection="EPSG:3857",
+    center=None,
+    zoom=1,
+    children=None,
+    **kwargs,
+):
     """A Map for displaying geospatial data. Fixed to the EPSG:3857 projection.
 
     Args:
@@ -167,17 +177,35 @@ def Map(lib, projection="EPSG:3857", center=None, zoom=1, on_click=None, childre
         on_click (callable): A function that should be called when the map is clicked. Defaults to None.
         children (list[]): A list of layers to be rendered. These can also be passed in as nested components (i.e. Map()(layer1, layer2, layer3)). Defaults to [].
     """
-
-    center = (
-        center or [-100, 40]
+    if isinstance(projection, dict):
+        if not center and not projection.get("definition"):
+            raise ValueError(
+                "Either provide a center point or a projection definition from which a center point can be calculated."
+            )
+    center = center or (
+        [-100, 40]
         if projection == "EPSG:3857"
         else lib.utils.transform_coordinate([-100, 40], "EPSG:3857", projection)
     )
-    return lib.ol.Map(**(lib.Props(onClick=on_click) if on_click else {}))(
-        lib.ol.View(options=lib.Props(projection=projection, center=center, zoom=zoom)),
-        lib.tethys.BaseMapSuite(),
+    view_opts = lib.Props(projection=projection)
+    actual_children = []
+    overlays = []
+    if children:
+        for child in children:
+            if not child:
+                continue
+            if dict(child)["tagName"] == "Overlay":
+                overlays.append(child)
+            else:
+                actual_children.append(child)
+    if isinstance(projection, dict) and projection.get("extent"):
+        view_opts |= lib.Props(extent=projection["extent"])
+    return lib.ol.Map(**lib.Props(**kwargs))(
+        lib.ol.View(options=view_opts, center=center, zoom=zoom),
+        lib.tethys.BaseMapSuite(default=default_basemap),
+        *overlays if overlays else [],
         lib.ol.layer.Group(options=lib.Props(title="Overlays", fold="open"))(
-            *children or []
+            *actual_children or []
         ),
         lib.ol.control.ScaleLine(),
         lib.tethys.LayerPanel(),
@@ -336,7 +364,10 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
     redirect, set_redirect = lib.hooks.use_state(False)
 
     lib.hooks.use_effect(
-        lambda: lib.utils.background_execute(set_margin_top, [0], 0.5), []
+        lambda: (
+            None if lib.utils.background_execute(set_margin_top, [0], 0.5) else None
+        ),
+        [],
     )
 
     def handle_exit(*_, **__):  # pragma: no cover
