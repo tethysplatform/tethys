@@ -321,6 +321,9 @@ AUTHENTICATION_BACKENDS = portal_config_settings.pop(
 AUTHENTICATION_BACKENDS = tuple(
     portal_config_settings.pop("AUTHENTICATION_BACKENDS", []) + AUTHENTICATION_BACKENDS
 )
+ALLOW_JWT_BASIC_AUTHENTICATION = portal_config_settings.pop(
+    "ALLOW_JWT_BASIC_AUTHENTICATION", False
+)
 
 RESOURCE_QUOTA_HANDLERS = portal_config_settings.pop(
     "RESOURCE_QUOTA_HANDLERS_OVERRIDE",
@@ -341,7 +344,9 @@ CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
