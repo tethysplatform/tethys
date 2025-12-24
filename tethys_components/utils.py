@@ -1,5 +1,6 @@
 import inspect
 import io
+import math
 import tokenize
 from tethys_components import layouts
 from typing import Any
@@ -49,6 +50,13 @@ def args_to_dot_notation_dicts(func: callable) -> callable:
         return func(*[DotNotationDict(d) if isinstance(d, dict) else d for d in data])
 
     return wrapped
+
+
+def fetch(url: str) -> str:
+    """Fetches data from url and returns result as string"""
+    from requests import get
+
+    return get(url).text
 
 
 def fetch_json(url: str, as_attr_dict: bool = True) -> dict | DotNotationDict:
@@ -205,6 +213,42 @@ def _background_execute_wrapper(func, args, callback=None):
         callback(result)
 
 
+class RepeatManager:
+    from threading import Timer, Thread
+
+    def __init__(self, repeat_seconds, target, args=None):
+        self._running = False
+        self.repeat_seconds = repeat_seconds
+        self.target = target
+        self.args = args or ()
+        self._timer = None
+
+    def _repeat_function(self):
+        if not self._running:
+            return
+        self.Thread(
+            target=self.target,
+            args=self.args,
+        ).start()
+        self._timer = self.Timer(
+            interval=self.repeat_seconds,
+            function=self._repeat_function,
+        )
+        self._timer.start()
+
+    def start(self):
+        self._running = True
+        self._repeat_function()
+        return self
+
+    def cancel(self):
+        self._running = False
+        self._timer.cancel()
+
+    def is_alive(self):
+        return self._running
+
+
 def background_execute(
     func, args=None, delay_seconds=None, repeat_seconds=None, callback=None
 ):
@@ -220,47 +264,57 @@ def background_execute(
 
     Returns: None
     """
+    args = args or ()
+    if not isinstance(args, (list, tuple)):
+        raise ValueError("args must be a list or tuple")
 
     if delay_seconds:
         from threading import Timer
 
         t = Timer(
-            delay_seconds,
-            _background_execute_wrapper,
-            [func, args if args else [], callback],
+            interval=delay_seconds,
+            function=_background_execute_wrapper,
+            args=(func, args, callback),
+        )
+    elif repeat_seconds:
+        t = RepeatManager(
+            repeat_seconds=repeat_seconds,
+            target=_background_execute_wrapper,
+            args=(func, args, callback),
         )
     else:
         from threading import Thread
 
         t = Thread(
             target=_background_execute_wrapper,
-            func=func,
-            args=args if args else [],
-            callback=callback,
+            args=(func, args, callback),
         )
 
     t.start()
-
-    if repeat_seconds:
-        from threading import Timer
-
-        def repeat_function():
-            Thread(
-                target=_background_execute_wrapper,
-                func=func,
-                args=args if args else [],
-                callback=callback,
-            ).start()
-            Timer(repeat_seconds, repeat_function).start()
-
-        repeat_function()
+    return t
 
 
 def transform_coordinate(coordinate, src_proj, target_proj):
     from pyproj import Transformer, CRS
 
-    source_crs = CRS(src_proj)
-    target_crs = CRS(target_proj)
+    if isinstance(src_proj, dict):
+        source_crs = CRS(src_proj["definition"])
+    elif isinstance(src_proj, str):
+        source_crs = CRS(src_proj)
+    else:
+        raise ValueError(
+            "src_proj must be a string or dictionary with a definition key"
+        )
+
+    if isinstance(target_proj, dict):
+        target_crs = CRS(target_proj["definition"])
+    elif isinstance(target_proj, str):
+        target_crs = CRS(target_proj)
+    else:
+        raise ValueError(
+            "target_proj must be a string or dictionary with a definition key"
+        )
+
     transformer = Transformer.from_crs(source_crs, target_crs)
     return transformer.transform(coordinate[0], coordinate[1])
 
@@ -356,3 +410,184 @@ def remove_comments_and_docstrings(source):
 
 def _get_db_object(app):
     return app.db_object
+
+
+def get_legend_url(vdom_element, resolution=None, params=None):
+    if vdom_element["tagName"] not in ["ImageWMSSource", "TileWMSSource"]:
+        raise ValueError(
+            "The get_legend_url method can only be called on ImageWMSSource or TileWMSSource components"
+        )
+
+    from urllib.parse import urlencode, urljoin
+    from pyproj import CRS
+
+    if not params:
+        params = {}
+
+    source_params = vdom_element["attributes"]["options"]["params"]
+    base_url = vdom_element["attributes"]["options"]["url"]
+    query_params = {
+        "SERVICE": "WMS",
+        "VERSION": "1.0.0",
+        "REQUEST": "GetLegendGraphic",
+        "FORMAT": "image/png",
+        **source_params,
+    }
+
+    if "LAYER" not in query_params:
+        layers = source_params["LAYERS"]
+        is_single_layer = not isinstance(layers, list) or len(layers) != 1
+        if not is_single_layer:
+            print("NOT SINGLE LAYER")
+            return None
+        query_params["LAYER"] = layers
+
+    if resolution:
+        mpu = 1
+        try:
+            mpu = (
+                CRS(
+                    source_params["projection"]
+                    if "projection" in source_params
+                    else "EPSG:3857"
+                )
+                .axis_info[0]
+                .unit_conversion_factor
+            )
+        except Exception:
+            pass
+        pixelSize = 0.00028
+        query_params["SCALE"] = (resolution * mpu) / pixelSize
+
+    query_string = urlencode(query_params)
+    legend_url = urljoin(base_url, f"?{query_string}")
+    return legend_url
+
+
+def get_feature_info_url(
+    vdom_element, map_coordinate, map_resolution, map_proj, layer_proj, params=None
+):
+    if vdom_element["tagName"] not in ["ImageWMSSource", "TileWMSSource"]:
+        raise ValueError(
+            "The get_feature_info_url method can only be called on ImageWMSSource or TileWMSSource components"
+        )
+
+    from urllib.parse import urlencode, urljoin
+    from pyproj import CRS
+
+    if not params:
+        params = {}
+
+    GETFEATUREINFO_IMAGE_SIZE = [101, 101]
+    DECIMALS = 4
+
+    if map_proj != layer_proj:
+        # TODO: Implement transformation of map coordinates to layer coordinates
+        raise NotImplementedError(
+            "get_feature_info_url has not yet been implemented for layers with different projections than the map"
+        )
+
+    extent = _get_for_view_and_size(
+        map_coordinate,
+        map_resolution,
+        0,
+        GETFEATUREINFO_IMAGE_SIZE,
+    )
+    x = round(math.floor((map_coordinate[0] - extent[0]) / map_resolution), DECIMALS)
+    y = round(math.floor((extent[3] - map_coordinate[1]) / map_resolution), DECIMALS)
+
+    axisOrientation = "".join([a.direction[0] for a in CRS(map_proj).axis_info])
+    bbox = (
+        [extent[1], extent[0], extent[3], extent[2]]
+        if axisOrientation == "ne"
+        else extent
+    )
+
+    source_params = vdom_element["attributes"]["options"]["params"]
+    base_url = vdom_element["attributes"]["options"]["url"]
+    query_params = {
+        "SERVICE": "WMS",
+        "VERSION": "1.3.0",
+        "REQUEST": "GetFeatureInfo",
+        "LAYERS": source_params["LAYERS"],
+        "STYLES": "",
+        "CRS": map_proj,  # Map's projection
+        "BBOX": ",".join(str(x) for x in bbox),  # In map's projection
+        "WIDTH": GETFEATUREINFO_IMAGE_SIZE[0],
+        "HEIGHT": GETFEATUREINFO_IMAGE_SIZE[1],
+        "QUERY_LAYERS": source_params["LAYERS"],
+        "INFO_FORMAT": "application/json",
+        "I": x,  # X ordinate of query point on map, in pixels. 0 is left side.
+        "J": y,  # Y ordinate of query point on map, in pixels. 0 is top.
+        **source_params,
+        **params,
+    }
+
+    query_string = urlencode(query_params)
+    feature_info_url = urljoin(base_url, f"?{query_string}")
+    return feature_info_url
+
+
+def _get_for_view_and_size(center, resolution, rotation, size):
+    [x0, y0, x1, y1, x2, y2, x3, y3, _, _] = _get_rotated_viewport(
+        center,
+        resolution,
+        rotation,
+        size,
+    )
+    return [
+        min(x0, x1, x2, x3),
+        min(y0, y1, y2, y3),
+        max(x0, x1, x2, x3),
+        max(y0, y1, y2, y3),
+    ]
+
+
+def _get_rotated_viewport(center, resolution, rotation, size):
+    dx = (resolution * size[0]) / 2
+    dy = (resolution * size[1]) / 2
+    cosRotation = math.cos(rotation)
+    sinRotation = math.sin(rotation)
+    xCos = dx * cosRotation
+    xSin = dx * sinRotation
+    yCos = dy * cosRotation
+    ySin = dy * sinRotation
+    x = center[0]
+    y = center[1]
+
+    return [
+        x - xCos + ySin,
+        y - xSin - yCos,
+        x - xCos - ySin,
+        y - xSin + yCos,
+        x + xCos - ySin,
+        y + xSin + yCos,
+        x + xCos + ySin,
+        y + xSin - yCos,
+        x - xCos + ySin,
+        y - xSin - yCos,
+    ]
+
+
+def find_by_tag(element, tag_name: str):
+    """Recursively finds all elements with a specific tag name."""
+    if isinstance(element, dict):
+        found_elements = []
+        if element.get("tagName") == tag_name:
+            found_elements.append(element)
+
+        # Recursively search children
+        children = element.get("children")
+        if children:
+            found_elements.extend(find_by_tag(children, tag_name))
+
+        return found_elements
+
+    elif isinstance(element, list):
+        found_elements = []
+        for child in element:
+            found_elements.extend(find_by_tag(child, tag_name))
+        return found_elements
+    else:
+        # Ignore non-element types (like strings or numbers)
+        return []
