@@ -65,4 +65,7 @@ Component Apps
 .. recipe-gallery::
     :layout: multi-row
     
-    recipes/component_apps/add_geojson_to_map images/recipes/component_apps/add_geojson_to_map/geojson_from_csv.png [component app, component, app, geojson, map]
+    recipes/component_apps/mapping_with_geojson images/recipes/component_apps/geojson.png [component, app, geojson, map, server]
+    recipes/component_apps/mapping_with_wms images/recipes/component_apps/wms.png [component, app, wms, map, service]
+    recipes/component_apps/mapping_with_arcgis_rest images/recipes/component_apps/arcgis.png [component, app, arcgis, rest, map, server, service]
+    recipes/component_apps/mapping_with_popups_and_overlays images/recipes/component_apps/overlay_popup.png [component, app, arcgis, rest, map, server, service]

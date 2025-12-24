@@ -1,16 +1,14 @@
-.. _component_app__add_geojson_to_map :
+.. _component_app__mapping_with_geojson :
 
 
 
-***************************************
-Component Apps: Adding GeoJSON to a Map
-***************************************
+************************************
+Component Apps: Mapping with GeoJSON
+************************************
 
 .. important::
 
-    This recipe only applies to Component App development and will not work for Standard Apps.
-
-This recipe will show you how to display GeoJSON on a map in your Component App - whether from a URL, or directly provided inline.
+    These recipes only apply to Component App development and will not work for Standard Apps.
 
 **Last Updated:** December 2025
 
