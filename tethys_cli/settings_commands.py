@@ -86,6 +86,7 @@ def write_settings(tethys_settings):
         tethys_portal_settings=portal_settings,
         directory=None,
         overwrite=True,
+        action_performed="updated",
     )
     generate_command(args)
 
