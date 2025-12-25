@@ -1,9 +1,27 @@
 
-import {Container, Row, Button, Col} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container,Row,Button,Col";
-export {Container, Row, Button, Col};
+import {Col, Row, Container} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Col,Row,Container";
+export {Col, Row, Container};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
-import Editor from "https://esm.sh/@monaco-editor/react/?deps=react@19.0,react-dom@19.0,react-is@19.0";
-export {Editor};
+import ImageLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Image.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import ImageArcGISRestSource from "https://esm.sh/@planet/maps@11.2.0/source/ImageArcGISRest.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import VectorLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import Map from "https://esm.sh/@planet/maps@11.2.0/Map.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import XYZSource from "https://esm.sh/@planet/maps@11.2.0/source/XYZ.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import OSMSource from "https://esm.sh/@planet/maps@11.2.0/source/OSM.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import GroupLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Group.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import TileLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Tile.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+import ScaleLineControl from "https://esm.sh/@planet/maps@11.2.0/control/ScaleLine.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
+export {ImageLayer, ImageArcGISRestSource, VectorLayer, Map, XYZSource, OSMSource, GroupLayer, TileLayer, ScaleLineControl};
+loadCSS("https://esm.sh/ol@10.7.0/ol.css");
+import {LayerPanel} from "/static/tethys_apps/js/layer-panel.js/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LayerPanel";
+export {LayerPanel};
+loadCSS("https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css");
+loadCSS("https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css");
+import VectorSource from "/static/tethys_apps/js/ol-mods/source/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
+import View from "/static/tethys_apps/js/ol-mods/View.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
+export {VectorSource, View};
+import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
+export {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -112,6 +130,6 @@ function makeJsonSafeEventHandler(oldHandler) {
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 2)));
+        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
     };
 }
