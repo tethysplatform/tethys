@@ -109,3 +109,7 @@ class TestCustomComponents(TestCase):
         vdom_content = layout["children"][1]["children"]
         self.assertIsInstance(vdom_content, list)
         self.assertListEqual([content], vdom_content)
+
+    def test_map_invalid_projection_dict(self):
+        with self.assertRaises(ValueError):
+            custom.Map(self.lib, projection={})

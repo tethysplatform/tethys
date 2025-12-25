@@ -2,6 +2,7 @@ import pytest
 from unittest import TestCase, mock
 from tethys_components import utils
 from pathlib import Path
+from urllib.parse import urlencode, urljoin
 
 THIS_DIR = Path(__file__).parent
 TEST_APP_DIR = (
@@ -181,16 +182,20 @@ class TestComponentUtils(TestCase):
 
         self.assertEqual(result, self.app.public_path)
 
+    def test_background_execute_invalid_args(self):
+        with self.assertRaises(ValueError):
+            utils.background_execute(lambda: None, "fail")
+
     def test_background_execute_no_delay(self):
         mock_import = mock.patch("builtins.__import__").start()
 
-        def test_func(arg1):
+        def _test_func(arg1):
             pass
-        
-        utils.background_execute(test_func, ("Hello",))
+
+        utils.background_execute(_test_func, ("Hello",))
         mock_import.return_value.Thread.assert_called_once_with(
             target=utils._background_execute_wrapper,
-            args=(test_func, ("Hello",), None)
+            args=(_test_func, ("Hello",), None),
         )
         mock_import.return_value.Thread().start.assert_called_once()
         mock.patch.stopall()
@@ -198,12 +203,14 @@ class TestComponentUtils(TestCase):
     def test_background_execute_delay(self):
         mock_import = mock.patch("builtins.__import__").start()
 
-        def test_func(arg1):
+        def _test_func(arg1):
             pass
 
-        utils.background_execute(test_func, ("Hello",), delay_seconds=10)
+        utils.background_execute(_test_func, ("Hello",), delay_seconds=10)
         mock_import.return_value.Timer.assert_called_once_with(
-            interval=10, function=utils._background_execute_wrapper, args=(test_func, ("Hello",), None)
+            interval=10,
+            function=utils._background_execute_wrapper,
+            args=(_test_func, ("Hello",), None),
         )
         mock_import.return_value.Timer().start.assert_called_once()
         mock.patch.stopall()
@@ -212,15 +219,15 @@ class TestComponentUtils(TestCase):
     def test_background_execute_repeat(self, mock_repeat_manager):
         mock_import = mock.patch("builtins.__import__").start()
 
-        def test_func(arg1):
+        def _test_func(arg1):
             pass
 
-        utils.background_execute(test_func, ("Hello",), repeat_seconds=1)
+        utils.background_execute(_test_func, ("Hello",), repeat_seconds=1)
         mock_import.assert_not_called()
         mock_repeat_manager.assert_called_once_with(
             repeat_seconds=1,
             target=utils._background_execute_wrapper,
-            args=(test_func, ("Hello",), None)
+            args=(_test_func, ("Hello",), None),
         )
         mock.patch.stopall()
 
@@ -231,18 +238,18 @@ class TestComponentUtils(TestCase):
         self.assertEqual(value, expected)
 
     def test_get_layout_component_layout_callable(self):
-        def test_layout_func():
+        def _test_layout_func():
             pass
 
         self.assertEqual(
-            utils._get_layout_component(self.app, test_layout_func), test_layout_func
+            utils._get_layout_component(self.app, _test_layout_func), _test_layout_func
         )
 
     def test_get_layout_component_default_layout_callable(self):
-        def test_layout_func():
+        def _test_layout_func():
             pass
 
-        self.app.default_layout = test_layout_func
+        self.app.default_layout = _test_layout_func
         self.assertEqual(
             utils._get_layout_component(self.app, "default"), self.app.default_layout
         )
@@ -316,12 +323,12 @@ class TestComponentUtils(TestCase):
 
     def test_args_to_attrdicts_wrapper(self):
         @utils.args_to_dot_notation_dicts
-        def test_func(arg1, arg2, arg3):
+        def _test_func(arg1, arg2, arg3):
             self.assertTrue(isinstance(arg1, utils.DotNotationDict))
             self.assertTrue(isinstance(arg2, utils.DotNotationDict))
             self.assertTrue(isinstance(arg3, str))
 
-        test_func(
+        _test_func(
             {"this": "is", "a": "test"}, {"how": "about", "another": "one"}, "done"
         )
 
@@ -353,6 +360,19 @@ class TestComponentUtils(TestCase):
 
         mock.patch.stopall()
 
+    def test_fetch(self):
+        mock_import = mock.patch("builtins.__import__").start()
+        test_content = "this is a test"
+        mock_import.return_value.get.return_value.text = test_content
+        test_url = "test-url"
+
+        data = utils.fetch(test_url)
+
+        mock_import.return_value.get.assert_called_once_with(test_url)
+        self.assertEqual(data, test_content)
+
+        mock.patch.stopall()
+
     def test_transform_coordinate(self):
         mock_import = mock.patch("builtins.__import__").start()
         coordinate = [0, 0]
@@ -371,6 +391,42 @@ class TestComponentUtils(TestCase):
 
         mock.patch.stopall()
 
+    def test_transform_coordinate_custom_projections(self):
+        mock_import = mock.patch("builtins.__import__").start()
+        coordinate = [0, 0]
+        src_proj = {"definition": "test src proj"}
+        target_proj = {"definition": "test src proj"}
+
+        result = utils.transform_coordinate(coordinate, src_proj, target_proj)
+
+        self.assertEqual(
+            mock_import.return_value.Transformer.from_crs.return_value.transform.return_value,
+            result,
+        )
+        mock_import.return_value.CRS.assert_has_calls(
+            [mock.call(src_proj["definition"]), mock.call(target_proj["definition"])]
+        )
+
+        mock.patch.stopall()
+
+    def test_transform_coordinate_invalid_src_proj(self):
+        mock.patch("builtins.__import__").start()
+        coordinate = [0, 0]
+        src_proj = 1234
+        target_proj = {"definition": "test src proj"}
+
+        with self.assertRaises(ValueError):
+            utils.transform_coordinate(coordinate, src_proj, target_proj)
+
+    def test_transform_coordinate_invalid_target_proj(self):
+        mock.patch("builtins.__import__").start()
+        coordinate = [0, 0]
+        src_proj = {"definition": "test src proj"}
+        target_proj = 1234
+
+        with self.assertRaises(ValueError):
+            utils.transform_coordinate(coordinate, src_proj, target_proj)
+
     def test_get_db_object(self):
         app = mock.MagicMock(db_object="expected")
         val = utils._get_db_object(app)
@@ -384,3 +440,240 @@ class TestComponentUtils(TestCase):
         utils._background_execute_wrapper(test_func, ("Hello",), callback)
         test_func.assert_called_once_with("Hello")
         callback.assert_called_once_with("Test")
+
+    def test_repeat_manager_start_and_cancel(self):
+        # Patch the Thread and Timer implementations on the class
+        rm = utils.RepeatManager(repeat_seconds=2, target=lambda: None, args=(1,))
+
+        with (
+            mock.patch.object(utils.RepeatManager, "Thread") as mock_thread_cls,
+            mock.patch.object(utils.RepeatManager, "Timer") as mock_timer_cls,
+        ):
+
+            # Make start/cancel available on instances
+            mock_thread = mock.MagicMock()
+            mock_timer = mock.MagicMock()
+            mock_thread_cls.return_value = mock_thread
+            mock_timer_cls.return_value = mock_timer
+
+            # Start the repeat manager
+            rm.start()
+
+            # Thread should be created and started for the first invocation
+            mock_thread_cls.assert_called()
+            mock_thread.start.assert_called_once()
+
+            # Timer should be created with the correct interval and function
+            mock_timer_cls.assert_called()
+            called_args, called_kwargs = mock_timer_cls.call_args
+            self.assertEqual(called_kwargs.get("interval"), 2)
+            self.assertTrue(callable(called_kwargs.get("function")))
+
+            # is_alive should be True after start
+            self.assertTrue(rm.is_alive())
+
+            # Cancel should stop the repeating timer
+            rm.cancel()
+            mock_timer.cancel.assert_called_once()
+            self.assertFalse(rm.is_alive())
+
+    def test_repeat_manager_repeat_schedules_timer_again(self):
+        # Verify that _repeat_function schedules another timer when running
+        rm = utils.RepeatManager(repeat_seconds=3, target=lambda: None, args=(1,))
+
+        with (
+            mock.patch.object(utils.RepeatManager, "Thread") as mock_thread_cls,
+            mock.patch.object(utils.RepeatManager, "Timer") as mock_timer_cls,
+        ):
+
+            mock_thread = mock.MagicMock()
+            mock_timer = mock.MagicMock()
+            mock_thread_cls.return_value = mock_thread
+            mock_timer_cls.return_value = mock_timer
+
+            # Directly call internal repeat function to simulate running state
+            rm._running = False
+            rm._repeat_function()
+            mock_thread.start.assert_not_called()
+            rm._running = True
+            rm._repeat_function()
+
+            # Should have started a Thread and scheduled a Timer
+            mock_thread.start.assert_called_once()
+            mock_timer.start.assert_called_once()
+            # The created timer instance should be stored on the manager
+            self.assertIs(rm._timer, mock_timer)
+
+    def test_get_legend_url_invalid_tag(self):
+        vdom = {"tagName": "Div", "attributes": {}}
+        with self.assertRaises(ValueError):
+            utils._get_legend_url_(vdom)
+
+    def test_get_legend_url_single_layer_list_returns_none(self):
+        # When LAYERS is a single-element list the function currently treats
+        # it as not a single-layer and will print and return None.
+        vdom = {
+            "tagName": "ImageWMSSource",
+            "attributes": {
+                "options": {
+                    "params": {"LAYERS": ["only_layer"]},
+                    "url": "http://example.com/wms",
+                }
+            },
+        }
+
+        with (
+            mock.patch("builtins.print") as mock_print,
+            mock.patch("builtins.__import__"),
+        ):
+            result = utils._get_legend_url_(vdom)
+            self.assertIsNone(result)
+            mock_print.assert_called_with("NOT SINGLE LAYER")
+
+    def test_get_legend_url_basic_with_layer_and_no_resolution(self):
+        vdom = {
+            "tagName": "TileWMSSource",
+            "attributes": {
+                "options": {
+                    "params": {"LAYER": "layer1"},
+                    "url": "http://example.com/wms",
+                }
+            },
+        }
+
+        with mock.patch("builtins.__import__") as mock_import:
+            mock_import.return_value.urljoin = urljoin
+            mock_import.return_value.urlencode = urlencode
+            url = utils._get_legend_url_(vdom)
+            self.assertIsInstance(url, str)
+            self.assertIn("GetLegendGraphic", url)
+            self.assertIn("LAYER=layer1", url)
+
+    def test_get_legend_url_basic_with_single_layer_in_layers(self):
+        vdom = {
+            "tagName": "TileWMSSource",
+            "attributes": {
+                "options": {
+                    "params": {"LAYERS": "layer1"},
+                    "url": "http://example.com/wms",
+                }
+            },
+        }
+
+        with mock.patch("builtins.__import__") as mock_import:
+            mock_import.return_value.urljoin = urljoin
+            mock_import.return_value.urlencode = urlencode
+            url = utils._get_legend_url_(vdom)
+            self.assertIsInstance(url, str)
+            self.assertIn("GetLegendGraphic", url)
+            self.assertIn("LAYER=layer1", url)
+
+    def test_get_legend_url_with_resolution_and_scale(self):
+        vdom = {
+            "tagName": "ImageWMSSource",
+            "attributes": {
+                "options": {
+                    "params": {"LAYER": "layerX", "projection": "EPSG:3857"},
+                    "url": "http://example.com/wms",
+                }
+            },
+        }
+
+        with mock.patch("builtins.__import__") as mock_import:
+            mock_import.return_value.urljoin = urljoin
+            mock_import.return_value.urlencode = urlencode
+            mock_crs = mock_import.return_value.CRS
+            mock_axis = mock.MagicMock()
+            mock_axis.unit_conversion_factor = 2
+            mock_crs.return_value.axis_info = [mock_axis]
+
+            # Call with resolution so SCALE is computed
+            result = utils._get_legend_url_(vdom, resolution=100)
+
+        self.assertIsInstance(result, str)
+        self.assertIn("GetLegendGraphic", result)
+        self.assertIn("SCALE=", result)
+
+    def test_get_feature_info_url_invalid_tag(self):
+        vdom = {"tagName": "Div", "attributes": {}}
+        with self.assertRaises(ValueError):
+            utils._get_feature_info_url_(vdom, [0, 0], 1, "EPSG:3857", "EPSG:3857")
+
+    def test_get_feature_info_url_not_implemented_for_diff_projections(self):
+        vdom = {
+            "tagName": "TileWMSSource",
+            "attributes": {
+                "options": {
+                    "params": {"LAYERS": "layer1"},
+                    "url": "http://example.com/wms",
+                }
+            },
+        }
+
+        with mock.patch("builtins.__import__"):
+            with self.assertRaises(NotImplementedError):
+                # map_proj != layer_proj triggers NotImplementedError
+                utils._get_feature_info_url_(vdom, [0, 0], 1, "EPSG:3857", "EPSG:4326")
+
+    def test_get_feature_info_url_success(self):
+        vdom = {
+            "tagName": "ImageWMSSource",
+            "attributes": {
+                "options": {
+                    "params": {"LAYERS": "layer1"},
+                    "url": "http://example.com/wms",
+                }
+            },
+        }
+
+        # Patch pyproj.CRS to provide predictable axis_info and directions
+        with mock.patch("builtins.__import__") as mock_import:
+            mock_import.return_value.urljoin = urljoin
+            mock_import.return_value.urlencode = urlencode
+            mock_crs = mock_import.return_value.CRS
+            mock_axis1 = mock.MagicMock()
+            mock_axis1.direction = "north"
+            mock_axis2 = mock.MagicMock()
+            mock_axis2.direction = "east"
+            mock_crs.return_value.axis_info = [mock_axis1, mock_axis2]
+
+            feature_url = utils._get_feature_info_url_(
+                vdom,
+                map_coordinate=[0, 0],
+                map_resolution=1,
+                map_proj="EPSG:3857",
+                layer_proj="EPSG:3857",
+            )
+
+        self.assertIsInstance(feature_url, str)
+        self.assertIn("GetFeatureInfo", feature_url)
+        self.assertIn("I=", feature_url)
+        self.assertIn("J=", feature_url)
+
+    def test_find_by_tag_various_structures(self):
+        # Nested dict/list structure with two matching tags
+        tree = {
+            "tagName": "root",
+            "children": [
+                {"tagName": "target", "children": []},
+                {
+                    "tagName": "branch",
+                    "children": [
+                        {"tagName": "target", "children": []},
+                        "some text",
+                    ],
+                },
+            ],
+        }
+
+        found = utils.find_by_tag(tree, "target")
+        self.assertEqual(len(found), 2)
+
+        # Top-level list input
+        found_list = utils.find_by_tag(
+            [tree, {"tagName": "target", "children": []}], "target"
+        )
+        self.assertEqual(len(found_list), 3)
+
+        # Non-element input returns empty list
+        self.assertEqual(utils.find_by_tag("not an element", "target"), [])

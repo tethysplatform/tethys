@@ -412,7 +412,7 @@ def _get_db_object(app):
     return app.db_object
 
 
-def get_legend_url(vdom_element, resolution=None, params=None):
+def _get_legend_url_(vdom_element, resolution=None, params=None):
     if vdom_element["tagName"] not in ["ImageWMSSource", "TileWMSSource"]:
         raise ValueError(
             "The get_legend_url method can only be called on ImageWMSSource or TileWMSSource components"
@@ -443,19 +443,15 @@ def get_legend_url(vdom_element, resolution=None, params=None):
         query_params["LAYER"] = layers
 
     if resolution:
-        mpu = 1
-        try:
-            mpu = (
-                CRS(
-                    source_params["projection"]
-                    if "projection" in source_params
-                    else "EPSG:3857"
-                )
-                .axis_info[0]
-                .unit_conversion_factor
+        mpu = (
+            CRS(
+                source_params["projection"]
+                if "projection" in source_params
+                else "EPSG:3857"
             )
-        except Exception:
-            pass
+            .axis_info[0]
+            .unit_conversion_factor
+        )
         pixelSize = 0.00028
         query_params["SCALE"] = (resolution * mpu) / pixelSize
 
@@ -464,7 +460,7 @@ def get_legend_url(vdom_element, resolution=None, params=None):
     return legend_url
 
 
-def get_feature_info_url(
+def _get_feature_info_url_(
     vdom_element, map_coordinate, map_resolution, map_proj, layer_proj, params=None
 ):
     if vdom_element["tagName"] not in ["ImageWMSSource", "TileWMSSource"]:

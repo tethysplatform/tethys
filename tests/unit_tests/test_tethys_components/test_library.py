@@ -2,7 +2,7 @@ import sys
 from json import dumps
 from unittest import TestCase, mock
 from pathlib import Path
-from tethys_components import library
+from tethys_components import library, utils
 import reactpy
 
 THIS_DIR = Path(__file__).parent
@@ -115,3 +115,15 @@ class TestComponentLibrary(TestCase):
 
         lib = library.ComponentLibrary("hooks_test")
         self.assertEqual(lib.hooks, hooks)
+
+    def test_callable_vdom_as_dict(self):
+        test_dict = {"test": 1, "foo": 2, "bar": 3}
+        instance = library._CallableVdom(**test_dict)
+        self.assertDictEqual(instance.as_dict(), test_dict)
+
+    @mock.patch("tethys_components.library.partial")
+    def test_callable_vdom_custom_util_func(self, mock_partial):
+        test_dict = {"test": 1, "foo": 2, "bar": 3}
+        instance = library._CallableVdom(**test_dict)
+        instance.get_feature_info_url
+        mock_partial.assert_called_once_with(utils._get_feature_info_url_, instance)
