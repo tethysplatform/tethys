@@ -23,6 +23,21 @@ TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
 
 class _CallableVdom(dict):
+    def as_dict(self):
+        return dict(self)
+
+    def __getattribute__(self, name):
+        if (
+            not name.startswith("__")
+            and hasattr(utils, f"_{name}_")
+            and callable(getattr(utils, f"_{name}_"))
+        ):
+            func = partial(getattr(utils, f"_{name}_"), self)
+            setattr(self, name, func)
+            return func
+        else:
+            return super().__getattribute__(name)
+
     def __call__(self, *args):
         self["children"] = list(args)
         return self
@@ -73,13 +88,8 @@ class _ReactPyElementWrapper:
             for k, v in kwargs.items():
                 if callable(v):
                     kwargs[k] = utils.args_to_dot_notation_dicts(v)
-            # Custom ReactPy
-            if self.component.startswith("ol") and any(
-                x in self.component for x in ["ol.source", "ol.layer", "ol.View"]
-            ):
-                args = [{"options": utils.Props(**kwargs)}]
-            else:
-                args = [utils.Props(**kwargs)]
+
+            args = [utils.Props(**kwargs)]
             kwargs = {}
         vdom = self.vdom_func(*args, **kwargs)
         return _CallableVdom(vdom)
@@ -155,7 +165,6 @@ class Package:
         self._components_by_path = {}
 
     def add_component(self, module_path, component):
-
         added = False
         if module_path not in self._components_by_path:
             self._components_by_path[module_path] = []
@@ -185,6 +194,7 @@ class Package:
         for i, (module_path, components) in enumerate(
             self.get_components_by_path().items()
         ):
+            module_path = f"{module_path}.js" if self.treat_as_path else module_path
             if i == 0:
                 exports_statement += "export {"
             non_default_components = [
@@ -301,15 +311,29 @@ class ComponentLibrary:
                 name="plotly-chart.js",
                 host="/static/tethys_apps/js",
             ),
+            "olmod": Package(
+                name="ol-mods",
+                host="/static/tethys_apps/js",
+                default_export="*",
+                treat_as_path=True,
+            ),
             "ol": Package(
                 name="@planet/maps@11.2.0",
                 default_export="*",
                 treat_as_path=True,
-                dependencies=["ol@10.4.0"],
-                styles=["https://esm.sh/ol@10.4.0/ol.css"],
+                dependencies=["ol@10.7.0"],
+                styles=["https://esm.sh/ol@10.7.0/ol.css"],
             ),
         }
     )
+
+    OVERRIDES = {
+        "ol.source.Vector": "olmod.source.Vector",
+        "ol.source.Image": "olmod.source.Image",
+        "ol.source.TileWMS": "olmod.source.TileWMS",
+        "ol.View": "olmod.View",
+        "ol.Overlay": "olmod.Overlay",
+    }
 
     def __init__(self, name):
         self.name = name
@@ -376,7 +400,9 @@ class ComponentLibrary:
 
         return content
 
-    def register(self, package, accessor, styles=None, default_export=None):
+    def register(
+        self, package, accessor, styles=None, default_export=None, treat_as_path=False
+    ):
         """
         Registers a new package to be used by the ComponentLibrary
 
@@ -427,7 +453,10 @@ class ComponentLibrary:
                     return lib.rgl.GridLayout(...)
         """
         new_package = Package(
-            name=package, styles=styles, default_export=default_export
+            name=package,
+            styles=styles,
+            default_export=default_export,
+            treat_as_path=treat_as_path,
         )
         self.CURATED_PACKAGES.check_package(accessor, new_package)
         if hasattr(self, accessor):
@@ -477,17 +506,25 @@ class ComponentLibrary:
         source_code = utils.remove_comments_and_docstrings(source_code)
 
         register_matches = re.findall(r"""lib\.register\([^\)]+\)""", source_code)
-        for register_match in register_matches:
-            capture_match = re.match(
-                r"""lib\.register\((?:package=)?['"]([^'"]+)['"], ?(?:accessor=)?['"]([^'"]+)['"],? ?(?:(?:styles=)?(\[[^\]]+\])?,? ?)(?:(?:default_export=)?['"]([^'"]+)['"])?""",
-                "".join(register_match.split()),
-            )
-            args = []
-            for m in capture_match.groups():
-                if m and m.startswith("[") and m.endswith("]") and len(m) > 2:
-                    m = eval(m)
-                args.append(m)
-            self.register(*args)
+        if register_matches:
+            import ast
+
+            ast_obj = ast.parse(source_code)
+            for node in ast.iter_child_nodes(ast_obj.body[0]):
+                if isinstance(node, ast.Expr):
+                    if isinstance(node.value, ast.Call):
+                        if isinstance(node.value.func, ast.Attribute):
+                            if node.value.func.attr == "register":
+                                register_args = []
+                                register_kwargs = {}
+                                for register_arg in node.value.args:
+                                    register_args.append(ast.literal_eval(register_arg))
+                                for register_kwarg in node.value.keywords:
+                                    register_kwargs[register_kwarg.arg] = (
+                                        ast.literal_eval(register_kwarg.value)
+                                    )
+                                self.register(*register_args, **register_kwargs)
+
         matches = re.findall(r"\blib\.([^\(]+)\(", source_code)
         for match in matches:
             try:
@@ -548,9 +585,21 @@ class DynamicPackageManager:
 
     def __getattr__(self, attr):
         component = f"{self.component}.{attr}" if self.component else attr
-        new_instance = DynamicPackageManager(
-            library=self.library, package=self.package, component=component
-        )
+        override_key = f"{self.package.accessor}.{component}"
+        if override_key in self.library.OVERRIDES:
+            override_accessor, override_component = self.library.OVERRIDES[
+                override_key
+            ].split(".", 1)
+            new_instance_base = getattr(
+                self.library, override_accessor
+            )  # Get or create the new instance of the override package if it does not exist
+            new_instance = getattr(
+                new_instance_base, override_component
+            )  # Create the new instance of the override component (a recursive call to this same __getattr__ method)
+        else:
+            new_instance = DynamicPackageManager(
+                library=self.library, package=self.package, component=component
+            )
         setattr(self, attr, new_instance)
         return new_instance
 
@@ -558,7 +607,7 @@ class DynamicPackageManager:
         component_parts = self.component.split(".")
         _component = self.component
 
-        if self.package.accessor == "ol":
+        if self.package.accessor in ["ol", "olmod"]:
             _component += "." + component_parts[-1]
             if len(component_parts) > 1:
                 _component += component_parts[-2].capitalize()
