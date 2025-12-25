@@ -1,8 +1,6 @@
-def test(lib):
+def page_test(lib):
     position, set_position = lib.hooks.use_state(None)
-    static_position = lib.utils.transform_coordinate(
-        [48.208889, 16.3725], "EPSG:4326", "EPSG:3857"
-    )
+    static_position = [48.208889, 16.3725]
 
     return lib.tethys.Display(
         lib.html.a(
