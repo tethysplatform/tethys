@@ -109,6 +109,6 @@ function makeJsonSafeEventHandler(oldHandler) {
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 2)));
+        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
     };
 }

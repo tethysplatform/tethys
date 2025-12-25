@@ -12,7 +12,7 @@ LIBRARY_EVAL_DIR = THIS_DIR / "test_resources" / "test_library"
 class TestComponentLibrary(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.test_pages = list(LIBRARY_EVAL_DIR.glob("test_page_*.py"))
+        cls.test_pages = list(LIBRARY_EVAL_DIR.glob("_test_page_*.py"))
         sys.path.append(str(LIBRARY_EVAL_DIR))
 
     @classmethod

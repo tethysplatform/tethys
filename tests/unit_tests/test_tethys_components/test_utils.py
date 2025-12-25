@@ -48,7 +48,7 @@ class TestComponentUtils(TestCase):
         # SETUP ARGS/ENV
         mock_iafst.return_value = self.app
         mock_import = mock.patch("builtins.__import__").start()
-        mock_import().use_query.return_value.loading = True
+        mock_import.return_value.use_query.return_value.loading = True
 
         # EXECUTE FUNCTION
         result = utils.use_workspace()
@@ -56,7 +56,7 @@ class TestComponentUtils(TestCase):
         # EVALUATE RESULT
         self.assertIsInstance(result, utils._PathsQuery)
         self.assertTrue(result.checking_quota)
-        mock_import().use_query.assert_called_once_with(
+        mock_import.return_value.use_query.assert_called_once_with(
             utils._get_app_workspace, {"app_or_request": self.app}, postprocessor=None
         )
         # CLEANUP
@@ -67,8 +67,8 @@ class TestComponentUtils(TestCase):
         # SETUP ARGS/ENV
         mock_iafst.return_value = self.app
         mock_import = mock.patch("builtins.__import__").start()
-        mock_import().use_query.return_value.loading = False
-        mock_import().use_query.return_value.error = True
+        mock_import.return_value.use_query.return_value.loading = False
+        mock_import.return_value.use_query.return_value.error = True
 
         # EXECUTE FUNCTION
         result = utils.use_workspace(self.user)
@@ -77,7 +77,7 @@ class TestComponentUtils(TestCase):
         self.assertIsInstance(result, utils._PathsQuery)
         self.assertFalse(result.checking_quota)
         self.assertTrue(result.quota_exceeded)
-        mock_import().use_query.assert_called_once_with(
+        mock_import.return_value.use_query.assert_called_once_with(
             utils._get_user_workspace,
             {"app_or_request": self.app, "user_or_request": self.user},
             postprocessor=None,
@@ -90,14 +90,14 @@ class TestComponentUtils(TestCase):
         # SETUP ARGS/ENV
         mock_iafst.return_value = self.app
         mock_import = mock.patch("builtins.__import__").start()
-        mock_import().use_query.return_value.loading = False
-        mock_import().use_query.return_value.error = False
+        mock_import.return_value.use_query.return_value.loading = False
+        mock_import.return_value.use_query.return_value.error = False
 
         # EXECUTE FUNCTION
         result = utils.use_workspace(self.user)
 
         # EVALUATE RESULT
-        self.assertEqual(result, mock_import().use_query.return_value.data)
+        self.assertEqual(result, mock_import.return_value.use_query.return_value.data)
         self.assertFalse(result.checking_quota)
         self.assertFalse(result.quota_exceeded)
 
@@ -109,7 +109,7 @@ class TestComponentUtils(TestCase):
         # SETUP ARGS/ENV
         mock_iafst.return_value = self.app
         mock_import = mock.patch("builtins.__import__").start()
-        mock_import().use_query.return_value.loading = True
+        mock_import.return_value.use_query.return_value.loading = True
 
         # EXECUTE FUNCTION
         result = utils.use_media()
@@ -117,7 +117,7 @@ class TestComponentUtils(TestCase):
         # EVALUATE RESULT
         self.assertIsInstance(result, utils._PathsQuery)
         self.assertTrue(result.checking_quota)
-        mock_import().use_query.assert_called_once_with(
+        mock_import.return_value.use_query.assert_called_once_with(
             utils._get_app_media, {"app_or_request": self.app}, postprocessor=None
         )
         # CLEANUP
@@ -128,8 +128,8 @@ class TestComponentUtils(TestCase):
         # SETUP ARGS/ENV
         mock_iafst.return_value = self.app
         mock_import = mock.patch("builtins.__import__").start()
-        mock_import().use_query.return_value.loading = False
-        mock_import().use_query.return_value.error = True
+        mock_import.return_value.use_query.return_value.loading = False
+        mock_import.return_value.use_query.return_value.error = True
 
         # EXECUTE FUNCTION
         result = utils.use_media(self.user)
@@ -138,7 +138,7 @@ class TestComponentUtils(TestCase):
         self.assertIsInstance(result, utils._PathsQuery)
         self.assertFalse(result.checking_quota)
         self.assertTrue(result.quota_exceeded)
-        mock_import().use_query.assert_called_once_with(
+        mock_import.return_value.use_query.assert_called_once_with(
             utils._get_user_media,
             {"app_or_request": self.app, "user_or_request": self.user},
             postprocessor=None,
@@ -151,14 +151,14 @@ class TestComponentUtils(TestCase):
         # SETUP ARGS/ENV
         mock_iafst.return_value = self.app
         mock_import = mock.patch("builtins.__import__").start()
-        mock_import().use_query.return_value.loading = False
-        mock_import().use_query.return_value.error = False
+        mock_import.return_value.use_query.return_value.loading = False
+        mock_import.return_value.use_query.return_value.error = False
 
         # EXECUTE FUNCTION
         result = utils.use_media(self.user)
 
         # EVALUATE RESULT
-        self.assertEqual(result, mock_import().use_query.return_value.data)
+        self.assertEqual(result, mock_import.return_value.use_query.return_value.data)
         self.assertFalse(result.checking_quota)
         self.assertFalse(result.quota_exceeded)
 
@@ -186,15 +186,13 @@ class TestComponentUtils(TestCase):
 
         def test_func(arg1):
             pass
-
-        utils.background_execute(test_func, ["Hello"])
-        mock_import().Thread.assert_called_once_with(
+        
+        utils.background_execute(test_func, ("Hello",))
+        mock_import.return_value.Thread.assert_called_once_with(
             target=utils._background_execute_wrapper,
-            func=test_func,
-            args=["Hello"],
-            callback=None,
+            args=(test_func, ("Hello",), None)
         )
-        mock_import().Thread().start.assert_called_once()
+        mock_import.return_value.Thread().start.assert_called_once()
         mock.patch.stopall()
 
     def test_background_execute_delay(self):
@@ -203,42 +201,27 @@ class TestComponentUtils(TestCase):
         def test_func(arg1):
             pass
 
-        utils.background_execute(test_func, ["Hello"], delay_seconds=10)
-        mock_import().Timer.assert_called_once_with(
-            10, utils._background_execute_wrapper, [test_func, ["Hello"], None]
+        utils.background_execute(test_func, ("Hello",), delay_seconds=10)
+        mock_import.return_value.Timer.assert_called_once_with(
+            interval=10, function=utils._background_execute_wrapper, args=(test_func, ("Hello",), None)
         )
-        mock_import().Timer().start.assert_called_once()
+        mock_import.return_value.Timer().start.assert_called_once()
         mock.patch.stopall()
 
-    def test_background_execute_repeat(self):
+    @mock.patch("tethys_components.utils.RepeatManager")
+    def test_background_execute_repeat(self, mock_repeat_manager):
         mock_import = mock.patch("builtins.__import__").start()
 
         def test_func(arg1):
             pass
 
-        utils.background_execute(test_func, ["Hello"], repeat_seconds=1)
-        mock_import().Thread.assert_has_calls(
-            [
-                mock.call(
-                    target=utils._background_execute_wrapper,
-                    func=test_func,
-                    args=["Hello"],
-                    callback=None,
-                ),
-                mock.call().start(),
-                mock.call(
-                    target=utils._background_execute_wrapper,
-                    func=test_func,
-                    args=["Hello"],
-                    callback=None,
-                ),
-                mock.call().start(),
-            ]
+        utils.background_execute(test_func, ("Hello",), repeat_seconds=1)
+        mock_import.assert_not_called()
+        mock_repeat_manager.assert_called_once_with(
+            repeat_seconds=1,
+            target=utils._background_execute_wrapper,
+            args=(test_func, ("Hello",), None)
         )
-        self.assertEqual(mock_import().Thread().start.call_count, 2)
-        mock_import().Timer.assert_called_once()
-        self.assertEqual(mock_import().Timer.call_args.args[0], 1)
-        mock_import().Timer().start.assert_called_once()
         mock.patch.stopall()
 
     def test_props_all_cases_combined(self):
@@ -398,6 +381,6 @@ class TestComponentUtils(TestCase):
         test_func.return_value = "Test"
         callback = mock.MagicMock()
 
-        utils._background_execute_wrapper(test_func, ["Hello"], callback)
+        utils._background_execute_wrapper(test_func, ("Hello",), callback)
         test_func.assert_called_once_with("Hello")
         callback.assert_called_once_with("Test")
