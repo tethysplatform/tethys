@@ -284,21 +284,21 @@ class TestComponentUtils(TestCase):
         d = utils.DotNotationDict(test_dict)
 
         self.assertTrue(hasattr(d, "camel_prop"))
-        self.assertTrue(isinstance(d.camel_prop, list))
+        self.assertIsInstance(d.camel_prop, list)
         self.assertEqual(len(d.camel_prop), 1)
-        self.assertTrue(isinstance(d.camel_prop[0], utils.DotNotationDict))
+        self.assertIsInstance(d.camel_prop[0], utils.DotNotationDict)
         self.assertTrue(hasattr(d.camel_prop[0], "list"))
         self.assertEqual(d.camel_prop[0].list, "of")
         self.assertTrue(hasattr(d.camel_prop[0], "props"))
-        self.assertTrue(isinstance(d.camel_prop[0].props, list))
+        self.assertIsInstance(d.camel_prop[0].props, list)
         self.assertEqual(len(d.camel_prop[0].props), 3)
         self.assertEqual(d.camel_prop[0].props[0], "that")
-        self.assertTrue(isinstance(d.camel_prop[0].props[1], utils.DotNotationDict))
+        self.assertIsInstance(d.camel_prop[0].props[1], utils.DotNotationDict)
         self.assertTrue(hasattr(d.camel_prop[0].props[1], "are"))
         self.assertEqual(d.camel_prop[0].props[1].are, "all")
         self.assertEqual(d.camel_prop[0].props[2], "very")
         self.assertTrue(hasattr(d.camel_prop[0], "differ_ent"))
-        self.assertTrue(isinstance(d.camel_prop[0].differ_ent, list))
+        self.assertIsInstance(d.camel_prop[0].differ_ent, list)
         self.assertEqual(len(d.camel_prop[0].differ_ent), 2)
         self.assertTrue(
             isinstance(d.camel_prop[0].differ_ent[0], utils.DotNotationDict)
@@ -315,7 +315,7 @@ class TestComponentUtils(TestCase):
         self.assertTrue(hasattr(d, "update_"))
         self.assertEqual(d.update_, 100)
         self.assertTrue(hasattr(d, "one_more"))
-        self.assertTrue(isinstance(d.one_more, utils.DotNotationDict))
+        self.assertIsInstance(d.one_more, utils.DotNotationDict)
         self.assertTrue(hasattr(d.one_more, "howbout"))
         self.assertEqual(d.one_more.howbout, "this")
         with self.assertRaises(AttributeError):
@@ -324,9 +324,9 @@ class TestComponentUtils(TestCase):
     def test_args_to_attrdicts_wrapper(self):
         @utils.args_to_dot_notation_dicts
         def _test_func(arg1, arg2, arg3):
-            self.assertTrue(isinstance(arg1, utils.DotNotationDict))
-            self.assertTrue(isinstance(arg2, utils.DotNotationDict))
-            self.assertTrue(isinstance(arg3, str))
+            self.assertIsInstance(arg1, utils.DotNotationDict)
+            self.assertIsInstance(arg2, utils.DotNotationDict)
+            self.assertIsInstance(arg3, str)
 
         _test_func(
             {"this": "is", "a": "test"}, {"how": "about", "another": "one"}, "done"
@@ -341,7 +341,7 @@ class TestComponentUtils(TestCase):
         data = utils.fetch_json(test_url)
 
         mock_import.return_value.get.assert_called_once_with(test_url)
-        self.assertTrue(isinstance(data, utils.DotNotationDict))
+        self.assertIsInstance(data, utils.DotNotationDict)
         self.assertEqual(data.this, "is")
         self.assertEqual(data.a, "test")
 
