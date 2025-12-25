@@ -55,12 +55,20 @@ def page_test(lib):
                         padding="1em",
                         border="1px black solid",
                     )
-                )(f"You clicked at: {", ".join(map(str, position))}"),
+                )(f"You clicked at: {', '.join(map(str, position))}"),
             )
             if position
             else lib.html.div()
         ),
-        lib.tethys.Map(key="map", onClick=lambda e: set_position(e.coordinate))(
+        lib.tethys.Map(
+            key="map",
+            projection=lib.Props(
+                code="EPSG:21781",
+                extent=[485869.5728, 76443.1884, 837076.5648, 299941.7864],
+            ),
+            center=[660000, 190000],
+            onClick=lambda e: set_position(e.coordinate),
+        )(
             lib.ol.Overlay(
                 options=lib.Props(stopEvent=False),
                 position=static_position,
@@ -80,5 +88,6 @@ def page_test(lib):
                 if position
                 else None
             ),
+            None,
         ),
     )

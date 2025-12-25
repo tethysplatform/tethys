@@ -21,13 +21,6 @@ logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 
-CUSTOM_VDOM_FUNCS = {
-    "get_feature_info_url": {
-        "tags": ["ImageWMSSource", "TileWMSSource"],
-        "function": utils.get_feature_info_url,
-    }
-}
-
 
 class _CallableVdom(dict):
     def as_dict(self):
@@ -36,10 +29,10 @@ class _CallableVdom(dict):
     def __getattribute__(self, name):
         if (
             not name.startswith("__")
-            and hasattr(utils, name)
-            and callable(getattr(utils, name))
+            and hasattr(utils, f"_{name}_")
+            and callable(getattr(utils, f"_{name}_"))
         ):
-            func = partial(getattr(utils, name), self)
+            func = partial(getattr(utils, f"_{name}_"), self)
             setattr(self, name, func)
             return func
         else:
