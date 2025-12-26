@@ -16,3 +16,6 @@ if has_module("django_tenants"):
     class TethysTenantsConfig(AppConfig):
         name = "tethys_tenants"
         verbose_name = "Tethys Tenants"
+
+        def ready(self):
+            import tethys_tenants.checks
