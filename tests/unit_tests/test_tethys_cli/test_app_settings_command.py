@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import json
 from unittest import mock
@@ -242,6 +243,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.TethysApp")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @pytest.mark.django_db
     def test_app_settings_list_command_object_does_not_exist(
         self, mock_pretty_output, MockTethysApp
     ):

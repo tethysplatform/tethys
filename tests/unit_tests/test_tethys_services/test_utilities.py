@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 
@@ -603,6 +604,7 @@ class TestUtilites(unittest.TestCase):
     @mock.patch("tethys_services.utilities.activate_wps")
     @mock.patch("tethys_services.utilities.WebProcessingService")
     @mock.patch("tethys_services.utilities.issubclass")
+    @pytest.mark.django_db
     def test_list_wps_service_engines_apps(
         self, mock_issubclass, mock_wps, mock_activate_wps
     ):
