@@ -33,21 +33,36 @@ Use the following instructions to setup multi-tenancy for your Tethys Portal dep
 Configuration
 -------------
 
-Enable multi-tenancy by overriding the database engine to use the ``django-tenants`` backend:
+Enable multi-tenancy by making the following changes to your settings:
+
+Begin by enabling Tethys Tenants:
 
 .. code-block:: yaml
+   :emphasize-lines: 3-4
+
+   settings:
+     ...
+     TENANTS_CONFIG:
+       ENABLED: true
+
+Next, override the database engine to use the ``django-tenants`` backend:
+
+.. code-block:: yaml
+    :emphasize-lines: 4
 
     settings:
-        DATABASES:
-          default:
-            ENGINE: django_tenants.postgresql_backend
+      DATABASES:
+        default:
+          ENGINE: django_tenants.postgresql_backend
 
 You can customize the multi-tenancy behavior with the following settings:
 
 .. code-block:: yaml
+    :emphasize-lines: 4-9
 
     settings:
       TENANTS_CONFIG:
+        ENABLED: true
         TENANT_APPS:
           - "tethys_apps"
           - "tethys_config"
