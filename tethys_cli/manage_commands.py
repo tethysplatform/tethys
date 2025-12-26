@@ -17,22 +17,21 @@ from tethys_cli.cli_colors import write_warning
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
 
 
-
 MANAGE_START = "start"
 MANAGE_COLLECTSTATIC = "collectstatic"
 MANAGE_COLLECTWORKSPACES = "collectworkspaces"
 MANAGE_COLLECT = "collectall"
 MANAGE_GET_PATH = "path"
 MANAGE_TENANTS = [
-    "migrate_schemas", 
-    "tenant_command", 
-    "all_tenants_command", 
-    "create_tenant_superuser", 
-    "create_tenant", 
-    "delete_tenant", 
-    "clone_tenant", 
-    "rename_schema", 
-    "create_missing_schemas"
+    "migrate_schemas",
+    "tenant_command",
+    "all_tenants_command",
+    "create_tenant_superuser",
+    "create_tenant",
+    "delete_tenant",
+    "clone_tenant",
+    "rename_schema",
+    "create_missing_schemas",
 ]
 
 
@@ -202,9 +201,9 @@ def manage_command(args, unknown_args=None):
         if not getattr(settings, "TENANTS_ENABLED", False):
             write_warning(
                 "Multi-tenancy features are not enabled. To enable multi-tenancy, set 'TENANTS_CONFIG.ENABLED"
-                "to true in your portal_config.yml file. " \
+                "to true in your portal_config.yml file. "
                 "You can use the following command to do so:\n\n"
-                "tethys settings --set TENANTS_CONFIG.ENABLED true\n\n" \
+                "tethys settings --set TENANTS_CONFIG.ENABLED true\n\n"
                 "For more information, see the documentation at "
                 f"{DOCS_BASE_URL}tethys_portal/multi_tenancy.html"
             )
