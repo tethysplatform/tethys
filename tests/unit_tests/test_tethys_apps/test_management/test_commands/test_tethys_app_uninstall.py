@@ -1,3 +1,4 @@
+import pytest
 import sys
 
 try:
@@ -34,6 +35,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch(
         "tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_items"
     )
+    @pytest.mark.django_db
     def test_tethys_app_uninstall_handle_apps_cancel(
         self, mock_installed_items, mock_input, mock_stdout, mock_exit
     ):
