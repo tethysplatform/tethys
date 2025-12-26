@@ -361,21 +361,11 @@ TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 ROOT_URLCONF = "tethys_portal.urls"
 
 # Django Tenants settings
-if has_module("django_tenants"):
-    TENANTS_CONFIG = portal_config_settings.pop("TENANTS_CONFIG", {})
-
+TENANTS_CONFIG = portal_config_settings.pop("TENANTS_CONFIG", {})
+TENANTS_ENABLED = TENANTS_CONFIG.pop("ENABLED", False)
+if has_module("django_tenants") and TENANTS_ENABLED:
     # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
     # Set up in portal_config.yml
-    if DATABASES["default"]["ENGINE"] != "django_tenants.postgresql_backend":
-        print("")
-        write_warning(
-            "The database engine for the default database must be set to "
-            "'django_tenants.postgresql_backend' to use multi-tenancy features. "
-            "Please update your portal_config.yml file accordingly."
-            "You can use the following command to do so:\n\n"
-            "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n"
-        )
-
     DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
     TENANT_LIMIT_SET_CALLS = TENANTS_CONFIG.pop("TENANT_LIMIT_SET_CALLS", False)
