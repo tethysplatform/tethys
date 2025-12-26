@@ -18,4 +18,4 @@ if has_module("django_tenants"):
         verbose_name = "Tethys Tenants"
 
         def ready(self):
-            import tethys_tenants.checks
+            import tethys_tenants.checks  # noqa: F401
