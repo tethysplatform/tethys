@@ -36,7 +36,6 @@ from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import relative_to_tethys_home
 from tethys_utils import deprecation_warning
 from tethys_cli.gen_commands import generate_secret_key
-from tethys_cli.cli_colors import write_warning
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
