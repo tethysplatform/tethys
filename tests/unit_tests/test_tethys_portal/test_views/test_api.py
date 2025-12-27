@@ -32,6 +32,7 @@ class TethysPortalApiTests(TethysTestCase):
         self.reload_urlconf()
         pass
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_csrf_not_authenticated(self):
         """Test get_csrf API endpoint not authenticated and check deprecation warning."""
         with warnings.catch_warnings(record=True) as w:
@@ -47,7 +48,7 @@ class TethysPortalApiTests(TethysTestCase):
                 )
             )
 
-    @override_settings(ENABLE_OPEN_PORTAL=True)
+    @override_settings(ENABLE_OPEN_PORTAL=True, SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_csrf_not_authenticated_but_open_portal(self):
         """Test get_csrf API endpoint not authenticated and check deprecation warning."""
         self.client.force_login(self.user)
@@ -66,6 +67,7 @@ class TethysPortalApiTests(TethysTestCase):
                 )
             )
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_csrf_authenticated(self):
         """Test get_csrf API endpoint authenticated and check deprecation warning."""
         self.client.force_login(self.user)
@@ -84,6 +86,7 @@ class TethysPortalApiTests(TethysTestCase):
                 )
             )
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_session_not_authenticated(self):
         """Test get_session API endpoint not authenticated and check deprecation warning."""
         with warnings.catch_warnings(record=True) as w:
@@ -99,7 +102,7 @@ class TethysPortalApiTests(TethysTestCase):
                 )
             )
 
-    @override_settings(ENABLE_OPEN_PORTAL=True)
+    @override_settings(ENABLE_OPEN_PORTAL=True, SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_session_not_authenticated_but_open_portal(self):
         """Test get_session API endpoint not authenticated and check deprecation warning."""
         with warnings.catch_warnings(record=True) as w:
@@ -119,6 +122,7 @@ class TethysPortalApiTests(TethysTestCase):
                 )
             )
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_session_authenticated(self):
         """Test get_session API endpoint authenticated and check deprecation warning."""
         self.client.force_login(self.user)
@@ -139,6 +143,7 @@ class TethysPortalApiTests(TethysTestCase):
                 )
             )
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_whoami_not_authenticated(self):
         """Test get_whoami API endpoint not authenticated."""
         response = self.client.get(reverse("api:get_whoami"))
@@ -149,6 +154,7 @@ class TethysPortalApiTests(TethysTestCase):
             {"username": "", "isAuthenticated": False, "isStaff": False}, json
         )
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_whoami_authenticated(self):
         """Test get_whoami API endpoint authenticated."""
         self.client.force_login(self.user)
@@ -166,6 +172,7 @@ class TethysPortalApiTests(TethysTestCase):
         self.assertEqual("foo", json["username"])
         self.assertTrue(json["isAuthenticated"])
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_whoami_authenticated_gravatar_exception(self):
         """Test get_whoami API endpoint when gravatar fails."""
         from unittest.mock import patch
@@ -193,6 +200,7 @@ class TethysPortalApiTests(TethysTestCase):
     @override_settings(STATIC_URL="/static")
     @override_settings(PREFIX_URL="/")
     @override_settings(LOGIN_URL="/accounts/login/")
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_app_valid_id(self):
         self.reload_urlconf()
 
@@ -231,6 +239,7 @@ class TethysPortalApiTests(TethysTestCase):
     @override_settings(PREFIX_URL="test/prefix")
     @override_settings(LOGIN_URL="/test/prefix/test/login/")
     @override_settings(STATIC_URL="/test/prefix/test/static/")
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_app_valid_id_with_prefix(self):
         self.reload_urlconf()
 
@@ -271,6 +280,7 @@ class TethysPortalApiTests(TethysTestCase):
     @override_settings(STATIC_URL="/static")
     @override_settings(PREFIX_URL="/")
     @override_settings(LOGIN_URL="/accounts/login/")
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_app_authenticated(self):
         self.client.force_login(self.user)
         self.reload_urlconf()
@@ -318,6 +328,7 @@ class TethysPortalApiTests(TethysTestCase):
             json["customSettings"],
         )
 
+    @override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_get_app_invalid_id(self):
         """Test get_app API endpoint with invalid app id."""
         response = self.client.get(reverse("api:get_app", kwargs={"app": "foo-bar"}))
