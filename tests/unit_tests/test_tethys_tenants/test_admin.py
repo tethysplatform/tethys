@@ -1,6 +1,6 @@
 import importlib
 from unittest import mock
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory
 from django.contrib import admin
 from django.http import Http404
 from django.contrib.admin.sites import AdminSite
@@ -38,7 +38,6 @@ def test_is_public_schema_function():
     assert not tethys_tenants_admin.is_public_schema(tenant_request)
 
 
-
 def test_public_schema_only_decorator():
     @tethys_tenants_admin.public_schema_only
     def dummy_view(self, request):
@@ -57,12 +56,10 @@ def test_public_schema_only_decorator():
         dummy_view(None, tenant_request)
 
 
-
 def test_domain_admin_registration():
     registry = admin.site._registry
     assert models.Domain in registry
     assert isinstance(registry[models.Domain], tethys_tenants_admin.DomainAdmin)
-
 
 
 def test_tenant_admin_registration():
@@ -71,11 +68,9 @@ def test_tenant_admin_registration():
     assert isinstance(registry[models.Tenant], tethys_tenants_admin.TenantAdmin)
 
 
-
 def test_tenant_admin_configuration(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
     assert admin_instance.list_display == ("name",)
-
 
 
 def test_domain_admin_has_module_permission(setup_test):
@@ -92,7 +87,6 @@ def test_domain_admin_has_module_permission(setup_test):
     assert not admin_instance.has_module_permission(tenant_request)
 
 
-
 def test_tenant_admin_has_module_permission(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
 
@@ -107,21 +101,17 @@ def test_tenant_admin_has_module_permission(setup_test):
     assert not admin_instance.has_module_permission(tenant_request)
 
 
-
 def test_domain_admin_changelist_view_public_schema(setup_test):
     admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
 
     public_request = mock.MagicMock()
     public_request.tenant.schema_name = "public"
 
-    with mock.patch(
-        "django.contrib.admin.ModelAdmin.changelist_view"
-    ) as mock_super:
+    with mock.patch("django.contrib.admin.ModelAdmin.changelist_view") as mock_super:
         mock_super.return_value = "success"
         result = admin_instance.changelist_view(public_request)
         assert result == "success"
         mock_super.assert_called_once_with(public_request, None)
-
 
 
 def test_domain_admin_changelist_view_tenant_schema(setup_test):
@@ -134,9 +124,10 @@ def test_domain_admin_changelist_view_tenant_schema(setup_test):
         admin_instance.changelist_view(tenant_request)
 
 
-
 @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
-def test_admin_graceful_handling_without_django_tenants(mock_has_module, ):
+def test_admin_graceful_handling_without_django_tenants(
+    mock_has_module,
+):
     importlib.reload(tethys_tenants_admin)
 
     # Verify has_module was called
