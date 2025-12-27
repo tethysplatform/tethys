@@ -1,9 +1,7 @@
 import importlib
 from unittest import mock
-from django.test import TestCase
 
 from tethys_tenants import models
-import pytest
 
 
 def test_tenant_model_exists():
@@ -13,11 +11,9 @@ def test_tenant_model_exists():
     assert models.Tenant.auto_create_schema
 
 
-
 def test_domain_model_exists():
     # Domain inherits from DomainMixin, so just checking it exists
     assert models.Domain is not None
-
 
 
 @mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
