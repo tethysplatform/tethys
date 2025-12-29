@@ -200,7 +200,7 @@ def manage_command(args, unknown_args=None):
         DATABASES = getattr(settings, "DATABASES", {})
         if not getattr(settings, "TENANTS_ENABLED", False):
             write_warning(
-                "Multi-tenancy features are not enabled. To enable multi-tenancy, set 'TENANTS_CONFIG.ENABLED"
+                "Multi-tenancy features are not enabled. To enable multi-tenancy, set 'TENANTS_CONFIG.ENABLED "
                 "to true in your portal_config.yml file. "
                 "You can use the following command to do so:\n\n"
                 "tethys settings --set TENANTS_CONFIG.ENABLED true\n\n"
