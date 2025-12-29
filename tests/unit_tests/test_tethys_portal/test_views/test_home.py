@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 
@@ -29,6 +30,7 @@ class TethysPortalHomeTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.home.render")
     @mock.patch("tethys_portal.views.home.redirect")
     @mock.patch("tethys_portal.views.home.settings")
+    @pytest.mark.django_db
     def test_home_with_no_attribute(
         self, mock_settings, mock_redirect, mock_render, mock_hasattr
     ):

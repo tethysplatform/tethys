@@ -65,7 +65,7 @@ class HandoffManager:
                 handlers = [handler for handler in handlers if not handler.internal]
 
             if jsonify:
-                handlers = json.dumps([handler.__dict__ for handler in handlers])
+                handlers = json.dumps([handler.__dict__() for handler in handlers])
 
             return handlers
 

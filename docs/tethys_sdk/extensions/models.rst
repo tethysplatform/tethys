@@ -26,7 +26,7 @@ Extensions are not able to be linked to databases, but they can be used to store
         id = Column(Integer, autoincrement=True, primary_key=True)
         name = Column(String)
         description = Column(String)
-        date_created = Column(DateTime, default=datetime.datetime.utcnow)
+        date_created = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
 
 
 To initialize the tables using a model defined in an extension, import the declarative base from the extension in the initializer function for the persistent store database you'd like to initialize:

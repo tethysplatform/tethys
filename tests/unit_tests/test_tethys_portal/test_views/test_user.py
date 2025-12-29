@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from unittest import mock
@@ -286,6 +287,7 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user.Token.objects.get_or_create")
     @mock.patch("tethys_portal.views.user.UserSettingsForm")
     @mock.patch("tethys_portal.views.user.render")
+    @pytest.mark.django_db
     def test_settings_request_get(
         self,
         mock_render,
@@ -488,6 +490,7 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user._convert_storage_units")
     @mock.patch("tethys_portal.views.user.SingletonHarvester")
     @mock.patch("tethys_portal.views.user.render")
+    @pytest.mark.django_db
     def test_manage_storage_successful(
         self, mock_render, mock_harvester, mock_convert_storage, _, __
     ):

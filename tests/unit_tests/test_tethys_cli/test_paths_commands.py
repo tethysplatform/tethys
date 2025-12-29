@@ -223,6 +223,11 @@ class TestPathsCommandAddFileToPath(TestCase):
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
 
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
+
         mock_path.return_value = mock_file
 
         mock_gra.return_value = {"resource_available": 1500}
@@ -266,6 +271,11 @@ class TestPathsCommandAddFileToPath(TestCase):
 
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
+
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
 
         mock_path.return_value = mock_file
 
@@ -311,6 +321,11 @@ class TestPathsCommandAddFileToPath(TestCase):
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
 
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
+
         mock_path.return_value = mock_file
 
         mock_gra.return_value = {"resource_available": 1500}
@@ -355,6 +370,11 @@ class TestPathsCommandAddFileToPath(TestCase):
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
 
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{media}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
+
         mock_path.return_value = mock_file
 
         mock_gra.return_value = {"resource_available": 1500}
@@ -397,6 +417,11 @@ class TestPathsCommandAddFileToPath(TestCase):
 
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
+
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{media}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
 
         mock_path.return_value = mock_file
 
@@ -442,6 +467,11 @@ class TestPathsCommandAddFileToPath(TestCase):
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
 
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{public}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
+
         mock_path.return_value = mock_file
 
         mock_gra.return_value = {"resource_available": 1500}
@@ -484,6 +514,11 @@ class TestPathsCommandAddFileToPath(TestCase):
 
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
+
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{resources}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
 
         mock_path.return_value = mock_file
 
@@ -608,9 +643,12 @@ class TestPathsCommandAddFileToPath(TestCase):
         mock_file.name = file_name
         mock_file.stat.return_value = 1024
 
-        mock_file.is_file.return_value = True
         # Mock the destination file already existing
-        mock_file.exists.return_value = True
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = True
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
+
         mock_path.return_value = mock_file
 
         mock_return = mock.MagicMock()
@@ -646,6 +684,11 @@ class TestPathsCommandAddFileToPath(TestCase):
 
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
+
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
 
         mock_path.return_value = mock_file
 
@@ -690,6 +733,11 @@ class TestPathsCommandAddFileToPath(TestCase):
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
 
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
+
         mock_path.return_value = mock_file
 
         # Mock the resource avilable as 300 bytes so 1024 will exceed it
@@ -729,6 +777,11 @@ class TestPathsCommandAddFileToPath(TestCase):
 
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
+
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
 
         mock_path.return_value = mock_file
 
@@ -772,6 +825,11 @@ class TestPathsCommandAddFileToPath(TestCase):
 
         mock_file.exists.return_value = False
         mock_file.__str__.return_value = file_name
+
+        mock_destination = mock.MagicMock()
+        mock_destination.exists.return_value = False
+        mock_destination.__str__.return_value = f"{workspace}/{file_name}"
+        mock_file.__truediv__.return_value = mock_destination
 
         mock_path.return_value = mock_file
 
