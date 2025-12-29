@@ -730,7 +730,8 @@ def render_template(file_type, context, destination_path):
 
 
 def write_path_to_console(file_path, args):
-    write_info(f'File generated at "{file_path}".')
+    action_performed = getattr(args, "action_performed", "generated")
+    write_info(f'File {action_performed} at "{file_path}".')
 
 
 def get_target_tethys_app_dir(args):

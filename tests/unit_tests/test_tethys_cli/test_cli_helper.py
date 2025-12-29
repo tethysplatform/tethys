@@ -301,9 +301,9 @@ def test_gen_salt_string_for_setting_with_secrets_deleted_or_changed(
 
 @mock.patch("tethys_cli.cli_helpers.input")
 @pytest.mark.django_db
-def test_prompt_yes_or_no__accept_default_yes(mock_input, test_app):
+def test_prompt_yes_or_no__yes(mock_input):
     question = "How are you?"
-    mock_input.return_value = None
+    mock_input.return_value = "y"
     test_val = cli_helper.prompt_yes_or_no(question)
     assert test_val
     mock_input.assert_called_once()
@@ -311,30 +311,30 @@ def test_prompt_yes_or_no__accept_default_yes(mock_input, test_app):
 
 @mock.patch("tethys_cli.cli_helpers.input")
 @pytest.mark.django_db
-def test_prompt_yes_or_no__accept_default_no(mock_input, test_app):
+def test_prompt_yes_or_no__no(mock_input):
     question = "How are you?"
-    mock_input.return_value = None
-    test_val = cli_helper.prompt_yes_or_no(question, default="n")
+    mock_input.return_value = "no"
+    test_val = cli_helper.prompt_yes_or_no(question)
     assert not test_val
     mock_input.assert_called_once()
 
 
 @mock.patch("tethys_cli.cli_helpers.input")
 @pytest.mark.django_db
-def test_prompt_yes_or_no__invalid_first(mock_input, test_app):
+def test_prompt_yes_or_no__invalid_first(mock_input):
     question = "How are you?"
     mock_input.side_effect = ["invalid", "y"]
-    test_val = cli_helper.prompt_yes_or_no(question, default="n")
+    test_val = cli_helper.prompt_yes_or_no(question)
     assert test_val
     assert mock_input.call_count == 2
 
 
 @mock.patch("tethys_cli.cli_helpers.input")
 @pytest.mark.django_db
-def test_prompt_yes_or_no__system_exit(mock_input, test_app):
+def test_prompt_yes_or_no__system_exit(mock_input):
     question = "How are you?"
     mock_input.side_effect = SystemExit
-    test_val = cli_helper.prompt_yes_or_no(question, default="n")
+    test_val = cli_helper.prompt_yes_or_no(question)
     assert test_val is None
     mock_input.assert_called_once()
 
