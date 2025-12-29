@@ -2,7 +2,10 @@ import pytest
 from tethys_quotas.models import ResourceQuota, UserQuota, TethysAppQuota
 from tethys_apps.models import TethysApp
 
+from django.test import override_settings
 
+
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_resource_quotas_list(admin_client, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -10,6 +13,7 @@ def test_admin_resource_quotas_list(admin_client, load_quotas):
     assert response.status_code == 200
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_resource_quotas_change(admin_client, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -20,6 +24,7 @@ def test_admin_resource_quotas_change(admin_client, load_quotas):
     assert response.status_code == 200
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_tethys_app_quotas_inline_inactive(admin_client, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -33,6 +38,7 @@ def test_admin_tethys_app_quotas_inline_inactive(admin_client, load_quotas):
     assert TethysAppQuota.objects.count() == 0
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_tethys_app_quotas_inline_active(admin_client, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -48,6 +54,7 @@ def test_admin_tethys_app_quotas_inline_active(admin_client, load_quotas):
     arq.save()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_tethys_app_quotas_inline_active_impose_default(
     admin_client, load_quotas
@@ -69,6 +76,7 @@ def test_admin_tethys_app_quotas_inline_active_impose_default(
     arq.save()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_tethys_app_quotas_inline_active_no_default(admin_client, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -89,6 +97,7 @@ def test_admin_tethys_app_quotas_inline_active_no_default(admin_client, load_quo
     arq.save()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_user_quotas_inline_inactive(admin_client, admin_user, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -101,6 +110,7 @@ def test_admin_user_quotas_inline_inactive(admin_client, admin_user, load_quotas
     assert UserQuota.objects.count() == 0  # User quota is inactive
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_user_quotas_inline_active(admin_client, admin_user, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -115,6 +125,7 @@ def test_admin_user_quotas_inline_active(admin_client, admin_user, load_quotas):
     urq.save()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_user_quotas_inline_active_impose_default(
     admin_client, admin_user, load_quotas
@@ -135,6 +146,7 @@ def test_admin_user_quotas_inline_active_impose_default(
     urq.save()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_user_quotas_inline_no_default(admin_client, admin_user, load_quotas):
     assert ResourceQuota.objects.count() == 2
@@ -152,6 +164,7 @@ def test_admin_user_quotas_inline_no_default(admin_client, admin_user, load_quot
     urq.save()
 
 
+@override_settings(SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
 @pytest.mark.django_db
 def test_admin_user_quotas_inline_add_user(admin_client, load_quotas):
     assert ResourceQuota.objects.count() == 2
