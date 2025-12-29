@@ -1,15 +1,13 @@
-import sys
 import re
-from importlib import reload, import_module
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
-from django.urls import reverse, clear_url_caches
+from django.urls import reverse
 from django.test import override_settings
-from django.conf import settings
 import warnings
 
 from unittest.mock import patch, MagicMock
 import pytest
+
 
 @pytest.fixture
 def user(db):
