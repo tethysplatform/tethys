@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: apps.py
+* Author: Jacob Johnson
+* Created On: 2025
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 from django.conf import settings
 from django.core.checks import Warning, register
 
