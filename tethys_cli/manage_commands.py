@@ -214,7 +214,9 @@ def manage_command(args, unknown_args=None):
                 "'django_tenants.postgresql_backend' to use multi-tenancy features.\n"
                 "Please update your portal_config.yml file accordingly."
                 "You can use the following command to do so:\n\n"
-                "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n"
+                "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n\n"
+                "For more information, see the documentation at "
+                f"{DOCS_BASE_URL}tethys_portal/multi_tenancy.html"
             )
             sys.exit(1)
         else:
