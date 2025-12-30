@@ -4,7 +4,6 @@ const OVERLAYS_DOM_NODE = document.createElement('div');
 const OVERLAYS_ROOT = ReactDOM.createRoot(OVERLAYS_DOM_NODE);
 const OVERLAYS = {};
 document.body.appendChild(OVERLAYS_DOM_NODE);
-console.log("THIS CODE IS RUNNING");
 
 function renderNode(type, attributes, children) {
     if (Array.isArray(children) && children.length > 0) {
@@ -17,7 +16,6 @@ export default function Overlay(...props) {
     props = props[0];
 
     if (props.element) {
-        debugger;
         if (props.element instanceof HTMLElement) {
             "pass";
         } else {
