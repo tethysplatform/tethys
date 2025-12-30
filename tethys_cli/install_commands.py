@@ -8,6 +8,7 @@ from argparse import Namespace
 from collections.abc import Mapping
 import sys
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import (
@@ -16,6 +17,7 @@ from tethys_cli.cli_colors import (
     write_warning,
     write_success,
 )
+from tethys_cli.settings_commands import settings_command
 from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
     setup_django,
@@ -23,12 +25,14 @@ from tethys_cli.cli_helpers import (
     load_conda_commands,
     conda_run_command,
     conda_available,
+    prompt_yes_or_no,
 )
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
     get_service_model_from_type,
     get_tethys_home_dir,
+    get_installed_tethys_items,
 )
 
 from .gen_commands import download_vendor_static_files
@@ -880,8 +884,12 @@ def install_command(args):
 
         return
 
+    multiple_app_mode_check(app_name, quiet_mode=args.quiet)
+
     if args.no_db_sync:
-        write_success(f"Successfully installed {app_name}.")
+        write_success(
+            f"Successfully installed {app_name} into the active Tethys Portal."
+        )
         return
 
     call(["tethys", "db", "sync"])
@@ -927,8 +935,7 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
-
-    write_success(f"Successfully installed {app_name}.")
+    write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
 
 
 def validate_schema(check_str, check_list):
@@ -962,3 +969,64 @@ def assign_json_value(value):
     else:
         write_error(f"The current value: {value} is not a dict or a valid file path")
         return None
+
+
+def multiple_app_mode_check(new_app_name, quiet_mode=False):
+    """
+    Check if MULTIPLE_APP_MODE needs to be updated based on the number of installed apps.
+    """
+    if settings.MULTIPLE_APP_MODE:
+        return
+    setup_django()
+    if quiet_mode:
+        update_settings_args = Namespace(
+            set_kwargs=[
+                (
+                    "TETHYS_PORTAL_CONFIG",
+                    f"""
+                    MULTIPLE_APP_MODE: False
+                    STANDALONE_APP: {new_app_name}
+                    """,
+                )
+            ]
+        )
+        settings_command(update_settings_args)
+        write_msg(f"STANDALONE_APP set to {new_app_name}.")
+    elif len(get_installed_tethys_items(apps=True)) > 1:
+        response = prompt_yes_or_no(
+            "Your portal has multiple apps installed, but MULTIPLE_APP_MODE is set to False. Would you like to change that to True now?"
+        )
+        if response is True:
+            update_settings_args = Namespace(
+                set_kwargs=[
+                    (
+                        "TETHYS_PORTAL_CONFIG",
+                        """
+                        MULTIPLE_APP_MODE: True
+                        """,
+                    )
+                ]
+            )
+            settings_command(update_settings_args)
+            write_msg("MULTIPLE_APP_MODE set to True.")
+        elif response is False:
+            write_msg("MULTIPLE_APP_MODE left unchanged as False.")
+            response = prompt_yes_or_no(
+                f"Would you like to set the STANDALONE_APP to the newly installed app: {new_app_name}?"
+            )
+            if response is True:
+                update_settings_args = Namespace(
+                    set_kwargs=[
+                        (
+                            "TETHYS_PORTAL_CONFIG",
+                            f"""
+                            MULTIPLE_APP_MODE: False
+                            STANDALONE_APP: {new_app_name}
+                        """,
+                        )
+                    ]
+                )
+                settings_command(update_settings_args)
+                write_msg(f"STANDALONE_APP set to {new_app_name}.")
+            elif response is False:
+                write_msg("STANDALONE_APP left unchanged.")

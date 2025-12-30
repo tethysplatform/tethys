@@ -64,7 +64,9 @@ def unpatched_run(main):
         asyncio.run(main)
 
 
-def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=None):
+def _execute_lifecycle_commands(
+    app_package, command_message_tuples, from_import=False, cleanup=None
+):
     if cleanup and not callable(cleanup):
         raise ValueError('The "cleanup" argument must be a function or callable.')
 
@@ -95,9 +97,13 @@ def _execute_lifecycle_commands(app_package, command_message_tuples, cleanup=Non
                 )  # So the websocket has time to send the message prior to killing the server
             result = run(command, shell=True, check=True, capture_output=True)
             output = str(result.stdout)
-            if "Successfully installed " in output:
-                match = re.search(r"Successfully installed ([\w_]+)", output)
-                revised_app_package = match.group(match.lastindex)
+            if from_import:
+                match = re.search(
+                    r"Successfully installed ([\w_]+) into your active Tethys Portal.",
+                    output,
+                )
+                if match:
+                    revised_app_package = match.group(match.lastindex)
 
     except CalledProcessError as e:
         unpatched_run(
@@ -194,7 +200,12 @@ def import_app(request):
             Timer(
                 1,
                 _execute_lifecycle_commands,
-                args=[app_package, command_message_tuples, lambda: rmtree(tmpdir)],
+                args=[
+                    app_package,
+                    command_message_tuples,
+                    True,
+                    lambda: rmtree(tmpdir),
+                ],
             ).start()
 
             context["app_name"] = import_name
@@ -251,6 +262,8 @@ def create_app(request):
             context["app_name"] = app_name
             context["app_package"] = project_name
             del context["form"]
+
+    context["project_location"] = Path.cwd() / f"{APP_PREFIX}-<Project Name>"
 
     return render(request, "tethys_portal/create_app.html", context)
 
