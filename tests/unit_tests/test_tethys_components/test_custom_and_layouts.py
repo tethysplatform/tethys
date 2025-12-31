@@ -30,6 +30,7 @@ class TestCustomComponents(TestCase):
             "NavHeader": [{"app": cls.mock_all, "user": cls.mock_all}],
             "PageLoader": [{"content": "TEST"}],
             "Chart": [{"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]}, {"data": None}],
+            "Display": [{"style": {"color": "black"}}],
         }
 
     def json_serializer(self, obj):
@@ -108,3 +109,7 @@ class TestCustomComponents(TestCase):
         vdom_content = layout["children"][1]["children"]
         self.assertIsInstance(vdom_content, list)
         self.assertListEqual([content], vdom_content)
+
+    def test_map_invalid_projection_dict(self):
+        with self.assertRaises(ValueError):
+            custom.Map(self.lib, projection={})
