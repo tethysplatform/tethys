@@ -102,6 +102,11 @@ def _reload_urlconf(urlconf=None):
     else:
         import_module(urlconf)
 
+    if "tethys_apps.urls" in sys.modules:
+        reload(sys.modules["tethys_apps.urls"])
+    else:
+        import_module("tethys_apps.urls")
+
 
 @pytest.fixture
 def reload_urls():

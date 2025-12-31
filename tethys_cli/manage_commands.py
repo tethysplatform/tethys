@@ -10,15 +10,29 @@
 
 import sys
 from django.core.management import get_commands
+from django.conf import settings
 
 from tethys_cli.cli_helpers import get_manage_path, run_process
+from tethys_cli.cli_colors import write_warning
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
+
 
 MANAGE_START = "start"
 MANAGE_COLLECTSTATIC = "collectstatic"
 MANAGE_COLLECTWORKSPACES = "collectworkspaces"
 MANAGE_COLLECT = "collectall"
 MANAGE_GET_PATH = "path"
+MANAGE_TENANTS = [
+    "migrate_schemas",
+    "tenant_command",
+    "all_tenants_command",
+    "create_tenant_superuser",
+    "create_tenant",
+    "delete_tenant",
+    "clone_tenant",
+    "rename_schema",
+    "create_missing_schemas",
+]
 
 
 def add_manage_parser(subparsers):
@@ -181,6 +195,32 @@ def manage_command(args, unknown_args=None):
 
     elif args.command == MANAGE_GET_PATH:
         print(manage_path)
+
+    elif args.command in MANAGE_TENANTS:
+        DATABASES = getattr(settings, "DATABASES", {})
+        if not getattr(settings, "TENANTS_ENABLED", False):
+            write_warning(
+                "Multi-tenancy features are not enabled. To enable multi-tenancy, set 'TENANTS_CONFIG.ENABLED "
+                "to true in your portal_config.yml file. "
+                "You can use the following command to do so:\n\n"
+                "tethys settings --set TENANTS_CONFIG.ENABLED true\n\n"
+                "For more information, see the documentation at "
+                f"{DOCS_BASE_URL}tethys_portal/multi_tenancy.html"
+            )
+            sys.exit(1)
+        elif DATABASES["default"]["ENGINE"] != "django_tenants.postgresql_backend":
+            write_warning(
+                "The database engine for the default database must be set to "
+                "'django_tenants.postgresql_backend' to use multi-tenancy features.\n"
+                "Please update your portal_config.yml file accordingly."
+                "You can use the following command to do so:\n\n"
+                "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n\n"
+                "For more information, see the documentation at "
+                f"{DOCS_BASE_URL}tethys_portal/multi_tenancy.html"
+            )
+            sys.exit(1)
+        else:
+            primary_process = [sys.executable, manage_path, args.command, *unknown_args]
 
     else:
         if args.django_help:
