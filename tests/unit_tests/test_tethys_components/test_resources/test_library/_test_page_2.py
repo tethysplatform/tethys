@@ -8,7 +8,17 @@ def page_test(lib):
         lib.tethys.Map(
             lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
                 lib.ol.source.ImageArcGISRest(
-                    url="https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"
+                    options=lib.Props(
+                        url="https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"
+                    )
+                )
+            ),
+            lib.ol.layer.Vector(
+                lib.ol.source.Vector(
+                    options=lib.Props(
+                        url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_ocean.geojson",
+                        format_="GeoJSON",
+                    )
                 )
             ),
         ),
