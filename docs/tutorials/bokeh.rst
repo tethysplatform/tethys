@@ -35,7 +35,7 @@ To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``
     conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django bokeh_sampledata
 
     # pip
-    pip install bokeh bokeh-django
+    pip install bokeh bokeh-django bokeh_sampledata
 
 2. Add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
 
@@ -121,6 +121,7 @@ This is a simple Bokeh plot. We will now add the rest of the logic to make it an
 5. Modify the ``handler function`` from ``handlers.py`` to look like this.
 
 .. code-block:: python
+    :emphasize-lines: 1-2, 17-28
 
     from bokeh.models import ColumnDataSource, Slider
     from bokeh.layouts import column
@@ -273,6 +274,7 @@ The added classes depend on ``Bokeh``.  The `Circle` and `NGon` classes depend o
 4. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``handlers.py``.
 
 .. code-block:: python
+    :emphasize-lines: 3, 7-12
 
     ...
 
