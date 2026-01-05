@@ -57,6 +57,7 @@ dependencies:
   - hs_restclient # Used with HydroShare Social backend
   - python-jose # required by django-mfa2  - used for onelogin backend
   - django-oauth-toolkit
+  - django-tenants  # enables multi-tenant support
 
   # datetime dependencies for "humanize" template filter (used with MFA2)
   - arrow

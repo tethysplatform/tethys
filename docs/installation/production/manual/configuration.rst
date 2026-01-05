@@ -30,16 +30,25 @@ Advanced Configuration
 
 These guides describe additional configuration that you can perform to add more capabilities to your Tethys Portal.
 
+**Recommended Configuration**
+
 .. toctree::
     :maxdepth: 1
 
     configuration/advanced/https_config
     configuration/advanced/cookie_consent
     configuration/advanced/customize
+
+**Optional Configuration**
+
+.. toctree::
+    :maxdepth: 1
+
     configuration/advanced/email_config
     configuration/advanced/lockout
     configuration/advanced/self_hosted_js_deps
     configuration/advanced/social_auth
     configuration/advanced/multi_factor_auth
+    configuration/advanced/multi_tenancy
     configuration/advanced/webanalytics
     configuration/advanced/django_channels_layer
