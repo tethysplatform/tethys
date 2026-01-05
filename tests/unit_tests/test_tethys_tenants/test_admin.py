@@ -1,4 +1,3 @@
-import importlib
 from unittest import mock
 from django.test import RequestFactory
 from django.contrib import admin
@@ -117,6 +116,7 @@ def test_domain_admin_changelist_view_tenant_schema(setup_test):
     with pytest.raises(Http404):
         admin_instance.changelist_view(tenant_request)
 
+
 def test_domain_admin_change_view_public_schema(setup_test):
     admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
 
@@ -129,6 +129,7 @@ def test_domain_admin_change_view_public_schema(setup_test):
         assert result == "success"
         mock_super.assert_called_once_with(public_request, "123", "test_url", None)
 
+
 def test_domain_admin_change_view_tenant_schema(setup_test):
     admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
 
@@ -137,6 +138,7 @@ def test_domain_admin_change_view_tenant_schema(setup_test):
 
     with pytest.raises(Http404):
         admin_instance.change_view(tenant_request, "123", "test_url")
+
 
 def test_domain_admin_add_view_public_schema(setup_test):
     admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
@@ -150,6 +152,7 @@ def test_domain_admin_add_view_public_schema(setup_test):
         assert result == "success"
         mock_super.assert_called_once_with(public_request, "test_url", None)
 
+
 def test_domain_admin_add_view_tenant_schema(setup_test):
     admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
 
@@ -158,6 +161,7 @@ def test_domain_admin_add_view_tenant_schema(setup_test):
 
     with pytest.raises(Http404):
         admin_instance.add_view(tenant_request, "test_url")
+
 
 def test_tenants_admin_changelist_view_public_schema(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
@@ -171,6 +175,7 @@ def test_tenants_admin_changelist_view_public_schema(setup_test):
         assert result == "success"
         mock_super.assert_called_once_with(public_request, None)
 
+
 def test_tenants_admin_changelist_view_tenant_schema(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
 
@@ -179,6 +184,7 @@ def test_tenants_admin_changelist_view_tenant_schema(setup_test):
 
     with pytest.raises(Http404):
         admin_instance.changelist_view(tenant_request)
+
 
 def test_tenants_admin_change_view_public_schema(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
@@ -192,6 +198,7 @@ def test_tenants_admin_change_view_public_schema(setup_test):
         assert result == "success"
         mock_super.assert_called_once_with(public_request, "123", "test_url", None)
 
+
 def test_tenants_admin_change_view_tenant_schema(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
 
@@ -200,6 +207,7 @@ def test_tenants_admin_change_view_tenant_schema(setup_test):
 
     with pytest.raises(Http404):
         admin_instance.change_view(tenant_request, "123", "test_url")
+
 
 def test_tenants_admin_add_view_public_schema(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
@@ -212,6 +220,7 @@ def test_tenants_admin_add_view_public_schema(setup_test):
         result = admin_instance.add_view(public_request, "test_url")
         assert result == "success"
         mock_super.assert_called_once_with(public_request, "test_url", None)
+
 
 def test_tenants_admin_add_view_tenant_schema(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
