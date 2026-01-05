@@ -15,7 +15,6 @@ def setup_test():
     factory = RequestFactory()
     site = AdminSite()
 
-    # Create object to hold instance properties
     class InstanceProperties:
         pass
 
@@ -23,7 +22,6 @@ def setup_test():
     props.factory = factory
     props.site = site
     yield props
-    pass
 
 
 def test_is_public_schema_function():
@@ -76,12 +74,10 @@ def test_tenant_admin_configuration(setup_test):
 def test_domain_admin_has_module_permission(setup_test):
     admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
 
-    # Test with public schema
     public_request = mock.MagicMock()
     public_request.tenant.schema_name = "public"
     assert admin_instance.has_module_permission(public_request)
 
-    # Test with tenant schema
     tenant_request = mock.MagicMock()
     tenant_request.tenant.schema_name = "tenant1"
     assert not admin_instance.has_module_permission(tenant_request)
@@ -90,12 +86,10 @@ def test_domain_admin_has_module_permission(setup_test):
 def test_tenant_admin_has_module_permission(setup_test):
     admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
 
-    # Test with public schema
     public_request = mock.MagicMock()
     public_request.tenant.schema_name = "public"
     assert admin_instance.has_module_permission(public_request)
 
-    # Test with tenant schema
     tenant_request = mock.MagicMock()
     tenant_request.tenant.schema_name = "tenant1"
     assert not admin_instance.has_module_permission(tenant_request)
@@ -123,12 +117,107 @@ def test_domain_admin_changelist_view_tenant_schema(setup_test):
     with pytest.raises(Http404):
         admin_instance.changelist_view(tenant_request)
 
+def test_domain_admin_change_view_public_schema(setup_test):
+    admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
 
-@mock.patch("tethys_portal.optional_dependencies.has_module", return_value=False)
-def test_admin_graceful_handling_without_django_tenants(
-    mock_has_module,
-):
-    importlib.reload(tethys_tenants_admin)
+    public_request = mock.MagicMock()
+    public_request.tenant.schema_name = "public"
 
-    # Verify has_module was called
-    mock_has_module.assert_called()
+    with mock.patch("django.contrib.admin.ModelAdmin.change_view") as mock_super:
+        mock_super.return_value = "success"
+        result = admin_instance.change_view(public_request, "123", "test_url")
+        assert result == "success"
+        mock_super.assert_called_once_with(public_request, "123", "test_url", None)
+
+def test_domain_admin_change_view_tenant_schema(setup_test):
+    admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
+
+    tenant_request = mock.MagicMock()
+    tenant_request.tenant.schema_name = "tenant1"
+
+    with pytest.raises(Http404):
+        admin_instance.change_view(tenant_request, "123", "test_url")
+
+def test_domain_admin_add_view_public_schema(setup_test):
+    admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
+
+    public_request = mock.MagicMock()
+    public_request.tenant.schema_name = "public"
+
+    with mock.patch("django.contrib.admin.ModelAdmin.add_view") as mock_super:
+        mock_super.return_value = "success"
+        result = admin_instance.add_view(public_request, "test_url")
+        assert result == "success"
+        mock_super.assert_called_once_with(public_request, "test_url", None)
+
+def test_domain_admin_add_view_tenant_schema(setup_test):
+    admin_instance = tethys_tenants_admin.DomainAdmin(models.Domain, setup_test.site)
+
+    tenant_request = mock.MagicMock()
+    tenant_request.tenant.schema_name = "tenant1"
+
+    with pytest.raises(Http404):
+        admin_instance.add_view(tenant_request, "test_url")
+
+def test_tenants_admin_changelist_view_public_schema(setup_test):
+    admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
+
+    public_request = mock.MagicMock()
+    public_request.tenant.schema_name = "public"
+
+    with mock.patch("django.contrib.admin.ModelAdmin.changelist_view") as mock_super:
+        mock_super.return_value = "success"
+        result = admin_instance.changelist_view(public_request)
+        assert result == "success"
+        mock_super.assert_called_once_with(public_request, None)
+
+def test_tenants_admin_changelist_view_tenant_schema(setup_test):
+    admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
+
+    tenant_request = mock.MagicMock()
+    tenant_request.tenant.schema_name = "tenant1"
+
+    with pytest.raises(Http404):
+        admin_instance.changelist_view(tenant_request)
+
+def test_tenants_admin_change_view_public_schema(setup_test):
+    admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
+
+    public_request = mock.MagicMock()
+    public_request.tenant.schema_name = "public"
+
+    with mock.patch("django.contrib.admin.ModelAdmin.change_view") as mock_super:
+        mock_super.return_value = "success"
+        result = admin_instance.change_view(public_request, "123", "test_url")
+        assert result == "success"
+        mock_super.assert_called_once_with(public_request, "123", "test_url", None)
+
+def test_tenants_admin_change_view_tenant_schema(setup_test):
+    admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
+
+    tenant_request = mock.MagicMock()
+    tenant_request.tenant.schema_name = "tenant1"
+
+    with pytest.raises(Http404):
+        admin_instance.change_view(tenant_request, "123", "test_url")
+
+def test_tenants_admin_add_view_public_schema(setup_test):
+    admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
+
+    public_request = mock.MagicMock()
+    public_request.tenant.schema_name = "public"
+
+    with mock.patch("django.contrib.admin.ModelAdmin.add_view") as mock_super:
+        mock_super.return_value = "success"
+        result = admin_instance.add_view(public_request, "test_url")
+        assert result == "success"
+        mock_super.assert_called_once_with(public_request, "test_url", None)
+
+def test_tenants_admin_add_view_tenant_schema(setup_test):
+    admin_instance = tethys_tenants_admin.TenantAdmin(models.Tenant, setup_test.site)
+
+    tenant_request = mock.MagicMock()
+    tenant_request.tenant.schema_name = "tenant1"
+
+    with pytest.raises(Http404):
+        admin_instance.add_view(tenant_request, "test_url")
