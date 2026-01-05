@@ -1,15 +1,9 @@
-{%- for package in packages %}
-    {%- set import_statements, exports_statement = package.compose_javascript_statements() %}
-    {%- for import_statement in import_statements %}
-{{import_statement}}
-    {%- endfor %}
-    {%- if exports_statement %}
-{{exports_statement}}
-        {%- for style in package.styles %}
-loadCSS("{{ style }}");
-        {%- endfor %}
-    {%- endif %}
-{%- endfor %}
+
+import {Container, Row, Button, Col} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container,Row,Button,Col";
+export {Container, Row, Button, Col};
+loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
+import Editor from "https://esm.sh/@monaco-editor/react/?deps=react@19.0,react-dom@19.0,react-is@19.0";
+export {Editor};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -25,7 +19,7 @@ function loadCSS(href) {
     }
 }
 
-{% if reactjs_version_int > 17 %}
+
 export function bind(node, config) {
     const root = ReactDOM.createRoot(node);
     return {
@@ -35,16 +29,7 @@ export function bind(node, config) {
         unmount: () => root.unmount()
     };
 }
-{% else %}
-export function bind(node, config) {
-    return {
-        create: (component, props, children) =>
-            React.createElement(component, wrapEventHandlers(props), ...children),
-        render: (element) => ReactDOM.render(element, node),
-        unmount: () => ReactDOM.unmountComponentAtNode(node),
-    };
-}
-{% endif %}
+
 
 function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
