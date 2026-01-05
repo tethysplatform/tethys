@@ -265,7 +265,6 @@ for module in [
     if has_module(module):
         default_installed_apps.append(module)
 
-
 INSTALLED_APPS = portal_config_settings.pop(
     "INSTALLED_APPS_OVERRIDE",
     default_installed_apps,
@@ -365,6 +364,63 @@ TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 
 ROOT_URLCONF = "tethys_portal.urls"
 
+# Django Tenants settings
+TENANTS_CONFIG = portal_config_settings.pop("TENANTS_CONFIG", {})
+TENANTS_ENABLED = TENANTS_CONFIG.pop("ENABLED", False)
+if has_module("django_tenants") and TENANTS_ENABLED:
+    # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
+    # Set up in portal_config.yml
+    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+    TENANT_LIMIT_SET_CALLS = TENANTS_CONFIG.pop("TENANT_LIMIT_SET_CALLS", False)
+
+    TENANT_COLOR_ADMIN_APPS = TENANTS_CONFIG.pop(
+        "TENANT_COLOR_ADMIN_APPS",
+        True,
+    )
+
+    SHOW_PUBLIC_IF_NO_TENANT_FOUND = TENANTS_CONFIG.pop(
+        "SHOW_PUBLIC_IF_NO_TENANT_FOUND",
+        False,
+    )
+
+    TENANT_MODEL = "tethys_tenants.Tenant"
+    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
+
+    default_tenant_apps = [
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+    ]
+
+    for module in [
+        "axes",
+        "captcha",
+        "mfa",
+        "oauth2_provider",
+        "rest_framework.authtoken",
+        "social_django",
+        "termsandconditions",
+    ]:
+        if has_module(module):
+            default_tenant_apps.append(module)
+
+    TENANT_APPS = TENANTS_CONFIG.pop("TENANT_APPS_OVERRIDE", default_tenant_apps)
+
+    SHARED_APPS = ("django_tenants", "tethys_tenants") + INSTALLED_APPS
+    TENANT_APPS = tuple(TENANT_APPS + TENANTS_CONFIG.pop("TENANT_APPS", []))
+
+    INSTALLED_APPS = tuple(
+        list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+    )
+
+    MIDDLEWARE = list(MIDDLEWARE)
+    MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
+    MIDDLEWARE = tuple(MIDDLEWARE)
+
 # Internationalization
 LANGUAGE_CODE = "en-us"
 
@@ -434,7 +490,6 @@ TEMPLATES = [
         },
     }
 ]
-
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = portal_config_settings.pop("STATIC_URL", "/static/")

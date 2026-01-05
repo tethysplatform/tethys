@@ -2,6 +2,12 @@ import sys
 import unittest
 from unittest import mock
 
+from django.test.utils import override_settings
+
+from tethys_utils import DOCS_BASE_URL
+
+import pytest
+
 import tethys_cli.manage_commands as manage_commands
 from tethys_cli.manage_commands import (
     MANAGE_START,
@@ -324,3 +330,72 @@ class TestManageCommands(unittest.TestCase):
         self.assertIn("manage.py", process_call_args[0][0][0][1])
         self.assertEqual("check", process_call_args[0][0][0][2])
         self.assertEqual(unknown_args[0], process_call_args[0][0][0][3])
+
+    @mock.patch("tethys_cli.manage_commands.write_warning")
+    @mock.patch("tethys_cli.manage_commands.sys.exit", side_effect=SystemExit)
+    @override_settings(TENANTS_ENABLED=False)
+    def test_manage_command_with_tenants_disabled_warning(
+        self, mock_exit, mock_write_warning
+    ):
+        # mock the input arg
+        args = mock.MagicMock(manage="", command="create_tenant", django_help=False)
+
+        with pytest.raises(SystemExit):
+            manage_commands.manage_command(args)
+
+        mock_write_warning.assert_called_with(
+            "Multi-tenancy features are not enabled. To enable multi-tenancy, set 'TENANTS_CONFIG.ENABLED "
+            "to true in your portal_config.yml file. "
+            "You can use the following command to do so:\n\n"
+            "tethys settings --set TENANTS_CONFIG.ENABLED true\n\n"
+            "For more information, see the documentation at "
+            f"{DOCS_BASE_URL}tethys_portal/multi_tenancy.html"
+        )
+
+        mock_exit.assert_called_with(1)
+
+    @mock.patch("tethys_cli.manage_commands.write_warning")
+    @mock.patch("tethys_cli.manage_commands.sys.exit", side_effect=SystemExit)
+    @override_settings(
+        TENANTS_ENABLED=True,
+        DATABASES={"default": {"ENGINE": "django.db.backends.sqlite3"}},
+    )
+    def test_manage_command_with_incorrect_db_engine_warning(
+        self, mock_exit, mock_write_warning
+    ):
+        # mock the input args
+        args = mock.MagicMock(manage="", command="create_tenant", django_help=False)
+
+        with pytest.raises(SystemExit):
+            manage_commands.manage_command(args)
+
+        mock_write_warning.assert_called_with(
+            "The database engine for the default database must be set to "
+            "'django_tenants.postgresql_backend' to use multi-tenancy features.\n"
+            "Please update your portal_config.yml file accordingly."
+            "You can use the following command to do so:\n\n"
+            "tethys settings --set DATABASES.default.ENGINE django_tenants.postgresql_backend\n\n"
+            "For more information, see the documentation at "
+            f"{DOCS_BASE_URL}tethys_portal/multi_tenancy.html"
+        )
+
+        mock_exit.assert_called_with(1)
+
+    @mock.patch("tethys_cli.manage_commands.run_process")
+    @override_settings(
+        TENANTS_ENABLED=True,
+        DATABASES={"default": {"ENGINE": "django_tenants.postgresql_backend"}},
+    )
+    def test_manage_command_with_tenants(self, mock_run_process):
+        # mock the input args
+        args = mock.MagicMock(manage="", command="create_tenant", django_help=False)
+
+        manage_commands.manage_command(args)
+
+        # get the call arguments for the run process mock method
+        process_call_args = mock_run_process.call_args_list
+
+        # check the values from the argument list
+        assert sys.executable == process_call_args[0][0][0][0]
+        assert "manage.py" in process_call_args[0][0][0][1]
+        assert "create_tenant" == process_call_args[0][0][0][2]
