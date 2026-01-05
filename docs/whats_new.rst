@@ -63,6 +63,14 @@ Recipes
 
 See: :ref:`recipes`
 
+Multi-Tenancy Support
+---------------------
+
+* Tethys Platform now supports multi-tenancy using the third-party `django-tenants` library. 
+* This allows you to run multiple isolated configurations of Tethys Portal within a single portal.
+
+See: :ref:`Multi Tenancy <multi_tenancy_config>`
+
 Automated PyPI Package Uploads
 ------------------------------
 
