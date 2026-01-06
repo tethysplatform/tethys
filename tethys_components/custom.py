@@ -268,7 +268,6 @@ def Chart(
 def Panel(
     lib,
     show=True,
-    set_show=None,
     handle_close=None,
     anchor="right",
     extent="500px",
@@ -287,10 +286,6 @@ def Panel(
         style (dict[str: str]|Style): Any CSS styles as key:value pairs to be applied to the panel. Defaults to {}.
         children: The actual nested content that is to be rendered. Can also be supplied as call args to Panel (i.e. Panel()(panel_content)).
     """
-    # This following block allows this Panel to have the "x" icon
-    # handle closing itself even if set_close isn't overridden
-    _show, _set_show = lib.hooks.use_state(show and True)
-
     style = style or {}
     if anchor in ["top", "bottom"]:
         style["height"] = extent
@@ -300,13 +295,10 @@ def Panel(
         anchor = {"right": "end", "left": "start"}[anchor]
         style["width"] = extent
 
-    def _handle_close(_):
-        set_show(False) if set_show is not None else _set_show(False)
-
     return lib.html.div(
         role="dialog",
         **{"aria-modal": "true"},
-        class_name=f"offcanvas offcanvas-{anchor}{' show' if (show if set_show is not None else _show) else ''}",
+        class_name=f"offcanvas offcanvas-{anchor}{' show' if show else ''}",
         tabIndex="-1",
         style=lib.Style(visibility="visible") | style,
     )(
@@ -316,7 +308,7 @@ def Panel(
                 type="button",
                 class_name="btn-close",
                 **{"aria-label": "true"},
-                onClick=handle_close if handle_close else _handle_close,
+                onClick=handle_close if handle_close else lambda e: None,
             ),
         ),
         lib.html.div(class_name="offcanvas-body")(*children or []),

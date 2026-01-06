@@ -587,3 +587,19 @@ def find_by_tag(element, tag_name: str):
     else:
         # Ignore non-element types (like strings or numbers)
         return []
+
+
+class OlManager:
+    def __init__(self, attr):
+        self.attr = attr
+
+    def __getattr__(self, attr):
+        new_instance = OlManager(f"{self.attr}.{attr}")
+        setattr(self, attr, new_instance)
+        return new_instance
+
+    def __call__(self, *args, **kwargs):
+        if args:
+            if "ol.geom" in self.attr and len(args) == 1:
+                kwargs["geom"] = args[0]
+        return dict(type=self.attr, **kwargs)

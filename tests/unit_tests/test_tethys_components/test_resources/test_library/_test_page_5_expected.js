@@ -1,27 +1,23 @@
 
-import {Col, Row, Container} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Col,Row,Container";
-export {Col, Row, Container};
+import {FormLabel, FormControl, Container} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=FormLabel,FormControl,Container";
+export {FormLabel, FormControl, Container};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
-import ImageLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Image.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import ImageArcGISRestSource from "https://esm.sh/@planet/maps@11.2.0/source/ImageArcGISRest.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
 import XYZSource from "https://esm.sh/@planet/maps@11.2.0/source/XYZ.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
 import OSMSource from "https://esm.sh/@planet/maps@11.2.0/source/OSM.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
 import GroupLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Group.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
 import TileLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Tile.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
 import ScaleLineControl from "https://esm.sh/@planet/maps@11.2.0/control/ScaleLine.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-export {ImageLayer, ImageArcGISRestSource, XYZSource, OSMSource, GroupLayer, TileLayer, ScaleLineControl};
+export {XYZSource, OSMSource, GroupLayer, TileLayer, ScaleLineControl};
 loadCSS("https://esm.sh/ol@10.7.0/ol.css");
 import {LayerPanel} from "/static/tethys_apps/js/layer-panel.js/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LayerPanel";
 export {LayerPanel};
 loadCSS("https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css");
 loadCSS("https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css");
-import VectorSource from "/static/tethys_apps/js/ol-mods/source/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
 import VectorLayer from "/static/tethys_apps/js/ol-mods/layer/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
+import VectorSource from "/static/tethys_apps/js/ol-mods/source/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
 import Map from "/static/tethys_apps/js/ol-mods/Map.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
 import View from "/static/tethys_apps/js/ol-mods/View.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
-export {VectorSource, VectorLayer, Map, View};
-import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
-export {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line};
+export {VectorLayer, VectorSource, Map, View};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
