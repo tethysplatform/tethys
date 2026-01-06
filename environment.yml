@@ -87,7 +87,7 @@ dependencies:
 
   # plotting Gizmo dependencies
   - plotly
-  - bokeh=3.3.4
+  - bokeh
 
   # TethysJob Types
   - dask
