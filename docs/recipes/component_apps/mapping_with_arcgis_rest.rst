@@ -69,21 +69,22 @@ XYZ Esri
 .. code-block:: python
 
     @App.page
-    return lib.tethys.Display(
-        lib.tethys.Map(default_basemap=None)(
-            lib.ol.layer.WebGLTile(
-                lib.ol.source.ImageTile(
-                    options=lib.Props(
-                        attributions=(
-                            'Tiles \u00A9 <a href="https://services.arcgisonline.com/ArcGIS/' +
-                            'rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
-                        ),
-                        url=(
-                            'https://server.arcgisonline.com/ArcGIS/rest/services/' +
-                            'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+    def xyz_esri(lib):
+        return lib.tethys.Display(
+            lib.tethys.Map(default_basemap=None)(
+                lib.ol.layer.WebGLTile(
+                    lib.ol.source.ImageTile(
+                        options=lib.Props(
+                            attributions=(
+                                'Tiles \u00A9 <a href="https://services.arcgisonline.com/ArcGIS/' +
+                                'rest/services/World_Topo_Map/MapServer">ArcGIS</a>'
+                            ),
+                            url=(
+                                'https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                                'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+                            )
                         )
                     )
                 )
             )
         )
-    )

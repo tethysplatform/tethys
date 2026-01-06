@@ -331,8 +331,14 @@ class ComponentLibrary:
         "ol.source.Vector": "olmod.source.Vector",
         "ol.source.Image": "olmod.source.Image",
         "ol.source.TileWMS": "olmod.source.TileWMS",
+        "ol.layer.Vector": "olmod.layer.Vector",
         "ol.View": "olmod.View",
         "ol.Overlay": "olmod.Overlay",
+        "ol.geom": utils.OlManager("ol.geom"),
+        "ol.Feature": utils.OlManager("ol.Feature"),
+        "ol.Style": utils.OlManager("ol.Style"),
+        "ol.style": utils.OlManager("ol.style"),
+        "ol.Map": "olmod.Map",
     }
 
     def __init__(self, name):
@@ -587,15 +593,17 @@ class DynamicPackageManager:
         component = f"{self.component}.{attr}" if self.component else attr
         override_key = f"{self.package.accessor}.{component}"
         if override_key in self.library.OVERRIDES:
-            override_accessor, override_component = self.library.OVERRIDES[
-                override_key
-            ].split(".", 1)
-            new_instance_base = getattr(
-                self.library, override_accessor
-            )  # Get or create the new instance of the override package if it does not exist
-            new_instance = getattr(
-                new_instance_base, override_component
-            )  # Create the new instance of the override component (a recursive call to this same __getattr__ method)
+            override = self.library.OVERRIDES[override_key]
+            if callable(override):
+                new_instance = override
+            else:
+                override_accessor, override_component = override.split(".", 1)
+                new_instance_base = getattr(
+                    self.library, override_accessor
+                )  # Get or create the new instance of the override package if it does not exist
+                new_instance = getattr(
+                    new_instance_base, override_component
+                )  # Create the new instance of the override component (a recursive call to this same __getattr__ method)
         else:
             new_instance = DynamicPackageManager(
                 library=self.library, package=self.package, component=component
