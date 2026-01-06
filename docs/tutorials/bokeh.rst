@@ -183,6 +183,21 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
       - param
 
 
+.. warning::
+
+    The current versions of ``panel`` and ``param`` may not function properly with the following sections of this tutorial. If you encounter issues,
+    consider installing specific versions using one of the following commands:
+
+    .. code-block:: bash
+
+        conda install -c conda-forge panel=1.3.8 param=2.0.2 bokeh=3.3.4
+
+    .. code-block:: bash
+
+        pip install panel==1.3.8 param==2.0.2 bokeh==3.3.4
+
+    For best results, make sure your python version is 3.12 or lower.
+
 3. Add the following objects to a new file called ``param_model.py``.
 
 .. code-block:: python
