@@ -22,7 +22,7 @@ def static_finder_root():
 def test_find():
     tethys_static_finder = TethysStaticFinder()
     path = Path("test_app") / "css" / "main.css"
-    expected_path = "test_app/public/css/main.css"
+    expected_path = str(Path("test_app/public/css/main.css"))
     path_ret = tethys_static_finder.find(path)
     assert isinstance(path_ret, Path)
     assert expected_path in str(path_ret)
@@ -37,7 +37,7 @@ def test_find_all():
 
     tethys_static_finder = TethysStaticFinder()
     path = Path("test_app") / "css" / "main.css"
-    expected_path = "test_app/public/css/main.css"
+    expected_path = str(Path("test_app/public/css/main.css"))
     use_find_all = django.VERSION >= (5, 2)
     if use_find_all:
         path_ret = tethys_static_finder.find(path, find_all=True)
