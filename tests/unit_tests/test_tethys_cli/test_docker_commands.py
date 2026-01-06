@@ -3,6 +3,8 @@ from unittest import mock
 import tethys_cli.docker_commands as cli_docker_commands
 from pathlib import Path
 from tempfile import gettempdir
+import pytest
+import sys
 
 
 class TestDockerCommands(unittest.TestCase):
@@ -1264,6 +1266,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
     @mock.patch("tethys_cli.docker_commands.has_module")
+    @pytest.mark.skipif(sys.platform == "win32", reason="This test does not run on Windows")
     def test_log_pull_stream_linux_with_id_bad_status(
         self, mock_has_module, mock_curses, mock_pretty_output
     ):
@@ -1301,6 +1304,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
     @mock.patch("tethys_cli.docker_commands.has_module")
+    @pytest.mark.skipif(sys.platform == "win32", reason="This test does not run on Windows")
     def test_log_pull_stream_linux_with_id_progress_status(
         self, mock_has_module, mock_curses, mock_pretty_output
     ):
@@ -1332,6 +1336,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
     @mock.patch("tethys_cli.docker_commands.has_module")
+    @pytest.mark.skipif(sys.platform == "win32", reason="This test does not run on Windows")
     def test_log_pull_stream_linux_with_id_status(
         self, mock_has_module, mock_curses, mock_pretty_output
     ):
@@ -1364,6 +1369,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
     @mock.patch("tethys_cli.docker_commands.has_module")
+    @pytest.mark.skipif(sys.platform == "win32", reason="This test does not run on Windows")
     def test_log_pull_stream_linux_with_no_id(
         self, mock_has_module, mock_curses, mock_pretty_output
     ):
@@ -1388,6 +1394,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch("tethys_cli.docker_commands.write_pretty_output")
     @mock.patch("tethys_cli.docker_commands.curses")
     @mock.patch("tethys_cli.docker_commands.has_module")
+    @pytest.mark.skipif(sys.platform == "win32", reason="This test does not run on Windows")
     def test_log_pull_stream_linux_with_curses_error(
         self, mock_has_module, mock_curses, mock_pretty_output
     ):

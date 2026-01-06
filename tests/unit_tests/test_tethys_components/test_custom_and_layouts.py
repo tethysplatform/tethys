@@ -83,23 +83,21 @@ class TestCustomComponents(TestCase):
 
     def test_panel_special_case_2(self):
         mock_lib = mock.MagicMock()
-        mock_lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
         style = mock.MagicMock()
         custom.Panel(mock_lib, anchor="top", style=style)
         style.__setitem__.assert_called_once_with("height", "500px")
-        mock_lib.hooks.use_state.assert_called_once()
 
     def test_panel_special_case_3(self):
         proof = mock.MagicMock()
 
-        def test_set_show(val):
+        def test_handle_close(val):
             proof(val)
 
-        panel = custom.Panel(self.lib, set_show=test_set_show)
+        panel = custom.Panel(self.lib, handle_close=test_handle_close)
         async_to_sync(
             panel["children"][0]["children"][1]["eventHandlers"]["onClick"].function
         )(["ignored"])
-        proof.assert_called_once_with(False)
+        proof.assert_called_once_with("ignored")
 
     def test_navheader_special_case_1(self):
         content = "not_list"
