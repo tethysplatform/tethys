@@ -7,7 +7,7 @@ Display Feature Props On Click
     def display_feature_props_on_click(lib):
         props, set_props = lib.hooks.use_state({})
         return lib.tethys.Display(
-            lib.tethys.Panel(title="Properties", show=len(props) > 0, handle_close=lambda e: set_props({}), extent="300px")(
+            lib.tethys.Panel(title="Properties", show=len(props) > 0, on_close=lambda e: set_props({}), extent="300px")(
                 *[
                     lib.html.div(
                         lib.html.span(
