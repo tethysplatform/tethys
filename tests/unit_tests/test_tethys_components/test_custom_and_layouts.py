@@ -90,10 +90,10 @@ class TestCustomComponents(TestCase):
     def test_panel_special_case_3(self):
         proof = mock.MagicMock()
 
-        def test_handle_close(val):
+        def test_on_close(val):
             proof(val)
 
-        panel = custom.Panel(self.lib, handle_close=test_handle_close)
+        panel = custom.Panel(self.lib, on_close=test_on_close)
         async_to_sync(
             panel["children"][0]["children"][1]["eventHandlers"]["onClick"].function
         )(["ignored"])

@@ -268,7 +268,7 @@ def Chart(
 def Panel(
     lib,
     show=True,
-    handle_close=None,
+    on_close=lambda _: None,
     anchor="right",
     extent="500px",
     title="Panel",
@@ -308,7 +308,7 @@ def Panel(
                 type="button",
                 class_name="btn-close",
                 **{"aria-label": "true"},
-                onClick=handle_close if handle_close else lambda e: None,
+                onClick=on_close,
             ),
         ),
         lib.html.div(class_name="offcanvas-body")(*children or []),
