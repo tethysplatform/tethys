@@ -6,11 +6,7 @@ def page_test(lib):
     }
     return lib.html.div(style=lib.Style(width="100vw", height="calc(100vh - 57px)"))(
         lib.tethys.Map(
-            lib.ol.layer.Image(
-                    options=lib.Props(
-                        title="GEOGLOWS Streamflow Service"
-                    )
-                )(
+            lib.ol.layer.Image(options=lib.Props(title="GEOGLOWS Streamflow Service"))(
                 lib.ol.source.ImageArcGISRest(
                     options=lib.Props(
                         url="https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"
