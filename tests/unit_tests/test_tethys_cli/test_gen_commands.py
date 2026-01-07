@@ -903,7 +903,10 @@ def test_get_target_tethys_app_dir_with_invalid_directory(
 
     mock_is_dir.assert_called_once()
     error_msg = mock_write_error.call_args.args[0]
-    assert f'The specified directory "{Path("/invalid/directory")}" is not valid.' in error_msg
+    assert (
+        f'The specified directory "{Path("/invalid/directory")}" is not valid.'
+        in error_msg
+    )
     mock_exit.assert_called_once_with(1)
 
 
