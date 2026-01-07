@@ -590,15 +590,55 @@ def find_by_tag(element, tag_name: str):
 
 
 class OlManager:
+    """
+    A utility class for dynamically building OpenLayers (OL) configuration dictionaries.
+    This class uses dynamic attribute access to construct nested namespace paths
+    and generate configuration objects for OpenLayers components. It enables a
+    fluent interface for creating OL geometry and feature configurations.
+    Example:
+        >>> manager = OlManager("ol")
+        >>> result = manager.geom.Point(coords=[0, 0])
+        >>> result
+        {'type': 'ol.geom.Point', 'coords': [0, 0]}
+    """
+
     def __init__(self, attr):
+        """
+        Initialize the OlManager with an attribute path.
+        Args:
+            attr (str): The OpenLayers namespace path (e.g., "ol", "ol.geom").
+        """
         self.attr = attr
 
     def __getattr__(self, attr):
+        """
+        Dynamically create nested OlManager instances for attribute access.
+        This method intercepts attribute access and creates new OlManager instances
+        with extended namespace paths. The new instance is cached as an attribute
+        for subsequent access.
+        Args:
+            attr (str): The attribute name to append to the current namespace.
+        Returns:
+            OlManager: A new OlManager instance with the extended namespace path.
+        """
         new_instance = OlManager(f"{self.attr}.{attr}")
         setattr(self, attr, new_instance)
         return new_instance
 
     def __call__(self, *args, **kwargs):
+        """
+        Generate an OpenLayers configuration dictionary.
+        Converts the OlManager instance into a configuration dictionary with the
+        accumulated namespace path as the 'type' field. Special handling for
+        geometry objects: if the namespace contains "ol.geom" and a single
+        positional argument is provided, it is converted to a 'geom' keyword argument.
+        Args:
+            *args: Positional arguments. For ol.geom objects, a single argument
+                   is treated as the geometry parameter.
+            **kwargs: Keyword arguments to include in the configuration dictionary.
+        Returns:
+            dict: A configuration dictionary with 'type' and additional parameters.
+        """
         if args:
             if "ol.geom" in self.attr and len(args) == 1:
                 kwargs["geom"] = args[0]
