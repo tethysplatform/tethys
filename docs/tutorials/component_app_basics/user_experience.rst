@@ -78,7 +78,11 @@ Solution
 
         return lib.tethys.Display(
             lib.tethys.Map(on_click=handle_map_click)(
-                lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
+                lib.ol.layer.Image(
+                    options=lib.Props(
+                        title="GEOGLOWS Streamflow Service"
+                    )
+                )(
                     lib.ol.source.ImageArcGISRest(
                         url="https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"
                     )
@@ -86,7 +90,7 @@ Solution
             ),
             lib.tethys.Panel(
                 show=show_panel,
-                set_show=set_show_panel,
+                on_close=lambda _: set_show_panel(False),
                 title="Streamflow",
             )(
                 lib.tethys.Chart(data=chart_data["series"], title=f"Streamflow @ {chart_data["river_id"]}", y_label="CFS") if chart_data else lib.bs.Spinner()
@@ -135,7 +139,7 @@ This ensures that the re-render scheduled by the **state varaible setter functio
     
     Sending the data-fetching logic to a background thread immediately frees up the processing queue since each thread has its own queue.
 
-``lib.tethys.Panel(show=show_panel, set_show=set_show_panel, title="Streamflow")``
+``lib.tethys.Panel(show=show_panel, on_close=lambda _: set_show_panel(False), title="Streamflow")``
 
 The panel is now controlled by state, and its title is more descriptive.
 
