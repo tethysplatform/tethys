@@ -116,7 +116,11 @@ To add an ArcGIS REST Map Service layer to your map, you'll use the ``lib.ol.lay
     def home(lib):
         return lib.tethys.Display(
             lib.tethys.Map(
-                lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
+                lib.ol.layer.Image(
+                    options=lib.Props(
+                        title="GEOGLOWS Streamflow Service"
+                    )
+                )(
                     lib.ol.source.ImageArcGISRest(
                         url='https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer'
                     )
@@ -136,7 +140,7 @@ This mouthful simply means that with ``lib.ol`` you are indirectly accessing muc
 
 The ``lib.ol.layer.Image`` component:
 
-- Accepts a ``title`` keyword argument. The provided value will be displayed in the layer toggle that is automatically generated under the Map's layer control menu (see screenshot below)
+- Accepts an ``options`` keyword argument that takes a ``title`` property, which will be displayed in the layer toggle that is automatically generated under the Map's layer control menu (see screenshot below)
 - Requires a nested layer source component. Because we're adding an ArcGIS REST Map Server, we use the corresponding ``lib.ol.source.ImageArcGISRest`` component as the child of the Layer.
 
 The ``lib.ol.source.ImageArcGISRest`` component:
@@ -197,7 +201,11 @@ Here's the new code:
     def home(lib):
         return lib.tethys.Display(
             lib.tethys.Map(
-                lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
+                lib.ol.layer.Image(
+                    options=lib.Props(
+                        title="GEOGLOWS Streamflow Service"
+                    )
+                )(
                     lib.ol.source.ImageArcGISRest(
                         url='https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer'
                     )
@@ -222,7 +230,7 @@ Save the ``app.py`` and refresh your browser after the server automatically relo
 The panel renders by default anchored to the right edge of the page, overlaying the content below.
 A couple of important things to point out:
 
-- The panel has an "X" icon in the top right that will close the panel upon click. Great, right? But there's currently no way of pulling it back up... Remember, our goal is to pull it up by click a feature on the map.
+- The panel has an "X" icon in the top right that does nothing. We will need to program it to hide the panel. We also will not want the panel showing by default. Remember, our goal is to pull it up by clicking a feature on the map.
 - The chart does not look at all like a chart. It's currently more of a placeholder for a chart. This is because we haven't added data to it. Remember, we plan for that same map click to initiate a process that fetches the relevant data and adds it to the chart.
 
 If you hadn't guessed, our next step will be adding some additional interactivity to the app by triggering updates with a map click. Let's get to it!
