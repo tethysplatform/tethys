@@ -23,7 +23,7 @@ Create and install a new Tethys app named bokeh_tutorial in your :ref:`virtual_e
 1. Bokeh Server
 ===============
 
-``Bokeh`` is an interactive visualization library for Python. ``Bokeh Server`` is a component of the ``Bokeh`` architecture. It provides a way to sync model objects in Python on the backend to JavaScript model objects on the client. This is done by levering the ``Websocket`` protocol. With the addition of ``Django Channels`` to Tethys, this ability to sync backend python objects and frontend plots has also been integrated without the need of other components such as a ``Tornado`` server (see the Tethys Bokeh Integration documentation :ref:`bokeh_integration`). This integration facilitates the linking of objects and ``Bokeh`` widgets as well as the creation of the necessary ``websocket`` and ``http`` ``consumers``.
+``Bokeh`` is an interactive visualization library for Python. ``Bokeh Server`` is a component of the ``Bokeh`` architecture. It provides a way to sync model objects in Python on the backend to JavaScript model objects on the client. This is done by leveraging the ``Websocket`` protocol. With the addition of ``Django Channels`` to Tethys, this ability to sync backend python objects and frontend plots has also been integrated without the need of other components such as a ``Tornado`` server (see the Tethys Bokeh Integration documentation :ref:`bokeh_integration`). This integration facilitates the linking of objects and ``Bokeh`` widgets as well as the creation of the necessary ``websocket`` and ``http`` ``consumers``.
 
 To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``bokeh-django`` libraries.
 
@@ -35,7 +35,7 @@ To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``
     conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django bokeh_sampledata
 
     # pip
-    pip install bokeh bokeh-django
+    pip install bokeh bokeh-django bokeh_sampledata
 
 2. Add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
 
@@ -121,6 +121,7 @@ This is a simple Bokeh plot. We will now add the rest of the logic to make it an
 5. Modify the ``handler function`` from ``handlers.py`` to look like this.
 
 .. code-block:: python
+    :emphasize-lines: 1-2, 17-28
 
     from bokeh.models import ColumnDataSource, Slider
     from bokeh.layouts import column
@@ -181,6 +182,21 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
       - panel
       - param
 
+
+.. warning::
+
+    The current versions of ``panel`` and ``param`` may not function properly with the following sections of this tutorial. If you encounter issues,
+    consider installing specific versions using one of the following commands:
+
+    .. code-block:: bash
+
+        conda install -c conda-forge panel=1.3.8 param=2.0.2 bokeh=3.3.4
+
+    .. code-block:: bash
+
+        pip install panel==1.3.8 param==2.0.2 bokeh==3.3.4
+
+    For best results, make sure your python version is 3.12 or lower.
 
 3. Add the following objects to a new file called ``param_model.py``.
 
@@ -273,6 +289,7 @@ The added classes depend on ``Bokeh``.  The `Circle` and `NGon` classes depend o
 4. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``handlers.py``.
 
 .. code-block:: python
+    :emphasize-lines: 3, 7-12
 
     ...
 
