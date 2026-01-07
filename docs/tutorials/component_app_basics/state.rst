@@ -61,7 +61,11 @@ Here's how that should look:
 
         return lib.tethys.Display(
             lib.tethys.Map(on_click=handle_map_click)(
-                lib.ol.layer.Image(title="GEOGLOWS Streamflow Service")(
+                lib.ol.layer.Image(
+                    options=lib.Props(
+                        title="GEOGLOWS Streamflow Service"
+                    )
+                )(
                     lib.ol.source.ImageArcGISRest(
                         url="https://livefeeds3.arcgis.com/arcgis/rest/services/GEOGLOWS/GlobalWaterModel_Medium/MapServer"
                     )
