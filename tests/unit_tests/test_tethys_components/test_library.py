@@ -36,7 +36,7 @@ class TestComponentLibrary(TestCase):
 
                 lib = library.ComponentLibrary(test_page_name)
                 lib.hooks = mock.MagicMock()
-                lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
+                lib.hooks.use_state.return_value = [None, lambda _: None]
                 test_module = __import__(test_page_name, fromlist=["test"])
                 raw_vdom = test_module.page_test(lib)
                 js_string = lib.render_js_template()

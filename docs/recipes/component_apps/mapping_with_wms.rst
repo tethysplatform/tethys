@@ -216,6 +216,7 @@ WMS Time
             microsecond=0
         )
 
+    @App.page
     def wms_time(lib):
         frame_rate = 0.5  # frames per second
         wms_time, set_wms_time = lib.hooks.use_state(lambda: three_hours_ago())

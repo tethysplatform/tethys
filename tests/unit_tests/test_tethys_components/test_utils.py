@@ -671,3 +671,46 @@ def test_find_by_tag_various_structures():
 
     # Non-element input returns empty list
     assert utils.find_by_tag("not an element", "target") == []
+
+
+def test_ol_manager_attribute_chaining_and_call():
+    base = utils.OlManager("ol")
+
+    # Accessing an attribute should return a new OlManager with dotted attr
+    src = base.source
+    assert isinstance(src, utils.OlManager)
+    assert src.attr == "ol.source"
+
+    # Chaining attributes should build dotted names
+    chained = base.layer.tile
+    assert chained.attr == "ol.layer.tile"
+
+    # Accessed attributes are cached on the instance
+    assert base.source is src
+
+    # Calling returns a dict with type and provided kwargs
+    res = src(foo="bar")
+    assert isinstance(res, dict)
+    assert res["type"] == "ol.source"
+    assert res["foo"] == "bar"
+
+
+def test_ol_manager_geom_arg_handling():
+    # When the attr contains 'ol.geom' and a single positional arg is given,
+    # the call should place that arg into the 'geom' kwarg
+    geom_mgr = utils.OlManager("ol.geom")
+
+    out = geom_mgr("POINT(1 2)")
+    assert out["type"] == "ol.geom"
+    assert out["geom"] == "POINT(1 2)"
+
+    # If kwargs already provide geom it should be preserved/overridden by call logic
+    out2 = geom_mgr("POINT(3 4)", geom="override")
+    # __call__ will still set geom from args when args present
+    assert out2["geom"] == "POINT(3 4)"
+
+    # For non-geom managers, positional args are ignored and only kwargs are returned
+    mgr = utils.OlManager("ol.someType")
+    out3 = mgr(1, 2, foo="baz")
+    assert out3["type"] == "ol.someType"
+    assert out3["foo"] == "baz"

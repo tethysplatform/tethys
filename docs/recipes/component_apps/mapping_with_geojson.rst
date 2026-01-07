@@ -39,7 +39,7 @@ GeoJSON from explicit inline
 
     @App.page
     def geojson_from_inline(lib):
-        features, set_features = lib.hooks.use_state({
+        features = {
             'type': 'FeatureCollection',
             'crs': {
                 'type': 'name',
@@ -49,137 +49,137 @@ GeoJSON from explicit inline
             },
             'features': [
                 {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'Point',
-                    'coordinates': [0, 0],
-                },
-                },
-                {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'LineString',
-                    'coordinates': [
-                    [4e6, -2e6],
-                    [8e6, 2e6],
-                    ],
-                },
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [0, 0],
+                    },
                 },
                 {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'LineString',
-                    'coordinates': [
-                    [4e6, 2e6],
-                    [8e6, -2e6],
-                    ],
-                },
-                },
-                {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'Polygon',
-                    'coordinates': [
-                    [
-                        [-5e6, -1e6],
-                        [-3e6, -1e6],
-                        [-4e6, 1e6],
-                        [-5e6, -1e6],
-                    ],
-                    ],
-                },
-                },
-                {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'MultiLineString',
-                    'coordinates': [
-                    [
-                        [-1e6, -7.5e5],
-                        [-1e6, 7.5e5],
-                    ],
-                    [
-                        [1e6, -7.5e5],
-                        [1e6, 7.5e5],
-                    ],
-                    [
-                        [-7.5e5, -1e6],
-                        [7.5e5, -1e6],
-                    ],
-                    [
-                        [-7.5e5, 1e6],
-                        [7.5e5, 1e6],
-                    ],
-                    ],
-                },
-                },
-                {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'MultiPolygon',
-                    'coordinates': [
-                    [
-                        [
-                        [-5e6, 6e6],
-                        [-3e6, 6e6],
-                        [-3e6, 8e6],
-                        [-5e6, 8e6],
-                        [-5e6, 6e6],
-                        ],
-                    ],
-                    [
-                        [
-                        [-2e6, 6e6],
-                        [0, 6e6],
-                        [0, 8e6],
-                        [-2e6, 8e6],
-                        [-2e6, 6e6],
-                        ],
-                    ],
-                    [
-                        [
-                        [1e6, 6e6],
-                        [3e6, 6e6],
-                        [3e6, 8e6],
-                        [1e6, 8e6],
-                        [1e6, 6e6],
-                        ],
-                    ],
-                    ],
-                },
-                },
-                {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'GeometryCollection',
-                    'geometries': [
-                    {
+                    'type': 'Feature',
+                    'geometry': {
                         'type': 'LineString',
                         'coordinates': [
-                        [-5e6, -5e6],
-                        [0, -5e6],
+                            [4e6, -2e6],
+                            [8e6, 2e6],
                         ],
                     },
-                    {
-                        'type': 'Point',
-                        'coordinates': [4e6, -5e6],
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [
+                            [4e6, 2e6],
+                            [8e6, -2e6],
+                        ],
                     },
-                    {
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
                         'type': 'Polygon',
                         'coordinates': [
-                        [
-                            [1e6, -6e6],
-                            [3e6, -6e6],
-                            [2e6, -4e6],
-                            [1e6, -6e6],
-                        ],
+                            [
+                                [-5e6, -1e6],
+                                [-3e6, -1e6],
+                                [-4e6, 1e6],
+                                [-5e6, -1e6],
+                            ],
                         ],
                     },
-                    ],
                 },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'MultiLineString',
+                        'coordinates': [
+                            [
+                                [-1e6, -7.5e5],
+                                [-1e6, 7.5e5],
+                            ],
+                            [
+                                [1e6, -7.5e5],
+                                [1e6, 7.5e5],
+                            ],
+                            [
+                                [-7.5e5, -1e6],
+                                [7.5e5, -1e6],
+                            ],
+                            [
+                                [-7.5e5, 1e6],
+                                [7.5e5, 1e6],
+                            ],
+                        ],
+                    },
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'MultiPolygon',
+                        'coordinates': [
+                            [
+                                [
+                                    [-5e6, 6e6],
+                                    [-3e6, 6e6],
+                                    [-3e6, 8e6],
+                                    [-5e6, 8e6],
+                                    [-5e6, 6e6],
+                                ],
+                            ],
+                            [
+                                [
+                                    [-2e6, 6e6],
+                                    [0, 6e6],
+                                    [0, 8e6],
+                                    [-2e6, 8e6],
+                                    [-2e6, 6e6],
+                                ],
+                            ],
+                            [
+                                [
+                                    [1e6, 6e6],
+                                    [3e6, 6e6],
+                                    [3e6, 8e6],
+                                    [1e6, 8e6],
+                                    [1e6, 6e6],
+                                ],
+                            ],
+                        ],
+                    },
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'GeometryCollection',
+                        'geometries': [
+                            {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [-5e6, -5e6],
+                                    [0, -5e6],
+                                ],
+                            },
+                            {
+                                'type': 'Point',
+                                'coordinates': [4e6, -5e6],
+                            },
+                            {
+                                'type': 'Polygon',
+                                'coordinates': [
+                                    [
+                                        [1e6, -6e6],
+                                        [3e6, -6e6],
+                                        [2e6, -4e6],
+                                        [1e6, -6e6],
+                                    ],
+                                ],
+                            },
+                        ],
+                    },
                 },
             ],
-        })
+        }
         return lib.tethys.Display(
             lib.tethys.Map(
                 lib.ol.layer.Vector(
@@ -226,3 +226,9 @@ GeoJSON from File / Pandas Dataframe
                 )
             )
         )
+
+.. include:: reusables/geojson_with_dynamic_style.rst
+
+.. include:: reusables/geojson_unique_value_styler.rst
+
+.. include:: reusables/display_feature_props_on_click.rst
