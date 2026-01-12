@@ -407,7 +407,13 @@ class ComponentLibrary:
         return content
 
     def register(
-        self, package, accessor, styles=None, default_export=None, treat_as_path=False, host='https://esm.sh'
+        self,
+        package,
+        accessor,
+        styles=None,
+        default_export=None,
+        treat_as_path=False,
+        host="https://esm.sh",
     ):
         """
         Registers a new package to be used by the ComponentLibrary
@@ -463,7 +469,7 @@ class ComponentLibrary:
             styles=styles,
             default_export=default_export,
             treat_as_path=treat_as_path,
-            host=host
+            host=host,
         )
         self.CURATED_PACKAGES.check_package(accessor, new_package)
         if hasattr(self, accessor):
