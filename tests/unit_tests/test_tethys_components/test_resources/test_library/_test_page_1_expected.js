@@ -64,6 +64,12 @@ function htmlToJsonObject(element) {
 }
 
 function jsonSanitizeObject(obj, maxDepth, refs, depth) {
+    try {
+        JSON.stringify(obj);
+        return obj;
+    } catch (e) {
+        "pass";
+    }
     if (!maxDepth) {
         maxDepth = 4;
     }
@@ -86,7 +92,6 @@ function jsonSanitizeObject(obj, maxDepth, refs, depth) {
         return undefined;
     }
     refs.push(obj);
-    delete obj.nativeEvent;
     let newObj = Array.isArray(obj) ? [] : {};
     if (depth > maxDepth) {
         newObj = "BEYOND MAX DEPTH";
