@@ -1,18 +1,14 @@
-from os import chdir
 from pathlib import Path
+import sys
 import webbrowser
 from argparse import Namespace
-from tethys_apps.utilities import get_installed_tethys_items
-from tethys_cli.cli_helpers import get_manage_path, run_process, setup_django
+from tethys_cli.cli_helpers import get_manage_path, run_process
 from tethys_cli.db_commands import configure_tethys_db, process_args
 from tethys_cli.gen_commands import (
     get_destination_path,
     generate_command,
     GEN_PORTAL_OPTION,
 )
-from tethys_cli.scaffold_commands import scaffold_command, APP_PREFIX
-from tethys_cli.install_commands import install_command
-from tethys_cli.settings_commands import settings_command
 from tethys_cli.cli_colors import write_warning
 
 
@@ -43,9 +39,9 @@ def add_quickstart_parser(subparsers):
 def start_command(args):
     manage_path = get_manage_path(args)
     if args.port:
-        primary_process = ["python", manage_path, "runserver", args.port]
+        primary_process = [sys.executable, manage_path, "runserver", args.port]
     else:
-        primary_process = ["python", manage_path, "runserver"]
+        primary_process = [sys.executable, manage_path, "runserver"]
 
     run_process(primary_process)
 
@@ -85,48 +81,6 @@ def quickstart_command(args):
     db_config_options = process_args(db_config_args)
     if not Path(db_config_options["db_name"]).exists():
         configure_tethys_db(**db_config_options)
-
-    setup_django()
-    installed_apps = get_installed_tethys_items(apps=True)
-    if not installed_apps:
-        # Automatically scaffolds and installs an app
-        app_scaffold_args = Namespace(
-            name="hello_world",
-            extension=False,
-            template="default",
-            prefix=str(Path.cwd()),
-            use_defaults=True,
-            overwrite=False,
-        )
-        scaffold_command(app_scaffold_args)
-        chdir(f"{APP_PREFIX}-hello_world")
-        app_install_args = Namespace(
-            develop=True,
-            file=None,
-            without_dependencies=False,
-            only_dependencies=False,
-            verbose=False,
-            no_db_sync=False,
-            force_services=False,
-            services_file=None,
-            quiet=True,
-            no_sync_stores=False,
-            update_installed=False,
-        )
-        install_command(app_install_args)
-
-        update_settings_args = Namespace(
-            set_kwargs=[
-                (
-                    "TETHYS_PORTAL_CONFIG",
-                    """
-                    MULTIPLE_APP_MODE: False
-                    STANDALONE_APP: hello_world
-                """,
-                )
-            ]
-        )
-        settings_command(update_settings_args)
 
     webbrowser.open("http://127.0.0.1:8000/")
     start_args = Namespace(port=None)

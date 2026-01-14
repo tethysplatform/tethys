@@ -184,7 +184,15 @@ var MAP_LAYOUT = (function() {
                     };
 
                     // Fetch the WMS GetCapabilities for each layer
-                    $.each(source.getUrls(), function(i, url) {
+                    // Handle different URL methods for TileWMS vs ImageWMS
+                    let urls = [];
+                    if (source instanceof ol.source.TileWMS) {
+                        urls = source.getUrls();
+                    } else if (source instanceof ol.source.ImageWMS) {
+                        urls = [source.getUrl()];
+                    }
+                    
+                    $.each(urls, function(i, url) {
                         let capabilities_url = `${url}?request=GetCapabilities`;
                         
                         // Use cache if layer on same server as previous lookup
@@ -304,7 +312,7 @@ var MAP_LAYOUT = (function() {
         let feature_id = feature.getId();
 
         if (feature_id) {
-            if (feature_id.includes('.fid')) {
+            if (feature_id.includes != undefined && feature_id.includes('.fid')) {
                 // Derive fid from ID assigned by GeoServer (<layer_name>.<fid>)
                 // e.g.: 0958cc07-c194-4af9-81c5-118a77d335ac_stream_links.fid--72787a80_169a16811e6_-7aa6
                 feature_id = feature_id.split('.')[1];

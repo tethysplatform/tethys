@@ -58,8 +58,11 @@ Glossary
         A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the :doc:`./tethys_sdk/tethys_services/dataset_services` for more information.
 
     virtual environment
-    Python conda environment
-        An isolated Python installation. Many operating systems use the system Python installation to perform maintenance operations. Installing Tethys Platform in a conda environment prevents potential dependency conflicts. It also make it easier to install dependencies that have non-python dependencies (e.g. netCDF4, GDAL, arcgis)
+        An isolated Python installation. Many operating systems use the system Python installation to perform maintenance operations. Installing Tethys Platform in a virtual environment prevents potential dependency conflicts. 
+    
+    conda environment
+        An isolated Python installation managed by `Conda <https://docs.conda.io/projects/conda/en/latest/index.html>`_, which does more than a standard virtual environment, such as providing its own package manager and installing/managing non-python dependencies (e.g. netCDF4, GDAL, arcgis). Packages are installed via ``conda install`` rather than ``pip install``.
+
 
     Model View Controller
         The development pattern used to develop Tethys apps. The Model represents the data of the app, the View is composed of the representation of the data, and the Controller consists of the logic needed to prepare the data from the Model for the View and any other logic your app needs.
@@ -69,4 +72,4 @@ Glossary
         A WPS Service provides processes/geoprocesses as web services using the Open Geospatial Consortium Web Processing Service (WPS) standard.
 
     Debian
-        Debian is a type of Linux operating system and many Linux distributions are based on it including Ubuntu. See `Linux Distributions <http://en.wikipedia.org/wiki/Linux_distribution#Examples>`_ for more information.
+        Debian is a type of Linux operating system and many Linux distributions are based on it including Ubuntu. See `Linux Distributions <https://en.wikipedia.org/wiki/Linux_distribution>`_ for more information.

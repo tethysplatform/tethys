@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{project_dir}}"
+description =  "{{description|default('')}}"
+{% if license_name %}license = {text = "{{license_name|default('')}}"}{% endif %}
+keywords = [{{', '.join(tags.split(','))}}]
+{% if author and author_email %}authors = [
+    {name = "{{author|default('')}}", email = "{{author_email|default('')}}"},
+]{% endif %}
+classifiers = [
+     "Environment :: Web Environment",
+     "Framework :: Django",
+     "Intended Audience :: Developers",{% if license_name %}
+     "License :: OSI Approved :: {{license_name}}",{% endif %}
+     "Operating System :: OS Independent",
+     "Programming Language :: Python",
+     "Programming Language :: Python :: 3",
+     "Programming Language :: Python :: 3.10",
+     "Topic :: Internet :: WWW/HTTP",
+     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+
+
+[tool.setuptools.package-data]
+"tethysext.{{project}}" = [
+    "templates/**/*",
+    "public/**/*",
+    "resources/**/*",
+]

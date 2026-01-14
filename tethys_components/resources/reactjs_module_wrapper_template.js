@@ -1,14 +1,14 @@
-{%- for package, components in components_by_package.items() %}
-{% if components|length == 1 and components[0] in named_defaults -%}
-import {{ components|join('') }} from "https://esm.sh/{{ package }}?deps={{ dependencies|join(',') }}&bundle_deps";
-{% else -%}
-import {{ '{' }}{{ components|join(', ') }}{{ '}' }} from "https://esm.sh/{{ package }}?deps={{ dependencies|join(',') }}&exports={{ components|join(',') }}&bundle_deps";
-{% endif -%}
-export {{ '{' }}{{ components|join(', ') }}{{ '}' }};
-{%- endfor %}
-
-{%- for style in style_deps %}
+{%- for package in packages %}
+    {%- set import_statements, exports_statement = package.compose_javascript_statements() %}
+    {%- for import_statement in import_statements %}
+{{import_statement}}
+    {%- endfor %}
+    {%- if exports_statement %}
+{{exports_statement}}
+        {%- for style in package.styles %}
 loadCSS("{{ style }}");
+        {%- endfor %}
+    {%- endif %}
 {%- endfor %}
 
 function loadCSS(href) {  
@@ -25,19 +25,7 @@ function loadCSS(href) {
     }
 }
 
-export default ({ children, ...props }) => {
-    const [{ component }, setComponent] = React.useState({});
-    React.useEffect(() => {
-        import("https://esm.sh/{npm_package_name}?deps={dependencies}").then((module) => {
-            // dynamically load the default export since we don't know if it's exported.
-            setComponent({ component: module.default });
-        });
-    });
-    return component
-        ? React.createElement(component, props, ...(children || []))
-        : null;
-};
-
+{% if reactjs_version_int > 17 %}
 export function bind(node, config) {
     const root = ReactDOM.createRoot(node);
     return {
@@ -47,6 +35,16 @@ export function bind(node, config) {
         unmount: () => root.unmount()
     };
 }
+{% else %}
+export function bind(node, config) {
+    return {
+        create: (component, props, children) =>
+            React.createElement(component, wrapEventHandlers(props), ...children),
+        render: (element) => ReactDOM.render(element, node),
+        unmount: () => ReactDOM.unmountComponentAtNode(node),
+    };
+}
+{% endif %}
 
 function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
@@ -58,12 +56,75 @@ function wrapEventHandlers(props) {
     return newProps;
 }
 
-function stringifyToDepth(val, depth, replacer, space) {
-    depth = isNaN(+depth) ? 1 : depth;
-    function _build(key, val, depth, o, a) { // (JSON.stringify() has it's own rules, which we respect here by using it for property iteration)
-        return !val || typeof val != 'object' ? val : (a=Array.isArray(val), JSON.stringify(val, function(k,v){ if (a || depth > 0) { if (replacer) v=replacer(k,v); if (!k) return (a=Array.isArray(v),val=v); !o && (o=a?[]:{}); o[k] = _build(k, v, a?depth:depth-1); } }), o||(a?[]:{}));
+/**
+ * Converts an HTML element and its children into a structured JavaScript object.
+ * @param {HTMLElement} element The HTML element to convert.
+ * @return {object} The structured object.
+ */
+function htmlToJsonObject(element) {
+  if (!element) return null;
+
+  const obj = {
+    tagName: element.tagName.toLowerCase(),
+    attributes: {}
+  };
+
+  // Get attributes
+  for (let i = 0; i < element.attributes.length; i++) {
+    const attr = element.attributes[i];
+    obj.attributes[attr.name] = attr.value;
+  }
+
+  return obj;
+}
+
+function jsonSanitizeObject(obj, maxDepth, refs, depth) {
+    try {
+        JSON.stringify(obj);
+        return obj;
+    } catch (e) {
+        "pass";
     }
-    return JSON.stringify(_build('', val, depth), null, space);
+    if (!maxDepth) {
+        maxDepth = 4;
+    }
+    if (!depth) {
+        depth = 0;
+    }
+    if (!refs) {
+        refs = [];
+    }
+    if (typeof obj === 'string' || typeof obj === 'number' || obj == null || typeof obj === 'boolean') {
+        return obj;
+    }
+    if (typeof obj === 'function') {
+        return undefined;
+    }
+    if (obj.constructor === Window) {
+        return undefined;
+    }
+    if (refs.includes(obj)) {
+        return undefined;
+    }
+    refs.push(obj);
+    let newObj = Array.isArray(obj) ? [] : {};
+    if (depth > maxDepth) {
+        newObj = "BEYOND MAX DEPTH";
+    } else {
+        for (const [key, value] of Object.entries(obj)) {
+            if (refs.includes(value)) continue;
+            newObj[key] = jsonSanitizeObject(value, maxDepth, refs, depth+1);
+        }
+        if (obj.__proto__) {
+            Object.getOwnPropertyNames(obj.__proto__).forEach(function (propName) {
+                newObj[propName] = jsonSanitizeObject(obj[propName], maxDepth, refs, depth+1);
+            });
+        }
+        if (obj instanceof Element) {
+            newObj = {...newObj, ...htmlToJsonObject(obj)}
+        }
+    }
+    return newObj;
 }
 
 function makeJsonSafeEventHandler(oldHandler) {
@@ -71,24 +132,6 @@ function makeJsonSafeEventHandler(oldHandler) {
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-
-        var filteredArguments = [];
-        Array.from(arguments).forEach(function (arg) {
-            if (typeof arg === "object" && arg.nativeEvent) {
-                // this is probably a standard React synthetic event
-                filteredArguments.push(arg);
-            } else {
-                filteredArguments.push(JSON.parse(stringifyToDepth(arg, 3, (key, value) => {
-                    if (key === '') return value;
-                    try {
-                        JSON.stringify(value);
-                        return value;
-                    } catch (err) {
-                        return (typeof value === 'object') ? value : undefined;
-                    }
-                })))
-            }
-        });
-        oldHandler(...Array.from(filteredArguments));
+        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
     };
 }

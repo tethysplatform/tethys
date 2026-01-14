@@ -371,7 +371,7 @@ then
         sudo sed -i.bak "s/django>=.*/django=${DJANGO_VERSION}/" "${TETHYS_SRC}/generated_environment.yml"
         conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/generated_environment.yml"
         conda activate ${CONDA_ENV_NAME}
-        pip install -e ${TETHYS_SRC}
+        pip install --no-deps -e ${TETHYS_SRC}
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
         conda activate ${CONDA_ENV_NAME}
@@ -386,7 +386,8 @@ then
           --set DATABASES.default.PASSWORD ${TETHYS_DB_PASSWORD} \
           --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
           --set DATABASES.default.DIR ${TETHYS_DB_DIR} \
-          --set DATABASES.default.ENGINE django.db.backends.postgresql
+          --set DATABASES.default.ENGINE django_tenants.postgresql_backend \
+          --set TENANTS_CONFIG.ENABLED true
         cat ${TETHYS_HOME}/portal_config.yml
     fi
 

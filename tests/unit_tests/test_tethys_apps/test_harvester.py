@@ -1,3 +1,4 @@
+import pytest
 import io
 import unittest
 from unittest import mock
@@ -70,6 +71,7 @@ class HarvesterTest(unittest.TestCase):
         self.assertNotIn("Tethys Apps Loaded:", mock_stdout.getvalue())
         self.assertNotIn("test_app", mock_stdout.getvalue())
 
+    @pytest.mark.django_db
     def test_harvest_get_url_patterns(self):
         """
         Test for SingletonHarvester.get_url_patterns
@@ -297,19 +299,47 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         list_apps = {"test_app": "tethysapp.test_app"}
-        exceptions = [ProgrammingError, SqliteProgrammingError]
 
-        for exception in exceptions:
-            with self.subTest(exception=exception):
-                mock_permissions.side_effect = exception
+        mock_permissions.side_effect = ProgrammingError
 
-                shv = SingletonHarvester()
-                shv._harvest_app_instances(list_apps)
+        shv = SingletonHarvester()
+        shv._harvest_app_instances(list_apps)
 
-                mock_logwarning.assert_called()
-                mock_permissions.assert_called()
-                self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
-                self.assertIn("test_app", mock_stdout.getvalue())
+        mock_logwarning.assert_called_with(
+            "Unable to register app permissions. django_content_type table does not exist"
+        )
+        mock_permissions.assert_called()
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+        self.assertIn("test_app", mock_stdout.getvalue())
+
+    @mock.patch("sys.stdout", new_callable=io.StringIO)
+    @mock.patch("tethys_apps.harvester.tethys_log.warning")
+    @mock.patch("tethysapp.test_app.app.App.register_app_permissions")
+    def test_harvest_app_instances_sqlite_programming_error(
+        self, mock_permissions, mock_logwarning, mock_stdout
+    ):
+        """
+        Test for SingletonHarvester._harvest_app_instances
+        For the app permissions exception (ProgrammingError)
+        With an exception mocked up for register_app_permissions
+        :param mock_permissions:  mock for throwing a ProgrammingError exception
+        :param mock_logerror:  mock for the tethys_log error
+        :param mock_stdout:  mock for the text output
+        :return:
+        """
+        list_apps = {"test_app": "tethysapp.test_app"}
+
+        mock_permissions.side_effect = SqliteProgrammingError
+
+        shv = SingletonHarvester()
+        shv._harvest_app_instances(list_apps)
+
+        mock_logwarning.assert_called_with(
+            "Unable to register app permissions. django_content_type table does not exist in sqlite3"
+        )
+        mock_permissions.assert_called()
+        self.assertIn("Tethys Apps Loaded:", mock_stdout.getvalue())
+        self.assertIn("test_app", mock_stdout.getvalue())
 
     @mock.patch("sys.stdout", new_callable=io.StringIO)
     @mock.patch("tethys_apps.harvester.tethys_log.warning")

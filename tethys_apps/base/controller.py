@@ -17,6 +17,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 
 from tethys_apps.base.page_handler import global_page_controller
 from tethys_cli.cli_colors import write_warning
+from tethys_components.library import ComponentLibraryManager
 from tethys_quotas.decorators import enforce_quota
 from tethys_services.utilities import ensure_oauth2
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
@@ -471,36 +472,41 @@ def page(
     index=None,
     custom_css=None,
     custom_js=None,
+    app=None,
 ) -> Callable:
     """
-    Decorator to register a function as a Page in the ReactPy paradigm
+    Decorator to register a function as a Page in the Component App paradigm
     (by automatically registering a UrlMap for it).
 
     Args:
-        name: Name of the url map. Letters and underscores only (_). Must be unique within the app. The default is the name of the function being decorated.
-        url: URL pattern to map the endpoint for the controller or consumer. If a `list` then a separate UrlMap is generated for each URL in the list. The first URL is given `name` and subsequent URLS are named `name` _1, `name` _2 ... `name` _n. Can also be passed as dict mapping names to URL patterns. In this case the `name` argument is ignored.
+        name: The internal name of the page, using only letters and underscores. Must be unique within the app. Defaults to the name of the function being decorated.
+        url: The page portion (i.e. slug) of the URL associated with this page (e.g. http://localhost:8000/app/my-app/<url>). Defaults to the name of the function being decorated, with underscores replaced by dashes (e.g. ``my_page`` becomes "my-page").
         regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
-        handler: Dot-notation path a handler function that will process the actual request. This is for an escape-hatch pattern to get back to Django templating.
+        handler: Function that will process the actual request. This is for an advanced escape-hatch pattern to get back to Django templating.
         login_required: If user is required to be logged in to access the controller. Default is `True`.
         redirect_field_name: URL query string parameter for the redirect path. Default is "next".
-        login_url: URL to send users to in order to authenticate.
+        login_url: URL to send users to in order to authenticate. This defaults to the built-in login page of your Tethys Portal.
         ensure_oauth2_provider: An OAuth2 provider name to ensure is authenticated to access the controller.
         enforce_quotas: The name(s) of quotas to enforce on the controller.
         permissions_required: The name(s) of permissions that a user is required to have to access the controller.
         permissions_use_or: When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
         permissions_message: Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
         permissions_raise_exception: Raise 403 error if True. Defaults to False.
-        layout: Layout within which the page content will be wrapped
-        title: Title of page as used in both the built-in Navigation component and the browser tab
-        index: Index of the page as used to determine the display order in the built-in Navigation component. Defaults to top-to-bottom as written in code. Pass -1 to remove from built-in Navigation component.
+        layout: Custom layout component within which the page's returned component content will be wrapped. Defaults to the ``default_layout`` as defined in the ``App`` class of the app that this page belongs to.
+        title: Title of page as used in both the built-in Navigation component and the browser tab. Defaults to a title-cased version of the name of the function being decorated (e.g. ``my_page`` becomes "My Page").
+        index: Index of the page as used to determine the display order in the built-in Navigation component. Defaults to an incrementing integer based on the order the function is processed by code. Pass -1 to remove the page entry from built-in Navigation component.
         custom_css: A list of URLs to additional css files that should be rendered with the page. These will be rendered in the order provided.
         custom_js: A list of URLs to additional js files that should be rendered with the page. These will be rendered in the order provided.
+        app: The TethysAppBase instance that this page belongs to. This defaults to the App of the ``App.page`` decorator, which is the recommended way to use this decorator. If you are using this decorator outside of the context of an App, then you must provide the app argument.
     """  # noqa: E501
+    if not app:
+        raise ValueError(
+            "The app argument must be supplied. Alternatively, use the @App.page wrapper, which supplies the app argument."
+        )
     permissions_required = _listify(permissions_required)
     enforce_quota_codenames = _listify(enforce_quotas)
 
     def wrapped(component_function):
-        component_source_code = inspect.getsource(component_function)
         url_map_kwargs_list = _get_url_map_kwargs_list(
             function_or_class=component_function,
             name=name,
@@ -509,7 +515,15 @@ def page(
             regex=regex,
             title=title,
             index=index,
+            for_page=True,
         )
+
+        component_source_code = inspect.getsource(component_function)
+
+        lib = ComponentLibraryManager.get_library(
+            f"{app.package}-{component_function.__name__}"
+        )
+        lib.load_dependencies_from_source_code(component_source_code)
 
         def controller_wrapper(request, **kwargs):
             controller = handler or global_page_controller
@@ -533,11 +547,12 @@ def page(
                 controller = login_required_decorator(
                     redirect_field_name=redirect_field_name, login_url=login_url
                 )(controller)
+
             return controller(
                 request,
+                app=app,
                 layout=layout,
                 component_func=component_function,
-                component_source_code=component_source_code,
                 title=url_map_kwargs_list[0]["title"],
                 custom_css=custom_css,
                 custom_js=custom_js,
@@ -760,6 +775,7 @@ def _get_url_map_kwargs_list(
     app_resources=False,
     title=None,
     index=None,
+    for_page=False,
 ):
     final_urls = []
     if url is not None:
@@ -788,6 +804,11 @@ def _get_url_map_kwargs_list(
                 parameters = OrderedDict(
                     inspect.signature(function_or_class).parameters
                 )
+
+            if for_page:
+                # Removes the standard ComponentLib parameter
+                arg = list(parameters.keys())[0]
+                parameters.pop(arg)
 
             for condition in [
                 app_workspace,

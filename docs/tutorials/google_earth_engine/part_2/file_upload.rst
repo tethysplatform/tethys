@@ -4,11 +4,11 @@ File Upload
 
 **Last Updated:** July 2024
 
-In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded. The following topics will be reviewed in this tutorial:
+In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's media directory after being uploaded. The following topics will be reviewed in this tutorial:
 
 * File Uploads via HTML Forms
 * Validating Form Data
-* User Workspaces
+* User Media (:ref:`tethys_paths_api`)
 * `Bootstrap Modals <https://getbootstrap.com/docs/5.2/components/modal/>`_
 * Manipulating Shapefiles in Python with `pyshp <https://pypi.org/project/pyshp/>`_
 * Temp Files
@@ -24,7 +24,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b about-page-solution about-page-solution-|version|
 
@@ -525,12 +525,12 @@ In this step you will add the logic to validate that the file contained in the Z
     * Upload the :file:`points.zip` and verify that an error *is* shown.
     * Create a zip archive that does not contain a shapefile and upload it. Verify an error *is* shown.
 
-7. Save Shapefile to the User's Workspace Directory
+7. Save Shapefile to the User's Media Directory
 ===================================================
 
-At this point you have confirmed that the user uploaded a ZIP archive containing a shapefile of polygons but the file is still stored as a temporary file and will be deleted as soon as the code finishes executing. In this step you will add the logic to write the file to the user's workspace directory. This will involve creating a few new helper functions and using the :ref:`tethys_paths_api`.
+At this point you have confirmed that the user uploaded a ZIP archive containing a shapefile of polygons but the file is still stored as a temporary file and will be deleted as soon as the code finishes executing. In this step you will add the logic to write the file to the user's media directory. This will involve creating a few new helper functions and using the :ref:`tethys_paths_api`.
 
-1. The shapefile and its sidecars will be stored in a directory called :file:`boundary` within the user's workspace. Only one boundary shapefile will be stored for each user, so if the :file:`boundary` directory already exists, it will need to be cleared out. The ``prep_boundary_dir`` helper function will be responsible for initializing the :file:`boundary` directory in the user's workspace and clearing it out if needed. Add the following imports and create the ``prep_boundary_dir`` function in :file:`helpers.py`:
+1. The shapefile and its sidecars will be stored in a directory called :file:`boundary` within the user's media directory. Only one boundary shapefile will be stored for each user, so if the :file:`boundary` directory already exists, it will need to be cleared out. The ``prep_boundary_dir`` helper function will be responsible for initializing the :file:`boundary` directory in the user's media directory and clearing it out if needed. Add the following imports and create the ``prep_boundary_dir`` function in :file:`helpers.py`:
 
 .. code-block:: python
 
@@ -540,7 +540,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
     def prep_boundary_dir(root_path):
         """
-        Setup the workspace directory that will store the uploaded boundary shapefile.
+        Setup the media directory that will store the uploaded boundary shapefile.
 
         Args:
             root_path (str): path to the root directory where the boundary directory will be located.
@@ -607,9 +607,10 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
         Controller for the app viewer page.
         """
 
-.. tip:
 
-    For more information about Tethys Workspaces, see :ref:`tethys_paths_api`.
+.. tip::
+
+    For more information about User Media, see :ref:`tethys_paths_api`.
 
 4. The ``viewer`` controller will need to be able to pass the ``user_media`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_media`` as an additional argument in :file:`helpers.py`:
 
@@ -622,7 +623,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
         Args:
             request (django.Request): the request object.
-            user_workspace (tethys_sdk.paths.TethysPath): the User workspace object.
+            user_media (tethys_sdk.paths.TethysPath): the User media object.
 
         Returns:
             str: Error string if errors occurred.
@@ -639,7 +640,7 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
 
         Args:
             request (django.Request): the request object.
-            user_workspace (tethys_sdk.workspaces.Workspace): the User workspace object.
+            user_media (tethys_sdk.paths.TethysPath): the User media object.
 
         Returns:
             str: Error string if errors occurred.
@@ -696,7 +697,17 @@ At this point you have confirmed that the user uploaded a ZIP archive containing
     if request.POST and request.FILES:
         set_boundary_error = handle_shapefile_upload(request, user_media)
 
-7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the shapefile is saved to the active user's workspace directory with its sidecar files (e.g. :file:`workspaces/user_workspaces/admin/boundary/boundary.shp`).
+7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the shapefile is saved to the active user's media directory with its sidecar files 
+(e.g. :file:`~/.tethys/tethys/media/earth_engine/user/admin/boundary/boundary.shp`).
+
+.. note::
+
+    The exact path to the user media directory will vary based on your Tethys installation and the active user. To find the path to the user media directory you can use this command:
+
+    .. code-block:: bash
+
+        tethys paths get -t user_media --user <username> --app earth_engine
+    
 
 8. Redirect Upon Successful File Upload
 =======================================
@@ -733,16 +744,16 @@ Browse to `<http://localhost:8000/apps/earth-engine/viewer/>`_ in a web browser 
 3. Upload a zip archive that does not contain a shapefile and verify that the appropriate error is displayed.
 4. Upload the :file:`points.zip` and verify that the appropriate error is displayed.
 5. Upload the :file:`USA_simplified.zip` and verify that **no** errors are displayed.
-6. Verify that the :file:`boundary.shp` is written to the user workspace of the active user (e.g. :file:`workspaces/user_workspace/admin/boundary/boundary.shp`).
+6. Verify that the :file:`boundary.shp` is written to the user media directory of the active user (e.g. :file:`~/.tethys/tethys/media/earth_engine/user/admin/boundary/boundary.shp`).
 7. Press the *Home* button in the header to navigate to the home page. Verify that no warnings are displayed after a successful upload when navigating away.
 
 10. Solution
 ============
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/file-upload-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/file-upload-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b file-upload-solution file-upload-solution-|version|

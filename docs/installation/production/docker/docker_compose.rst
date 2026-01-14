@@ -19,8 +19,6 @@ A simple Docker Compose YAML (:file:`docker-compose.yml`) for a Django web appli
 
 .. code-block:: yaml
 
-    version: "3.9"
-
     services:
       db:
         image: postgres
@@ -56,9 +54,9 @@ Starting all the services in a Docker Compose YAML is done using the following c
 
 Here is a list of resources that you can use to learn more about Docker Compose:
 
-* `Docker Compose Features List <https://docs.docker.com/compose/#features>`_
-* `Compose File Reference | Docker Documentation <https://docs.docker.com/compose/compose-file/>`_
-* `Compose Command Reference | Docker Documentation <https://docs.docker.com/compose/cli-command/>`_
+* `Docker Compose Features List <https://docs.docker.com/compose/intro/features-uses/>`_
+* `Compose File Reference | Docker Documentation <https://docs.docker.com/reference/compose-file/>`_
+* `Compose Command Reference | Docker Documentation <https://docs.docker.com/reference/cli/docker/compose/>`_
 
 Create Docker Compose Recipe
 ============================
@@ -98,15 +96,15 @@ e. Place the ``JSON`` file containing the service account key in the :file:`keys
 2. Create Docker Compose File
 -----------------------------
 
-.. _`image`: https://docs.docker.com/compose/compose-file/compose-file-v3/#image
-.. _`build`: https://docs.docker.com/compose/compose-file/compose-file-v3/#build
-.. _`restart`: https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
-.. _`depends_on`: https://docs.docker.com/compose/compose-file/compose-file-v3/#depends_on
-.. _`networks (services)`: https://docs.docker.com/compose/compose-file/compose-file-v3/#networks
-.. _`ports`: https://docs.docker.com/compose/compose-file/compose-file-v3/#ports
-.. _`env_file`: https://docs.docker.com/compose/compose-file/compose-file-v3/#env_file
-.. _`environment`: https://docs.docker.com/compose/compose-file/compose-file-v3/#environment
-.. _`volumes`: https://docs.docker.com/compose/compose-file/compose-file-v3/#volumes
+.. _`image`: https://docs.docker.com/reference/compose-file/services/#image
+.. _`build`: https://docs.docker.com/reference/compose-file/services/#build
+.. _`restart`: https://docs.docker.com/reference/compose-file/services/#restart
+.. _`depends_on`: https://docs.docker.com/reference/compose-file/services/#depends_on
+.. _`networks (services)`: https://docs.docker.com/reference/compose-file/services/#networks
+.. _`ports`: https://docs.docker.com/reference/compose-file/services/#ports
+.. _`env_file`: https://docs.docker.com/reference/compose-file/services/#env_file
+.. _`environment`: https://docs.docker.com/reference/compose-file/services/#environment
+.. _`volumes`: https://docs.docker.com/reference/compose-file/services/#volumes
 
 Create a new file called :file:`docker-compose.yml` in the :file:`tethys_portal_docker` directory:
 
@@ -118,7 +116,6 @@ Add the following contents to the :file:`docker-compose.yml`:
 
 .. code-block:: yaml
 
-    version: "3"
     services:
       db:
       thredds:
@@ -131,9 +128,8 @@ Add the following contents to the :file:`docker-compose.yml`:
 
 **Explanation**
 
-* `version <https://docs.docker.com/compose/compose-file/compose-file-v3/#compose-and-docker-compatibility-matrix>`_: This is the version of the Docker Compose file format that this Compose file uses.
-* `services <https://docs.docker.com/compose/compose-file/compose-file-v3/#service-configuration-reference>`_: This section contains a list of services or containers and configuration for each. Three stubs are defined for the four containers that need to be defined for the custom image: ``db``, ``thredds``, ``redis``, and ``web``.
-* `networks (top-level) <https://docs.docker.com/compose/compose-file/compose-file-v3/#network-configuration-reference>`_: Networks that should be created. In this example two networks are defined, one that is internal, meaning only accessible to the containers that are connected to it, and one that is external, to allow access to the web container for example. To learn more about Docker networks, see: `Networking overview | Docker Documentation <https://docs.docker.com/network/>`_.
+* `services <https://docs.docker.com/reference/compose-file/services/>`_: This section contains a list of services or containers and configuration for each. Three stubs are defined for the four containers that need to be defined for the custom image: ``db``, ``thredds``, ``redis``, and ``web``.
+* `networks (top-level) <https://docs.docker.com/reference/compose-file/networks/>`_: Networks that should be created. In this example two networks are defined, one that is internal, meaning only accessible to the containers that are connected to it, and one that is external, to allow access to the web container for example. To learn more about Docker networks, see: `Networking overview | Docker Documentation <https://docs.docker.com/engine/network/>`_.
 
 3. Define Database Service
 --------------------------
@@ -181,7 +177,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
 .. code-block:: yaml
 
     thredds:
-      image: unidata/thredds-docker:5.5
+      image: unidata/thredds-docker:5.6
       restart: always
       networks:
         - "internal"
@@ -207,7 +203,7 @@ Add the following definition for the ``thredds`` service in the :file:`docker-co
     * ``./data/thredds/:/usr/local/tomcat/content/thredds``: Main content directory for THREDDS. This directory will contain the data and XML configuration files for THREDDS.
     * ``./logs/thredds/tomcat/:/usr/local/tomcat/logs/``: Logs for Tomcat, the server running THREDDS.
     * ``./logs/thredds/thredds/:/usr/local/tomcat/content/thredds/logs/``: Logs for THREDDS.
-    * ``./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml``: Tomcat user configuration file. Use this file to create user accounts for the THREDDS Data Manager service that is also run inside the container (see: `THREDDS Data Manager (TDM) <https://www.unidata.ucar.edu/software/tds/current/reference/collections/TDM.html>`_ and `Manager App HOW-TO | Tomcat Documentation <https://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html>`_).
+    * ``./config/thredds/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml``: Tomcat user configuration file. Use this file to create user accounts for the THREDDS Data Manager service that is also run inside the container (see: `THREDDS Data Manager (TDM) <https://docs.unidata.ucar.edu/tds/current/userguide/tdm_ref.html>`_ and `Manager App HOW-TO | Tomcat Documentation <https://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html>`_).
 
 5. Define Redis Service
 -----------------------

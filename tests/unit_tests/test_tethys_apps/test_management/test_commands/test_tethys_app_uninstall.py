@@ -1,3 +1,6 @@
+import pytest
+import sys
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -32,6 +35,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch(
         "tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_items"
     )
+    @pytest.mark.django_db
     def test_tethys_app_uninstall_handle_apps_cancel(
         self, mock_installed_items, mock_input, mock_stdout, mock_exit
     ):
@@ -110,7 +114,9 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_extension.objects.get.assert_called()
         mock_extension.objects.get().delete.assert_not_called()
         mock_popen.assert_called_once_with(
-            ["pip", "uninstall", "-y", "tethysapp-foo_app"], stderr=-2, stdout=-1
+            [sys.executable, "-m", "pip", "uninstall", "-y", "tethysapp-foo_app"],
+            stderr=-2,
+            stdout=-1,
         )
 
     @mock.patch("warnings.warn")

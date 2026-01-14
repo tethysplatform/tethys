@@ -1,8 +1,8 @@
 .. _key_concepts_new_app_project_tutorial:
 
-**********************
-New Tethys App Project
-**********************
+************************
+New Standard App Project
+************************
 
 **Last Updated:** July 2024
 
@@ -15,16 +15,11 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
 1. Generate Scaffold
 ====================
 
-To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` to stop the development server if it is still running, and execute the following commands:
+To generate a new app using the scaffold, open a terminal, :ref:`activate_environment`, and execute the following commands:
 
 .. code-block:: bash
 
-    conda activate tethys
     tethys scaffold dam_inventory
-
-.. tip::
-
-    Windows Users: Use the Anaconda Powershell Prompt to run Tethys commands.
 
 You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default value that is shown in the square brackets by pressing enter.
 

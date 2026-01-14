@@ -11,13 +11,6 @@ section>section {
     margin-top: 3rem;
 }
 
-/* Hide header buttons if screen gets too narrow */
-@media (max-width: 975px) {
-    header a {
-        display: none!important;
-    }
-}
-
 /* Make the sidebar nav not so wide */
 [data-sidebar-target=sidebar].isShown {
     width: auto!important;
@@ -62,3 +55,4 @@ pre {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+

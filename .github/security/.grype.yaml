@@ -1,0 +1,26 @@
+# Global configuration for Anchore Grype scans.
+# This keeps suppressions and path exclusions versioned alongside the codebase
+# so both local scans and the GitHub Action behave the same way.
+
+fail-on-severity: high
+
+exclude:
+  # Salt’s vendored Python tree contains known CVEs that we do not ship.
+  - /opt/saltstack/**
+
+ignore:
+  # We intentionally pin an older CPython in the conda environment while we
+  # wait on conda-build support for the latest release. Track the waiver here
+  # so the justification is audited and easy to revisit.
+  - package:
+      name: python
+      type: binary
+    reason: "Pinned to an older CPython until conda-build grows support for the latest version."
+  - package:
+      name: django
+      type: python
+    reason: "Only django 5.x has vulnerabilities that have been resolved"
+  - package:
+      name: social-auth-app-django
+      type: python
+    reason: "Fixed version not yet availble for versions of conda < 5.1"

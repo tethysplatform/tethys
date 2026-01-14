@@ -1,5 +1,5 @@
 # flake8: noqa
-DJANGO_VERSION = 3.2
+DJANGO_VERSION = 5.2
 
 d = {
     "": {
@@ -20,6 +20,7 @@ d = {
         "ENABLE_OPEN_SIGNUP": 'anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.',
         "REGISTER_CONTROLLER": "override the default registration page with a custom controller. The value should be the dot-path to the controller function/class (e.g. ``tethysext.my_extension.controllers.custom_registration``)",
         "ENABLE_OPEN_PORTAL": "no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``controller`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.",
+        "ALLOW_JWT_BASIC_AUTHENTICATION": "allows users to get a JSON Web Token (JWT) using basic authentication when ``True``. Defaults to ``False``. If set to true, users can obtain a JWT by sending a POST request with their username and password to the ``/api/token/`` endpoint.",
         "ENABLE_RESTRICTED_APP_ACCESS": "app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. A list can also be provided to restrict specific applications. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.",
         "TETHYS_WORKSPACES_ROOT": "location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.",
         "STATIC_ROOT": f"the Django `STATIC_ROOT <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.",
@@ -32,12 +33,12 @@ d = {
     "DATABASES": {
         "__description__": f"See the Django `DATABASES <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#databases>`_ setting.",
         "default": {
-            "ENGINE": "the Django default database `ENGINE <https://docs.djangoproject.com/en/3.2/ref/settings/#engine>`_ setting. Default is ``django.db.backends.sqlite3``.",
-            "NAME": "the Django default databases `NAME <https://docs.djangoproject.com/en/3.2/ref/settings/#name>`_ setting. If using the ``sqlite3`` ``ENGINE`` (default) then the default value for name will be ``tethys_platform.sqlite`` and will be located in the ``TETHYS_HOME`` directory. If another ``ENGINE`` is used then the default value is ``tethys_platform``.",
-            "USER": "the Django default database `USER <https://docs.djangoproject.com/en/3.2/ref/settings/#user>`_ setting. Not used with SQLite.",
-            "PASSWORD": "the Django default database `PASSWORD <https://docs.djangoproject.com/en/3.2/ref/settings/#password>`_ setting. Not used with SQLite.",
-            "HOST": "the Django default database `HOST <https://docs.djangoproject.com/en/3.2/ref/settings/#host>`_ setting. Not used with SQLite.",
-            "PORT": "the Django default database `PORT <https://docs.djangoproject.com/en/3.2/ref/settings/#port>`_ setting. Not used with SQLite.",
+            "ENGINE": "the Django default database `ENGINE <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#engine>`_ setting. Default is ``django.db.backends.sqlite3``.",
+            "NAME": "the Django default databases `NAME <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#name>`_ setting. If using the ``sqlite3`` ``ENGINE`` (default) then the default value for name will be ``tethys_platform.sqlite`` and will be located in the ``TETHYS_HOME`` directory. If another ``ENGINE`` is used then the default value is ``tethys_platform``.",
+            "USER": "the Django default database `USER <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#user>`_ setting. Not used with SQLite.",
+            "PASSWORD": "the Django default database `PASSWORD <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#password>`_ setting. Not used with SQLite.",
+            "HOST": "the Django default database `HOST <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#host>`_ setting. Not used with SQLite.",
+            "PORT": "the Django default database `PORT <https://docs.djangoproject.com/en/{DJANGO_VERSION}/ref/settings/#port>`_ setting. Not used with SQLite.",
             "DIR": "name of psql directory for conda installation of PostgreSQL that ships with Tethys (if using the ``django.db.backends.postgresql`` ``ENGINE``). This directory will be created relative to the ``TETHYS_HOME`` directory when ``tethys db create`` is executed, unless an absolute path is provided. Defaults to ``psql``. If you are using the ``sqlite3`` ``ENGINE`` or an external database server then exclude this key or set it to `None`.",
         },
     },
@@ -61,9 +62,9 @@ d = {
         },
     },
     "CAPTCHA_CONFIG": {
-        "RECAPTCHA_PRIVATE_KEY": "Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.",
-        "RECAPTCHA_PUBLIC_KEY": "Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.",
-        "RECAPTCHA_PROXY_HOST": "Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.",
+        "RECAPTCHA_PRIVATE_KEY": "Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.",
+        "RECAPTCHA_PUBLIC_KEY": "Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.",
+        "RECAPTCHA_PROXY_HOST": "Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.",
     },
     "OAUTH_CONFIG": {
         "SSO_TENANT_REGEX": 'A regular expression defining the characters allowed in the Tenant field on the /accounts/tenant/ page. This page is only needed when using Multi-Tenant SSO features. Defaults to "^[\\w\\s_-]+$".',

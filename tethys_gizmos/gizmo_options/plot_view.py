@@ -94,7 +94,7 @@ class PlotObject(TethysGizmoOptions):
         y_axis=None,
         tooltip_format=None,
         plotOptions=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -218,7 +218,7 @@ class LinePlot(PlotViewBase):
         x_axis_units="",
         y_axis_title="",
         y_axis_units="",
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -270,7 +270,7 @@ class LinePlot(PlotViewBase):
             x_axis=x_axis,
             y_axis=y_axis,
             tooltip_format=tooltip_format,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -341,7 +341,7 @@ class PolarPlot(PlotViewBase):
         title="",
         subtitle="",
         categories=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -375,7 +375,7 @@ class PolarPlot(PlotViewBase):
             series=series,
             x_axis=x_axis,
             y_axis=y_axis,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -489,7 +489,7 @@ class ScatterPlot(PlotViewBase):
         x_axis_units="",
         y_axis_title="",
         y_axis_units="",
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -532,7 +532,7 @@ class ScatterPlot(PlotViewBase):
             x_axis=x_axis,
             y_axis=y_axis,
             tooltip_format=tooltip_format,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -552,7 +552,7 @@ class PiePlot(PlotViewBase):
 
     ::
 
-        from tethys_sdk.gizmos import PieChart
+        from tethys_sdk.gizmos import PiePlot
 
         pie_plot_view = PiePlot(
             height='500px',
@@ -592,7 +592,7 @@ class PiePlot(PlotViewBase):
         engine="d3",
         title="",
         subtitle="",
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -626,7 +626,7 @@ class PiePlot(PlotViewBase):
             series=series,
             plotOptions=plotOptions,
             tooltip_format=tooltip_format,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -711,7 +711,7 @@ class BarPlot(PlotViewBase):
         axis_units="",
         group_tools=True,
         y_min=0,
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -764,7 +764,7 @@ class BarPlot(PlotViewBase):
             tooltip_format=tooltip_format,
             x_axis=x_axis,
             y_axis=y_axis,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -848,7 +848,7 @@ class TimeSeries(PlotViewBase):
         y_axis_title="",
         y_axis_units="",
         y_min=0,
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -883,7 +883,7 @@ class TimeSeries(PlotViewBase):
             x_axis=x_axis,
             y_axis=y_axis,
             tooltip_format=tooltip_format,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -984,7 +984,7 @@ class AreaRange(PlotViewBase):
         subtitle="",
         y_axis_title="",
         y_axis_units="",
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -1020,7 +1020,7 @@ class AreaRange(PlotViewBase):
             x_axis=x_axis,
             y_axis=y_axis,
             tooltip_format=tooltip_format,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -1117,7 +1117,7 @@ class HeatMap(PlotViewBase):
         y_categories=None,
         tooltip_phrase_one="",
         tooltip_phrase_two="",
-        **kwargs
+        **kwargs,
     ):
         """
         Constructor
@@ -1150,5 +1150,5 @@ class HeatMap(PlotViewBase):
             x_axis=x_axis,
             y_axis=y_axis,
             tooltip_format=tooltip_format,
-            **kwargs
+            **kwargs,
         )

@@ -12,7 +12,7 @@ class CesiumMapView(TethysGizmoOptions):
     Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. If the Cesium Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
     Attributes:
-        cesium_ion_token(str): Cesium Ion Access Token. See: `Cesium Rest API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
+        cesium_ion_token(str): Cesium Ion Access Token. See: `Cesium Rest API - Authentication <https://cesium.com/learn/ion/ion-upload-rest/>`_.
         options(dict): Viewer basic options. One item in dictionary per option.
         globe(dict): Options to set on the Globe of the view.
         view(dict): Set the initial view of the map using various methods(e.g.: flyTo, setView).
@@ -46,7 +46,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Cesium Ion Token**
 
-    This is your Cesium Ion Access token that grants you access to the Cesium REST APIs. In newer version of Cesium this token is required for proper functioning of the map viewer. To learn how to obtain a token, see `Cesium REST API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
+    This is your Cesium Ion Access token that grants you access to the Cesium REST APIs. In newer version of Cesium this token is required for proper functioning of the map viewer. To learn how to obtain a token, see `Cesium REST API - Authentication <https://cesium.com/learn/ion/ion-upload-rest/>`_.
 
     ::
 
@@ -83,7 +83,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **View**
 
-    Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Camera.html>`_):
+    Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://sandcastle.cesium.com/?src=Camera.html>`_):
 
     ::
 
@@ -111,7 +111,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Layers**
 
-    ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesiumjs.org/tutorials/Imagery-Layers-Tutorial/#imagery-providers>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
+    ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesium.com/learn/cesiumjs-learn/cesiumjs-imagery/#more-imagery-providers>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
     You can load one or more imagery layers using the following pattern:
 
     ::
@@ -201,7 +201,7 @@ class CesiumMapView(TethysGizmoOptions):
             )
         ]
 
-    * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html>`_
+    * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://sandcastle.cesium.com/?src=Imagery%20Layers%20Manipulation.html>`_
 
     **Entities**
 
@@ -353,7 +353,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Terrain**
 
-    Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
+    Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesium.com/learn/cesiumjs-learn/cesiumjs-terrain/#terrain-providers>`_
 
     You can load a terrain provider using the following pattern:
 
@@ -497,7 +497,7 @@ class CesiumMapView(TethysGizmoOptions):
 
     **Translate Cesium Attributes from Javascript to Python**
 
-    You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html>`_
+    You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://sandcastle.cesium.com/>`_
 
     Here are a few things to remember:
 

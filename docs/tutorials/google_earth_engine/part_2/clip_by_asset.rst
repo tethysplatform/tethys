@@ -6,7 +6,7 @@ Clip by Asset
 
 In this tutorial you will use the shapefile uploaded using the file upload form to clip the dataset imagery. This will be done by uploading the shapefile to Google Earth Engine as an asset. Then the map will be reconfigured to check for the asset and clip the imagery if it exists. It will also use the bounding box of the asset to set the default map extent. The following topics will be reviewed in this tutorial:
 
-* `Google Earth Engine Assets <https://developers.google.com/earth-engine/asset_manager>`_
+* `Google Earth Engine Assets <https://developers.google.com/earth-engine/guides/manage_assets>`_
 * Clipping Google Earth Engine Imagery
 
 .. figure:: ../../../images/tutorial/gee/clip_by_asset.png
@@ -20,7 +20,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b file-upload-solution file-upload-solution-|version|
 
@@ -64,7 +64,7 @@ In this step you will stub out a new GEE method called ``upload_shapefile_to_gee
 
         Args:
             request (django.Request): the request object.
-            user_workspace (tethys_sdk.workspaces.Workspace): the User workspace object.
+            user_media (tethys_sdk.paths.TethysPath): the User media object.
 
         Returns:
             str: Error string if errors occurred.
@@ -197,7 +197,7 @@ The first step to uploading the shapefile as an asset is to convert it to an ``e
 3. Export the New ee.FeatureCollection to an Asset
 ==================================================
 
-Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can be exported as a Google Earth Engine table asset (see:  `Importing Table Data - Uploading a Shapefile <https://developers.google.com/earth-engine/importing>`_). Remember that ``ee`` objects are server objects, which means the features are already on the server. Exporting the ``ee.FeatureCollection`` as an asset persists it to storage in the GEE cloud infrastructure so that you can use it again later without needing to upload it again. Similar to when the shapefile was written to the user's workspace, several helper functions will also be created to manage the folder where the asset will be written.
+Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can be exported as a Google Earth Engine table asset (see:  `Importing Table Data - Uploading a Shapefile <https://developers.google.com/earth-engine/guides/table_upload>`_). Remember that ``ee`` objects are server objects, which means the features are already on the server. Exporting the ``ee.FeatureCollection`` as an asset persists it to storage in the GEE cloud infrastructure so that you can use it again later without needing to upload it again. Similar to when the shapefile was written to the user's media directory, several helper functions will also be created to manage the folder where the asset will be written.
 
 1. The ``get_asset_dir_for_user`` function will create a folder for the user and return the path. It will make use of the ``get_earth_engine_credentials_path`` function to find the credentials file with information on your Earth Engine account and project. 
 Create two new functions: ``get_earth_engine_credentials_path``, and  ``get_asset_dir_for_user``, both in :file:`gee/methods.py` with the following contents:
@@ -680,10 +680,10 @@ Browse to `<http://localhost:8000/apps/earth-engine/viewer/>`_ in a web browser 
 7. Solution
 ===========
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/clip-by-asset-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/clip-by-asset-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b clip-by-asset-solution clip-by-asset-solution-|version|

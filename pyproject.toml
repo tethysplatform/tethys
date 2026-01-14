@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tethys-platform"
 description =  "Primary Tethys Platform Django Site Project"
-readme = "README.rst"
-license = {file = "LICENSE"}
+readme = "README.md"
+license-files = ["LICENSE"]
 keywords = ["web app", "scientific", "geospatial"]
 authors = [
     {name = "Nathan Swain", email = "nswain@aquaveo.com"},
@@ -16,7 +16,6 @@ classifiers = [
      "Environment :: Web Environment",
      "Framework :: Django",
      "Intended Audience :: Developers",
-     "License :: OSI Approved :: BSD License",
      "Operating System :: OS Independent",
      "Programming Language :: Python",
      "Programming Language :: Python :: 3",
@@ -25,6 +24,30 @@ classifiers = [
      "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 dynamic = ["version"]
+requires-python = ">= 3.10"
+dependencies = [
+    "pyopenssl",
+  # core dependencies
+    "django>=4.2,<6",
+    "tornado>=6.5,<7",
+    "channels",
+    "daphne",
+    "requests>=2.32.4,<3",
+    "bcrypt",
+    "cryptography>=44.0.1,<45",
+  # Gen CLI commands
+    "pyyaml",
+    "jinja2",
+  # django plugin dependencies
+    "django-bootstrap5",
+    "django-model-utils",
+    "django-guardian",
+    "djangorestframework_simplejwt",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-django", "pytest-cov", "requests_mock"]
+lint = ["flake8", "black"]
 
 [project.urls]
 homepage = "http://tethysplatform.org/"
@@ -34,10 +57,30 @@ repository = "https://github.com/tethysplatform/tethys"
 [project.scripts]
 tethys = "tethys_cli:tethys_command"
 
-[project.optional-dependencies]
-test = [
-    "requests_mock"
-]
-
 [tool.setuptools_scm]
 write_to = "tethys_portal/_version.py"
+local_scheme = "no-local-version"
+
+[tool.setuptools.packages.find]
+include = ["tethys_*"]
+
+[tool.setuptools]
+package-data = {"*" = ["*"]}
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tethys_portal.settings"
+addopts = "-s --cov"
+testpaths = ["tests/unit_tests/"]
+
+[tool.coverage.run]
+omit = [
+    "docs/*",
+    "tests/*",
+    "tethys_portal/_version.py",
+    "tethys_portal/__init__.py",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

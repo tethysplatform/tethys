@@ -23,7 +23,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b clip-by-asset-solution clip-by-asset-solution-|version|
 
@@ -615,6 +615,9 @@ In this step you'll add the validation logic for the ``start_date`` and ``end_da
         }
     }
 
+    return JsonResponse(response_data)
+
+
 4. Use Postman to send a request with only the ``platform``, ``sensor``, and ``product`` parameters. Ensure that the values given for the enabled parameters are valid. Verify that ``end_date`` is returned as today's date and that the ``start_date`` is 30 days prior to today's date.
 
 5. Add the ``start_date`` parameter and send another request. Verify that the same date sent is returned as the ``start_date``.
@@ -683,6 +686,8 @@ In this step you'll add the validation logic for the ``reducer``, ``orient``, an
         }
     }
 
+    return JsonResponse(response_data)
+
 2. Use Postman to send a request with only the ``platform``, ``sensor``, ``product``, ``start_date`` and ``end_date`` parameters. Ensure that the values given for the enabled parameters are valid. Verify that the default values for ``reducer``, ``orient``, and ``scale`` are returned.
 
 3. Add the ``reducer`` parameter with an invalid value (e.g. ``foo``). Verify that the validation message is displayed and lists valid values for ``reducer``.
@@ -737,6 +742,9 @@ In this step you'll add the logic to validate the ``geometry`` parameter, which 
             'geometry': geometry
         }
     }
+
+    return JsonResponse(response_data)
+
 
 2. Use Postman to send a request with only the ``platform``, ``sensor``, ``product``, ``start_date``, ``end_date``, ``reducer``, ``orient``, and ``scale`` parameters. Ensure that the values given for the enabled parameters are valid. Verify that a message indicating that the ``geometry`` parameter is required is returned.
 
@@ -877,6 +885,9 @@ With the parameters properly vetted, you are now ready to call the ``get_time_se
         }
     }
 
+    return JsonResponse(response_data)
+
+
 3. Enable all of the Query parameters in Postman by checking the box next to each with the exception of the ``index`` parameter. Ensure that the values given for the enabled parameters are valid.
 
 4. Press the **Send** button to submit the request and verify that the time series is included in the response object.
@@ -993,10 +1004,10 @@ With the parameters properly vetted, you are now ready to call the ``get_time_se
 14. Solution
 ============
 
-This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/rest-api-solution-solution-3.0>`_ or clone it as follows:
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/rest-api-solution>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b rest-api-solution rest-api-solution-|version|

@@ -20,6 +20,7 @@ from django.core.signing import Signer
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
+from django.http import HttpRequest
 from django.conf import settings
 from channels.consumer import SyncConsumer
 
@@ -60,16 +61,19 @@ def get_tethys_home_dir():
 
     # Initialize to default TETHYS_HOME
     tethys_home = Path.home() / ".tethys"
-
-    try:
-        conda_env_name = environ.get("CONDA_DEFAULT_ENV")
-        if conda_env_name != "tethys":
-            tethys_home = tethys_home / conda_env_name
-    except Exception:
-        tethys_log.warning(
-            f"Running Tethys outside of active Conda environment detected. Using default "
-            f'TETHYS_HOME "{tethys_home}". Set TETHYS_HOME environment to override.'
-        )
+    active_conda_env = environ.get("CONDA_DEFAULT_ENV")
+    active_venv = environ.get("VIRTUAL_ENV_PROMPT", "")
+    if active_venv.strip().startswith("(") and active_venv.strip().endswith(")"):
+        active_venv = active_venv.strip()[1:-1]
+    active_env = active_conda_env or active_venv
+    if active_env != "tethys":
+        try:
+            tethys_home = tethys_home / active_env
+        except Exception:
+            tethys_log.warning(
+                f"Running Tethys outside of active virtual environment detected. Using default "
+                f'TETHYS_HOME "{tethys_home}". Set TETHYS_HOME environment to override.'
+            )
 
     return str(tethys_home)
 
@@ -125,6 +129,30 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
                         match_dirs.append((Path(potential_dir).name, match_dir))
 
     return match_dirs
+
+
+def get_app_model(app_or_request):
+    """
+    Get the TethysApp model instance for the given app or request.
+    """
+    from tethys_apps.models import TethysApp
+    from tethys_apps.base.app_base import TethysAppBase
+
+    if isinstance(app_or_request, HttpRequest):
+        app = get_active_app(app_or_request)
+    elif isinstance(app_or_request, TethysAppBase) or (
+        isinstance(app_or_request, type) and issubclass(app_or_request, TethysAppBase)
+    ):
+        app = TethysApp.objects.get(root_url=app_or_request.root_url)
+    elif isinstance(app_or_request, TethysApp):
+        app = app_or_request
+    else:
+        raise ValueError(
+            f'Argument "app_or_request" must be of type HttpRequest, TethysAppBase, or TethysApp: '
+            f'"{type(app_or_request)}" given.'
+        )
+
+    return app
 
 
 def get_active_app(request=None, url=None, get_class=False):

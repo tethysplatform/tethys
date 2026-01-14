@@ -28,7 +28,7 @@ You may wish to configure your conda environment to automatically install packag
 
     conda config --add channels conda-forge
 
-This command will add the ``conda-forge`` channel to the top of the channel list, making it the highest priority channel for retrieving packages. To learn more see `Conda User Guide - Manage channels <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html>`_.
+This command will add the ``conda-forge`` channel to the top of the channel list, making it the highest priority channel for retrieving packages. To learn more see `Conda User Guide - Manage channels <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html>`_.
 
 .. _libmamba_solver:
 

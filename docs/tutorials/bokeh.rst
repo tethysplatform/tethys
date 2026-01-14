@@ -12,11 +12,10 @@ This tutorial introduces ``Bokeh Server`` integration concepts for Tethys develo
 * Handler functions using Bokeh Widgets
 * Handler functions using Param and Panel
 
-Create and install a new Tethys app named bokeh_tutorial.
+Create and install a new Tethys app named bokeh_tutorial in your :ref:`virtual_environment`.
 
 ::
 
-    conda activate tethys
     tethys scaffold bokeh_tutorial
     cd tethysapp-bokeh_tutorial
     tethys install -d
@@ -24,7 +23,7 @@ Create and install a new Tethys app named bokeh_tutorial.
 1. Bokeh Server
 ===============
 
-``Bokeh`` is an interactive visualization library for Python. ``Bokeh Server`` is a component of the ``Bokeh`` architecture. It provides a way to sync model objects in Python on the backend to JavaScript model objects on the client. This is done by levering the ``Websocket`` protocol. With the addition of ``Django Channels`` to Tethys, this ability to sync backend python objects and frontend plots has also been integrated without the need of other components such as a ``Tornado`` server (see the Tethys Bokeh Integration documentation :ref:`bokeh_integration`). This integration facilitates the linking of objects and ``Bokeh`` widgets as well as the creation of the necessary ``websocket`` and ``http`` ``consumers``.
+``Bokeh`` is an interactive visualization library for Python. ``Bokeh Server`` is a component of the ``Bokeh`` architecture. It provides a way to sync model objects in Python on the backend to JavaScript model objects on the client. This is done by leveraging the ``Websocket`` protocol. With the addition of ``Django Channels`` to Tethys, this ability to sync backend python objects and frontend plots has also been integrated without the need of other components such as a ``Tornado`` server (see the Tethys Bokeh Integration documentation :ref:`bokeh_integration`). This integration facilitates the linking of objects and ``Bokeh`` widgets as well as the creation of the necessary ``websocket`` and ``http`` ``consumers``.
 
 To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``bokeh-django`` libraries.
 
@@ -36,7 +35,7 @@ To leverage the Bokeh integration with Tethys you will need the ``bokeh`` and ``
     conda install -c conda-forge -c erdc/label/dev bokeh bokeh-django bokeh_sampledata
 
     # pip
-    pip install bokeh bokeh-django
+    pip install bokeh bokeh-django bokeh_sampledata
 
 2. Add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
 
@@ -122,6 +121,7 @@ This is a simple Bokeh plot. We will now add the rest of the logic to make it an
 5. Modify the ``handler function`` from ``handlers.py`` to look like this.
 
 .. code-block:: python
+    :emphasize-lines: 1-2, 17-28
 
     from bokeh.models import ColumnDataSource, Slider
     from bokeh.layouts import column
@@ -165,7 +165,7 @@ The ``Slider`` and ``Plot`` will appear in the order they were added to the ``Co
 
 ``Param`` is a Python library for providing parameters with dynamically generated values. One of the main advantages of ``Param`` is that parameters are provided using declarative programming. ``Panel``, on the other hand, is a visualization library for creating custom dashboards that rely on the use of widgets to render plots, images, and tables. These libraries can be used in combination with ``Bokeh Server`` to attain the same result of creating interactive tools within an app that are connected to Python objects. Given the depth of these libraries, the resulting code structure, and the level of difficulty for creating complex visualizations may be simplified.
 
-In this example we will build on top of the ``bokeh_tutorial`` app to demonstrate how to use ``Param`` and ``Panel`` in combination with ``bokeh Server``. This same example can be found in `Panel's documentation <https://panel.pyviz.org/gallery/param/param_subobjects.html#gallery-param-subobjects>`_.
+In this example we will build on top of the ``bokeh_tutorial`` app to demonstrate how to use ``Param`` and ``Panel`` in combination with ``bokeh Server``. This same example can be found in `Panel's documentation <https://panel.holoviz.org/how_to/param/examples/subobjects.html#param-subobjects>`_.
 
 1. Install the ``param`` and ``panel`` libraries by running the following with your Tethys environment activated:
 
@@ -182,6 +182,21 @@ In this example we will build on top of the ``bokeh_tutorial`` app to demonstrat
       - panel
       - param
 
+
+.. warning::
+
+    The current versions of ``panel`` and ``param`` may not function properly with the following sections of this tutorial. If you encounter issues,
+    consider installing specific versions using one of the following commands:
+
+    .. code-block:: bash
+
+        conda install -c conda-forge panel=1.3.8 param=2.0.2 bokeh=3.3.4
+
+    .. code-block:: bash
+
+        pip install panel==1.3.8 param==2.0.2 bokeh==3.3.4
+
+    For best results, make sure your python version is 3.12 or lower.
 
 3. Add the following objects to a new file called ``param_model.py``.
 
@@ -274,6 +289,7 @@ The added classes depend on ``Bokeh``.  The `Circle` and `NGon` classes depend o
 4. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``handlers.py``.
 
 .. code-block:: python
+    :emphasize-lines: 3, 7-12
 
     ...
 
@@ -314,6 +330,6 @@ This concludes the ``Bokeh Integration`` tutorial. You can view the solution on 
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial.git
+    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial
     cd tethysapp-bokeh_tutorial
     git checkout -b solution solution-|version|

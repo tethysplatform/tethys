@@ -35,14 +35,20 @@ def tethys_portal_context(request):
         if settings.MULTIPLE_APP_MODE
         and (
             settings.ENABLE_OPEN_PORTAL
-            or (request.user.is_authenticated and request.user.is_active)
+            or (
+                getattr(request, "user", None)
+                and request.user.is_authenticated
+                and request.user.is_active
+            )
         )
         else False
     )
 
     context = {
         "has_analytical": has_module("analytical"),
-        "has_terms": has_module("termsandconditions"),
+        "has_terms": has_module("termsandconditions")
+        and getattr(request, "user", None) is not None,
+        "has_cookieconsent": has_module("cookie_consent"),
         "has_mfa": has_module("mfa"),
         "has_gravatar": has_module("django_gravatar"),
         "has_session_security": has_module("session_security"),
@@ -51,6 +57,7 @@ def tethys_portal_context(request):
         "single_app_mode": not settings.MULTIPLE_APP_MODE,
         "configured_single_app": configured_single_app,
         "idp_backends": idps.keys(),
+        "debug_mode": settings.DEBUG,
     }
 
     return context

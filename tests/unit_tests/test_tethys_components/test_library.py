@@ -1,124 +1,129 @@
+import sys
+from json import dumps
 from unittest import TestCase, mock
 from pathlib import Path
+from tethys_components import library, utils
+import reactpy
 
 THIS_DIR = Path(__file__).parent
-RESOURCES_DIR = THIS_DIR / "test_resources"
+LIBRARY_EVAL_DIR = THIS_DIR / "test_resources" / "test_library"
 
 
 class TestComponentLibrary(TestCase):
-    def test_standard_library_workflow(self):
-        from tethys_components.library import Library as lib, ComponentLibrary
+    @classmethod
+    def setUpClass(cls):
+        cls.test_pages = list(LIBRARY_EVAL_DIR.glob("_test_page_*.py"))
+        sys.path.append(str(LIBRARY_EVAL_DIR))
 
-        mock_import = mock.patch("builtins.__import__").start()
+    @classmethod
+    def tearDownClass(cls):
+        sys.path.remove(str(LIBRARY_EVAL_DIR))
 
-        # TEST VALID ACCESSORS
-        lib.tethys
-        self.assertEqual(mock_import.call_args_list[-1][0][0], "tethys_components")
-        self.assertEqual(mock_import.call_args_list[-1][0][3][0], "custom")
-        lib.html
-        self.assertEqual(mock_import.call_args_list[-1][0][0], "reactpy")
-        self.assertEqual(mock_import.call_args_list[-1][0][3][0], "html")
-        lib.hooks
-        self.assertEqual(mock_import.call_args_list[-1][0][0], "tethys_components")
-        self.assertEqual(mock_import.call_args_list[-1][0][3][0], "hooks")
-        self.assertEqual(len(lib.styles), 0)
-        self.assertIsNone(lib.parent_package)
-        external_lib = lib.bs
-        self.assertNotEqual(lib.bs, lib)
-        self.assertIsInstance(external_lib, ComponentLibrary)
-        self.assertIsNone(lib.bs.package)
-        self.assertEqual(lib.bs.parent_package, "bs")
-        self.assertEqual(len(lib.styles), 1)
-        self.assertEqual(lib.styles[0], lib.STYLE_DEPS["bs"][0])
-        self.assertDictEqual(lib.components_by_package, {})
-        orig_func = ComponentLibrary.get_reactjs_module_wrapper_js
-        mock_func = mock.MagicMock()
-        ComponentLibrary.get_reactjs_module_wrapper_js = mock_func
-        button_component = lib.bs.Button
-        lib.bs.Button
-        mock_func.assert_called_once()
-        self.assertEqual(button_component, mock_import().web.export())
-        mock.patch.stopall()
+    def json_serializer(self, obj):
+        if isinstance(obj, reactpy.types.Component):
+            return obj.render()
 
-        # CREATE JAVASCRIPT WRAPPER FOR LIBRARY
-        ComponentLibrary.get_reactjs_module_wrapper_js = orig_func
-        content = lib.get_reactjs_module_wrapper_js()
-        # (RESOURCES_DIR / 'expected_1.js').open('w+').write(content)  # Uncomment to write newly expected js
-        self.assertEqual(content, (RESOURCES_DIR / "expected_1.js").open("r").read())
+    def test_building_complex_page(self):
+        for test_page in self.test_pages:
+            test_page_name = test_page.name[:-3]
+            with self.subTest(page=test_page_name):
+                expected_vdom_json_fpath = (
+                    LIBRARY_EVAL_DIR / f"{test_page_name}_expected.json"
+                )
+                expected_js_module_fpath = (
+                    LIBRARY_EVAL_DIR / f"{test_page_name}_expected.js"
+                )
 
-        # LOAD A NEW PAGE
-        ComponentLibrary.refresh("new_page")
-        self.assertDictEqual(lib.components_by_package, {})
-        self.assertDictEqual(lib.package_handles, {})
-        self.assertListEqual(lib.styles, [])
-        self.assertListEqual(lib.defaults, [])
-        self.assertEqual(lib.EXPORT_NAME, "new_page")
+                lib = library.ComponentLibrary(test_page_name)
+                lib.hooks = mock.MagicMock()
+                lib.hooks.use_state.return_value = [None, lambda _: None]
+                test_module = __import__(test_page_name, fromlist=["test"])
+                raw_vdom = test_module.page_test(lib)
+                js_string = lib.render_js_template()
+                json_vdom = dumps(raw_vdom, default=self.json_serializer)
 
-        # TRY TO ACCESS INVALID PACKAGE
-        self.assertRaises(AttributeError, lambda: lib.does_not_exist)
+                alternate_lib = library.ComponentLibrary(f"{test_page_name}_alternate")
+                alternate_lib.load_dependencies_from_source_code(test_module.page_test)
+                alternate_lib_js_string = lib.render_js_template()
+                self.assertEqual(js_string, alternate_lib_js_string)
 
-        # REGISTER PACKAGE
-        lib.register(
-            "my-react-package@0.0.0",
-            "does_not_exist",
-            styles=["my_style.css"],
-            use_default=True,
-        )
-        self.assertIn("does_not_exist", lib.PACKAGE_BY_ACCESSOR)
-        self.assertEqual(
-            lib.PACKAGE_BY_ACCESSOR["does_not_exist"], "my-react-package@0.0.0"
-        )
-        self.assertIn("does_not_exist", lib.STYLE_DEPS)
-        self.assertListEqual(lib.STYLE_DEPS["does_not_exist"], ["my_style.css"])
-        self.assertListEqual(lib.DEFAULTS, ["rp", "mapgl", "does_not_exist"])
+                # # Uncomment to create expected files when writing new test
+                # expected_vdom_json_fpath.write_text(json_vdom)
+                # expected_js_module_fpath.write_text(js_string)
 
-        # REGISTER AGAIN EXACTLY
-        lib.register(
-            "my-react-package@0.0.0",
-            "does_not_exist",
-            styles=["my_style.css"],
-            use_default=True,
-        )
+                expected_json_vdom = expected_vdom_json_fpath.read_text()
+                expected_js_string = expected_js_module_fpath.read_text()
+                self.assertEqual(json_vdom, expected_json_vdom)
+                self.assertEqual(js_string, expected_js_string)
 
-        # REGISTER NEW PACKAGE TO SAME ACCESSOR (NAUGHTY)
-        self.assertRaises(
-            ValueError, lib.register, "different-react-package@1.1.1", "does_not_exist"
-        )
+    def test_cannot_instantiate_ComponentLibraryManager(self):
+        with self.assertRaises(RuntimeError):
+            library.ComponentLibraryManager()
 
-        # PREVIOUSLY INVALID PACKAGE NOW WORKS
-        lib.does_not_exist  # Does not raise AttributeError it did before
+    def test_package_version_mismatch(self):
+        with self.assertRaises(ValueError):
+            library.Package("this-lib@1.2.3", version="2.5.3")
 
-        # LOAD COMPONENTS FROM SOURCE CODE
-        mock_import = mock.patch("builtins.__import__").start()
-        ComponentLibrary.get_reactjs_module_wrapper_js = mock_func
-        test_source_code = """
-        @compoenent
-        def my_component():
-            return lib.html.div(
-                lib.pm.Map(),
-                lib.bs.Button(Props(), "My Button"),
-                lib.does_not_exist.Test()
+    def test_package_manager_add_packages_invalid(self):
+        pm = library.PackageManager()
+        with self.assertRaises(TypeError):
+            pm.add_packages("fail")
+
+    def test_package_manager_check_non_package(self):
+        pm = library.PackageManager()
+        with self.assertRaises(TypeError):
+            pm.check_package("foo", "incorrect type")
+
+    def test_package_manager_check_accessor_taken(self):
+        pm = library.PackageManager()
+        pm.taken = "package"
+        with self.assertRaises(ValueError):
+            pm.check_package("taken", library.Package("test"))
+
+    def test_library_package_already_registered_at_accessor(self):
+        lib = library.ComponentLibrary("test123")
+        lib.register("package", "foo")
+        lib.register("package", "foo")  # This would fail if not programmed correctly
+        with self.assertRaises(EnvironmentError):
+            lib.register("another", "foo")
+
+    def test_load_dependencies_from_source_code_skips_bad_match(self):
+        lib = library.ComponentLibrary("test456")
+        with mock.patch("builtins.print") as mock_print:
+            lib.load_dependencies_from_source_code("foo bar lib.does_not_exist(999)")
+            # Verify print was called twice (once for the match, once for the exception)
+            self.assertEqual(mock_print.call_count, 2)
+            # Check the expected print calls
+            mock_print.assert_any_call("Couldn't process match does_not_exist")
+            # The second call should be the exception, we'll just check it was called
+            call_args_list = mock_print.call_args_list
+            exception_printed = any(
+                "AttributeError" in str(call) or "does_not_exist" in str(call)
+                for call in call_args_list
             )
-        """
-        lib.load_dependencies_from_source_code(test_source_code)
+            self.assertTrue(exception_printed)
+        self.assertFalse(hasattr(lib, "does_not_exist"))
 
-        self.assertDictEqual(
-            lib.components_by_package,
-            {
-                "pigeon-maps@0.21.6": ["Map"],
-                "react-bootstrap@2.10.2": ["Button"],
-                "my-react-package@0.0.0": ["Test"],
-            },
-        )
-        self.assertIn("pm", lib.package_handles)
-        self.assertIn("bs", lib.package_handles)
-        self.assertIn("does_not_exist", lib.package_handles)
-        self.assertIn("my_style.css", lib.styles)
-        self.assertEqual(lib.defaults, ["Test"])
-        ComponentLibrary.get_reactjs_module_wrapper_js = orig_func
-        mock.patch.stopall()
+    def test_attempt_at_incorrect_tethys_component(self):
+        lib = library.ComponentLibrary("another_test")
+        ccm = library.CustomComponentManager(lib)
+        with self.assertRaises(AttributeError):
+            ccm.tethys.does_not_exist
 
-        # EXPORT TO JS ONCE MORE
-        content = lib.get_reactjs_module_wrapper_js()
-        # (RESOURCES_DIR / 'expected_2.js').open('w+').write(content)  # Uncomment to write newly expected js
-        self.assertEqual(content, (RESOURCES_DIR / "expected_2.js").open("r").read())
+    def test_lib_hooks_are_reactpy_hooks(self):
+        from tethys_components import hooks
+
+        lib = library.ComponentLibrary("hooks_test")
+        self.assertEqual(lib.hooks, hooks)
+
+    def test_callable_vdom_as_dict(self):
+        test_dict = {"test": 1, "foo": 2, "bar": 3}
+        instance = library._CallableVdom(**test_dict)
+        self.assertDictEqual(instance.as_dict(), test_dict)
+
+    @mock.patch("tethys_components.library.partial")
+    def test_callable_vdom_custom_util_func(self, mock_partial):
+        test_dict = {"test": 1, "foo": 2, "bar": 3}
+        instance = library._CallableVdom(**test_dict)
+        instance.get_feature_info_url
+        mock_partial.assert_called_once_with(utils._get_feature_info_url_, instance)

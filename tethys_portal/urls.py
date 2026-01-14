@@ -22,6 +22,10 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
     PasswordResetCompleteView,
 )
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 from tethys_apps.urls import extension_urls
 
@@ -34,6 +38,7 @@ from tethys_portal.views import (
     admin as tethys_portal_admin,
     psa as tethys_portal_psa,
     email as tethys_portal_email,
+    app_lifecycle,
 )
 from tethys_portal.optional_dependencies import has_module
 from tethys_apps import views as tethys_apps_views
@@ -49,6 +54,9 @@ from tethys_portal.optional_dependencies import optional_import
 TrustedDevice = optional_import("mfa.TrustedDevice")
 psa_views = optional_import("views", from_module="social_django")
 psa_urls = optional_import("social_django.urls")
+REACTPY_WEBSOCKET_ROUTE = optional_import(
+    "REACTPY_WEBSOCKET_ROUTE", from_module="reactpy_django"
+)
 
 logger = logging.getLogger(f"tethys.{__name__}")
 
@@ -84,6 +92,24 @@ admin_url_list.insert(
         tethys_portal_admin.clear_workspace,
         name="clear_workspace",
     ),
+)
+
+# Add build app
+admin_url_list.insert(
+    0,
+    re_path(
+        r"^remove_app/(?P<app_id>[0-9]+)/$",
+        app_lifecycle.remove_app,
+        name="remove_app",
+    ),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^create_app/$", app_lifecycle.create_app, name="create_app"),
+)
+admin_url_list.insert(
+    0,
+    re_path(r"^import_app/$", app_lifecycle.import_app, name="import_app"),
 )
 
 # Recreate admin.site.urls tuple
@@ -139,6 +165,13 @@ api_urls = [
     re_path(r"^csrf/$", tethys_portal_api.get_csrf, name="get_csrf"),
     re_path(r"^session/$", tethys_portal_api.get_session, name="get_session"),
     re_path(r"^whoami/$", tethys_portal_api.get_whoami, name="get_whoami"),
+    re_path(
+        r"^token/$",
+        tethys_portal_api.get_jwt_token,
+        name="token_obtain_pair",
+    ),
+    re_path(r"^token/refresh/$", TokenRefreshView.as_view(), name="token_refresh"),
+    re_path(r"^token/verify/$", TokenVerifyView.as_view(), name="token_verify"),
     re_path(r"^apps/(?P<app>[\w-]+)/$", tethys_portal_api.get_app, name="get_app"),
 ]
 
@@ -174,56 +207,45 @@ developer_urls = [
     ),
 ]
 
+# Uncomment these lines to debug the error views more easily (e.g. http://localhost:8000/developer/500/)
 # development_error_urls = [
 #     re_path(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
 #     re_path(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
 #     re_path(r'^404/$', tethys_portal_error.handler_404, name='error_404'),
 #     re_path(r'^500/$', tethys_portal_error.handler_500, name='error_500'),
 # ]
+# developer_urls.extend(development_error_urls)
 
-if settings.MULTIPLE_APP_MODE:
-    urlpatterns = [
-        re_path(r"^$", tethys_portal_home.home, name="home"),
-        re_path(r"^apps/", include("tethys_apps.urls")),
-    ]
-else:
-    urlpatterns = [
-        re_path(r"^", include("tethys_apps.urls")),
-    ]
+urlpatterns = [
+    re_path(r"^admin/", admin_urls),
+    re_path(r"^accounts/", include((account_urls, "accounts"), namespace="accounts")),
+    re_path(r"^user/", include((user_urls, "user"), namespace="user")),
+    re_path(r"^extensions/", include(extension_urls)),
+    re_path(r"^developer/", include(developer_urls)),
+    re_path(
+        r"^handoff/(?P<app_name>[\w-]+)/$",
+        tethys_apps_views.handoff_capabilities,
+        name="handoff_capabilities",
+    ),
+    re_path(
+        r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
+        tethys_apps_views.handoff,
+        name="handoff",
+    ),
+    re_path(
+        r"^update-job-status/(?P<job_id>[\w-]+)/$",
+        tethys_compute_views.update_job_status,
+        name="update_job_status",
+    ),
+    re_path(
+        r"^update-dask-job-status/(?P<key>[\w-]+)/$",
+        tethys_compute_views.update_dask_job_status,
+        name="update_dask_job_status",
+    ),
+    re_path(r"^api/", include((api_urls, "api"), namespace="api")),
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+]
 
-urlpatterns.extend(
-    [
-        re_path(r"^admin/", admin_urls),
-        re_path(
-            r"^accounts/", include((account_urls, "accounts"), namespace="accounts")
-        ),
-        re_path(r"^user/", include((user_urls, "user"), namespace="user")),
-        re_path(r"^extensions/", include(extension_urls)),
-        re_path(r"^developer/", include(developer_urls)),
-        re_path(
-            r"^handoff/(?P<app_name>[\w-]+)/$",
-            tethys_apps_views.handoff_capabilities,
-            name="handoff_capabilities",
-        ),
-        re_path(
-            r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
-            tethys_apps_views.handoff,
-            name="handoff",
-        ),
-        re_path(
-            r"^update-job-status/(?P<job_id>[\w-]+)/$",
-            tethys_compute_views.update_job_status,
-            name="update_job_status",
-        ),
-        re_path(
-            r"^update-dask-job-status/(?P<key>[\w-]+)/$",
-            tethys_compute_views.update_dask_job_status,
-            name="update_dask_job_status",
-        ),
-        re_path(r"^api/", include((api_urls, "api"), namespace="api")),
-        *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-    ]
-)
 
 if has_module(psa_views):
     oauth2_urls = [
@@ -267,6 +289,8 @@ if has_module("django_recaptcha"):
     urlpatterns.append(re_path(r"^captcha/", include("captcha.urls")))
 if has_module("termsandconditions"):
     urlpatterns.append(re_path(r"^terms/", include("termsandconditions.urls")))
+if has_module("cookie_consent"):
+    urlpatterns.append(re_path(r"^cookies/", include("cookie_consent.urls")))
 if has_module("session_security"):
     urlpatterns.append(re_path(r"session_security/", include("session_security.urls")))
 if has_module("mfa"):
@@ -293,6 +317,27 @@ for url_pattern_path in additional_url_pattern_paths:
 
 urlpatterns = additional_url_patterns + urlpatterns
 
+websocket_urlpatterns = [
+    re_path(
+        r"ws/app-lifecycle/(?P<app_name>\w+)/",
+        app_lifecycle.AppLifeCycleConsumer.as_asgi(),
+    ),
+]
+
+if has_module("reactpy_django"):
+    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))
+    websocket_urlpatterns += [REACTPY_WEBSOCKET_ROUTE]
+
+if settings.MULTIPLE_APP_MODE:
+    urlpatterns.extend(
+        [
+            re_path(r"^$", tethys_portal_home.home, name="home"),
+            re_path(r"^apps/", include("tethys_apps.urls")),
+        ]
+    )
+else:
+    urlpatterns.append(re_path(r"^", include("tethys_apps.urls")))
+
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403
 handler404 = tethys_portal_error.handler_404
@@ -318,6 +363,3 @@ if (
             name="login_prefix",
         )
     )
-
-if has_module("reactpy_django"):
-    urlpatterns.append(re_path("^reactpy/", include("reactpy_django.http.urls")))

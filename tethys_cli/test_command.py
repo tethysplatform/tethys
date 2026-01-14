@@ -2,6 +2,7 @@ from pathlib import Path
 from os import devnull, environ
 import webbrowser
 import subprocess
+import sys
 from tethys_cli.manage_commands import get_manage_path, run_process
 from tethys_cli.cli_colors import write_warning, write_error
 from tethys_apps.utilities import get_tethys_src_dir
@@ -45,7 +46,7 @@ def add_test_parser(subparsers):
     test_parser.add_argument(
         "-f", "--file", type=str, help="File to run tests in. Overrides -g and -u."
     )
-    test_parser.set_defaults(func=test_command)
+    test_parser.set_defaults(func=_test_command)
 
 
 def check_and_install_prereqs(tests_path):
@@ -57,11 +58,12 @@ def check_and_install_prereqs(tests_path):
     except ImportError:
         write_warning("Test App not found. Installing.....")
         setup_path = tests_path / "apps" / "tethysapp-test_app"
-        subprocess.call(
-            ["pip", "install", "-e", "."],
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
             cwd=str(setup_path),
+            check=True,
         )
 
     try:
@@ -72,15 +74,16 @@ def check_and_install_prereqs(tests_path):
     except ImportError:
         write_warning("Test Extension not found. Installing.....")
         setup_path = Path(tests_path) / "extensions" / "tethysext-test_extension"
-        subprocess.call(
-            ["pip", "install", "-e", "."],
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-e", "."],
             stdout=FNULL,
             stderr=subprocess.STDOUT,
             cwd=str(setup_path),
+            check=True,
         )
 
 
-def test_command(args):
+def _test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
@@ -96,7 +99,7 @@ def test_command(args):
         exit(1)
 
     # Define the process to be run
-    primary_process = ["python", manage_path, "test"]
+    primary_process = [sys.executable, manage_path, "test"]
 
     # Tag to later check if tests are being run on a specific app or extension
     app_package_tag = "tethys_apps.tethysapp."
@@ -176,12 +179,12 @@ def test_command(args):
 
     # Removing Test App
     try:
-        subprocess.call(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
+        subprocess.run(["tethys", "uninstall", "test_app", "-f"], stdout=FNULL)
     except Exception:
         pass
 
     try:
-        subprocess.call(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
+        subprocess.run(["tethys", "uninstall", "test_extension", "-ef"], stdout=FNULL)
     except Exception:
         pass
 

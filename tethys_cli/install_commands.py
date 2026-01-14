@@ -8,28 +8,43 @@ from argparse import Namespace
 from collections.abc import Mapping
 import sys
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
+from tethys_cli.cli_colors import (
+    write_msg,
+    write_error,
+    write_warning,
+    write_success,
+)
+from tethys_cli.settings_commands import settings_command
 from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import (
     setup_django,
     generate_salt_string,
+    load_conda_commands,
+    conda_run_command,
+    conda_available,
+    prompt_yes_or_no,
 )
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
     get_service_model_from_type,
     get_tethys_home_dir,
+    get_installed_tethys_items,
 )
 
 from .gen_commands import download_vendor_static_files
-from tethys_portal.optional_dependencies import optional_import, has_module
+from tethys_portal.optional_dependencies import has_module, optional_import
 
 # optional imports
-conda_run, Commands = optional_import(
-    ("run_command", "Commands"), from_module="conda.cli.python_api"
-)
+run_api = optional_import("run_command", from_module="conda.cli.python_api")
+if not has_module(run_api):
+    run_api = conda_run_command()
+conda_run = run_api
+Commands = load_conda_commands()
+
 
 FNULL = open(devnull, "w")
 
@@ -593,7 +608,11 @@ def configure_services_from_file(services, app_name):
                             continue
 
                         find_and_link(
-                            service_type, setting_name, service_id, app_name, setting
+                            service_type,
+                            setting_name,
+                            service_id,
+                            app_name,
+                            setting,
                         )
 
                     if not setting_found:
@@ -744,31 +763,59 @@ def install_command(args):
             elif args.without_dependencies:
                 write_warning("Skipping package installation.")
             else:
-                if validate_schema("conda", requirements_config):  # noqa: E501
-                    if has_module(conda_run):
+                if "conda" in requirements_config and validate_schema(
+                    "packages", requirements_config["conda"]
+                ):  # noqa: E501
+                    if conda_available() and has_module(run_api):
                         conda_config = requirements_config["conda"]
                         install_packages(
-                            conda_config, update_installed=args.update_installed
+                            conda_config,
+                            update_installed=args.update_installed,
                         )
                     else:
-                        write_warning(
-                            "Conda is not installed. Attempting to install conda packages with pip..."
-                        )
-                        try:
-                            call(
-                                [
-                                    "pip",
-                                    "install",
-                                    *requirements_config["conda"]["packages"],
-                                ]
+                        write_warning("Conda is not installed...")
+                        if not args.quiet:
+                            proceed = input(
+                                "Attempt to install conda packages with pip and continue the installation process: [y/n]"
                             )
-                        except Exception as e:
-                            write_error(
-                                f"Installing conda packages with pip failed with the following exception: {e}"
+                            while proceed.lower() not in ["y", "n"]:
+                                proceed = input('Please enter either "y" or "n": ')
+                        else:
+                            proceed = "y"
+                            write_warning(
+                                "Attempting to install conda packages with pip..."
                             )
+
+                        if proceed.lower() in ["y"]:
+                            try:
+                                call(
+                                    [
+                                        sys.executable,
+                                        "-m",
+                                        "pip",
+                                        "install",
+                                        *requirements_config["conda"]["packages"],
+                                    ]
+                                )
+                            except Exception as e:
+                                write_error(
+                                    f"Installing conda packages with pip failed with the following exception: {e}"
+                                )
+                        else:
+                            write_msg("\nInstall Command cancelled.")
+                            exit(0)
+
                 if validate_schema("pip", requirements_config):
                     write_msg("Running pip installation tasks...")
-                    call(["pip", "install", *requirements_config["pip"]])
+                    call(
+                        [
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            *requirements_config["pip"],
+                        ]
+                    )
                 try:
                     public_resources_dir = [
                         *Path().glob(str(Path("tethysapp", "*", "public"))),
@@ -805,18 +852,44 @@ def install_command(args):
     # Install Python Package
     write_msg("Running application install....")
 
+    cmd = [sys.executable, "-m", "pip", "install"]
+
     if args.develop:
-        cmd = ["pip", "install", "-e", "."]
+        cmd += ["-e", "."]
     else:
-        cmd = ["pip", "install", "."]
+        cmd.append(".")
+
+    # Check for deprecated setup.py file in the same directory as install.yml
+    setup_py_path = file_path.parent / "setup.py"
+    if setup_py_path.exists():
+        write_warning(
+            "WARNING: setup.py file detected. The use of setup.py is deprecated and may cause installation issues."
+        )
+        write_warning(
+            "Please migrate to pyproject.toml for defining your app's metadata and dependencies."
+        )
+        write_warning(
+            "You can use 'tethys gen pyproject' to help migrate to pyproject.toml."
+        )
 
     if args.verbose:
-        call(cmd, stderr=STDOUT)
+        return_code = call(cmd, stderr=STDOUT)
     else:
-        call(cmd, stdout=FNULL, stderr=STDOUT)
+        return_code = call(cmd, stdout=FNULL, stderr=STDOUT)
+
+    if return_code != 0:
+        write_error(
+            f"ERROR: Application installation failed with exit code {return_code}."
+        )
+
+        return
+
+    multiple_app_mode_check(app_name, quiet_mode=args.quiet)
 
     if args.no_db_sync:
-        write_success(f"Successfully installed {app_name}.")
+        write_success(
+            f"Successfully installed {app_name} into the active Tethys Portal."
+        )
         return
 
     call(["tethys", "db", "sync"])
@@ -862,7 +935,7 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
-    write_success(f"Successfully installed {app_name}.")
+    write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
 
 
 def validate_schema(check_str, check_list):
@@ -896,3 +969,64 @@ def assign_json_value(value):
     else:
         write_error(f"The current value: {value} is not a dict or a valid file path")
         return None
+
+
+def multiple_app_mode_check(new_app_name, quiet_mode=False):
+    """
+    Check if MULTIPLE_APP_MODE needs to be updated based on the number of installed apps.
+    """
+    if settings.MULTIPLE_APP_MODE:
+        return
+    setup_django()
+    if quiet_mode:
+        update_settings_args = Namespace(
+            set_kwargs=[
+                (
+                    "TETHYS_PORTAL_CONFIG",
+                    f"""
+                    MULTIPLE_APP_MODE: False
+                    STANDALONE_APP: {new_app_name}
+                    """,
+                )
+            ]
+        )
+        settings_command(update_settings_args)
+        write_msg(f"STANDALONE_APP set to {new_app_name}.")
+    elif len(get_installed_tethys_items(apps=True)) > 1:
+        response = prompt_yes_or_no(
+            "Your portal has multiple apps installed, but MULTIPLE_APP_MODE is set to False. Would you like to change that to True now?"
+        )
+        if response is True:
+            update_settings_args = Namespace(
+                set_kwargs=[
+                    (
+                        "TETHYS_PORTAL_CONFIG",
+                        """
+                        MULTIPLE_APP_MODE: True
+                        """,
+                    )
+                ]
+            )
+            settings_command(update_settings_args)
+            write_msg("MULTIPLE_APP_MODE set to True.")
+        elif response is False:
+            write_msg("MULTIPLE_APP_MODE left unchanged as False.")
+            response = prompt_yes_or_no(
+                f"Would you like to set the STANDALONE_APP to the newly installed app: {new_app_name}?"
+            )
+            if response is True:
+                update_settings_args = Namespace(
+                    set_kwargs=[
+                        (
+                            "TETHYS_PORTAL_CONFIG",
+                            f"""
+                            MULTIPLE_APP_MODE: False
+                            STANDALONE_APP: {new_app_name}
+                        """,
+                        )
+                    ]
+                )
+                settings_command(update_settings_args)
+                write_msg(f"STANDALONE_APP set to {new_app_name}.")
+            elif response is False:
+                write_msg("STANDALONE_APP left unchanged.")

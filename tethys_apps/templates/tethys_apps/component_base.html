@@ -1,0 +1,48 @@
+{% extends "tethys_apps/app_base.html" %}
+{% load static tethys reactpy %}
+
+{% block title %}{{ title }} | {{ tethys_app.name }}{% endblock %}
+
+{% block styles %}
+  <link href="{% static 'tethys_apps/css/loader.css' %}" rel="stylesheet" />
+  {% if tethys_app.enable_feedback %}
+    <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
+  {% endif %}
+  <link href="{% static 'tethys_portal/css/termsandconditions.min.css' %}"  rel="stylesheet" />
+{% endblock %}
+
+{% block app_styles %}
+  {% for css in custom_css %}
+    <link href="{{ css }}" rel="stylesheet" />
+  {% endfor %}
+  {{ block.super }}
+{% endblock %}
+
+{% block global_scripts %}
+{{ tethys.jquery.script_tag|safe }}
+<script type="module">
+  import React from "https://esm.sh/react@{{ reactjs_version }}"
+  import ReactDOM from "https://esm.sh/react-dom@{{ reactjs_version }}{% if reactjs_version_int > 17 %}/client{% endif %}"
+  globalThis['React'] = React
+  globalThis['ReactDOM'] = ReactDOM
+</script>
+{% endblock %}
+
+{% block app_content_wrapper_override %}
+  {% component "tethys_apps.base.page_handler.page_component_wrapper" app=app user=request.user layout=layout_func component=component_func extras=extras %}
+{% endblock %}
+
+{% block app_base_js %}
+  {% for js in custom_js %}
+    <script src="{{ js }}" type="text/javascript"></script>
+  {% endfor %}
+{% endblock %}
+
+{% block content_dependent_styles %}{% endblock %}
+
+{% block scripts %}
+  {{ tethys.doc_cookies.script_tag|safe }}
+  {% if tethys_app.enable_feedback %}
+    <script src="{% static 'tethys_apps/js/feedback.js' %}" type="text/javascript"></script>
+  {% endif %}
+{% endblock %}

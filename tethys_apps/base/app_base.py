@@ -18,6 +18,8 @@ from django.utils.functional import classproperty
 from django.shortcuts import render, redirect, reverse
 from django.template.loader import render_to_string
 
+from tethys_portal.optional_dependencies import has_module
+from tethys_portal.cookies import sync_cookies_from_yaml
 from .testing.environment import (
     is_testing_environment,
     get_test_db_name,
@@ -43,7 +45,7 @@ except ImportError:
 
 tethys_log = logging.getLogger("tethys.app_base")
 
-DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages"]
+DEFAULT_CONTROLLER_MODULES = ["controllers", "consumers", "handlers", "pages", "app"]
 
 
 class TethysBase(TethysBaseMixin):
@@ -58,6 +60,7 @@ class TethysBase(TethysBaseMixin):
     root_url = ""
     index = None
     controller_modules = []
+    cookie_config = "cookies.yaml"
 
     def __init__(self):
         self._url_patterns = None
@@ -91,6 +94,16 @@ class TethysBase(TethysBaseMixin):
 
         """
         return TethysPath(self._package_files / "resources")
+
+    @property
+    def cookie_config_path(self):
+        """
+        Property to access the cookie configuration file path.
+
+        Returns: TethysPath: path object bound to the cookie configuration file.
+
+        """
+        return self.resources_path.path / self.cookie_config
 
     @classproperty
     def db_model(cls):
@@ -575,7 +588,8 @@ class TethysAppBase(TethysBase):
       tags (string): A string for filtering apps.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
-
+      enabled (boolean): Whether or not the app is enabled
+      show_in_apps_library (boolean): Whether or not the app should be shown on the Apps Library page.
     """
 
     index = ""
@@ -586,8 +600,6 @@ class TethysAppBase(TethysBase):
     feedback_emails = []
     enabled = True
     show_in_apps_library = True
-    default_layout = None
-    nav_links = []
 
     def __str__(self):
         """
@@ -610,29 +622,6 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         return TethysApp
-
-    @property
-    def navigation_links(self):
-        nav_links = self.nav_links
-        if nav_links == "auto":
-            nav_links = []
-            for url_map in sorted(
-                self.registered_url_maps,
-                key=lambda x: x.index if x.index is not None else 999,
-            ):
-                href = f"/apps/{self.root_url}/"
-                if url_map.name != self.index:
-                    href += url_map.name.replace("_", "-") + "/"
-                if url_map.index == -1:
-                    continue  # Do not render
-                nav_links.append(
-                    {
-                        "title": url_map.title,
-                        "href": href,
-                    }
-                )
-            self.nav_links = nav_links  # Caches results of "auto"
-        return nav_links
 
     def custom_settings(self):
         """
@@ -1956,6 +1945,9 @@ class TethysAppBase(TethysBase):
             # More than one instance of the app in db... (what to do here?)
             elif len(db_apps) >= 2:
                 pass
+
+            if has_module("cookie_consent") and self.cookie_config_path.exists():
+                sync_cookies_from_yaml(self.cookie_config_path, self.package, self.name)
         except ProgrammingError:
             tethys_log.warning(
                 "Unable to sync app with database. tethys_apps_tethysapp "

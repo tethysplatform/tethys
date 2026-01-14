@@ -75,11 +75,10 @@ For convenience, you may consider setting up these or similar aliases in the act
         conda deactivate
         . setup_aliases.sh
 
-3. Activate your Tethys environment and test the commands and check permissions on the directories to verify they worked:
+3. :ref:`activate_environment` and test the commands and check permissions on the directories to verify they worked:
 
     .. code-block:: bash
 
-        conda activate tethys
         tethys_user_own
 
 4. Be sure to change ownership back to the NGINX user before moving on:
@@ -95,7 +94,7 @@ For convenience, you may consider setting up these or similar aliases in the act
 
 If you are installing Tethys Portal on a Rocky Linux or RedHat system that has `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ enabled and set to enforcing mode, you may need to perform additional setup to allow the server processes to access files.
 
-SELinux adds additional layers of security that define access controls for applications, processes, and files on a system. To learn more about SELinux see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `What is SELinux <https://www.redhat.com/en/topics/linux/what-is-selinux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos/SELinux>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_.
+SELinux adds additional layers of security that define access controls for applications, processes, and files on a system. To learn more about SELinux see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `What is SELinux <https://www.redhat.com/en/topics/linux/what-is-selinux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos(2f)SELinux.html>`_, `RedHat SELinux <https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_.
 
 .. note::
 

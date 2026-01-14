@@ -84,12 +84,13 @@ ENABLE_OPEN_SIGNUP                                 anyone can create a Tethys Po
 REGISTER_CONTROLLER                                override the default registration page with a custom controller. The value should be the dot-path to the controller function/class (e.g. ``tethysext.my_extension.controllers.custom_registration``)
 ENABLE_OPEN_PORTAL                                 no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``controller`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
 ENABLE_RESTRICTED_APP_ACCESS                       app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. A list can also be provided to restrict specific applications. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.
+ALLOW_JWT_BASIC_AUTHENTICATION                     allows users to get a JSON Web Token (JWT) using basic authentication when ``True``. Defaults to ``False``. If set to true, users can obtain a JWT by sending a POST request with their username and password to the ``/api/token/`` endpoint.
 TETHYS_WORKSPACES_ROOT                             location to where app/user workspaces will be created. Defaults to :file:`<TETHYS_HOME>/workspaces`.
 STATIC_ROOT                                        the Django `STATIC_ROOT <https://docs.djangoproject.com/en/4.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 MEDIA_URL                                          the Django `MEDIA_URL <https://docs.djangoproject.com/en/4.2/ref/settings/#media-url>`_ setting. Defaults to ``'/media/'``.
 MEDIA_ROOT                                         the Django `MEDIA_ROOT <https://docs.djangoproject.com/en/4.2/ref/settings/#media-root>`_ setting. Defaults to :file:`~/.tethys/media/`.
 STATICFILES_USE_NPM                                serves JavaScript dependencies through Tethys rather than using a content delivery network (CDN) when ``True``. Defaults to ``False``. When set to ``True`` then you must run ``tethys gen package_json`` to npm install the JS dependencies locally so they can be served by Tethys.
-ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overriden.
+ADDITIONAL_TEMPLATE_DIRS                           a list of dot-paths to template directories. These will be prepended to Tethys's list of template directories so specific templates can be overridden.
 ADDITIONAL_URLPATTERNS                             a list of dot-paths to list or tuples that define additional URL patterns to register in the portal. Additional URL patterns will precede default URL patterns so URLs will first match against user specified URL patterns.
 ADDITIONAL_SETTINGS_FILES                          a list of dot-paths or file paths to Python files that will be imported into the ``settings.py`` file. Additional settings files are imported at the end of the file and thus will override any previous settings with name conflicts.
 MULTIPLE_APP_MODE                                  boolean indicating if the portal should host multiple apps or be configured for a single standalone app.
@@ -199,9 +200,9 @@ CAPTCHA_CONFIG
 Setting                                            Description
 ================================================== ================================================================================
 ENABLE_CAPTCHA                                     Boolean specifying if captcha should be enabled on the login screen. If using Google ReCaptcha then the following two settings are required. Default is ``False``
-RECAPTCHA_PRIVATE_KEY                              Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
-RECAPTCHA_PUBLIC_KEY                               Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
-RECAPTCHA_PROXY_HOST                               Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
+RECAPTCHA_PRIVATE_KEY                              Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.
+RECAPTCHA_PUBLIC_KEY                               Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.
+RECAPTCHA_PROXY_HOST                               Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2>`_.
 ================================================== ================================================================================
 
 OAUTH_CONFIG

@@ -6,9 +6,9 @@ Google Earth Engine Service Account
 
 **Last Updated:** July 2024
 
-Up to this point, you've been using your personal Google account to authenticate with Google Earth Engine (see: :ref:`gee_authentication_step`). However, when you run an app that uses Google Earth Engine in a production environment, you will not want it to be using your personal credentials. Instead you will use a `service account <https://developers.google.com/earth-engine/service_account>`_, which is an account associated with an application instead of a user.
+Up to this point, you've been using your personal Google account to authenticate with Google Earth Engine (see: :ref:`gee_authentication_step`). However, when you run an app that uses Google Earth Engine in a production environment, you will not want it to be using your personal credentials. Instead you will use a `service account <https://developers.google.com/earth-engine/guides/service_account>`_, which is an account associated with an application instead of a user.
 
-This tutorial requires you to already have a service account registered with Google Earth Engine. If you do not already have a service account, follow the instructions here: `How do I create a service account? <https://developers.google.com/earth-engine/service_account#how-do-i-create-a-service-account>`_. It may take several days for your registration application to be reviewed and approved.
+This tutorial requires you to already have a service account registered with Google Earth Engine. If you do not already have a service account, follow the instructions here: `How do I create a service account? <https://developers.google.com/earth-engine/guides/service_account#create-a-service-account>`_. It may take several days for your registration application to be reviewed and approved.
 
 The following topics are covered in this tutorial:
 
@@ -26,7 +26,7 @@ If you wish to use the previous solution as a starting point:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b rest-api-solution rest-api-solution-|version|
 
@@ -101,8 +101,46 @@ The app needs to be configured to use the service account key that you downloade
     Please make sure you are using the latest version of the earthengine-api when authenticating with your service account for the first time.
     Using an old version in the first authetication can cause a 404 error. After the initial authetication older version of the earthengine-api can be used.
 
+3. Update Finding Asset Directories
+===================================
 
-3. Test App Functionality with Service Account
+You'll also need to update the `get_asset_dir_for_user` function in the `methods.py` file:
+
+.. code-block:: python
+    :emphasize-lines: 11-25
+
+    def get_asset_dir_for_user(user):
+        """
+        Get a unique asset directory for given user.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+
+        Returns:
+            str: asset directory path for given user.
+        """
+        if gee_account.service_account and credentials:
+            service_account_project_id = credentials._project_id
+            asset_roots = ee.data.listAssets({'parent': f'projects/{service_account_project_id}/assets'}).get('assets', [])
+            if len(asset_roots) == 0:
+                asset_path = f"projects/{service_account_project_id}/assets/tethys"
+                ee.batch.data.createAsset({
+                    'type': 'Folder',
+                    'name': asset_path
+                })
+
+                asset_roots = ee.data.listAssets({'parent': f'projects/{service_account_project_id}/assets/'}).get('assets', [])
+
+        else:
+            raise NameError("""Variable service_account_project_id was not assigned. 
+                            Make sure your service account credentials are set up properly.""")
+        
+        # Prepare asset directory paths
+        asset_root_dir = asset_roots[0]['id']
+        ...
+
+
+4. Test App Functionality with Service Account
 ==============================================
 
 Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify the following:

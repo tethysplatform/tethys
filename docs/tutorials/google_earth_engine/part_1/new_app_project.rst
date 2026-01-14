@@ -18,13 +18,7 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 1. Generate Scaffold
 ====================
 
-To generate a new Tethys App using the scaffold, open a terminal and execute the following commands:
-
-
-.. code-block:: bash
-
-    # Activate the tethys environment
-    conda activate tethys
+To generate a new Tethys App using the scaffold, open a terminal, :ref:`activate_environment`, and execute the following commands:
 
 .. code-block:: bash
 
@@ -139,6 +133,6 @@ This concludes the New App Project portion of the GEE Tutorial. You can view the
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine
     cd tethysapp-earth_engine
     git checkout -b new-app-project-solution new-app-project-solution-|version|

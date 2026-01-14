@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from unittest import mock
 
@@ -20,6 +21,7 @@ class TethysAppsViewsTest(unittest.TestCase):
     @mock.patch("tethys_apps.views.render")
     @mock.patch("tethys_apps.views.TethysApp")
     @mock.patch("tethys_apps.views.ProxyApp")
+    @pytest.mark.django_db
     def test_library_staff(self, mock_ProxyApp, mock_TethysApp, mock_render):
         mock_request = mock.MagicMock()
         mock_request.user.is_staff = True

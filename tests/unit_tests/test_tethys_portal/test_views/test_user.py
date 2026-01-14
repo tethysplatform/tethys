@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from unittest import mock
@@ -286,6 +287,7 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user.Token.objects.get_or_create")
     @mock.patch("tethys_portal.views.user.UserSettingsForm")
     @mock.patch("tethys_portal.views.user.render")
+    @pytest.mark.django_db
     def test_settings_request_get(
         self,
         mock_render,
@@ -484,10 +486,11 @@ class TethysPortalUserTests(unittest.TestCase):
         )
 
     @mock.patch("tethys_quotas.utilities.log")
-    @mock.patch("tethys_portal.views.user.get_user_workspace")
+    @mock.patch("tethys_portal.views.user._get_user_workspace")
     @mock.patch("tethys_portal.views.user._convert_storage_units")
     @mock.patch("tethys_portal.views.user.SingletonHarvester")
     @mock.patch("tethys_portal.views.user.render")
+    @pytest.mark.django_db
     def test_manage_storage_successful(
         self, mock_render, mock_harvester, mock_convert_storage, _, __
     ):
@@ -524,8 +527,8 @@ class TethysPortalUserTests(unittest.TestCase):
             mock_request, "tethys_portal/user/clear_workspace.html", expected_context
         )
 
-    @mock.patch("tethys_portal.views.user.get_user_media")
-    @mock.patch("tethys_portal.views.user.get_user_workspace")
+    @mock.patch("tethys_portal.views.user._get_user_media")
+    @mock.patch("tethys_portal.views.user._get_user_workspace")
     @mock.patch("tethys_portal.views.user.get_app_class")
     @mock.patch("tethys_portal.views.user.TethysApp")
     @mock.patch("tethys_portal.views.user.messages.success")

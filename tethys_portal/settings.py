@@ -14,10 +14,10 @@ Settings for Tethys Platform
 This file contains default Django and other settings for the Tethys Platform.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/3.2/topics/settings/
+https://docs.djangoproject.com/en/5.2/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/3.2/ref/settings/
+https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
@@ -25,6 +25,7 @@ import sys
 import yaml
 import logging
 import datetime as dt
+import mimetypes
 from os import getenv
 from pathlib import Path
 from importlib import import_module
@@ -43,6 +44,8 @@ bokeh_django = optional_import("bokeh_django")
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
+
+mimetypes.add_type("text/javascript", ".js", True)
 
 BASE_DIR = Path(__file__).parent
 
@@ -178,7 +181,7 @@ else:
     DEFAULT_DB.setdefault("PORT", 5436)
 
 
-# See https://docs.djangoproject.com/en/3.2/ref/settings/#logging-config for more logging configuration options.
+# See https://docs.djangoproject.com/en/5.2/ref/settings/#logging-config for more logging configuration options.
 LOGGING = portal_config_settings.pop("LOGGING", {})
 LOGGING.setdefault("version", 1)
 LOGGING.setdefault("disable_existing_loggers", False)
@@ -256,11 +259,11 @@ for module in [
     "django_recaptcha",
     "social_django",
     "termsandconditions",
+    "cookie_consent",
     "reactpy_django",
 ]:
     if has_module(module):
         default_installed_apps.append(module)
-
 
 INSTALLED_APPS = portal_config_settings.pop(
     "INSTALLED_APPS_OVERRIDE",
@@ -317,6 +320,9 @@ AUTHENTICATION_BACKENDS = portal_config_settings.pop(
 AUTHENTICATION_BACKENDS = tuple(
     portal_config_settings.pop("AUTHENTICATION_BACKENDS", []) + AUTHENTICATION_BACKENDS
 )
+ALLOW_JWT_BASIC_AUTHENTICATION = portal_config_settings.pop(
+    "ALLOW_JWT_BASIC_AUTHENTICATION", False
+)
 
 RESOURCE_QUOTA_HANDLERS = portal_config_settings.pop(
     "RESOURCE_QUOTA_HANDLERS_OVERRIDE",
@@ -337,9 +343,12 @@ CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
+
 
 # Terms and conditions settings
 ACCEPT_TERMS_PATH = "/terms/accept/"
@@ -354,6 +363,63 @@ TERMS_EXCLUDE_URL_LIST = {"/"}
 TERMS_BASE_TEMPLATE = "termsandconditions_base.html"
 
 ROOT_URLCONF = "tethys_portal.urls"
+
+# Django Tenants settings
+TENANTS_CONFIG = portal_config_settings.pop("TENANTS_CONFIG", {})
+TENANTS_ENABLED = TENANTS_CONFIG.pop("ENABLED", False)
+if has_module("django_tenants") and TENANTS_ENABLED:
+    # Tethys Tenants requires "django_tenants.postgresql_backend" as the database engine
+    # Set up in portal_config.yml
+    DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+    TENANT_LIMIT_SET_CALLS = TENANTS_CONFIG.pop("TENANT_LIMIT_SET_CALLS", False)
+
+    TENANT_COLOR_ADMIN_APPS = TENANTS_CONFIG.pop(
+        "TENANT_COLOR_ADMIN_APPS",
+        True,
+    )
+
+    SHOW_PUBLIC_IF_NO_TENANT_FOUND = TENANTS_CONFIG.pop(
+        "SHOW_PUBLIC_IF_NO_TENANT_FOUND",
+        False,
+    )
+
+    TENANT_MODEL = "tethys_tenants.Tenant"
+    TENANT_DOMAIN_MODEL = "tethys_tenants.Domain"
+
+    default_tenant_apps = [
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+    ]
+
+    for module in [
+        "axes",
+        "captcha",
+        "mfa",
+        "oauth2_provider",
+        "rest_framework.authtoken",
+        "social_django",
+        "termsandconditions",
+    ]:
+        if has_module(module):
+            default_tenant_apps.append(module)
+
+    TENANT_APPS = TENANTS_CONFIG.pop("TENANT_APPS_OVERRIDE", default_tenant_apps)
+
+    SHARED_APPS = ("django_tenants", "tethys_tenants") + INSTALLED_APPS
+    TENANT_APPS = tuple(TENANT_APPS + TENANTS_CONFIG.pop("TENANT_APPS", []))
+
+    INSTALLED_APPS = tuple(
+        list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+    )
+
+    MIDDLEWARE = list(MIDDLEWARE)
+    MIDDLEWARE.insert(0, "django_tenants.middleware.main.TenantMainMiddleware")
+    MIDDLEWARE = tuple(MIDDLEWARE)
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
@@ -424,7 +490,6 @@ TEMPLATES = [
         },
     }
 ]
-
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = portal_config_settings.pop("STATIC_URL", "/static/")
@@ -507,7 +572,7 @@ GRAVATAR_DEFAULT_RATING = "g"
 GRAVATAR_DEFAULT_SECURE = True
 
 # OAuth Settings
-# http://psa.matiasaguirre.net/docs/configuration/index.html
+# https://python-social-auth.readthedocs.io/en/latest/docs/configuration/index.html
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ["username", "first_name", "email"]
 SOCIAL_AUTH_SLUGIFY_USERNAMES = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/apps/"

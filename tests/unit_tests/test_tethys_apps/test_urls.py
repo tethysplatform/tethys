@@ -1,4 +1,5 @@
 from django.urls import reverse, resolve
+from tethys_portal import urls
 from tethys_sdk.testing import TethysTestCase
 from django.test import override_settings
 from django.urls.exceptions import NoReverseMatch
@@ -67,9 +68,14 @@ class TestUrls(TethysTestCase):
             "tethysext.test_extension.controllers.home", resolver._func_path
         )
 
+        # ensure app urls are at the end
+        self.assertEqual(
+            urls.urlpatterns[-2].urlconf_module.__name__, "tethys_apps.urls"
+        )
+
     @mock.patch("django.urls.include")
     @mock.patch("tethys_portal.optional_dependencies.has_module")
-    def test_reactpy_urls(self, mock_has_module, mock_include):
+    def test_reactpy_django_urls(self, mock_has_module, mock_include):
         mock_has_module.return_value = True
         from tethys_portal import urls
         from importlib import reload
@@ -192,6 +198,11 @@ class TestUrlsWithStandaloneApp(TethysTestCase):
         self.assertEqual("home", resolver.func.__name__)
         self.assertEqual(
             "tethysext.test_extension.controllers", resolver.func.__module__
+        )
+
+        # ensure app urls are at the end
+        self.assertEqual(
+            urls.urlpatterns[-2].urlconf_module.__name__, "tethys_apps.urls"
         )
 
 

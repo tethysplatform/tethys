@@ -1,0 +1,147 @@
+/* Recipe Gallery */
+
+.recipe-hidden {
+    display: none;
+}
+
+#search-container {
+    position: relative;
+}
+
+#recipe-tag-search-bar {
+    position: absolute;
+    top: -40px;
+    right: 12px;
+}
+
+
+
+/* Shared styles for both styles of recipe gallery */
+.recipe-gallery-container {
+    height: auto;
+    padding: 0 !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.recipe-gallery {
+    display: flex;
+}
+
+.recipe-card {
+    padding: 0 !important;
+    text-align: center;
+    margin-right: 10px;
+    margin-left: 0;
+    margin-top: 10px;
+    box-sizing: border-box;    
+    height: auto;
+    border: 2px solid #e5e7eb;
+    border-radius: 5px;
+}
+
+.recipe-card:hover {
+    background-color: #e0e0e0;
+}
+
+.recipe-image-container {
+    width: 85%;
+    aspect-ratio: 1 / 1;
+    padding: 2% !important;
+    /* border: 1px solid black; */
+}
+
+ .recipe-link {
+    width: 100%;
+    height: 100%;
+    text-decoration: none !important;
+}
+
+.recipe-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    margin-top: 0 !important;
+}
+
+.recipe-title {
+    display: block;
+    padding-bottom: 5px;
+}
+
+/* Paragraph elements for recipe tags */
+.recipe-tags {
+    display: none;
+}
+
+/* Recipe Gallery with carousel layout */
+.carousel {
+    width: 100%;
+    box-sizing: border-box;
+    transition: transform 0.5s ease;
+    padding: 0 10% !important;
+    white-space: normal;
+    position: relative;
+    margin: 0 !important;
+}
+
+.carousel-button-left-container, .carousel-button-right-container {
+    width: calc(10% - 10px) !important;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 10px); /* Account for margin-top of recipe cards so the buttons line up with height */
+    position: absolute;
+    z-index: 1000;
+    padding: 0 !important;
+    margin: 0 !important;
+    margin-top: 10px !important; /* Account for margin-top of recipe cards */
+    top: 0;
+}
+
+.carousel-button-left-container {
+    left: 0;
+}
+
+.carousel-button-right-container {
+    right: 0;
+}
+
+.carousel-button-left-container:hover .carousel-button-left, .carousel-button-right-container:hover .carousel-button-right {
+    opacity: 1;
+    visibility: visible;
+}
+
+.carousel-button-left, .carousel-button-right {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.650);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    color: white;
+}
+
+.carousel-button-left {
+    padding-left: 35%;
+}
+
+.carousel-button-right {
+    padding-right: 35%;
+}
+
+.carousel .recipe-card {
+    /* flex: 0 0 20%; */
+    flex: 0 0 calc((100% - (2 * 10px)) /3);
+}
+
+/* Recipe Gallery with multi-row layout */
+.multi-row {
+    width: 100%;
+    justify-items: start;
+    padding: 0 !important;
+    flex-wrap: wrap;
+}
+
+.multi-row .recipe-card {
+    flex: 0 0 calc(25% - 10px);
+}
