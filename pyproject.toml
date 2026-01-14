@@ -43,6 +43,8 @@ dependencies = [
     "django-model-utils",
     "django-guardian",
     "djangorestframework_simplejwt",
+    # NOTE: The following is temporary. TODO: Remove this soon.
+    "jaraco.context>=6.1.0",
 ]
 
 [project.optional-dependencies]
