@@ -1,5 +1,5 @@
 
-import {Container, Row, Button, Col} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container,Row,Button,Col";
+import {Container, Row, Button, Col} from "https://esm.sh/react-bootstrap@2.10.10/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container,Row,Button,Col";
 export {Container, Row, Button, Col};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
 import Editor from "https://esm.sh/@monaco-editor/react/?deps=react@19.0,react-dom@19.0,react-is@19.0";

@@ -36,8 +36,6 @@ Text Link Overlay
                 )
             )("Vienna"),
             lib.tethys.Map(
-                onClick=lambda e: set_position(e.coordinate)
-            )(
                 lib.ol.Overlay(
                     options=lib.Props(
                         stopEvent=False

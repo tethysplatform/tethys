@@ -195,6 +195,9 @@ class Package:
             self.get_components_by_path().items()
         ):
             module_path = f"{module_path}.js" if self.treat_as_path else module_path
+            package_root = f"{self.host}/{self.name}"
+            if self.version:
+                package_root += f"@{self.version}"
             if i == 0:
                 exports_statement += "export {"
             non_default_components = [
@@ -205,15 +208,15 @@ class Package:
             if self.default_export == "*":
                 for component in components:
                     import_statements.append(
-                        f"""import {component} from "{self.host}/{self.name}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
+                        f"""import {component} from "{package_root}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
                     )
             elif self.default_export and self.default_export in components:
                 import_statements.append(
-                    f"""import {self.default_export} from "{self.host}/{self.name}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
+                    f"""import {self.default_export} from "{package_root}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
                 )
             if non_default_components:
                 import_statements.append(
-                    f"""import {{{', '.join(non_default_components)}}} from "{self.host}/{self.name}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}&exports={','.join(non_default_components)}";"""
+                    f"""import {{{', '.join(non_default_components)}}} from "{package_root}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}&exports={','.join(non_default_components)}";"""
                 )
             if i > 0:
                 exports_statement += ", "
@@ -280,7 +283,7 @@ class ComponentLibrary:
     CURATED_PACKAGES = PackageManager(
         {
             "bs": Package(
-                name="react-bootstrap@2.10.2",
+                name="react-bootstrap@2.10.10",
                 styles=[
                     "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
                 ],
@@ -288,7 +291,7 @@ class ComponentLibrary:
             "pm": Package(name="pigeon-maps@0.21.6"),
             "rc": Package(name="recharts@2.12.7"),
             "ag": Package(name="react-grid-wrapper.js", host="/static/tethys_apps/js"),
-            "rp": Package(name="react-player@2.16.0", default_export="ReactPlayer"),
+            "rp": Package(name="react-player@3.4.0", default_export="ReactPlayer"),
             "lo": Package(name="react-loading-overlay-ts@2.0.2"),
             "mapgl": Package(
                 name="react-map-gl/maplibre",
@@ -414,6 +417,7 @@ class ComponentLibrary:
         default_export=None,
         treat_as_path=False,
         host="https://esm.sh",
+        version=None,
     ):
         """
         Registers a new package to be used by the ComponentLibrary
@@ -466,6 +470,7 @@ class ComponentLibrary:
         """
         new_package = Package(
             name=package,
+            version=version,
             styles=styles,
             default_export=default_export,
             treat_as_path=treat_as_path,

@@ -1,5 +1,5 @@
 
-import {Col, Row, Container} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Col,Row,Container";
+import {Col, Row, Container} from "https://esm.sh/react-bootstrap@2.10.10/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Col,Row,Container";
 export {Col, Row, Container};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
 import ImageLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Image.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
@@ -20,7 +20,7 @@ import VectorLayer from "/static/tethys_apps/js/ol-mods/layer/Vector.js?deps=rea
 import Map from "/static/tethys_apps/js/ol-mods/Map.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
 import View from "/static/tethys_apps/js/ol-mods/View.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
 export {VectorSource, VectorLayer, Map, View};
-import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
+import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts@2.12.7/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
 export {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line};
 
 function loadCSS(href) {  

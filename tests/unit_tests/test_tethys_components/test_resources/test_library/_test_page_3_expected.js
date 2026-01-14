@@ -1,5 +1,5 @@
 
-import ReactPlayer from "https://esm.sh/react-player/?deps=react@19.0,react-dom@19.0,react-is@19.0";
+import ReactPlayer from "https://esm.sh/react-player@3.4.0/?deps=react@19.0,react-dom@19.0,react-is@19.0";
 export {ReactPlayer};
 
 function loadCSS(href) {  

@@ -449,7 +449,8 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
                                 lib.bs.NavLink(
                                     href=link["href"],
                                     key=f"link-{index}",
-                                    active=location.pathname == link["href"],
+                                    active=location.pathname == link["href"]
+                                    or location.pathname[:-1] == link["href"],
                                     style=lib.Style(padding_left="10pt"),
                                 )(
                                     link["title"],
