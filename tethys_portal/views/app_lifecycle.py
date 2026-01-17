@@ -239,7 +239,11 @@ def create_app(request):
             author = form.cleaned_data["author"]
             author_email = form.cleaned_data["author_email"]
             license = form.cleaned_data["license"]
-            migrate_cmd = "&& tethys db migrate" if template == "component" else ""
+            migrate_cmd = (
+                "&& tethys manage migrate reactpy_django"
+                if template == "component"
+                else ""
+            )
 
             command_message_tuples += [
                 (

@@ -8,6 +8,7 @@ from django.template import TemplateSyntaxError
 from django.template import Context
 from importlib import reload
 from pathlib import Path
+import sys
 
 
 class CustomGizmo(TethysGizmoOptions):
@@ -74,7 +75,8 @@ class TestTethysGizmos(unittest.TestCase):
         )
 
         # Timestamp should be 1514764800
-        self.assertEqual(1514764800000.0, result)
+        expected = 1514790000000.0 if sys.platform == "win32" else 1514764800000.0
+        self.assertEqual(expected, result)
 
     def test_HighchartsDateEncoder_no_dt(self):
         result = gizmos_templatetags.HighchartsDateEncoder().default(date(2018, 1, 1))
@@ -136,7 +138,8 @@ class TestTethysGizmos(unittest.TestCase):
         result = gizmos_templatetags.json_date_handler(datetime(2018, 1, 1))
 
         # Timestamp should be 1514764800
-        self.assertEqual(1514764800000.0, result)
+        expected = 1514790000000.0 if sys.platform == "win32" else 1514764800000.0
+        self.assertEqual(expected, result)
 
     def test_json_date_handler_no_datetime(self):
         result = gizmos_templatetags.json_date_handler("2018")

@@ -24,3 +24,7 @@ ignore:
       name: social-auth-app-django
       type: python
     reason: "Fixed version not yet availble for versions of conda < 5.1"
+  - package:
+      name: jaraco.context
+      type: python
+    reason: Temporary until next release of setuptools (see https://github.com/pypa/setuptools/issues/5140#issuecomment-3761013479)
