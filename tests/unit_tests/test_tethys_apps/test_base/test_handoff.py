@@ -117,6 +117,28 @@ def test_HandoffManager_handoff_type_error(mock_hrbr):
     assert "HTTP 400 Bad Request: test message." in rts_call_args[0][0][0]
 
 
+@mock.patch("tethys_apps.base.handoff.redirect", return_value="foo")
+def test_HandoffManager_handoff_internal_handler(mock_redirect):
+    from django.http import HttpRequest
+
+    request = HttpRequest()
+    app = mock.MagicMock()
+    app.name = "test_app_name"
+    handler1 = mock.MagicMock()
+    handler1.internal = False
+    handler1.return_value = "bar"
+    manager = mock.MagicMock(get_handler=mock.MagicMock(return_value=handler1), app=app)
+    with mock.patch(
+        "tethys_apps.base.handoff.HandoffManager._get_handoff_manager_for_app",
+        return_value=manager,
+    ):
+        value = tethys_handoff.HandoffManager(app=app).handoff(
+            request=request, handler_name="test_handler"
+        )
+    mock_redirect.assert_called_once_with("bar")
+    assert value == "foo"
+
+
 @mock.patch("tethys_apps.base.handoff.HttpResponseBadRequest")
 def test_HandoffManager_handoff_error(mock_hrbr):
     from django.http import HttpRequest
