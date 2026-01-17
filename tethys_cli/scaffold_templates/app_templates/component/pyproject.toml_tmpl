@@ -25,6 +25,10 @@ classifiers = [
 ]
 dynamic = ["version"]
 
+dependencies = [
+    "reactpy-django >=5.2.1, <6.0.0"
+]
+
 [tool.setuptools]
 include-package-data = true
 
