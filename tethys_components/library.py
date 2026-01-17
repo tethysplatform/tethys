@@ -270,7 +270,6 @@ class ComponentLibrary:
         f"react@{REACTJS_VERSION}",
         f"react-dom@{REACTJS_VERSION}",
         f"react-is@{REACTJS_VERSION}",
-        # "@restart/ui@1.6.8",
     ]
     INTERNALLY_MANAGED = [
         "html",

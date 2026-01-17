@@ -368,8 +368,20 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
 
     return lib.html.div(
         (
-            lib.html.script(
-                f"""window.setTimeout(function () {{window.location = "{app.exit_url}";}}, 200);"""
+            lib.html.div(
+                style=lib.Style(
+                    position="fixed",
+                    top=0,
+                    bottom=0,
+                    right=0,
+                    left=0,
+                    background="white",
+                    zIndex=100,
+                )
+            )(
+                lib.html.script(
+                    f"""window.setTimeout(function () {{window.location = "{app.exit_url}";}}, 200);"""
+                )
             )
             if redirect
             else None
