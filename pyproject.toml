@@ -1,6 +1,5 @@
 [build-system]
-# TODO: Revert setuptools to setuptools>=45
-requires = ["setuptools==75.3.3", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
