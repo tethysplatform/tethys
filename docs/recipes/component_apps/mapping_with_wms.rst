@@ -206,7 +206,6 @@ WMS Time
 .. code-block:: python
 
     import datetime as dt
-    import random
 
     def three_hours_ago():
         now = dt.datetime.now()
@@ -220,7 +219,6 @@ WMS Time
     def wms_time(lib):
         frame_rate = 0.5  # frames per second
         wms_time, set_wms_time = lib.hooks.use_state(lambda: three_hours_ago())
-        force_update, set_force_update = lib.hooks.use_state(False)
         timer, set_timer = lib.hooks.use_state(None)
 
         return lib.tethys.Display(style=lib.Style(position="relative"))(

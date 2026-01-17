@@ -1,5 +1,5 @@
 
-import {Container} from "https://esm.sh/react-bootstrap/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container";
+import {Container} from "https://esm.sh/react-bootstrap@2.10.10/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container";
 export {Container};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
 import XYZSource from "https://esm.sh/@planet/maps@11.2.0/source/XYZ.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
