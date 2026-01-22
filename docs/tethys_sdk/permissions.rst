@@ -11,7 +11,7 @@ Permissions allow you to restrict access to certain features or content of your 
 Create Permissions and Permission Groups
 ========================================
 
-Declare the ``permissions`` method in the app class and have it return a list or tuple of ``Permission`` and/or ``PermissionGroup`` objects. Permissions are synced everytime you start or restart the development server (i.e.: ``tethys manage start``) or Apache server in production.
+Declare the ``permissions`` method in the app class and have it return a list or tuple of ``Permission`` and/or ``PermissionGroup`` objects. Permissions are synced everytime you start or restart the development server (i.e.: ``tethys start``) or Apache server in production.
 
 Once you have created permissions and permission groups for your app, they will be available for the Tethys Portal administrator to assign to users. See the :ref:`tethys_portal_permissions` documentation for more details.
 
