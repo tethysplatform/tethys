@@ -43,7 +43,7 @@ Restart tethys portal to effect the changes:
 
 .. code-block::
 
-    tethys manage start
+    tethys start
 
 
 4. Configure Additional App Settings
