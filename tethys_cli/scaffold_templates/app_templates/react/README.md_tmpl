@@ -28,7 +28,7 @@ The webpack dev server is configured to proxy the Tethys development server (see
 1. Start Tethys development server
 
 ```
-tethys manage start
+tethys start
 ```
 
 2. Start webpack development server (in separate terminal)

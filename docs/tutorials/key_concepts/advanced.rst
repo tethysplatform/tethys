@@ -76,7 +76,7 @@ c. Configure Tethys to use PostgreSQL database:
 
     The default password for the ``postgis/postgis`` container is "mysecretpassword". If you changed it, you will need to replace it in the command above.
 
-    d. Start Tethys the development server (``tethys manage start``) and verify that the app is still working.
+    d. Start Tethys the development server (``tethys start``) and verify that the app is still working.
 
 .. important::
 
