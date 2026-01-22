@@ -113,7 +113,7 @@ Once you have a database successfully configured you can run the Tethys developm
 
 .. code-block:: bash
 
-    tethys manage start
+    tethys start
 
 This will start up a locally running web server. You can access the Tethys Portal by going to `<http://localhost:8000>`_ in your browser.
 
@@ -123,7 +123,7 @@ This will start up a locally running web server. You can access the Tethys Porta
 
     .. code-block:: bash
 
-        tethys manage start -p 8001
+        tethys start -p 8001
 
     See :ref:`tethys_manage_cmd` for more details.
 
