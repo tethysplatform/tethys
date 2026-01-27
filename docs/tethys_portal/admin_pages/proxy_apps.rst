@@ -3,7 +3,7 @@
 Proxy Apps
 ----------
 
-Proxy apps are links to external web applications or websites. They are represented in the App Library page with an app tile just like native Tethys Apps. To manage the Proxy Apps in a Tethys Portal, click on the ``Proxy Apps`` link under the ``TETHYS APPS`` heading. Click on the ``ADD PROXY APP`` button to create a new Proxy App. Proxy Apps have many of the same configuration options as normal Tethys Apps including ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library`` and ``Order``, but there are a few options that are specific to Proxy apps (see Figure 16). A brief description of each option is provided below:
+Proxy apps are links to external web applications or websites. They are represented in the App Library page with an app tile just like native Tethys Apps. To manage the Proxy Apps in a Tethys Portal, click on the ``Proxy Apps`` link under the ``TETHYS APPS`` heading. Click on the ``ADD PROXY APP`` button to create a new Proxy App. Proxy Apps have many of the same configuration options as normal Tethys Apps including ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library`` and ``Order``, but there are a few options that are specific to Proxy apps (see Figure 1). A brief description of each option is provided below:
 
 * **Name**: The name of the app that will appear on the app tile on the Apps Library page (e.g.: "My Proxy App").
 * **Endpoint**: The URL that will be opened when the user clicks on the app tile of the proxy app (e.g.: ``https://my.proxy.app/foo/``).
@@ -20,4 +20,4 @@ Proxy apps are links to external web applications or websites. They are represen
 .. figure:: ../../images/site_admin/new_proxy_app.png
     :width: 675px
 
-**Figure 16.** The Add Proxy App dialog.
+**Figure 1.** The Add Proxy App dialog.
