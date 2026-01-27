@@ -4,12 +4,12 @@
 Tethys Portal
 *************
 
-The links under the ``TETHYS PORTAL`` heading can be used to customize the look of the Tethys Portal. For example, you can change the name, logo, and color theme of the portal (see Figure 17).
+The links under the ``TETHYS PORTAL`` heading can be used to customize the look of the Tethys Portal. For example, you can change the name, logo, and color theme of the portal (see Figure 1).
 
 .. figure:: ../../images/tethys_portal/tethys_portal_home_page_settings.png
     :width: 500px
 
-**Figure 17.** Home page settings for Tethys Portal.
+**Figure 1.** Home page settings for Tethys Portal.
 
 .. tip::
 

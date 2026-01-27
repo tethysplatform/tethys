@@ -11,7 +11,6 @@ Tethys Portal is the Django web site provided by Tethys Platform that acts as th
 
    tethys_portal/configuration
    tethys_portal/admin_pages
-   tethys_portal/tethys_compute_admin_pages
    tethys_portal/tethys_users
    tethys_portal/feedback
    

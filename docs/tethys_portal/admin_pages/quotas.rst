@@ -11,7 +11,7 @@ The link under the ``TETHYS QUOTAS`` heading can be used to manage resource quot
 Resource Quotas
 ---------------
 
-``Resource Quotas`` shows a list of all loaded quotas. By default, all quotas are disabled when they are first loaded. Use this page to enable and customize the quotas for your portal (see Figure 18).
+``Resource Quotas`` shows a list of all loaded quotas. By default, all quotas are disabled when they are first loaded. Use this page to enable and customize the quotas for your portal (see Figure 1).
 
 All quotas have the following fields that can be customized:
 
@@ -23,14 +23,14 @@ All quotas have the following fields that can be customized:
 .. figure:: ../../images/tethys_portal/tethys_portal_rq_settings.png
     :width: 675px
 
-**Figure 18.** Resource Quota settings page.
+**Figure 1.** Resource Quota settings page.
 
 .. _tethys_quotas_user_admin:
 
 User Workspace Quotas
 ---------------------
 
-To manage quotas specific to individual users, navigate to the user's settings page. Any applicable Resource Quotas will be listed in the User Quotas section. To set a custom quota for the user, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 19).
+To manage quotas specific to individual users, navigate to the user's settings page. Any applicable Resource Quotas will be listed in the User Quotas section. To set a custom quota for the user, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 2).
 
 .. tip::
 
@@ -39,19 +39,19 @@ To manage quotas specific to individual users, navigate to the user's settings p
 .. figure:: ../../images/tethys_portal/tethys_portal_uq_settings.png
     :width: 675px
 
-**Figure 19.** User settings page showing User Quotas.
+**Figure 2.** User settings page showing User Quotas.
 
 .. _tethys_quotas_app_admin:
 
 App Workspace Quotas
 --------------------
 
-To manage quotas specific to individual apps, navigate to the specified app's settings page. Any applicable Resource Quotas will be listed in the Tethys App Quotas section. To set a custom quota for the app, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 20).
+To manage quotas specific to individual apps, navigate to the specified app's settings page. Any applicable Resource Quotas will be listed in the Tethys App Quotas section. To set a custom quota for the app, enter the custom value in the Value field on the line corresponding to the appropriate Resource Quota. A link to the ``Resource Quota`` is also provided in the table (see Figure 3).
 
 .. figure:: ../../images/tethys_portal/tethys_portal_aq_settings.png
     :width: 675px
 
-**Figure 20.** App settings page showing Tethys App Quotas.
+**Figure 3.** App settings page showing Tethys App Quotas.
 
 
 
