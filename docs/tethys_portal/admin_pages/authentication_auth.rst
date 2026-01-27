@@ -4,12 +4,12 @@
 Authentication and Authorization
 ********************************
 
-Permissions and users can be managed from the administrator dashboard using ``Users`` link under the ``AUTHENTICATION AND AUTHORIZATION`` heading. Figure 3 shows an example of the user management page for a user named John.
+Permissions and users can be managed from the administrator dashboard using ``Users`` link under the ``AUTHENTICATION AND AUTHORIZATION`` heading. Figure 1 shows an example of the user management page for a user named John.
 
 .. figure:: ../../images/tethys_portal/tethys_portal_user_management.png
     :width: 675px
 
-**Figure 3.** User management for Tethys Portal.
+**Figure 1.** User management for Tethys Portal.
 
 .. _tethys_portal_app_permission_groups:
 
@@ -53,20 +53,20 @@ Change Group Method (Recommended)
 To assign app permissions to a user using the ``Change Group`` method:
   1. Go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading.
   2. Select the link with the group name from the list.
-  3. On the ``Change Group`` page you can assign a group permission to access a specific proxy app from the ``Proxy Apps`` multiselect field or installed app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box (see Figure 4).
-  4. When an installed app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any (see Figure 5). 
+  3. On the ``Change Group`` page you can assign a group permission to access a specific proxy app from the ``Proxy Apps`` multiselect field or installed app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box (see Figure 2).
+  4. When an installed app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any (see Figure 3). 
   5. Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated with the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. 
   6. The ``Change Group`` form then needs to be saved for changes to take effect.
 
 .. figure:: ../../images/tethys_portal/tethys_portal_assign_perm4.png
    :width: 900px
 
-**Figure 4.** Change Group - Add app access.
+**Figure 2.** Change Group - Add app access.
 
 .. figure:: ../../images/tethys_portal/tethys_portal_assign_perm5.png
    :width: 900px
 
-**Figure 5.** Change Group - Add permissions from available permissions or groups.
+**Figure 3.** Change Group - Add permissions from available permissions or groups.
 
 .. note::
 
@@ -78,7 +78,7 @@ Object Permissions Method
 To assign a singular app permission to a user using the ``Change Tethys App`` page:
   1. Go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading.
   2. Select the link with the app name from the list.
-  3. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 6).
+  3. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 4).
   4. On the ``Object Permissions`` page you can assign app-specific permissions to a user by entering the username in the ``User Identification`` field and pressing the ``Manage user`` button (see Figure 7).
   5. The same method can be used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page. Previously added App permissions will be listed in the table on this page and can be edited by clicking the ``Edit`` link (see Figure 8).
 
@@ -87,17 +87,17 @@ A similar process can be done for proxy apps.
 .. figure:: ../../images/tethys_portal/tethys_portal_assign_perm1.png
    :width: 900px
 
-**Figure 6.** Object Permissions button.
+**Figure 4.** Object Permissions button.
 
 .. figure:: ../../images/tethys_portal/tethys_portal_assign_perm2.png
    :width: 900px
 
-**Figure 7.** Object Permissions page.
+**Figure 5.** Object Permissions page.
 
 .. figure:: ../../images/tethys_portal/tethys_portal_assign_perm3.png
    :width: 900px
 
-**Figure 8.** Link to edit Object Permissions.
+**Figure 6.** Link to edit Object Permissions.
 
 Anonymous User
 --------------
