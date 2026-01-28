@@ -4,9 +4,9 @@
 Manage App Storage
 ******************
 
-Within the app settings page there is a ``Manage app storage`` section that provides a summary of the app workspace storage and the current quota being enforced on it. To clear the workspace click the ``Clear Workspace`` button.
+Within the app settings page there is a ``Manage app storage`` section that provides a summary of the app workspace storage and the current quota being enforced on it (see Figure 1). To clear the workspace click the ``Clear Workspace`` button.
 
-.. figure:: ../../../images/site_admin/app_settings_top.png
+.. figure:: ../../images/site_admin/app_settings_top.png
     :width: 675px
 
 **Figure 1.** App settings page showing Manage App Storage.
