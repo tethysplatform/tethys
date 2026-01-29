@@ -43,6 +43,7 @@
 {% block scripts %}
   {{ tethys.doc_cookies.script_tag|safe }}
   {% if tethys_app.enable_feedback %}
+    <script src="{% static 'tethys_sdk/js/csrf.js' %}" type="text/javascript"></script>
     <script src="{% static 'tethys_apps/js/feedback.js' %}" type="text/javascript"></script>
   {% endif %}
 {% endblock %}

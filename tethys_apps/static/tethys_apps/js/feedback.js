@@ -41,7 +41,7 @@ $(document).ready(function(){
                             "<textarea form='uploadBetaFeedback' name='betaFormUserAgent' id='betaFormUserAgent' style='display: none;'>"+navigator.userAgent+"</textarea>"+
                             "<textarea form='uploadBetaFeedback' name='betaFormVendor' id='betaFormVendor' style='display: none;'>"+navigator.vendor+"</textarea>"+
                           "</div>"+
-                          "<input type='hidden' name='csrfmiddlewaretoken' value="+csrftoken+">"+
+                          "<input type='hidden' name='csrfmiddlewaretoken' value="+get_csrf_token()+">"+
                           "<div style='width:100%'>"+
                             "<button id='cancelBetaForm' class='btn btn-secondary' type='button'>Cancel</button>"+
                             "<button id='submitBetaForm'  class='btn btn-secondary' type='button'>Submit</button>"+
