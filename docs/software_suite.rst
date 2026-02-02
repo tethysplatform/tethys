@@ -165,7 +165,7 @@ The installation procedure for each software has been encapsulated in a Docker i
 SDK Relationships
 =================
 
-Tethys Platform provides a software development kit (SDK) that provides application programming interfaces (APIs) for interacting with each of the software included in teh Software Suite. The appropriate APIs are referenced in each section above, but a summary table of the relationship between the Software Suite and the SDK is provided as a reference.
+Tethys Platform provides a software development kit (SDK) that provides application programming interfaces (APIs) for interacting with each of the software included in the Software Suite. The appropriate APIs are referenced in each section above, but a summary table of the relationship between the Software Suite and the SDK is provided as a reference.
 
 =====================================  ===============================================================  ============================================
 Software                               API                                                              Functionality
