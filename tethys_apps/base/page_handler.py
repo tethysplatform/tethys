@@ -3,6 +3,7 @@ from tethys_components.library import ComponentLibrary, ComponentLibraryManager
 from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
 from tethys_components.custom import PageLoader
+from uuid import uuid4
 
 
 def global_page_controller(
@@ -49,7 +50,7 @@ if has_module("reactpy"):
             layout(func or None): The layout component, if any, that the page content will be nested in
             component(func): The page component to render
         """
-        lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}")
+        lib = ComponentLibraryManager.get_library(app, component)
         component_obj = PageLoader(
             lib, content=component(lib, **extras) if extras else component(lib)
         )
@@ -64,5 +65,15 @@ if has_module("reactpy"):
             )
         else:
             page_obj = component_obj
+
+        page_obj = lib.html.div(
+            lib.html.script(
+                key=str(uuid4()), 
+                type="importmap"
+            )(
+                lib.render_importmap()
+            ),
+            page_obj
+        )
 
         return page_obj

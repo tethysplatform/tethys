@@ -1,7 +1,5 @@
-import {LayersHalf} from "https://esm.sh/react-bootstrap-icons@1.11.4?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LayersHalf";
-export {LayersHalf};
-import {SidePanel} from 'https://esm.sh/ol-side-panel@1.0.6?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0&exports=SidePanel';
-import LayerSwitcher from "https://esm.sh/ol-layerswitcher@4.1.2?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0&bundle=false";
+import {SidePanel} from 'ol-side-panel';
+import LayerSwitcher from "ol-layerswitcher";
 
 class LayerPanelClass extends SidePanel {
   constructor() {

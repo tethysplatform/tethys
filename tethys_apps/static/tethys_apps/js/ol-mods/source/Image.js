@@ -1,6 +1,6 @@
-import _ImageSource from 'https://esm.sh/ol@10.7.0/source/Image';
-import {load} from 'https://esm.sh/ol@10.7.0/Image';
-import {createLoader} from 'https://esm.sh/ol@10.7.0/source/wms';
+import _ImageSource from 'planet_maps/source/Image';
+import {load} from 'ol/Image';
+import {createLoader} from 'ol/source/wms';
 
 export default function ImageSource (...props) {
     let loader;
@@ -21,5 +21,5 @@ export default function ImageSource (...props) {
             props.options.loader = loader;
         }
     }
-    return React.createElement('source', {cls: _ImageSource, ...props});
+    return _ImageSource(props);
 }

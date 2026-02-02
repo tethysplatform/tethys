@@ -1,5 +1,5 @@
-import _VectorLayer from 'https://esm.sh/ol@10.7.0/layer/Vector';
-import * as StyleLib from 'https://esm.sh/ol@10.7.0/style';
+import _VectorLayer from "planet_maps/layer/Vector"
+import * as StyleLib from 'ol/style';
 
 export default function VectorLayer (...props) {
     let style;
@@ -24,7 +24,7 @@ export default function VectorLayer (...props) {
         }
     }
     
-    return React.createElement('layer', {cls: _VectorLayer, ...props});
+    return _VectorLayer(props);
 }
 
 const _uniqueValuesStyler = (styleObj, feature, resolution) => {

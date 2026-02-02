@@ -1,7 +1,7 @@
-import _View from 'https://esm.sh/ol@10.7.0/View';
-import Projection from 'https://esm.sh/ol@10.7.0/proj/Projection';
-import proj4 from 'https://esm.sh/proj4?deps=ol@10.7.0';
-import {register} from 'https://esm.sh/ol@10.7.0/proj/proj4';
+import _View from "planet_maps/View.js?external=react,react-dom,ol"
+import Projection from 'ol/proj/Projection';
+import proj4 from 'proj4';
+import {register} from 'ol/proj/proj4?external=proj4';
 
 export default function View (...props) {
     let projection;
@@ -22,5 +22,5 @@ export default function View (...props) {
         }
         props.options.projection = projection;
     }
-    return React.createElement('view', {cls: _View, ...props});
+    return _View(props);
 }

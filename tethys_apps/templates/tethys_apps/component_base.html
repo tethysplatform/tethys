@@ -20,12 +20,23 @@
 
 {% block global_scripts %}
 {{ tethys.jquery.script_tag|safe }}
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@{{ reactjs_version }}",
+    "react/": "https://esm.sh/react@{{ reactjs_version }}/",
+    "react-dom": "https://esm.sh/react-dom@{{ reactjs_version }}",
+    "react-dom/": "https://esm.sh/react-dom@{{ reactjs_version }}/"
+  }
+}
+</script>
 <script type="module">
-  import React from "https://esm.sh/react@{{ reactjs_version }}"
-  import ReactDOM from "https://esm.sh/react-dom@{{ reactjs_version }}{% if reactjs_version_int > 17 %}/client{% endif %}"
+  import React from "react"
+  import ReactDOM from "react-dom{% if reactjs_version_int > 17 %}/client{% endif %}"
   globalThis['React'] = React
   globalThis['ReactDOM'] = ReactDOM
 </script>
+
 {% endblock %}
 
 {% block app_content_wrapper_override %}

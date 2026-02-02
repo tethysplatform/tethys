@@ -8,8 +8,10 @@
 ********************************************************************************
 """
 
+import json
 import re
 from pathlib import Path
+from os import PathLike
 from jinja2 import Template
 import logging
 from functools import partial
@@ -19,8 +21,9 @@ from importlib import import_module
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
+LOG = logging.getLogger(f"tethys_components.{__name__}")
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
-
+ESM_HOST = "https://esm.sh"
 
 class _CallableVdom(dict):
     def as_dict(self):
@@ -124,9 +127,10 @@ class ComponentLibraryManager:
         raise RuntimeError("The ComponentLibraryManager should only be used as a class")
 
     @classmethod
-    def get_library(cls, library_name):
+    def get_library(cls, app, page_function):
+        library_name = f"{app.package}-{page_function.__name__}"
         if library_name not in cls.LIBRARIES:
-            cls.LIBRARIES[library_name] = ComponentLibrary(library_name)
+            cls.LIBRARIES[library_name] = ComponentLibrary(app, page_function)
 
         return cls.LIBRARIES[library_name]
 
@@ -143,7 +147,7 @@ class Package:
         styles: list[str] | None = None,
         accessor: str | None = None,
     ):
-        if "@" in name and not name.startswith("@"):
+        if name.startswith('@') and name.count('@') > 1 or "@" in name and not name.startswith("@"):
             new_name, parsed_version = name.rsplit("@", 1)
             if version and parsed_version and version != parsed_version:
                 raise ValueError(
@@ -195,9 +199,16 @@ class Package:
             self.get_components_by_path().items()
         ):
             module_path = f"{module_path}.js" if self.treat_as_path else module_path
-            package_root = f"{self.host}/{self.name}"
-            if self.version:
-                package_root += f"@{self.version}"
+            if self.host == ESM_HOST:
+                if module_path:
+                    module_path = '/' + module_path
+                package_uri = f"{utils._clean_name(self.name)}{module_path}"
+            else:
+                package_root = f"{self.host}/{self.name}"
+                if self.version:
+                    package_root += f"@{self.version}"
+                package_uri = f"{package_root}/{module_path}"
+            
             if i == 0:
                 exports_statement += "export {"
             non_default_components = [
@@ -205,22 +216,20 @@ class Package:
                 for c in components
                 if c != self.default_export and self.default_export != "*"
             ]
+            non_default_imports = ", ".join([f"{c} as {self.accessor}_{c}" for c in non_default_components])
             if self.default_export == "*":
                 for component in components:
-                    import_statements.append(
-                        f"""import {component} from "{package_root}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
-                    )
+                    import_statement = f'import {self.accessor}_{component} from "{package_uri}";'
+                    import_statements.append(import_statement)
             elif self.default_export and self.default_export in components:
-                import_statements.append(
-                    f"""import {self.default_export} from "{package_root}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}";"""
-                )
+                import_statement = f'import {self.accessor}_{self.default_export} from "{package_uri}";'
+                import_statements.append(import_statement)
             if non_default_components:
-                import_statements.append(
-                    f"""import {{{', '.join(non_default_components)}}} from "{package_root}/{module_path}?deps={(',').join(ComponentLibrary.REACTJS_DEPENDENCIES + self.dependencies)}&exports={','.join(non_default_components)}";"""
-                )
+                import_statement = f"""import {{{non_default_imports}}} from "{package_uri}";"""
+                import_statements.append(import_statement)
             if i > 0:
                 exports_statement += ", "
-            exports_statement += ", ".join(components)
+            exports_statement += ", ".join([f"{self.accessor}_{c}" for c in components])
         if exports_statement:
             exports_statement += "};"
         return import_statements, exports_statement
@@ -264,12 +273,11 @@ class ComponentLibrary:
         / "reactjs_module_wrapper_template.js"
     )
     TEMPLATE = Template(TEMPLATE_FPATH.read_text())
-    REACTJS_VERSION = "19.0"
+    REACTJS_VERSION = "19.2.4"
     REACTJS_VERSION_INT = int(REACTJS_VERSION.split(".")[0])
     REACTJS_DEPENDENCIES = [
         f"react@{REACTJS_VERSION}",
         f"react-dom@{REACTJS_VERSION}",
-        f"react-is@{REACTJS_VERSION}",
     ]
     INTERNALLY_MANAGED = [
         "html",
@@ -289,9 +297,13 @@ class ComponentLibrary:
             ),
             "pm": Package(name="pigeon-maps@0.21.6"),
             "rc": Package(name="recharts@2.12.7"),
-            "ag": Package(name="react-grid-wrapper.js", host="/static/tethys_apps/js"),
+            "ag": Package(
+                name="react-grid-wrapper.js", 
+                host="/static/tethys_apps/js",
+                dependencies=["ag-grid-community", "ag-grid-react"],
+            ),
             "rp": Package(name="react-player@3.4.0", default_export="ReactPlayer"),
-            "lo": Package(name="react-loading-overlay-ts@2.0.2"),
+            "lo": Package(name="react-loading-overlay-ts@2.0.2", default_export="LoadingOverlay"),
             "mapgl": Package(
                 name="react-map-gl/maplibre",
                 version="7.1.7",
@@ -304,6 +316,11 @@ class ComponentLibrary:
             "ollp": Package(
                 name="layer-panel.js",
                 host="/static/tethys_apps/js",
+                dependencies=[
+                    "ol-layerswitcher", 
+                    "ol-side-panel",
+                    "ol",
+                ],
                 styles=[
                     "https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css",
                     "https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css",
@@ -312,6 +329,7 @@ class ComponentLibrary:
             "pl": Package(
                 name="plotly-chart.js",
                 host="/static/tethys_apps/js",
+                dependencies=["react-plotly.js"],
             ),
             "olmod": Package(
                 name="ol-mods",
@@ -323,7 +341,7 @@ class ComponentLibrary:
                 name="@planet/maps@11.2.0",
                 default_export="*",
                 treat_as_path=True,
-                dependencies=["ol@10.7.0"],
+                dependencies=["ol", "proj4"],
                 styles=["https://esm.sh/ol@10.7.0/ol.css"],
             ),
         }
@@ -341,10 +359,13 @@ class ComponentLibrary:
         "ol.Style": utils.OlManager("ol.Style"),
         "ol.style": utils.OlManager("ol.style"),
         "ol.Map": "olmod.Map",
+        "ol.Geolocation": "olmod.Geolocation",
     }
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, app, page_function):
+        self.app = app
+        self.page_function = page_function
+        self.name = f"{app.package}-{page_function.__name__}"
 
     def __getattr__(self, package_accessor):
         """
@@ -384,6 +405,17 @@ class ComponentLibrary:
         setattr(self, package_accessor, package)
         return package
 
+    def get_packages(self) -> list:
+        packages = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            if isinstance(value, DynamicPackageManager):
+                packages.append(value.package)
+        
+        return packages
+
     def render_js_template(self) -> str:
         """
         Renders the library's JavaScript module as a string
@@ -392,13 +424,7 @@ class ComponentLibrary:
         as documented here:
         https://reactpy.dev/docs/guides/escape-hatches/javascript-components.html#custom-javascript-components
         """
-        packages = []
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-            value = getattr(self, attr)
-            if isinstance(value, DynamicPackageManager):
-                packages.append(value.package)
+        packages = self.get_packages()
         context = {
             "packages": packages,
             "reactjs_dependencies": self.REACTJS_DEPENDENCIES,
@@ -415,8 +441,9 @@ class ComponentLibrary:
         styles=None,
         default_export=None,
         treat_as_path=False,
-        host="https://esm.sh",
+        host=ESM_HOST,
         version=None,
+        dependencies=None,
     ):
         """
         Registers a new package to be used by the ComponentLibrary
@@ -474,6 +501,7 @@ class ComponentLibrary:
             default_export=default_export,
             treat_as_path=treat_as_path,
             host=host,
+            dependencies=dependencies
         )
         self.CURATED_PACKAGES.check_package(accessor, new_package)
         if hasattr(self, accessor):
@@ -491,6 +519,61 @@ class ComponentLibrary:
         setattr(
             self, accessor, DynamicPackageManager(library=self, package=new_package)
         )
+    
+    @staticmethod
+    def has_version(str):
+        return (str.startswith("@") and str.count("@") == 2) or (str.count("@") == 1 and not str.startswith("@"))
+
+    
+    def render_importmap(self):
+        """
+        Generates and returns the ComponentLibrary's importmap as a json string
+        """
+        packages = self.get_packages()
+
+        importmap = {}
+        for package in packages:
+            root_packages = [utils._clean_name(p.name) for p in packages if p.name != package.name and p.host == ESM_HOST]
+            dependency_packages = [utils._clean_name(d) for d in package.dependencies]
+            external_string = ','.join(root_packages + dependency_packages)
+            if package.dependencies:
+                for d in package.dependencies:
+                    clean_name = utils._clean_name(d)
+                    importmap[clean_name] = f"{ESM_HOST}/{d}?external={external_string}&deps=react@{self.REACTJS_VERSION}"
+                    if (self.has_version(d)):
+                        importmap[f"{clean_name}/"] = f"{ESM_HOST}/{d}&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
+                    else:
+                        importmap[f"{clean_name}/"] = f"{ESM_HOST}/{d}@&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
+            if package.host == ESM_HOST:
+                clean_name = utils._clean_name(package.name)
+                uri = f"{package.host}/{package.name}"
+                if package.version:
+                    uri += f"@{package.version}"
+                importmap[clean_name] = f"{uri}?external={external_string}"
+                if package.version:
+                    importmap[f"{clean_name}/"] = f"{uri}&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
+                else:
+                    importmap[f"{clean_name}/"] = f"{uri}@&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
+
+        return json.dumps({"imports": importmap}, indent=2)
+
+    def preload(self, preload):
+        for path_or_func_or_code in preload:
+            if isinstance(path_or_func_or_code, PathLike):
+                _path = Path(path_or_func_or_code)
+                if _path.exists():
+                    if _path.is_dir():
+                        for fpath in _path.iterdir():
+                            if fpath.suffix == ".py":
+                                self.load_dependencies_from_source_code(fpath.read_text())
+                    elif _path.is_file() and _path.suffix == ".py":
+                        self.load_dependencies_from_source_code(_path.read_text())
+                else:
+                    self.load_dependencies_from_source_code(path_or_func_or_code)
+            elif callable(path_or_func_or_code):
+                self.load_dependencies_from_source_code(path_or_func_or_code)
+            else:
+                raise ValueError(f"{path_or_func_or_code} is not a valid entry for the preload list.")
 
     def load_dependencies_from_source_code(self, function_or_source_code):
         """
@@ -521,26 +604,27 @@ class ComponentLibrary:
             else function_or_source_code
         )
         source_code = utils.remove_comments_and_docstrings(source_code)
-
         register_matches = re.findall(r"""lib\.register\([^\)]+\)""", source_code)
         if register_matches:
             import ast
 
             ast_obj = ast.parse(source_code)
-            for node in ast.iter_child_nodes(ast_obj.body[0]):
-                if isinstance(node, ast.Expr):
-                    if isinstance(node.value, ast.Call):
-                        if isinstance(node.value.func, ast.Attribute):
-                            if node.value.func.attr == "register":
-                                register_args = []
-                                register_kwargs = {}
-                                for register_arg in node.value.args:
-                                    register_args.append(ast.literal_eval(register_arg))
-                                for register_kwarg in node.value.keywords:
-                                    register_kwargs[register_kwarg.arg] = (
-                                        ast.literal_eval(register_kwarg.value)
-                                    )
-                                self.register(*register_args, **register_kwargs)
+            for item in ast_obj.body:
+                if not isinstance(item, ast.FunctionDef): continue
+                for node in ast.iter_child_nodes(item):
+                    if isinstance(node, ast.Expr):
+                        if isinstance(node.value, ast.Call):
+                            if isinstance(node.value.func, ast.Attribute):
+                                if node.value.func.attr == "register":
+                                    register_args = []
+                                    register_kwargs = {}
+                                    for register_arg in node.value.args:
+                                        register_args.append(ast.literal_eval(register_arg))
+                                    for register_kwarg in node.value.keywords:
+                                        register_kwargs[register_kwarg.arg] = (
+                                            ast.literal_eval(register_kwarg.value)
+                                        )
+                                    self.register(*register_args, **register_kwargs)
 
         matches = re.findall(r"\blib\.([^\(]+)\(", source_code)
         for match in matches:
@@ -563,8 +647,8 @@ class ComponentLibrary:
                     dynamic_package_manager = getattr(dynamic_package_manager, part)
                 dynamic_package_manager()
             except Exception as e:
-                print(f"Couldn't process match {match}")
-                print(e)
+                LOG.warning(print(f"Couldn't process match {match}"))
+                LOG.warning(e)
 
 
 class CustomComponentManager:
@@ -642,6 +726,8 @@ class DynamicPackageManager:
             component = component_parts[0]
             export_component = ".".join(component_parts)
             module_path = ""
+
+        export_component = f"{self.package.accessor}_{export_component}"
 
         added = self.package.add_component(module_path, component)
         if added:

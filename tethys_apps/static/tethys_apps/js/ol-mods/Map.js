@@ -1,6 +1,6 @@
-import _Map from "https://esm.sh/@planet/maps@11.2.0/Map.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0"
-import Group from "https://esm.sh/@planet/maps@11.2.0/layer/Group.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0"
-import VectorLayer from "/static/tethys_apps/js/ol-mods/layer/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0"
+import _Map from "planet_maps/Map.js"
+import Group from "planet_maps/layer/Group.js"
+import VectorLayer from "/static/tethys_apps/js/ol-mods/layer/Vector.js"
 
 export default function Map (...props) {
     props = props[0];
@@ -43,7 +43,7 @@ function findVectorLayerClickEvents(obj) {
             if (child.props.children) {
                 events = {...events, ...findVectorLayerClickEvents(child.props)}
             }
-        } else if (child.type === VectorLayer) {
+        } else if (child.type.name === "VectorLayer") {
             if (child.props.onClick) {
                 if (!child.props.hasOwnProperty("options")) {
                     child.props.properties = {};
