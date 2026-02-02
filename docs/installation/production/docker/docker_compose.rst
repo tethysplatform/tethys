@@ -564,7 +564,7 @@ In a web browser, navigate to web address of the running portal (Figure 1). If u
 5. Review Mounted Directory Contents
 ------------------------------------
 
-Inspect the contents of the various directories that were mounted into the containers (i.e.: :file:`data`, :file:`logs`, :file:`config`). Notice how the logs for Tethys and THREDDS are easily accessible. As is the :file:`portal_config.yml` (see :file:`data/tehtys/portal_config.yml`). Data can be easily added to the THREDDS server by adding it to the :file:`data/thredds/public` directory and then modifying the :file:`catalog.xml`.
+Inspect the contents of the various directories that were mounted into the containers (i.e.: :file:`data`, :file:`logs`, :file:`config`). Notice how the logs for Tethys and THREDDS are easily accessible. As is the :file:`portal_config.yml` (see :file:`data/tethys/portal_config.yml`). Data can be easily added to the THREDDS server by adding it to the :file:`data/thredds/public` directory and then modifying the :file:`catalog.xml`.
 
 .. tip::
 
