@@ -342,7 +342,7 @@ class CustomSetting(CustomSettingBase):
 
         default_name_setting = CustomSetting(
             name='default_name',
-            type=CustomSetting.TYPE_STRING
+            type=CustomSetting.TYPE_STRING,
             description='Default model name.',
             required=True,
             default="Name_123"
