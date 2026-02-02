@@ -13,11 +13,12 @@ dependencies:
 - pip
 - tethys_dataset_services >=2.0.0
 - django =4.2.*
-- sphinx
+
 - sphinx-argparse
 - make
 - setuptools_scm
 - pip:
+  - sphinx<9
   - sphinxawesome-theme
   - sphinx-autobuild
   - sphinx_autodoc_typehints
