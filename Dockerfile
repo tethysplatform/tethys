@@ -150,7 +150,7 @@ WORKDIR ${TETHYS_HOME}/tethys
 
 # Set the versions of Django, Channels, and Daphne if provided in environment.yml and micro_environment.yml
 RUN if [ -n "$DJANGO_VERSION" ]; then \
-      sed -i "s/\s*- django[^-].*/  - django=${DJANGO_VERSION}/" environment.yml micro_environment.yml; \
+      sed -i "s/\s*- django>=.*/  - django=${DJANGO_VERSION}/" environment.yml micro_environment.yml; \
     fi && \
     if [ -n "$DJANGO_CHANNELS_VERSION" ]; then \
       sed -i "s/\s*- channels.*/  - channels=${DJANGO_CHANNELS_VERSION}/" environment.yml micro_environment.yml; \
