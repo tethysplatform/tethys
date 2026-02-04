@@ -24,12 +24,15 @@ ignore:
       name: social-auth-app-django
       type: python
     reason: "Fixed version not yet availble for versions of conda < 5.1"
+    expires: 2026-03-04
   - package:
       name: jaraco.context
       type: python
     reason: Temporary until next release of setuptools (see https://github.com/pypa/setuptools/issues/5140#issuecomment-3761013479)
+    expires: 2026-03-04
   - vulnerability: GHSA-5vcc-86wm-547q
     reason: "djangorestframework-simplejwt 5.5.1 isn't available in conda-forge yet."
+    expires: 2026-03-04
   - vulnerability: GHSA-7gcm-g887-7qv7
     reason: "protobuf 6.33.5 breaks other dependencies:
               libarrow
@@ -50,3 +53,5 @@ ignore:
               dask
               dask-core
               distributed "
+    expires: 2026-03-04
+      
