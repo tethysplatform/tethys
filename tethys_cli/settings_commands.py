@@ -20,7 +20,6 @@ from tethys_apps.utilities import get_tethys_home_dir
 
 from django.conf import settings
 
-
 TETHYS_HOME = Path(get_tethys_home_dir())
 
 

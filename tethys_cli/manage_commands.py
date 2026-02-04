@@ -16,7 +16,6 @@ from tethys_cli.cli_helpers import get_manage_path, run_process
 from tethys_cli.cli_colors import write_warning
 from tethys_utils import deprecation_warning, DOCS_BASE_URL
 
-
 MANAGE_START = "start"
 MANAGE_COLLECTSTATIC = "collectstatic"
 MANAGE_COLLECTWORKSPACES = "collectworkspaces"

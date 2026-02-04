@@ -19,7 +19,6 @@ from model_utils.managers import InheritanceManager
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
-
 log = logging.getLogger("tethys." + __name__)
 
 
