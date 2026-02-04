@@ -6,7 +6,6 @@ from tethys_components.library import ComponentLibrary
 from unittest import TestCase, mock
 from asgiref.sync import async_to_sync
 
-
 THIS_DIR = Path(__file__).parent
 CUSTOM_EVAL_DIR = THIS_DIR / "test_resources" / "test_custom_and_layouts"
 

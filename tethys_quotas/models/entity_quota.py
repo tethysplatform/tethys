@@ -14,7 +14,6 @@ from model_utils.managers import InheritanceManager
 
 from tethys_quotas.models.resource_quota import ResourceQuota
 
-
 log = logging.getLogger("tethys." + __name__)
 
 
