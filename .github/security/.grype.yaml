@@ -28,3 +28,25 @@ ignore:
       name: jaraco.context
       type: python
     reason: Temporary until next release of setuptools (see https://github.com/pypa/setuptools/issues/5140#issuecomment-3761013479)
+  - vulnerability: GHSA-5vcc-86wm-547q
+    reason: "djangorestframework-simplejwt 5.5.1 isn't available in conda-forge yet."
+  - vulnerability: GHSA-7gcm-g887-7qv7
+    reason: "protobuf 6.33.5 breaks other dependencies:
+              libarrow
+              libarrow-acero
+              libarrow-compute
+              libarrow-dataset
+              libarrow-substrait
+              libgoogle-cloud
+              libgoogle-cloud-storage
+              libopentelemetry
+              libparquet
+              orc
+              pyarrow
+              pyarrow-core
+            
+            It also downgrades the following packages:
+              bokeh
+              dask
+              dask-core
+              distributed "
