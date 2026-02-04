@@ -24,7 +24,6 @@ from tethys_cli.scaffold_commands import APP_PREFIX
 from tethys_portal.forms import AppScaffoldForm, AppImportForm
 from tethys_portal import settings
 
-
 TOUCH_COMMAND = (
     f"copy /b {settings.__file__}+,, {settings.__file__}"
     if platform.system() == "Windows"
