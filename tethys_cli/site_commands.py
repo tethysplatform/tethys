@@ -8,7 +8,6 @@ from tethys_cli.cli_helpers import setup_django
 from tethys_cli.cli_colors import write_msg, write_warning
 from tethys_apps.utilities import get_tethys_home_dir
 
-
 SITE_SETTING_CATEGORIES = [
     "GENERAL_SETTINGS",
     "HOME_PAGE",
