@@ -5,7 +5,6 @@ import inspect
 from django.utils import timezone
 from tethys_cli.site_commands import add_site_parser
 
-
 args = re.findall(
     "add_argument\(.*?dest='(.*?)'.*?help='(.*?)'\)",
     inspect.getsource(add_site_parser),

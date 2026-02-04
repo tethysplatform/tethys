@@ -18,7 +18,6 @@ from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
 from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
 
-
 log = logging.getLogger("tethys." + __name__)
 
 
