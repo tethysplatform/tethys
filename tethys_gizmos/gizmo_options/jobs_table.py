@@ -8,6 +8,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from collections import namedtuple
 import logging
 from functools import wraps

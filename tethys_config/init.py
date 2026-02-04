@@ -8,6 +8,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from django.utils import timezone
 from .models import SettingsCategory, Setting
 

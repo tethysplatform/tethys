@@ -24,7 +24,6 @@ from tethys_cli.cli_colors import (
 )
 from tethys_portal.optional_dependencies import optional_import, FailedImport
 
-
 TETHYS_HOME = Path(get_tethys_home_dir())
 
 
