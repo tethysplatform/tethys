@@ -12,7 +12,6 @@ from django.contrib import admin
 from django.http import Http404
 from tethys_portal.optional_dependencies import has_module
 
-
 if has_module("django_tenants"):
 
     from tethys_tenants.models import Tenant, Domain
