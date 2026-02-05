@@ -13,7 +13,6 @@ dependencies:
 - pip
 - tethys_dataset_services >=2.0.0
 - django =4.2.*
-
 - sphinx-argparse
 - make
 - setuptools_scm

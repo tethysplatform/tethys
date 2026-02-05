@@ -10,7 +10,6 @@
 from django.apps import AppConfig
 from tethys_portal.optional_dependencies import has_module
 
-
 if has_module("django_tenants"):
 
     class TethysTenantsConfig(AppConfig):
