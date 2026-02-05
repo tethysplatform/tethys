@@ -15,7 +15,6 @@ from tethys_apps.base.function_extractor import TethysFunctionExtractor
 from tethys_apps.models import TethysApp
 from tethys_quotas.handlers.base import ResourceQuotaHandler
 
-
 log = logging.getLogger("tethys." + __name__)
 
 

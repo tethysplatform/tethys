@@ -12,7 +12,6 @@ from social.utils import module_member, parse_qs
 from social.strategies.django_strategy import DjangoStrategy
 from social.apps.django_app.default.models import DjangoStorage, UserSocialAuth
 
-
 logger = logging.getLogger(__name__)
 
 

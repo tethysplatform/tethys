@@ -10,7 +10,6 @@
 from django.db import models
 from tethys_portal.optional_dependencies import has_module
 
-
 if has_module("django_tenants"):
 
     from django_tenants.models import TenantMixin, DomainMixin
