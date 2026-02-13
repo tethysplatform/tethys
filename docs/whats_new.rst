@@ -33,7 +33,7 @@ Scaffold Apps Graphically
 * Tethys Portal features an option to scaffold and import apps graphically.
 * This feature is currently only supported for admin/staff users in development mode (i.e. DEBUG=True).
 
-See: :ref:`scaffold_an_app_via_the_portal`
+See: :ref:`scaffold_an_app_via_the_portal_recipe`
 
 Cookie Privacy Consent
 ----------------------

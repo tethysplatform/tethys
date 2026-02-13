@@ -62,8 +62,8 @@ Next Steps
 
 There are several directions that you may want to go from here.
 
-* Learn how to :ref:`scaffold_an_app_via_the_portal`.
-* Learn how to :ref:`scaffold_an_app_via_command_line`.
+* Learn how to :ref:`scaffold_an_app_via_the_portal_recipe`.
+* Learn how to :ref:`scaffold_an_app_via_command_line_recipe`.
 * Install an app you have already developed using the :ref:`app_installation` guide.
 * Complete one or more :ref:`tutorials` to learn how to develop apps using Tethys Platform.
 * Install one or both of the :ref:`installation_showcase_apps` to see live demos and code examples of Gizmos and Layouts.

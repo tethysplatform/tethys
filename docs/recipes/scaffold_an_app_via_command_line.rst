@@ -1,4 +1,4 @@
-.. _scaffold_an_app_via_command_line :
+.. _scaffold_an_app_via_command_line_recipe :
 
 
 
@@ -18,7 +18,7 @@ Tethys Platform provides an easy way to create new app projects via command line
 
 .. note::
 
-    See :ref:`scaffold_an_app_via_the_portal` if you would rather avoid using the command line.
+    See :ref:`scaffold_an_app_via_the_portal_recipe` if you would rather avoid using the command line.
 
 1. Generate Scaffold
 =====================

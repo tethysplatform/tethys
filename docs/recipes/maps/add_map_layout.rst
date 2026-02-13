@@ -39,7 +39,7 @@ This can be done by replacing the entire contents of :file:`controllers.py` with
 
 It is that simple! Return to your tethys server and open your app, refresh if needed, and confirm the change. Your map layout should look like the figure below.
 
-.. figure:: ../../docs/images/recipes/map_layout.png
+.. figure:: ../../images/recipes/map_layout.png
     :width: 800px
     :align: center
 
