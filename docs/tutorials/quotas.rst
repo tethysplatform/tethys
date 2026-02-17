@@ -405,7 +405,7 @@ b. Now go into the portal's :file:`portal_config.yml` file and add the dot-path 
           RESOURCE_QUOTA_HANDLERS:
             - tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler
 
-c. Make sure the Tethys development server restarts by pressing ``CTRL-C`` and then running ``tethys manage start``.
+c. Make sure the Tethys development server restarts by pressing ``CTRL-C`` and then running ``tethys start``.
 
 d. After re-starting tethys the ``User Dam Quota`` should be visible in the ``Resource Quota`` section of the admin pages. Click on it and make sure `Active` and `Impose default` are both ``Enabled``.
 

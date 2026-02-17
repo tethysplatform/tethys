@@ -99,7 +99,7 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
 .. code-block:: bash
 
-    tethys manage start
+    tethys start
 
 .. tip::
 
