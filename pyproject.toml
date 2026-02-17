@@ -34,7 +34,7 @@ dependencies = [
     "daphne",
     "requests>=2.32.4,<3",
     "bcrypt",
-    "cryptography>=44.0.1,<45",
+    "cryptography>=46.0.5",
   # Gen CLI commands
     "pyyaml",
     "jinja2",
