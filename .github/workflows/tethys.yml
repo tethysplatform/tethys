@@ -128,18 +128,6 @@ jobs:
       run: |
         docker build --build-arg DJANGO_VERSION=${{ matrix.django-version }} --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} .;
         docker tag ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }} ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }};
-    # Scan image with Anchore (Grype)
-    - name: Scan Image with Anchore (Grype)
-      id: anchore_scan
-      uses: anchore/scan-action@v5
-      env:
-        GRYPE_CONFIG: .github/security/.grype.yaml
-      with:
-        image: ${{ env.DOCKER_UPLOAD_URL }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
-        fail-build: true
-        severity-cutoff: high
-        only-fixed: true
-        output-format: table
     # Upload docker if pull request no tag
     - name: Upload Docker No Tag
       if: ${{ github.event_name != 'pull_request' }}
@@ -158,6 +146,38 @@ jobs:
       with:
         image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
         retention_days: "1"
+
+  security-scan:
+    name: Security Scan (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
+    needs: [ docker-build ]
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ ubuntu-latest ]
+        python-version: [ "3.10", "3.11", "3.12" ]
+        django-version: [ "4.2", "5.2" ]
+    steps:
+    # Checkout the source for Grype config
+    - name: Checkout Source
+      uses: actions/checkout@v4
+    # Download the Docker image artifact from docker-build job
+    - name: Download Docker Artifact
+      uses: ishworkh/container-image-artifact-download@v2.0.0
+      with:
+        image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
+    # Scan image with Anchore (Grype)
+    - name: Scan Image with Anchore (Grype)
+      id: anchore_scan
+      uses: anchore/scan-action@v5
+      env:
+        GRYPE_CONFIG: .github/security/.grype.yaml
+      with:
+        image: ${{ env.TEST_IMAGE }}:dev-py${{ matrix.python-version }}-dj${{ matrix.django-version }}
+        fail-build: true
+        severity-cutoff: high
+        only-fixed: true
+        output-format: table
 
   startup_test:
     name: Docker Start-up Test (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
