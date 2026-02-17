@@ -345,7 +345,7 @@ Update the ``icon`` property of the :term:`app class` in :file:`app.py` to use t
 5. Review Results
 =================
 
-If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
+If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys start`` again. Now when you navigate to your app page, you should see this:
 
 .. figure:: ../../images/tutorial/dask/blank_home.png
     :width: 900px

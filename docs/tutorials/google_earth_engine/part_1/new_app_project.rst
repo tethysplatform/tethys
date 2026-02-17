@@ -109,7 +109,7 @@ Start up the development server to view the new app:
 
 .. code-block:: bash
 
-    tethys manage start
+    tethys start
 
 .. tip::
 

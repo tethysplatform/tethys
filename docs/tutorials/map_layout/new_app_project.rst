@@ -101,7 +101,7 @@ Download this :download:`NOAA Digital Logo <./resources/noaa_digital_logo-2022.p
 
 .. code-block:: bash
 
-    tethys manage start
+    tethys start
 
 .. tip::
 
