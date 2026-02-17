@@ -404,7 +404,7 @@ then
         # Create environment activatescripts
         mkdir -p "${ACTIVATE_DIR}"
 
-        echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tms='tethys start -p ${ALLOWED_HOST}:${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "alias tstart='tethys db start; tms'" >> "${ACTIVATE_SCRIPT}"
     fi
 

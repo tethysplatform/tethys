@@ -69,7 +69,7 @@ A simple way to do this is in the tethys CLI by running this command:
 
     tethys settings --set settings.RESOURCE_QUOTA_HANDLERS ["tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler"]
 
-Make sure the Tethys development server restarts by pressing CTRL-C and then running tethys manage start.
+Make sure the Tethys development server restarts by pressing CTRL-C and then running tethys start.
 
 After re-starting tethys the User Dam Quota should be visible in the Resource Quota section of the admin pages. Click on it and make sure Active and Impose default are both Enabled.
 
