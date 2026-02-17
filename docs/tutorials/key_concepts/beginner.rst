@@ -81,7 +81,7 @@ a. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInve
 
 b. Save changes to ``app.py``.
 
-c. The development server should automatically restart when it detects changes to files. However if it does not restart, you can manually restart it by pressing ``CTRL-C`` to stop the server followed by the ``tethys manage start`` command to start it again.
+c. The development server should automatically restart when it detects changes to files. However if it does not restart, you can manually restart it by pressing ``CTRL-C`` to stop the server followed by the ``tethys start`` command to start it again.
 
 d. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
 
