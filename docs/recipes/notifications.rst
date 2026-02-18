@@ -9,3 +9,6 @@ This recipe shows how to make use of the Tethys MessageBox gizmo.
 
 MessageBoxes are useful for showing notifications to the user or to confirm actions.
 
+###########
+COMING SOON
+###########
