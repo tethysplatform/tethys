@@ -1,4 +1,4 @@
-.. _scaffold_an_app_via_the_portal:
+.. _scaffold_an_app_via_the_portal_recipe:
 
 
 
@@ -10,13 +10,13 @@ Scaffold and Install an App via the Portal
 
     This feature is only available to **staff/admin users** when the ``DEBUG`` portal setting is set to ``True``.
 
-    This recipe assumes that you have already started your Tethys server (see :ref:`start_tethys`).
+    This recipe assumes that you have already started your Tethys server (see :ref:`start_tethys_recipe`).
 
 Tethys Platform provides an easy way for developers to create new app projects via the Tethys Portal itself, rather than via command line.
 
 .. note::
 
-    See :ref:`scaffold_an_app_via_command_line` if you need to automate an install or otherwise want/need to use the command line.
+    See :ref:`scaffold_an_app_via_command_line_recipe` if you need to automate an install or otherwise want/need to use the command line.
 
 Recipe
 ++++++
