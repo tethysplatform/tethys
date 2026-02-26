@@ -51,6 +51,20 @@ Maintaining thorough documentation has been a priority since the inception of Te
 
    contribute/documentation
 
+.. _contribute_financially
+
+Support Financially
+-------------------
+
+You can support the Tethys Platform community financially in a few ways:
+
+- Become a member of the Tethys Geoscience Foundation - https://tethysgeoscience.org/become-a-member-of-tgf/
+
+- Make a one-time donation to the Tethys Geoscience Foundation - https://tethysgeoscience.org/donate/
+
+- Sponsor Tethys Development - 
+
+- Buy our developers a soda(preferrably a Dr Pepper) - 
 
 .. _contribute_intro_community_support:
 
