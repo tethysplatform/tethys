@@ -70,11 +70,11 @@ You can support the Tethys Platform community financially in a few ways:
 
 - Make a one-time donation to the Tethys Geoscience Foundation - https://tethysgeoscience.org/donate/
 
-- Sponsor Tethys Development - 
+- Sponsor Tethys Development - Contact us at `info@tethysgeoscience.org <mailto:info@tethysgeoscience.org>`_
 
 - Buy our developers a soda (preferably a Dr Pepper): `Buy us a soda <https://www.buymeacoffee.com/tethysplatform>`_
-Support the Community
 
+Support the Community
 ---------------------
 
 The Tethys Platform community is composed of a diverse group of app users, app developers, and contributors from around the world. You can help support the community by answering questions, providing support, and sharing your knowledge on the Tethys Platform Discussions forum. Alternatively, you can help maintain and triage Issues or report new issues or security vulnerabilities. Other opportunities include content writing for the Tethys Geoscience Foundation website and social media and replying to comments on social media. Engaging with the community is a great way to contribute and help ensure the success of the Tethys Platform.
