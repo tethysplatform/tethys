@@ -1,3 +1,11 @@
+.. |bmc-button| raw:: html
+
+   <a href="https://www.buymeacoffee.com/tethysplatform" target="_blank">
+     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+          alt="Buy Me A Coffee"
+          style="height:1.6em; vertical-align:middle; margin-left:6px;">
+   </a>
+
 *******************************
 Contributing to Tethys Platform
 *******************************
@@ -53,7 +61,7 @@ Maintaining thorough documentation has been a priority since the inception of Te
 
 .. _contribute_financially
 
-Support Financially
+Support Monetarily
 -------------------
 
 You can support the Tethys Platform community financially in a few ways:
@@ -64,11 +72,9 @@ You can support the Tethys Platform community financially in a few ways:
 
 - Sponsor Tethys Development - 
 
-- Buy our developers a soda(preferrably a Dr Pepper) - 
-
-.. _contribute_intro_community_support:
-
+- Buy our developers a soda (preferably a Dr Pepper): `Buy us a soda <https://www.buymeacoffee.com/tethysplatform>`_
 Support the Community
+
 ---------------------
 
 The Tethys Platform community is composed of a diverse group of app users, app developers, and contributors from around the world. You can help support the community by answering questions, providing support, and sharing your knowledge on the Tethys Platform Discussions forum. Alternatively, you can help maintain and triage Issues or report new issues or security vulnerabilities. Other opportunities include content writing for the Tethys Geoscience Foundation website and social media and replying to comments on social media. Engaging with the community is a great way to contribute and help ensure the success of the Tethys Platform.
