@@ -72,7 +72,7 @@ jobs:
         EVENT="${{ github.event_name }}"
         HEAD="${{ github.sha }}"
 
-        if [["$EVENT" == "pull_request"]]; then
+        if [[ "$EVENT" == "pull_request" ]]; then
           git fetch origin "${{ github.event.pull_request.base.ref }}" --depth=1
           BASE="$(git merge-base HEAD "origin/${{ github.event.pull_request.base.ref }}")"
         elif [[ "$EVENT" == "push" ]]; then
@@ -81,7 +81,7 @@ jobs:
           BASE="$(git rev-parse HEAD^)"
         fi
 
-        echo "BASE=$BASE" >> "GITHUB_OUPUT"
+        echo "BASE=$BASE" >> "GITHUB_OUTPUT"
         echo "HEAD=$HEAD" >> "GITHUB_OUTPUT"
     
     - name: Check for missing LFS pointers
