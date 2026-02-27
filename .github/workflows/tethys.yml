@@ -81,8 +81,8 @@ jobs:
           BASE="$(git rev-parse HEAD^)"
         fi
 
-        echo "BASE=$BASE" >> "GITHUB_OUTPUT"
-        echo "HEAD=$HEAD" >> "GITHUB_OUTPUT"
+        echo "BASE=$BASE" >> "$GITHUB_OUTPUT"
+        echo "HEAD=$HEAD" >> "$GITHUB_OUTPUT"
     
     - name: Check for missing LFS pointers
       shell: bash
