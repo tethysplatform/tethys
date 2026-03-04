@@ -3,7 +3,7 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import (
     TethysApp,
     PersistentStoreDatabaseSetting,
-    PersistentStoreService,
+    PostgresPersistentStoreService,
 )
 from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import (
@@ -34,7 +34,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             self.conn["PORT"],
         )
 
-        self.pss = PersistentStoreService(
+        self.pss = PostgresPersistentStoreService(
             name="test_ps",
             host=self.conn["HOST"],
             port=self.conn["PORT"],
@@ -129,7 +129,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         )
 
         # Check results
-        self.assertIsInstance(ret, PersistentStoreService)
+        self.assertIsInstance(ret, PostgresPersistentStoreService)
         self.assertEqual("test_ps", ret.name)
         self.assertEqual(self.conn["HOST"], ret.host)
         self.assertEqual(int(self.conn["PORT"]), ret.port)
@@ -166,7 +166,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             .get_value(with_db=True)
         )
 
-        self.assertIsInstance(ret, PersistentStoreService)
+        self.assertIsInstance(ret, PostgresPersistentStoreService)
         self.assertEqual("test_database", ret.database)
 
     def test_get_value_as_engine(self):

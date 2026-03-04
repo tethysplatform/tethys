@@ -525,7 +525,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_services.models.DatasetService")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreServiceeService")
     @mock.patch("tethys_services.models.WebProcessingService")
     @mock.patch("tethys_compute.models.CondorScheduler")
     @mock.patch("tethys_compute.models.DaskScheduler")
