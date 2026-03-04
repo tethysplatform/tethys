@@ -2,7 +2,7 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import (
     TethysApp,
     PersistentStoreConnectionSetting,
-    PersistentStoreService,
+    PostgresPersistentStoreService,
 )
 from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
@@ -10,11 +10,11 @@ from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm.session import sessionmaker
 
 
-class PersistentStoreConnectionSettingTests(TethysTestCase):
+class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
     def set_up(self):
         self.test_app = TethysApp.objects.get(package="test_app")
 
-        self.pss = PersistentStoreService(
+        self.pss = PostgresPersistentStoreService(
             name="test_ps",
             host="localhost",
             port="5432",
@@ -49,8 +49,8 @@ class PersistentStoreConnectionSettingTests(TethysTestCase):
         # Execute
         ret = PersistentStoreConnectionSetting.objects.get(name="primary").get_value()
 
-        # Check if ret is an instance of PersistentStoreService
-        self.assertIsInstance(ret, PersistentStoreService)
+        # Check if ret is an instance of PostgresPersistentStoreService
+        self.assertIsInstance(ret, PostgresPersistentStoreService)
         self.assertEqual("test_ps", ret.name)
         self.assertEqual("localhost", ret.host)
         self.assertEqual(5432, ret.port)

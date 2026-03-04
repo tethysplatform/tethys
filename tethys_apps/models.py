@@ -42,7 +42,7 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
-        PersistentStoreService,
+        PostgresPersistentStoreService,SQLitePersistentStoreService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -870,22 +870,29 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
     """
 
-    persistent_store_service = models.ForeignKey(
-        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    postgres_persistent_store_service = models.ForeignKey(
+        PostgresPersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    )
+    sqlite_persistent_store_service = models.ForeignKey(
+        SQLitePersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
     )
 
     def clean(self):
         """
         Validate prior to saving changes.
         """
-        if not self.persistent_store_service and self.required:
+        if not (self.postgres_persistent_store_service or self.sqlite_persistent_store_service) and self.required:
             raise ValidationError("Required.")
 
     def get_value(self, as_url=False, as_sessionmaker=False, as_engine=False):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
-        ps_service = self.persistent_store_service
+        ps_service = None
+        if self.postgres_persistent_store_service:
+            ps_service = self.postgres_persistent_store_service
+        elif self.sqlite_persistent_store_service:
+            ps_service = self.sqlite_persistent_store_service
 
         # Validate connection service
         if ps_service is None:
@@ -944,15 +951,18 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    persistent_store_service = models.ForeignKey(
-        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    postgres_persistent_store_service = models.ForeignKey(
+        PostgresPersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    )
+    sqlite_persistent_store_service = models.ForeignKey(
+        SQLitePersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
     )
 
     def clean(self):
         """
         Validate prior to saving changes.
         """
-        if not self.persistent_store_service and self.required:
+        if not (self.postgres_persistent_store_service or self.sqlite_persistent_store_service) and self.required:
             raise ValidationError("Required.")
 
     def initialize(self):
@@ -980,7 +990,11 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
-        ps_service = self.persistent_store_service
+        ps_service = None
+        if self.postgres_persistent_store_service:
+            ps_service = self.postgres_persistent_store_service
+        elif self.sqlite_persistent_store_service:
+            ps_service = self.sqlite_persistent_store_service
 
         # Validate connection service
         if ps_service is None:
