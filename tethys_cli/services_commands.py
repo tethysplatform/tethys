@@ -106,6 +106,22 @@ def add_services_parser(subparsers):
         help="The connection of the Service in the form "
         '"<username>:<password>@<host>:<port>"',
     )
+    services_create_ps.add_argument(
+        "-d",
+        "--dir_path",
+        required=False,
+        type=str,
+        help="The directory path for the SQLite database file (only required if type is sqlite).",
+    )
+    services_create_ps.add_argument(
+        "-t",
+        "--type",
+        required=False,
+        type=str,
+        choices=["postgres", "sqlite"],
+        default="postgres",
+        help="Type of persistent store service being created (postgres/sqlite). Default is postgres.",
+    )
     services_create_ps.set_defaults(func=services_create_persistent_command)
 
     # tethys services create spatial
@@ -236,39 +252,60 @@ def services_create_persistent_command(args):
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
     setup_django()
-    from tethys_services.models import PersistentStoreService
+    from tethys_services.models import PostgresPersistentStoreService, SQLitePersistentStoreService
 
     name = None
 
     try:
         name = args.name
         connection = args.connection
-        parts = connection.split("@")
-        cred_parts = parts[0].split(":")
-        store_username = cred_parts[0]
-        store_password = cred_parts[1]
-        url_parts = parts[1].split(":")
-        host = url_parts[0]
-        port = url_parts[1]
+        store_type = getattr(args, "type", "postgres")
 
-        new_persistent_service = PersistentStoreService(
-            name=name,
-            host=host,
-            port=port,
-            username=store_username,
-            password=store_password,
-        )
-        new_persistent_service.save()
+        if store_type == "postgres":
+            parts = connection.split("@")
+            if len(parts) != 2:
+                raise IndexError()
+            cred_parts = parts[0].split(":")
+            if len(cred_parts) != 2:
+                raise IndexError()
+            store_username = cred_parts[0]
+            store_password = cred_parts[1]
+            url_parts = parts[1].split(":")
+            if len(url_parts) != 2:
+                raise IndexError()
+            host = url_parts[0]
+            port = url_parts[1]
 
-        with pretty_output(FG_GREEN) as p:
-            p.write("Successfully created new Persistent Store Service!")
+            new_persistent_service = PostgresPersistentStoreService(
+                name=name,
+                host=host,
+                port=port,
+                username=store_username,
+                password=store_password,
+            )
+            new_persistent_service.save()
+            with pretty_output(FG_GREEN) as p:
+                p.write("Successfully created new PostgreSQL Persistent Store Service!")
+        elif store_type == "sqlite":
+            file_path = connection
+            new_persistent_service = SQLitePersistentStoreService(
+                name=name,
+                file_path=file_path,
+            )
+            new_persistent_service.save()
+            with pretty_output(FG_GREEN) as p:
+                p.write("Successfully created new SQLite Persistent Store Service!")
+        else:
+            with pretty_output(FG_RED) as p:
+                p.write(f"Unknown persistent store type: {store_type}")
+                
     except AttributeError:
         with pretty_output(FG_RED) as p:
             p.write("Missing Input Parameters. Please check your input.")
     except IndexError:
         with pretty_output(FG_RED) as p:
             p.write(
-                'The connection argument (-c) must be of the form "<username>:<password>@<host>:<port>".'
+                'The connection argument (-c) must be of the form "<username>:<password>@<host>:<port>" for postgres or "<file_path>" for sqlite.'
             )
     except IntegrityError:
         with pretty_output(FG_RED) as p:
@@ -468,50 +505,82 @@ def remove_service(serviceType, args):
     from tethys_services.models import (
         SpatialDatasetService,
         DatasetService,
-        PersistentStoreService,
+        PostgresPersistentStoreService,
+        SQLitePersistentStoreService,
         WebProcessingService,
     )
 
     services = {
         "spatial": SpatialDatasetService,
         "dataset": DatasetService,
-        "persistent": PersistentStoreService,
         "wps": WebProcessingService,
     }
 
-    service = services.get(serviceType)
-    service_label = str(service)
-    service_id = None
-
-    try:
+    # Determine which persistent store type to use
+    if serviceType == "persistent":
+        # Try both Postgres and SQLite
+        service = None
+        service_label = "Persistent Store Service"
         service_id = args.service_uid
         force = args.force
-
-        try:
-            service_id = int(service_id)
-            service = service.objects.get(pk=service_id)
-        except ValueError:
-            service = service.objects.get(name=service_id)
-
+        found = False
+        for model in [PostgresPersistentStoreService, SQLitePersistentStoreService]:
+            try:
+                try:
+                    obj = model.objects.get(pk=int(service_id))
+                except (ValueError, ObjectDoesNotExist):
+                    obj = model.objects.get(name=service_id)
+                service = obj
+                found = True
+                break
+            except ObjectDoesNotExist:
+                continue
+            
+        if not found:
+            with pretty_output(FG_RED) as p:
+                p.write(
+                    'A Persistent Store Service with ID/Name "{0}" does not exist.'.format(service_id)
+                )
+            exit(0)
+            
         if force:
             service.delete()
             with pretty_output(FG_GREEN) as p:
                 p.write(
-                    "Successfully removed {0} Service {1}!".format(
-                        service_label, service_id
-                    )
+                    "Successfully removed {0} {1}!".format(service_label, service_id)
                 )
             exit(0)
         else:
             proceed = input(
-                "Are you sure you want to delete this {0} Service? [y/n]: ".format(
-                    service_label
-                )
+                "Are you sure you want to delete this {0}? [y/n]: ".format(service_label)
             )
             while proceed not in ["y", "n", "Y", "N"]:
                 proceed = input('Please enter either "y" or "n": ')
-
             if proceed in ["y", "Y"]:
+                service.delete()
+                with pretty_output(FG_GREEN) as p:
+                    p.write(
+                        "Successfully removed {0} {1}!".format(service_label, service_id)
+                    )
+                exit(0)
+            else:
+                with pretty_output(FG_RED) as p:
+                    p.write("Aborted. {0} not removed.".format(service_label))
+                exit(0)
+                
+    else:
+        service = services.get(serviceType)
+        service_label = str(service)
+        service_id = None
+        try:
+            service_id = args.service_uid
+            force = args.force
+            try:
+                service_id = int(service_id)
+                service = service.objects.get(pk=service_id)
+            except ValueError:
+                service = service.objects.get(name=service_id)
+            if force:
                 service.delete()
                 with pretty_output(FG_GREEN) as p:
                     p.write(
@@ -521,17 +590,34 @@ def remove_service(serviceType, args):
                     )
                 exit(0)
             else:
-                with pretty_output(FG_RED) as p:
-                    p.write("Aborted. {0} Service not removed.".format(service_label))
-                exit(0)
-    except ObjectDoesNotExist:
-        with pretty_output(FG_RED) as p:
-            p.write(
-                'A {0} Service with ID/Name "{1}" does not exist.'.format(
-                    service_label, service_id
+                proceed = input(
+                    "Are you sure you want to delete this {0} Service? [y/n]: ".format(
+                        service_label
+                    )
                 )
-            )
-        exit(0)
+                while proceed not in ["y", "n", "Y", "N"]:
+                    proceed = input('Please enter either "y" or "n": ')
+                if proceed in ["y", "Y"]:
+                    service.delete()
+                    with pretty_output(FG_GREEN) as p:
+                        p.write(
+                            "Successfully removed {0} Service {1}!".format(
+                                service_label, service_id
+                            )
+                        )
+                    exit(0)
+                else:
+                    with pretty_output(FG_RED) as p:
+                        p.write("Aborted. {0} Service not removed.".format(service_label))
+                    exit(0)
+        except ObjectDoesNotExist:
+            with pretty_output(FG_RED) as p:
+                p.write(
+                    'A {0} Service with ID/Name "{1}" does not exist.'.format(
+                        service_label, service_id
+                    )
+                )
+            exit(0)
 
 
 def services_remove_spatial_command(args):
@@ -557,7 +643,8 @@ def services_list_command(args):
     setup_django()
     from tethys_services.models import (
         SpatialDatasetService,
-        PersistentStoreService,
+        PostgresPersistentStoreService,
+        SQLitePersistentStoreService,
         DatasetService,
         WebProcessingService,
     )
@@ -583,13 +670,15 @@ def services_list_command(args):
 
     entries = []
     if list_persistent:
-        persistent_entries = PersistentStoreService.objects.order_by("id").all()
-        entries.append(persistent_entries)
-        if len(persistent_entries) > 0:
+        postgres_entries = PostgresPersistentStoreService.objects.order_by("id").all()
+        sqlite_entries = SQLitePersistentStoreService.objects.order_by("id").all()
+        entries.append(postgres_entries)
+        entries.append(sqlite_entries)
+        if len(postgres_entries) > 0:
             with pretty_output(BOLD) as p:
-                p.write("\nPersistent Store Services:")
+                p.write("\nPostgreSQL Persistent Store Services:")
             is_first_entry = True
-            for entry in persistent_entries:
+            for entry in postgres_entries:
                 model_dict = model_to_dict(entry)
                 if is_first_entry:
                     with pretty_output(BOLD) as p:
@@ -605,6 +694,27 @@ def services_list_command(args):
                         model_dict["name"],
                         model_dict["host"],
                         model_dict["port"],
+                    )
+                )
+        if len(sqlite_entries) > 0:
+            with pretty_output(BOLD) as p:
+                p.write("\nSQLite Persistent Store Services:")
+            is_first_entry = True
+            for entry in sqlite_entries:
+                model_dict = model_to_dict(entry)
+                if is_first_entry:
+                    with pretty_output(BOLD) as p:
+                        p.write(
+                            "{0: <3}{1: <50}{2: <50}".format(
+                                "ID", "Name", "File Path"
+                            )
+                        )
+                    is_first_entry = False
+                print(
+                    "{0: <3}{1: <50}{2: <50}".format(
+                        model_dict["id"],
+                        model_dict["name"],
+                        model_dict["file_path"],
                     )
                 )
 
