@@ -47,12 +47,12 @@ class ServicesCommandsTest(unittest.TestCase):
         pass
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_create_persistent_command(self, mock_service, mock_pretty_output):
         """
         Test for services_create_persistent_command.
         For running the test without any errors or problems.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
@@ -67,14 +67,14 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_create_persistent_command_exception_attributeerror(
         self, mock_service, mock_pretty_output
     ):
         """
         Test for services_create_persistent_command.
         For running the test with an IndexError exception thrown.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
@@ -92,14 +92,14 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_create_persistent_command_exception_indexerror(
         self, mock_service, mock_pretty_output
     ):
         """
         Test for services_create_persistent_command.
         For running the test with an IndexError exception thrown.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
@@ -117,14 +117,14 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_create_persistent_command_exception_integrityerror(
         self, mock_service, mock_pretty_output
     ):
         """
         Test for services_create_persistent_command.
         For running the test with an IntegrityError exception thrown.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
@@ -142,23 +142,27 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
     def test_services_remove_persistent_command_Exceptions(
-        self, mock_service, mock_exit, mock_pretty_output
+        self, mock_sqlite_service, mock_postgres_service, mock_exit, mock_pretty_output
     ):
         """
         Test for services_remove_persistent_command
         Test for handling all exceptions thrown by the function.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_sqlite_service:  mock for SQLitePersistentStoreService
+        :param mock_postgres_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output: mock for pretty_output text
         :return:
         """
 
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Persistent Store"
         mock_args.force = True
-        mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
+        mock_postgres_service.__str__.return_value = "Postgres Persistent Store"
+        mock_postgres_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
+        mock_sqlite_service.__str__.return_value = "SQLite Persistent Store"
+        mock_sqlite_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
@@ -172,14 +176,14 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_remove_persistent_command_force(
         self, mock_service, mock_exit, mock_pretty_output
     ):
         """
         Test for services_remove_persistent_command
         Test for forcing a delete of the service
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output: mock for pretty_output text
         :return:
@@ -205,14 +209,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.input")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_remove_persistent_command_no_proceed_invalid_char(
         self, mock_service, mock_exit, mock_pretty_output, mock_input
     ):
         """
         Test for services_remove_persistent_command
         Handles answering the prompt to delete with invalid characters, and answering no.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output:  mock for pretty_output text
         :param mock_input:  mock for handling raw_input requests
@@ -247,14 +251,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.input")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_remove_persistent_command_proceed(
         self, mock_service, mock_exit, mock_pretty_output, mock_input
     ):
         """
         Test for services_remove_persistent_command
         Handles answering the prompt to delete with invalid characters by answering yes
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output:  mock for pretty_output text
         :param mock_input:  mock for handling raw_input requests
@@ -596,7 +600,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
     @pytest.mark.django_db
@@ -608,7 +612,7 @@ class ServicesCommandsTest(unittest.TestCase):
         Both spatial and persistent are not set, so both are processed
         :param mock_mtd:  mock for model_to_dict to return a dictionary
         :param mock_spatial:  mock for SpatialDatasetService
-        :param mock_persistent:  mock for PersistentStoreService
+        :param mock_persistent:  mock for PostgresPersistentStoreService
         :param mock_pretty_output: mock for pretty_output text
         :param mock_stdout:  mock for text written with print statements
         :return:
@@ -723,7 +727,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
     def test_services_list_command_persistent(
         self, mock_mtd, mock_persistent, mock_pretty_output, mock_print
@@ -732,7 +736,7 @@ class ServicesCommandsTest(unittest.TestCase):
         Test for services_list_command
         Only persistent is set
         :param mock_mtd:  mock for model_to_dict to return a dictionary
-        :param mock_persistent:  mock for PersistentStoreService
+        :param mock_persistent:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :param mock_stdout:  mock for text written with print statements
         :return:

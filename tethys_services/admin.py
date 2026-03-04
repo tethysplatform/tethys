@@ -14,7 +14,8 @@ from .models import (
     DatasetService,
     SpatialDatasetService,
     WebProcessingService,
-    PersistentStoreService,
+    PostgresPersistentStoreService,
+    SQLitePersistentStoreService
 )
 from django.forms import ModelForm, PasswordInput
 
@@ -65,13 +66,18 @@ class WebProcessingServiceForm(ModelForm):
         labels = {"public_endpoint": _("Public Endpoint")}
 
 
-class PersistentStoreServiceForm(ModelForm):
+class PostgresPersistentStoreServiceForm(ModelForm):
     class Meta:
-        model = PersistentStoreService
+        model = PostgresPersistentStoreService
         fields = ("name", "engine", "host", "port", "username", "password")
         widgets = {
             "password": PasswordInput(),
         }
+        
+class SQLitePersistentStoreServiceForm(ModelForm):
+    class Meta:
+        model = SQLitePersistentStoreService
+        fields = ("name", "engine", "dir_path")
 
 
 class DatasetServiceAdmin(admin.ModelAdmin):
@@ -117,16 +123,26 @@ class WebProcessingServiceAdmin(admin.ModelAdmin):
     fields = ("name", "endpoint", "public_endpoint", "username", "password")
 
 
-class PersistentStoreServiceAdmin(admin.ModelAdmin):
+class PostgresPersistentStoreServiceAdmin(admin.ModelAdmin):
     """
-    Admin model for Persistent Store Service Model
+    Admin model for Postgres Persistent Store Service Model
     """
 
-    form = PersistentStoreServiceForm
+    form = PostgresPersistentStoreServiceForm
     fields = ("name", "engine", "host", "port", "username", "password")
+
+
+class SQLitePersistentStoreServiceAdmin(admin.ModelAdmin):
+    """
+    Admin model for SQLite Persistent Store Service Model
+    """
+
+    form = SQLitePersistentStoreServiceForm
+    fields = ("name", "engine", "dir_path")
 
 
 admin.site.register(DatasetService, DatasetServiceAdmin)
 admin.site.register(SpatialDatasetService, SpatialDatasetServiceAdmin)
 admin.site.register(WebProcessingService, WebProcessingServiceAdmin)
-admin.site.register(PersistentStoreService, PersistentStoreServiceAdmin)
+admin.site.register(PostgresPersistentStoreService, PostgresPersistentStoreServiceAdmin)
+admin.site.register(SQLitePersistentStoreService, SQLitePersistentStoreServiceAdmin)
