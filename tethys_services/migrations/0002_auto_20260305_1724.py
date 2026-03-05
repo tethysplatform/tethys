@@ -15,6 +15,10 @@ class Migration(migrations.Migration):
             old_name="PersistentStoreService",
             new_name="PostgresPersistentStoreService",
         ),
+        migrations.AlterModelTable(
+            name="postgrespersistentstoreservice",
+            table="tethys_services_persistentstoreservice_postgres",
+        ),
         migrations.CreateModel(
             name="SQLitePersistentStoreService",
             fields=[
