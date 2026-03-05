@@ -280,9 +280,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     @mock.patch(
         "tethys_apps.models.PersistentStoreDatabaseSetting.persistent_store_database_exists"
     )
+    @mock.patch("tethys_apps.models.is_testing_environment")
     @pytest.mark.django_db
-    def test_drop_persistent_store_database(self, mock_psd, mock_get, mock_log):
+    def test_drop_persistent_store_database(self, mock_ite, mock_psd, mock_get, mock_log):
         mock_psd.return_value = True
+        mock_ite.return_value = True
 
         # Execute
         self.test_app.settings_set.select_subclasses().get(
