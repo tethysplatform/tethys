@@ -2,85 +2,44 @@
 
 from django.db import migrations, models
 
-# Helper function for data migration
-def migrate_persistent_store_service_to_postgres(apps, schema_editor):
-    ConnectionSetting = apps.get_model("tethys_apps", "PersistentStoreConnectionSetting")
-    DatabaseSetting = apps.get_model("tethys_apps", "PersistentStoreDatabaseSetting")
-    # For connection settings
-    for cs in ConnectionSetting.objects.all():
-        service = getattr(cs, "persistent_store_service", None)
-        if service and service.__class__.__name__ == "PostgresPersistentStoreService":
-            cs.postgres_persistent_store_service_id = service.id
-            cs.save()
-    # For database settings
-    for ds in DatabaseSetting.objects.all():
-        service = getattr(ds, "persistent_store_service", None)
-        if service and service.__class__.__name__ == "PostgresPersistentStoreService":
-            ds.postgres_persistent_store_service_id = service.id
-            ds.save()
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ("tethys_apps", "0007_tethysapp_back_url"),
+        ("tethys_services", "0002_auto_20260305_1724"),
     ]
 
     operations = [
         # Add new fields
-        migrations.AddField(
+        migrations.RenameField(
             model_name="persistentstoreconnectionsetting",
-            name="postgres_persistent_store_service",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=models.deletion.CASCADE,
-                to="tethys_services.postgrespersistentstoreservice",
-            ),
+            old_name="persistent_store_service",
+            new_name="persistent_store_service_postgres",
+        ),
+        migrations.RenameField(
+            model_name="persistentstoredatabasesetting",
+            old_name="persistent_store_service",
+            new_name="persistent_store_service_postgres",
         ),
         migrations.AddField(
             model_name="persistentstoreconnectionsetting",
-            name="sqlite_persistent_store_service",
+            name="persistent_store_service_sqlite",
             field=models.ForeignKey(
                 blank=True,
                 null=True,
                 on_delete=models.deletion.CASCADE,
-                to="tethys_services.sqlitepersistentstoreservice",
+                to="tethys_services.SQLitePersistentStoreService",
             ),
         ),
         migrations.AddField(
             model_name="persistentstoredatabasesetting",
-            name="postgres_persistent_store_service",
+            name="persistent_store_service_sqlite",
             field=models.ForeignKey(
                 blank=True,
                 null=True,
                 on_delete=models.deletion.CASCADE,
-                to="tethys_services.postgrespersistentstoreservice",
+                to="tethys_services.SQLitePersistentStoreService",
             ),
-        ),
-        migrations.AddField(
-            model_name="persistentstoredatabasesetting",
-            name="sqlite_persistent_store_service",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=models.deletion.CASCADE,
-                to="tethys_services.sqlitepersistentstoreservice",
-            ),
-        ),
-        # Data migration: move persistent_store_service to postgres_persistent_store_service if type matches
-        migrations.RunPython(
-            code=migrate_persistent_store_service_to_postgres,
-            reverse_code=migrations.RunPython.noop,
-        ),
-        # Remove old fields
-        migrations.RemoveField(
-            model_name="persistentstoreconnectionsetting",
-            name="persistent_store_service",
-        ),
-        migrations.RemoveField(
-            model_name="persistentstoredatabasesetting",
-            name="persistent_store_service",
         ),
     ]
-
-    
