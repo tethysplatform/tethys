@@ -613,8 +613,10 @@ def get_service_from_type(service_type, service_uid):
     else:
         return get_service_object(service_model, service_uid)
 
+
 def get_service_object(service_model, service_uid):
     from django.core.exceptions import ObjectDoesNotExist
+
     try:
         try:
             service_uid = int(service_uid)
