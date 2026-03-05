@@ -252,7 +252,10 @@ def services_create_persistent_command(args):
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
     setup_django()
-    from tethys_services.models import PostgresPersistentStoreService, SQLitePersistentStoreService
+    from tethys_services.models import (
+        PostgresPersistentStoreService,
+        SQLitePersistentStoreService,
+    )
 
     name = None
 
@@ -292,7 +295,7 @@ def services_create_persistent_command(args):
         else:
             with pretty_output(FG_RED) as p:
                 p.write(f"Unknown persistent store type: {store_type}")
-                
+
     except AttributeError:
         with pretty_output(FG_RED) as p:
             p.write("Missing Input Parameters. Please check your input.")
@@ -529,14 +532,16 @@ def remove_service(serviceType, args):
                 break
             except ObjectDoesNotExist:
                 continue
-            
+
         if not found:
             with pretty_output(FG_RED) as p:
                 p.write(
-                    'A Persistent Store Service with ID/Name "{0}" does not exist.'.format(service_id)
+                    'A Persistent Store Service with ID/Name "{0}" does not exist.'.format(
+                        service_id
+                    )
                 )
             exit(0)
-            
+
         if force:
             service.delete()
             with pretty_output(FG_GREEN) as p:
@@ -546,7 +551,9 @@ def remove_service(serviceType, args):
             exit(0)
         else:
             proceed = input(
-                "Are you sure you want to delete this {0}? [y/n]: ".format(service_label)
+                "Are you sure you want to delete this {0}? [y/n]: ".format(
+                    service_label
+                )
             )
             while proceed not in ["y", "n", "Y", "N"]:
                 proceed = input('Please enter either "y" or "n": ')
@@ -554,14 +561,16 @@ def remove_service(serviceType, args):
                 service.delete()
                 with pretty_output(FG_GREEN) as p:
                     p.write(
-                        "Successfully removed {0} {1}!".format(service_label, service_id)
+                        "Successfully removed {0} {1}!".format(
+                            service_label, service_id
+                        )
                     )
                 exit(0)
             else:
                 with pretty_output(FG_RED) as p:
                     p.write("Aborted. {0} not removed.".format(service_label))
                 exit(0)
-                
+
     else:
         service = services.get(serviceType)
         service_label = str(service)
@@ -602,7 +611,9 @@ def remove_service(serviceType, args):
                     exit(0)
                 else:
                     with pretty_output(FG_RED) as p:
-                        p.write("Aborted. {0} Service not removed.".format(service_label))
+                        p.write(
+                            "Aborted. {0} Service not removed.".format(service_label)
+                        )
                     exit(0)
         except ObjectDoesNotExist:
             with pretty_output(FG_RED) as p:
@@ -699,9 +710,7 @@ def services_list_command(args):
                 if is_first_entry:
                     with pretty_output(BOLD) as p:
                         p.write(
-                            "{0: <3}{1: <50}{2: <50}".format(
-                                "ID", "Name", "Dir Path"
-                            )
+                            "{0: <3}{1: <50}{2: <50}".format("ID", "Name", "Dir Path")
                         )
                     is_first_entry = False
                 print(

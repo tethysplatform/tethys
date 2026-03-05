@@ -159,5 +159,6 @@ class TestTethysServicesAdmin(unittest.TestCase):
 
         self.assertIn(PostgresPersistentStoreService, registry)
         self.assertIsInstance(
-            registry[PostgresPersistentStoreService], PostgresPersistentStoreServiceAdmin
+            registry[PostgresPersistentStoreService],
+            PostgresPersistentStoreServiceAdmin,
         )

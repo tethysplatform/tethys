@@ -298,7 +298,10 @@ class PersistentStoreServiceBase(models.Model):
     ORM for Persistent Store Service settings.
     """
 
-    ENGINE_CHOICES = (("postgresql", "PostgreSQL"),("sqlite", "SQLite"),)
+    ENGINE_CHOICES = (
+        ("postgresql", "PostgreSQL"),
+        ("sqlite", "SQLite"),
+    )
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(
         max_length=50, default="postgresql", choices=ENGINE_CHOICES
@@ -328,6 +331,7 @@ class PersistentStoreServiceBase(models.Model):
         """
         return None
 
+
 class PostgresPersistentStoreService(PersistentStoreServiceBase):
     host = models.CharField(max_length=255, default="localhost")
     port = models.IntegerField(
@@ -335,7 +339,7 @@ class PostgresPersistentStoreService(PersistentStoreServiceBase):
     )
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
-    
+
     class Meta:
         verbose_name = "PostgreSQL Persistent Store Service"
         verbose_name_plural = "PostgreSQL Persistent Store Services"
@@ -356,9 +360,10 @@ class PostgresPersistentStoreService(PersistentStoreServiceBase):
             database=self.database,
         )
 
+
 class SQLitePersistentStoreService(PersistentStoreServiceBase):
     dir_path = models.CharField(max_length=255)
-    
+
     class Meta:
         verbose_name = "SQLite Persistent Store Service"
         verbose_name_plural = "SQLite Persistent Store Services"

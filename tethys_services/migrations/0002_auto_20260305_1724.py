@@ -7,12 +7,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("tethys_services", "0001_initial_40"),
+        ("tethys_apps", "0001_initial_41"),
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql="ALTER TABLE tethys_services_persistentstoreservice RENAME TO tethys_services_persistentstoreservice_postgres;",
-            reverse_sql="ALTER TABLE tethys_services_persistentstoreservice_postgres RENAME TO tethys_services_persistentstoreservice;",
+        migrations.RenameModel(
+            old_name="PersistentStoreService",
+            new_name="PostgresPersistentStoreService",
         ),
         migrations.CreateModel(
             name="SQLitePersistentStoreService",
@@ -27,17 +28,20 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("name", models.CharField(max_length=30, unique=True)),
-                ("engine", models.CharField(
-                    choices=[("sqlite", "SQLite")],
-                    default="sqlite",
-                    max_length=50,
-                )),
+                (
+                    "engine",
+                    models.CharField(
+                        choices=[("sqlite", "SQLite")],
+                        default="sqlite",
+                        max_length=50,
+                    ),
+                ),
                 ("dir_path", models.CharField(max_length=255)),
             ],
             options={
                 "verbose_name": "SQLite Persistent Store Service",
                 "verbose_name_plural": "SQLite Persistent Store Services",
                 "db_table": "tethys_services_persistentstoreservice_sqlite",
-            }
+            },
         ),
     ]

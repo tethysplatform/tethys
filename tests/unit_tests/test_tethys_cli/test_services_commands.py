@@ -37,12 +37,8 @@ class ServicesCommandsTest(unittest.TestCase):
         "public_endpoint": "PublicEndPoint_bar",
         "apikey": "APIKey_foo",
     }
-    
-    my_sqlite_dict = {
-        "id": "Id_bar",
-        "name": "Name_bar",
-        "dir_path": "DirPath_bar"
-    }
+
+    my_sqlite_dict = {"id": "Id_bar", "name": "Name_bar", "dir_path": "DirPath_bar"}
 
     def setUp(self):
         setup_django_patcher = mock.patch("tethys_cli.services_commands.setup_django")
@@ -69,7 +65,8 @@ class ServicesCommandsTest(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEqual(
-            "Successfully created new PostgreSQL Persistent Store Service!", po_call_args[0][0][0]
+            "Successfully created new PostgreSQL Persistent Store Service!",
+            po_call_args[0][0][0],
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
@@ -737,7 +734,12 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_services.models.SQLitePersistentStoreService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
     def test_services_list_command_persistent(
-        self, mock_mtd, mock_sqlite_persistent, mock_postgres_persistent, mock_pretty_output, mock_print
+        self,
+        mock_mtd,
+        mock_sqlite_persistent,
+        mock_postgres_persistent,
+        mock_pretty_output,
+        mock_print,
     ):
         """
         Test for services_list_command
@@ -774,7 +776,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertNotIn("Endpoint", po_call_args[1][0][0])
         self.assertNotIn("Public Endpoint", po_call_args[1][0][0])
         self.assertNotIn("API Key", po_call_args[1][0][0])
-        
+
         self.assertIn("SQLite Persistent Store Services:", po_call_args[2][0][0])
         self.assertIn("ID", po_call_args[3][0][0])
         self.assertIn("Name", po_call_args[3][0][0])
@@ -788,7 +790,9 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertIn(self.my_postgres_dict["host"], rts_call_args[0][0][0])
         self.assertIn(self.my_postgres_dict["port"], rts_call_args[0][0][0])
         self.assertNotIn(self.my_postgres_dict["endpoint"], rts_call_args[0][0][0])
-        self.assertNotIn(self.my_postgres_dict["public_endpoint"], rts_call_args[0][0][0])
+        self.assertNotIn(
+            self.my_postgres_dict["public_endpoint"], rts_call_args[0][0][0]
+        )
         self.assertNotIn(self.my_postgres_dict["apikey"], rts_call_args[0][0][0])
 
         self.assertIn(self.my_sqlite_dict["id"], rts_call_args[1][0][0])
