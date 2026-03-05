@@ -50,7 +50,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
-    def test_services_create_persistent_command(self, mock_service, mock_pretty_output):
+    def test_services_create_postgres_persistent_command(self, mock_service, mock_pretty_output):
         """
         Test for services_create_persistent_command.
         For running the test without any errors or problems.
@@ -71,7 +71,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
-    def test_services_create_persistent_command_exception_attributeerror(
+    def test_services_create_postgres_persistent_command_exception_attributeerror(
         self, mock_service, mock_pretty_output
     ):
         """
@@ -96,7 +96,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
-    def test_services_create_persistent_command_exception_indexerror(
+    def test_services_create_postgres_persistent_command_exception_indexerror(
         self, mock_service, mock_pretty_output
     ):
         """
@@ -121,11 +121,11 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
-    def test_services_create_persistent_command_exception_integrityerror(
+    def test_services_create_postgres_persistent_command_exception_integrityerror(
         self, mock_service, mock_pretty_output
     ):
         """
-        Test for services_create_persistent_command.
+        Test for services_create_postgres_persistent_command.
         For running the test with an IntegrityError exception thrown.
         :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
@@ -142,6 +142,51 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn("Persistent Store Service with name", po_call_args[0][0][0])
         self.assertIn("already exists. Command aborted.", po_call_args[0][0][0])
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
+    def test_services_create_sqlite_persistent_command(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_persistent_command.
+        For running the test without any errors or problems.
+        :param mock_service:  mock for SQLitePersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(type="sqlite")
+        services_create_persistent_command(mock_args)
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Successfully created new SQLite Persistent Store Service!",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    def test_services_create_unknown_persistent_command(self, mock_postgres_service, mock_sqlite_service, mock_pretty_output):
+        """
+        Test for services_create_persistent_command.
+        For running the test with an unknown persistent store type.
+        :param mock_postgres_service:  mock for PostgresPersistentStoreService
+        :param mock_sqlite_service:  mock for SQLitePersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(type="unknown")
+        services_create_persistent_command(mock_args)
+        mock_postgres_service.assert_not_called()
+        mock_sqlite_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Unknown persistent store type: unknown",
+            po_call_args[0][0][0],
+        )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
