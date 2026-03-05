@@ -6,6 +6,7 @@
 [![Test Status](https://github.com/tethysplatform/tethys/actions/workflows/tethys.yml/badge.svg)](https://github.com/tethysplatform/tethys/actions)
 [![Coverage Status](https://coveralls.io/repos/github/tethysplatform/tethys/badge.svg?branch=main)](https://coveralls.io/github/tethysplatform/tethys?branch=main)
 [![Documentation Status](https://readthedocs.org/projects/tethys-platform/badge/?version=stable)](http://docs.tethysplatform.org/en/stable/?badge=stable)
+[![Buy us a soda](https://img.shields.io/badge/🥤-Buy%20Us%20a%20Soda-0a62a9)](https://www.buymeacoffee.com/tethysplatform)
 
 Tethys Platform provides both a development environment and a hosting environment for geoscientific web apps.
 
@@ -47,6 +48,10 @@ There are several directions you may want to go from here:
 - **Customize your portal**: Check out the [Web Admin Setup](https://docs.tethysplatform.org/en/stable/installation/web_admin_setup.html) docs to customize your Tethys Portal
 - **Use Docker**: For help getting started with Docker, see [Using Docker](https://docs.tethysplatform.org/en/stable/installation/using_docker.html)
 - **Full documentation**: Browse the complete [documentation](https://docs.tethysplatform.org/en/stable/) for comprehensive guides and API references
+
+## Support Development
+
+If Tethys Platform is useful to you, consider supporting development by [buying the developers a soda](https://www.buymeacoffee.com/tethysplatform).
 
 ## Acknowledgments
 
