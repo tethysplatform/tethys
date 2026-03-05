@@ -11,13 +11,13 @@ class PersistentStoreServiceTests(TethysTestCase):
         pass
 
     def test_unicode(self):
-        pss = service_model.PostgresPersistentStoreServiceeService(
+        pss = service_model.PostgresPersistentStoreService(
             name="test_pss", username="foo", password="pass"
         )
         self.assertEqual("test_pss", str(pss))
 
     def test_get_url(self):
-        pss = service_model.PostgresPersistentStoreServiceeService(
+        pss = service_model.PostgresPersistentStoreService(
             name="test_pss", username="foo", password="pass"
         )
 
@@ -26,10 +26,10 @@ class PersistentStoreServiceTests(TethysTestCase):
 
         self.assertEqual("postgresql://foo:pass@localhost:5435", str(ret))
 
-    @mock.patch("tethys_services.models.PostgresPersistentStoreServiceeService.get_url")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService.get_url")
     @mock.patch("sqlalchemy.create_engine")
     def test_get_engine(self, mock_ce, mock_url):
-        pss = service_model.PostgresPersistentStoreServiceeService(
+        pss = service_model.PostgresPersistentStoreService(
             name="test_pss", username="foo", password="pass"
         )
 

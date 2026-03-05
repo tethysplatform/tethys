@@ -31,7 +31,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
             name="primary"
         )
-        ps_cs_setting.persistent_store_service = None
+        ps_cs_setting.persistent_store_service_postgres = None
         ps_cs_setting.save()
         # Check ValidationError
         self.assertRaises(
@@ -43,7 +43,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
             name="primary"
         )
-        ps_cs_setting.persistent_store_service = self.pss
+        ps_cs_setting.persistent_store_service_postgres = self.pss
         ps_cs_setting.save()
 
         # Execute
@@ -61,7 +61,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
             name="primary"
         )
-        ps_cs_setting.persistent_store_service = None
+        ps_cs_setting.persistent_store_service_postgres = None
         ps_cs_setting.save()
 
         # Check TethysAppSettingNotAssigned
@@ -74,7 +74,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
             name="primary"
         )
-        ps_cs_setting.persistent_store_service = self.pss
+        ps_cs_setting.persistent_store_service_postgres = self.pss
         ps_cs_setting.save()
 
         # Execute
@@ -90,7 +90,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
             name="primary"
         )
-        ps_cs_setting.persistent_store_service = self.pss
+        ps_cs_setting.persistent_store_service_postgres = self.pss
         ps_cs_setting.save()
 
         # Execute
@@ -108,7 +108,7 @@ class PostgresPersistentStoreConnectionSettingTests(TethysTestCase):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(
             name="primary"
         )
-        ps_cs_setting.persistent_store_service = self.pss
+        ps_cs_setting.persistent_store_service_postgres = self.pss
         ps_cs_setting.save()
 
         # Execute

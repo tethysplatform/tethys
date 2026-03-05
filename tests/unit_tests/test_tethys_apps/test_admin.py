@@ -214,7 +214,8 @@ class TestTethysAppAdmin(unittest.TestCase):
         expected_fields = (
             "name",
             "description",
-            "persistent_store_service",
+            "persistent_store_service_postgres",
+            "persistent_store_service_sqlite",
             "required",
         )
         expected_model = PersistentStoreConnectionSetting
@@ -239,7 +240,8 @@ class TestTethysAppAdmin(unittest.TestCase):
             "description",
             "spatial",
             "initialized",
-            "persistent_store_service",
+            "persistent_store_service_postgres",
+            "persistent_store_service_sqlite",
             "required",
         )
         expected_model = PersistentStoreDatabaseSetting
