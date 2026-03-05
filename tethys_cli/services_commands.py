@@ -101,7 +101,7 @@ def add_services_parser(subparsers):
     services_create_ps.add_argument(
         "-c",
         "--connection",
-        required=True,
+        required=False,
         type=str,
         help="The connection of the Service in the form "
         '"<username>:<password>@<host>:<port>"',
@@ -258,21 +258,15 @@ def services_create_persistent_command(args):
 
     try:
         name = args.name
-        connection = args.connection
-        store_type = getattr(args, "type", "postgres")
+        store_type = args.type
 
         if store_type == "postgres":
+            connection = args.connection
             parts = connection.split("@")
-            if len(parts) != 2:
-                raise IndexError()
             cred_parts = parts[0].split(":")
-            if len(cred_parts) != 2:
-                raise IndexError()
             store_username = cred_parts[0]
             store_password = cred_parts[1]
             url_parts = parts[1].split(":")
-            if len(url_parts) != 2:
-                raise IndexError()
             host = url_parts[0]
             port = url_parts[1]
 
@@ -706,7 +700,7 @@ def services_list_command(args):
                     with pretty_output(BOLD) as p:
                         p.write(
                             "{0: <3}{1: <50}{2: <50}".format(
-                                "ID", "Name", "File Path"
+                                "ID", "Name", "Dir Path"
                             )
                         )
                     is_first_entry = False
@@ -714,7 +708,7 @@ def services_list_command(args):
                     "{0: <3}{1: <50}{2: <50}".format(
                         model_dict["id"],
                         model_dict["name"],
-                        model_dict["file_path"],
+                        model_dict["dir_path"],
                     )
                 )
 
