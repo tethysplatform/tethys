@@ -284,10 +284,10 @@ def services_create_persistent_command(args):
             with pretty_output(FG_GREEN) as p:
                 p.write("Successfully created new PostgreSQL Persistent Store Service!")
         elif store_type == "sqlite":
-            file_path = connection
+            dir_path = args.dir_path
             new_persistent_service = SQLitePersistentStoreService(
                 name=name,
-                file_path=file_path,
+                dir_path=dir_path,
             )
             new_persistent_service.save()
             with pretty_output(FG_GREEN) as p:
