@@ -15,7 +15,7 @@ from .models import (
     SpatialDatasetService,
     WebProcessingService,
     PostgresPersistentStoreService,
-    SQLitePersistentStoreService
+    SQLitePersistentStoreService,
 )
 from django.forms import ModelForm, PasswordInput
 
@@ -73,7 +73,8 @@ class PostgresPersistentStoreServiceForm(ModelForm):
         widgets = {
             "password": PasswordInput(),
         }
-        
+
+
 class SQLitePersistentStoreServiceForm(ModelForm):
     class Meta:
         model = SQLitePersistentStoreService
