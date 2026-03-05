@@ -235,7 +235,7 @@ class TethysAppTests(TethysTestCase):
 
     def test_persistent_store_connection_settings_prop(self):
         ps_setting = self.test_app.settings_set.select_subclasses().get(name="primary")
-        ps_setting.persistent_store_service = self.ps
+        ps_setting.persistent_store_service_postgres = self.ps
         ps_setting.save()
 
         ret = self.test_app.persistent_store_connection_settings
@@ -243,17 +243,17 @@ class TethysAppTests(TethysTestCase):
         for r in ret:
             self.assertIsInstance(r, TethysAppSetting)
             if r.name == "primary":
-                self.assertEqual("test_ps", r.persistent_store_service.name)
-                self.assertEqual("localhost", r.persistent_store_service.host)
-                self.assertEqual(5432, r.persistent_store_service.port)
-                self.assertEqual("foo", r.persistent_store_service.username)
-                self.assertEqual("password", r.persistent_store_service.password)
+                self.assertEqual("test_ps", r.persistent_store_service_postgres.name)
+                self.assertEqual("localhost", r.persistent_store_service_postgres.host)
+                self.assertEqual(5432, r.persistent_store_service_postgres.port)
+                self.assertEqual("foo", r.persistent_store_service_postgres.username)
+                self.assertEqual("password", r.persistent_store_service_postgres.password)
 
     def test_persistent_store_database_settings_prop(self):
         ps_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_setting.persistent_store_service = self.ps
+        ps_setting.persistent_store_service_postgres = self.ps
         ps_setting.save()
 
         ret = self.test_app.persistent_store_database_settings
@@ -261,11 +261,11 @@ class TethysAppTests(TethysTestCase):
         for r in ret:
             self.assertIsInstance(r, TethysAppSetting)
             if r.name == "spatial_db":
-                self.assertEqual("test_ps", r.persistent_store_service.name)
-                self.assertEqual("localhost", r.persistent_store_service.host)
-                self.assertEqual(5432, r.persistent_store_service.port)
-                self.assertEqual("foo", r.persistent_store_service.username)
-                self.assertEqual("password", r.persistent_store_service.password)
+                self.assertEqual("test_ps", r.persistent_store_service_postgres.name)
+                self.assertEqual("localhost", r.persistent_store_service_postgres.host)
+                self.assertEqual(5432, r.persistent_store_service_postgres.port)
+                self.assertEqual("foo", r.persistent_store_service_postgres.username)
+                self.assertEqual("password", r.persistent_store_service_postgres.password)
 
     def test_configured_prop_required_and_set(self):
         # See: test_app.app for expected settings configuration
@@ -343,13 +343,13 @@ class TethysAppTests(TethysTestCase):
         sched_setting.save()
 
         ps_setting = self.test_app.settings_set.select_subclasses().get(name="primary")
-        ps_setting.persistent_store_service = self.ps
+        ps_setting.persistent_store_service_postgres = self.ps
         ps_setting.save()
 
         ps_db_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_db_setting.persistent_store_service = self.ps
+        ps_db_setting.persistent_store_service_postgres = self.ps
         ps_db_setting.save()
 
         ret = self.test_app.configured
