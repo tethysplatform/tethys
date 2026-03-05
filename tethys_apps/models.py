@@ -42,7 +42,8 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
-        PostgresPersistentStoreService,SQLitePersistentStoreService,
+        PostgresPersistentStoreService,
+        SQLitePersistentStoreService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -870,10 +871,10 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
     """
 
-    postgres_persistent_store_service = models.ForeignKey(
+    persistent_store_service_postgres = models.ForeignKey(
         PostgresPersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
     )
-    sqlite_persistent_store_service = models.ForeignKey(
+    persistent_store_service_sqlite = models.ForeignKey(
         SQLitePersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
     )
 
@@ -881,7 +882,13 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         """
         Validate prior to saving changes.
         """
-        if not (self.postgres_persistent_store_service or self.sqlite_persistent_store_service) and self.required:
+        if (
+            not (
+                self.persistent_store_service_postgres
+                or self.persistent_store_service_sqlite
+            )
+            and self.required
+        ):
             raise ValidationError("Required.")
 
     def get_value(self, as_url=False, as_sessionmaker=False, as_engine=False):
@@ -889,10 +896,10 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         Get the SQLAlchemy engine from the connected persistent store service
         """
         ps_service = None
-        if self.postgres_persistent_store_service:
-            ps_service = self.postgres_persistent_store_service
-        elif self.sqlite_persistent_store_service:
-            ps_service = self.sqlite_persistent_store_service
+        if self.persistent_store_service_postgres:
+            ps_service = self.persistent_store_service_postgres
+        elif self.persistent_store_service_sqlite:
+            ps_service = self.persistent_store_service_sqlite
 
         # Validate connection service
         if ps_service is None:
@@ -951,10 +958,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    postgres_persistent_store_service = models.ForeignKey(
+    persistent_store_service_postgres = models.ForeignKey(
         PostgresPersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
     )
-    sqlite_persistent_store_service = models.ForeignKey(
+    persistent_store_service_sqlite = models.ForeignKey(
         SQLitePersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
     )
 
@@ -962,7 +969,13 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Validate prior to saving changes.
         """
-        if not (self.postgres_persistent_store_service or self.sqlite_persistent_store_service) and self.required:
+        if (
+            not (
+                self.persistent_store_service_postgres
+                or self.persistent_store_service_sqlite
+            )
+            and self.required
+        ):
             raise ValidationError("Required.")
 
     def initialize(self):
@@ -991,10 +1004,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         Get the SQLAlchemy engine from the connected persistent store service
         """
         ps_service = None
-        if self.postgres_persistent_store_service:
-            ps_service = self.postgres_persistent_store_service
-        elif self.sqlite_persistent_store_service:
-            ps_service = self.sqlite_persistent_store_service
+        if self.persistent_store_service_postgres:
+            ps_service = self.persistent_store_service_postgres
+        elif self.persistent_store_service_sqlite:
+            ps_service = self.persistent_store_service_sqlite
 
         # Validate connection service
         if ps_service is None:
@@ -1036,7 +1049,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                          FROM pg_catalog.pg_database d
                          LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
                          WHERE d.datname = '{0}';
-                         """.format(namespaced_name)
+                         """.format(
+            namespaced_name
+        )
 
         existing_dbs = connection.execute(existing_query)
         connection.close()
@@ -1085,7 +1100,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                                                 FROM pg_stat_activity
                                                 WHERE pg_stat_activity.datname = '{0}'
                                                 AND pg_stat_activity.pid <> pg_backend_pid();
-                                                """.format(namespaced_ps_name)
+                                                """.format(
+                    namespaced_ps_name
+                )
                 if drop_connection:
                     drop_connection.execute(disconnect_sessions_statement)
 
@@ -1138,7 +1155,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                                   CREATE DATABASE "{0}"
                                   WITH OWNER {1}
                                   ENCODING 'UTF8'
-                                  """.format(namespaced_ps_name, url.username)
+                                  """.format(
+                namespaced_ps_name, url.username
+            )
 
             # Close transaction first and then execute
             create_connection.execute("commit")
