@@ -143,7 +143,7 @@ class SchedulerSettingInline(TethysAppSettingInline):
 # Consider: https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
 class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
-    fields = ("name", "description", "persistent_store_service", "required")
+    fields = ("name", "description", "persistent_store_service_postgres", "persistent_store_service_sqlite", "required")
     model = PersistentStoreConnectionSetting
 
 
@@ -154,7 +154,8 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
         "description",
         "spatial",
         "initialized",
-        "persistent_store_service",
+        "persistent_store_service_postgres",
+        "persistent_store_service_sqlite",
         "required",
     )
     model = PersistentStoreDatabaseSetting
