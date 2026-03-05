@@ -4,6 +4,7 @@ from tethys_apps.models import (
     TethysApp,
     PersistentStoreDatabaseSetting,
     PostgresPersistentStoreService,
+    SQLitePersistentStoreService
 )
 from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import (
@@ -34,15 +35,21 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             self.conn["PORT"],
         )
 
-        self.pss = PostgresPersistentStoreService(
-            name="test_ps",
+        self.pss_postgres = PostgresPersistentStoreService(
+            name="test_ps_postgres",
             host=self.conn["HOST"],
             port=self.conn["PORT"],
             username=self.conn["USER"],
             password=self.conn["PASSWORD"],
         )
 
-        self.pss.save()
+        self.pss_postgres.save()
+        
+        self.pss_sqlite = SQLitePersistentStoreService(
+            name="test_ps_sqlite",
+            dir_path="/tmp",
+        )
+        self.pss_sqlite.save()
 
     def tear_down(self):
         pass
@@ -66,7 +73,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -82,7 +89,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -101,7 +108,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -114,11 +121,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         # Check result
         self.assertEqual("test_app_tethys-testing_spatial_db", ret)
 
-    def test_get_value(self):
+    def test_get_value_postgres(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -130,17 +137,37 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
 
         # Check results
         self.assertIsInstance(ret, PostgresPersistentStoreService)
-        self.assertEqual("test_ps", ret.name)
+        self.assertEqual("test_ps_postgres", ret.name)
         self.assertEqual(self.conn["HOST"], ret.host)
         self.assertEqual(int(self.conn["PORT"]), ret.port)
         self.assertEqual(self.conn["USER"], ret.username)
         self.assertEqual(self.conn["PASSWORD"], ret.password)
+
+    def test_get_value_sqlite(self):
+        ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
+            name="spatial_db"
+        )
+        ps_ds_setting.persistent_store_service_sqlite = self.pss_sqlite
+        ps_ds_setting.save()
+
+        # Execute
+        ret = (
+            self.test_app.settings_set.select_subclasses()
+            .get(name="spatial_db")
+            .get_value(with_db=True)
+        )
+
+        # Check results
+        self.assertIsInstance(ret, SQLitePersistentStoreService)
+        self.assertEqual("test_ps_sqlite", ret.name)
+        self.assertEqual("/tmp", ret.dir_path)
 
     def test_get_value_none(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
         ps_ds_setting.persistent_store_service_postgres = None
+        ps_ds_setting.persistent_store_service_sqlite = None
         ps_ds_setting.save()
 
         self.assertRaises(
@@ -156,7 +183,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -173,7 +200,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -190,7 +217,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -207,7 +234,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         # Execute
@@ -224,7 +251,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         ps_ds_setting.get_namespaced_persistent_store_name = mock.MagicMock(
@@ -245,7 +272,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
-        ps_ds_setting.persistent_store_service_postgres = self.pss
+        ps_ds_setting.persistent_store_service_postgres = self.pss_postgres
         ps_ds_setting.save()
 
         ps_ds_setting.get_namespaced_persistent_store_name = mock.MagicMock(
