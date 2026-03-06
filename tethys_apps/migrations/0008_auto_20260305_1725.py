@@ -11,35 +11,34 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Add new fields
-        migrations.RenameField(
+        # Remove old ForeignKey field
+        migrations.RemoveField(
             model_name="persistentstoreconnectionsetting",
-            old_name="persistent_store_service",
-            new_name="persistent_store_service_postgres",
+            name="persistent_store_service",
         ),
-        migrations.RenameField(
+        migrations.RemoveField(
             model_name="persistentstoredatabasesetting",
-            old_name="persistent_store_service",
-            new_name="persistent_store_service_postgres",
+            name="persistent_store_service",
+        ),
+        # Add new fields for GenericForeignKey
+        migrations.AddField(
+            model_name="persistentstoreconnectionsetting",
+            name="content_type",
+            field=models.ForeignKey(to="contenttypes.ContentType", on_delete=models.CASCADE, null=True),
         ),
         migrations.AddField(
             model_name="persistentstoreconnectionsetting",
-            name="persistent_store_service_sqlite",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=models.deletion.CASCADE,
-                to="tethys_services.SQLitePersistentStoreService",
-            ),
+            name="object_id",
+            field=models.PositiveIntegerField(null=True),
         ),
         migrations.AddField(
             model_name="persistentstoredatabasesetting",
-            name="persistent_store_service_sqlite",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=models.deletion.CASCADE,
-                to="tethys_services.SQLitePersistentStoreService",
-            ),
+            name="content_type",
+            field=models.ForeignKey(to="contenttypes.ContentType", on_delete=models.CASCADE, null=True),
+        ),
+        migrations.AddField(
+            model_name="persistentstoredatabasesetting",
+            name="object_id",
+            field=models.PositiveIntegerField(null=True),
         ),
     ]
