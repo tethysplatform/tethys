@@ -1,6 +1,7 @@
 from tethys_sdk.testing import TethysTestCase
 import tethys_services.models as service_model
 from unittest import mock
+from django.apps import apps
 
 
 class PostgresPersistentStoreServiceTests(TethysTestCase):
@@ -75,14 +76,24 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         mock_ce.assert_called_with("sqlite:////tmp")
 
 
-class TestConcreteStore(service_model.PersistentStoreServiceBase):
-    class Meta:
-        app_label = "test_app"  # Required for Django model
-        verbose_name = "Test Store"
-        verbose_name_plural = "Test Stores"
-        db_table = "test_concrete_store"
+class TestConcreteStoreTests(TethysTestCase):
+    def set_up(self):
+        class TestConcreteStore(service_model.PersistentStoreServiceBase):
+            class Meta:
+                app_label = "test_app"
+                verbose_name = "Test Store"
+                verbose_name_plural = "Test Stores"
+                db_table = "test_concrete_store"
+        self.TestConcreteStore = TestConcreteStore
 
+    def tear_down(self):
+        # Clean up: remove model from app registry
+        if apps.is_installed("test_app"):
+            try:
+                del apps.all_models["test_app"]["testconcretestore"]
+            except KeyError:
+                pass
 
-def test_get_url():
-    store = TestConcreteStore(name="Test", engine="sqlite")
-    assert store.get_url() is None
+    def test_get_url(self):
+        store = self.TestConcreteStore(name="Test", engine="sqlite")
+        self.assertIsNone(store.get_url())
