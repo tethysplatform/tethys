@@ -33,6 +33,11 @@ session_manager = optional_import("session_manager", from_module="siphon.http_ut
 AuthException = optional_import("AuthException", from_module="social_core.exceptions")
 
 
+PERSISTENT_STORE_SERVICE_ENGINE_CHOICES = (
+    ("postgresql", "PostgreSQL"),
+    ("sqlite", "SQLite"),
+)
+
 def validate_url(value):
     """
     Validate URLs
@@ -293,27 +298,20 @@ class WebProcessingService(models.Model):
         return self.activate(wps=wps)
 
 
-class PersistentStoreService(models.Model):
+class PersistentStoreServiceBase(models.Model):
     """
     ORM for Persistent Store Service settings.
     """
-
-    ENGINE_CHOICES = (("postgresql", "PostgreSQL"),)
     name = models.CharField(max_length=30, unique=True)
-    host = models.CharField(max_length=255, default="localhost")
-    port = models.IntegerField(
-        default=5435, validators=[validate_persistent_store_port]
-    )
-    username = models.CharField(max_length=100, blank=True)
-    password = models.CharField(max_length=100, blank=True)
     engine = models.CharField(
-        max_length=50, default="postgresql", choices=ENGINE_CHOICES
+        max_length=50, default="postgresql", choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES
     )
     database = None  #: temporary property for creating engines and URLs with database, but not persisted in database.
 
     class Meta:
         verbose_name = "Persistent Store Service"
         verbose_name_plural = "Persistent Store Services"
+        abstract = True
 
     def __str__(self):
         return self.name
@@ -331,9 +329,29 @@ class PersistentStoreService(models.Model):
         """
         Returns a Persistent Store URL
         """
+        return None
+
+
+class PostgresPersistentStoreService(PersistentStoreServiceBase):
+    host = models.CharField(max_length=255, default="localhost")
+    port = models.IntegerField(
+        default=5435, validators=[validate_persistent_store_port]
+    )
+    username = models.CharField(max_length=100, blank=True)
+    password = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = "PostgreSQL Persistent Store Service"
+        verbose_name_plural = "PostgreSQL Persistent Store Services"
+        db_table = "tethys_services_persistentstoreservice_postgres"
+
+    def get_url(self):
+        """
+        Returns a Persistent Store URL
+        """
         from sqlalchemy.engine.url import URL
 
-        url = URL.create(
+        return URL.create(
             drivername=self.engine,
             host=self.host,
             port=self.port,
@@ -341,4 +359,21 @@ class PersistentStoreService(models.Model):
             password=self.password,
             database=self.database,
         )
-        return url
+
+
+class SQLitePersistentStoreService(PersistentStoreServiceBase):
+    dir_path = models.CharField(max_length=255)
+    engine = models.CharField(
+        max_length=50, default="sqlite", choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES
+    )
+
+    class Meta:
+        verbose_name = "SQLite Persistent Store Service"
+        verbose_name_plural = "SQLite Persistent Store Services"
+        db_table = "tethys_services_persistentstoreservice_sqlite"
+
+    def get_url(self):
+        """
+        Returns a Persistent Store URL
+        """
+        return f"sqlite:///{self.dir_path}"

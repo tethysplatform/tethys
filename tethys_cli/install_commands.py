@@ -30,7 +30,7 @@ from tethys_cli.cli_helpers import (
 from tethys_apps.utilities import (
     link_service_to_app_setting,
     get_app_settings,
-    get_service_model_from_type,
+    get_service_from_type,
     get_tethys_home_dir,
     get_installed_tethys_items,
 )
@@ -133,17 +133,9 @@ def open_file(file_path):
 
 
 def validate_service_id(service_type, service_id):
-    service_model = get_service_model_from_type(service_type)
-    try:
-        service_model.objects.get(id=service_id)  # noqa: F841
+    service = get_service_from_type(service_type, service_id)
+    if service:
         return True
-    except (ObjectDoesNotExist, ValueError):
-        try:
-            service_model.objects.get(name=service_id)  # noqa: F841
-            return True
-        except ObjectDoesNotExist:
-            pass
-
     return False
 
 
