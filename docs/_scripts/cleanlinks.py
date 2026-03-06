@@ -37,7 +37,7 @@ def parse_linkcheck_output(docs_dir):
         )
         sys.exit(1)
 
-    click.echo(f"Using linkcheck output at {click.style(linkcheck_out, fg="blue")}")
+    click.echo(f"Using linkcheck output at {click.style(linkcheck_out, fg='blue')}")
 
     # Parse the linkcheck output
     with linkcheck_out.open() as f:
