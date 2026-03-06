@@ -106,10 +106,10 @@ def recursive_search_and_save(fixes, directory, dry_run):
                         # Save changes to the file
                         with curr_file.open("w") as f:
                             f.write(text)
-                        click.echo(f"  {click.style('Changes saved!', fg="green")}")
+                        click.echo(f"  {click.style('Changes saved!', fg='green')}")
                     else:
                         click.echo(
-                            f"  {click.style('Dry Run:', bg="yellow")} Changes NOT saved."
+                            f"  {click.style('Dry Run:', bg='yellow')} Changes NOT saved."
                         )
 
                     files_updated.add(str(curr_file))
@@ -185,11 +185,11 @@ def fix_links(links_type, links, docs_dir):
                 new_link = link["info"] if links_type == "redirected" else ""
                 if links_type == "broken":
                     click.echo(
-                        f"{os.linesep}  {click.style(original_link, bg="magenta")}"
+                        f"{os.linesep}  {click.style(original_link, bg='magenta')}"
                     )
                 elif links_type == "redirected":
                     click.echo(
-                        f"{os.linesep}  {click.style(link["code"], bold=True)}: {click.style(original_link, bg="magenta")} -> {click.style(new_link, bg="magenta")}"
+                        f"{os.linesep}  {click.style(link['code'], bold=True)}: {click.style(original_link, bg='magenta')} -> {click.style(new_link, bg='magenta')}"
                     )
 
                 try:
@@ -210,12 +210,12 @@ def fix_links(links_type, links, docs_dir):
                         )
                         if links_type == "broken":
                             click.echo(
-                                f'  {click.style('Info', bold=True)}: {link["info"]}'
+                                f'  {click.style("Info", bold=True)}: {link["info"]}'
                             )
 
                         if not review_each and too_dissimilar:
                             click.echo(
-                                f"  {click.style('Review Required', bold=True, fg="yellow")}: The new link is significantly different from the original."
+                                f"  {click.style('Review Required', bold=True, fg='yellow')}: The new link is significantly different from the original."
                             )
 
                         valid = False
@@ -253,7 +253,7 @@ def fix_links(links_type, links, docs_dir):
                             elif entered_option == "1":
                                 new_link = original_link
                             elif entered_option == "2":
-                                click.echo(f"  {click.style('Skipped', bg="yellow")}")
+                                click.echo(f"  {click.style('Skipped', bg='yellow')}")
                                 link["unfixed_reason"] = "User skipped."
                                 progress_bar.update(1)
                                 click.secho(os.linesep)
@@ -303,7 +303,7 @@ def fix_links(links_type, links, docs_dir):
                             continue
 
                         if not new_link:
-                            click.echo(f"  {click.style('Skipped', bg="yellow")}")
+                            click.echo(f"  {click.style('Skipped', bg='yellow')}")
                             link["unfixed_reason"] = "No link provided."
                             progress_bar.update(1)
                             click.secho(os.linesep)
@@ -311,12 +311,12 @@ def fix_links(links_type, links, docs_dir):
 
                         if original_link == new_link:
                             click.echo(
-                                f"  {click.style('No Change:', bg="yellow")} {new_link}"
+                                f"  {click.style('No Change:', bg='yellow')} {new_link}"
                             )
                             continue
                         else:
                             click.echo(
-                                f"  {click.style('Fix:', bg="green")} {original_link} -> {new_link}"
+                                f"  {click.style('Fix:', bg='green')} {original_link} -> {new_link}"
                             )
 
                     # Save to fixes dict
