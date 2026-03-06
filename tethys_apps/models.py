@@ -1022,7 +1022,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                          FROM pg_catalog.pg_database d
                          LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
                          WHERE d.datname = '{0}';
-                         """.format(namespaced_name)
+                         """.format(
+            namespaced_name
+        )
 
         existing_dbs = connection.execute(existing_query)
         connection.close()
@@ -1071,7 +1073,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                                                 FROM pg_stat_activity
                                                 WHERE pg_stat_activity.datname = '{0}'
                                                 AND pg_stat_activity.pid <> pg_backend_pid();
-                                                """.format(namespaced_ps_name)
+                                                """.format(
+                    namespaced_ps_name
+                )
                 if drop_connection:
                     drop_connection.execute(disconnect_sessions_statement)
 
@@ -1124,7 +1128,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                                   CREATE DATABASE "{0}"
                                   WITH OWNER {1}
                                   ENCODING 'UTF8'
-                                  """.format(namespaced_ps_name, url.username)
+                                  """.format(
+                namespaced_ps_name, url.username
+            )
 
             # Close transaction first and then execute
             create_connection.execute("commit")
