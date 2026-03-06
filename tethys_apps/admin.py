@@ -157,6 +157,14 @@ class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
 class PersistentStoreConnectionSettingForm(forms.ModelForm):
     persistent_store_service_choice = forms.ChoiceField(choices=[], required=True, label="Persistent Store Service")
 
+    class Meta:
+        model = PersistentStoreConnectionSetting
+        fields = ["name", "description", "persistent_store_service_choice", "required"]
+        widgets = {
+            "content_type": forms.HiddenInput(),
+            "object_id": forms.HiddenInput(),
+        }
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from django.contrib.contenttypes.models import ContentType
@@ -174,22 +182,6 @@ class PersistentStoreConnectionSettingForm(forms.ModelForm):
             ct_pk = self.instance.content_type_id
             obj_pk = self.instance.object_id
             self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Set initial value for persistent_store_service_choice if editing existing instance
-        if self.instance.pk and getattr(self.instance, "content_type_id", None) and getattr(self.instance, "object_id", None):
-            ct_pk = self.instance.content_type_id
-            obj_pk = self.instance.object_id
-            self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
-
-    class Meta:
-        model = PersistentStoreConnectionSetting
-        fields = ["name", "description", "persistent_store_service_choice", "required"]
-        widgets = {
-            "content_type": forms.HiddenInput(),
-            "object_id": forms.HiddenInput(),
-        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -229,6 +221,14 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
 class PersistentStoreDatabaseSettingForm(forms.ModelForm):
     persistent_store_service_choice = forms.ChoiceField(choices=[], required=True, label="Persistent Store Service")
 
+    class Meta:
+        model = PersistentStoreDatabaseSetting
+        fields = ["name", "description", "spatial", "initialized", "persistent_store_service_choice", "required"]
+        widgets = {
+            "content_type": forms.HiddenInput(),
+            "object_id": forms.HiddenInput(),
+        }
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from django.contrib.contenttypes.models import ContentType
@@ -246,22 +246,6 @@ class PersistentStoreDatabaseSettingForm(forms.ModelForm):
             ct_pk = self.instance.content_type_id
             obj_pk = self.instance.object_id
             self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Set initial value for persistent_store_service_choice if editing existing instance
-        if self.instance.pk and getattr(self.instance, "content_type_id", None) and getattr(self.instance, "object_id", None):
-            ct_pk = self.instance.content_type_id
-            obj_pk = self.instance.object_id
-            self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
-
-    class Meta:
-        model = PersistentStoreDatabaseSetting
-        fields = ["name", "description", "spatial", "initialized", "persistent_store_service_choice", "required"]
-        widgets = {
-            "content_type": forms.HiddenInput(),
-            "object_id": forms.HiddenInput(),
-        }
 
     def clean(self):
         cleaned_data = super().clean()

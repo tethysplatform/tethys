@@ -872,8 +872,8 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
     """
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
     persistent_store_service = GenericForeignKey("content_type", "object_id")
 
     def clean(self):
@@ -948,8 +948,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
     persistent_store_service = GenericForeignKey("content_type", "object_id")
 
     def clean(self):
@@ -1097,6 +1097,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Provision all persistent stores for all apps or for only the app name given.
         """
+        # TODO: update to handle SQLite and other database types if needed. Currently this is only designed to work with PostGIS enabled PostgreSQL databases.
         # Get looger
         log = logging.getLogger("tethys")
 

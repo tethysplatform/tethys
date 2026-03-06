@@ -33,6 +33,11 @@ session_manager = optional_import("session_manager", from_module="siphon.http_ut
 AuthException = optional_import("AuthException", from_module="social_core.exceptions")
 
 
+PERSISTENT_STORE_SERVICE_ENGINE_CHOICES = (
+    ("postgresql", "PostgreSQL"),
+    ("sqlite", "SQLite"),
+)
+
 def validate_url(value):
     """
     Validate URLs
@@ -297,14 +302,9 @@ class PersistentStoreServiceBase(models.Model):
     """
     ORM for Persistent Store Service settings.
     """
-
-    ENGINE_CHOICES = (
-        ("postgresql", "PostgreSQL"),
-        ("sqlite", "SQLite"),
-    )
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(
-        max_length=50, default="postgresql", choices=ENGINE_CHOICES
+        max_length=50, default="postgresql", choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES
     )
     database = None  #: temporary property for creating engines and URLs with database, but not persisted in database.
 
@@ -363,6 +363,9 @@ class PostgresPersistentStoreService(PersistentStoreServiceBase):
 
 class SQLitePersistentStoreService(PersistentStoreServiceBase):
     dir_path = models.CharField(max_length=255)
+    engine = models.CharField(
+        max_length=50, default="sqlite", choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES
+    )
 
     class Meta:
         verbose_name = "SQLite Persistent Store Service"
