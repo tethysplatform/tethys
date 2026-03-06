@@ -84,3 +84,6 @@ omit = [
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+[tool.black]
+target-version = ["py310", "py311", "py312", "py313"]
