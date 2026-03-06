@@ -50,7 +50,9 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
-    def test_services_create_postgres_persistent_command(self, mock_service, mock_pretty_output):
+    def test_services_create_postgres_persistent_command(
+        self, mock_service, mock_pretty_output
+    ):
         """
         Test for services_create_persistent_command.
         For running the test without any errors or problems.
@@ -145,7 +147,9 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SQLitePersistentStoreService")
-    def test_services_create_sqlite_persistent_command(self, mock_service, mock_pretty_output):
+    def test_services_create_sqlite_persistent_command(
+        self, mock_service, mock_pretty_output
+    ):
         """
         Test for services_create_persistent_command.
         For running the test without any errors or problems.
@@ -167,7 +171,9 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SQLitePersistentStoreService")
     @mock.patch("tethys_services.models.PostgresPersistentStoreService")
-    def test_services_create_unknown_persistent_command(self, mock_postgres_service, mock_sqlite_service, mock_pretty_output):
+    def test_services_create_unknown_persistent_command(
+        self, mock_postgres_service, mock_sqlite_service, mock_pretty_output
+    ):
         """
         Test for services_create_persistent_command.
         For running the test with an unknown persistent store type.

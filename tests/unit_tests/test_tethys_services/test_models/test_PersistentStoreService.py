@@ -2,7 +2,7 @@ from tethys_sdk.testing import TethysTestCase
 import tethys_services.models as service_model
 from unittest import mock
 
-        
+
 class PostgresPersistentStoreServiceTests(TethysTestCase):
     def set_up(self):
         pass
@@ -39,7 +39,8 @@ class PostgresPersistentStoreServiceTests(TethysTestCase):
 
         # Check if called correctly
         mock_ce.assert_called_with("test_url")
-        
+
+
 class SQLitePersistentStoreServiceTests(TethysTestCase):
     def set_up(self):
         pass
@@ -48,9 +49,7 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         pass
 
     def test_unicode(self):
-        pss = service_model.SQLitePersistentStoreService(
-            name="test_pss"
-        )
+        pss = service_model.SQLitePersistentStoreService(name="test_pss")
         self.assertEqual("test_pss", str(pss))
 
     def test_get_url(self):
@@ -60,7 +59,7 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
 
         # Execute
         ret = pss.get_url()
-    
+
         self.assertEqual("sqlite:////tmp", str(ret))
 
     @mock.patch("sqlalchemy.create_engine")
@@ -68,20 +67,22 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         pss = service_model.SQLitePersistentStoreService(
             name="test_pss", dir_path="/tmp"
         )
-        
+
         # Execute
         pss.get_engine()
 
         # Check if called correctly
         mock_ce.assert_called_with("sqlite:////tmp")
 
+
 class TestConcreteStore(service_model.PersistentStoreServiceBase):
     class Meta:
-        app_label = 'test_app'  # Required for Django model
+        app_label = "test_app"  # Required for Django model
         verbose_name = "Test Store"
         verbose_name_plural = "Test Stores"
         db_table = "test_concrete_store"
 
+
 def test_get_url():
     store = TestConcreteStore(name="Test", engine="sqlite")
-    assert store.get_url() == None
+    assert store.get_url() is None

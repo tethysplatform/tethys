@@ -4,7 +4,7 @@ from tethys_apps.models import (
     TethysApp,
     PersistentStoreDatabaseSetting,
     PostgresPersistentStoreService,
-    SQLitePersistentStoreService
+    SQLitePersistentStoreService,
 )
 from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import (
@@ -44,7 +44,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         )
 
         self.pss_postgres.save()
-        
+
         self.pss_sqlite = SQLitePersistentStoreService(
             name="test_ps_sqlite",
             dir_path="/tmp",
@@ -309,7 +309,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     )
     @mock.patch("tethys_apps.models.is_testing_environment")
     @pytest.mark.django_db
-    def test_drop_persistent_store_database(self, mock_ite, mock_psd, mock_get, mock_log):
+    def test_drop_persistent_store_database(
+        self, mock_ite, mock_psd, mock_get, mock_log
+    ):
         mock_psd.return_value = True
         mock_ite.return_value = True
 
