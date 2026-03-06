@@ -3,7 +3,7 @@ from tethys_apps.models import (
     TethysApp,
     PersistentStoreConnectionSetting,
     PostgresPersistentStoreService,
-    SQLitePersistentStoreService
+    SQLitePersistentStoreService,
 )
 from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
