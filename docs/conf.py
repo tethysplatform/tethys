@@ -199,7 +199,9 @@ branch = ret.stdout.decode().strip() if ret.returncode == 0 else "release"
 
 rst_epilog = """
 .. |branch| replace:: {branch}
-""".format(branch=branch)
+""".format(
+    branch=branch
+)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

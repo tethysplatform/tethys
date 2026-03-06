@@ -51,7 +51,8 @@ def PageLoader(lib, content):
                     lib.html.div(
                         id_="trigger-loaded", onClick=lambda _: set_hide_loading(True)
                     ),
-                    lib.html.script("""
+                    lib.html.script(
+                        """
                     window.onload = function () {
                         window.setTimeout(function () {
                             try {
@@ -61,7 +62,8 @@ def PageLoader(lib, content):
                             }
                         }, 1000)
                     }
-                """),
+                """
+                    ),
                 )
                 if not hide_loading
                 else None
