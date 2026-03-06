@@ -7,4 +7,3 @@ docs/**/*.zip filter=lfs diff=lfs merge=lfs -text
 docs/**/*.ico filter=lfs diff=lfs merge=lfs -text
 *.eps filter=lfs diff=lfs merge=lfs -text
 *.ai filter=lfs diff=lfs merge=lfs -text
-docs/images/site_admin/new_proxy_app.png filter=lfs diff=lfs merge=lfs -text
