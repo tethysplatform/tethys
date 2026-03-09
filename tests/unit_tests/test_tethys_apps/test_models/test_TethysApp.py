@@ -247,9 +247,7 @@ class TethysAppTests(TethysTestCase):
                 self.assertEqual("localhost", r.persistent_store_service.host)
                 self.assertEqual(5432, r.persistent_store_service.port)
                 self.assertEqual("foo", r.persistent_store_service.username)
-                self.assertEqual(
-                    "password", r.persistent_store_service.password
-                )
+                self.assertEqual("password", r.persistent_store_service.password)
 
     def test_persistent_store_database_settings_prop(self):
         ps_setting = self.test_app.settings_set.select_subclasses().get(
@@ -267,9 +265,7 @@ class TethysAppTests(TethysTestCase):
                 self.assertEqual("localhost", r.persistent_store_service.host)
                 self.assertEqual(5432, r.persistent_store_service.port)
                 self.assertEqual("foo", r.persistent_store_service.username)
-                self.assertEqual(
-                    "password", r.persistent_store_service.password
-                )
+                self.assertEqual("password", r.persistent_store_service.password)
 
     def test_configured_prop_required_and_set(self):
         # See: test_app.app for expected settings configuration
