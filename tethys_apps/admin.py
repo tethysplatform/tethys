@@ -139,8 +139,94 @@ class SchedulerSettingInline(TethysAppSettingInline):
     model = SchedulerSetting
 
 
-# TODO: Figure out how to initialize persistent stores with button in admin
-# Consider: https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
+class PersistentStoreServiceChoiceMixin:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from django.contrib.contenttypes.models import ContentType
+        from tethys_services.models import PersistentStoreServiceBase
+
+        persistent_store_service_choices = []
+        for subclass in PersistentStoreServiceBase.__subclasses__():
+            try:
+                for instance in subclass.objects.all():
+                    ct = ContentType.objects.get_for_model(instance)
+                    persistent_store_service_choices.append(
+                        (
+                            f"{ct.pk}_{instance.pk}",
+                            f"{subclass.__name__}: {instance.name}",
+                        )
+                    )
+            except Exception:
+                pass
+        self.fields["persistent_store_service_choice"].choices = (
+            persistent_store_service_choices
+        )
+        if (
+            self.instance.pk
+            and getattr(self.instance, "content_type_id", None)
+            and getattr(self.instance, "object_id", None)
+        ):
+            ct_pk = self.instance.content_type_id
+            obj_pk = self.instance.object_id
+            self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        persistent_store_service_choice = cleaned_data.get(
+            "persistent_store_service_choice"
+        )
+        if persistent_store_service_choice:
+            ct_pk, obj_pk = map(int, persistent_store_service_choice.split("_"))
+            from django.contrib.contenttypes.models import ContentType
+
+            content_type = ContentType.objects.get(pk=ct_pk)
+            cleaned_data["content_type"] = content_type
+            cleaned_data["object_id"] = obj_pk
+            self.instance.content_type = content_type
+            self.instance.object_id = obj_pk
+        return cleaned_data
+
+
+class PersistentStoreConnectionSettingForm(
+    PersistentStoreServiceChoiceMixin, forms.ModelForm
+):
+    persistent_store_service_choice = forms.ChoiceField(
+        choices=[], required=True, label="Persistent Store Service"
+    )
+
+    class Meta:
+        model = PersistentStoreConnectionSetting
+        fields = ["name", "description", "persistent_store_service_choice", "required"]
+        widgets = {
+            "content_type": forms.HiddenInput(),
+            "object_id": forms.HiddenInput(),
+        }
+
+
+class PersistentStoreDatabaseSettingForm(
+    PersistentStoreServiceChoiceMixin, forms.ModelForm
+):
+    persistent_store_service_choice = forms.ChoiceField(
+        choices=[], required=True, label="Persistent Store Service"
+    )
+
+    class Meta:
+        model = PersistentStoreDatabaseSetting
+        fields = [
+            "name",
+            "description",
+            "spatial",
+            "initialized",
+            "persistent_store_service_choice",
+            "required",
+        ]
+        widgets = {
+            "content_type": forms.HiddenInput(),
+            "object_id": forms.HiddenInput(),
+        }
+
+
 class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
     fields = (
@@ -150,53 +236,8 @@ class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
         "required",
     )
     model = PersistentStoreConnectionSetting
-    form = None  # Will be set below
+    form = PersistentStoreConnectionSettingForm
     extra = 0
-
-# Custom form for PersistentStoreConnectionSetting
-class PersistentStoreConnectionSettingForm(forms.ModelForm):
-    persistent_store_service_choice = forms.ChoiceField(choices=[], required=True, label="Persistent Store Service")
-
-    class Meta:
-        model = PersistentStoreConnectionSetting
-        fields = ["name", "description", "persistent_store_service_choice", "required"]
-        widgets = {
-            "content_type": forms.HiddenInput(),
-            "object_id": forms.HiddenInput(),
-        }
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from django.contrib.contenttypes.models import ContentType
-        from tethys_services.models import PersistentStoreServiceBase
-        persistent_store_service_choices = []
-        for subclass in PersistentStoreServiceBase.__subclasses__():
-            try:
-                for instance in subclass.objects.all():
-                    ct = ContentType.objects.get_for_model(instance)
-                    persistent_store_service_choices.append((f"{ct.pk}_{instance.pk}", f"{subclass.__name__}: {instance.name}"))
-            except Exception:
-                pass  # Table may not exist yet during migration
-        self.fields["persistent_store_service_choice"].choices = persistent_store_service_choices
-        if self.instance.pk and getattr(self.instance, "content_type_id", None) and getattr(self.instance, "object_id", None):
-            ct_pk = self.instance.content_type_id
-            obj_pk = self.instance.object_id
-            self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
-
-    def clean(self):
-        cleaned_data = super().clean()
-        persistent_store_service_choice = cleaned_data.get("persistent_store_service_choice")
-        if persistent_store_service_choice:
-            ct_pk, obj_pk = map(int, persistent_store_service_choice.split("_"))
-            from django.contrib.contenttypes.models import ContentType
-            content_type = ContentType.objects.get(pk=ct_pk)
-            cleaned_data["content_type"] = content_type
-            cleaned_data["object_id"] = obj_pk
-            self.instance.content_type = content_type
-            self.instance.object_id = obj_pk
-        return cleaned_data
-
-PersistentStoreConnectionSettingInline.form = PersistentStoreConnectionSettingForm
 
 
 class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
@@ -210,57 +251,14 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
         "required",
     )
     model = PersistentStoreDatabaseSetting
-    form = None  # Will be set below
+    form = PersistentStoreDatabaseSettingForm
     extra = 0
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(dynamic=False)# Custom form for PersistentStoreDatabaseSetting
-
-
-class PersistentStoreDatabaseSettingForm(forms.ModelForm):
-    persistent_store_service_choice = forms.ChoiceField(choices=[], required=True, label="Persistent Store Service")
-
-    class Meta:
-        model = PersistentStoreDatabaseSetting
-        fields = ["name", "description", "spatial", "initialized", "persistent_store_service_choice", "required"]
-        widgets = {
-            "content_type": forms.HiddenInput(),
-            "object_id": forms.HiddenInput(),
-        }
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from django.contrib.contenttypes.models import ContentType
-        from tethys_services.models import PersistentStoreServiceBase
-        persistent_store_service_choices = []
-        for subclass in PersistentStoreServiceBase.__subclasses__():
-            try:
-                for instance in subclass.objects.all():
-                    ct = ContentType.objects.get_for_model(instance)
-                    persistent_store_service_choices.append((f"{ct.pk}_{instance.pk}", f"{subclass.__name__}: {instance.name}"))
-            except Exception:
-                pass  # Table may not exist yet during migration
-        self.fields["persistent_store_service_choice"].choices = persistent_store_service_choices
-        if self.instance.pk and getattr(self.instance, "content_type_id", None) and getattr(self.instance, "object_id", None):
-            ct_pk = self.instance.content_type_id
-            obj_pk = self.instance.object_id
-            self.fields["persistent_store_service_choice"].initial = f"{ct_pk}_{obj_pk}"
-
-    def clean(self):
-        cleaned_data = super().clean()
-        persistent_store_service_choice = cleaned_data.get("persistent_store_service_choice")
-        if persistent_store_service_choice:
-            ct_pk, obj_pk = map(int, persistent_store_service_choice.split("_"))
-            from django.contrib.contenttypes.models import ContentType
-            content_type = ContentType.objects.get(pk=ct_pk)
-            cleaned_data["content_type"] = content_type
-            cleaned_data["object_id"] = obj_pk
-            self.instance.content_type = content_type
-            self.instance.object_id = obj_pk
-        return cleaned_data
-
-PersistentStoreDatabaseSettingInline.form = PersistentStoreDatabaseSettingForm
+        return qs.filter(
+            dynamic=False
+        )  # Custom form for PersistentStoreDatabaseSetting
 
 
 class TethysAppAdmin(GuardedModelAdmin):

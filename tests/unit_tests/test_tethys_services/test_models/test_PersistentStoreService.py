@@ -84,6 +84,7 @@ class TestConcreteStoreTests(TethysTestCase):
                 verbose_name = "Test Store"
                 verbose_name_plural = "Test Stores"
                 db_table = "test_concrete_store"
+
         self.TestConcreteStore = TestConcreteStore
 
     def tear_down(self):

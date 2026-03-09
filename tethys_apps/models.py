@@ -43,8 +43,6 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
-        PostgresPersistentStoreService,
-        SQLitePersistentStoreService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -872,7 +870,9 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
     """
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
+    )
     object_id = models.PositiveIntegerField(null=True, blank=True)
     persistent_store_service = GenericForeignKey("content_type", "object_id")
 
@@ -948,7 +948,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
+    )
     object_id = models.PositiveIntegerField(null=True, blank=True)
     persistent_store_service = GenericForeignKey("content_type", "object_id")
 
