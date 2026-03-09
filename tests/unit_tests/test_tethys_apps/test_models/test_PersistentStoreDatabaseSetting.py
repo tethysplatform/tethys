@@ -3,6 +3,8 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import (
     TethysApp,
     PersistentStoreDatabaseSetting,
+)
+from tethys_services.models import (
     PostgresPersistentStoreService,
     SQLitePersistentStoreService,
 )
