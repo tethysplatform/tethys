@@ -38,6 +38,7 @@ PERSISTENT_STORE_SERVICE_ENGINE_CHOICES = (
     ("sqlite", "SQLite"),
 )
 
+
 def validate_url(value):
     """
     Validate URLs
@@ -302,9 +303,12 @@ class PersistentStoreServiceBase(models.Model):
     """
     ORM for Persistent Store Service settings.
     """
+
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(
-        max_length=50, default="postgresql", choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES
+        max_length=50,
+        default="postgresql",
+        choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES,
     )
     database = None  #: temporary property for creating engines and URLs with database, but not persisted in database.
 
