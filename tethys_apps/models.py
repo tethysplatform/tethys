@@ -16,6 +16,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
@@ -42,7 +43,6 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
-        PersistentStoreService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -870,9 +870,11 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
     """
 
-    persistent_store_service = models.ForeignKey(
-        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
     )
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    persistent_store_service = GenericForeignKey("content_type", "object_id")
 
     def clean(self):
         """
@@ -885,7 +887,9 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
-        ps_service = self.persistent_store_service
+        ps_service = None
+        if self.persistent_store_service:
+            ps_service = self.persistent_store_service
 
         # Validate connection service
         if ps_service is None:
@@ -944,9 +948,11 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    persistent_store_service = models.ForeignKey(
-        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
     )
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    persistent_store_service = GenericForeignKey("content_type", "object_id")
 
     def clean(self):
         """
@@ -980,7 +986,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
-        ps_service = self.persistent_store_service
+        ps_service = None
+        if self.persistent_store_service:
+            ps_service = self.persistent_store_service
 
         # Validate connection service
         if ps_service is None:
@@ -1087,6 +1095,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Provision all persistent stores for all apps or for only the app name given.
         """
+        # TODO: update to handle SQLite and other database types if needed. Currently this is only designed to work with PostGIS enabled PostgreSQL databases.
         # Get looger
         log = logging.getLogger("tethys")
 

@@ -1,11 +1,3 @@
-.. |bmc-button| raw:: html
-
-   <a href="https://www.buymeacoffee.com/tethysplatform" target="_blank">
-     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-          alt="Buy Me A Coffee"
-          style="height:1.6em; vertical-align:middle; margin-left:6px;">
-   </a>
-
 *******************************
 Contributing to Tethys Platform
 *******************************
@@ -59,20 +51,8 @@ Maintaining thorough documentation has been a priority since the inception of Te
 
    contribute/documentation
 
-.. _contribute_financially
 
-Support Monetarily
--------------------
-
-You can support the Tethys Platform community financially in a few ways:
-
-- Become a member of the Tethys Geoscience Foundation - https://tethysgeoscience.org/become-a-member-of-tgf/
-
-- Make a one-time donation to the Tethys Geoscience Foundation - https://tethysgeoscience.org/donate/
-
-- Sponsor Tethys Development - Contact us at `info@tethysgeoscience.org <mailto:info@tethysgeoscience.org>`_
-
-- Buy our developers a soda (preferably a Dr Pepper): `Buy us a soda <https://www.buymeacoffee.com/tethysplatform>`_
+.. _contribute_intro_community_support:
 
 Support the Community
 ---------------------

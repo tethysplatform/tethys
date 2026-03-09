@@ -9,7 +9,7 @@ The **TETHYS COMPUTE** section of the site admin page allows an administrator to
 * `Jobs`_
 * `Schedulers`_
 
-.. figure:: ../../images/tethys_compute/tethys_compute_admin.png
+.. figure:: ../images/tethys_compute/tethys_compute_admin.png
     :width: 900px
     :align: center
 
@@ -27,7 +27,7 @@ HTCondor Schedulers
 
 Use the HTCondor Schedulers section to create (register) and manage the HTCondor schedulers that are needed by apps installed in the Tethys Portal. When creating a new HTCondor Scheduler, there are two required settings: Name and Host. The other options are for specifying authentication credentials when using a scheduler that is running on a different server that Tethys. Tethys Platform uses CondorPy to interact with the HTCondor Scheduler and CondorPy is capable of copying files and issuing commands to a remote scheduler via SCP/SSH.
 
-.. figure:: ../../images/tethys_compute/tethys_compute_condor_scheduler.png
+.. figure:: ../images/tethys_compute/tethys_compute_condor_scheduler.png
     :width: 900px
     :align: center
 
@@ -48,7 +48,7 @@ Dask Schedulers
 
 Use the Dask Schedulers section to create (register) and manage the Dask schedulers that are needed by apps installed in the Tethys Portal. When creating a new Dask Scheduler, there are two required settings: Name and Host. For detailed instructions for how to configure Dask Schedulers, see: :ref:`Dask Tutorial: Setup Scheduler <dask_tutorial_setup_scheduler>`.
 
-.. figure:: ../../images/tethys_compute/tethys_compute_dask_scheduler.png
+.. figure:: ../images/tethys_compute/tethys_compute_dask_scheduler.png
     :width: 900px
     :align: center
 
@@ -67,7 +67,7 @@ Embedded Dask Dashboard
 
 If the Dashboard parameter is provided when creating a Dask Scheduler, a link to the Dashboard titled **Launch Dashboard** will be provided for that Scheduler.
 
-.. figure:: ../../images/tethys_compute/tethys_compute_dask_launch_links.png
+.. figure:: ../images/tethys_compute/tethys_compute_dask_launch_links.png
     :width: 900px
     :align: center
 
@@ -75,7 +75,7 @@ If the Dashboard parameter is provided when creating a Dask Scheduler, a link to
 
 Clicking on the **Launch Dashboard** link will take you to an embedded version of the Dask dashboard app.
 
-.. figure:: ../../images/tethys_compute/tethys_compute_dashboard.png
+.. figure:: ../images/tethys_compute/tethys_compute_dashboard.png
     :width: 900px
     :align: center
 
@@ -89,7 +89,7 @@ Jobs
 
 Tethys Platform stores information about jobs that are created using the :ref:`jobs_api`. For each job that is created a database record is made to store some of the basic information about the job including: name, user, creation time, and status. The Jobs section in the Tethys Compute admin page allows for basic management of these database records. Jobs cannot be created in the admin pages, but they can be edited and removed.
 
-.. figure:: ../../images/tethys_compute/tethys_compute_jobs.png
+.. figure:: ../images/tethys_compute/tethys_compute_jobs.png
     :width: 900px
     :align: center
 
