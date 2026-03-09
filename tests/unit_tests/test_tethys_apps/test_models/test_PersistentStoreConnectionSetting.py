@@ -2,6 +2,8 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import (
     TethysApp,
     PersistentStoreConnectionSetting,
+)
+from tethys_services.models import (
     PostgresPersistentStoreService,
     SQLitePersistentStoreService,
 )
