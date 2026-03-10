@@ -1084,7 +1084,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 f'Creating database "{self.name}" for app "{self.tethys_app.package}"...'
             )
             strategy.create_database(self, engine, url, namespaced_ps_name)
-            
+
         if self.spatial:
             log.info(
                 'Enabling PostGIS on database "{0}" for app "{1}"...'.format(
