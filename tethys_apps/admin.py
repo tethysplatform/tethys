@@ -154,7 +154,7 @@ class PersistentStoreServiceChoiceMixin:
                     persistent_store_service_choices.append(
                         (
                             f"{ct.pk}_{instance.pk}",
-                            f"{subclass.__name__}: {instance.name}",
+                            f"{instance.engine}: {instance.name}",
                         )
                     )
             except Exception:
