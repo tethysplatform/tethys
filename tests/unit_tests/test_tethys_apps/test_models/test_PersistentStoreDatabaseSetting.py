@@ -317,7 +317,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     )
     @mock.patch("tethys_apps.models.is_testing_environment")
     @pytest.mark.django_db
-    def test_drop_persistent_store_database(self, mock_ite, mock_psd, mock_get, mock_log):
+    def test_drop_persistent_store_database(
+        self, mock_ite, mock_psd, mock_get, mock_log
+    ):
         mock_psd.return_value = True
         mock_ite.return_value = True
 
@@ -326,8 +328,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_get.side_effect = [self.pss_postgres, mock_url, mock_engine]
 
         # Execute
-        breakpoint()
-        self.test_app.settings_set.select_subclasses().get(name="spatial_db").drop_persistent_store_database()
+        self.test_app.settings_set.select_subclasses().get(
+            name="spatial_db"
+        ).drop_persistent_store_database()
 
         # Check
         mock_log.getLogger().info.assert_called_with(
@@ -511,9 +514,14 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     @mock.patch("tethys_apps.models.logging")
     @mock.patch("tethys_apps.db_handlers.logging")
     def test_create_persistent_store_database_postgis2(
-        self, 
+        self,
         mock_db_handler_log,
-        mock_model_log, mock_init, mock_get, mock_ps_de, mock_gn, mock_drop
+        mock_model_log,
+        mock_init,
+        mock_get,
+        mock_ps_de,
+        mock_gn,
+        mock_drop,
     ):
         # Mock Get Name
         mock_gn.return_value = "spatial_db"
@@ -738,7 +746,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertEqual(execute1, mock_execute_calls[0][0][0])
         self.assertEqual(execute2, mock_execute_calls[1][0][0])
 
-        mock_db_handler_log_warning_calls = mock_db_handler_log.getLogger().warning.call_args_list
+        mock_db_handler_log_warning_calls = (
+            mock_db_handler_log.getLogger().warning.call_args_list
+        )
         self.assertEqual(1, len(mock_db_handler_log_warning_calls))
         check_log1 = 'Could not parse PostGIS version from "BAD VERSION STRING"'
         self.assertEqual(check_log1, mock_db_handler_log_warning_calls[0][0][0])
@@ -788,7 +798,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_engine = mock.MagicMock()
         mock_e.ProgrammingError = Exception
         mock_engine.connect().execute.side_effect = [mock.MagicMock(), Exception]
-        mock_get.side_effect = [self.pss_postgres,mock_url, mock_engine]
+        mock_get.side_effect = [self.pss_postgres, mock_url, mock_engine]
 
         # Execute
         self.assertRaises(
@@ -829,7 +839,12 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_e.ProgrammingError = Exception
         mock_new_db_engine = mock.MagicMock()
         mock_new_db_engine.connect().execute.side_effect = Exception
-        mock_get.side_effect = [self.pss_postgres,mock_url, mock_engine, mock_new_db_engine]
+        mock_get.side_effect = [
+            self.pss_postgres,
+            mock_url,
+            mock_engine,
+            mock_new_db_engine,
+        ]
 
         # Execute
         self.assertRaises(
