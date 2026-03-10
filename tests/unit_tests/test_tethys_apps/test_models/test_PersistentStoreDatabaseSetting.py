@@ -169,7 +169,6 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             name="spatial_db"
         )
         ps_ds_setting.persistent_store_service = None
-        ps_ds_setting.persistent_store_service = None
         ps_ds_setting.save()
 
         self.assertRaises(
@@ -249,7 +248,8 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         # check URL
         self.assertEqual(self.expected_url, str(ret))
 
-    def test_persistent_store_database_exists(self):
+    @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting.get_value")
+    def test_persistent_store_database_exists(self, mock_get_value):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
@@ -259,8 +259,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.get_namespaced_persistent_store_name = mock.MagicMock(
             return_value="foo_bar"
         )
-        ps_ds_setting.get_value = mock.MagicMock()
-        mock_engine = ps_ds_setting.get_value()
+
+        mock_engine = mock.MagicMock()
+        mock_url = mock.MagicMock(username="test_app")
+        mock_get_value.side_effect = [self.pss_postgres, mock_url, mock_engine]
+
         mock_db = mock.MagicMock()
         mock_db.name = "foo_bar"
         mock_engine.connect().execute.return_value = [mock_db]
@@ -270,7 +273,8 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
 
         self.assertTrue(ret)
 
-    def test_persistent_store_database_exists_false(self):
+    @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting.get_value")
+    def test_persistent_store_database_exists_false(self, mock_get_value):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(
             name="spatial_db"
         )
@@ -280,8 +284,10 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.get_namespaced_persistent_store_name = mock.MagicMock(
             return_value="foo_bar"
         )
-        ps_ds_setting.get_value = mock.MagicMock()
-        mock_engine = ps_ds_setting.get_value()
+
+        mock_engine = mock.MagicMock()
+        mock_url = mock.MagicMock(username="test_app")
+        mock_get_value.side_effect = [self.pss_postgres, mock_url, mock_engine]
         mock_engine.connect().execute.return_value = []
 
         # Execute
@@ -311,29 +317,30 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     )
     @mock.patch("tethys_apps.models.is_testing_environment")
     @pytest.mark.django_db
-    def test_drop_persistent_store_database(
-        self, mock_ite, mock_psd, mock_get, mock_log
-    ):
+    def test_drop_persistent_store_database(self, mock_ite, mock_psd, mock_get, mock_log):
         mock_psd.return_value = True
         mock_ite.return_value = True
 
+        mock_engine = mock.MagicMock()
+        mock_url = mock.MagicMock(username="test_app")
+        mock_get.side_effect = [self.pss_postgres, mock_url, mock_engine]
+
         # Execute
-        self.test_app.settings_set.select_subclasses().get(
-            name="spatial_db"
-        ).drop_persistent_store_database()
+        breakpoint()
+        self.test_app.settings_set.select_subclasses().get(name="spatial_db").drop_persistent_store_database()
 
         # Check
         mock_log.getLogger().info.assert_called_with(
             'Dropping database "spatial_db" for app "test_app"...'
         )
-        mock_get().connect.assert_called()
-        rts_call_args = mock_get().connect().execute.call_args_list
+        mock_engine.connect.assert_called()
+        rts_call_args = mock_engine.connect().execute.call_args_list
         self.assertEqual("commit", rts_call_args[0][0][0])
         self.assertEqual(
             'DROP DATABASE IF EXISTS "test_app_tethys-testing_spatial_db"',
             rts_call_args[1][0][0],
         )
-        mock_get().connect().close.assert_called()
+        mock_engine.connect().close.assert_called()
 
     @mock.patch("tethys_apps.models.logging")
     @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting.get_value")
@@ -344,7 +351,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self, mock_psd, mock_get, mock_log
     ):
         mock_psd.return_value = True
-        mock_get().connect().execute.side_effect = [
+
+        mock_engine = mock.MagicMock()
+        mock_url = mock.MagicMock(username="test_app")
+        mock_get.side_effect = [self.pss_postgres, mock_url, mock_engine]
+        mock_engine.connect().execute.side_effect = [
             Exception("Message: being accessed by other users"),
             mock.MagicMock(),
             mock.MagicMock(),
@@ -360,13 +371,13 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_log.getLogger().info.assert_called_with(
             'Dropping database "spatial_db" for app "test_app"...'
         )
-        mock_get().connect.assert_called()
-        rts_call_args = mock_get().connect().execute.call_args_list
+        mock_engine.connect.assert_called()
+        rts_call_args = mock_engine.connect().execute.call_args_list
         self.assertEqual("commit", rts_call_args[0][0][0])
         self.assertIn(
             "SELECT pg_terminate_backend(pg_stat_activity.pid)", rts_call_args[1][0][0]
         )
-        mock_get().connect().close.assert_called()
+        mock_engine.connect().close.assert_called()
 
     @mock.patch("tethys_apps.models.logging")
     @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting.get_value")
@@ -377,7 +388,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self, mock_psd, mock_get, mock_log
     ):
         mock_psd.return_value = True
-        mock_get().connect.side_effect = [
+
+        mock_engine = mock.MagicMock()
+        mock_url = mock.MagicMock(username="test_app")
+        mock_get.side_effect = [self.pss_postgres, mock_url, mock_engine]
+        mock_engine.connect.side_effect = [
             Exception("Message: being accessed by other users"),
             mock.MagicMock(),
             mock.MagicMock(),
@@ -391,9 +406,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_log.getLogger().info.assert_called_with(
             'Dropping database "spatial_db" for app "test_app"...'
         )
-        mock_get().connect.assert_called()
-        mock_get().connect().execute.assert_not_called()
-        mock_get().connect().close.assert_not_called()
+        mock_engine.connect.assert_called()
+        mock_engine.connect().execute.assert_not_called()
+        mock_engine.connect().close.assert_not_called()
 
     @mock.patch("tethys_apps.models.logging")
     @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting.get_value")
@@ -402,7 +417,12 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     )
     def test_drop_persistent_store_database_exception_else(self, mock_psd, mock_get, _):
         mock_psd.return_value = True
-        mock_get().connect().execute.side_effect = [
+
+        mock_engine = mock.MagicMock()
+        mock_url = mock.MagicMock(username="test_app")
+        mock_get.side_effect = [self.pss_postgres, mock_url, mock_engine]
+
+        mock_engine.connect().execute.side_effect = [
             Exception("Error Message"),
             mock.MagicMock(),
         ]
@@ -416,7 +436,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         )
 
         # Check
-        mock_get().connect().close.assert_called()
+        mock_engine.connect().close.assert_called()
 
     @mock.patch(
         "tethys_apps.models.PersistentStoreDatabaseSetting.drop_persistent_store_database"
@@ -450,6 +470,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_new_db_engine = mock.MagicMock()
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [
+            self.pss_postgres,
             mock_url,
             mock_engine,
             mock_new_db_engine,
@@ -488,8 +509,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         "tethys_apps.models.PersistentStoreDatabaseSetting.initializer_function"
     )
     @mock.patch("tethys_apps.models.logging")
+    @mock.patch("tethys_apps.db_handlers.logging")
     def test_create_persistent_store_database_postgis2(
-        self, mock_log, mock_init, mock_get, mock_ps_de, mock_gn, mock_drop
+        self, 
+        mock_db_handler_log,
+        mock_model_log, mock_init, mock_get, mock_ps_de, mock_gn, mock_drop
     ):
         # Mock Get Name
         mock_gn.return_value = "spatial_db"
@@ -507,6 +531,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_db_connection = mock_new_db_engine.connect()
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [
+            self.pss_postgres,
             mock_url,
             mock_engine,
             mock_new_db_engine,
@@ -533,8 +558,12 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertEqual(execute1, mock_execute_calls[0][0][0])
         self.assertEqual(execute2, mock_execute_calls[1][0][0])
 
-        mock_log_info_calls = mock_log.getLogger().info.call_args_list
-        self.assertEqual(4, len(mock_log_info_calls))
+        mock_db_handler_log_info_calls = (
+            mock_db_handler_log.getLogger().info.call_args_list
+        )
+        mock_model_log_info_calls = mock_model_log.getLogger().info.call_args_list
+        self.assertEqual(1, len(mock_db_handler_log_info_calls))
+        self.assertEqual(3, len(mock_model_log_info_calls))
         check_log1 = 'Creating database "spatial_db" for app "test_app"...'
         check_log2 = 'Enabling PostGIS on database "spatial_db" for app "test_app"...'
         check_log3 = "Detected PostGIS version 2.5"
@@ -542,10 +571,10 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             'Initializing database "spatial_db" for app "test_app" '
             'with initializer "appsettings.model.init_spatial_db"...'
         )
-        self.assertEqual(check_log1, mock_log_info_calls[0][0][0])
-        self.assertEqual(check_log2, mock_log_info_calls[1][0][0])
-        self.assertEqual(check_log3, mock_log_info_calls[2][0][0])
-        self.assertEqual(check_log4, mock_log_info_calls[3][0][0])
+        self.assertEqual(check_log1, mock_model_log_info_calls[0][0][0])
+        self.assertEqual(check_log2, mock_model_log_info_calls[1][0][0])
+        self.assertEqual(check_log3, mock_db_handler_log_info_calls[0][0][0])
+        self.assertEqual(check_log4, mock_model_log_info_calls[2][0][0])
         mock_init.assert_called()
 
     @mock.patch(
@@ -562,8 +591,16 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         "tethys_apps.models.PersistentStoreDatabaseSetting.initializer_function"
     )
     @mock.patch("tethys_apps.models.logging")
+    @mock.patch("tethys_apps.db_handlers.logging")
     def test_create_persistent_store_database_postgis3(
-        self, mock_log, mock_init, mock_get, mock_ps_de, mock_gn, mock_drop
+        self,
+        mock_db_handler_log,
+        mock_model_log,
+        mock_init,
+        mock_get,
+        mock_ps_de,
+        mock_gn,
+        mock_drop,
     ):
         # Mock Get Name
         mock_gn.return_value = "spatial_db"
@@ -581,6 +618,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_db_connection = mock_new_db_engine.connect()
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [
+            self.pss_postgres,
             mock_url,
             mock_engine,
             mock_new_db_engine,
@@ -609,8 +647,12 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertEqual(execute2, mock_execute_calls[1][0][0])
         self.assertEqual(execute3, mock_execute_calls[2][0][0])
 
-        mock_log_info_calls = mock_log.getLogger().info.call_args_list
-        self.assertEqual(5, len(mock_log_info_calls))
+        mock_db_handler_log_info_calls = (
+            mock_db_handler_log.getLogger().info.call_args_list
+        )
+        mock_model_log_info_calls = mock_model_log.getLogger().info.call_args_list
+        self.assertEqual(2, len(mock_db_handler_log_info_calls))
+        self.assertEqual(3, len(mock_model_log_info_calls))
         check_log1 = 'Creating database "spatial_db" for app "test_app"...'
         check_log2 = 'Enabling PostGIS on database "spatial_db" for app "test_app"...'
         check_log3 = "Detected PostGIS version 3.5"
@@ -621,11 +663,11 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             'Initializing database "spatial_db" for app "test_app" '
             'with initializer "appsettings.model.init_spatial_db"...'
         )
-        self.assertEqual(check_log1, mock_log_info_calls[0][0][0])
-        self.assertEqual(check_log2, mock_log_info_calls[1][0][0])
-        self.assertEqual(check_log3, mock_log_info_calls[2][0][0])
-        self.assertEqual(check_log4, mock_log_info_calls[3][0][0])
-        self.assertEqual(check_log5, mock_log_info_calls[4][0][0])
+        self.assertEqual(check_log1, mock_model_log_info_calls[0][0][0])
+        self.assertEqual(check_log2, mock_model_log_info_calls[1][0][0])
+        self.assertEqual(check_log3, mock_db_handler_log_info_calls[0][0][0])
+        self.assertEqual(check_log4, mock_db_handler_log_info_calls[1][0][0])
+        self.assertEqual(check_log5, mock_model_log_info_calls[2][0][0])
         mock_init.assert_called()
 
     @mock.patch(
@@ -642,8 +684,16 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         "tethys_apps.models.PersistentStoreDatabaseSetting.initializer_function"
     )
     @mock.patch("tethys_apps.models.logging")
+    @mock.patch("tethys_apps.db_handlers.logging")
     def test_create_persistent_store_database_postgis3_bad_version_string(
-        self, mock_log, mock_init, mock_get, mock_ps_de, mock_gn, mock_drop
+        self,
+        mock_db_handler_log,
+        mock_model_log,
+        mock_init,
+        mock_get,
+        mock_ps_de,
+        mock_gn,
+        mock_drop,
     ):
         # Mock Get Name
         mock_gn.return_value = "spatial_db"
@@ -661,6 +711,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_db_connection = mock_new_db_engine.connect()
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [
+            self.pss_postgres,
             mock_url,
             mock_engine,
             mock_new_db_engine,
@@ -687,22 +738,22 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertEqual(execute1, mock_execute_calls[0][0][0])
         self.assertEqual(execute2, mock_execute_calls[1][0][0])
 
-        mock_log_warning_calls = mock_log.getLogger().warning.call_args_list
-        self.assertEqual(1, len(mock_log_warning_calls))
+        mock_db_handler_log_warning_calls = mock_db_handler_log.getLogger().warning.call_args_list
+        self.assertEqual(1, len(mock_db_handler_log_warning_calls))
         check_log1 = 'Could not parse PostGIS version from "BAD VERSION STRING"'
-        self.assertEqual(check_log1, mock_log_warning_calls[0][0][0])
+        self.assertEqual(check_log1, mock_db_handler_log_warning_calls[0][0][0])
 
-        mock_log_info_calls = mock_log.getLogger().info.call_args_list
-        self.assertEqual(3, len(mock_log_info_calls))
+        mock_model_log_info_calls = mock_model_log.getLogger().info.call_args_list
+        self.assertEqual(3, len(mock_model_log_info_calls))
         check_log1 = 'Creating database "spatial_db" for app "test_app"...'
         check_log2 = 'Enabling PostGIS on database "spatial_db" for app "test_app"...'
         check_log3 = (
             'Initializing database "spatial_db" for app "test_app" '
             'with initializer "appsettings.model.init_spatial_db"...'
         )
-        self.assertEqual(check_log1, mock_log_info_calls[0][0][0])
-        self.assertEqual(check_log2, mock_log_info_calls[1][0][0])
-        self.assertEqual(check_log3, mock_log_info_calls[2][0][0])
+        self.assertEqual(check_log1, mock_model_log_info_calls[0][0][0])
+        self.assertEqual(check_log2, mock_model_log_info_calls[1][0][0])
+        self.assertEqual(check_log3, mock_model_log_info_calls[2][0][0])
         mock_init.assert_called()
 
     @mock.patch("sqlalchemy.exc")
@@ -737,7 +788,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_engine = mock.MagicMock()
         mock_e.ProgrammingError = Exception
         mock_engine.connect().execute.side_effect = [mock.MagicMock(), Exception]
-        mock_get.side_effect = [mock_url, mock_engine]
+        mock_get.side_effect = [self.pss_postgres,mock_url, mock_engine]
 
         # Execute
         self.assertRaises(
@@ -778,7 +829,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_e.ProgrammingError = Exception
         mock_new_db_engine = mock.MagicMock()
         mock_new_db_engine.connect().execute.side_effect = Exception
-        mock_get.side_effect = [mock_url, mock_engine, mock_new_db_engine]
+        mock_get.side_effect = [self.pss_postgres,mock_url, mock_engine, mock_new_db_engine]
 
         # Execute
         self.assertRaises(
@@ -822,6 +873,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_new_db_engine = mock.MagicMock()
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [
+            self.pss_postgres,
             mock_url,
             mock_engine,
             mock_new_db_engine,
