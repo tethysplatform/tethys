@@ -247,6 +247,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_sqlite_subclass_instance.name = mock_sqlite_subclass_instance_name
         mock_sqlite_subclass_instance_pk = 1
         mock_sqlite_subclass_instance.pk = mock_sqlite_subclass_instance_pk
+        mock_sqlite_subclass_instance.engine = "sqlite"
         mock_sqlite_subclass.objects.all.return_value = [mock_sqlite_subclass_instance]
         mock_sqlite_subclass.__name__ = "MockSQLitePersistentStoreService"
 
@@ -257,6 +258,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_postgres_subclass_instance.name = mock_postgres_subclass_instance_name
         mock_postgres_subclass_instance_pk = 2
         mock_postgres_subclass_instance.pk = mock_postgres_subclass_instance_pk
+        mock_postgres_subclass_instance.engine = "postgres"
         mock_postgres_subclass.objects.all.return_value = [
             mock_postgres_subclass_instance
         ]
@@ -277,11 +279,11 @@ class TestTethysAppAdmin(unittest.TestCase):
                 [
                     (
                         f"{mock_sqlite_subclass_pk}_{mock_sqlite_subclass_instance_pk}",
-                        f"{mock_sqlite_subclass.__name__}: {mock_sqlite_subclass_instance_name}",
+                        f"{mock_sqlite_subclass_instance.engine}: {mock_sqlite_subclass_instance_name}",
                     ),
                     (
                         f"{mock_postgres_subclass_pk}_{mock_postgres_subclass_instance_pk}",
-                        f"{mock_postgres_subclass.__name__}: {mock_postgres_subclass_instance_name}",
+                        f"{mock_postgres_subclass_instance.engine}: {mock_postgres_subclass_instance_name}",
                     ),
                 ],
             )
@@ -354,6 +356,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_sqlite_subclass_instance.name = mock_sqlite_subclass_instance_name
         mock_sqlite_subclass_instance_pk = 1
         mock_sqlite_subclass_instance.pk = mock_sqlite_subclass_instance_pk
+        mock_sqlite_subclass_instance.engine = "sqlite"
         mock_sqlite_subclass.objects.all.return_value = [mock_sqlite_subclass_instance]
         mock_sqlite_subclass.__name__ = "MockSQLitePersistentStoreService"
 
@@ -363,6 +366,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_postgres_subclass_instance_name = "Test Postgres Service"
         mock_postgres_subclass_instance.name = mock_postgres_subclass_instance_name
         mock_postgres_subclass_instance_pk = 2
+        mock_postgres_subclass_instance.engine = "postgres"
         mock_postgres_subclass_instance.pk = mock_postgres_subclass_instance_pk
         mock_postgres_subclass.objects.all.return_value = [
             mock_postgres_subclass_instance
@@ -399,11 +403,11 @@ class TestTethysAppAdmin(unittest.TestCase):
                 [
                     (
                         f"{mock_sqlite_subclass_pk}_{mock_sqlite_subclass_instance_pk}",
-                        f"{mock_sqlite_subclass.__name__}: {mock_sqlite_subclass_instance_name}",
+                        f"{mock_sqlite_subclass_instance.engine}: {mock_sqlite_subclass_instance_name}",
                     ),
                     (
                         f"{mock_postgres_subclass_pk}_{mock_postgres_subclass_instance_pk}",
-                        f"{mock_postgres_subclass.__name__}: {mock_postgres_subclass_instance_name}",
+                        f"{mock_postgres_subclass_instance.engine}: {mock_postgres_subclass_instance_name}",
                     ),
                 ],
             )
