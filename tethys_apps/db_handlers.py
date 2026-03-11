@@ -21,7 +21,7 @@ class PersistentStoreDatabaseHandler:
         raise NotImplementedError()
 
     def enable_postgis_extension(self, model, engine, url, namespaced_ps_name):
-        # Only relevant for Postgres
+        # optionally implemented by database handlers that support PostGIS
         pass
 
 
@@ -33,8 +33,9 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
             WITH OWNER {url.username}
             ENCODING 'UTF8'
         """
-        create_connection.execute("commit")
+
         try:
+            create_connection.execute("commit")
             create_connection.execute(create_db_statement)
         except sqlalchemy.exc.ProgrammingError:
             raise PersistentStorePermissionError(
@@ -70,7 +71,8 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
             else:
                 raise e
         finally:
-            drop_connection and drop_connection.close()
+            if drop_connection:
+                drop_connection.close()
 
     def database_exists(self, model, engine, url, namespaced_ps_name):
         connection = engine.connect()
@@ -118,7 +120,8 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
             raise PersistentStorePermissionError(
                 f'Database user "{url.username}" has insufficient permissions to enable spatial extension on persistent store database "{model.name}": must be a superuser.'
             )
-        new_db_connection.close()
+        finally:
+            new_db_connection.close()
 
 
 class SQLiteDatabaseHandler(PersistentStoreDatabaseHandler):
