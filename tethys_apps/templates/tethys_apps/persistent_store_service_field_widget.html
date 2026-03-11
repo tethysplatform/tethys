@@ -1,0 +1,132 @@
+{% load static %}
+<style>
+  form .related-widget-wrapper .dropdown-menu {
+    display: none;
+  }
+  form .related-widget-wrapper .show .dropdown-menu,
+  form .related-widget-wrapper .btn-group .dropdown-menu.show {
+    display: block;
+  }
+
+  .add-pss-dropdown {
+    padding: 0;
+  }
+  .add-pss-dropdown::after {
+    border-top-color: black;
+  }
+
+  .persistent-store-wrapper {
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+<div
+  class="related-widget-wrapper persistent-store-wrapper"
+  data-model-ref="Persistent Store Service"
+>
+  {{ widget }}
+  <a
+    class="related-widget-wrapper-link change-related"
+    id="change_id_{{ name }}"
+    data-popup="yes"
+    title="Change selected Persistent Store Service"
+    href="{{ change_url }}"
+  >
+    <img
+      src="{% static 'admin/img/icon-changelink.svg' %}"
+      alt=""
+      width="20"
+      height="20"
+    />
+  </a>
+  <div class="btn-group">
+    <button
+      type="button"
+      class="btn add-pss-dropdown dropdown-toggle dropdown-toggle-split"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      title="Add another Persistent Store Service"
+    >
+      <img
+        src="{% static 'admin/img/icon-addlink.svg' %}"
+        alt=""
+        width="20"
+        height="20"
+      />
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-start">
+      {% for subclass in persistent_store_subclasses %}
+      <li>
+        <a
+          class="dropdown-item"
+          href="/admin/tethys_services/{{ subclass.model_name }}/add/?_popup=1"
+          data-popup="yes"
+        >
+          {{ subclass.verbose_name }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <a
+    class="related-widget-wrapper-link view-related"
+    id="view_id_{{ name }}"
+    title="View selected Persistent Store Service"
+    href="{{ view_url }}"
+  >
+    <img
+      src="{% static 'admin/img/icon-viewlink.svg' %}"
+      alt=""
+      width="20"
+      height="20"
+    />
+  </a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var select = document.getElementById("id_{{ name }}");
+    var changeLink = document.getElementById("change_id_{{ name }}");
+    var viewLink = document.getElementById("view_id_{{ name }}");
+    function updateLinks() {
+      var selected = select.value;
+      if (selected === "" || selected === "---------") {
+        changeLink.style.pointerEvents = "none";
+        changeLink.style.opacity = 0.5;
+        viewLink.style.pointerEvents = "none";
+        viewLink.style.opacity = 0.5;
+        changeLink.href = "#";
+        viewLink.href = "#";
+      } else {
+        changeLink.style.pointerEvents = "";
+        changeLink.style.opacity = 1;
+        viewLink.style.pointerEvents = "";
+        viewLink.style.opacity = 1;
+        var parts = selected.split(":");
+        var model_name = parts[0];
+        var ct = parts[1];
+        var pk = parts[2];
+        changeLink.href = `/admin/tethys_services/${model_name}/${pk}/change/`;
+        viewLink.href = `/admin/tethys_services/${model_name}/${pk}/change/?_to_field=id`;
+      }
+    }
+
+    document
+      .querySelectorAll(".add-pss-dropdown ~ .dropdown-menu .dropdown-item")
+      .forEach(function (link) {
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          window.open(
+            link.href,
+            "_blank",
+            "width=800,height=600,scrollbars=yes,resizable=yes",
+          );
+        });
+      });
+
+    select.addEventListener("change", updateLinks);
+    updateLinks();
+  });
+</script>
