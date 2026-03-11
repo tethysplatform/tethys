@@ -11,6 +11,7 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError
+import os
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -377,7 +378,5 @@ class SQLitePersistentStoreService(PersistentStoreServiceBase):
         db_table = "tethys_services_persistentstoreservice_sqlite"
 
     def get_url(self):
-        """
-        Returns a Persistent Store URL
-        """
-        return f"sqlite:///{self.dir_path}"
+        db_file = os.path.join(self.dir_path, f"{self.database}.sqlite")
+        return f"sqlite:///{db_file}"

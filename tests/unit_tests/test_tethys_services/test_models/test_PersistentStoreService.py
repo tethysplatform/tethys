@@ -57,23 +57,25 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         pss = service_model.SQLitePersistentStoreService(
             name="test_pss", dir_path="/tmp"
         )
+        pss.database = "test_db"
 
         # Execute
         ret = pss.get_url()
 
-        self.assertEqual("sqlite:////tmp", str(ret))
+        self.assertEqual("sqlite:////tmp/test_db.sqlite", str(ret))
 
     @mock.patch("sqlalchemy.create_engine")
     def test_get_engine(self, mock_ce):
         pss = service_model.SQLitePersistentStoreService(
             name="test_pss", dir_path="/tmp"
         )
+        pss.database = "test_db"
 
         # Execute
         pss.get_engine()
 
         # Check if called correctly
-        mock_ce.assert_called_with("sqlite:////tmp")
+        mock_ce.assert_called_with("sqlite:////tmp/test_db.sqlite")
 
 
 class TestConcreteStoreTests(TethysTestCase):
