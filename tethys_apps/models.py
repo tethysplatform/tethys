@@ -33,8 +33,8 @@ from tethys_portal.optional_dependencies import optional_import, has_module
 from tethys_apps.db_handlers import PostgresDatabaseHandler, SQLiteDatabaseHandler
 
 DB_ENGINE_HANDLERS = {
-    "postgresql": PostgresDatabaseHandler(),
-    "sqlite": SQLiteDatabaseHandler(),
+    "postgresql": PostgresDatabaseHandler,
+    "sqlite": SQLiteDatabaseHandler,
 }
 
 # optional imports
@@ -1028,11 +1028,11 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         engine = self.get_value(as_engine=True)
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
-        strategy = DB_ENGINE_HANDLERS.get(engine_type)
-        if not strategy:
-            raise NotImplementedError(f"No strategy for engine type: {engine_type}")
+        db_handler = DB_ENGINE_HANDLERS.get(engine_type)
+        if not db_handler:
+            raise NotImplementedError(f"No db_handler for engine type: {engine_type}")
 
-        return strategy.database_exists(self, engine, url, namespaced_ps_name)
+        return db_handler().database_exists(self, engine, url, namespaced_ps_name)
 
     def drop_persistent_store_database(self):
         """
@@ -1051,11 +1051,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         engine = self.get_value(as_engine=True)
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
-        strategy = DB_ENGINE_HANDLERS.get(engine_type)
-        if not strategy:
-            raise NotImplementedError(f"No strategy for engine type: {engine_type}")
+        db_handler = DB_ENGINE_HANDLERS.get(engine_type)
+        # NotImplementedError would be raised in persistent_store_database_exists method
 
-        strategy.drop_database(self, engine, url, namespaced_ps_name)
+        db_handler().drop_database(self, engine, url, namespaced_ps_name)
 
     def create_persistent_store_database(self, refresh=False, force_first_time=False):
         """
@@ -1069,9 +1068,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
         db_exists = self.persistent_store_database_exists()
 
-        strategy = DB_ENGINE_HANDLERS.get(engine_type)
-        if not strategy:
-            raise NotImplementedError(f"No strategy for engine type: {engine_type}")
+        db_handler = DB_ENGINE_HANDLERS.get(engine_type)
+        # NotImplementedError would be raised in persistent_store_database_exists method
 
         if db_exists and refresh:
             self.drop_persistent_store_database()
@@ -1083,7 +1081,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             log.info(
                 f'Creating database "{self.name}" for app "{self.tethys_app.package}"...'
             )
-            strategy.create_database(self, engine, url, namespaced_ps_name)
+            db_handler().create_database(self, engine, url, namespaced_ps_name)
 
         if self.spatial:
             log.info(
@@ -1092,7 +1090,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     self.tethys_app.package,
                 )
             )
-            strategy.enable_postgis_extension(self, engine, url, namespaced_ps_name)
+            db_handler().enable_postgis_extension(self, engine, url, namespaced_ps_name)
 
         if self.initializer:
             log.info(
