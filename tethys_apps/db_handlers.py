@@ -126,27 +126,20 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
 
 class SQLiteDatabaseHandler(PersistentStoreDatabaseHandler):
     def create_database(self, model, engine, url, namespaced_ps_name):
-        db_url = model.get_value(as_url=True)
-        if db_url.startswith("sqlite:///"):
-            db_path = db_url.replace("sqlite:///", "")
-            db_path = os.path.join(db_path, namespaced_ps_name + ".sqlite")
-            if not os.path.isfile(db_path):
-                import sqlite3
+        db_path = model.get_value(with_db=True, as_url=True)
+        db_path = db_path.replace("sqlite:///", "")
+        if not os.path.isfile(db_path):
+            import sqlite3
 
-                sqlite3.connect(db_path).close()
+            sqlite3.connect(db_path).close()
 
     def drop_database(self, model, engine, url, namespaced_ps_name):
-        db_url = model.get_value(as_url=True)
-        if db_url.startswith("sqlite:///"):
-            db_path = db_url.replace("sqlite:///", "")
-            db_path = os.path.join(db_path, namespaced_ps_name + ".sqlite")
-            if os.path.isfile(db_path):
-                os.remove(db_path)
+        db_path = model.get_value(with_db=True, as_url=True)
+        db_path = db_path.replace("sqlite:///", "")
+        if os.path.isfile(db_path):
+            os.remove(db_path)
 
     def database_exists(self, model, engine, url, namespaced_ps_name):
-        db_url = model.get_value(as_url=True)
-        if db_url.startswith("sqlite:///"):
-            db_path = db_url.replace("sqlite:///", "")
-            db_path = os.path.join(db_path, namespaced_ps_name + ".sqlite")
-            return os.path.isfile(db_path)
-        return False
+        db_path = model.get_value(with_db=True, as_url=True)
+        db_path = db_path.replace("sqlite:///", "")
+        return os.path.isfile(db_path)

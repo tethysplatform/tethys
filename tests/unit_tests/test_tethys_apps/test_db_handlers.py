@@ -383,7 +383,7 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
         namespaced_ps_name = "test_db"
         dir_path = "/fake/path"
         db_path = f"{dir_path}/{namespaced_ps_name}.sqlite"
-        mock_model.get_value.return_value = f"sqlite:///{dir_path}"
+        mock_model.get_value.return_value = f"sqlite:///{db_path}"
 
         with (
             mock.patch("os.path.isfile") as mock_isfile,
@@ -402,7 +402,8 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
         mock_model = mock.MagicMock()
         namespaced_ps_name = "test_db"
         dir_path = "/fake/path"
-        mock_model.get_value.return_value = f"sqlite:///{dir_path}"
+        db_path = f"{dir_path}/{namespaced_ps_name}.sqlite"
+        mock_model.get_value.return_value = f"sqlite:///{db_path}"
 
         with (
             mock.patch("os.path.isfile") as mock_isfile,
@@ -422,7 +423,7 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
         namespaced_ps_name = "test_db"
         dir_path = "/fake/path"
         db_path = f"{dir_path}/{namespaced_ps_name}.sqlite"
-        mock_model.get_value.return_value = f"sqlite:///{dir_path}"
+        mock_model.get_value.return_value = f"sqlite:///{db_path}"
 
         with (
             mock.patch("os.path.isfile") as mock_isfile,
@@ -441,7 +442,8 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
         mock_model = mock.MagicMock()
         namespaced_ps_name = "test_db"
         dir_path = "/fake/path"
-        mock_model.get_value.return_value = f"sqlite:///{dir_path}"
+        db_path = f"{dir_path}/{namespaced_ps_name}.sqlite"
+        mock_model.get_value.return_value = f"sqlite:///{db_path}"
 
         with (
             mock.patch("os.path.isfile") as mock_isfile,
