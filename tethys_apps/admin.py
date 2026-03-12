@@ -208,7 +208,7 @@ class PersistentStoreServiceChoiceMixin:
             "persistent_store_service_choice"
         )
         if persistent_store_service_choice:
-            ct_pk, obj_pk = map(int, persistent_store_service_choice.split("_"))
+            ct_pk, obj_pk = map(int, persistent_store_service_choice.split(":")[1:])
             content_type = ContentType.objects.get(pk=ct_pk)
             cleaned_data["content_type"] = content_type
             cleaned_data["object_id"] = obj_pk
