@@ -231,7 +231,12 @@ class TestTethysAppAdmin(unittest.TestCase):
     def test_PersistentStoreConnectionSettingForm_init_no_subclass_instances(self):
         form = PersistentStoreConnectionSettingForm()
         choices = form.fields["persistent_store_service_choice"].choices
-        self.assertEqual(choices, [])
+        self.assertEqual(
+            choices,
+            [
+                ("", "---------"),
+            ],
+        )
 
     @mock.patch(
         "django.contrib.contenttypes.models.ContentType.objects.get_for_model",
@@ -277,12 +282,13 @@ class TestTethysAppAdmin(unittest.TestCase):
             self.assertEqual(
                 choices,
                 [
+                    ("", "---------"),
                     (
-                        f"{mock_sqlite_subclass_pk}_{mock_sqlite_subclass_instance_pk}",
+                        f"{mock_sqlite_subclass.__name__.lower()}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}",
                         f"{mock_sqlite_subclass_instance.engine}: {mock_sqlite_subclass_instance_name}",
                     ),
                     (
-                        f"{mock_postgres_subclass_pk}_{mock_postgres_subclass_instance_pk}",
+                        f"{mock_postgres_subclass.__name__.lower()}:{mock_postgres_subclass_pk}:{mock_postgres_subclass_instance_pk}",
                         f"{mock_postgres_subclass_instance.engine}: {mock_postgres_subclass_instance_name}",
                     ),
                 ],
@@ -298,7 +304,12 @@ class TestTethysAppAdmin(unittest.TestCase):
         ):
             form = PersistentStoreConnectionSettingForm()
             choices = form.fields["persistent_store_service_choice"].choices
-            self.assertEqual(choices, [])
+            self.assertEqual(
+                choices,
+                [
+                    ("", "---------"),
+                ],
+            )
 
     @pytest.mark.django_db
     def test_PersistentStoreDatabaseSettingInline(self):
@@ -336,7 +347,12 @@ class TestTethysAppAdmin(unittest.TestCase):
     def test_PersistentStoreDatabaseSettingForm_init_no_subclass_instances(self):
         form = PersistentStoreDatabaseSettingForm()
         choices = form.fields["persistent_store_service_choice"].choices
-        self.assertEqual(choices, [])
+        self.assertEqual(
+            choices,
+            [
+                ("", "---------"),
+            ],
+        )
 
     @mock.patch(
         "django.contrib.contenttypes.models.ContentType.objects.get_for_model",
@@ -373,9 +389,21 @@ class TestTethysAppAdmin(unittest.TestCase):
         ]
         mock_postgres_subclass.__name__ = "MockPostgresPersistentStoreService"
         mock_get_for_model.side_effect = [
-            mock.MagicMock(pk=mock_sqlite_subclass_pk),
-            mock.MagicMock(pk=mock_postgres_subclass_pk),
+            mock.MagicMock(
+                pk=mock_sqlite_subclass_pk, model=mock_sqlite_subclass.__name__
+            ),
+            mock.MagicMock(
+                pk=mock_postgres_subclass_pk, model=mock_postgres_subclass.__name__
+            ),
         ]
+        mock_get.side_effect = [
+            mock.MagicMock(
+                pk=mock_postgres_subclass_pk, model=mock_postgres_subclass.__name__
+            ),
+            mock_sqlite_subclass,
+        ]
+        lowerCasePostgresName = mock_postgres_subclass.__name__.lower()
+        lowerCaseSQLiteName = mock_sqlite_subclass.__name__.lower()
 
         mock_psds.content_type_id = mock_postgres_subclass_pk
         mock_psds.object_id = mock_postgres_subclass_instance_pk
@@ -390,7 +418,7 @@ class TestTethysAppAdmin(unittest.TestCase):
                 "description": "desc",
                 "spatial": False,
                 "initialized": False,
-                "persistent_store_service_choice": f"{mock_sqlite_subclass_pk}_{mock_sqlite_subclass_instance_pk}",
+                "persistent_store_service_choice": f"{lowerCaseSQLiteName}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}",
                 "required": True,
             }
 
@@ -401,27 +429,27 @@ class TestTethysAppAdmin(unittest.TestCase):
             self.assertEqual(
                 choices,
                 [
+                    ("", "---------"),
                     (
-                        f"{mock_sqlite_subclass_pk}_{mock_sqlite_subclass_instance_pk}",
+                        f"{lowerCaseSQLiteName}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}",
                         f"{mock_sqlite_subclass_instance.engine}: {mock_sqlite_subclass_instance_name}",
                     ),
                     (
-                        f"{mock_postgres_subclass_pk}_{mock_postgres_subclass_instance_pk}",
+                        f"{lowerCasePostgresName}:{mock_postgres_subclass_pk}:{mock_postgres_subclass_instance_pk}",
                         f"{mock_postgres_subclass_instance.engine}: {mock_postgres_subclass_instance_name}",
                     ),
                 ],
             )
             self.assertEqual(
                 form.fields["persistent_store_service_choice"].initial,
-                f"{mock_postgres_subclass_pk}_{mock_postgres_subclass_instance_pk}",
+                f"{lowerCasePostgresName}:{mock_postgres_subclass_pk}:{mock_postgres_subclass_instance_pk}",
             )
 
-            mock_get.return_value = mock_sqlite_subclass
             is_valid = form.is_valid()
             assert is_valid
             assert (
                 form.cleaned_data["persistent_store_service_choice"]
-                == f"{mock_sqlite_subclass_pk}_{mock_sqlite_subclass_instance_pk}"
+                == f"{lowerCaseSQLiteName}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}"
             )
             assert form.instance.content_type == mock_sqlite_subclass
             assert form.instance.object_id == mock_sqlite_subclass_instance_pk
@@ -436,7 +464,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         ):
             form = PersistentStoreDatabaseSettingForm()
             choices = form.fields["persistent_store_service_choice"].choices
-            self.assertEqual(choices, [])
+            self.assertEqual(choices, [("", "---------")])
 
     @pytest.mark.django_db
     def test_TethysAppQuotasSettingInline(self):
