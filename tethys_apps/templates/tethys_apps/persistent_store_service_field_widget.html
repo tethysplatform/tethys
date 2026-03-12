@@ -60,8 +60,8 @@
       {% for subclass in persistent_store_subclasses %}
       <li>
         <a
-          class="dropdown-item"
-          href="/admin/tethys_services/{{ subclass.model_name }}/add/?_popup=1"
+          class="dropdown-item related-widget-wrapper-link view-related"
+          href="/admin/tethys_services/{{ subclass.model_name }}/add/?_to_field=id&_popup=1"
           data-popup="yes"
         >
           {{ subclass.verbose_name }}
@@ -108,7 +108,7 @@
         var model_name = parts[0];
         var ct = parts[1];
         var pk = parts[2];
-        changeLink.href = `/admin/tethys_services/${model_name}/${pk}/change/`;
+        changeLink.href = `/admin/tethys_services/${model_name}/${pk}/change/?_to_field=id&_popup=1`;
         viewLink.href = `/admin/tethys_services/${model_name}/${pk}/change/?_to_field=id`;
       }
     }
