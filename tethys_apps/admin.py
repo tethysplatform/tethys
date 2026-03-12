@@ -145,6 +145,7 @@ class SchedulerSettingInline(TethysAppSettingInline):
 class CustomRelatedFieldWidgetWrapper(forms.Select):
     def render(self, name, value, attrs=None, renderer=None):
         from tethys_services.models import PersistentStoreServiceBase
+
         persistent_store_subclasses = [
             {
                 "model_name": subclass.__name__.lower(),
@@ -152,20 +153,25 @@ class CustomRelatedFieldWidgetWrapper(forms.Select):
             }
             for subclass in PersistentStoreServiceBase.__subclasses__()
         ]
-        
+
         widget_html = super().render(name, value, attrs, renderer)
         context = {
-            'widget': widget_html,
-            'name': name,
-            'persistent_store_subclasses': persistent_store_subclasses,
-            'change_url': '#',  # Initial value, JS will update
-            'view_url': '#',    # Initial value, JS will update
-            'add_url': '/admin/tethys_services/persistentstoreservicebase/add/?_popup=1',
-            'change_link_style': 'pointer-events:none;opacity:0.5;',
-            'view_link_style': 'pointer-events:none;opacity:0.5;',
+            "widget": widget_html,
+            "name": name,
+            "persistent_store_subclasses": persistent_store_subclasses,
+            "change_url": "#",  # Initial value, JS will update
+            "view_url": "#",  # Initial value, JS will update
+            "add_url": "/admin/tethys_services/persistentstoreservicebase/add/?_popup=1",
+            "change_link_style": "pointer-events:none;opacity:0.5;",
+            "view_link_style": "pointer-events:none;opacity:0.5;",
         }
-        return mark_safe(render_to_string('tethys_apps/persistent_store_service_field_widget.html', context))
-    
+        return mark_safe(
+            render_to_string(
+                "tethys_apps/persistent_store_service_field_widget.html", context
+            )
+        )
+
+
 class PersistentStoreServiceChoiceMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -188,7 +194,9 @@ class PersistentStoreServiceChoiceMixin:
         self.fields["persistent_store_service_choice"].choices = (
             persistent_store_service_choices
         )
-        self.fields["persistent_store_service_choice"].widget = CustomRelatedFieldWidgetWrapper(choices=persistent_store_service_choices)
+        self.fields["persistent_store_service_choice"].widget = (
+            CustomRelatedFieldWidgetWrapper(choices=persistent_store_service_choices)
+        )
         if (
             self.instance.pk
             and getattr(self.instance, "content_type_id", None)
@@ -197,10 +205,12 @@ class PersistentStoreServiceChoiceMixin:
             ct_pk = self.instance.content_type_id
             obj_pk = self.instance.object_id
             # Find the model_name for the current content_type
-            
+
             ct = ContentType.objects.get(pk=ct_pk)
             model_name = ct.model.lower()
-            self.fields["persistent_store_service_choice"].initial = f"{model_name}:{ct_pk}:{obj_pk}"
+            self.fields["persistent_store_service_choice"].initial = (
+                f"{model_name}:{ct_pk}:{obj_pk}"
+            )
 
     def clean(self):
         cleaned_data = super().clean()
