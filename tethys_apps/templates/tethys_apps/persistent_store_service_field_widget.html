@@ -113,6 +113,39 @@
       }
     }
 
+    var django_dismissChangeRelatedObjectPopup =
+      window.dismissChangeRelatedObjectPopup;
+    var django_dismissAddRelatedObjectPopup =
+      window.dismissAddRelatedObjectPopup;
+
+    function dismissChangeRelatedObjectPopup(win, objId, newRepr, newId) {
+      try {
+        django_dismissChangeRelatedObjectPopup(win, objId, newRepr, newId);
+      } catch (error) {
+        console.error(
+          "Error calling original dismissChangeRelatedObjectPopup:",
+          error,
+        );
+        win.close();
+      }
+    }
+
+    function dismissAddRelatedObjectPopup(win, newId, newRepr) {
+      try {
+        django_dismissAddRelatedObjectPopup(win, newId, newRepr);
+      } catch (error) {
+        console.error(
+          "Error calling original dismissAddRelatedObjectPopup:",
+          error,
+        );
+        win.close();
+        window.location.reload();
+      }
+    }
+
+    window.dismissChangeRelatedObjectPopup = dismissChangeRelatedObjectPopup;
+    window.dismissAddRelatedObjectPopup = dismissAddRelatedObjectPopup;
+
     document
       .querySelectorAll(".add-pss-dropdown ~ .dropdown-menu .dropdown-item")
       .forEach(function (link) {
