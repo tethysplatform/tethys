@@ -209,7 +209,7 @@ Persistent Stores
 Enables apps to define and use persistent stores.
 
 **dependencies**
-    - ``sqlalchemy<2``
+    - ``sqlalchemy<2`` 
     - ``psycopg2`` (or other DB driver for Persistent Store type)
 
 Spatial Persistent Stores
