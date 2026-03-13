@@ -338,6 +338,9 @@ class PersistentStoreServiceBase(models.Model):
 
 
 class PostgresPersistentStoreService(PersistentStoreServiceBase):
+    engine = models.CharField(
+        max_length=50, default="postgresql", choices=(("postgresql", "PostgreSQL"),)
+    )
     host = models.CharField(max_length=255, default="localhost")
     port = models.IntegerField(
         default=5435, validators=[validate_persistent_store_port]
@@ -369,7 +372,7 @@ class PostgresPersistentStoreService(PersistentStoreServiceBase):
 class SQLitePersistentStoreService(PersistentStoreServiceBase):
     dir_path = models.CharField(max_length=255)
     engine = models.CharField(
-        max_length=50, default="sqlite", choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES
+        max_length=50, default="sqlite", choices=(("sqlite", "SQLite"),)
     )
 
     class Meta:
