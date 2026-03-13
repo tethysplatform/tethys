@@ -170,7 +170,7 @@ Tethys Platform provides a software development kit (SDK) that provides applicat
 =====================================  ===============================================================  ============================================
 Software                               API                                                              Functionality
 =====================================  ===============================================================  ============================================
-PostgreSQL                             :doc:`./tethys_sdk/tethys_services/persistent_store`             SQL Database Storage
+PostgreSQL, SQLite                     :doc:`./tethys_sdk/tethys_services/persistent_store`             SQL Database Storage
 PostGIS                                :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
 GeoServer                              :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
 THREDDS Data Server                    :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
