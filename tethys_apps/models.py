@@ -1090,7 +1090,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     self.tethys_app.package,
                 )
             )
-            db_handler().enable_postgis_extension(self, engine, url, namespaced_ps_name)
+            db_handler().enable_spatial_extension(self, engine, url, namespaced_ps_name)
 
         if self.initializer:
             log.info(

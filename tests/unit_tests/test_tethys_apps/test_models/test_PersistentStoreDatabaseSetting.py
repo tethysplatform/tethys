@@ -429,7 +429,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertEqual(check_log3, mock_log_info_calls[2][0][0])
 
         mock_handler.create_database.assert_called()
-        mock_handler.enable_postgis_extension.assert_called()
+        mock_handler.enable_spatial_extension.assert_called()
         mock_init.assert_called_with(mock_init_param, True)
 
     @mock.patch("tethys_apps.models.PostgresDatabaseHandler")
@@ -491,7 +491,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
 
         mock_drop_persistent_store_database.assert_not_called()
         mock_handler.create_database.assert_not_called()
-        mock_handler.enable_postgis_extension.assert_called()
+        mock_handler.enable_spatial_extension.assert_called()
         mock_init.assert_called_with(mock_init_param, False)
 
     @mock.patch("tethys_apps.models.PostgresDatabaseHandler")
@@ -549,7 +549,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
 
         mock_drop_persistent_store_database.assert_called()
         mock_handler.create_database.assert_called()
-        mock_handler.enable_postgis_extension.assert_not_called()
+        mock_handler.enable_spatial_extension.assert_not_called()
         mock_init.assert_not_called()
 
     @mock.patch("tethys_apps.models.PostgresDatabaseHandler")
@@ -608,5 +608,5 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
 
             mock_drop_persistent_store_database.assert_called()
             mock_handler.create_database.assert_called()
-            mock_handler.enable_postgis_extension.assert_not_called()
+            mock_handler.enable_spatial_extension.assert_not_called()
             mock_init.assert_called()

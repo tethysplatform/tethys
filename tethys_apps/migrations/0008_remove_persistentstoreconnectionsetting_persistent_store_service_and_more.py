@@ -4,22 +4,44 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+def migrate_persistent_store_service(apps, schema_editor):
+    ContentType = apps.get_model("contenttypes", "ContentType")
+    PersistentStoreDatabaseSetting = apps.get_model(
+        "tethys_apps", "PersistentStoreDatabaseSetting"
+    )
+    PersistentStoreConnectionSetting = apps.get_model(
+        "tethys_apps", "PersistentStoreConnectionSetting"
+    )
+
+    # Get ContentType for your PostgresPersistentStoreService model
+    PostgresService = apps.get_model(
+        "tethys_services", "PostgresPersistentStoreService"
+    )
+    postgres_ct = ContentType.objects.get_for_model(PostgresService)
+
+    for setting in PersistentStoreDatabaseSetting.objects.all():
+        # If the old field existed and was set
+        if getattr(setting, "persistent_store_service_id", None):
+            setting.content_type = postgres_ct
+            setting.object_id = setting.persistent_store_service_id
+            setting.save()
+
+    for setting in PersistentStoreConnectionSetting.objects.all():
+        if getattr(setting, "persistent_store_service_id", None):
+            setting.content_type = postgres_ct
+            setting.object_id = setting.persistent_store_service_id
+            setting.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
         ("contenttypes", "0002_remove_content_type_name"),
         ("tethys_apps", "0007_tethysapp_back_url"),
+        ("tethys_services", "0002_postgrespersistentstoreservice_and_more"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="persistentstoreconnectionsetting",
-            name="persistent_store_service",
-        ),
-        migrations.RemoveField(
-            model_name="persistentstoredatabasesetting",
-            name="persistent_store_service",
-        ),
         migrations.AddField(
             model_name="persistentstoreconnectionsetting",
             name="content_type",
@@ -49,5 +71,14 @@ class Migration(migrations.Migration):
             model_name="persistentstoredatabasesetting",
             name="object_id",
             field=models.PositiveIntegerField(blank=True, null=True),
+        ),
+        migrations.RunPython(migrate_persistent_store_service),
+        migrations.RemoveField(
+            model_name="persistentstoreconnectionsetting",
+            name="persistent_store_service",
+        ),
+        migrations.RemoveField(
+            model_name="persistentstoredatabasesetting",
+            name="persistent_store_service",
         ),
     ]

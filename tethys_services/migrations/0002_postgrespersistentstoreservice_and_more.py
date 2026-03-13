@@ -6,10 +6,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        (
-            "tethys_apps",
-            "0008_remove_persistentstoreconnectionsetting_persistent_store_service_and_more",
-        ),
         ("tethys_services", "0001_initial_40"),
     ]
 

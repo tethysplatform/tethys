@@ -161,7 +161,6 @@ class CustomRelatedFieldWidgetWrapper(forms.Select):
             "persistent_store_subclasses": persistent_store_subclasses,
             "change_url": "#",  # Initial value, JS will update
             "view_url": "#",  # Initial value, JS will update
-            "add_url": "/admin/tethys_services/persistentstoreservicebase/add/?_popup=1",
             "change_link_style": "pointer-events:none;opacity:0.5;",
             "view_link_style": "pointer-events:none;opacity:0.5;",
         }
