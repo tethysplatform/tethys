@@ -33,10 +33,10 @@ class PersistentStoreDatabaseHandlerTests(TethysTestCase):
     def test_enable_postgis_extension_not_implemented(self):
         handler = PersistentStoreDatabaseHandler()
         try:
-            handler.enable_postgis_extension(None, None, None, None)
+            handler.enable_spatial_extension(None, None, None, None)
         except NotImplementedError:
             self.fail(
-                "enable_postgis_extension should not raise NotImplementedError by default"
+                "enable_spatial_extension should not raise NotImplementedError by default"
             )
 
 
@@ -253,7 +253,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
-        handler.enable_postgis_extension(mock_model, mock.MagicMock(), mock_url, "")
+        handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
 
         rts_call_args = mock_new_engine.connect().execute.call_args_list
         self.assertEqual(
@@ -289,7 +289,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
-        handler.enable_postgis_extension(mock_model, mock.MagicMock(), mock_url, "")
+        handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
 
         mock_new_engine.connect().close.assert_called_once()
 
@@ -332,7 +332,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
-        handler.enable_postgis_extension(mock_model, mock.MagicMock(), mock_url, "")
+        handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
 
         mock_new_engine.connect().close.assert_called_once()
 
@@ -365,7 +365,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         ]
 
         with self.assertRaises(PersistentStorePermissionError) as context:
-            handler.enable_postgis_extension(mock_model, mock.MagicMock(), mock_url, "")
+            handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
 
         self.assertIn(
             f'Database user "{mock_url.username}" has insufficient permissions to enable spatial extension on persistent store database "{mock_model.name}": must be a superuser.',

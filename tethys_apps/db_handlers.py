@@ -20,8 +20,8 @@ class PersistentStoreDatabaseHandler:
     def database_exists(self, model, engine, url, namespaced_ps_name):
         raise NotImplementedError()
 
-    def enable_postgis_extension(self, model, engine, url, namespaced_ps_name):
-        # optionally implemented by database handlers that support PostGIS
+    def enable_spatial_extension(self, model, engine, url, namespaced_ps_name):
+        # optionally implemented by database handlers that support spatial extensions
         pass
 
 
@@ -89,7 +89,7 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
                 return True
         return False
 
-    def enable_postgis_extension(self, model, engine, url, namespaced_ps_name):
+    def enable_spatial_extension(self, model, engine, url, namespaced_ps_name):
         log = logging.getLogger("tethys")
 
         new_db_engine = model.get_value(with_db=True, as_engine=True)
