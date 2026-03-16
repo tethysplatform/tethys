@@ -37,6 +37,7 @@ from tethys_apps.models import (
     SchedulerSetting,
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
+    SecureImageryServiceSetting,
     ProxyApp,
 )
 from tethys_portal.optional_dependencies import (
@@ -159,9 +160,10 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
     )
     model = PersistentStoreDatabaseSetting
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(dynamic=False)
+class SecureImageryServiceSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "secure_imagery_service", "required")
+    model = SecureImageryServiceSetting
 
 
 class TethysAppAdmin(GuardedModelAdmin):
@@ -194,6 +196,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,
         SpatialDatasetServiceSettingInline,
+        SecureImageryServiceSettingInline,
         WebProcessingServiceSettingInline,
         SchedulerSettingInline,
         TethysAppQuotasSettingInline,

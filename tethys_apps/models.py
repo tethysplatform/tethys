@@ -43,6 +43,7 @@ try:
         SpatialDatasetService,
         WebProcessingService,
         PersistentStoreService,
+        SecureImageryService
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -159,6 +160,12 @@ class TethysApp(models.Model, TethysBaseMixin):
         return self.settings_set.exclude(
             persistentstoredatabasesetting__isnull=True
         ).select_subclasses("persistentstoredatabasesetting")
+
+    @property
+    def secure_imagery_service_settings(self):
+        return self.settings_set.exclude(
+            secureimageryservicesetting__isnull=True
+        ).select_subclasses("secureimageryservicesetting")
 
     @property
     def configured(self):
@@ -1222,6 +1229,57 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # Update initialization
         self.initialized = True
         self.save()
+
+class SecureImageryServiceSetting(TethysAppSetting):
+    """
+    Used to define a Secure Imagery Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import SecureImageryServiceSetting
+
+        secure_imagery_service_setting = SecureImageryServiceSetting(
+            name='secure_imagery_service',
+            description='Secure Imagery service for app to use',
+            required=True,
+        )
+
+    """
+
+    secure_imagery_service = models.ForeignKey(
+        SecureImageryService, on_delete=models.CASCADE, blank=True, null=True
+    )
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.secure_imagery_service and self.required:
+            raise ValidationError("Required.")
+
+
+    def get_value(self):
+        secure_service = self.secure_imagery_service
+
+        if not secure_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot create endpoint for SecureImageryServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureImageryService assigned."
+            )
+
+        return {"name": secure_service.name, 
+                "endpoint": secure_service.endpoint, 
+                "metadata": secure_service.metadata,
+                "api_key": secure_service.api_key}
+
 
 
 class SchedulerSetting(TethysAppSetting):

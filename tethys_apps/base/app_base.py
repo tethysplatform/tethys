@@ -845,6 +845,37 @@ class TethysAppBase(TethysBase):
                     return wps_services
         """
         return None
+    
+    def secure_imagery_service_settings(self):
+        """
+        Override this method to define secure imagery service connections for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``SecureImageryServiceSetting`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.app_settings import SecureImageryServiceSetting
+
+            class MyFirstApp(TethysAppBase):
+
+                def secure_imagery_service_settings(self):
+                    \"""
+                    Example secure_imagery_service_settings method.
+                    \"""
+                    secure_imagery_services = (
+                        SecureImageryServiceSetting(
+                            name='primary_secure_imagery_service',
+                            description='Secure Imagery Service for app to use',
+                            required=True,
+                        ),
+                    )
+
+                    return secure_imagery_services
+        """
+        return None
 
     def scheduler_settings(self):
         """
@@ -1860,6 +1891,33 @@ class TethysAppBase(TethysBase):
         # Check if it exists
         ps_database_setting.persistent_store_database_exists()
         return True
+    
+    @classmethod
+    def get_secure_imagery_service(self, name):
+        """
+        Retrieves secure imagery service engine assigned to named SecureImageryServiceSetting for the app.
+
+        Args:
+            name(str): name of the SecureImageryServiceSetting as defined in the app.py.
+
+        Returns:
+            SecureImageryService: SecureImageryService assigned to setting.
+        """
+
+        from tethys_apps.models import TethysApp
+
+        db_app = TethysApp.objects.get(package=self.package)
+        secure_imagery_service_settings = db_app.secure_imagery_service_settings
+
+        try:
+            secure_imagery_service_setting = secure_imagery_service_settings.get(
+                name=name
+            )
+            return secure_imagery_service_setting.get_value()
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                "SecureImageryServiceSetting", name, self.name
+            )
 
     def sync_all_settings(self, db_app):
         # custom settings
@@ -1883,6 +1941,9 @@ class TethysAppBase(TethysBase):
             list(db_app.persistent_store_connection_settings)
             + list(db_app.persistent_store_database_settings),
         )
+        # secure imagery service settings
+        db_app.sync_settings(self.secure_imagery_service_settings(), db_app.secure_imagery_service_settings)
+        
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
 

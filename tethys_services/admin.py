@@ -12,6 +12,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from .models import (
     DatasetService,
+    SecureImageryService,
     SpatialDatasetService,
     WebProcessingService,
     PersistentStoreService,
@@ -73,6 +74,13 @@ class PersistentStoreServiceForm(ModelForm):
             "password": PasswordInput(),
         }
 
+class SecureImageryServiceForm(ModelForm):
+    class Meta:
+        model = SecureImageryService
+        fields = ("name", "endpoint", "api_key")
+        labels = {"name": _("Name"), "endpoint": _("Endpoint")}
+
+
 
 class DatasetServiceAdmin(admin.ModelAdmin):
     """
@@ -125,8 +133,17 @@ class PersistentStoreServiceAdmin(admin.ModelAdmin):
     form = PersistentStoreServiceForm
     fields = ("name", "engine", "host", "port", "username", "password")
 
+class SecureImageryServiceAdmin(admin.ModelAdmin):
+    """
+    Admin model for Secure Imagery Service Model
+    """
+
+    form = SecureImageryServiceForm
+    fields = ("name", "endpoint", "api_key", "metadata")
+
 
 admin.site.register(DatasetService, DatasetServiceAdmin)
 admin.site.register(SpatialDatasetService, SpatialDatasetServiceAdmin)
 admin.site.register(WebProcessingService, WebProcessingServiceAdmin)
 admin.site.register(PersistentStoreService, PersistentStoreServiceAdmin)
+admin.site.register(SecureImageryService, SecureImageryServiceAdmin)

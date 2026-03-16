@@ -11,6 +11,7 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError
+from fernet_fields import EncryptedTextField
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -342,3 +343,23 @@ class PersistentStoreService(models.Model):
             database=self.database,
         )
         return url
+
+class SecureImageryService(models.Model):
+    """
+    ORM for Secure Imagery Service settings.
+    """
+
+    name = models.CharField(max_length=30, unique=True)
+    endpoint = models.CharField(
+        max_length=1024, validators=[validate_url]
+    )
+    api_key = EncryptedTextField()
+    metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Secure Imagery Service"
+        verbose_name_plural = "Secure Imagery Services"
+
+    def __str__(self):
+        return self.name
+    
