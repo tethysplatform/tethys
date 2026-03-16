@@ -90,6 +90,7 @@ class SecureImageryServiceForm(ModelForm):
         labels = {
             "name": _("Name"), 
             "endpoint": _("Endpoint"), 
+            "hide_api_key": _("Hide API Key in Requests"),
             "api_key": _("API Key"), 
             "params": _("Parameters")
         }
@@ -172,7 +173,7 @@ class SecureImageryServiceAdmin(admin.ModelAdmin):
     """
 
     form = SecureImageryServiceForm
-    fields = ("name", "endpoint", "authentication_method", "authentication_key", "api_key", "params")
+    fields = ("name", "endpoint", "authentication_method", "hide_api_key", "authentication_key", "api_key", "params")
 
     class Media:
         js = ("tethys_services/js/secure_imagery_service_admin.js",)
