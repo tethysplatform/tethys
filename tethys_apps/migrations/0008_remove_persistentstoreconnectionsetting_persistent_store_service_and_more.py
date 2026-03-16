@@ -13,9 +13,9 @@ def migrate_persistent_store_service(apps, schema_editor):
         "tethys_apps", "PersistentStoreConnectionSetting"
     )
 
-    # Get ContentType for your PostgresPersistentStoreService model
+    # Get ContentType for your PersistentStoreService model
     PostgresService = apps.get_model(
-        "tethys_services", "PostgresPersistentStoreService"
+        "tethys_services", "PersistentStoreService"
     )
     postgres_ct = ContentType.objects.get_for_model(PostgresService)
 
@@ -38,7 +38,6 @@ class Migration(migrations.Migration):
     dependencies = [
         ("contenttypes", "0002_remove_content_type_name"),
         ("tethys_apps", "0007_tethysapp_back_url"),
-        ("tethys_services", "0002_postgrespersistentstoreservice_and_more"),
     ]
 
     operations = [
