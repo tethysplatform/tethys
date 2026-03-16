@@ -21,6 +21,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
+import os
 import sys
 import yaml
 import logging
@@ -707,3 +708,6 @@ USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", Tr
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
+
+# Encryption keys
+FERNET_KEYS = [os.environ.get("FERNET_KEY", None)]
