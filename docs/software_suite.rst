@@ -24,8 +24,13 @@ Spatial Database Storage
 
 Tethys Platform includes support for multiple spatially enabled databases for Tethys web apps.
 
- - `**PostgreSQL** <https://www.postgresql.org/>`_ with `**PostGIS** <http://postgis.net/>`_: Provides full spatial data storage and analysis capabilities. PostGIS adds spatial column types including raster, geometry, and geography, along with database functions for GIS analysis.
- - `**SQLite** <https://www.sqlite.org/>`_ with `**SpatiaLite** <https://www.gaia-gis.it/fossil/libspatialite/index>`_: Offers a lightweight spatial database option. SpatiaLite extends SQLite with support for spatial data types and functions, allowing apps to store and manipulate GIS data without requiring a full database server.
+ - **PostgreSQL**_ with **PostGIS**_: Provides full spatial data storage and analysis capabilities. PostGIS adds spatial column types including raster, geometry, and geography, along with database functions for GIS analysis.
+ - **SQLite**_ with **SpatiaLite**_: Offers a lightweight spatial database option. SpatiaLite extends SQLite with support for spatial data types and functions, allowing apps to store and manipulate GIS data without requiring a full database server.
+
+.. _PostgreSQL: https://www.postgresql.org/
+.. _PostGIS: http://postgis.net/
+.. _SQLite: https://www.sqlite.org/
+.. _SpatiaLite: https://www.gaia-gis.it/fossil/libspatialite/index
 
 To use a PostgreSQL or SQLite database in your app use the :doc:`./tethys_sdk/tethys_services/persistent_store`. To use a spatially enabled database with PostGIS or SpatiaLite use the :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`.
 
