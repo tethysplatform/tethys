@@ -504,3 +504,79 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
         exists = handler.database_exists(mock_model)
 
         self.assertFalse(exists)
+
+    @mock.patch("tethys_apps.db_handlers.logging")
+    @mock.patch("tethys_apps.db_handlers.sqlalchemy")
+    @mock.patch("tethys_apps.db_handlers.geoalchemy2")
+    def test_enable_spatial_extension(
+        self, mock_geoalchemy2, mock_sqlalchemy, mock_logging
+    ):
+        handler = SQLiteDatabaseHandler()
+        mock_model = mock.MagicMock()
+        mock_engine = mock.MagicMock()
+        mock_model.get_value.return_value = mock_engine
+        mock_model.name = "spatial_db"
+
+        handler.enable_spatial_extension(mock_model)
+
+        mock_engine.connect.assert_called()
+        mock_engine.connect().close.assert_called_once()
+
+        mock_db_handler_log_info_calls = mock_logging.getLogger().info.call_args_list
+        check_log = "SpatiaLite extension enabled on database spatial_db"
+        self.assertEqual(check_log, mock_db_handler_log_info_calls[0][0][0])
+        mock_sqlalchemy.event.listen.assert_called_once_with(
+            mock_engine, "connect", mock_geoalchemy2.load_spatialite
+        )
+
+    @mock.patch("tethys_apps.db_handlers.logging")
+    @mock.patch("tethys_apps.db_handlers.sqlalchemy")
+    @mock.patch("tethys_apps.db_handlers.geoalchemy2")
+    def test_enable_spatial_extension_connection_failed(
+        self, mock_geoalchemy2, mock_sqlalchemy, mock_logging
+    ):
+        handler = SQLiteDatabaseHandler()
+        mock_model = mock.MagicMock()
+        mock_engine = mock.MagicMock()
+        mock_model.get_value.return_value = mock_engine
+        mock_model.name = "spatial_db"
+        mock_engine.connect.side_effect = Exception("connection failed")
+        handler.enable_spatial_extension(mock_model)
+
+        mock_engine.connect.assert_called()
+
+        mock_db_handler_log_info_calls = mock_logging.getLogger().warning.call_args_list
+        check_log = "Could not enable SpatiaLite extension on database spatial_db: connection failed"
+        self.assertEqual(len(mock_db_handler_log_info_calls), 1)
+        self.assertEqual(check_log, mock_db_handler_log_info_calls[0][0][0])
+        mock_sqlalchemy.event.listen.assert_called_once_with(
+            mock_engine, "connect", mock_geoalchemy2.load_spatialite
+        )
+
+    @mock.patch("tethys_apps.db_handlers.logging")
+    @mock.patch("tethys_apps.db_handlers.sqlalchemy")
+    @mock.patch("tethys_apps.db_handlers.geoalchemy2")
+    def test_enable_spatial_extension_missing_env_path(
+        self, mock_geoalchemy2, mock_sqlalchemy, mock_logging
+    ):
+        handler = SQLiteDatabaseHandler()
+        mock_model = mock.MagicMock()
+        mock_engine = mock.MagicMock()
+        mock_model.get_value.return_value = mock_engine
+        mock_model.name = "spatial_db"
+        mock_engine.connect.side_effect = Exception(
+            "The SPATIALITE_LIBRARY_PATH environment variable is not set"
+        )
+        handler.enable_spatial_extension(mock_model)
+
+        mock_engine.connect.assert_called()
+
+        mock_db_handler_log_info_calls = mock_logging.getLogger().warning.call_args_list
+        check_log = "Could not enable SpatiaLite extension on database spatial_db: The SPATIALITE_LIBRARY_PATH environment variable is not set"
+        check_log2 = "To enable SpatiaLite support, Install and set the SPATIALITE_LIBRARY_PATH environment variable to the path of the SpatiaLite library on your system. Check https://www.gaia-gis.it/fossil/libspatialite/home for installation instructions."
+        self.assertEqual(len(mock_db_handler_log_info_calls), 2)
+        self.assertEqual(check_log, mock_db_handler_log_info_calls[0][0][0])
+        self.assertEqual(check_log2, mock_db_handler_log_info_calls[1][0][0])
+        mock_sqlalchemy.event.listen.assert_called_once_with(
+            mock_engine, "connect", mock_geoalchemy2.load_spatialite
+        )
