@@ -357,6 +357,7 @@ class SecureImageryService(models.Model):
     authentication_key = EncryptedTextField(blank=True, null=True)
     authentication_method = models.CharField(max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth", "OAuth")])
     params = models.JSONField(blank=True, null=True)
+    hide_api_key = models.BooleanField(default=True) # Hide API key in requests
 
     class Meta:
         verbose_name = "Secure Imagery Service"
