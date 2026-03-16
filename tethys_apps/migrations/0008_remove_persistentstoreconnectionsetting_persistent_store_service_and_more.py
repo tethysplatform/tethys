@@ -14,9 +14,7 @@ def migrate_persistent_store_service(apps, schema_editor):
     )
 
     # Get ContentType for your PersistentStoreService model
-    PostgresService = apps.get_model(
-        "tethys_services", "PersistentStoreService"
-    )
+    PostgresService = apps.get_model("tethys_services", "PersistentStoreService")
     postgres_ct = ContentType.objects.get_for_model(PostgresService)
 
     for setting in PersistentStoreDatabaseSetting.objects.all():
