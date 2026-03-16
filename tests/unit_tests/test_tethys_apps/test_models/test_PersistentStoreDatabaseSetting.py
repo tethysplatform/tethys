@@ -395,11 +395,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_get_value,
         mock_db_handler,
     ):
-        mock_engine = mock.MagicMock()
-        mock_url = mock.MagicMock(username="test_app")
         mock_pss = mock.MagicMock(engine="postgresql")
         mock_init_param = mock.MagicMock()
-        mock_get_value.side_effect = [mock_pss, mock_url, mock_engine, mock_init_param]
+        mock_get_value.side_effect = [mock_pss, mock_init_param]
         mock_get_namespaced_name.return_value = "spatial_db"
 
         # Set up the handler mock so every new instance uses it
@@ -419,7 +417,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
 
         mock_log_info_calls = mock_log.getLogger().info.call_args_list
         check_log1 = 'Creating database "spatial_db" for app "test_app"...'
-        check_log2 = 'Enabling PostGIS on database "spatial_db" for app "test_app"...'
+        check_log2 = (
+            'Enabling Spatial Extension on database "spatial_db" for app "test_app"...'
+        )
         check_log3 = (
             'Initializing database "spatial_db" for app "test_app" '
             'with initializer "appsettings.model.init_spatial_db"...'
@@ -457,11 +457,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_get_value,
         mock_db_handler,
     ):
-        mock_engine = mock.MagicMock()
-        mock_url = mock.MagicMock(username="test_app")
         mock_pss = mock.MagicMock(engine="postgresql")
         mock_init_param = mock.MagicMock()
-        mock_get_value.side_effect = [mock_pss, mock_url, mock_engine, mock_init_param]
+        mock_get_value.side_effect = [mock_pss, mock_init_param]
         mock_get_namespaced_name.return_value = "spatial_db"
 
         # Set up the handler mock so every new instance uses it
@@ -481,7 +479,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
             )
 
         mock_log_info_calls = mock_log.getLogger().info.call_args_list
-        check_log1 = 'Enabling PostGIS on database "spatial_db" for app "test_app"...'
+        check_log1 = (
+            'Enabling Spatial Extension on database "spatial_db" for app "test_app"...'
+        )
         check_log2 = (
             'Initializing database "spatial_db" for app "test_app" '
             'with initializer "appsettings.model.init_spatial_db"...'
