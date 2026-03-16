@@ -1008,10 +1008,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         # Order here matters. Think carefully before changing.
         if as_engine:
-            return ps_service.get_engine()
+            return ps_service.get_engine(spatial=self.spatial)
 
         if as_sessionmaker:
-            return sessionmaker(bind=ps_service.get_engine())
+            return sessionmaker(bind=ps_service.get_engine(spatial=self.spatial))
 
         if as_url:
             return ps_service.get_url()
@@ -1024,15 +1024,12 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         ps_service = self.get_value()
         engine_type = ps_service.engine
-        url = self.get_value(as_url=True)
-        engine = self.get_value(as_engine=True)
-        namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
         db_handler = DB_ENGINE_HANDLERS.get(engine_type)
         if not db_handler:
             raise NotImplementedError(f"No db_handler for engine type: {engine_type}")
 
-        return db_handler().database_exists(self, engine, url, namespaced_ps_name)
+        return db_handler().database_exists(model=self)
 
     def drop_persistent_store_database(self):
         """
@@ -1047,14 +1044,11 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         )
         ps_service = self.get_value()
         engine_type = ps_service.engine
-        url = self.get_value(as_url=True)
-        engine = self.get_value(as_engine=True)
-        namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
         db_handler = DB_ENGINE_HANDLERS.get(engine_type)
         # NotImplementedError would be raised in persistent_store_database_exists method
 
-        db_handler().drop_database(self, engine, url, namespaced_ps_name)
+        db_handler().drop_database(model=self)
 
     def create_persistent_store_database(self, refresh=False, force_first_time=False):
         """
@@ -1063,9 +1057,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         log = logging.getLogger("tethys")
         ps_service = self.get_value()
         engine_type = ps_service.engine
-        url = self.get_value(as_url=True)
-        engine = self.get_value(as_engine=True)
-        namespaced_ps_name = self.get_namespaced_persistent_store_name()
         db_exists = self.persistent_store_database_exists()
 
         db_handler = DB_ENGINE_HANDLERS.get(engine_type)
@@ -1081,16 +1072,16 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             log.info(
                 f'Creating database "{self.name}" for app "{self.tethys_app.package}"...'
             )
-            db_handler().create_database(self, engine, url, namespaced_ps_name)
+            db_handler().create_database(model=self)
 
         if self.spatial:
             log.info(
-                'Enabling PostGIS on database "{0}" for app "{1}"...'.format(
+                'Enabling Spatial Extension on database "{0}" for app "{1}"...'.format(
                     self.name,
                     self.tethys_app.package,
                 )
             )
-            db_handler().enable_spatial_extension(self, engine, url, namespaced_ps_name)
+            db_handler().enable_spatial_extension(model=self)
 
         if self.initializer:
             log.info(
