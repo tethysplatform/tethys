@@ -2,11 +2,11 @@
 Spatial Persistent Stores API
 *****************************
 
-**Last Updated:** May 2017
+**Last Updated:** March 2026
 
 .. important::
 
-    This feature requires the ``psycopg2``, ``sqlalchmey``, and ``geoalchemy2`` libraries to be installed. Starting with Tethys 5.0 or if you are using ```micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
+    This feature requires the ``psycopg2``, ``sqlalchemy``, and ``geoalchemy2`` libraries to be installed. Starting with Tethys 5.0 or if you are using ```micro-tethys-platform``, you will need to install these libraries using conda or pip as follows:
 
     .. code-block:: bash
 
@@ -16,9 +16,17 @@ Spatial Persistent Stores API
         # pip
         pip install psycopg2 "sqlalchemy<2" geoalchemy2
 
-Persistent store databases can support spatial data types. The spatial capabilities are provided by the `PostGIS <http://postgis.net/>`_ extension for the `PostgreSQL <https://www.postgresql.org/>`_ database. PostGIS extends the column types of PostgreSQL databases by adding ``geometry``, ``geography``, and ``raster`` types. PostGIS also provides hundreds of database functions that can be used to perform spatial operations on data stored in spatial columns. For more information on PostGIS, see `<http://www.postgis.net>`_.
+Persistent store databases can support spatial data types. Spatial capabilities are provided through spatial database extensions depending on the database being used.
 
-The following article details the the spatial capabilities of persistent stores in Tethys Platform. This article builds on the concepts and ideas introduced in the :doc:`./persistent_store` documentation. Please review it before continuing.
+For **`PostgreSQL <https://www.postgresql.org/>`_**, spatial functionality is provided by the `PostGIS <http://postgis.net/>`_ extension. PostGIS extends the column types of PostgreSQL databases by adding geometry, geography, and raster types. It also provides hundreds of database functions that can be used to perform spatial operations on data stored in spatial columns.
+
+For **`SQLite <https://www.sqlite.org/>`_**, spatial functionality is provided by the `SpatiaLite <https://www.gaia-gis.it/fossil/libspatialite/index>`_ extension. SpatiaLite extends SQLite with support for geometry data types, spatial indexing, and a large collection of spatial functions for working with vector GIS data.
+
+The following article details the spatial capabilities of persistent stores in Tethys Platform. This article builds on the concepts and ideas introduced in the :doc:`./persistent_store` documentation. Please review it before continuing.
+
+.. note::
+
+    If using the `SpatiaLite <https://www.gaia-gis.it/fossil/libspatialite/index>`_ extension with SQLite, a separation installation of SpatiaLite is required. Follow the instructions in the SpatiaLite documentation to install the extension on your system. After installation, you will need to set the ``SPATIALITE_LIBRARY_PATH`` environment variable to the path of the SpatiaLite library file (e.g. ``libspatialite.so`` on Linux or ``mod_spatialite.dll`` on Windows) for Tethys to be able to use it.
 
 Spatial Persistent Store Settings
 =================================
