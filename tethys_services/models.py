@@ -321,7 +321,7 @@ class PersistentStoreServiceBase(models.Model):
     def __str__(self):
         return self.name
 
-    def get_engine(self):
+    def get_engine(self, **kwargs):
         """
         Returns a Persistent Store engine
         """
@@ -379,6 +379,25 @@ class SQLitePersistentStoreService(PersistentStoreServiceBase):
         verbose_name = "SQLite Persistent Store Service"
         verbose_name_plural = "SQLite Persistent Store Services"
         db_table = "tethys_services_persistentstoreservice_sqlite"
+
+    def get_engine(self, spatial=False):
+        """
+        Returns a Persistent Store engine
+        """
+        from sqlalchemy import create_engine
+        from geoalchemy2 import load_spatialite
+        from sqlalchemy.event import listen
+
+        url = self.get_url()
+        engine = create_engine(url)
+        if spatial:
+            if not os.environ.get("SPATIALITE_LIBRARY_PATH"):
+                raise EnvironmentError(
+                    "SPATIALITE_LIBRARY_PATH environment variable must be set to enable spatial features on SQLite persistent stores. To enable SpatiaLite support, Install and set the SPATIALITE_LIBRARY_PATH environment variable to the path of the SpatiaLite library on your system. Check https://www.gaia-gis.it/fossil/libspatialite/home for installation instructions."
+                )
+            listen(engine, "connect", load_spatialite)
+
+        return engine
 
     def get_url(self):
         db_file = os.path.join(self.dir_path, f"{self.database}.sqlite")

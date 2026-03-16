@@ -18,22 +18,22 @@ class PersistentStoreDatabaseHandlerTests(TethysTestCase):
     def test_create_database_not_implemented(self):
         handler = PersistentStoreDatabaseHandler()
         with self.assertRaises(NotImplementedError):
-            handler.create_database(None, None, None, None)
+            handler.create_database(None)
 
     def test_drop_database_not_implemented(self):
         handler = PersistentStoreDatabaseHandler()
         with self.assertRaises(NotImplementedError):
-            handler.drop_database(None, None, None, None)
+            handler.drop_database(None)
 
     def test_database_exists_not_implemented(self):
         handler = PersistentStoreDatabaseHandler()
         with self.assertRaises(NotImplementedError):
-            handler.database_exists(None, None, None, None)
+            handler.database_exists(None)
 
     def test_enable_postgis_extension_not_implemented(self):
         handler = PersistentStoreDatabaseHandler()
         try:
-            handler.enable_spatial_extension(None, None, None, None)
+            handler.enable_spatial_extension(None)
         except NotImplementedError:
             self.fail(
                 "enable_spatial_extension should not raise NotImplementedError by default"
@@ -47,9 +47,13 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model = mock.MagicMock()
         mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.side_effect = [mock_url, mock_engine]
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
-        handler.create_database(mock_model, mock_engine, mock_url, namespaced_ps_name)
+        handler.create_database(mock_model)
 
         rts_call_args = mock_engine.connect().execute.call_args_list
         self.assertEqual("commit", rts_call_args[0][0][0])
@@ -69,6 +73,10 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model = mock.MagicMock()
         mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.side_effect = [mock_url, mock_engine]
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to raise a ProgrammingError when execute is called
@@ -77,9 +85,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         ]
 
         with self.assertRaises(PersistentStorePermissionError) as context:
-            handler.create_database(
-                mock_model, mock_engine, mock_url, namespaced_ps_name
-            )
+            handler.create_database(mock_model)
 
         self.assertIn(
             f'Database user "{mock_url.username}" has insufficient permissions to create '
@@ -92,11 +98,14 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
     def test_drop_database(self):
         mock_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.return_value = mock_engine
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
-        handler.drop_database(mock_model, mock_engine, mock_url, namespaced_ps_name)
+        handler.drop_database(mock_model)
 
         rts_call_args = mock_engine.connect().execute.call_args_list
         self.assertEqual("commit", rts_call_args[0][0][0])
@@ -109,8 +118,11 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
     def test_drop_database_in_use_on_execute(self):
         mock_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.return_value = mock_engine
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to raise an Exception indicating the database is being accessed by other users
@@ -122,7 +134,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             None,
         ]
 
-        handler.drop_database(mock_model, mock_engine, mock_url, namespaced_ps_name)
+        handler.drop_database(mock_model)
 
         rts_call_args = mock_engine.connect().execute.call_args_list
         self.assertEqual("commit", rts_call_args[0][0][0])
@@ -150,29 +162,35 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
     def test_drop_database_in_use_on_connect(self):
         mock_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.return_value = mock_engine
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to raise an Exception indicating the database is being accessed by other users
         mock_engine.connect.side_effect = Exception("being accessed by other users")
 
-        handler.drop_database(mock_model, mock_engine, mock_url, namespaced_ps_name)
+        handler.drop_database(mock_model)
 
         mock_engine.connect.assert_called_once()
 
     def test_drop_database_other_exception(self):
         mock_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.return_value = mock_engine
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to raise a generic Exception
         mock_engine.connect().execute.side_effect = Exception("some other error")
 
         with self.assertRaises(Exception) as context:
-            handler.drop_database(mock_model, mock_engine, mock_url, namespaced_ps_name)
+            handler.drop_database(mock_model)
 
         self.assertIn("some other error", str(context.exception))
 
@@ -181,8 +199,11 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
     def test_database_exists(self):
         mock_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.return_value = mock_engine
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to return a result indicating the database exists
@@ -190,9 +211,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_result.name = namespaced_ps_name
         mock_engine.connect().execute.return_value = [mock_result]
 
-        exists = handler.database_exists(
-            mock_model, mock_engine, mock_url, namespaced_ps_name
-        )
+        exists = handler.database_exists(mock_model)
 
         self.assertTrue(exists)
         rts_call_args = mock_engine.connect().execute.call_args_list
@@ -210,8 +229,11 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
     def test_database_not_exists(self):
         mock_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_url = mock.MagicMock(username="some user")
         namespaced_ps_name = "test_database"
+        mock_model.get_value.return_value = mock_engine
+        mock_model.get_namespaced_persistent_store_name.return_value = (
+            namespaced_ps_name
+        )
         handler = PostgresDatabaseHandler()
 
         # Configure the mock to return a result indicating the database does not exist
@@ -219,9 +241,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_result.name = "some other name"
         mock_engine.connect().execute.return_value = [mock_result]
 
-        exists = handler.database_exists(
-            mock_model, mock_engine, mock_url, namespaced_ps_name
-        )
+        exists = handler.database_exists(mock_model)
 
         self.assertFalse(exists)
         rts_call_args = mock_engine.connect().execute.call_args_list
@@ -241,7 +261,6 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_new_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
         mock_model.get_value.return_value = mock_new_engine
-        mock_url = mock.MagicMock(username="some user")
         handler = PostgresDatabaseHandler()
 
         mock_db_connection = mock_new_engine.connect()
@@ -253,7 +272,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
-        handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
+        handler.enable_spatial_extension(mock_model)
 
         rts_call_args = mock_new_engine.connect().execute.call_args_list
         self.assertEqual(
@@ -277,7 +296,6 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model.name = "spatial_db"
         mock_model.tethys_app.package = "test_app"
         mock_model.get_value.return_value = mock_new_engine
-        mock_url = mock.MagicMock(username="some user")
         handler = PostgresDatabaseHandler()
 
         mock_db_connection = mock_new_engine.connect()
@@ -289,7 +307,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
-        handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
+        handler.enable_spatial_extension(mock_model)
 
         mock_new_engine.connect().close.assert_called_once()
 
@@ -320,7 +338,6 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         mock_model.name = "spatial_db"
         mock_model.tethys_app.package = "test_app"
         mock_model.get_value.return_value = mock_new_engine
-        mock_url = mock.MagicMock(username="some user")
         handler = PostgresDatabaseHandler()
 
         mock_db_connection = mock_new_engine.connect()
@@ -332,7 +349,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
             mock.MagicMock(),  # Enable PostGIS Raster Statement
         ]
 
-        handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
+        handler.enable_spatial_extension(mock_model)
 
         mock_new_engine.connect().close.assert_called_once()
 
@@ -354,8 +371,8 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
     def test_enable_postgis_extension_permission_error(self):
         mock_new_engine = mock.MagicMock()
         mock_model = mock.MagicMock()
-        mock_model.get_value.return_value = mock_new_engine
         mock_url = mock.MagicMock(username="some user")
+        mock_model.get_value.side_effect = [mock_url, mock_new_engine]
         handler = PostgresDatabaseHandler()
 
         mock_db_connection = mock_new_engine.connect()
@@ -365,7 +382,7 @@ class PostgresDatabaseHandlerTests(TethysTestCase):
         ]
 
         with self.assertRaises(PersistentStorePermissionError) as context:
-            handler.enable_spatial_extension(mock_model, mock.MagicMock(), mock_url, "")
+            handler.enable_spatial_extension(mock_model)
 
         self.assertIn(
             f'Database user "{mock_url.username}" has insufficient permissions to enable spatial extension on persistent store database "{mock_model.name}": must be a superuser.',
@@ -392,7 +409,7 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
             # Simulate that the database file does not exist
             mock_isfile.return_value = False
 
-            handler.create_database(mock_model, None, None, namespaced_ps_name)
+            handler.create_database(mock_model)
 
             # Check that sqlite3.connect was called to create the database file
             mock_sqlite_connect.assert_called_once_with(db_path)
@@ -412,7 +429,7 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
             # Simulate that the database file exists
             mock_isfile.return_value = True
 
-            handler.create_database(mock_model, None, None, namespaced_ps_name)
+            handler.create_database(mock_model)
 
             # Check that sqlite3.connect was not called since the database file exists
             mock_sqlite_connect.assert_not_called()
@@ -432,7 +449,7 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
             # Simulate that the database file exists
             mock_isfile.return_value = True
 
-            handler.drop_database(mock_model, None, None, namespaced_ps_name)
+            handler.drop_database(mock_model)
 
             # Check that os.remove was called to delete the database file
             mock_os_remove.assert_called_once_with(db_path)
@@ -452,7 +469,7 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
             # Simulate that the database file does not exist
             mock_isfile.return_value = False
 
-            handler.drop_database(mock_model, None, None, namespaced_ps_name)
+            handler.drop_database(mock_model)
 
             # Check that os.remove was not called since the database file does not exist
             mock_os_remove.assert_not_called()
@@ -460,7 +477,6 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
     def test_database_exists(self):
         handler = SQLiteDatabaseHandler()
         mock_model = mock.MagicMock()
-        namespaced_ps_name = "test_db"
         dir_path = "/fake/path"
         mock_model.get_value.return_value = f"sqlite:///{dir_path}"
 
@@ -468,24 +484,23 @@ class SQLiteDatabaseHandlerTests(TethysTestCase):
             # Simulate that the database file exists
             mock_isfile.return_value = True
 
-            exists = handler.database_exists(mock_model, None, None, namespaced_ps_name)
+            exists = handler.database_exists(mock_model)
 
             self.assertTrue(exists)
 
             # Simulate that the database file does not exist
             mock_isfile.return_value = False
 
-            exists = handler.database_exists(mock_model, None, None, namespaced_ps_name)
+            exists = handler.database_exists(mock_model)
 
             self.assertFalse(exists)
 
     def test_database_exists_bad_url(self):
         handler = SQLiteDatabaseHandler()
         mock_model = mock.MagicMock()
-        namespaced_ps_name = "test_db"
         dir_path = "/fake/path"
         mock_model.get_value.return_value = dir_path  # Not a valid SQLite URL
 
-        exists = handler.database_exists(mock_model, None, None, namespaced_ps_name)
+        exists = handler.database_exists(mock_model)
 
         self.assertFalse(exists)

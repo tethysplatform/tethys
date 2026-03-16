@@ -6,27 +6,32 @@ from tethys_apps.exceptions import (
 from tethys_portal.optional_dependencies import optional_import
 
 sqlalchemy = optional_import("sqlalchemy")
+geoalchemy2 = optional_import("geoalchemy2")
 
 
 class PersistentStoreDatabaseHandler:
     """Base handler for persistent store DB operations."""
 
-    def create_database(self, model, engine, url, namespaced_ps_name):
+    def create_database(self, model):
         raise NotImplementedError()
 
-    def drop_database(self, model, engine, url, namespaced_ps_name):
+    def drop_database(self, model):
         raise NotImplementedError()
 
-    def database_exists(self, model, engine, url, namespaced_ps_name):
+    def database_exists(self, model):
         raise NotImplementedError()
 
-    def enable_spatial_extension(self, model, engine, url, namespaced_ps_name):
+    def enable_spatial_extension(self, model):
         # optionally implemented by database handlers that support spatial extensions
         pass
 
 
 class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
-    def create_database(self, model, engine, url, namespaced_ps_name):
+    def create_database(self, model):
+        namespaced_ps_name = model.get_namespaced_persistent_store_name()
+        url = model.get_value(as_url=True)
+        engine = model.get_value(as_engine=True)
+
         create_connection = engine.connect()
         create_db_statement = f"""
             CREATE DATABASE "{namespaced_ps_name}"
@@ -45,7 +50,10 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
         finally:
             create_connection.close()
 
-    def drop_database(self, model, engine, url, namespaced_ps_name):
+    def drop_database(self, model):
+        namespaced_ps_name = model.get_namespaced_persistent_store_name()
+        engine = model.get_value(as_engine=True)
+
         drop_db_statement = f'DROP DATABASE IF EXISTS "{namespaced_ps_name}"'
         drop_connection = None
 
@@ -74,7 +82,10 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
             if drop_connection:
                 drop_connection.close()
 
-    def database_exists(self, model, engine, url, namespaced_ps_name):
+    def database_exists(self, model):
+        namespaced_ps_name = model.get_namespaced_persistent_store_name()
+        engine = model.get_value(as_engine=True)
+
         connection = engine.connect()
         existing_query = f"""
             SELECT d.datname as name
@@ -89,9 +100,10 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
                 return True
         return False
 
-    def enable_spatial_extension(self, model, engine, url, namespaced_ps_name):
+    def enable_spatial_extension(self, model):
         log = logging.getLogger("tethys")
 
+        url = model.get_value(as_url=True)
         new_db_engine = model.get_value(with_db=True, as_engine=True)
         new_db_connection = new_db_engine.connect()
 
@@ -125,7 +137,7 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
 
 
 class SQLiteDatabaseHandler(PersistentStoreDatabaseHandler):
-    def create_database(self, model, engine, url, namespaced_ps_name):
+    def create_database(self, model):
         db_path = model.get_value(with_db=True, as_url=True)
         db_path = db_path.replace("sqlite:///", "")
         if not os.path.isfile(db_path):
@@ -133,13 +145,30 @@ class SQLiteDatabaseHandler(PersistentStoreDatabaseHandler):
 
             sqlite3.connect(db_path).close()
 
-    def drop_database(self, model, engine, url, namespaced_ps_name):
+    def drop_database(self, model):
         db_path = model.get_value(with_db=True, as_url=True)
         db_path = db_path.replace("sqlite:///", "")
         if os.path.isfile(db_path):
             os.remove(db_path)
 
-    def database_exists(self, model, engine, url, namespaced_ps_name):
+    def database_exists(self, model):
         db_path = model.get_value(with_db=True, as_url=True)
         db_path = db_path.replace("sqlite:///", "")
         return os.path.isfile(db_path)
+
+    def enable_spatial_extension(self, model):
+        log = logging.getLogger("tethys")
+        engine = model.get_value(as_engine=True)
+
+        try:
+            sqlalchemy.event.listen(engine, "connect", geoalchemy2.load_spatialite)
+            engine.connect().close()
+            log.info(f"SpatiaLite extension enabled on database {model.name}")
+        except Exception as e:
+            log.warning(
+                f"Could not enable SpatiaLite extension on database {model.name}: {e}"
+            )
+            if "The SPATIALITE_LIBRARY_PATH environment variable is not set" in str(e):
+                log.warning(
+                    "To enable SpatiaLite support, Install and set the SPATIALITE_LIBRARY_PATH environment variable to the path of the SpatiaLite library on your system. Check https://www.gaia-gis.it/fossil/libspatialite/home for installation instructions."
+                )
