@@ -18,6 +18,15 @@ from .models import (
     PersistentStoreService,
 )
 from django.forms import ModelForm, PasswordInput
+from tethys_portal.optional_dependencies import (
+    optional_import,
+    has_module,
+    MissingOptionalDependency,
+)
+
+JSONEditorWidget = optional_import(
+    "JSONEditorWidget", from_module="django_json_widget.widgets"
+)
 
 
 class DatasetServiceForm(ModelForm):
@@ -77,9 +86,33 @@ class PersistentStoreServiceForm(ModelForm):
 class SecureImageryServiceForm(ModelForm):
     class Meta:
         model = SecureImageryService
-        fields = ("name", "endpoint", "api_key")
-        labels = {"name": _("Name"), "endpoint": _("Endpoint")}
+        fields = "__all__"
+        labels = {
+            "name": _("Name"), 
+            "endpoint": _("Endpoint"), 
+            "api_key": _("API Key"), 
+            "params": _("Parameters")
+        }
+        
 
+        widgets = {
+            "authentication_key": PasswordInput(render_value=True),
+            "api_key": PasswordInput(render_value=True),
+        }
+
+        options_default = {
+            "modes": ["code", "text"],
+            "search": False,
+            "navigationBar": False,
+        }
+
+        if has_module("django_json_widget"):
+            widgets["params"] = JSONEditorWidget(
+                width="60%",
+                height="300px",
+                options=options_default
+            )
+        
 
 
 class DatasetServiceAdmin(admin.ModelAdmin):
@@ -139,7 +172,10 @@ class SecureImageryServiceAdmin(admin.ModelAdmin):
     """
 
     form = SecureImageryServiceForm
-    fields = ("name", "endpoint", "api_key", "metadata")
+    fields = ("name", "endpoint", "authentication_method", "authentication_key", "api_key", "params")
+
+    class Media:
+        js = ("tethys_services/js/secure_imagery_service_admin.js",)
 
 
 admin.site.register(DatasetService, DatasetServiceAdmin)

@@ -353,8 +353,10 @@ class SecureImageryService(models.Model):
     endpoint = models.CharField(
         max_length=1024, validators=[validate_url]
     )
-    api_key = EncryptedTextField()
-    metadata = models.JSONField(blank=True, null=True)
+    api_key = EncryptedTextField(blank=True, null=True)
+    authentication_key = EncryptedTextField(blank=True, null=True)
+    authentication_method = models.CharField(max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth", "OAuth")])
+    params = models.JSONField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Secure Imagery Service"

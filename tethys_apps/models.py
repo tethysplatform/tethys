@@ -1277,7 +1277,7 @@ class SecureImageryServiceSetting(TethysAppSetting):
 
         return {"name": secure_service.name, 
                 "endpoint": secure_service.endpoint, 
-                "metadata": secure_service.metadata,
+                "params": secure_service.params,
                 "api_key": secure_service.api_key}
 
 
