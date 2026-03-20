@@ -15,7 +15,7 @@ from tethys_apps.models import (
 )
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_services.models import (
-    PersistentStoreService,
+    PostgresPersistentStoreService,
     SpatialDatasetService,
     DatasetService,
     WebProcessingService,
@@ -48,7 +48,7 @@ class TethysAppTests(TethysTestCase):
         )
         self.ds.save()
 
-        self.ps = PersistentStoreService(
+        self.ps = PostgresPersistentStoreService(
             name="test_ps",
             host="localhost",
             port="5432",

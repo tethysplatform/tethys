@@ -16,10 +16,10 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
-    PersistentStorePermissionError,
     PersistentStoreInitializerError,
 )
 from tethys_apps.base.mixins import TethysBaseMixin
@@ -30,6 +30,12 @@ from tethys_sdk.testing import is_testing_environment, get_test_db_name
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 from tethys_apps.utilities import secrets_signed_unsigned_value
 from tethys_portal.optional_dependencies import optional_import, has_module
+from tethys_apps.db_handlers import PostgresDatabaseHandler, SQLiteDatabaseHandler
+
+DB_ENGINE_HANDLERS = {
+    "postgresql": PostgresDatabaseHandler,
+    "sqlite": SQLiteDatabaseHandler,
+}
 
 # optional imports
 sqlalchemy = optional_import("sqlalchemy")
@@ -42,7 +48,6 @@ try:
         DatasetService,
         SpatialDatasetService,
         WebProcessingService,
-        PersistentStoreService,
     )
 except RuntimeError:  # pragma: no cover
     log.exception("An error occurred while trying to import tethys service models.")
@@ -870,9 +875,11 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
     """
 
-    persistent_store_service = models.ForeignKey(
-        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
     )
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    persistent_store_service = GenericForeignKey("content_type", "object_id")
 
     def clean(self):
         """
@@ -885,7 +892,9 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
-        ps_service = self.persistent_store_service
+        ps_service = None
+        if self.persistent_store_service:
+            ps_service = self.persistent_store_service
 
         # Validate connection service
         if ps_service is None:
@@ -944,9 +953,11 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    persistent_store_service = models.ForeignKey(
-        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
     )
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    persistent_store_service = GenericForeignKey("content_type", "object_id")
 
     def clean(self):
         """
@@ -980,7 +991,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
-        ps_service = self.persistent_store_service
+        ps_service = None
+        if self.persistent_store_service:
+            ps_service = self.persistent_store_service
 
         # Validate connection service
         if ps_service is None:
@@ -995,10 +1008,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         # Order here matters. Think carefully before changing.
         if as_engine:
-            return ps_service.get_engine()
+            return ps_service.get_engine(spatial=self.spatial)
 
         if as_sessionmaker:
-            return sessionmaker(bind=ps_service.get_engine())
+            return sessionmaker(bind=ps_service.get_engine(spatial=self.spatial))
 
         if as_url:
             return ps_service.get_url()
@@ -1009,29 +1022,14 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Returns True if the persistent store database exists.
         """
-        # Get the database engine
-        engine = self.get_value(as_engine=True)
-        namespaced_name = self.get_namespaced_persistent_store_name()
+        ps_service = self.get_value()
+        engine_type = ps_service.engine
 
-        # Cannot create databases in a transaction: connect and commit to close transaction
-        connection = engine.connect()
+        db_handler = DB_ENGINE_HANDLERS.get(engine_type)
+        if not db_handler:
+            raise NotImplementedError(f"No db_handler for engine type: {engine_type}")
 
-        # Check for Database
-        existing_query = """
-                         SELECT d.datname as name
-                         FROM pg_catalog.pg_database d
-                         LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
-                         WHERE d.datname = '{0}';
-                         """.format(namespaced_name)
-
-        existing_dbs = connection.execute(existing_query)
-        connection.close()
-
-        for existing_db in existing_dbs:
-            if existing_db.name == namespaced_name:
-                return True
-
-        return False
+        return db_handler().database_exists(model=self)
 
     def drop_persistent_store_database(self):
         """
@@ -1040,171 +1038,54 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         if not self.persistent_store_database_exists():
             return
 
-        # Provide update for user
         log = logging.getLogger("tethys")
         log.info(
-            'Dropping database "{0}" for app "{1}"...'.format(
-                self.name, self.tethys_app.package
-            )
+            f'Dropping database "{self.name}" for app "{self.tethys_app.package}"...'
         )
+        ps_service = self.get_value()
+        engine_type = ps_service.engine
 
-        # Get the database engine
-        engine = self.get_value(as_engine=True)
+        db_handler = DB_ENGINE_HANDLERS.get(engine_type)
+        # NotImplementedError would be raised in persistent_store_database_exists method
 
-        # Connection
-        drop_connection = None
-
-        namespaced_ps_name = self.get_namespaced_persistent_store_name()
-
-        # Drop db
-        drop_db_statement = 'DROP DATABASE IF EXISTS "{0}"'.format(namespaced_ps_name)
-
-        try:
-            drop_connection = engine.connect()
-            drop_connection.execute("commit")
-            drop_connection.execute(drop_db_statement)
-        except Exception as e:
-            if "being accessed by other users" in str(e):
-                # Force disconnect all other connections to the database
-                disconnect_sessions_statement = """
-                                                SELECT pg_terminate_backend(pg_stat_activity.pid)
-                                                FROM pg_stat_activity
-                                                WHERE pg_stat_activity.datname = '{0}'
-                                                AND pg_stat_activity.pid <> pg_backend_pid();
-                                                """.format(namespaced_ps_name)
-                if drop_connection:
-                    drop_connection.execute(disconnect_sessions_statement)
-
-                    # Try again to drop the database
-                    drop_connection.execute("commit")
-                    drop_connection.execute(drop_db_statement)
-            else:
-                raise e
-        finally:
-            drop_connection and drop_connection.close()
+        db_handler().drop_database(model=self)
 
     def create_persistent_store_database(self, refresh=False, force_first_time=False):
         """
         Provision all persistent stores for all apps or for only the app name given.
         """
-        # Get looger
         log = logging.getLogger("tethys")
-
-        # Connection engine
-        url = self.get_value(as_url=True)
-        engine = self.get_value(as_engine=True)
-        namespaced_ps_name = self.get_namespaced_persistent_store_name()
+        ps_service = self.get_value()
+        engine_type = ps_service.engine
         db_exists = self.persistent_store_database_exists()
 
-        # -------------------------------------------------------------------------------------------------------------#
-        # 1. Drop database if refresh option is included
-        # -------------------------------------------------------------------------------------------------------------#
+        db_handler = DB_ENGINE_HANDLERS.get(engine_type)
+        # NotImplementedError would be raised in persistent_store_database_exists method
+
         if db_exists and refresh:
             self.drop_persistent_store_database()
             self.initialized = False
             self.save()
             db_exists = False
 
-        # -------------------------------------------------------------------------------------------------------------#
-        # 2. Create the database if it does not already exist
-        # -------------------------------------------------------------------------------------------------------------#
         if not db_exists:
-            # Provide Update for User
             log.info(
-                'Creating database "{0}" for app "{1}"...'.format(
-                    self.name, self.tethys_app.package
-                )
+                f'Creating database "{self.name}" for app "{self.tethys_app.package}"...'
             )
+            db_handler().create_database(model=self)
 
-            # Cannot create databases in a transaction: connect and commit to close transaction
-            create_connection = engine.connect()
-
-            # Create db
-            create_db_statement = """
-                                  CREATE DATABASE "{0}"
-                                  WITH OWNER {1}
-                                  ENCODING 'UTF8'
-                                  """.format(namespaced_ps_name, url.username)
-
-            # Close transaction first and then execute
-            create_connection.execute("commit")
-            try:
-                create_connection.execute(create_db_statement)
-
-            except sqlalchemy.exc.ProgrammingError:
-                raise PersistentStorePermissionError(
-                    'Database user "{0}" has insufficient permissions to create '
-                    'the persistent store database "{1}": must have CREATE DATABASES '
-                    "permission at a minimum.".format(url.username, self.name)
-                )
-            finally:
-                create_connection.close()
-
-        # -------------------------------------------------------------------------------------------------------------#
-        # 3. Enable PostGIS extension
-        # -------------------------------------------------------------------------------------------------------------#
         if self.spatial:
-            # Connect to new database
-            new_db_engine = self.get_value(with_db=True, as_engine=True)
-            new_db_connection = new_db_engine.connect()
-
-            # Notify user
             log.info(
-                'Enabling PostGIS on database "{0}" for app "{1}"...'.format(
+                'Enabling Spatial Extension on database "{0}" for app "{1}"...'.format(
                     self.name,
                     self.tethys_app.package,
                 )
             )
+            db_handler().enable_spatial_extension(model=self)
 
-            # Execute postgis statement
-            try:
-                new_db_connection.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
-
-                # Get the POSTGIS version
-                ret = new_db_connection.execute("SELECT PostGIS_Version();")
-                postgis_version = None
-                for r in ret:
-                    # Example version string: "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1"
-                    try:
-                        postgis_version = float(r.postgis_version.split(" ")[0])
-                        log.info(f"Detected PostGIS version {postgis_version}")
-                        break
-                    except Exception:
-                        log.warning(
-                            f'Could not parse PostGIS version from "{r.postgis_version}"'
-                        )
-                        continue
-
-                # Execute postgis raster statement for verions 3.0 and above
-                if postgis_version is not None and postgis_version >= 3.0:
-                    log.info(
-                        'Enabling PostGIS Raster on database "{0}" for app "{1}"...'.format(
-                            self.name,
-                            self.tethys_app.package,
-                        )
-                    )
-                    new_db_connection.execute(
-                        "CREATE EXTENSION IF NOT EXISTS postgis_raster;"
-                    )
-
-            except sqlalchemy.exc.ProgrammingError:
-                raise PersistentStorePermissionError(
-                    'Database user "{0}" has insufficient permissions to enable '
-                    'spatial extension on persistent store database "{1}": must be a '
-                    "superuser.".format(url.username, self.name)
-                )
-
-            # Close connection
-            new_db_connection.close()
-
-        # -------------------------------------------------------------------------------------------------------------#
-        # 4. Run initialization function
-        # -------------------------------------------------------------------------------------------------------------#
         if self.initializer:
             log.info(
-                'Initializing database "{0}" for app "{1}" with initializer "{2}"...'.format(
-                    self.name, self.tethys_app.package, self.initializer
-                )
+                f'Initializing database "{self.name}" for app "{self.tethys_app.package}" with initializer "{self.initializer}"...'
             )
             try:
                 if force_first_time:
@@ -1219,7 +1100,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             except Exception as e:
                 raise PersistentStoreInitializerError(e)
 
-        # Update initialization
         self.initialized = True
         self.save()
 

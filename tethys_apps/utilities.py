@@ -528,18 +528,11 @@ def link_service_to_app_setting(
         },
     }
 
-    service_model = get_service_model_from_type(service_type)
-
-    try:
-        try:
-            service_uid = int(service_uid)
-            service = service_model.objects.get(pk=service_uid)
-        except ValueError:
-            service = service_model.objects.get(name=service_uid)
-    except ObjectDoesNotExist:
+    service = get_service_from_type(service_type, service_uid)
+    if not service:
         with pretty_output(FG_RED) as p:
             p.write(
-                f'A {service_model.__class__.__name__} with ID/Name "{service_uid}" does not exist.'
+                f'A {service_type} model with ID/Name "{service_uid}" does not exist.'
             )
         return False
 
@@ -587,11 +580,12 @@ def link_service_to_app_setting(
         return False
 
 
-def get_service_model_from_type(service_type):
+def get_service_from_type(service_type, service_uid):
     from tethys_services.models import (
         SpatialDatasetService,
         DatasetService,
-        PersistentStoreService,
+        PostgresPersistentStoreService,
+        SQLitePersistentStoreService,
         WebProcessingService,
     )
     from tethys_compute.models import (
@@ -603,12 +597,34 @@ def get_service_model_from_type(service_type):
         "condor": CondorScheduler,
         "dask": DaskScheduler,
         "dataset": DatasetService,
-        "persistent": PersistentStoreService,
+        "persistent": [PostgresPersistentStoreService, SQLitePersistentStoreService],
         "spatial": SpatialDatasetService,
         "wps": WebProcessingService,
     }
 
-    return service_type_to_model_dict[service_type]
+    service_model = service_type_to_model_dict[service_type]
+
+    if isinstance(service_model, list):
+        for model in service_model:
+            service = get_service_object(model, service_uid)
+            if service:
+                return service
+        return None
+    else:
+        return get_service_object(service_model, service_uid)
+
+
+def get_service_object(service_model, service_uid):
+    from django.core.exceptions import ObjectDoesNotExist
+
+    try:
+        try:
+            service_uid = int(service_uid)
+            return service_model.objects.get(pk=service_uid)
+        except ValueError:
+            return service_model.objects.get(name=service_uid)
+    except ObjectDoesNotExist:
+        return None
 
 
 def user_can_access_app(user, app):

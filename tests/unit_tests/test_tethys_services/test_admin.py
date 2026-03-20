@@ -6,17 +6,17 @@ from tethys_services.models import (
     DatasetService,
     SpatialDatasetService,
     WebProcessingService,
-    PersistentStoreService,
+    PostgresPersistentStoreService,
 )
 from tethys_services.admin import (
     DatasetServiceForm,
     SpatialDatasetServiceForm,
     WebProcessingServiceForm,
-    PersistentStoreServiceForm,
+    PostgresPersistentStoreServiceForm,
     DatasetServiceAdmin,
     SpatialDatasetServiceAdmin,
     WebProcessingServiceAdmin,
-    PersistentStoreServiceAdmin,
+    PostgresPersistentStoreServiceAdmin,
 )
 
 
@@ -79,12 +79,12 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertTrue("password" in ret.Meta.widgets)
         self.assertEqual(self.expected_labels, ret.Meta.labels)
 
-    def test_PersistentStoreServiceForm(self):
+    def test_PostgresPersistentStoreServiceForm(self):
         mock_args = mock.MagicMock()
         expected_fields = ("name", "engine", "host", "port", "username", "password")
 
-        ret = PersistentStoreServiceForm(mock_args)
-        self.assertEqual(PersistentStoreService, ret.Meta.model)
+        ret = PostgresPersistentStoreServiceForm(mock_args)
+        self.assertEqual(PostgresPersistentStoreService, ret.Meta.model)
         self.assertEqual(expected_fields, ret.Meta.fields)
         self.assertTrue("password" in ret.Meta.widgets)
 
@@ -134,12 +134,12 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertEqual(WebProcessingServiceForm, ret.form)
         self.assertEqual(expected_fields, ret.fields)
 
-    def test_PersistentStoreServiceAdmin(self):
+    def test_PostgresPersistentStoreServiceAdmin(self):
         mock_args = mock.MagicMock()
         expected_fields = ("name", "engine", "host", "port", "username", "password")
 
-        ret = PersistentStoreServiceAdmin(mock_args, mock_args)
-        self.assertEqual(PersistentStoreServiceForm, ret.form)
+        ret = PostgresPersistentStoreServiceAdmin(mock_args, mock_args)
+        self.assertEqual(PostgresPersistentStoreServiceForm, ret.form)
         self.assertEqual(expected_fields, ret.fields)
 
     def test_admin_site_register(self):
@@ -157,7 +157,8 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertIn(WebProcessingService, registry)
         self.assertIsInstance(registry[WebProcessingService], WebProcessingServiceAdmin)
 
-        self.assertIn(PersistentStoreService, registry)
+        self.assertIn(PostgresPersistentStoreService, registry)
         self.assertIsInstance(
-            registry[PersistentStoreService], PersistentStoreServiceAdmin
+            registry[PostgresPersistentStoreService],
+            PostgresPersistentStoreServiceAdmin,
         )

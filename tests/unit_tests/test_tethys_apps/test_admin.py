@@ -15,8 +15,10 @@ from tethys_apps.admin import (
     SpatialDatasetServiceSettingInline,
     WebProcessingServiceSettingInline,
     PersistentStoreConnectionSettingInline,
+    PersistentStoreConnectionSettingForm,
     SchedulerSettingInline,
     PersistentStoreDatabaseSettingInline,
+    PersistentStoreDatabaseSettingForm,
     TethysAppAdmin,
     TethysExtensionAdmin,
     CustomUser,
@@ -214,7 +216,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         expected_fields = (
             "name",
             "description",
-            "persistent_store_service",
+            "persistent_store_service_choice",
             "required",
         )
         expected_model = PersistentStoreConnectionSetting
@@ -224,6 +226,90 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertEqual(expected_readonly_fields, ret.readonly_fields)
         self.assertEqual(expected_fields, ret.fields)
         self.assertEqual(expected_model, ret.model)
+
+    @pytest.mark.django_db
+    def test_PersistentStoreConnectionSettingForm_init_no_subclass_instances(self):
+        form = PersistentStoreConnectionSettingForm()
+        choices = form.fields["persistent_store_service_choice"].choices
+        self.assertEqual(
+            choices,
+            [
+                ("", "---------"),
+            ],
+        )
+
+    @mock.patch(
+        "django.contrib.contenttypes.models.ContentType.objects.get_for_model",
+    )
+    @pytest.mark.django_db
+    def test_PersistentStoreConnectionSettingForm_init_with_subclass_instances(
+        self, mock_get_for_model
+    ):
+        mock_sqlite_subclass = mock.MagicMock()
+        mock_sqlite_subclass_pk = 1
+        mock_sqlite_subclass_instance = mock.MagicMock(pk=mock_sqlite_subclass_pk)
+        mock_sqlite_subclass_instance_name = "Test SQLite Service"
+        mock_sqlite_subclass_instance.name = mock_sqlite_subclass_instance_name
+        mock_sqlite_subclass_instance_pk = 1
+        mock_sqlite_subclass_instance.pk = mock_sqlite_subclass_instance_pk
+        mock_sqlite_subclass_instance.engine = "sqlite"
+        mock_sqlite_subclass.objects.all.return_value = [mock_sqlite_subclass_instance]
+        mock_sqlite_subclass.__name__ = "MockSQLitePersistentStoreService"
+
+        mock_postgres_subclass = mock.MagicMock()
+        mock_postgres_subclass_pk = 2
+        mock_postgres_subclass_instance = mock.MagicMock(pk=mock_postgres_subclass_pk)
+        mock_postgres_subclass_instance_name = "Test Postgres Service"
+        mock_postgres_subclass_instance.name = mock_postgres_subclass_instance_name
+        mock_postgres_subclass_instance_pk = 2
+        mock_postgres_subclass_instance.pk = mock_postgres_subclass_instance_pk
+        mock_postgres_subclass_instance.engine = "postgres"
+        mock_postgres_subclass.objects.all.return_value = [
+            mock_postgres_subclass_instance
+        ]
+        mock_postgres_subclass.__name__ = "MockPostgresPersistentStoreService"
+        mock_get_for_model.side_effect = [
+            mock.MagicMock(pk=mock_sqlite_subclass_pk),
+            mock.MagicMock(pk=mock_postgres_subclass_pk),
+        ]
+
+        with mock.patch(
+            "tethys_services.models.PersistentStoreServiceBase.__subclasses__",
+            return_value=[mock_sqlite_subclass, mock_postgres_subclass],
+        ):
+            form = PersistentStoreConnectionSettingForm()
+            choices = form.fields["persistent_store_service_choice"].choices
+            self.assertEqual(
+                choices,
+                [
+                    ("", "---------"),
+                    (
+                        f"{mock_sqlite_subclass.__name__.lower()}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}",
+                        f"{mock_sqlite_subclass_instance.engine}: {mock_sqlite_subclass_instance_name}",
+                    ),
+                    (
+                        f"{mock_postgres_subclass.__name__.lower()}:{mock_postgres_subclass_pk}:{mock_postgres_subclass_instance_pk}",
+                        f"{mock_postgres_subclass_instance.engine}: {mock_postgres_subclass_instance_name}",
+                    ),
+                ],
+            )
+
+    @pytest.mark.django_db
+    def test_PersistentStoreConnectionSettingForm_init_exception_on_subclass_instances(
+        self,
+    ):
+        with mock.patch(
+            "tethys_services.models.PostgresPersistentStoreService.objects.all",
+            side_effect=Exception("Test Exception"),
+        ):
+            form = PersistentStoreConnectionSettingForm()
+            choices = form.fields["persistent_store_service_choice"].choices
+            self.assertEqual(
+                choices,
+                [
+                    ("", "---------"),
+                ],
+            )
 
     @pytest.mark.django_db
     def test_PersistentStoreDatabaseSettingInline(self):
@@ -239,7 +325,7 @@ class TestTethysAppAdmin(unittest.TestCase):
             "description",
             "spatial",
             "initialized",
-            "persistent_store_service",
+            "persistent_store_service_choice",
             "required",
         )
         expected_model = PersistentStoreDatabaseSetting
@@ -256,6 +342,129 @@ class TestTethysAppAdmin(unittest.TestCase):
         obj = PersistentStoreDatabaseSettingInline(mock.MagicMock(), mock.MagicMock())
         mock_request = mock.MagicMock()
         obj.get_queryset(mock_request)
+
+    @pytest.mark.django_db
+    def test_PersistentStoreDatabaseSettingForm_init_no_subclass_instances(self):
+        form = PersistentStoreDatabaseSettingForm()
+        choices = form.fields["persistent_store_service_choice"].choices
+        self.assertEqual(
+            choices,
+            [
+                ("", "---------"),
+            ],
+        )
+
+    @mock.patch(
+        "django.contrib.contenttypes.models.ContentType.objects.get_for_model",
+    )
+    @mock.patch(
+        "django.contrib.contenttypes.models.ContentType.objects.get",
+    )
+    @mock.patch("tethys_apps.models.PersistentStoreDatabaseSetting")
+    @pytest.mark.django_db
+    def test_PersistentStoreDatabaseSettingForm_init_with_subclass_instance(
+        self, mock_psds, mock_get, mock_get_for_model
+    ):
+        mock_sqlite_subclass = mock.MagicMock()
+        mock_sqlite_subclass_pk = 1
+        mock_sqlite_subclass_instance = mock.MagicMock(pk=mock_sqlite_subclass_pk)
+        mock_sqlite_subclass_instance_name = "Test SQLite Service"
+        mock_sqlite_subclass_instance.name = mock_sqlite_subclass_instance_name
+        mock_sqlite_subclass_instance_pk = 1
+        mock_sqlite_subclass_instance.pk = mock_sqlite_subclass_instance_pk
+        mock_sqlite_subclass_instance.engine = "sqlite"
+        mock_sqlite_subclass.objects.all.return_value = [mock_sqlite_subclass_instance]
+        mock_sqlite_subclass.__name__ = "MockSQLitePersistentStoreService"
+
+        mock_postgres_subclass = mock.MagicMock()
+        mock_postgres_subclass_pk = 2
+        mock_postgres_subclass_instance = mock.MagicMock(pk=mock_postgres_subclass_pk)
+        mock_postgres_subclass_instance_name = "Test Postgres Service"
+        mock_postgres_subclass_instance.name = mock_postgres_subclass_instance_name
+        mock_postgres_subclass_instance_pk = 2
+        mock_postgres_subclass_instance.engine = "postgres"
+        mock_postgres_subclass_instance.pk = mock_postgres_subclass_instance_pk
+        mock_postgres_subclass.objects.all.return_value = [
+            mock_postgres_subclass_instance
+        ]
+        mock_postgres_subclass.__name__ = "MockPostgresPersistentStoreService"
+        mock_get_for_model.side_effect = [
+            mock.MagicMock(
+                pk=mock_sqlite_subclass_pk, model=mock_sqlite_subclass.__name__
+            ),
+            mock.MagicMock(
+                pk=mock_postgres_subclass_pk, model=mock_postgres_subclass.__name__
+            ),
+        ]
+        mock_get.side_effect = [
+            mock.MagicMock(
+                pk=mock_postgres_subclass_pk, model=mock_postgres_subclass.__name__
+            ),
+            mock_sqlite_subclass,
+        ]
+        lowerCasePostgresName = mock_postgres_subclass.__name__.lower()
+        lowerCaseSQLiteName = mock_sqlite_subclass.__name__.lower()
+
+        mock_psds.content_type_id = mock_postgres_subclass_pk
+        mock_psds.object_id = mock_postgres_subclass_instance_pk
+        mock_psds.pk = 2
+
+        with mock.patch(
+            "tethys_services.models.PersistentStoreServiceBase.__subclasses__",
+            return_value=[mock_sqlite_subclass, mock_postgres_subclass],
+        ):
+            post_data = {
+                "name": "Test DB Setting",
+                "description": "desc",
+                "spatial": False,
+                "initialized": False,
+                "persistent_store_service_choice": f"{lowerCaseSQLiteName}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}",
+                "required": True,
+            }
+
+            form = PersistentStoreDatabaseSettingForm(
+                instance=mock_psds, data=post_data
+            )
+            choices = form.fields["persistent_store_service_choice"].choices
+            self.assertEqual(
+                choices,
+                [
+                    ("", "---------"),
+                    (
+                        f"{lowerCaseSQLiteName}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}",
+                        f"{mock_sqlite_subclass_instance.engine}: {mock_sqlite_subclass_instance_name}",
+                    ),
+                    (
+                        f"{lowerCasePostgresName}:{mock_postgres_subclass_pk}:{mock_postgres_subclass_instance_pk}",
+                        f"{mock_postgres_subclass_instance.engine}: {mock_postgres_subclass_instance_name}",
+                    ),
+                ],
+            )
+            self.assertEqual(
+                form.fields["persistent_store_service_choice"].initial,
+                f"{lowerCasePostgresName}:{mock_postgres_subclass_pk}:{mock_postgres_subclass_instance_pk}",
+            )
+
+            is_valid = form.is_valid()
+            assert is_valid
+            assert (
+                form.cleaned_data["persistent_store_service_choice"]
+                == f"{lowerCaseSQLiteName}:{mock_sqlite_subclass_pk}:{mock_sqlite_subclass_instance_pk}"
+            )
+            assert form.instance.content_type == mock_sqlite_subclass
+            assert form.instance.object_id == mock_sqlite_subclass_instance_pk
+
+    @pytest.mark.django_db
+    def test_PersistentStoreDatabaseSettingForm_init_exception_on_subclass_instances(
+        self,
+    ):
+        with mock.patch(
+            "tethys_services.models.PostgresPersistentStoreService.objects.all",
+            side_effect=Exception("Test Exception"),
+        ):
+            form = PersistentStoreDatabaseSettingForm()
+            choices = form.fields["persistent_store_service_choice"].choices
+            self.assertEqual(choices, [("", "---------")])
 
     @pytest.mark.django_db
     def test_TethysAppQuotasSettingInline(self):

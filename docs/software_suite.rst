@@ -22,9 +22,12 @@ Spatial Database Storage
    :width: 170px
    :align: right
 
-Tethys Platform includes support for the `PostgreSQL <https://www.postgresql.org/>`_ database with `PostGIS <http://postgis.net/>`_, a spatial database extension, to provide spatial data storage capabilities for Tethys web apps. PostGIS adds spatial column types including raster, geometry, and geography. The extension also provides database functions for basic analysis of GIS objects.
+Tethys Platform includes support for multiple spatially enabled databases for Tethys web apps.
 
-To use a PostgreSQL database in your app use the :doc:`./tethys_sdk/tethys_services/persistent_store`. To use a spatially enabled database with PostGIS use the :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`.
+ - `PostgreSQL <https://www.postgresql.org/>`_ with `PostGIS <http://postgis.net/>`_: Provides full spatial data storage and analysis capabilities. PostGIS adds spatial column types including raster, geometry, and geography, along with database functions for GIS analysis.
+ - `SQLite <https://www.sqlite.org/>`_ with `SpatiaLite <https://www.gaia-gis.it/fossil/libspatialite/index>`_: Offers a lightweight spatial database option. SpatiaLite extends SQLite with support for spatial data types and functions, allowing apps to store and manipulate GIS data without requiring a full database server.
+
+To use a PostgreSQL or SQLite database in your app use the :doc:`./tethys_sdk/tethys_services/persistent_store`. To use a spatially enabled database with PostGIS or SpatiaLite use the :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`.
 
 Map Publishing
 ==============
@@ -170,8 +173,8 @@ Tethys Platform provides a software development kit (SDK) that provides applicat
 =====================================  ===============================================================  ============================================
 Software                               API                                                              Functionality
 =====================================  ===============================================================  ============================================
-PostgreSQL                             :doc:`./tethys_sdk/tethys_services/persistent_store`             SQL Database Storage
-PostGIS                                :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
+PostgreSQL, SQLite                     :doc:`./tethys_sdk/tethys_services/persistent_store`             SQL Database Storage
+PostGIS, SpatiaLite                    :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
 GeoServer                              :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
 THREDDS Data Server                    :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
 52° North WPS                          :doc:`./tethys_sdk/tethys_services/web_processing_services`      Geoprocessing Services

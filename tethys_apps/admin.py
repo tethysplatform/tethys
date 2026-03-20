@@ -11,6 +11,7 @@
 import json
 import logging
 from django import forms
+from django.utils.safestring import mark_safe
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import User, Group, Permission
@@ -19,6 +20,7 @@ from django.db.utils import ProgrammingError, OperationalError
 from django.utils.html import format_html
 from django.shortcuts import reverse
 from django.db import models
+from django.template.loader import render_to_string
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
@@ -44,6 +46,7 @@ from tethys_portal.optional_dependencies import (
     has_module,
     MissingOptionalDependency,
 )
+from django.contrib.contenttypes.models import ContentType
 
 # optional imports
 MFAApp = optional_import("myAppNameConfig", from_module="mfa.apps")
@@ -139,12 +142,140 @@ class SchedulerSettingInline(TethysAppSettingInline):
     model = SchedulerSetting
 
 
-# TODO: Figure out how to initialize persistent stores with button in admin
-# Consider: https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
+class CustomRelatedFieldWidgetWrapper(forms.Select):
+    def render(self, name, value, attrs=None, renderer=None):
+        from tethys_services.models import PersistentStoreServiceBase
+
+        persistent_store_subclasses = [
+            {
+                "model_name": subclass.__name__.lower(),
+                "verbose_name": subclass._meta.verbose_name.title(),
+            }
+            for subclass in PersistentStoreServiceBase.__subclasses__()
+        ]
+
+        widget_html = super().render(name, value, attrs, renderer)
+        context = {
+            "widget": widget_html,
+            "name": name,
+            "persistent_store_subclasses": persistent_store_subclasses,
+            "change_url": "#",  # Initial value, JS will update
+            "view_url": "#",  # Initial value, JS will update
+            "change_link_style": "pointer-events:none;opacity:0.5;",
+            "view_link_style": "pointer-events:none;opacity:0.5;",
+        }
+        return mark_safe(
+            render_to_string(
+                "tethys_apps/persistent_store_service_field_widget.html", context
+            )
+        )
+
+
+class PersistentStoreServiceChoiceMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from tethys_services.models import PersistentStoreServiceBase
+
+        persistent_store_service_choices = [("", "---------")]
+        for subclass in PersistentStoreServiceBase.__subclasses__():
+            try:
+                model_name = subclass.__name__.lower()
+                for instance in subclass.objects.all():
+                    ct = ContentType.objects.get_for_model(instance)
+                    persistent_store_service_choices.append(
+                        (
+                            f"{model_name}:{ct.pk}:{instance.pk}",
+                            f"{instance.engine}: {instance.name}",
+                        )
+                    )
+            except Exception:
+                pass
+        self.fields["persistent_store_service_choice"].choices = (
+            persistent_store_service_choices
+        )
+        self.fields["persistent_store_service_choice"].widget = (
+            CustomRelatedFieldWidgetWrapper(choices=persistent_store_service_choices)
+        )
+        if (
+            self.instance.pk
+            and getattr(self.instance, "content_type_id", None)
+            and getattr(self.instance, "object_id", None)
+        ):
+            ct_pk = self.instance.content_type_id
+            obj_pk = self.instance.object_id
+            # Find the model_name for the current content_type
+
+            ct = ContentType.objects.get(pk=ct_pk)
+            model_name = ct.model.lower()
+            self.fields["persistent_store_service_choice"].initial = (
+                f"{model_name}:{ct_pk}:{obj_pk}"
+            )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        persistent_store_service_choice = cleaned_data.get(
+            "persistent_store_service_choice"
+        )
+        if persistent_store_service_choice:
+            ct_pk, obj_pk = map(int, persistent_store_service_choice.split(":")[1:])
+            content_type = ContentType.objects.get(pk=ct_pk)
+            cleaned_data["content_type"] = content_type
+            cleaned_data["object_id"] = obj_pk
+            self.instance.content_type = content_type
+            self.instance.object_id = obj_pk
+        return cleaned_data
+
+
+class PersistentStoreConnectionSettingForm(
+    PersistentStoreServiceChoiceMixin, forms.ModelForm
+):
+    persistent_store_service_choice = forms.ChoiceField(
+        choices=[], required=True, label="Persistent Store Service"
+    )
+
+    class Meta:
+        model = PersistentStoreConnectionSetting
+        fields = ["name", "description", "persistent_store_service_choice", "required"]
+        widgets = {
+            "content_type": forms.HiddenInput(),
+            "object_id": forms.HiddenInput(),
+        }
+
+
+class PersistentStoreDatabaseSettingForm(
+    PersistentStoreServiceChoiceMixin, forms.ModelForm
+):
+    persistent_store_service_choice = forms.ChoiceField(
+        choices=[], required=True, label="Persistent Store Service"
+    )
+
+    class Meta:
+        model = PersistentStoreDatabaseSetting
+        fields = [
+            "name",
+            "description",
+            "spatial",
+            "initialized",
+            "persistent_store_service_choice",
+            "required",
+        ]
+        widgets = {
+            "content_type": forms.HiddenInput(),
+            "object_id": forms.HiddenInput(),
+        }
+
+
 class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
-    fields = ("name", "description", "persistent_store_service", "required")
+    fields = (
+        "name",
+        "description",
+        "persistent_store_service_choice",
+        "required",
+    )
     model = PersistentStoreConnectionSetting
+    form = PersistentStoreConnectionSettingForm
+    extra = 0
 
 
 class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
@@ -154,14 +285,18 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
         "description",
         "spatial",
         "initialized",
-        "persistent_store_service",
+        "persistent_store_service_choice",
         "required",
     )
     model = PersistentStoreDatabaseSetting
+    form = PersistentStoreDatabaseSettingForm
+    extra = 0
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(dynamic=False)
+        return qs.filter(
+            dynamic=False
+        )  # Custom form for PersistentStoreDatabaseSetting
 
 
 class TethysAppAdmin(GuardedModelAdmin):

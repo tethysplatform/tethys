@@ -158,9 +158,9 @@ class TestServiceInstallHelpers(TestCase):
         self.assertTrue(ret)
 
     def test_validate_service_id_valid_id_str(self):
-        from tethys_services.models import PersistentStoreService
+        from tethys_services.models import PostgresPersistentStoreService
 
-        test_service = PersistentStoreService.objects.create(
+        test_service = PostgresPersistentStoreService.objects.create(
             name="foo",
             engine="postgresql",
             host="example.com",

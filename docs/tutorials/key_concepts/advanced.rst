@@ -93,7 +93,7 @@ c. Configure Tethys to use PostgreSQL database:
 
     a. Add necessary dependencies:
 
-    Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+    Persistent stores is an optional feature in Tethys. When linking to a PostgreSQL database, it requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
 
     .. code-block:: bash
 
@@ -461,14 +461,14 @@ j. Refactor the ``compute_dams_extent`` method to use updated model methods:
         
         ...
 
-k. Add a **Persistent Store Service** to Tethys Portal:
+k. Add a **PostgreSQL Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
-    c. Scroll down to the **Tethys Services** section and select **Persistent Store Services** link.
-    d. Click on the **Add Persistent Store Service** button.
-    e. Give the **Persistent Store Service** any name and fill out the connection information.
-    f. Press **Save** to create the new **Persistent Store Service**.
+    c. Scroll down to the **Tethys Services** section and select **PostgreSQL Persistent Store Services** link.
+    d. Click on the **Add PostgreSQL Persistent Store Service** button.
+    e. Give the **PostgreSQL Persistent Store Service** any name and fill out the connection information.
+    f. Press **Save** to create the new **PostgreSQL Persistent Store Service**.
 
 
 .. figure:: ../../images/tutorial/advanced/Persistent_Store_Service.png
@@ -479,14 +479,14 @@ k. Add a **Persistent Store Service** to Tethys Portal:
 
     The username and password for the persistent store service must be a user with permissions to create databases to use spatial persistent stores. The ``tethys db configure`` command creates a superuser named "tethys_super", password: "pass".
 
-l. Assign the new **Persistent Store Service** to the Dam Inventory App:
+l. Assign the new **PostgreSQL Persistent Store Service** to the Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
     c. Scroll down to the **Tethys Apps** section and select the **Installed App** link.
     d. Select the **Dam Inventory** link.
     e. Scroll down to the **Persistent Store Database Settings** section.
-    f. Assign the **Persistent Store Service** that you created in Step 2 to the **primary_db** setting.
+    f. Assign the **PostgreSQL Persistent Store Service** that you created in Step 2 to the **primary_db** setting.
     g. Press **Save** to save the settings.
 
 .. figure:: ../../images/tutorial/advanced/Assign_Persistent_Store_Service.png
