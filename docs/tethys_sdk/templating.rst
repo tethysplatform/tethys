@@ -11,7 +11,7 @@ The pages of a Tethys app are created using the Django template language. This p
 Django Templating Concepts
 ==========================
 
-The Django template language allows you to create dynamic HTML templates and minmizes the amount of HTML you need to write for your app pages. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/2.2/topics/templates/>`_ documentation.
+The Django template language allows you to create dynamic HTML templates and minimizes the amount of HTML you need to write for your app pages. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/2.2/topics/templates/>`_ documentation.
 
 .. tip::
 
