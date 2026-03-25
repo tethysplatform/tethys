@@ -11,7 +11,6 @@ import logging
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
-
 log = logging.getLogger("tethys." + __name__)
 
 

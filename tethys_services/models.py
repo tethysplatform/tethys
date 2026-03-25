@@ -11,6 +11,7 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from urllib.error import HTTPError, URLError
+import os
 
 from tethys_portal.optional_dependencies import optional_import, has_module
 
@@ -31,6 +32,12 @@ WPS = optional_import("WebProcessingService", from_module="owslib.wps")
 TDSCatalog = optional_import("TDSCatalog", from_module="siphon.catalog")
 session_manager = optional_import("session_manager", from_module="siphon.http_util")
 AuthException = optional_import("AuthException", from_module="social_core.exceptions")
+
+
+PERSISTENT_STORE_SERVICE_ENGINE_CHOICES = (
+    ("postgresql", "PostgreSQL"),
+    ("sqlite", "SQLite"),
+)
 
 
 def validate_url(value):
@@ -293,32 +300,28 @@ class WebProcessingService(models.Model):
         return self.activate(wps=wps)
 
 
-class PersistentStoreService(models.Model):
+class PersistentStoreServiceBase(models.Model):
     """
     ORM for Persistent Store Service settings.
     """
 
-    ENGINE_CHOICES = (("postgresql", "PostgreSQL"),)
     name = models.CharField(max_length=30, unique=True)
-    host = models.CharField(max_length=255, default="localhost")
-    port = models.IntegerField(
-        default=5435, validators=[validate_persistent_store_port]
-    )
-    username = models.CharField(max_length=100, blank=True)
-    password = models.CharField(max_length=100, blank=True)
     engine = models.CharField(
-        max_length=50, default="postgresql", choices=ENGINE_CHOICES
+        max_length=50,
+        default="postgresql",
+        choices=PERSISTENT_STORE_SERVICE_ENGINE_CHOICES,
     )
     database = None  #: temporary property for creating engines and URLs with database, but not persisted in database.
 
     class Meta:
         verbose_name = "Persistent Store Service"
         verbose_name_plural = "Persistent Store Services"
+        abstract = True
 
     def __str__(self):
         return self.name
 
-    def get_engine(self):
+    def get_engine(self, **kwargs):
         """
         Returns a Persistent Store engine
         """
@@ -331,9 +334,32 @@ class PersistentStoreService(models.Model):
         """
         Returns a Persistent Store URL
         """
+        return None
+
+
+class PostgresPersistentStoreService(PersistentStoreServiceBase):
+    engine = models.CharField(
+        max_length=50, default="postgresql", choices=(("postgresql", "PostgreSQL"),)
+    )
+    host = models.CharField(max_length=255, default="localhost")
+    port = models.IntegerField(
+        default=5435, validators=[validate_persistent_store_port]
+    )
+    username = models.CharField(max_length=100, blank=True)
+    password = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = "PostgreSQL Persistent Store Service"
+        verbose_name_plural = "PostgreSQL Persistent Store Services"
+        db_table = "tethys_services_persistentstoreservice_postgres"
+
+    def get_url(self):
+        """
+        Returns a Persistent Store URL
+        """
         from sqlalchemy.engine.url import URL
 
-        url = URL.create(
+        return URL.create(
             drivername=self.engine,
             host=self.host,
             port=self.port,
@@ -341,4 +367,38 @@ class PersistentStoreService(models.Model):
             password=self.password,
             database=self.database,
         )
-        return url
+
+
+class SQLitePersistentStoreService(PersistentStoreServiceBase):
+    dir_path = models.CharField(max_length=255)
+    engine = models.CharField(
+        max_length=50, default="sqlite", choices=(("sqlite", "SQLite"),)
+    )
+
+    class Meta:
+        verbose_name = "SQLite Persistent Store Service"
+        verbose_name_plural = "SQLite Persistent Store Services"
+        db_table = "tethys_services_persistentstoreservice_sqlite"
+
+    def get_engine(self, spatial=False):
+        """
+        Returns a Persistent Store engine
+        """
+        from sqlalchemy import create_engine
+        from geoalchemy2 import load_spatialite
+        from sqlalchemy.event import listen
+
+        url = self.get_url()
+        engine = create_engine(url)
+        if spatial:
+            if not os.environ.get("SPATIALITE_LIBRARY_PATH"):
+                raise EnvironmentError(
+                    "SPATIALITE_LIBRARY_PATH environment variable must be set to enable spatial features on SQLite persistent stores. To enable SpatiaLite support, Install and set the SPATIALITE_LIBRARY_PATH environment variable to the path of the SpatiaLite library on your system. Check https://www.gaia-gis.it/fossil/libspatialite/home for installation instructions."
+                )
+            listen(engine, "connect", load_spatialite)
+
+        return engine
+
+    def get_url(self):
+        db_file = os.path.join(self.dir_path, f"{self.database}.sqlite")
+        return f"sqlite:///{db_file}"

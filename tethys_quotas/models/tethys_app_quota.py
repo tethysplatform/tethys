@@ -13,7 +13,6 @@ from django.db import models
 from tethys_quotas.models.entity_quota import EntityQuota
 from tethys_apps.models import TethysApp
 
-
 log = logging.getLogger("tethys." + __name__)
 
 

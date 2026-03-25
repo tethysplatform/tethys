@@ -170,7 +170,7 @@ extensions = [
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = "index"
@@ -199,9 +199,7 @@ branch = ret.stdout.decode().strip() if ret.returncode == 0 else "release"
 
 rst_epilog = """
 .. |branch| replace:: {branch}
-""".format(
-    branch=branch
-)
+""".format(branch=branch)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

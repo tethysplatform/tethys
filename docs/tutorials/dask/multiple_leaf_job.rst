@@ -191,7 +191,7 @@ Modify the ``app_content`` block in the :file:`home.html` so that it looks like 
 4. Review Multiple Leaf Job
 ===========================
 
-If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
+If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys start`` again. Now when you navigate to your app page, you should see this:
 
 .. figure:: ../../images/tutorial/dask/home_with_multiple_button.png
     :width: 900px

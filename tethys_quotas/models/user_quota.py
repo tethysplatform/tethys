@@ -13,7 +13,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from tethys_quotas.models.entity_quota import EntityQuota
 
-
 log = logging.getLogger("tethys." + __name__)
 
 

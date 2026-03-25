@@ -29,7 +29,7 @@ ln -s ${DEACTIVATE_SCRIPT} ${TETHYS_HOME}/tethys-deactivate.sh
 echo "export TETHYS_HOME=${TETHYS_HOME}" > "${ACTIVATE_SCRIPT}"
 echo "alias vipc='vi ${TETHYS_HOME}/portal_config.yml'" >> "${ACTIVATE_SCRIPT}"
 # Add lines to the activate script that create aliases to start the tethys development server
-echo "alias tms='tethys manage start -p ${HOSTNAME}:${PORT}'" >> "${ACTIVATE_SCRIPT}"
+echo "alias tms='tethys start -p ${HOSTNAME}:${PORT}'" >> "${ACTIVATE_SCRIPT}"
 echo "alias tstart='tethys db start; tms'"  >> "${ACTIVATE_SCRIPT}"
 # Add lines to the activate script that create aliases that change ownership of Tethys directories to the active user
 echo "alias tethys_user_own='sudo chown -R \${USER} \"${STATIC_ROOT}\" \"${TETHYS_WORKSPACES_ROOT}\"'" >> "${ACTIVATE_SCRIPT}"

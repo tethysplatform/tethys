@@ -24,7 +24,6 @@ from tethys_cli.cli_colors import (
 )
 from tethys_portal.optional_dependencies import optional_import, FailedImport
 
-
 TETHYS_HOME = Path(get_tethys_home_dir())
 
 
@@ -168,7 +167,7 @@ def supress_stdout(func):
     return wrapped
 
 
-def prompt_yes_or_no(question, default="y"):
+def prompt_yes_or_no(question):
     """Handles a yes/no question cli prompt
 
     Returns:
@@ -183,7 +182,7 @@ def prompt_yes_or_no(question, default="y"):
     valid = False
     while not valid:
         try:
-            response = input(f"{question} [y/n]: ") or default
+            response = input(f"{question} [y/n]: ")
         except (KeyboardInterrupt, SystemExit):
             return None
 

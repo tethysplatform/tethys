@@ -334,7 +334,7 @@ You can then activate the Tethys conda environment and start the Tethys developm
 .. code-block:: bash
 
     t
-    tethys manage start
+    tethys start
 
 or simply just:
 
@@ -368,7 +368,7 @@ Aliases
 The following aliases are available:
 
 - `tms`:
-        An alias to start the Tethys development server. It calls the command `tethys manage start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
+        An alias to start the Tethys development server. It calls the command `tethys start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
 - `tstart`:
         Combines the `tethys_start_db` and the `tms` commands.
 

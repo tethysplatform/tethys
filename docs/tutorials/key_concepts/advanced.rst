@@ -76,7 +76,7 @@ c. Configure Tethys to use PostgreSQL database:
 
     The default password for the ``postgis/postgis`` container is "mysecretpassword". If you changed it, you will need to replace it in the command above.
 
-    d. Start Tethys the development server (``tethys manage start``) and verify that the app is still working.
+    d. Start Tethys the development server (``tethys start``) and verify that the app is still working.
 
 .. important::
 
@@ -93,7 +93,7 @@ c. Configure Tethys to use PostgreSQL database:
 
     a. Add necessary dependencies:
 
-    Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+    Persistent stores is an optional feature in Tethys. When linking to a PostgreSQL database, it requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
 
     .. code-block:: bash
 
@@ -461,14 +461,14 @@ j. Refactor the ``compute_dams_extent`` method to use updated model methods:
         
         ...
 
-k. Add a **Persistent Store Service** to Tethys Portal:
+k. Add a **PostgreSQL Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
-    c. Scroll down to the **Tethys Services** section and select **Persistent Store Services** link.
-    d. Click on the **Add Persistent Store Service** button.
-    e. Give the **Persistent Store Service** any name and fill out the connection information.
-    f. Press **Save** to create the new **Persistent Store Service**.
+    c. Scroll down to the **Tethys Services** section and select **PostgreSQL Persistent Store Services** link.
+    d. Click on the **Add PostgreSQL Persistent Store Service** button.
+    e. Give the **PostgreSQL Persistent Store Service** any name and fill out the connection information.
+    f. Press **Save** to create the new **PostgreSQL Persistent Store Service**.
 
 
 .. figure:: ../../images/tutorial/advanced/Persistent_Store_Service.png
@@ -479,14 +479,14 @@ k. Add a **Persistent Store Service** to Tethys Portal:
 
     The username and password for the persistent store service must be a user with permissions to create databases to use spatial persistent stores. The ``tethys db configure`` command creates a superuser named "tethys_super", password: "pass".
 
-l. Assign the new **Persistent Store Service** to the Dam Inventory App:
+l. Assign the new **PostgreSQL Persistent Store Service** to the Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
     c. Scroll down to the **Tethys Apps** section and select the **Installed App** link.
     d. Select the **Dam Inventory** link.
     e. Scroll down to the **Persistent Store Database Settings** section.
-    f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db** setting.
+    f. Assign the **PostgreSQL Persistent Store Service** that you created in Step 2 to the **primary_db** setting.
     g. Press **Save** to save the settings.
 
 .. figure:: ../../images/tutorial/advanced/Assign_Persistent_Store_Service.png
@@ -596,7 +596,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
 
         For more information on app settings, see :doc:`../../tethys_sdk/app_settings`.
 
-5. App Permissions
+4. App Permissions
 ==================
 
 By default, any user logged into the app can access any part of it. You may want to restrict access to certain areas of the app to privileged users. This can be done using the :doc:`../../tethys_sdk/permissions`. Let's modify the app so that only admin users of the app can add dams to the app.
@@ -762,7 +762,7 @@ f. Log in with each user account. If the permission has been applied correctly, 
 
     For more details on Permissions, see: :doc:`../../tethys_sdk/permissions`.
 
-6. Persistent Store Related Tables
+5. Persistent Store Related Tables
 ==================================
 
 Add Flood Hydrograph table
@@ -823,7 +823,7 @@ b. Execute **syncstores** command again to add the new tables to the database:
         tethys syncstores dam_inventory
 
 
-7. File Upload
+6. File Upload
 ==============
 
 CSV File Upload
@@ -1057,7 +1057,7 @@ e. Test upload with these files:
 
     :download:`Sample Hydrograph CSVs <./hydrographs.zip>`
 
-8. URL Variables and Plotting
+7. URL Variables and Plotting
 =============================
 
 Create a new page with hydrograph plotted for selected Dam
@@ -1257,7 +1257,7 @@ f. Modify ``list_dams`` controller (and add needed imports):
 
 g. Test by going to the Dams page and clicking on the new ``Hydrograph Plot`` button in the table for a dam that has already been assigned a hydrograph.
 
-9. Dynamic Hydrograph Plot in Pop-Ups
+8. Dynamic Hydrograph Plot in Pop-Ups
 =====================================
 
 Add Hydrographs plot button to map pop-ups.
@@ -1304,7 +1304,7 @@ a. Update the ``HomeMap`` controller to include the hydrograph plot button in th
                 return f'Hydrograph for {dam.name}', data, layout
 
 
-10. Solution
+9. Solution
 ============
 
 This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:

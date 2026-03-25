@@ -28,7 +28,7 @@ class ServicesCommandsTest(unittest.TestCase):
     """
 
     # Dictionary used in some of the tests
-    my_dict = {
+    my_postgres_dict = {
         "id": "Id_foo",
         "name": "Name_foo",
         "host": "Host_foo",
@@ -37,6 +37,8 @@ class ServicesCommandsTest(unittest.TestCase):
         "public_endpoint": "PublicEndPoint_bar",
         "apikey": "APIKey_foo",
     }
+
+    my_sqlite_dict = {"id": "Id_bar", "name": "Name_bar", "dir_path": "DirPath_bar"}
 
     def setUp(self):
         setup_django_patcher = mock.patch("tethys_cli.services_commands.setup_django")
@@ -47,38 +49,41 @@ class ServicesCommandsTest(unittest.TestCase):
         pass
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
-    def test_services_create_persistent_command(self, mock_service, mock_pretty_output):
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    def test_services_create_postgres_persistent_command(
+        self, mock_service, mock_pretty_output
+    ):
         """
         Test for services_create_persistent_command.
         For running the test without any errors or problems.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(type="postgres")
         services_create_persistent_command(mock_args)
         mock_service.assert_called()
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEqual(
-            "Successfully created new Persistent Store Service!", po_call_args[0][0][0]
+            "Successfully created new PostgreSQL Persistent Store Service!",
+            po_call_args[0][0][0],
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
-    def test_services_create_persistent_command_exception_attributeerror(
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    def test_services_create_postgres_persistent_command_exception_attributeerror(
         self, mock_service, mock_pretty_output
     ):
         """
         Test for services_create_persistent_command.
         For running the test with an IndexError exception thrown.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(type="postgres")
         mock_args.connection = AttributeError
         services_create_persistent_command(mock_args)
 
@@ -92,18 +97,18 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
-    def test_services_create_persistent_command_exception_indexerror(
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    def test_services_create_postgres_persistent_command_exception_indexerror(
         self, mock_service, mock_pretty_output
     ):
         """
         Test for services_create_persistent_command.
         For running the test with an IndexError exception thrown.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(type="postgres")
         mock_service.side_effect = IndexError
         services_create_persistent_command(mock_args)
 
@@ -117,18 +122,18 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
-    def test_services_create_persistent_command_exception_integrityerror(
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    def test_services_create_postgres_persistent_command_exception_integrityerror(
         self, mock_service, mock_pretty_output
     ):
         """
-        Test for services_create_persistent_command.
+        Test for services_create_postgres_persistent_command.
         For running the test with an IntegrityError exception thrown.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(type="postgres")
         mock_service.side_effect = IntegrityError
         services_create_persistent_command(mock_args)
 
@@ -141,24 +146,77 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertIn("already exists. Command aborted.", po_call_args[0][0][0])
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
+    def test_services_create_sqlite_persistent_command(
+        self, mock_service, mock_pretty_output
+    ):
+        """
+        Test for services_create_persistent_command.
+        For running the test without any errors or problems.
+        :param mock_service:  mock for SQLitePersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(type="sqlite")
+        services_create_persistent_command(mock_args)
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Successfully created new SQLite Persistent Store Service!",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    def test_services_create_unknown_persistent_command(
+        self, mock_postgres_service, mock_sqlite_service, mock_pretty_output
+    ):
+        """
+        Test for services_create_persistent_command.
+        For running the test with an unknown persistent store type.
+        :param mock_postgres_service:  mock for PostgresPersistentStoreService
+        :param mock_sqlite_service:  mock for SQLitePersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(type="unknown")
+        services_create_persistent_command(mock_args)
+        mock_postgres_service.assert_not_called()
+        mock_sqlite_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Unknown persistent store type: unknown",
+            po_call_args[0][0][0],
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
     def test_services_remove_persistent_command_Exceptions(
-        self, mock_service, mock_exit, mock_pretty_output
+        self, mock_sqlite_service, mock_postgres_service, mock_exit, mock_pretty_output
     ):
         """
         Test for services_remove_persistent_command
         Test for handling all exceptions thrown by the function.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_sqlite_service:  mock for SQLitePersistentStoreService
+        :param mock_postgres_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output: mock for pretty_output text
         :return:
         """
 
         mock_args = mock.MagicMock()
-        mock_service.__str__.return_value = "Persistent Store"
         mock_args.force = True
-        mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
+        mock_postgres_service.__str__.return_value = "Postgres Persistent Store"
+        mock_postgres_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
+        mock_sqlite_service.__str__.return_value = "SQLite Persistent Store"
+        mock_sqlite_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
@@ -172,14 +230,14 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_remove_persistent_command_force(
         self, mock_service, mock_exit, mock_pretty_output
     ):
         """
         Test for services_remove_persistent_command
         Test for forcing a delete of the service
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output: mock for pretty_output text
         :return:
@@ -205,14 +263,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.input")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_remove_persistent_command_no_proceed_invalid_char(
         self, mock_service, mock_exit, mock_pretty_output, mock_input
     ):
         """
         Test for services_remove_persistent_command
         Handles answering the prompt to delete with invalid characters, and answering no.
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output:  mock for pretty_output text
         :param mock_input:  mock for handling raw_input requests
@@ -247,14 +305,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch("tethys_cli.services_commands.input")
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     def test_services_remove_persistent_command_proceed(
         self, mock_service, mock_exit, mock_pretty_output, mock_input
     ):
         """
         Test for services_remove_persistent_command
         Handles answering the prompt to delete with invalid characters by answering yes
-        :param mock_service:  mock for PersistentStoreService
+        :param mock_service:  mock for PostgresPersistentStoreService
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output:  mock for pretty_output text
         :param mock_input:  mock for handling raw_input requests
@@ -596,7 +654,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
     @pytest.mark.django_db
@@ -608,12 +666,12 @@ class ServicesCommandsTest(unittest.TestCase):
         Both spatial and persistent are not set, so both are processed
         :param mock_mtd:  mock for model_to_dict to return a dictionary
         :param mock_spatial:  mock for SpatialDatasetService
-        :param mock_persistent:  mock for PersistentStoreService
+        :param mock_persistent:  mock for PostgresPersistentStoreService
         :param mock_pretty_output: mock for pretty_output text
         :param mock_stdout:  mock for text written with print statements
         :return:
         """
-        mock_mtd.return_value = self.my_dict
+        mock_mtd.return_value = self.my_postgres_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = False
@@ -656,17 +714,17 @@ class ServicesCommandsTest(unittest.TestCase):
 
         # Check text written with Python's print
         rts_call_args = mock_print.call_args_list
-        self.assertIn(self.my_dict["id"], rts_call_args[0][0][0])
-        self.assertIn(self.my_dict["name"], rts_call_args[0][0][0])
-        self.assertIn(self.my_dict["host"], rts_call_args[0][0][0])
-        self.assertIn(self.my_dict["port"], rts_call_args[0][0][0])
-        self.assertIn(self.my_dict["id"], rts_call_args[4][0][0])
-        self.assertIn(self.my_dict["name"], rts_call_args[4][0][0])
-        self.assertNotIn(self.my_dict["host"], rts_call_args[4][0][0])
-        self.assertNotIn(self.my_dict["port"], rts_call_args[4][0][0])
-        self.assertIn(self.my_dict["endpoint"], rts_call_args[4][0][0])
-        self.assertIn(self.my_dict["public_endpoint"], rts_call_args[4][0][0])
-        self.assertIn(self.my_dict["apikey"], rts_call_args[4][0][0])
+        self.assertIn(self.my_postgres_dict["id"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["name"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["host"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["port"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["id"], rts_call_args[4][0][0])
+        self.assertIn(self.my_postgres_dict["name"], rts_call_args[4][0][0])
+        self.assertNotIn(self.my_postgres_dict["host"], rts_call_args[4][0][0])
+        self.assertNotIn(self.my_postgres_dict["port"], rts_call_args[4][0][0])
+        self.assertIn(self.my_postgres_dict["endpoint"], rts_call_args[4][0][0])
+        self.assertIn(self.my_postgres_dict["public_endpoint"], rts_call_args[4][0][0])
+        self.assertIn(self.my_postgres_dict["apikey"], rts_call_args[4][0][0])
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
@@ -684,7 +742,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :param mock_stdout:  mock for text written with print statements
         :return:
         """
-        mock_mtd.return_value = self.my_dict
+        mock_mtd.return_value = self.my_postgres_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = True
         mock_args.persistent = False
@@ -713,47 +771,55 @@ class ServicesCommandsTest(unittest.TestCase):
         # Check text written with Python's print
         rts_call_args = mock_print.call_args_list
 
-        self.assertIn(self.my_dict["id"], rts_call_args[2][0][0])
-        self.assertIn(self.my_dict["name"], rts_call_args[2][0][0])
-        self.assertNotIn(self.my_dict["host"], rts_call_args[2][0][0])
-        self.assertNotIn(self.my_dict["port"], rts_call_args[2][0][0])
-        self.assertIn(self.my_dict["endpoint"], rts_call_args[2][0][0])
-        self.assertIn(self.my_dict["public_endpoint"], rts_call_args[2][0][0])
-        self.assertIn(self.my_dict["apikey"], rts_call_args[2][0][0])
+        self.assertIn(self.my_postgres_dict["id"], rts_call_args[2][0][0])
+        self.assertIn(self.my_postgres_dict["name"], rts_call_args[2][0][0])
+        self.assertNotIn(self.my_postgres_dict["host"], rts_call_args[2][0][0])
+        self.assertNotIn(self.my_postgres_dict["port"], rts_call_args[2][0][0])
+        self.assertIn(self.my_postgres_dict["endpoint"], rts_call_args[2][0][0])
+        self.assertIn(self.my_postgres_dict["public_endpoint"], rts_call_args[2][0][0])
+        self.assertIn(self.my_postgres_dict["apikey"], rts_call_args[2][0][0])
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
     @mock.patch("tethys_cli.services_commands.model_to_dict")
     def test_services_list_command_persistent(
-        self, mock_mtd, mock_persistent, mock_pretty_output, mock_print
+        self,
+        mock_mtd,
+        mock_sqlite_persistent,
+        mock_postgres_persistent,
+        mock_pretty_output,
+        mock_print,
     ):
         """
         Test for services_list_command
         Only persistent is set
         :param mock_mtd:  mock for model_to_dict to return a dictionary
-        :param mock_persistent:  mock for PersistentStoreService
+        :param mock_postgres_persistent:  mock for PostgresPersistentStoreService
         :param mock_pretty_output:  mock for pretty_output text
         :param mock_stdout:  mock for text written with print statements
         :return:
         """
-        mock_mtd.return_value = self.my_dict
+        mock_mtd.side_effect = [self.my_postgres_dict, self.my_sqlite_dict]
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = True
         mock_args.dataset = False
         mock_args.wps = False
-        mock_persistent.objects.order_by("id").all.return_value = [
-            mock.MagicMock(),
-            mock.MagicMock(),
+        mock_postgres_persistent.objects.order_by("id").all.return_value = [
+            mock.MagicMock()
+        ]
+        mock_sqlite_persistent.objects.order_by("id").all.return_value = [
+            mock.MagicMock()
         ]
 
         services_list_command(mock_args)
 
         # Check expected pretty_output
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(2, len(po_call_args))
-        self.assertIn("Persistent Store Services:", po_call_args[0][0][0])
+        self.assertEqual(4, len(po_call_args))  # 2 for postgres, 2 for sqlite
+        self.assertIn("PostgreSQL Persistent Store Services:", po_call_args[0][0][0])
         self.assertIn("ID", po_call_args[1][0][0])
         self.assertIn("Name", po_call_args[1][0][0])
         self.assertIn("Host", po_call_args[1][0][0])
@@ -762,16 +828,27 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertNotIn("Public Endpoint", po_call_args[1][0][0])
         self.assertNotIn("API Key", po_call_args[1][0][0])
 
+        self.assertIn("SQLite Persistent Store Services:", po_call_args[2][0][0])
+        self.assertIn("ID", po_call_args[3][0][0])
+        self.assertIn("Name", po_call_args[3][0][0])
+        self.assertIn("Dir Path", po_call_args[3][0][0])
+
         # Check text written with Python's print
         rts_call_args = mock_print.call_args_list
 
-        self.assertIn(self.my_dict["id"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["name"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["host"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["port"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["endpoint"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["public_endpoint"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["apikey"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["id"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["name"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["host"], rts_call_args[0][0][0])
+        self.assertIn(self.my_postgres_dict["port"], rts_call_args[0][0][0])
+        self.assertNotIn(self.my_postgres_dict["endpoint"], rts_call_args[0][0][0])
+        self.assertNotIn(
+            self.my_postgres_dict["public_endpoint"], rts_call_args[0][0][0]
+        )
+        self.assertNotIn(self.my_postgres_dict["apikey"], rts_call_args[0][0][0])
+
+        self.assertIn(self.my_sqlite_dict["id"], rts_call_args[1][0][0])
+        self.assertIn(self.my_sqlite_dict["name"], rts_call_args[1][0][0])
+        self.assertIn(self.my_sqlite_dict["dir_path"], rts_call_args[1][0][0])
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
@@ -789,7 +866,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :param mock_stdout:  mock for text written with print statements
         :return:
         """
-        mock_mtd.return_value = self.my_dict
+        mock_mtd.return_value = self.my_postgres_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = False
@@ -817,13 +894,13 @@ class ServicesCommandsTest(unittest.TestCase):
         # Check text written with Python's print
         rts_call_args = mock_print.call_args_list
 
-        self.assertIn(self.my_dict["id"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["name"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["endpoint"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["public_endpoint"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["apikey"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["host"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["port"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["id"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["name"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["endpoint"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["public_endpoint"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["apikey"], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_postgres_dict["host"], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_postgres_dict["port"], rts_call_args[1][0][0])
 
     @mock.patch("tethys_cli.services_commands.print")
     @mock.patch("tethys_cli.services_commands.pretty_output")
@@ -841,7 +918,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :param mock_stdout:  mock for text written with print statements
         :return:
         """
-        mock_mtd.return_value = self.my_dict
+        mock_mtd.return_value = self.my_postgres_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = False
@@ -869,13 +946,13 @@ class ServicesCommandsTest(unittest.TestCase):
         # Check text written with Python's print
         rts_call_args = mock_print.call_args_list
 
-        self.assertIn(self.my_dict["id"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["name"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["endpoint"], rts_call_args[1][0][0])
-        self.assertIn(self.my_dict["public_endpoint"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["host"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["port"], rts_call_args[1][0][0])
-        self.assertNotIn(self.my_dict["apikey"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["id"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["name"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["endpoint"], rts_call_args[1][0][0])
+        self.assertIn(self.my_postgres_dict["public_endpoint"], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_postgres_dict["host"], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_postgres_dict["port"], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_postgres_dict["apikey"], rts_call_args[1][0][0])
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.DatasetService")

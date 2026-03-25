@@ -62,7 +62,7 @@ Install the app and it's dependencies into your development Tethys Portal. In a 
 
 .. code-block:: bash
 
-    tethys manage start
+    tethys start
 
 .. tip::
 

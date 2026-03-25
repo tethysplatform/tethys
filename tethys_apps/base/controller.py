@@ -482,7 +482,7 @@ def page(
         name: The internal name of the page, using only letters and underscores. Must be unique within the app. Defaults to the name of the function being decorated.
         url: The page portion (i.e. slug) of the URL associated with this page (e.g. http://localhost:8000/app/my-app/<url>). Defaults to the name of the function being decorated, with underscores replaced by dashes (e.g. ``my_page`` becomes "my-page").
         regex: Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
-        handler: Dot-notation path to a handler function that will process the actual request. This is for an advanced escape-hatch pattern to get back to Django templating.
+        handler: Function that will process the actual request. This is for an advanced escape-hatch pattern to get back to Django templating.
         login_required: If user is required to be logged in to access the controller. Default is `True`.
         redirect_field_name: URL query string parameter for the redirect path. Default is "next".
         login_url: URL to send users to in order to authenticate. This defaults to the built-in login page of your Tethys Portal.

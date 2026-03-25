@@ -525,7 +525,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_services.models.DatasetService")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     @mock.patch("tethys_services.models.WebProcessingService")
     @mock.patch("tethys_compute.models.CondorScheduler")
     @mock.patch("tethys_compute.models.DaskScheduler")
@@ -579,6 +579,35 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         self.assertEqual(False, result)
         mock_service.objects.get.assert_called_once_with(pk=123)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn("with ID/Name", po_call_args[0][0][0])
+        self.assertIn("does not exist.", po_call_args[0][0][0])
+
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
+    def test_link_service_to_app_setting_spatial_pss_does_not_exist(
+        self, mock_postgres_service, mock_sqlite_service, mock_pretty_output
+    ):
+        from django.core.exceptions import ObjectDoesNotExist
+
+        # Mock up the PostgresPersistentStoreService to throw ObjectDoesNotExist
+        mock_postgres_service.objects.get.side_effect = ObjectDoesNotExist
+        mock_sqlite_service.objects.get.side_effect = ObjectDoesNotExist
+
+        # Based on exception, False will be returned
+        result = utilities.link_service_to_app_setting(
+            service_type="persistent",
+            service_uid="123",
+            app_package="foo_app",
+            setting_type="pss_spatial",
+            setting_uid="456",
+        )
+
+        self.assertEqual(False, result)
+        mock_postgres_service.objects.get.assert_called_once_with(pk=123)
+        mock_sqlite_service.objects.get.assert_called_once_with(pk=123)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn("with ID/Name", po_call_args[0][0][0])
@@ -727,7 +756,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         env_tethys_home = None
         active_conda_env = "tethys"  # Default Tethys environment name
         expand_user_path = "/home/tethys"
-        active_venv = ""
+        active_venv = "(test)"
 
         mock_environ.get.side_effect = [
             env_tethys_home,
@@ -741,7 +770,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(mock_environ.get.call_count, 3)
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "()")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "")
 
         # Returns default tethys home environment
         self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
@@ -767,7 +796,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "()")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "")
 
         # Returns joined path of default tethys home path and environment name
         self.assertEqual(
@@ -818,7 +847,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(mock_environ.get.call_count, 3)
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "()")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "")
         mock_tethys_log.warning.assert_called()
 
         # Returns default tethys home environment path

@@ -2,7 +2,7 @@ import sys
 from json import dumps
 from unittest import TestCase, mock
 from pathlib import Path
-from tethys_components import library
+from tethys_components import library, utils
 import reactpy
 
 THIS_DIR = Path(__file__).parent
@@ -12,7 +12,7 @@ LIBRARY_EVAL_DIR = THIS_DIR / "test_resources" / "test_library"
 class TestComponentLibrary(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.test_pages = list(LIBRARY_EVAL_DIR.glob("test_page_*.py"))
+        cls.test_pages = list(LIBRARY_EVAL_DIR.glob("_test_page_*.py"))
         sys.path.append(str(LIBRARY_EVAL_DIR))
 
     @classmethod
@@ -36,7 +36,7 @@ class TestComponentLibrary(TestCase):
 
                 lib = library.ComponentLibrary(test_page_name)
                 lib.hooks = mock.MagicMock()
-                lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
+                lib.hooks.use_state.return_value = [None, lambda _: None]
                 test_module = __import__(test_page_name, fromlist=["test"])
                 raw_vdom = test_module.page_test(lib)
                 js_string = lib.render_js_template()
@@ -115,3 +115,15 @@ class TestComponentLibrary(TestCase):
 
         lib = library.ComponentLibrary("hooks_test")
         self.assertEqual(lib.hooks, hooks)
+
+    def test_callable_vdom_as_dict(self):
+        test_dict = {"test": 1, "foo": 2, "bar": 3}
+        instance = library._CallableVdom(**test_dict)
+        self.assertDictEqual(instance.as_dict(), test_dict)
+
+    @mock.patch("tethys_components.library.partial")
+    def test_callable_vdom_custom_util_func(self, mock_partial):
+        test_dict = {"test": 1, "foo": 2, "bar": 3}
+        instance = library._CallableVdom(**test_dict)
+        instance.get_feature_info_url
+        mock_partial.assert_called_once_with(utils._get_feature_info_url_, instance)

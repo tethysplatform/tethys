@@ -9,7 +9,6 @@ from django import test
 from tethys_services.backends.onelogin import OneLoginOIDC, OneLoginOIDCMultiTenant
 from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
-
 client_id = "182f8cb0-b8b2-0138-3936-0647e35409d7174645"
 
 

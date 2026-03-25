@@ -34,7 +34,7 @@ dependencies = [
     "daphne",
     "requests>=2.32.4,<3",
     "bcrypt",
-    "cryptography>=44.0.1,<45",
+    "cryptography>=46.0.5",
   # Gen CLI commands
     "pyyaml",
     "jinja2",
@@ -42,6 +42,7 @@ dependencies = [
     "django-bootstrap5",
     "django-model-utils",
     "django-guardian",
+    "djangorestframework_simplejwt",
 ]
 
 [project.optional-dependencies]
@@ -83,3 +84,6 @@ omit = [
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+[tool.black]
+target-version = ["py310", "py311", "py312", "py313"]
