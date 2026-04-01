@@ -92,7 +92,7 @@ Add this method to your MapLayout class:
     class MapLayoutTutorialMap(MapLayout):
     ...
 
-    def compose_layers(self, reuqest, map_view, *args, **kwargs):
+    def compose_layers(self, request, map_view, *args, **kwargs):
         """
         Add layers to the MapLayout and create associated layer group objects.
         """

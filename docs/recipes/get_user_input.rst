@@ -65,7 +65,7 @@ First, you will need to configure your inputs using Tethys Gizmos by adding them
         context = {
             'name_input': name_input,
             'owner_name_input': owner_name_input,
-            'measurement_type_input', measurement_type,
+            'measurement_type_input': measurement_type_input,
             'date_added_input': date_added_input,
             'submit_button': submit_button,
         }

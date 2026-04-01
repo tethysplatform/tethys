@@ -33,7 +33,7 @@ Inside `station_quota_handler.py` add the following:
 
         codename = "station_quota"
         name = "Measurement Station Quota"
-        description = "Set quota on station db entry stroage for persistent store."
+        description = "Set quota on station db entry storage for persistent store."
         default = 25 # Number of stations that can be created per user
         units = "station"
         help = "You have exceeded your quote on stations. Please visit the stations page and remove any unneeded stations."
@@ -61,13 +61,13 @@ Now go into the portal's portal_config.yml file and add the dot-path of the hand
 
         settings:
           RESOURCE_QUOTA_HANDLERS:
-            - tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler
+            - tethysapp.dam_inventory.station_quota_handler.StationQuotaHandler
 
 A simple way to do this is in the tethys CLI by running this command:
 
 .. code-block:: bash
 
-    tethys settings --set settings.RESOURCE_QUOTA_HANDLERS ["tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler"]
+    tethys settings --set settings.RESOURCE_QUOTA_HANDLERS ["tethysapp.dam_inventory.station_quota_handler.StationQuotaHandler"]
 
 Make sure the Tethys development server restarts by pressing CTRL-C and then running tethys start.
 

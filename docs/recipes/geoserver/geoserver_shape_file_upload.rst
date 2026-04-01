@@ -6,18 +6,18 @@ Uploading Shapefiles to GeoServer
 
 **Last Updated:** October 2025
 
-Start with the :ref:`Spatial Dataset Service Recipe <spatial_datset_service_recipe>`
+Start with the :ref:`Spatial Dataset Service Recipe <spatial_dataset_service_recipe>`
 
 This recipe will show you how to upload shapefiles to your GeoServer Spatial Dataset Service. These shapefiles can later be displayed on maps. You can learn how in the :ref:`MapLayout WMS Layer Recipe <wms_layer_map_layout_recipe>` or :ref:`MapView WMS Layer Recipe <wms_layer_map_view_recipe>`
 
 Add Upload Form to Page
 #######################
 
-Being by adding the following contents in your app's template.
+Begin by adding the following contents in your app's template.
 .. code-block:: html+django
 
     <h1>Upload a shapefile</h1>
-    <form action="" method="post" enctype="multipart/form-data">.
+    <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
             <label for="fileInput" class="form-label">Shapefiles</label>
@@ -93,7 +93,7 @@ The archive contains several shapefiles organized into folders. Unzip the archiv
 Upload Shapefile
 ################
 
-Go to the page in your app with your new form and you should see a new file input ("Browse" button or something similar) and your submit button. Click the "Browse" button and upload one of the shapefiles from the files you downloaded. Remember, for the shapefile to be valid you need to select at least the files with the extensions: "shp", "shx", and "dbf". Press submit to uplaod those files.
+Go to the page in your app with your new form and you should see a new file input ("Browse" button or something similar) and your submit button. Click the "Browse" button and upload one of the shapefiles from the files you downloaded. Remember, for the shapefile to be valid you need to select at least the files with the extensions: "shp", "shx", and "dbf". Press submit to upload those files.
 
 Now use the GeoServer web admin interface (`<http://localhost:8181/geoserver/web/>`_) to verify that the layers were successfully uploaded. Look for layers belonging to the workspace name you assigned in your  `WORKSPACE` variable earlier.
 
