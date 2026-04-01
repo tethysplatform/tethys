@@ -14,6 +14,7 @@ Add Upload Form to Page
 #######################
 
 Begin by adding the following contents in your app's template.
+
 .. code-block:: html+django
 
     <h1>Upload a shapefile</h1>
