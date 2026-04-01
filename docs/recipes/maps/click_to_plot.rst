@@ -95,6 +95,6 @@ Here is an example completed version of `get_plot_for_layer_feature`:
 
 Now, open your app and click on a feature on the map. You should see something like this:   
 
-.. figure:: ../../docs/images/recipes/click_to_plot_graph.png
+.. figure:: ../../images/recipes/click_to_plot_graph.png
     :width: 500px
     :align: center
