@@ -53,12 +53,12 @@ Your data list should be in the following format:
 .. code-block:: python
 
     data = [
-        dict(
-            x=[1, 2, 3],
-            y=[1, 2, 3],
-            name='Name of plot',
-            line={'color': "#000000", 'width': 2, 'shape': 'spline'}
-        )
+        {
+            'x': [1, 2, 3],
+            'y': [1, 2, 3],
+            'name': 'Name of plot',
+            'line': {'color': "#000000", 'width': 2, 'shape': 'spline'}
+        }
     ]
 
 Your layout dictionary should be in the following format:
