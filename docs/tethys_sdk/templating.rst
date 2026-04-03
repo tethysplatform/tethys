@@ -11,11 +11,11 @@ The pages of a Tethys app are created using the Django template language. This p
 Django Templating Concepts
 ==========================
 
-The Django template language allows you to create dynamic HTML templates and minmizes the amount of HTML you need to write for your app pages. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/2.2/topics/templates/>`_ documentation.
+The Django template language allows you to create dynamic HTML templates and minimizes the amount of HTML you need to write for your app pages. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/5.2/topics/templates/>`_ documentation.
 
 .. tip::
 
-    Review the `Django Template Language <https://docs.djangoproject.com/en/2.2/topics/templates/>`_ to get a better grasp on templating in Tethys.
+    Review the `Django Template Language <https://docs.djangoproject.com/en/5.2/topics/templates/>`_ to get a better grasp on templating in Tethys.
 
 Variables
 ---------
@@ -40,7 +40,7 @@ Examples:
 
 .. hint::
 
-    See `Django template Variables <https://docs.djangoproject.com/en/2.2/topics/templates/#variables>`_ documentation for more information.
+    See `Django template Variables <https://docs.djangoproject.com/en/5.2/topics/templates/#variables>`_ documentation for more information.
 
 Filters
 -------
@@ -59,7 +59,7 @@ Examples:
 
 .. hint::
 
-    Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
+    Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/5.2/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
 
 Tags
 ----
@@ -91,7 +91,7 @@ Examples:
 
 .. hint::
 
-    See the `Django Tag Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
+    See the `Django Tag Reference <https://docs.djangoproject.com/en/5.2/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
 
 Tethys Filters
 ++++++++++++++
@@ -122,7 +122,7 @@ One of the advantages of using the Django template language is that it provides 
 
 .. hint::
 
-    The `Django Template Inheritance <https://docs.djangoproject.com/en/5.1/ref/templates/language/#template-inheritance>`_ documentation provides an excellent example that illustrates how inheritance works.
+    The `Django Template Inheritance <https://docs.djangoproject.com/en/5.2/ref/templates/language/#template-inheritance>`_ documentation provides an excellent example that illustrates how inheritance works.
 
 
 Base Templates

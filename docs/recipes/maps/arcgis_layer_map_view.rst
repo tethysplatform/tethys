@@ -1,4 +1,4 @@
-.. _geojson_layer_map_view_recipe:
+.. _arcgis_layer_map_view_recipe:
 
 ********************************
 Add an ArcGIS REST Layer to a MapView
@@ -14,7 +14,7 @@ This recipe will show you how to add an ArcGIS REST layer to your MapView Gizmo.
 Add ArcGIS Rest Layer to Map View
 #############################
 
-In order to display that data on the map, you'll need to add a GEOJSON layer. Add the following code to your controller function:
+In order to display that data on the map, you'll need to add an ArcGIS REST layer. Add the following code to your controller function:
 
 .. code-block:: python
 

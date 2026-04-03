@@ -1,4 +1,4 @@
-.. _component_app__mapping_with_argis_rest :
+.. _component_app__mapping_with_arcgis_rest :
 
 
 

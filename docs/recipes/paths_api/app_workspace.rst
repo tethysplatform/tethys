@@ -21,7 +21,7 @@ Here is an example of a controller writing to the app_workspace path:
     from tethys_sdk.routing import controller
 
     @controller(app_workspace=True)
-    def page_controller(request, app_workspace) 
+    def page_controller(request, app_workspace): 
         date = request.POST.get('date')
         temperature_data = request.POST.get('weather_data').split(',')
 
