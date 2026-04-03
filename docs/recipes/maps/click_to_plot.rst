@@ -81,7 +81,7 @@ Here is an example completed version of `get_plot_for_layer_feature`:
                 'x': [1, 3, 4, 7],
                 'y': [5, 2, 16, 9],
                 'name': 'Example Plot Name',
-                line={'color': '#008000', 'width': 3, 'shape': 'spline'}
+                'line': {'color': '#008000', 'width': 3, 'shape': 'spline'}
             }
         ]
 
