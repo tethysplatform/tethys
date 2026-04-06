@@ -50,7 +50,7 @@ jobs:
       docs: ${{ steps.filter.outputs.docs }}
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     - name: Detect Changed Paths
       id: filter
       uses: dorny/paths-filter@v3
@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     - name: Install Flake8
@@ -98,7 +98,7 @@ jobs:
     if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: actions/setup-python@v6
       with:
         python-version: "3.13"
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     - name: Set Base and Head
@@ -168,7 +168,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Install Tethys
@@ -214,7 +214,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Build the docker for no tag
@@ -255,7 +255,7 @@ jobs:
     steps:
     # Checkout the source for Grype config
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     # Download the Docker image artifact from docker-build job
     - name: Download Docker Artifact
       uses: ishworkh/container-image-artifact-download@v2.0.0
@@ -346,7 +346,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Setup Tethys
@@ -445,11 +445,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         persist-credentials: false
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.x"
     - name: Install pypa/build
