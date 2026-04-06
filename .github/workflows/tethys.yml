@@ -37,8 +37,50 @@ permissions:
   security-events: write
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    # Skip change detection for scheduled runs so all jobs run weekly.
+    # Because this job is skipped on schedule, downstream jobs use always()
+    # in their `if` conditions to prevent GitHub Actions from auto-skipping
+    # them when this dependency is skipped.
+    if: github.event_name != 'schedule'
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v4
+    - name: Detect Changed Paths
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          code:
+            - 'tethys_*/**'
+            - 'tests/**'
+            - 'scripts/**'
+            - 'conda.recipe/**'
+            - 'Dockerfile'
+            - 'setup.cfg'
+            - 'setup.py'
+            - 'pyproject.toml'
+            - 'requirements*.txt'
+            - 'environment.yml'
+            - 'micro_environment.yml'
+            - '.github/workflows/**'
+            - '.github/security/**'
+            - 'tox.ini'
+          docs:
+            - 'docs/**'
+            - '*.md'
+            - '*.rst'
+            - '.readthedocs.yaml'
+
   lint:
     name: Lint with Flake8
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
@@ -52,6 +94,8 @@ jobs:
 
   format:
     name: Check Black Formatting
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -105,6 +149,8 @@ jobs:
 
   tests:
     name: Tests (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -156,6 +202,8 @@ jobs:
 
   docker-build:
     name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -195,7 +243,8 @@ jobs:
 
   security-scan:
     name: Security Scan (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
-    needs: [ docker-build ]
+    needs: [ changes, docker-build ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule') && needs.docker-build.result == 'success'
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -287,6 +336,8 @@ jobs:
 
   conda-build:
     name: Conda Build
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -389,6 +440,8 @@ jobs:
 
   test-pypi-build:
     name: Test Build PyPI Distribution 📦
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
 
     steps:
