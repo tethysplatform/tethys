@@ -52,7 +52,7 @@ In order to use GeoServer resources in your app, you'll need to create a Spatial
 
             return sds_settings
 
-Create GeoServer Spatial Datset Service
+Create GeoServer Spatial Dataset Service
 #######################################
 
 You can register and connect to your GeoServer in the Tethys Portal admin page by creating a Spatial Dataset Service:
@@ -83,7 +83,7 @@ Next, you'll need to assign your service to your app setting.
 1. Select the "Site Admin" link from the drop down menu by your username in the top right corner.--name
 2. Scroll to the "Tethys Apps" section and select the "Installed Apps" link. 
 3. Select your app.
-4. Scroll down to the "Spatial Datset Service Settings" section and assign the "primary_geoserver" to the Spatail Datset Service property of the "main_geoserver" setting for your app.--name
+4. Scroll down to the "Spatial Dataset Service Settings" section and assign the "primary_geoserver" to the Spatial Dataset Service property of the "main_geoserver" setting for your app.--name
 5. Press "Save".
 
 .. tip::

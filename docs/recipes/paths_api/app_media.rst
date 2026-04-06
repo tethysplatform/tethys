@@ -21,7 +21,7 @@ Writing to the App Media Path
     @controller(name='site_images', url='site_images/', app_media=True)
     def site_images(request, app_media):
         if request.method == "POST":
-            image_file = request.FILE.get("image")
+            image_file = request.FILES.get("image")
 
             destination = app_media.path / image_file.name
             with destination.open("wb") as f:

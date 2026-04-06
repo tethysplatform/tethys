@@ -31,7 +31,7 @@ This input will allow users to add files to this form to upload along with the r
 Update Controller Logic
 #######################
 
-Next, update your controller that handles the add-guage-form's input:
+Next, update your controller that handles the add-gauge-form's input:
 
 .. code-block:: python
     :emphasize-lines: 38-48
