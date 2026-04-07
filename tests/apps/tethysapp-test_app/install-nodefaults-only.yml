@@ -1,0 +1,11 @@
+version: 1.0
+name: test_app
+
+requirements:
+  skip: false
+  conda:
+    channels:
+    - nodefaults
+    packages:
+    - geojson
+post:
