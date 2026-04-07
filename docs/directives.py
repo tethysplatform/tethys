@@ -1,3 +1,4 @@
+import os
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
@@ -29,6 +30,18 @@ class RecipeGallery(Directive):
             raise self.error(
                 f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'."
             )
+        
+        env = self.state.document.settings.env
+
+        # Register images during read phase so sphinx copies them into the build
+        for line in self.content:
+            parts = line.split()
+            if len(parts) >= 2:
+                image_path = parts[1]
+                abs_image_path = os.path.normpath(
+                    os.path.join(env.srcdir, image_path.lstrip("/"))
+                )
+                env.images.add_file(env.docname, abs_image_path)
 
         node = recipe_gallery_placeholder()
         node["layout"] = layout
@@ -91,12 +104,14 @@ def build_gallery(app, doctree, fromdocname):
                 "", f'<a href="{link}" class="recipe-link">', format="html"
             )
 
+            absolute_image_path = os.path.normpath(os.path.join(env.srcdir, image_path.lstrip("/")))
+            print("path: ", absolute_image_path)
             image_container = nodes.container(classes=["recipe-image-container"])
-            image_node = nodes.image(uri=image_path, alt="Image Not Found")
-            image_node["candidates"] = {"*": image_path}
+            image_node = nodes.image(uri=absolute_image_path, alt="Image Not Found")
+            image_node["candidates"] = {"*": absolute_image_path}
             image_container += image_node
 
-            # Close the anchor tag
+            # Close the anchor taga
             card_close_html = f"""
                 <strong class="recipe-title">{title}</strong>
                 <p class="recipe-tags">{tags_string}</p>
