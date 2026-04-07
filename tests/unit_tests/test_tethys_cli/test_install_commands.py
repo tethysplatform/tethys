@@ -1422,7 +1422,7 @@ class TestInstallCommands(TestCase):
             stdout=None,
             stderr=None,
         )
-        
+
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertNotIn(
             mock.call(
@@ -1480,7 +1480,7 @@ class TestInstallCommands(TestCase):
             stdout=None,
             stderr=None,
         )
-        
+
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(len(po_call_args), 6)
         self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
