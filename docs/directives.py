@@ -30,7 +30,7 @@ class RecipeGallery(Directive):
             raise self.error(
                 f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'."
             )
-        
+
         env = self.state.document.settings.env
 
         # Register images during read phase so sphinx copies them into the build
@@ -104,7 +104,9 @@ def build_gallery(app, doctree, fromdocname):
                 "", f'<a href="{link}" class="recipe-link">', format="html"
             )
 
-            absolute_image_path = os.path.normpath(os.path.join(env.srcdir, image_path.lstrip("/")))
+            absolute_image_path = os.path.normpath(
+                os.path.join(env.srcdir, image_path.lstrip("/"))
+            )
             print("path: ", absolute_image_path)
             image_container = nodes.container(classes=["recipe-image-container"])
             image_node = nodes.image(uri=absolute_image_path, alt="Image Not Found")
