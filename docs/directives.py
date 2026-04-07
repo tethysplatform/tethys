@@ -1,10 +1,12 @@
-import os
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
+import sphinx.util.logging
+
+logger = sphinx.util.logging.getLogger(__name__)
 
 
-class recipe_gallery_placeholder(nodes.General, nodes.Element):
+class RecipeGalleryPlaceholder(nodes.General, nodes.Element):
     """Placeholder node replaced after all docs are read."""
 
     pass
@@ -38,22 +40,19 @@ class RecipeGallery(Directive):
             parts = line.split()
             if len(parts) >= 2:
                 image_path = parts[1]
-                abs_image_path = os.path.normpath(
-                    os.path.join(env.srcdir, image_path.lstrip("/"))
-                )
-                env.images.add_file(env.docname, abs_image_path)
+                rel_path, _ = env.relfn2path(image_path, env.docname)
+                env.images.add_file(env.docname, rel_path)
 
-        node = recipe_gallery_placeholder()
+        node = RecipeGalleryPlaceholder()
         node["layout"] = layout
         node["content"] = list(self.content)
-        node["docname"] = self.state.document.settings.env.docname
         return [node]
 
 
-def build_gallery(app, doctree, fromdocname):
+def build_gallery(app, doctree, docname):
     env = app.env
     # Go through all recipe gallery placeholder nodes found - these will be replaced with the fully built gallery nodes
-    for placeholder in doctree.findall(recipe_gallery_placeholder):
+    for placeholder in doctree.findall(RecipeGalleryPlaceholder):
         layout = placeholder["layout"]
         content = placeholder["content"]
         recipe_count = len(content)
@@ -76,25 +75,28 @@ def build_gallery(app, doctree, fromdocname):
 
         for line in content:
             parts = line.split()
+
             if len(parts) < 2:
-                raise ValueError(f"Invalid syntax: {line}")
+                logger.warning(f"Invalid syntax: {line} - expected at least a link and image path", location=placeholder)
+                continue
 
             # Parse the input on the line into its parts
             link, image_path, *tags = parts
             tags_string = " ".join(tag.strip("[],") for tag in tags)
 
             # Get the title of the target document
-            title = (
-                env.titles[link].astext()
-                if link in env.titles
-                else link.split("/")[-1].replace("_", " ")
-            )
+            if link in env.title:
+                title = env.title[link].astext()
+            else:
+                # Fallback to using the last part of the filename as the title if the document title is not found
+                title = link.split("/")[-1].replace("_", " ").title()
 
             # Resolve the link to the target document
             try:
-                link = app.builder.get_relative_uri(fromdocname, link)
+                link = app.builder.get_relative_uri(docname, link)
             except Exception as e:
-                print(f"Could not resolve link {link}: {e}")
+                logger.warning(f"Could not resolve link {link}: {e}", location=placeholder)
+                continue
 
             # Create a container for the recipe card with the link, image, and title
             card_container = nodes.container(classes=["recipe-card"])
@@ -104,16 +106,13 @@ def build_gallery(app, doctree, fromdocname):
                 "", f'<a href="{link}" class="recipe-link">', format="html"
             )
 
-            absolute_image_path = os.path.normpath(
-                os.path.join(env.srcdir, image_path.lstrip("/"))
-            )
-            print("path: ", absolute_image_path)
+            rel_path, _ = env.relfn2path(image_path, docname)
             image_container = nodes.container(classes=["recipe-image-container"])
-            image_node = nodes.image(uri=absolute_image_path, alt="Image Not Found")
-            image_node["candidates"] = {"*": absolute_image_path}
+            image_node = nodes.image(uri=rel_path, alt="Image Not Found")
+            image_node["candidates"] = {"*": rel_path}
             image_container += image_node
 
-            # Close the anchor taga
+            # Close the link node
             card_close_html = f"""
                 <strong class="recipe-title">{title}</strong>
                 <p class="recipe-tags">{tags_string}</p>
@@ -160,7 +159,7 @@ def build_gallery(app, doctree, fromdocname):
 
 def setup(app: Sphinx):
     """Add the recipe-gallery directive to Sphinx"""
-    app.add_node(recipe_gallery_placeholder)
+    app.add_node(RecipeGalleryPlaceholder)
     app.add_directive("recipe-gallery", RecipeGallery)
     app.connect("doctree-resolved", build_gallery)
     return {"version": "0.1", "parallel_read_safe": True, "parallel_write_safe": True}
