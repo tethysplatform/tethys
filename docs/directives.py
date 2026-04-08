@@ -77,7 +77,10 @@ def build_gallery(app, doctree, docname):
             parts = line.split()
 
             if len(parts) < 2:
-                logger.warning(f"Invalid syntax: {line} - expected at least a link and image path", location=placeholder)
+                logger.warning(
+                    f"Invalid syntax: {line} - expected at least a link and image path",
+                    location=placeholder,
+                )
                 continue
 
             # Parse the input on the line into its parts
@@ -95,7 +98,9 @@ def build_gallery(app, doctree, docname):
             try:
                 link = app.builder.get_relative_uri(docname, link)
             except Exception as e:
-                logger.warning(f"Could not resolve link {link}: {e}", location=placeholder)
+                logger.warning(
+                    f"Could not resolve link {link}: {e}", location=placeholder
+                )
                 continue
 
             # Create a container for the recipe card with the link, image, and title
