@@ -1,3 +1,4 @@
+from html import escape
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
@@ -55,7 +56,6 @@ def build_gallery(app, doctree, docname):
     for placeholder in doctree.findall(RecipeGalleryPlaceholder):
         layout = placeholder["layout"]
         content = placeholder["content"]
-        recipe_count = len(content)
 
         # Create a container node to hold the gallery
         gallery_container_node = nodes.container()
@@ -85,8 +85,8 @@ def build_gallery(app, doctree, docname):
             tags_string = " ".join(tag.strip("[],") for tag in tags)
 
             # Get the title of the target document
-            if link in env.title:
-                title = env.title[link].astext()
+            if link in env.titles:
+                title = env.titles[link].astext()
             else:
                 # Fallback to using the last part of the filename as the title if the document title is not found
                 title = link.split("/")[-1].replace("_", " ").title()
@@ -114,8 +114,8 @@ def build_gallery(app, doctree, docname):
 
             # Close the link node
             card_close_html = f"""
-                <strong class="recipe-title">{title}</strong>
-                <p class="recipe-tags">{tags_string}</p>
+                <strong class="recipe-title">{escape(title)}</strong>
+                <p class="recipe-tags">{escape(tags_string)}</p>
                 </a>
             """
             card_close = nodes.raw("", card_close_html, format="html")
@@ -133,7 +133,7 @@ def build_gallery(app, doctree, docname):
         gallery_container_node += gallery_node
 
         # If the layout is carousel and there are more than 4 recipes, add carousel buttons for navigation
-        if layout == "carousel" and recipe_count > 4:
+        if layout == "carousel" and len(recipe_card_nodes) > 4:
             left_button_container_node = nodes.container(
                 classes=["carousel-button-left-container"]
             )
