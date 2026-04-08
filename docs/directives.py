@@ -1,9 +1,26 @@
+from html import escape
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
+import sphinx.util.logging
+
+logger = sphinx.util.logging.getLogger(__name__)
+
+
+class RecipeGalleryPlaceholder(nodes.General, nodes.Element):
+    """Placeholder node replaced after all docs are read."""
+
+    pass
 
 
 class RecipeGallery(Directive):
+    """
+    Directive to insert a recipe gallery into the documentation.
+    The gallery can be displayed either as a carousel or a multi-row layout.
+    Each line of content should specify a target document link, an image path,
+    and optionally tags for the recipe.
+    """
+
     has_content = True
     option_spec = {
         "layout": directives.unchanged,
@@ -16,6 +33,29 @@ class RecipeGallery(Directive):
             raise self.error(
                 f"Invalid layout option: {layout}. Use 'carousel' or 'multi-row'."
             )
+
+        env = self.state.document.settings.env
+
+        # Register images during read phase so sphinx copies them into the build
+        for line in self.content:
+            parts = line.split()
+            if len(parts) >= 2:
+                image_path = parts[1]
+                rel_path, _ = env.relfn2path(image_path, env.docname)
+                env.images.add_file(env.docname, rel_path)
+
+        node = RecipeGalleryPlaceholder()
+        node["layout"] = layout
+        node["content"] = list(self.content)
+        return [node]
+
+
+def build_gallery(app, doctree, docname):
+    env = app.env
+    # Go through all recipe gallery placeholder nodes found - these will be replaced with the fully built gallery nodes
+    for placeholder in doctree.findall(RecipeGalleryPlaceholder):
+        layout = placeholder["layout"]
+        content = placeholder["content"]
 
         # Create a container node to hold the gallery
         gallery_container_node = nodes.container()
@@ -30,63 +70,62 @@ class RecipeGallery(Directive):
         gallery_node["classes"].append(f"{layout}")
         gallery_node["classes"].append("recipe-gallery")
 
-        # Get the Sphinx environment and app
-        env = self.state.document.settings.env
-        app = env.app
-
-        recipe_count = len(self.content)
-
         # List to hold all the recipe card nodes to be added to the gallery node
         recipe_card_nodes = []
 
-        for line in self.content:
+        for line in content:
             parts = line.split()
+
             if len(parts) < 2:
-                raise self.error(f"Invalid syntax: {line}")
+                logger.warning(
+                    f"Invalid syntax: {line} - expected at least a link and image path",
+                    location=placeholder,
+                )
+                continue
 
             # Parse the input on the line into its parts
             link, image_path, *tags = parts
             tags_string = " ".join(tag.strip("[],") for tag in tags)
 
             # Get the title of the target document
-            title = self.get_document_title(env, link)
-
-            # Create a new recipe card node
-            card_node = nodes.container(classes=["recipe-card"])
+            if link in env.titles:
+                title = env.titles[link].astext()
+            else:
+                # Fallback to using the last part of the filename as the title if the document title is not found
+                title = link.split("/")[-1].replace("_", " ").title()
 
             # Resolve the link to the target document
             try:
-                link = app.builder.get_relative_uri(env.docname, link)
+                link = app.builder.get_relative_uri(docname, link)
             except Exception as e:
-                print(f"Could not resolve link {link}: {e}")
+                logger.warning(
+                    f"Could not resolve link {link}: {e}", location=placeholder
+                )
+                continue
 
-            print("Image path: ", image_path)
-
-            # Add the image to the image container and the iamge container to the reference node
-            # then add the reference node to the card node
-
-            # Create a container for the recipe card
+            # Create a container for the recipe card with the link, image, and title
             card_container = nodes.container(classes=["recipe-card"])
 
-            # Create the anchor element (wrapping everything)
+            # Create the link node that wraps the image, title, and tags
             card_node = nodes.raw(
                 "", f'<a href="{link}" class="recipe-link">', format="html"
             )
 
-            # Image container with a properly resolved Sphinx image
+            rel_path, _ = env.relfn2path(image_path, docname)
             image_container = nodes.container(classes=["recipe-image-container"])
-            image_node = nodes.image(uri=image_path, alt="Image Not Found")
+            image_node = nodes.image(uri=rel_path, alt="Image Not Found")
+            image_node["candidates"] = {"*": rel_path}
             image_container += image_node
 
-            # Close the anchor tag\
+            # Close the link node
             card_close_html = f"""
-                <strong class="recipe-title">{title}</strong>
-                <p class="recipe-tags">{tags_string}</p>
+                <strong class="recipe-title">{escape(title)}</strong>
+                <p class="recipe-tags">{escape(tags_string)}</p>
                 </a>
             """
             card_close = nodes.raw("", card_close_html, format="html")
 
-            # Assemble the final structure
+            # Finish building the recipe card
             card_container += card_node  # Opening <a>
             card_container += image_container  # Image
             card_container += card_close  # Closing </a>
@@ -99,7 +138,7 @@ class RecipeGallery(Directive):
         gallery_container_node += gallery_node
 
         # If the layout is carousel and there are more than 4 recipes, add carousel buttons for navigation
-        if layout == "carousel" and recipe_count > 4:
+        if layout == "carousel" and len(recipe_card_nodes) > 4:
             left_button_container_node = nodes.container(
                 classes=["carousel-button-left-container"]
             )
@@ -118,31 +157,14 @@ class RecipeGallery(Directive):
                 format="html",
             )
             gallery_container_node += right_button_container_node
-            return [gallery_container_node]
 
-        return [gallery_container_node]
-
-    def get_document_title(self, env, docname):
-        """Get the title of a document by its filename
-
-        Args:
-            env: The Sphinx environment
-            docname: The name of the document
-
-        Returns:
-            str: The title of the document or the docname if the title is not found
-        """
-        if docname in env.titles:
-            return env.titles[docname].astext()
-
-        # Otherwise, fallback to a readable version of the filename
-        if "/" in docname:
-            return docname.split("/")[-1].replace("_", " ").title()
-
-        return docname.replace("_", " ").title()
+        # Replace the placeholder node in the doctree with the fully built gallery container node
+        placeholder.replace_self(gallery_container_node)
 
 
 def setup(app: Sphinx):
     """Add the recipe-gallery directive to Sphinx"""
+    app.add_node(RecipeGalleryPlaceholder)
     app.add_directive("recipe-gallery", RecipeGallery)
+    app.connect("doctree-resolved", build_gallery)
     return {"version": "0.1", "parallel_read_safe": True, "parallel_write_safe": True}
