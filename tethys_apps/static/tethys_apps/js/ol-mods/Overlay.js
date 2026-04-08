@@ -1,4 +1,4 @@
-import Overlay_ from 'planet_maps/Overlay';
+import Overlay_ from '@planet/maps/Overlay';
 
 const OVERLAYS_DOM_NODE = document.createElement('div');
 const OVERLAYS_ROOT = ReactDOM.createRoot(OVERLAYS_DOM_NODE);

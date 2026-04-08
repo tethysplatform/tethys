@@ -2,7 +2,6 @@ from django.shortcuts import render
 from tethys_components.library import ComponentLibrary, ComponentLibraryManager
 from tethys_components.utils import _get_layout_component
 from tethys_portal.optional_dependencies import has_module
-from tethys_components.custom import PageLoader
 from uuid import uuid4
 
 
@@ -37,7 +36,7 @@ if has_module("reactpy"):
     from reactpy import component
 
     @component
-    def page_component_wrapper(app, user, layout, component, extras=None):
+    def page_component_wrapper(app, user, layout, page_func, extras=None):
         """
         ReactPy component that wraps every custom user page
 
@@ -50,9 +49,13 @@ if has_module("reactpy"):
             layout(func or None): The layout component, if any, that the page content will be nested in
             component(func): The page component to render
         """
-        lib = ComponentLibraryManager.get_library(app, component)
-        component_obj = PageLoader(
-            lib, content=component(lib, **extras) if extras else component(lib)
+        lib = ComponentLibraryManager.get_library(app, page_func)
+        component_obj = page_func(lib, **extras) if extras else page_func(lib)
+        hide_loading, set_hide_loading = lib.hooks.use_state(False)
+
+        lib.hooks.use_effect(
+            lambda: None if set_hide_loading(True) else None,
+            dependencies=[],
         )
 
         if layout is not None:
@@ -71,9 +74,19 @@ if has_module("reactpy"):
                 key=str(uuid4()), 
                 type="importmap"
             )(
-                lib.render_importmap()
+                lib.get_importmap()
             ),
-            page_obj
+            page_obj,
+            lib.html.script(
+                '''
+                    setTimeout(() => {
+                        const loadingRoot = document.getElementById("loading-root");
+                        if (loadingRoot) {
+                            loadingRoot.style.display = "none";
+                        }
+                    }, 1000);
+                '''
+            ) if hide_loading else None
         )
 
         return page_obj

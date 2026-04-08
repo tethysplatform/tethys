@@ -4,9 +4,9 @@ def NavHeader(lib, app, user, nav_links=None, content=None):
     if not isinstance(content, list):
         content = [content]
 
-    return lib.html.div(style=lib.Style(height="100vh"))(
+    return lib.html.div(style=lib.Style(height="100%"))(
         lib.tethys.HeaderWithNavBar(app=app, user=user, nav_links=nav_links),
-        lib.html.div(style=lib.Style(paddingTop="56px", height="100%", width="100%"))(
+        lib.html.div(style=lib.Style(paddingTop="56px", height="100%"))(
             *content
         ),
     )

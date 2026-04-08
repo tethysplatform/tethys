@@ -1,4 +1,4 @@
-import _VectorSource from 'planet_maps/source/Vector';
+import _VectorSource from '@planet/maps/source/Vector';
 import * as FormatLib from 'ol/format';
 import Feature from 'ol/Feature';
 import * as GeomLib from 'ol/geom';
@@ -38,7 +38,6 @@ export default function VectorSource (...props) {
                         value.geometry = new GeomLib[geomType](value.geometry.geom);
                     }
                     if (value.style) {
-                        debugger;
                         if (value.style.image && value.style.image.type == "ol.style.Icon") {
                             value.style.image = new Icon(value.style.image)
                         }

@@ -24,6 +24,7 @@ logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 LOG = logging.getLogger(f"tethys_components.{__name__}")
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 ESM_HOST = "https://esm.sh"
+REACTJS_VERSION = "19.2.4"
 
 class _CallableVdom(dict):
     def as_dict(self):
@@ -70,7 +71,7 @@ class _CustomComponentWrapper:
                 return self.vdom_func()
         elif kwargs and not args:
             for k, v in kwargs.items():
-                if callable(v):
+                if callable(v) and isinstance(v, (utils.Props, utils.Style)):
                     kwargs[k] = utils.args_to_dot_notation_dicts(v)
             vdom = self.vdom_func(**kwargs)
             vdom["__creator_func__"] = self.vdom_func
@@ -147,26 +148,86 @@ class Package:
         styles: list[str] | None = None,
         accessor: str | None = None,
     ):
-        if name.startswith('@') and name.count('@') > 1 or "@" in name and not name.startswith("@"):
-            new_name, parsed_version = name.rsplit("@", 1)
-            if version and parsed_version and version != parsed_version:
+        matches = re.match(r'(?P<name>@?[^[@]+)@?(?P<version>[0-9\.]+)?(\[(?P<dependencies>[^\]]+?)])?', name)
+        name = matches.group("name")
+        _version = matches.group("version")
+        _dependencies = matches.group("dependencies")
+        if _version:
+            if version and version != _version:
                 raise ValueError(
-                    'The version provided via "@" in the name argument does not match the version argument.'
+                    'The version provided via "@" in the name argument does not match that passed directly to the version argument.'
                 )
-            elif not version and parsed_version:
-                version = parsed_version
-            name = new_name
+            if not version and _version:
+                version = _version
+        
+        if _dependencies:
+            _dependencies = _dependencies.split(",")
+            if dependencies and sorted(dependencies) != sorted(_dependencies):
+                raise ValueError(
+                    'The dependencies provided via bracket notation within the name argument do not match those passed directly to the dependencies argument.'
+                )
+            if not dependencies:
+                dependencies = _dependencies
+        
+        if dependencies:
+            for d in dependencies:
+                if not isinstance(d, (str, Package)):
+                    raise ValueError("Dependencies must be a list of strings or Package objects.")
 
         self.name = name
         self.version = version
         self.host = host
         self.default_export = default_export
-        self.dependencies = dependencies or []
+        self.dependencies = [d if isinstance(d, Package) else Package(d) for d in dependencies] if dependencies else []
         self.treat_as_path = treat_as_path
         self.styles = styles or []
         self.accessor = accessor
         self._reactpy_module = None
         self._components_by_path = {}
+    
+    def get_fullname(self):
+        fullname = self.name
+        if self.version:
+            fullname += f"@{self.version}"
+        return fullname
+    
+    def add_dependency(self, name):
+        self.dependencies.append(Package(name))
+    
+    def get_all_dependencies(self):
+        dependencies = set()
+        for d in self.dependencies:
+            dependencies.add(d)
+            dependencies |= d.get_all_dependencies()
+        return dependencies
+
+    def get_importmap(self):
+        importmap = {}
+        if self.host == ESM_HOST:
+            uri = self.get_uri()
+            importmap[self.name] = uri
+            if self.version:
+                importmap[f"{self.name}/"] = uri.replace("?", "&") + "/"
+            else:
+                importmap[f"{self.name}/"] = uri.replace("?", "@&") + "/"
+
+        for d in self.get_all_dependencies():
+            importmap |= d.get_importmap()
+
+        return importmap
+
+    def get_uri(self):
+        uri = f"{self.host}/{self.get_fullname()}?external=react,react-dom"
+        if self.dependencies:
+            uri += ","
+            uri += ",".join([d.name for d in self.dependencies])
+            versioned_deps = [d.get_fullname() for d in self.dependencies if d.version]
+            if versioned_deps:
+                uri += "&deps="
+                uri += ",".join(versioned_deps)
+        uri += ("," if "&deps=" in uri else "&deps=")
+        uri += f"react@{REACTJS_VERSION},react-dom@{REACTJS_VERSION}"
+        return uri
 
     def add_component(self, module_path, component):
         added = False
@@ -202,7 +263,7 @@ class Package:
             if self.host == ESM_HOST:
                 if module_path:
                     module_path = '/' + module_path
-                package_uri = f"{utils._clean_name(self.name)}{module_path}"
+                package_uri = f"{self.name}{module_path}"
             else:
                 package_root = f"{self.host}/{self.name}"
                 if self.version:
@@ -245,7 +306,7 @@ class PackageManager:
             raise TypeError("The package_instance argument must be of type Package")
         if hasattr(self, accessor):
             raise ValueError(
-                'The "{accessor}" accessor already exists on this PackageManager instance.'
+                f'The "{accessor}" accessor already exists on this PackageManager instance.'
             )
 
     def add_package(self, accessor, package_instance):
@@ -273,12 +334,8 @@ class ComponentLibrary:
         / "reactjs_module_wrapper_template.js"
     )
     TEMPLATE = Template(TEMPLATE_FPATH.read_text())
-    REACTJS_VERSION = "19.2.4"
+    REACTJS_VERSION = REACTJS_VERSION
     REACTJS_VERSION_INT = int(REACTJS_VERSION.split(".")[0])
-    REACTJS_DEPENDENCIES = [
-        f"react@{REACTJS_VERSION}",
-        f"react-dom@{REACTJS_VERSION}",
-    ]
     INTERNALLY_MANAGED = [
         "html",
         "tethys",
@@ -300,7 +357,7 @@ class ComponentLibrary:
             "ag": Package(
                 name="react-grid-wrapper.js", 
                 host="/static/tethys_apps/js",
-                dependencies=["ag-grid-community", "ag-grid-react"],
+                dependencies=["ag-grid-react[ag-grid-community]"],
             ),
             "rp": Package(name="react-player@3.4.0", default_export="ReactPlayer"),
             "lo": Package(name="react-loading-overlay-ts@2.0.2", default_export="LoadingOverlay"),
@@ -313,13 +370,16 @@ class ComponentLibrary:
             "mui": Package(name="@mui/material@5.16.7"),
             "chakra": Package(name="@chakra-ui/react@2.8.2"),
             "icons": Package(name="react-bootstrap-icons@1.11.4"),
+            "m": Package(
+                name="@mantine/core",
+                styles=["https://esm.sh/@mantine/core/styles.css"]
+            ),
             "ollp": Package(
                 name="layer-panel.js",
                 host="/static/tethys_apps/js",
                 dependencies=[
-                    "ol-layerswitcher", 
-                    "ol-side-panel",
-                    "ol",
+                    "ol-layerswitcher[ol@10.7.0]", 
+                    "ol-side-panel[ol@10.7.0]",
                 ],
                 styles=[
                     "https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css",
@@ -341,7 +401,7 @@ class ComponentLibrary:
                 name="@planet/maps@11.2.0",
                 default_export="*",
                 treat_as_path=True,
-                dependencies=["ol", "proj4"],
+                dependencies=["ol@10.7.0[proj4]"],
                 styles=["https://esm.sh/ol@10.7.0/ol.css"],
             ),
         }
@@ -366,6 +426,7 @@ class ComponentLibrary:
         self.app = app
         self.page_function = page_function
         self.name = f"{app.package}-{page_function.__name__}"
+        self.importmap = {}
 
     def __getattr__(self, package_accessor):
         """
@@ -427,7 +488,6 @@ class ComponentLibrary:
         packages = self.get_packages()
         context = {
             "packages": packages,
-            "reactjs_dependencies": self.REACTJS_DEPENDENCIES,
             "reactjs_version_int": self.REACTJS_VERSION_INT,
         }
         content = self.TEMPLATE.render(context)
@@ -519,41 +579,16 @@ class ComponentLibrary:
         setattr(
             self, accessor, DynamicPackageManager(library=self, package=new_package)
         )
-    
-    @staticmethod
-    def has_version(str):
-        return (str.startswith("@") and str.count("@") == 2) or (str.count("@") == 1 and not str.startswith("@"))
 
-    
-    def render_importmap(self):
+    def get_importmap(self):
         """
-        Generates and returns the ComponentLibrary's importmap as a json string
+        Gets and returns the entire ComponentLibrary's importmap as a json string
         """
         packages = self.get_packages()
 
         importmap = {}
         for package in packages:
-            root_packages = [utils._clean_name(p.name) for p in packages if p.name != package.name and p.host == ESM_HOST]
-            dependency_packages = [utils._clean_name(d) for d in package.dependencies]
-            external_string = ','.join(root_packages + dependency_packages)
-            if package.dependencies:
-                for d in package.dependencies:
-                    clean_name = utils._clean_name(d)
-                    importmap[clean_name] = f"{ESM_HOST}/{d}?external={external_string}&deps=react@{self.REACTJS_VERSION}"
-                    if (self.has_version(d)):
-                        importmap[f"{clean_name}/"] = f"{ESM_HOST}/{d}&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
-                    else:
-                        importmap[f"{clean_name}/"] = f"{ESM_HOST}/{d}@&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
-            if package.host == ESM_HOST:
-                clean_name = utils._clean_name(package.name)
-                uri = f"{package.host}/{package.name}"
-                if package.version:
-                    uri += f"@{package.version}"
-                importmap[clean_name] = f"{uri}?external={external_string}"
-                if package.version:
-                    importmap[f"{clean_name}/"] = f"{uri}&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
-                else:
-                    importmap[f"{clean_name}/"] = f"{uri}@&external={external_string}&deps=react@{self.REACTJS_VERSION}/"
+            importmap |= package.get_importmap()
 
         return json.dumps({"imports": importmap}, indent=2)
 
@@ -626,7 +661,7 @@ class ComponentLibrary:
                                         )
                                     self.register(*register_args, **register_kwargs)
 
-        matches = re.findall(r"\blib\.([^\(]+)\(", source_code)
+        matches = re.findall(r"\blib\.([^\n\(]+)\(", source_code)
         for match in matches:
             try:
                 path_parts = match.split(".")

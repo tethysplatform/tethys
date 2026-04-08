@@ -1,4 +1,4 @@
-import _ImageSource from 'planet_maps/source/Image';
+import _ImageSource from '@planet/maps/source/Image';
 import {load} from 'ol/Image';
 import {createLoader} from 'ol/source/wms';
 

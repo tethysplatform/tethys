@@ -10,18 +10,28 @@ html {
     --outer-moon-dia: 25px;
     --outer-moon-orbit: 148px;
 }
-.loading-text {
-    position: absolute;
+#loading-root {
+    z-index: 100;
+    background: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+#loading-text {
+    position: fixed;
     top: 70%;
     left: 0;
     width: 100%;
     text-align: center;
     font-size: 40pt;
+    line-height: normal;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     color: var(--app-primary-color);
 }
 .center {
-    position: absolute;
+    position: fixed;
     width: var(--center-dia);
     height: var(--center-dia);
     background: var(--app-primary-color);
@@ -31,7 +41,7 @@ html {
     transform: var(--center);
 }
 .outer-spin, .inner-spin {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
 }
@@ -39,7 +49,7 @@ html {
     animation: revspin var(--outer-spin) linear infinite;
 }
 .outer-arc, .inner-arc {
-    position: absolute;
+    position: fixed;
     border-radius: 50%;
     border: 5px solid;
 }
@@ -65,7 +75,7 @@ html {
     transform: var(--center) rotate(35deg) scale(-1, -1);
 }
 .outer-moon-a {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     width: var(--outer-moon-dia);
@@ -75,7 +85,7 @@ html {
     transform: var(--center) translate(var(--outer-moon-orbit), 0);
 }
 .outer-moon-b {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     width: var(--outer-moon-dia);
@@ -109,7 +119,7 @@ html {
     transform: var(--center) rotate(30deg) scale(-1, -1);
 }
 .inner-moon-a {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     width: var(--inner-moon-dia);
@@ -119,7 +129,7 @@ html {
     transform: var(--center) translate(var(--inner-moon-orbit), 0);
 }
 .inner-moon-b {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     width: var(--inner-moon-dia);

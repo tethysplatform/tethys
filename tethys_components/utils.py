@@ -213,10 +213,6 @@ def _background_execute_wrapper(func, args, callback=None):
         callback(result)
 
 
-def _clean_name(name):
-    return name.replace("@", "").replace("/", "_")
-
-
 class RepeatManager:
     from threading import Timer, Thread
 

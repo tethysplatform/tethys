@@ -1,4 +1,4 @@
-import _TileWMSSource from 'planet_maps/source/TileWMS';
+import _TileWMSSource from '@planet/maps/source/TileWMS';
 import TileGrid from 'ol/tilegrid/TileGrid';
 
 export default function TileWMSSource (...props) {

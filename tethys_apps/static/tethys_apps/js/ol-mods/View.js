@@ -1,7 +1,7 @@
-import _View from "planet_maps/View.js?external=react,react-dom,ol"
+import _View from "@planet/maps/View.js?external=react,react-dom,ol"
 import Projection from 'ol/proj/Projection';
 import proj4 from 'proj4';
-import {register} from 'ol/proj/proj4?external=proj4';
+import {register} from 'ol/proj/proj4';
 
 export default function View (...props) {
     let projection;

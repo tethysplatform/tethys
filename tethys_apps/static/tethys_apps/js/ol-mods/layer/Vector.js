@@ -1,4 +1,4 @@
-import _VectorLayer from "planet_maps/layer/Vector"
+import _VectorLayer from "@planet/maps/layer/Vector"
 import * as StyleLib from 'ol/style';
 
 export default function VectorLayer (...props) {
