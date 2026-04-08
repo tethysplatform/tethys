@@ -1389,6 +1389,123 @@ class TestInstallCommands(TestCase):
         )
         mock_mamc.assert_called_once()
 
+    @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
+    @mock.patch("tethys_cli.install_commands.run_services")
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
+    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_conda_nodefaults(
+        self, mock_pretty_output, mock_conda_run, mock_call, _, mock_mamc
+    ):
+        chdir("..")
+        file_path = self.root_app_path / "install-nodefaults.yml"
+        args = mock.MagicMock(
+            file=file_path,
+            develop=False,
+            verbose=False,
+            services_file=None,
+            update_installed=False,
+            no_db_sync=False,
+            only_dependencies=True,
+            without_dependencies=False,
+        )
+        install_commands.install_command(args)
+
+        mock_conda_run.assert_called_once_with(
+            Commands.INSTALL,
+            "-c",
+            "tacaswell",
+            "--override-channels",
+            "--freeze-installed",
+            "geojson",
+            use_exception_handler=False,
+            stdout=None,
+            stderr=None,
+        )
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertNotIn(
+            mock.call(
+                "Warning: 'nodefaults' was specified but no other channels were provided. "
+                "Ignoring 'nodefaults' to avoid conda errors."
+            ),
+            po_call_args,
+        )
+        self.assertEqual(len(po_call_args), 5)
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
+        self.assertIn(
+            "Warning: Packages installation ran into an error.",
+            po_call_args[2][0][0],
+        )
+        self.assertEqual(
+            "No public directory detected. Unable to process JavaScript dependencies.",
+            po_call_args[3][0][0],
+        )
+        self.assertEqual(
+            "Successfully installed dependencies for test_app.",
+            po_call_args[4][0][0],
+        )
+
+        self.assertEqual(0, len(mock_call.mock_calls))
+        mock_mamc.assert_not_called()
+
+    @mock.patch("tethys_cli.install_commands.multiple_app_mode_check")
+    @mock.patch("tethys_cli.install_commands.run_services")
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
+    @mock.patch("tethys_cli.install_commands.conda_run", return_value=["", "", 1])
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_conda_nodefaults_only(
+        self, mock_pretty_output, mock_conda_run, mock_call, _, mock_mamc
+    ):
+        chdir("..")
+        file_path = self.root_app_path / "install-nodefaults-only.yml"
+        args = mock.MagicMock(
+            file=file_path,
+            develop=False,
+            verbose=False,
+            services_file=None,
+            update_installed=False,
+            no_db_sync=False,
+            only_dependencies=True,
+            without_dependencies=False,
+        )
+        install_commands.install_command(args)
+
+        mock_conda_run.assert_called_once_with(
+            Commands.INSTALL,
+            "--freeze-installed",
+            "geojson",
+            use_exception_handler=False,
+            stdout=None,
+            stderr=None,
+        )
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(len(po_call_args), 6)
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual(
+            "Warning: 'nodefaults' was specified but no other channels were provided. "
+            "Ignoring 'nodefaults' to avoid conda errors.",
+            po_call_args[1][0][0],
+        )
+        self.assertEqual("Running conda installation tasks...", po_call_args[2][0][0])
+        self.assertIn(
+            "Warning: Packages installation ran into an error.",
+            po_call_args[3][0][0],
+        )
+        self.assertEqual(
+            "No public directory detected. Unable to process JavaScript dependencies.",
+            po_call_args[4][0][0],
+        )
+        self.assertEqual(
+            "Successfully installed dependencies for test_app.",
+            po_call_args[5][0][0],
+        )
+
+        self.assertEqual(0, len(mock_call.mock_calls))
+        mock_mamc.assert_not_called()
+
     @mock.patch("builtins.input", side_effect=["x", 5])
     @mock.patch("tethys_cli.install_commands.get_app_settings")
     @mock.patch("tethys_cli.cli_colors.pretty_output")
