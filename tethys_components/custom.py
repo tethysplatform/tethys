@@ -7,7 +7,12 @@ RESOURCE_DIR = THIS_DIR / "resources"
 
 def Display(lib, **kwargs):
     """A full screen container for nesting content within."""
-    style = lib.Style(height="100%")
+    style = lib.Style(
+        position="absolute",
+        top=0,
+        bottom=0,
+        width="100%",
+    )
     if "style" in kwargs:
         style |= kwargs["style"]
     return lib.bs.Container(fluid=True, style=style)(
@@ -297,6 +302,7 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
 
     def handle_exit(*_, **__):  # pragma: no cover
         set_margin_top(-56)
+        print("SETTING REDIRECT")
         set_redirect(True)
 
     return lib.html.div(
