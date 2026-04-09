@@ -49,7 +49,7 @@ if has_module("reactpy"):
             layout(func or None): The layout component, if any, that the page content will be nested in
             component(func): The page component to render
         """
-        lib = ComponentLibraryManager.get_library(app, page_func)
+        lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}", extras)
         component_obj = page_func(lib, **extras) if extras else page_func(lib)
         hide_loading, set_hide_loading = lib.hooks.use_state(False)
 
@@ -68,6 +68,11 @@ if has_module("reactpy"):
             )
         else:
             page_obj = component_obj
+
+        # Below used instead of hasattr(lib, "m") since that would automatically create 
+        # the attribute and return True due to the nature of its __getattr__ method
+        if "m" in dir(lib):
+            page_obj = lib.m.MantineProvider(page_obj)
 
         page_obj = lib.html.div(
             lib.html.script(

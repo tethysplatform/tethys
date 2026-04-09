@@ -520,7 +520,7 @@ def page(
         )
 
         component_source_code = inspect.getsource(component_function)
-        lib = ComponentLibraryManager.get_library(app, component_function)
+        lib = ComponentLibraryManager.get_library(f"{app.package}-{component_function.__name__}")
         lib.load_dependencies_from_source_code(component_source_code)
         if preload:
             if not isinstance(preload, list):

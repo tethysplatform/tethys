@@ -9,15 +9,16 @@
 """
 
 import json
-import re
-from pathlib import Path
-from os import PathLike
-from jinja2 import Template
 import logging
+import re
 from functools import partial
+from importlib import import_module
+from jinja2 import Template
+from os import PathLike
+from copy import deepcopy
+from pathlib import Path
 from tethys_components import utils
 from tethys_components import custom as custom_components
-from importlib import import_module
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
@@ -128,10 +129,36 @@ class ComponentLibraryManager:
         raise RuntimeError("The ComponentLibraryManager should only be used as a class")
 
     @classmethod
-    def get_library(cls, app, page_function):
-        library_name = f"{app.package}-{page_function.__name__}"
+    def get_library(cls, library_name, extras=None):
         if library_name not in cls.LIBRARIES:
-            cls.LIBRARIES[library_name] = ComponentLibrary(app, page_function)
+            cls.LIBRARIES[library_name] = ComponentLibrary(library_name)
+
+        if extras:
+            base_library : ComponentLibrary = cls.LIBRARIES[library_name]
+            
+            for key in sorted(list(extras.keys())):
+                library_name += f"_{extras[key]}"
+            
+            if library_name not in cls.LIBRARIES:
+                copy_library = ComponentLibrary(library_name)
+                for package in base_library.get_packages():
+                    new_package : Package = deepcopy(package)
+                    if new_package._reactpy_module:
+                        new_package._reactpy_module = DynamicPackageManager.web.module_from_string(
+                        name=library_name,
+                        content=copy_library.render_js_template(),
+                        resolve_exports=False,
+                        fallback="⌛",
+                    )
+                    setattr(
+                        copy_library, 
+                        package.accessor, 
+                        DynamicPackageManager(
+                            library=copy_library, 
+                            package=new_package
+                        )
+                    )
+                cls.LIBRARIES[library_name] = copy_library
 
         return cls.LIBRARIES[library_name]
 
@@ -422,10 +449,8 @@ class ComponentLibrary:
         "ol.Geolocation": "olmod.Geolocation",
     }
 
-    def __init__(self, app, page_function):
-        self.app = app
-        self.page_function = page_function
-        self.name = f"{app.package}-{page_function.__name__}"
+    def __init__(self, name):
+        self.name = name
         self.importmap = {}
 
     def __getattr__(self, package_accessor):
@@ -705,6 +730,7 @@ class CustomComponentManager:
 
 
 class DynamicPackageManager:
+    from reactpy import web
 
     def __init__(
         self,
@@ -712,12 +738,10 @@ class DynamicPackageManager:
         package: Package = None,
         component: str = "",
     ):
-        from reactpy import web
 
         self.library = library
         self.package = package
         self.component = component
-        self.web = web
 
     def __getattr__(self, attr):
         component = f"{self.component}.{attr}" if self.component else attr
