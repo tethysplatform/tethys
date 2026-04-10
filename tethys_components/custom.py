@@ -314,7 +314,6 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
 
     def handle_exit(*_, **__):  # pragma: no cover
         set_margin_top(-56)
-        print("SETTING REDIRECT")
         set_redirect(True)
 
     return lib.html.div(
