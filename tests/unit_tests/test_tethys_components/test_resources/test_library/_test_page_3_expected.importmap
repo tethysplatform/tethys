@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "react-player": "https://esm.sh/react-player@3.4.0?external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4",
+    "react-player/": "https://esm.sh/react-player@3.4.0&external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4/"
+  }
+}

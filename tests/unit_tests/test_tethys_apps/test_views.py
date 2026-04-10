@@ -59,12 +59,13 @@ class TethysAppsViewsTest(unittest.TestCase):
             mock_request, "tethys_apps/app_library.html", expected_context
         )
 
+    @mock.patch("tethys_apps.views.logger")
     @mock.patch("tethys_apps.views.get_custom_template", return_value="mock_template")
     @mock.patch("tethys_apps.views.render")
     @mock.patch("tethys_apps.views.TethysApp")
     @mock.patch("tethys_apps.views.ProxyApp")
     def test_library_not_staff(
-        self, mock_ProxyApp, mock_TethysApp, mock_render, mock_get_template
+        self, mock_ProxyApp, mock_TethysApp, mock_render, mock_get_template, mock_logger
     ):
         mock_request = mock.MagicMock()
         mock_request.user.is_staff = False
@@ -73,7 +74,10 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_app1.configured = True
         mock_app2 = mock.MagicMock(spec=TethysApp, name="app2", order=1)
         mock_app2.configured = False
-        mock_TethysApp.objects.all.return_value = [mock_app1, mock_app2]
+        fragment_app = mock.MagicMock(
+            spec=TethysApp, name="fragment", package="", order=3
+        )
+        mock_TethysApp.objects.all.return_value = [mock_app1, mock_app2, fragment_app]
 
         mock_proxy_app1 = mock.MagicMock(spec=ProxyApp, name="proxy", order=1)
         mock_ProxyApp.objects.all.return_value = [mock_proxy_app1]
@@ -81,11 +85,13 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_render.return_value = True
 
         # configure mock objects so they can be sorted
-        for app in (mock_app1, mock_app2, mock_proxy_app1):
+        for app in (mock_app1, mock_app2, mock_proxy_app1, fragment_app):
             app.__lt__ = lambda s, o: s.order < o.order
             app.name = app._extract_mock_name()
 
         ret = library(mock_request)
+        fragment_app.delete.assert_called_once()
+        mock_logger.warning.assert_called_once()
         self.assertEqual(ret, mock_render.return_value)
         mock_TethysApp.objects.all.assert_called_once()
         mock_ProxyApp.objects.all.assert_called_once()

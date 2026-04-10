@@ -520,14 +520,10 @@ def page(
         )
 
         component_source_code = inspect.getsource(component_function)
-        lib = ComponentLibraryManager.get_library(f"{app.package}-{component_function.__name__}")
+        lib = ComponentLibraryManager.get_library(
+            f"{app.package}-{component_function.__name__}"
+        )
         lib.load_dependencies_from_source_code(component_source_code)
-        if preload:
-            if not isinstance(preload, list):
-                raise ValueError("The preload argument must be a list of functions or paths to files/folders that should be scanned for components and preloaded.")
-            lib.preload(preload)
-
-
 
         def controller_wrapper(request, **kwargs):
             controller = handler or global_page_controller

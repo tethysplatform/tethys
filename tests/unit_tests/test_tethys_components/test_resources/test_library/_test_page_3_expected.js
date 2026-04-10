@@ -1,6 +1,10 @@
 
-import ReactPlayer from "https://esm.sh/react-player@3.4.0/?deps=react@19.0,react-dom@19.0,react-is@19.0";
-export {ReactPlayer};
+import {Fake as fp_Fake} from "https://fake-cdn.com/fake-package@3.2.1/";
+export {fp_Fake};
+loadCSS("style1.css");
+loadCSS("style2.css");
+import rp_ReactPlayer from "react-player";
+export {rp_ReactPlayer};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -32,7 +36,7 @@ function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
     for (const [key, value] of Object.entries(props)) {
         if (typeof value === "function") {
-            newProps[key] = makeJsonSafeEventHandler(value);
+            newProps[key] = makeJsonSafeEventHandler(key, value);
         }
     }
     return newProps;
@@ -105,15 +109,62 @@ function jsonSanitizeObject(obj, maxDepth, refs, depth) {
         if (obj instanceof Element) {
             newObj = {...newObj, ...htmlToJsonObject(obj)}
         }
+            if (obj.target && obj.target.tagName == "FORM") {
+            let rawFormData = new FormData(obj.target);
+            let formData = {};
+            rawFormData.entries().forEach(([key, value]) => {
+                if (value instanceof File) {
+                    const reader = new FileReaderSync();
+                    const resultBase64 = reader.readAsDataURL(value);
+
+                }
+                formData[key] = value;
+            });
+            newObj.formData = formData;
+        }
+        if (obj.nativeEvent) {
+            newObj = {...obj.nativeEvent, ...newObj};
+            delete newObj.nativeEvent;
+            if (obj.type == "submit") {
+                obj.preventDefault();
+            }
+        }
     }
     return newObj;
 }
 
-function makeJsonSafeEventHandler(oldHandler) {
+function makeJsonSafeEventHandler(key, oldHandler) {
     // Since we can't really know what the event handlers get passed we have to check if
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
+        if (key === "onSubmit") {
+            const event = arguments[0];
+            if (event && event.nativeEvent) {
+                event.preventDefault();
+                let newEvent = jsonSanitizeObject(event.nativeEvent, 4);
+                let rawFormData = new FormData(event.target);
+                let formData = {};
+                rawFormData.entries().forEach(([key, value]) => {
+                    if (value instanceof File) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            formData[key] = reader.result;
+                            newEvent.formData = formData;
+                            oldHandler(newEvent);  // <--- Call the original handler with the new event object
+                        };
+                        reader.onerror = () => {
+                            console.error("Error reading the file. Please try again.", "error");
+                        };
+                        reader.readAsDataURL(value);
+                    } else {
+                        formData[key] = value;
+                    }
+                });
+            }
+            
+        } else {
+            oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
+        }
     };
 }

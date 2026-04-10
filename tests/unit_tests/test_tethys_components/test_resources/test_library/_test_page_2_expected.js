@@ -1,27 +1,27 @@
 
-import {Col, Row, Container} from "https://esm.sh/react-bootstrap@2.10.10/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Col,Row,Container";
-export {Col, Row, Container};
+import {Col as bs_Col, Row as bs_Row, Container as bs_Container} from "react-bootstrap";
+export {bs_Col, bs_Row, bs_Container};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
-import ImageLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Image.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import ImageArcGISRestSource from "https://esm.sh/@planet/maps@11.2.0/source/ImageArcGISRest.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import XYZSource from "https://esm.sh/@planet/maps@11.2.0/source/XYZ.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import OSMSource from "https://esm.sh/@planet/maps@11.2.0/source/OSM.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import GroupLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Group.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import TileLayer from "https://esm.sh/@planet/maps@11.2.0/layer/Tile.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-import ScaleLineControl from "https://esm.sh/@planet/maps@11.2.0/control/ScaleLine.js?deps=react@19.0,react-dom@19.0,react-is@19.0,ol@10.7.0";
-export {ImageLayer, ImageArcGISRestSource, XYZSource, OSMSource, GroupLayer, TileLayer, ScaleLineControl};
+import ol_ImageLayer from "@planet/maps/layer/Image.js";
+import ol_ImageArcGISRestSource from "@planet/maps/source/ImageArcGISRest.js";
+import ol_XYZSource from "@planet/maps/source/XYZ.js";
+import ol_OSMSource from "@planet/maps/source/OSM.js";
+import ol_GroupLayer from "@planet/maps/layer/Group.js";
+import ol_TileLayer from "@planet/maps/layer/Tile.js";
+import ol_ScaleLineControl from "@planet/maps/control/ScaleLine.js";
+export {ol_ImageLayer, ol_ImageArcGISRestSource, ol_XYZSource, ol_OSMSource, ol_GroupLayer, ol_TileLayer, ol_ScaleLineControl};
 loadCSS("https://esm.sh/ol@10.7.0/ol.css");
-import {LayerPanel} from "/static/tethys_apps/js/layer-panel.js/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LayerPanel";
-export {LayerPanel};
+import {LayerPanel as ollp_LayerPanel} from "/static/tethys_apps/js/layer-panel.js/";
+export {ollp_LayerPanel};
 loadCSS("https://esm.sh/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.css");
 loadCSS("https://esm.sh/ol-side-panel@1.0.6/src/SidePanel.css");
-import VectorSource from "/static/tethys_apps/js/ol-mods/source/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
-import VectorLayer from "/static/tethys_apps/js/ol-mods/layer/Vector.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
-import Map from "/static/tethys_apps/js/ol-mods/Map.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
-import View from "/static/tethys_apps/js/ol-mods/View.js?deps=react@19.0,react-dom@19.0,react-is@19.0";
-export {VectorSource, VectorLayer, Map, View};
-import {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line} from "https://esm.sh/recharts@2.12.7/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=LineChart,CartesianGrid,XAxis,YAxis,Tooltip,Line";
-export {LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line};
+import olmod_VectorSource from "/static/tethys_apps/js/ol-mods/source/Vector.js";
+import olmod_VectorLayer from "/static/tethys_apps/js/ol-mods/layer/Vector.js";
+import olmod_Map from "/static/tethys_apps/js/ol-mods/Map.js";
+import olmod_View from "/static/tethys_apps/js/ol-mods/View.js";
+export {olmod_VectorSource, olmod_VectorLayer, olmod_Map, olmod_View};
+import {LineChart as rc_LineChart, CartesianGrid as rc_CartesianGrid, XAxis as rc_XAxis, YAxis as rc_YAxis, Tooltip as rc_Tooltip, Line as rc_Line} from "recharts";
+export {rc_LineChart, rc_CartesianGrid, rc_XAxis, rc_YAxis, rc_Tooltip, rc_Line};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -53,7 +53,7 @@ function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
     for (const [key, value] of Object.entries(props)) {
         if (typeof value === "function") {
-            newProps[key] = makeJsonSafeEventHandler(value);
+            newProps[key] = makeJsonSafeEventHandler(key, value);
         }
     }
     return newProps;
@@ -126,15 +126,62 @@ function jsonSanitizeObject(obj, maxDepth, refs, depth) {
         if (obj instanceof Element) {
             newObj = {...newObj, ...htmlToJsonObject(obj)}
         }
+            if (obj.target && obj.target.tagName == "FORM") {
+            let rawFormData = new FormData(obj.target);
+            let formData = {};
+            rawFormData.entries().forEach(([key, value]) => {
+                if (value instanceof File) {
+                    const reader = new FileReaderSync();
+                    const resultBase64 = reader.readAsDataURL(value);
+
+                }
+                formData[key] = value;
+            });
+            newObj.formData = formData;
+        }
+        if (obj.nativeEvent) {
+            newObj = {...obj.nativeEvent, ...newObj};
+            delete newObj.nativeEvent;
+            if (obj.type == "submit") {
+                obj.preventDefault();
+            }
+        }
     }
     return newObj;
 }
 
-function makeJsonSafeEventHandler(oldHandler) {
+function makeJsonSafeEventHandler(key, oldHandler) {
     // Since we can't really know what the event handlers get passed we have to check if
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
+        if (key === "onSubmit") {
+            const event = arguments[0];
+            if (event && event.nativeEvent) {
+                event.preventDefault();
+                let newEvent = jsonSanitizeObject(event.nativeEvent, 4);
+                let rawFormData = new FormData(event.target);
+                let formData = {};
+                rawFormData.entries().forEach(([key, value]) => {
+                    if (value instanceof File) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            formData[key] = reader.result;
+                            newEvent.formData = formData;
+                            oldHandler(newEvent);  // <--- Call the original handler with the new event object
+                        };
+                        reader.onerror = () => {
+                            console.error("Error reading the file. Please try again.", "error");
+                        };
+                        reader.readAsDataURL(value);
+                    } else {
+                        formData[key] = value;
+                    }
+                });
+            }
+            
+        } else {
+            oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
+        }
     };
 }

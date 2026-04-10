@@ -12,6 +12,7 @@ from tethys_apps.base.paths import (
     _get_app_media,
     _get_user_media,
 )
+from concurrent.futures import ThreadPoolExecutor
 
 
 class DotNotationDict(dict):
@@ -115,6 +116,29 @@ def _infer_app_from_stack_trace():
         raise EnvironmentError("The {app_package} app was not found.")
 
     return app
+
+
+def _memoized_use_setting(app, setting_name):
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(app.get_custom_setting, setting_name)
+        setting = future.result()
+        return setting
+
+
+def use_setting(setting_name):
+    """
+    A custom hook used to access TethysApp settings asynchronously.
+
+    Args:
+        setting_name (str): The name of the setting to access, as defined in the TethysApp's settings.py file.
+
+    Returns:
+        The value of the requested setting.
+    """
+    from reactpy import use_memo
+
+    app = _infer_app_from_stack_trace()
+    return use_memo(lambda: _memoized_use_setting(app, setting_name))
 
 
 def use_workspace(user=None):

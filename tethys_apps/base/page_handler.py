@@ -49,8 +49,10 @@ if has_module("reactpy"):
             layout(func or None): The layout component, if any, that the page content will be nested in
             component(func): The page component to render
         """
-        lib = ComponentLibraryManager.get_library(f"{app.package}-{component.__name__}", extras)
-        component_obj = page_func(lib, **extras) if extras else page_func(lib)
+        lib = ComponentLibraryManager.get_library(
+            f"{app.package}-{page_func.__name__}", extras
+        )
+        page_obj = page_func(lib, **extras) if extras else page_func(lib)
         hide_loading, set_hide_loading = lib.hooks.use_state(False)
 
         lib.hooks.use_effect(
@@ -64,34 +66,31 @@ if has_module("reactpy"):
                 app=app,
                 user=user,
                 nav_links=app.navigation_links,
-                content=component_obj,
+                content=page_obj,
             )
-        else:
-            page_obj = component_obj
 
-        # Below used instead of hasattr(lib, "m") since that would automatically create 
+        # Below used instead of hasattr(lib, "m") since that would automatically create
         # the attribute and return True due to the nature of its __getattr__ method
         if "m" in dir(lib):
             page_obj = lib.m.MantineProvider(page_obj)
 
         page_obj = lib.html.div(
-            lib.html.script(
-                key=str(uuid4()), 
-                type="importmap"
-            )(
-                lib.get_importmap()
-            ),
+            lib.html.script(key=str(uuid4()), type="importmap")(lib.get_importmap()),
             page_obj,
-            lib.html.script(
-                '''
+            (
+                lib.html.script(
+                    """
                     setTimeout(() => {
                         const loadingRoot = document.getElementById("loading-root");
                         if (loadingRoot) {
                             loadingRoot.style.display = "none";
                         }
                     }, 1000);
-                '''
-            ) if hide_loading else None
+                """
+                )
+                if hide_loading
+                else None
+            ),
         )
 
         return page_obj

@@ -176,8 +176,18 @@ def Chart(
             width=width,
             height=height,
             title=lib.Props(text=title),
-            xaxis=lib.Props(title=lib.Props(text=x_label), type="log", range=[0,3], autorange="reversed"),
-            yaxis=lib.Props(title=lib.Props(text=y_label), type="log", range=[0,3], autorange="reversed"),
+            xaxis=lib.Props(
+                title=lib.Props(text=x_label),
+                type="log",
+                range=[0, 3],
+                autorange="reversed",
+            ),
+            yaxis=lib.Props(
+                title=lib.Props(text=y_label),
+                type="log",
+                range=[0, 3],
+                autorange="reversed",
+            ),
         ),
     )
 
@@ -249,6 +259,7 @@ def HeaderButton(lib, **kwargs):
         *kwargs.get("children", []),
     )
 
+
 def AppNavLinks(lib, app, from_package="m"):
     if isinstance(app.navigation_links, property):
         app = app()
@@ -271,6 +282,7 @@ def AppNavLinks(lib, app, from_package="m"):
             link_component = link_component(link["title"])
         links.append(link_component)
     return lib.html.div(*links)
+
 
 def NavIcon(lib, src="", style=None):
     style = style or {}
@@ -396,7 +408,7 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
                                 "defaultActiveKey": f"/apps/{app.root_url}",
                                 "class_name": "flex-column",
                             },
-                            AppNavLinks(lib, app=app, from_package="bs")
+                            AppNavLinks(lib, app=app, from_package="bs"),
                         )
                     ),
                 ),
