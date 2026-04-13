@@ -21,7 +21,7 @@ from tethys_components import custom as custom_components
 
 logging.getLogger("reactpy.web.module").setLevel(logging.WARN)
 
-LOG = logging.getLogger(f"tethys_components.{__name__}")
+LOG = logging.getLogger(__name__)
 TETHYS_COMPONENTS_ROOT_DPATH = Path(__file__).parent
 ESM_HOST = "https://esm.sh"
 REACTJS_VERSION = "19.2.4"
@@ -604,12 +604,16 @@ class ComponentLibrary:
                 )
             else:
                 # Already registered, so just update in case any properties changed
-                existing.version = version
-                existing.styles = styles
-                existing.default_export = default_export
-                existing.treat_as_path = treat_as_path
-                existing.host = host
-                existing.dependencies = dependencies
+                existing.package.__init__(
+                    package,
+                    version,
+                    host,
+                    default_export,
+                    dependencies,
+                    treat_as_path,
+                    styles,
+                    accessor,
+                )
                 return
         new_package.accessor = accessor
         setattr(

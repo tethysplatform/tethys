@@ -36,12 +36,6 @@ def library(request):
     unconfigured_apps = list()
 
     for app in apps:
-        if not app.package:
-            logger.warning(
-                "A blank app was found in your database and is being removed to avoid crashing your portal."
-            )
-            app.delete()
-            continue
         if request.user.is_staff:
             if app.configured:
                 configured_apps.append(app)
