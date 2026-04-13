@@ -29,6 +29,7 @@ dependencies:
   - tornado>=6.5,<7
   - cryptography>=46.0.5
   - bcrypt # also required by channels, docker, daphne, condorpy
+  - pyproj
 
   # Gen CLI commands
   - pyyaml
