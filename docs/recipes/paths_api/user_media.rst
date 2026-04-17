@@ -19,7 +19,7 @@ Writing to the User Media Path
     from tethys_sdk.routing import controller
     
     @controller(name='profile_view', url='profile_view', user_media=True)
-    def profile_view(request, user_media)
+    def profile_view(request, user_media):
         if request.method == "POST":
             profile_pic = request.FILES.get("profile_picture")
 

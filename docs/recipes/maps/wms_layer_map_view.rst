@@ -7,7 +7,7 @@ WMS Layer MapView
 
 **Last Updated:** October 2025
 
-This recipe builds on the :ref:`MapView Recipe <add_map_view_recipe>` and the :ref:`GeoSever Shapefile Upload Recipe <upload_shape_file_to_geoserver_recipe>`
+This recipe builds on the :ref:`MapView Recipe <add_map_view_recipe>` and the :ref:`GeoServer Shapefile Upload Recipe <upload_shape_file_to_geoserver_recipe>`
 
 In this recipe you'll learn to add a WMS layer to your MapView Gizmo's interactive map. WMS Layers are often used to display GeoServer or THREDDS server assets on a map.
 

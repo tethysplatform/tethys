@@ -113,7 +113,7 @@ Also add a relationship to your Dam model:
         # Relationships
         hydrograph = relationship('Hydrograph', back_populates='dam', uselist=False)
 
-The `dam_id` attribute in the Hydorgraph model and the `hydrograph_id` attribute in the HydrographPoint model serve as actual columns on those "tables". The relationships you've defined in your models are Python helpers that let you more easily move between and access related Dams and Hydrographs, and related Hydrographs and Hydrograph Points. See some examples below:
+The `dam_id` attribute in the Hydrograph model and the `hydrograph_id` attribute in the HydrographPoint model serve as actual columns on those "tables". The relationships you've defined in your models are Python helpers that let you more easily move between and access related Dams and Hydrographs, and related Hydrographs and Hydrograph Points. See some examples below:
 
 .. tip::
 

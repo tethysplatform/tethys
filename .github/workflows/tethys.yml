@@ -37,12 +37,55 @@ permissions:
   security-events: write
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    # Skip change detection for scheduled runs so all jobs run weekly.
+    # Because this job is skipped on schedule, downstream jobs use always()
+    # in their `if` conditions to prevent GitHub Actions from auto-skipping
+    # them when this dependency is skipped.
+    if: github.event_name != 'schedule'
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v5
+    - name: Detect Changed Paths
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          code:
+            - 'tethys_*/**'
+            - 'tests/**'
+            - 'scripts/**'
+            - 'conda.recipe/**'
+            - 'Dockerfile'
+            - 'docker/**'
+            - 'setup.cfg'
+            - 'setup.py'
+            - 'pyproject.toml'
+            - 'requirements*.txt'
+            - 'environment.yml'
+            - 'micro_environment.yml'
+            - '.github/workflows/**'
+            - '.github/security/**'
+            - 'tox.ini'
+          docs:
+            - 'docs/**'
+            - '*.md'
+            - '*.rst'
+            - '.readthedocs.yaml'
+
   lint:
     name: Lint with Flake8
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     - name: Install Flake8
@@ -52,9 +95,11 @@ jobs:
 
   format:
     name: Check Black Formatting
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: actions/setup-python@v6
       with:
         python-version: "3.13"
@@ -65,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     - name: Set Base and Head
@@ -105,6 +150,8 @@ jobs:
 
   tests:
     name: Tests (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -122,7 +169,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Install Tethys
@@ -156,6 +203,8 @@ jobs:
 
   docker-build:
     name: Docker Build (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -166,7 +215,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Build the docker for no tag
@@ -195,7 +244,8 @@ jobs:
 
   security-scan:
     name: Security Scan (${{ matrix.platform }}, ${{ matrix.django-version }}, ${{ matrix.python-version }})
-    needs: [ docker-build ]
+    needs: [ changes, docker-build ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule') && needs.docker-build.result == 'success'
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -206,7 +256,7 @@ jobs:
     steps:
     # Checkout the source for Grype config
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     # Download the Docker image artifact from docker-build job
     - name: Download Docker Artifact
       uses: ishworkh/container-image-artifact-download@v2.0.0
@@ -287,6 +337,8 @@ jobs:
 
   conda-build:
     name: Conda Build
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
@@ -295,7 +347,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Setup Tethys
@@ -389,14 +441,16 @@ jobs:
 
   test-pypi-build:
     name: Test Build PyPI Distribution 📦
+    needs: [ changes ]
+    if: always() && (needs.changes.outputs.code == 'true' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         persist-credentials: false
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.x"
     - name: Install pypa/build

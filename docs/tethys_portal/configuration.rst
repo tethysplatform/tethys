@@ -524,7 +524,7 @@ ANONYMOUS_USER_NAME                                the Django Guardian `ANONYMOU
 
 .. note::
 
-    You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/2.2/ref/settings/>`_.
+    You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/5.2/ref/settings/>`_.
 
 
 .. tip::

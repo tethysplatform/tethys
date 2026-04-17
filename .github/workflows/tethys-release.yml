@@ -24,7 +24,7 @@ jobs:
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Parse version parts from tag
@@ -81,7 +81,7 @@ jobs:
       # Checkout the source
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Parse version parts from tag
@@ -209,11 +209,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         persist-credentials: false
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.x"
     - name: Install pypa/build

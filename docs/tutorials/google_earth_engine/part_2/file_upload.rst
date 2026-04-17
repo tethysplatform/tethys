@@ -160,7 +160,7 @@ Add an HTML ``form`` element with the attributes that are required to perform a 
 
 .. note::
 
-    The Cross Site Request Forgery (CSRF) token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
+    The Cross Site Request Forgery (CSRF) token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/5.2/ref/csrf/>`_.
 
 3. Add a ``<div>`` with an ``<input>`` element of type ``file`` to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
 

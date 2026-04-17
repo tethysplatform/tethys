@@ -205,8 +205,13 @@ COPY --chown=www:www LICENSE ${TETHYS_HOME}/tethys/
 COPY --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
 COPY --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
+# Mark repo as safe for git (needed for vcs-based versioning during build)
+RUN git config --global --add safe.directory ${TETHYS_HOME}/tethys
+
 # Run Installer
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
+
+# Install Tethys Platform
 RUN pip install --no-deps -e .
 RUN tethys gen portal_config
 

@@ -671,12 +671,31 @@ def run_services(app_name, args):
 
 
 def install_packages(conda_config, update_installed=False):
+    # Keep track of whether --override-channels needs to be added based on the presence of the nodefaults channel
+    add_override_channels = False
+
     # Compile channels arguments
     install_args = []
     if validate_schema("channels", conda_config):
         channels = conda_config["channels"]
         for channel in channels:
+            # Add --override-channels if nodefaults channel is included
+            if channel == "nodefaults":
+                add_override_channels = True
+                continue
+
+            # Add channel to install arguments
             install_args.extend(["-c", channel])
+
+    # Add --override-channels if needed
+    if add_override_channels:
+        if install_args:
+            install_args.append("--override-channels")
+        else:
+            write_warning(
+                "Warning: 'nodefaults' was specified but no other channels were provided. "
+                "Ignoring 'nodefaults' to avoid conda errors."
+            )
 
     # Install all Packages
     if validate_schema("packages", conda_config):
