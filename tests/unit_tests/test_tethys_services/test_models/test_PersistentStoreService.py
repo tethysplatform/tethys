@@ -64,7 +64,8 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         # Execute
         ret = pss.get_url()
 
-        self.assertEqual("sqlite:////tmp/test_db.sqlite", str(ret))
+        expected_path = os.path.join("/tmp", "test_db.sqlite")
+        self.assertEqual(f"sqlite:///{expected_path}", str(ret))
 
     @mock.patch("sqlalchemy.create_engine")
     def test_get_engine(self, mock_ce):
@@ -77,7 +78,8 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         pss.get_engine()
 
         # Check if called correctly
-        mock_ce.assert_called_with("sqlite:////tmp/test_db.sqlite")
+        expected_path = os.path.join("/tmp", "test_db.sqlite")
+        mock_ce.assert_called_with(f"sqlite:///{expected_path}")
 
     @mock.patch("sqlalchemy.create_engine")
     @mock.patch("sqlalchemy.event.listen")
@@ -96,7 +98,8 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         mock_listen.assert_called_with(
             mock_ce.return_value, "connect", mock_load_spatialite
         )
-        mock_ce.assert_called_with("sqlite:////tmp/test_db.sqlite")
+        expected_path = os.path.join("/tmp", "test_db.sqlite")
+        mock_ce.assert_called_with(f"sqlite:///{expected_path}")
 
     @mock.patch("sqlalchemy.create_engine")
     @mock.patch("sqlalchemy.event.listen")
@@ -117,7 +120,8 @@ class SQLitePersistentStoreServiceTests(TethysTestCase):
         )
 
         # Check if called correctly
-        mock_ce.assert_called_with("sqlite:////tmp/test_db.sqlite")
+        expected_path = os.path.join("/tmp", "test_db.sqlite")
+        mock_ce.assert_called_with(f"sqlite:///{expected_path}")
         mock_listen.assert_not_called()
 
 

@@ -1,4 +1,4 @@
-import OLOverlay from 'https://esm.sh/ol@10.7.0/Overlay.js';
+import Overlay_ from '@planet/maps/Overlay';
 
 const OVERLAYS_DOM_NODE = document.createElement('div');
 const OVERLAYS_ROOT = ReactDOM.createRoot(OVERLAYS_DOM_NODE);
@@ -35,5 +35,5 @@ export default function Overlay(...props) {
             props.element = Element;
         }
     }
-    return React.createElement('overlay', {cls: OLOverlay, ...props});
+    return Overlay_(props);
 }

@@ -90,12 +90,14 @@ class TestPageComponentWrapper(TestCase):
         del sys.modules["reactpy"]
         reload(page_handler)
 
-    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_none(self, mock_clm, mock_pl):
+    def test_page_component_wrapper__layout_none(self, mock_clm):
+        expected_return_value = "mock content"
         mock_lib = mock.MagicMock()
+        mock_lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
+        mock_lib.html.div.return_value = expected_return_value
+        mock_lib.m = mock.MagicMock()
         mock_clm.get_library.return_value = mock_lib
-        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
         app = mock.MagicMock(package="test_app")
         user = mock.MagicMock()
@@ -108,17 +110,16 @@ class TestPageComponentWrapper(TestCase):
 
         return_value = page_handler.page_component_wrapper(app, user, layout, component)
 
-        self.assertEqual(return_value, "rendered_page")
-        mock_clm.get_library.assert_called_once_with("test_app-component")
-        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
+        self.assertEqual(return_value, expected_return_value)
+        mock_clm.get_library.assert_called_once_with("test_app-component", None)
         proof_mock.assert_called_once_with(mock_lib)
+        mock_lib.m.MantineProvider.assert_called_once_with("rendered_component")
 
-    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_none_with_extras(self, mock_clm, mock_pl):
+    def test_page_component_wrapper__layout_none_with_extras(self, mock_clm):
         mock_lib = mock.MagicMock()
+        mock_lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
         mock_clm.get_library.return_value = mock_lib
-        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
         mock_app = mock.MagicMock(package="test_app")
         mock_user = mock.MagicMock()
@@ -130,28 +131,25 @@ class TestPageComponentWrapper(TestCase):
             proof_mock(lib, extra1, extra2)
             return "rendered_component"
 
-        return_value = page_handler.page_component_wrapper(
+        page_handler.page_component_wrapper(
             mock_app, mock_user, layout, component, extras
         )
 
-        self.assertEqual(return_value, mock_pl.return_value)
         proof_mock.assert_called_once_with(mock_lib, "val1", 2)
-        mock_clm.get_library.assert_called_once_with("test_app-component")
-        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
+        mock_clm.get_library.assert_called_once_with("test_app-component", extras)
 
-    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_not_none(self, mock_clm, mock_pl):
+    def test_page_component_wrapper__layout_not_none(self, mock_clm):
+        expected_return_value = "mock content"
         mock_lib = mock.MagicMock()
+        mock_lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
+        mock_lib.html.div.return_value = expected_return_value
         mock_clm.get_library.return_value = mock_lib
-        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
         mock_app = mock.MagicMock(package="test_app")
         mock_app.registered_url_maps = []
         mock_user = mock.MagicMock()
         layout = mock.MagicMock()
-        layout_return_val = "returned_layout"
-        layout.return_value = layout_return_val
         proof_mock = mock.MagicMock()
 
         def component(lib):
@@ -162,33 +160,29 @@ class TestPageComponentWrapper(TestCase):
             mock_app, mock_user, layout, component
         )
 
-        self.assertEqual(return_value, layout_return_val)
+        self.assertEqual(return_value, expected_return_value)
         layout.assert_called_once_with(
             mock_lib,
             app=mock_app,
             user=mock_user,
             nav_links=mock_app.navigation_links,
-            content=mock_pl.return_value,
+            content="rendered_component",
         )
         proof_mock.assert_called_once_with(mock_lib)
-        mock_clm.get_library.assert_called_once_with("test_app-component")
-        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
+        mock_clm.get_library.assert_called_once_with("test_app-component", None)
 
-    @mock.patch("tethys_apps.base.page_handler.PageLoader")
     @mock.patch("tethys_apps.base.page_handler.ComponentLibraryManager")
-    def test_page_component_wrapper__layout_not_none_with_extras(
-        self, mock_clm, mock_pl
-    ):
+    def test_page_component_wrapper__layout_not_none_with_extras(self, mock_clm):
+        expected_return_value = "mock content"
         mock_lib = mock.MagicMock()
+        mock_lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
+        mock_lib.html.div.return_value = expected_return_value
         mock_clm.get_library.return_value = mock_lib
-        mock_pl.return_value = "rendered_page"
         # FUNCTION ARGS
         mock_app = mock.MagicMock(package="test_app")
         mock_app.registered_url_maps = []
         mock_user = mock.MagicMock()
         layout = mock.MagicMock()
-        layout_return_val = "returned_layout"
-        layout.return_value = layout_return_val
         extras = {"extra1": "val1", "extra2": 2}
         component_return_val = "rendered_component"
         proof_mock = mock.MagicMock()
@@ -201,17 +195,16 @@ class TestPageComponentWrapper(TestCase):
             mock_app, mock_user, layout, component, extras
         )
 
-        self.assertEqual(return_value, layout_return_val)
+        self.assertEqual(return_value, expected_return_value)
         layout.assert_called_once_with(
             mock_lib,
             app=mock_app,
             user=mock_user,
             nav_links=mock_app.navigation_links,
-            content=mock_pl.return_value,
+            content=component_return_val,
         )
         proof_mock.assert_called_once_with(mock_lib, "val1", 2)
-        mock_clm.get_library.assert_called_once_with("test_app-component")
-        mock_pl.assert_called_once_with(mock_lib, content="rendered_component")
+        mock_clm.get_library.assert_called_once_with("test_app-component", extras)
 
 
 class TestPage(TestCase):
