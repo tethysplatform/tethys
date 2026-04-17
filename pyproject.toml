@@ -35,6 +35,7 @@ dependencies = [
     "requests>=2.32.4,<3",
     "bcrypt",
     "cryptography>=46.0.5",
+    "pyproj",
   # Gen CLI commands
     "pyyaml",
     "jinja2",
