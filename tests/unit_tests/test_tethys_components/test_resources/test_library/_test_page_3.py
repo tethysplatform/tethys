@@ -2,7 +2,11 @@ def page_test(lib):
     """This comment is here as a test to ensure certain code gets executed"""
     # Register additional packages
     lib.register(
-        package="fake-package", accessor="fp", styles=["style1.css", "style2.css"]
+        package="fake-package",
+        accessor="fp",
+        host="https://fake-cdn.com",
+        version="3.2.1",
+        styles=["style1.css", "style2.css"],
     )
 
     # Event handlers
@@ -11,7 +15,8 @@ def page_test(lib):
 
     # Layout
     return lib.html.div()(
+        lib.fp.Fake(),
         lib.rp.ReactPlayer(
             url="https://www.youtube.com/watch?v=xvFZjo5PgG0", onReady=handle_on_ready
-        )
+        ),
     )

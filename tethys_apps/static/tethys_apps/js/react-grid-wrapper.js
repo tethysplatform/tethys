@@ -1,5 +1,5 @@
-import { AllCommunityModule, ModuleRegistry } from 'https://esm.sh/ag-grid-community@34.2.0';
-import { AgGridReact as GridReact  } from 'https://esm.sh/ag-grid-react@34.2.0?deps=react@19.0&exports=AgGridReact';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import { AgGridReact as GridReact  } from 'ag-grid-react';
 
 // Register all Community features
 ModuleRegistry.registerModules([AllCommunityModule]);

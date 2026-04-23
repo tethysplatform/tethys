@@ -3,6 +3,7 @@ from tethys_components.utils import (  # noqa: F401
     use_resources,
     use_media,
     use_public,
+    use_setting,
 )
 from reactpy_django.hooks import (  # noqa: F401
     use_location,

@@ -1,9 +1,9 @@
-import _VectorSource from 'https://esm.sh/ol@10.7.0/source/Vector';
-import * as FormatLib from 'https://esm.sh/ol@10.7.0/format';
-import Feature from 'https://esm.sh/ol@10.7.0/Feature';
-import * as GeomLib from 'https://esm.sh/ol@10.7.0/geom';
-import Style from 'https://esm.sh/ol@10.7.0/style/Style.js';
-import Icon from 'https://esm.sh/ol@10.7.0/style/Icon.js';
+import _VectorSource from '@planet/maps/source/Vector';
+import * as FormatLib from 'ol/format';
+import Feature from 'ol/Feature';
+import * as GeomLib from 'ol/geom';
+import Style from 'ol/style/Style';
+import Icon from 'ol/style/Icon';
 
 export default function VectorSource (...props) {
     let format, features;
@@ -38,7 +38,6 @@ export default function VectorSource (...props) {
                         value.geometry = new GeomLib[geomType](value.geometry.geom);
                     }
                     if (value.style) {
-                        debugger;
                         if (value.style.image && value.style.image.type == "ol.style.Icon") {
                             value.style.image = new Icon(value.style.image)
                         }
@@ -63,5 +62,5 @@ export default function VectorSource (...props) {
             props.options.features = features;
         }
     }
-    return React.createElement('source', {cls: _VectorSource, ...props});
+    return _VectorSource(props);
 }

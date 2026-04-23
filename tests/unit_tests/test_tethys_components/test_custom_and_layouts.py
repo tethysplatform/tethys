@@ -12,7 +12,15 @@ CUSTOM_EVAL_DIR = THIS_DIR / "test_resources" / "test_custom_and_layouts"
 
 class A:
     def __getattribute__(self, name):
+        if name == "navigation_links":
+            return [{"href": "https://test.com", "title": "Test"}]
         return "MOCK"
+
+
+class B:
+    @property
+    def navigation_links(self):
+        return [{"href": "https://test.com", "title": "Test"}]
 
 
 class TestCustomComponents(TestCase):
@@ -22,14 +30,14 @@ class TestCustomComponents(TestCase):
         cls.mock_all = A()
         cls.lib.hooks = mock.MagicMock()
         cls.lib.hooks.use_query.return_value = mock.MagicMock(data=None)
-        cls.lib.hooks.use_location.return_value = "MOCK"
+        cls.lib.hooks.use_location.return_value = A()
         cls.lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
         cls.required_kwargs_mapping = {
             "HeaderWithNavBar": [{"app": cls.mock_all, "user": cls.mock_all}],
             "NavHeader": [{"app": cls.mock_all, "user": cls.mock_all}],
-            "PageLoader": [{"content": "TEST"}],
             "Chart": [{"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]}, {"data": None}],
             "Display": [{"style": {"color": "black"}}],
+            "AppNavLinks": [{"app": cls.mock_all}, {"app": B}],
         }
 
     def json_serializer(self, obj):

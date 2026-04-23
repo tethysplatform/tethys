@@ -33,6 +33,9 @@ class TestComponentLibrary(TestCase):
                 expected_js_module_fpath = (
                     LIBRARY_EVAL_DIR / f"{test_page_name}_expected.js"
                 )
+                expected_importmap_fpath = (
+                    LIBRARY_EVAL_DIR / f"{test_page_name}_expected.importmap"
+                )
 
                 lib = library.ComponentLibrary(test_page_name)
                 lib.hooks = mock.MagicMock()
@@ -41,6 +44,7 @@ class TestComponentLibrary(TestCase):
                 raw_vdom = test_module.page_test(lib)
                 js_string = lib.render_js_template()
                 json_vdom = dumps(raw_vdom, default=self.json_serializer)
+                importmap_string = lib.get_importmap()
 
                 alternate_lib = library.ComponentLibrary(f"{test_page_name}_alternate")
                 alternate_lib.load_dependencies_from_source_code(test_module.page_test)
@@ -50,15 +54,43 @@ class TestComponentLibrary(TestCase):
                 # # Uncomment to create expected files when writing new test
                 # expected_vdom_json_fpath.write_text(json_vdom)
                 # expected_js_module_fpath.write_text(js_string)
+                # expected_importmap_fpath.write_text(importmap_string)
 
                 expected_json_vdom = expected_vdom_json_fpath.read_text()
                 expected_js_string = expected_js_module_fpath.read_text()
+                expected_importmap_string = expected_importmap_fpath.read_text()
                 self.assertEqual(json_vdom, expected_json_vdom)
                 self.assertEqual(js_string, expected_js_string)
+                self.assertEqual(importmap_string, expected_importmap_string)
 
     def test_cannot_instantiate_ComponentLibraryManager(self):
         with self.assertRaises(RuntimeError):
             library.ComponentLibraryManager()
+
+    def test_get_library_with_kwargs(self):
+        base_lib = library.ComponentLibraryManager.get_library("test_lib")
+        base_lib.bs.Col
+        base_lib.bs.Button
+        lib = library.ComponentLibraryManager.get_library(
+            "test_lib", {"var1": "foo", "var2": "bar"}
+        )
+        self.assertIsInstance(lib, library.ComponentLibrary)
+        self.assertIn("test_lib_foo_bar", library.ComponentLibraryManager.LIBRARIES)
+
+    def test_package_dependency_mismatch(self):
+        with self.assertRaises(ValueError):
+            library.Package("this-lib[react@20]", dependencies=["react@19.2"])
+
+    def test_package_dependency_wrong_type(self):
+        with self.assertRaises(ValueError):
+            library.Package("this-lib[react@20]", dependencies=[True])
+
+    def test_package_dependencies_in_package_name(self):
+        package = library.Package("this-lib[react@20]")
+        self.assertTrue(hasattr(package, "dependencies"))
+        self.assertEqual(len(package.dependencies), 1)
+        self.assertEqual(package.dependencies[0].name, "react")
+        self.assertEqual(package.dependencies[0].version, "20")
 
     def test_package_version_mismatch(self):
         with self.assertRaises(ValueError):
@@ -87,21 +119,21 @@ class TestComponentLibrary(TestCase):
         with self.assertRaises(EnvironmentError):
             lib.register("another", "foo")
 
-    def test_load_dependencies_from_source_code_skips_bad_match(self):
+    @mock.patch("tethys_components.library.LOG")
+    def test_load_dependencies_from_source_code_skips_bad_match(self, mock_log):
         lib = library.ComponentLibrary("test456")
-        with mock.patch("builtins.print") as mock_print:
-            lib.load_dependencies_from_source_code("foo bar lib.does_not_exist(999)")
-            # Verify print was called twice (once for the match, once for the exception)
-            self.assertEqual(mock_print.call_count, 2)
-            # Check the expected print calls
-            mock_print.assert_any_call("Couldn't process match does_not_exist")
-            # The second call should be the exception, we'll just check it was called
-            call_args_list = mock_print.call_args_list
-            exception_printed = any(
-                "AttributeError" in str(call) or "does_not_exist" in str(call)
-                for call in call_args_list
-            )
-            self.assertTrue(exception_printed)
+        lib.load_dependencies_from_source_code("foo bar lib.does_not_exist(999)")
+        # Verify print was called twice (once for the match, once for the exception)
+        self.assertEqual(mock_log.warning.call_count, 2)
+        # Check the expected print calls
+        mock_log.warning.assert_any_call("Couldn't process match does_not_exist")
+        # The second call should be the exception, we'll just check it was called
+        call_args_list = mock_log.warning.call_args_list
+        exception_printed = any(
+            "AttributeError" in str(call) or "does_not_exist" in str(call)
+            for call in call_args_list
+        )
+        self.assertTrue(exception_printed)
         self.assertFalse(hasattr(lib, "does_not_exist"))
 
     def test_attempt_at_incorrect_tethys_component(self):

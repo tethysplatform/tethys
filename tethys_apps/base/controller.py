@@ -472,6 +472,7 @@ def page(
     index=None,
     custom_css=None,
     custom_js=None,
+    preload: list = None,
     app=None,
 ) -> Callable:
     """
@@ -519,7 +520,6 @@ def page(
         )
 
         component_source_code = inspect.getsource(component_function)
-
         lib = ComponentLibraryManager.get_library(
             f"{app.package}-{component_function.__name__}"
         )

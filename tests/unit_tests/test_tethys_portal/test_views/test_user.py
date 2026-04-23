@@ -61,7 +61,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": False,
+            "user_has_mfa": False,
             "mfa_required": False,
             "show_user_token_mfa": True,
         }
@@ -107,7 +107,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": "0 bytes",
-            "has_mfa": False,
+            "user_has_mfa": False,
             "mfa_required": False,
             "show_user_token_mfa": True,  # Show user token b/c mfa is not required
         }
@@ -152,7 +152,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": False,
+            "user_has_mfa": False,
             "mfa_required": True,
             "show_user_token_mfa": False,  # Don't show user token b/c mfa is required but user has not setup mfa
         }
@@ -195,7 +195,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": True,
+            "user_has_mfa": True,
             "mfa_required": True,
             "show_user_token_mfa": True,  # Show user token b/c mfa is required and user has setup mfa
         }
@@ -238,7 +238,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": True,
+            "user_has_mfa": True,
             "mfa_required": False,
             "show_user_token_mfa": True,  # Show user token b/c not mfa is required
         }
@@ -319,7 +319,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "current_use": "0 bytes",
             "quota": None,
             "mfa_required": False,
-            "has_mfa": False,
+            "user_has_mfa": False,
             "show_user_token_mfa": True,
         }
 

@@ -7,7 +7,12 @@ RESOURCE_DIR = THIS_DIR / "resources"
 
 def Display(lib, **kwargs):
     """A full screen container for nesting content within."""
-    style = lib.Style(height="100%")
+    style = lib.Style(
+        position="absolute",
+        top=0,
+        bottom=0,
+        width="100%",
+    )
     if "style" in kwargs:
         style |= kwargs["style"]
     return lib.bs.Container(fluid=True, style=style)(
@@ -17,92 +22,6 @@ def Display(lib, **kwargs):
 
 def LayerPanel(lib):
     return lib.ollp.LayerPanel()
-
-
-def PageLoader(lib, content):
-    hide_loading, set_hide_loading = lib.hooks.use_state(True)
-    hide_content, set_hide_content = lib.hooks.use_state(True)
-    lib.hooks.use_effect(
-        # This None if ... else None is a weird pattern used to ensure that nothing is returned by this
-        # lambda, since if anything besided None is returned, it is assumed to be a cleanup function
-        lambda: (
-            None if any([set_hide_loading(False), set_hide_content(False)]) else None
-        ),
-        dependencies=[],
-    )
-
-    return lib.html.div(style=lib.Style(height="100%", width="100%"))(
-        (
-            lib.html.div(key="loading-content")(
-                lib.tethys.LoadingAnimation(),
-            )
-            if not hide_loading
-            else None
-        ),
-        lib.html.div(
-            key="page-content",
-            style=lib.Style(
-                display=None if hide_content else "unset", height="100%", width="100%"
-            ),
-        )(
-            content,
-            (
-                lib.html.div(style=lib.Style(display="none"))(
-                    lib.html.div(
-                        id_="trigger-loaded", onClick=lambda _: set_hide_loading(True)
-                    ),
-                    lib.html.script("""
-                    window.onload = function () {
-                        window.setTimeout(function () {
-                            try {
-                                document.getElementById('trigger-loaded').click();
-                            } catch (e) {
-                                'pass';
-                            }
-                        }, 1000)
-                    }
-                """),
-                )
-                if not hide_loading
-                else None
-            ),
-        ),
-    )
-
-
-def LoadingAnimation(lib):
-    return lib.html._(
-        lib.html.div(
-            style=lib.Style(
-                zIndex=1029,
-                background="white",
-                top=0,
-                right=0,
-                bottom=0,
-                left=0,
-                position="absolute",
-            )
-        )(
-            lib.html.div(className="center"),
-            lib.html.div(className="inner-spin")(
-                lib.html.div(className="inner-arc inner-arc_start-a"),
-                lib.html.div(className="inner-arc inner-arc_end-a"),
-                lib.html.div(className="inner-arc inner-arc_start-b"),
-                lib.html.div(className="inner-arc inner-arc_end-b"),
-                lib.html.div(className="inner-moon-a"),
-                lib.html.div(className="inner-moon-b"),
-            ),
-            lib.html.div(className="outer-spin")(
-                lib.html.div(className="outer-arc outer-arc_start-a"),
-                lib.html.div(className="outer-arc outer-arc_end-a"),
-                lib.html.div(className="outer-arc outer-arc_start-b"),
-                lib.html.div(className="outer-arc outer-arc_end-b"),
-                lib.html.div(className="outer-moon-a"),
-                lib.html.div(className="outer-moon-b"),
-            ),
-            lib.html.div(className="loading-text")("Loading..."),
-        )
-    )
 
 
 def BaseMapSuite(lib, default="OpenStreetMap"):
@@ -192,7 +111,7 @@ def Map(
         for child in children:
             if not child:
                 continue
-            if dict(child)["tagName"] == "Overlay":
+            if "Overlay" in dict(child)["tagName"]:
                 overlays.append(child)
             else:
                 actual_children.append(child)
@@ -257,8 +176,18 @@ def Chart(
             width=width,
             height=height,
             title=lib.Props(text=title),
-            xaxis=lib.Props(title=lib.Props(text=x_label)),
-            yaxis=lib.Props(title=lib.Props(text=y_label)),
+            xaxis=lib.Props(
+                title=lib.Props(text=x_label),
+                type="log",
+                range=[0, 3],
+                autorange="reversed",
+            ),
+            yaxis=lib.Props(
+                title=lib.Props(text=y_label),
+                type="log",
+                range=[0, 3],
+                autorange="reversed",
+            ),
         ),
     )
 
@@ -331,6 +260,30 @@ def HeaderButton(lib, **kwargs):
     )
 
 
+def AppNavLinks(lib, app, from_package="m"):
+    if isinstance(app.navigation_links, property):
+        app = app()
+    if from_package == "m":
+        package = lib.m
+    elif from_package == "bs":
+        package = lib.bs
+    location = lib.hooks.use_location()
+    links = []
+    for index, link in enumerate(app.navigation_links):
+        link_component = package.NavLink(
+            href=link["href"],
+            key=f"link-{index}",
+            active=location.pathname == link["href"]
+            or location.pathname[:-1] == link["href"],
+            style=lib.Style(padding_left="10pt"),
+            **{"label": link["title"]} if from_package == "m" else {},
+        )
+        if from_package == "bs":
+            link_component = link_component(link["title"])
+        links.append(link_component)
+    return lib.html.div(*links)
+
+
 def NavIcon(lib, src="", style=None):
     style = style or {}
     return lib.html.img(
@@ -349,7 +302,6 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
     nav_links = nav_links or []
     app_db_query = lib.hooks.use_query(lib.utils._get_db_object, {"app": app})
     app_id = app_db_query.data.id if app_db_query.data else 999
-    location = lib.hooks.use_location()
     margin_top, set_margin_top = lib.hooks.use_state(-56)
     redirect, set_redirect = lib.hooks.use_state(False)
 
@@ -455,18 +407,7 @@ def HeaderWithNavBar(lib, app, user, nav_links=None):
                                 "defaultActiveKey": f"/apps/{app.root_url}",
                                 "class_name": "flex-column",
                             },
-                            [
-                                lib.bs.NavLink(
-                                    href=link["href"],
-                                    key=f"link-{index}",
-                                    active=location.pathname == link["href"]
-                                    or location.pathname[:-1] == link["href"],
-                                    style=lib.Style(padding_left="10pt"),
-                                )(
-                                    link["title"],
-                                )
-                                for index, link in enumerate(nav_links)
-                            ],
+                            AppNavLinks(lib, app=app, from_package="bs"),
                         )
                     ),
                 ),

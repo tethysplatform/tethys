@@ -1,9 +1,9 @@
 
-import {Container, Row, Button, Col} from "https://esm.sh/react-bootstrap@2.10.10/?deps=react@19.0,react-dom@19.0,react-is@19.0&exports=Container,Row,Button,Col";
-export {Container, Row, Button, Col};
+import {Container as bs_Container, Row as bs_Row, Button as bs_Button, Col as bs_Col} from "react-bootstrap";
+export {bs_Container, bs_Row, bs_Button, bs_Col};
 loadCSS("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css");
-import Editor from "https://esm.sh/@monaco-editor/react/?deps=react@19.0,react-dom@19.0,react-is@19.0";
-export {Editor};
+import me_Editor from "@monaco-editor/react";
+export {me_Editor};
 
 function loadCSS(href) {  
     var head = document.getElementsByTagName('head')[0];
@@ -35,7 +35,7 @@ function wrapEventHandlers(props) {
     const newProps = Object.assign({}, props);
     for (const [key, value] of Object.entries(props)) {
         if (typeof value === "function") {
-            newProps[key] = makeJsonSafeEventHandler(value);
+            newProps[key] = makeJsonSafeEventHandler(key, value);
         }
     }
     return newProps;
@@ -108,15 +108,61 @@ function jsonSanitizeObject(obj, maxDepth, refs, depth) {
         if (obj instanceof Element) {
             newObj = {...newObj, ...htmlToJsonObject(obj)}
         }
+        if (obj.nativeEvent) {
+            newObj = {...obj.nativeEvent, ...newObj};
+            delete newObj.nativeEvent;
+        }
     }
     return newObj;
 }
 
-function makeJsonSafeEventHandler(oldHandler) {
+function makeJsonSafeEventHandler(key, oldHandler) {
     // Since we can't really know what the event handlers get passed we have to check if
     // they are JSON serializable or not. We can allow normal synthetic events to pass
     // through since the original handler already knows how to serialize those for us.
     return function safeEventHandler() {
-        oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
+        let executeDefault = true;
+        if (key === "onSubmit") {
+            const event = arguments[0];
+            if (event && event.nativeEvent) {
+                event.preventDefault();
+                executeDefault = false;
+                let newEvent = jsonSanitizeObject(event.nativeEvent, 4);
+                let rawFormData = new FormData(event.target);
+                let formData = {};
+                let promises = [];
+                rawFormData.entries().forEach(([key, value]) => {
+                    if (value instanceof File) {
+                        promises.push(new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                formData[key] = reader.result;
+                                resolve();
+                            };
+                            reader.onerror = () => {
+                                console.error("Error reading the file. Please try again.", "error");
+                                reject();
+                            };
+                            reader.readAsDataURL(value);
+                        }));
+                    } else {
+                        formData[key] = value;
+                    }
+                });
+
+                if (promises.length > 0) {
+                    Promise.all(promises).then(() => {
+                        newEvent.formData = formData;
+                        oldHandler(newEvent);  // <--- Call the original handler with the new event object
+                    });
+                } else {
+                    newEvent.formData = formData;
+                    oldHandler(newEvent);  // <--- Call the original handler with the new event object
+                }
+            }
+        }
+        if (executeDefault) {
+            oldHandler(...Array.from(arguments).map((x) => jsonSanitizeObject(x, 4)));
+        }
     };
 }

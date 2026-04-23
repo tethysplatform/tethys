@@ -44,6 +44,33 @@ def test_infer_app_from_stack_trace_fails_no_app(mock_inspect):
         assert "app was not found" in str(cm.exception)
 
 
+@mock.patch("tethys_components.utils.ThreadPoolExecutor")
+def test_memoized_use_setting(mock_tpe):
+    mock_tpe.return_value.__enter__.return_value.submit.return_value.result.return_value = (
+        "setting_val"
+    )
+    test = utils._memoized_use_setting(MOCK_APP, "my_setting")
+    mock_tpe.return_value.__enter__.return_value.submit.assert_called_once_with(
+        MOCK_APP.get_custom_setting, "my_setting"
+    )
+    assert test == "setting_val"
+
+
+@mock.patch("tethys_components.utils._infer_app_from_stack_trace")
+def test_use_setting(mock_iafst):
+    # SETUP ARGS/ENV
+    mock_iafst.return_value = MOCK_APP
+    with mock.patch("builtins.__import__") as mock_import:
+        mock_import.return_value.use_memo.return_value = "setting_val"
+
+        # EXECUTE FUNCTION
+        setting = utils.use_setting("my_setting")
+
+        # EVALUATE RESULT
+        assert setting == "setting_val"
+        mock_import.return_value.use_memo.assert_called_once()
+
+
 @mock.patch("tethys_components.utils._infer_app_from_stack_trace")
 def test_use_app_workspace_loading(mock_iafst):
     # SETUP ARGS/ENV

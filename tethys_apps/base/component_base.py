@@ -1,5 +1,6 @@
 from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.base.controller import page as page_controller
+from django.templatetags.static import static
 
 
 class AppSingleton(type):
@@ -10,9 +11,9 @@ class AppSingleton(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
-        return cls._instances[cls]
+        if cls.package not in cls._instances:
+            cls._instances[cls.package] = super().__call__(*args, **kwargs)
+        return cls._instances[cls.package]
 
 
 class ComponentBase(TethysAppBase, metaclass=AppSingleton):
@@ -38,6 +39,15 @@ class ComponentBase(TethysAppBase, metaclass=AppSingleton):
         automatically generated based on the functions decorated with ``@App.page``.
 
     """
+
+    @classmethod
+    def get_static_url(cls, *args):
+        url = static(cls.package)
+        for arg in args:
+            if url.endswith("/"):
+                url = url[:-1]
+            url += f"/{arg}"
+        return url
 
     @property
     def navigation_links(self):

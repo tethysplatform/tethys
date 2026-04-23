@@ -63,7 +63,7 @@
             {% endif %}
             {% if has_mfa %}
             <dt class="col-sm-4">2-Step Verification: </dt>
-            <dd class="col-sm-8">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</dd>
+            <dd class="col-sm-8">{% if user_has_mfa %}Enabled{% else %}Not Enabled{% endif %}</dd>
             {% endif  %}
           </dl>
         </div>

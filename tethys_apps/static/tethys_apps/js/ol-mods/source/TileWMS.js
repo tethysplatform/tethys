@@ -1,5 +1,5 @@
-import _TileWMSSource from 'https://esm.sh/ol@10.7.0/source/TileWMS';
-import TileGrid from 'https://esm.sh/ol@10.7.0/tilegrid/TileGrid.js';
+import _TileWMSSource from '@planet/maps/source/TileWMS';
+import TileGrid from 'ol/tilegrid/TileGrid';
 
 export default function TileWMSSource (...props) {
     let tileGrid;
@@ -13,5 +13,5 @@ export default function TileWMSSource (...props) {
         }
         props.options.tileGrid = tileGrid;
     }
-    return React.createElement('source', {cls: _TileWMSSource, ...props});
+    return _TileWMSSource(props);
 }

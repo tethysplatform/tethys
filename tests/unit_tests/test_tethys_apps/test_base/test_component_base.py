@@ -73,3 +73,25 @@ class TestTethysAppBase(unittest.TestCase):
 
         self.assertEqual(app.page(test_page), mock_pc.return_value)
         mock_pc.assert_called_once_with(test_page, app=component_app_base.ComponentBase)
+
+    def test_base_get_static_url_no_args(self):
+        url = component_app_base.ComponentBase.get_static_url()
+        self.assertEqual(url, "/static/")
+
+    def test_base_get_static_url_args(self):
+        url = component_app_base.ComponentBase.get_static_url("js", "main.js")
+        self.assertEqual(url, "/static/js/main.js")
+
+    def test_app_get_static_url_no_args(self):
+        class Test(component_app_base.ComponentBase):
+            package = "test_app"
+
+        url = Test.get_static_url()
+        self.assertEqual(url, "/static/test_app")
+
+    def test_app_get_static_url_args(self):
+        class Test(component_app_base.ComponentBase):
+            package = "test_app"
+
+        url = Test.get_static_url("js", "main.js")
+        self.assertEqual(url, "/static/test_app/js/main.js")
