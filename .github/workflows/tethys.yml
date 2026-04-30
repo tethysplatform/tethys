@@ -186,6 +186,12 @@ jobs:
         conda list
         tethys db start
         pip install coveralls reactpy_django pytest pytest-django pytest-cov
+
+    - name: Show pyopenssl and cryptography versions
+      shell: bash -l {0}
+      run: |
+        conda activate tethys
+        conda list | grep -iE "pyopenssl|cryptography"
     # Test Tethys
     - name: Test Tethys
       run: |
