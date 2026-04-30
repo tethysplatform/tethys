@@ -353,7 +353,7 @@ class MapView(TethysGizmoOptions):
         disable_basemap=False,
         feature_selection=None,
         show_clicks=False,
-        target_form=None,
+        form_id=None,
     ):
         """
         Constructor
@@ -395,7 +395,7 @@ class MapView(TethysGizmoOptions):
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
         self.show_clicks = show_clicks
-        self.target_form = target_form
+        self.form_id = form_id
 
     @classmethod
     def get_vendor_js(cls):
