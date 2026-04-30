@@ -45,7 +45,7 @@ class MapView(TethysGizmoOptions):
         disable_basemap(bool): Render the map without a base map.
         feature_selection(bool): A dictionary of global feature selection options. See below.
         show_clicks (bool): Show a point on the map where the user clicks if True. Defaults to False. Use the TETHYS_MAP_VIEW.mapClicked() JavaScript API endpoint to provide a callback that will be called each time the map is clicked on. Use the TETHYS_MAP_VIEW.clearClickedPoint() to remove the clicked point.
-        form_id(str): The id of a form on the page to which the hidden geometry text field will be added. 
+        form_id(str): The id of a form on the page to which the hidden geometry text field will be linked.
 
     **Options Dictionaries**
 
