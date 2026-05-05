@@ -381,8 +381,8 @@ jobs:
       run: |
         cd ..
         . ~/miniconda/etc/profile.d/conda.sh;
-        conda create -y -c conda-forge -n conda-build conda-build anaconda-client
-        conda activate conda-build
+        conda create -y -c conda-forge -n conda-build-full conda-build anaconda-client
+        conda activate conda-build-full
         conda config --set anaconda_upload no
         mkdir -p ~/conda-bld
         conda-build -c conda-forge ./tethys/conda.recipe
@@ -393,7 +393,7 @@ jobs:
         cd ..
         . ~/miniconda/etc/profile.d/conda.sh;
         ls ~/conda-bld/noarch
-        conda activate conda-build
+        conda activate conda-build-full
         anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.* --force;
     # No Upload if Pull Request
     - name: No Upload
@@ -419,8 +419,8 @@ jobs:
       run: |
         cd ..
         . ~/miniconda/etc/profile.d/conda.sh;
-        conda create -y -c conda-forge -n conda-build conda-build anaconda-client
-        conda activate conda-build
+        conda create -y -c conda-forge -n conda-build-micro conda-build anaconda-client
+        conda activate conda-build-micro
         conda config --set anaconda_upload no
         mkdir -p ~/conda-bld
         conda-build -c conda-forge ./tethys/conda.recipe
@@ -431,7 +431,7 @@ jobs:
         cd ..
         . ~/miniconda/etc/profile.d/conda.sh;
         ls ~/conda-bld/noarch
-        conda activate conda-build
+        conda activate conda-build-micro
         anaconda -t "${{ secrets.CONDA_UPLOAD_TOKEN }}" upload -u ${{ secrets.CONDA_UPLOAD_USER }} -l dev $CONDA_BLD_PATH/noarch/micro-tethys-platform*.* --force;
     # No Upload if Pull Request
     - name: No Upload - micro
