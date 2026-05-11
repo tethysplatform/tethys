@@ -14,6 +14,17 @@ MOCK_APP = mock.MagicMock()
 MOCK_USER = mock.MagicMock()
 
 
+class MockOptionalPackage(mock.MagicMock):
+    def __getattr__(self, name):
+        if name in ["CRS", "Transformer", "from_crs", "transform", "_mock_methods"]:
+            return super().__getattr__(name)
+        # Allow internal Python/Mock attributes to avoid setup crashes
+        if name.startswith("__") and name.endswith("__"):
+            return super().__getattr__(name)
+        # Raise your desired exception for all other attribute access
+        raise Exception(f"Accessing pyproj.{name} is restricted in this test.")
+
+
 @mock.patch("tethys_components.utils.inspect")
 @pytest.mark.django_db
 def test_infer_app_from_stack_trace_works(mock_inspect):
@@ -385,7 +396,7 @@ def test_fetch():
         assert data == test_content
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=mock.MagicMock)
+@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
 def test_transform_coordinate(mock_pyproj):
     coordinate = [0, 0]
     src_proj = "EPSG:3857"
@@ -399,7 +410,7 @@ def test_transform_coordinate(mock_pyproj):
     mock_pyproj.CRS.assert_has_calls([mock.call(src_proj), mock.call(target_proj)])
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=mock.MagicMock)
+@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
 def test_transform_coordinate_custom_projections(mock_pyproj):
     coordinate = [0, 0]
     src_proj = {"definition": "test src proj"}
@@ -424,7 +435,7 @@ def test_transform_coordinate_invalid_src_proj():
         utils.transform_coordinate(coordinate, src_proj, target_proj)
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=mock.MagicMock)
+@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
 def test_transform_coordinate_invalid_target_proj(_):
     coordinate = [0, 0]
     src_proj = {"definition": "test src proj"}
@@ -583,7 +594,7 @@ def test_get_legend_url_basic_with_single_layer_in_layers():
         assert "LAYER=layer1" in url
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=mock.MagicMock)
+@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
 def test_get_legend_url_with_resolution_and_scale(mock_pyproj):
     vdom = {
         "tagName": "ImageWMSSource",
@@ -633,7 +644,7 @@ def test_get_feature_info_url_not_implemented_for_diff_projections():
             utils._get_feature_info_url_(vdom, [0, 0], 1, "EPSG:3857", "EPSG:4326")
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=mock.MagicMock)
+@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
 def test_get_feature_info_url_success(mock_pyproj):
     vdom = {
         "tagName": "ImageWMSSource",
