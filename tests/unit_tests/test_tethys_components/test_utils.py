@@ -12,17 +12,7 @@ TEST_APP_DIR = (
 
 MOCK_APP = mock.MagicMock()
 MOCK_USER = mock.MagicMock()
-
-
-class MockOptionalPackage(mock.MagicMock):
-    def __getattr__(self, name):
-        if name in ["CRS", "Transformer", "from_crs", "transform", "_mock_methods"]:
-            return super().__getattr__(name)
-        # Allow internal Python/Mock attributes to avoid setup crashes
-        if name.startswith("__") and name.endswith("__"):
-            return super().__getattr__(name)
-        # Raise your desired exception for all other attribute access
-        raise Exception(f"Accessing pyproj.{name} is restricted in this test.")
+mock_pyproj = mock.MagicMock()
 
 
 @mock.patch("tethys_components.utils.inspect")
@@ -396,8 +386,8 @@ def test_fetch():
         assert data == test_content
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
-def test_transform_coordinate(mock_pyproj):
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
+def test_transform_coordinate():
     coordinate = [0, 0]
     src_proj = "EPSG:3857"
     target_proj = "EPSG:4326"
@@ -410,8 +400,8 @@ def test_transform_coordinate(mock_pyproj):
     mock_pyproj.CRS.assert_has_calls([mock.call(src_proj), mock.call(target_proj)])
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
-def test_transform_coordinate_custom_projections(mock_pyproj):
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
+def test_transform_coordinate_custom_projections():
     coordinate = [0, 0]
     src_proj = {"definition": "test src proj"}
     target_proj = {"definition": "test src proj"}
@@ -435,8 +425,8 @@ def test_transform_coordinate_invalid_src_proj():
         utils.transform_coordinate(coordinate, src_proj, target_proj)
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
-def test_transform_coordinate_invalid_target_proj(_):
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
+def test_transform_coordinate_invalid_target_proj():
     coordinate = [0, 0]
     src_proj = {"definition": "test src proj"}
     target_proj = 1234
@@ -594,8 +584,8 @@ def test_get_legend_url_basic_with_single_layer_in_layers():
         assert "LAYER=layer1" in url
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
-def test_get_legend_url_with_resolution_and_scale(mock_pyproj):
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
+def test_get_legend_url_with_resolution_and_scale():
     vdom = {
         "tagName": "ImageWMSSource",
         "attributes": {
@@ -644,8 +634,8 @@ def test_get_feature_info_url_not_implemented_for_diff_projections():
             utils._get_feature_info_url_(vdom, [0, 0], 1, "EPSG:3857", "EPSG:4326")
 
 
-@mock.patch("tethys_components.utils.pyproj", new_callable=MockOptionalPackage)
-def test_get_feature_info_url_success(mock_pyproj):
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
+def test_get_feature_info_url_success():
     vdom = {
         "tagName": "ImageWMSSource",
         "attributes": {
