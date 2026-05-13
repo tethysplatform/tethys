@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+print("Testing")
 """
 Categorized pytest test failures
 Generated from: pytest_output.txt
