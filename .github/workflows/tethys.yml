@@ -121,10 +121,14 @@ jobs:
         HEAD="${{ github.sha }}"
 
         if [[ "$EVENT" == "pull_request" ]]; then
-          git fetch origin "${{ github.event.pull_request.base.ref }}" --depth=1
+          git fetch origin "${{ github.event.pull_request.base.ref }}"
           BASE="$(git merge-base HEAD "origin/${{ github.event.pull_request.base.ref }}")"
         elif [[ "$EVENT" == "push" ]]; then
-          BASE="${{ github.event.before }}"
+          if [[ "${{ github.event.before }}" =~ ^0+$ ]]; then
+            BASE="$(git rev-parse HEAD^)"
+          else
+            BASE="${{ github.event.before }}"
+          fi
         else
           BASE="$(git rev-parse HEAD^)"
         fi
