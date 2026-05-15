@@ -469,7 +469,46 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_services.models.SpatialDatasetService")
-    def test_services_create_spatial_command_thredds(
+    def test_services_create_spatial_command_thredds_with_endpoint(
+        self, mock_service, mock_pretty_output
+    ):
+        """
+        Test for services_create_spatial_command
+        For going through the function and saving
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            endpoint="http://localhost:8181/thredds/catalog.xml",
+            public_endpoint="https://www.example.com:443/thredds/catalog.xml",
+            apikey="apikey123",
+            type="THREDDS",
+        )
+        mock_args.name = "test_thredds"
+
+        services_create_spatial_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual(
+            "Successfully created new Spatial Dataset Service!", po_call_args[0][0][0]
+        )
+        mock_service.assert_called_with(
+            name="test_thredds",
+            endpoint="http://localhost:8181/thredds/catalog.xml",
+            public_endpoint="https://www.example.com:443/thredds/catalog.xml",
+            apikey="apikey123",
+            username="",
+            password="",
+            engine=mock_service.THREDDS,
+        )
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SpatialDatasetService")
+    def test_services_create_spatial_command_thredds_with_connection(
         self, mock_service, mock_pretty_output
     ):
         """

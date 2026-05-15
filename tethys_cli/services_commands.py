@@ -143,10 +143,18 @@ def add_services_parser(subparsers):
     services_create_sd.add_argument(
         "-c",
         "--connection",
-        required=True,
+        required=False,
         type=str,
         help="The connection of the Service in the form "
         '"<username>:<password>@<protocol>//<host>:<port>"',
+    )
+    services_create_sd.add_argument(
+        "-e",
+        "--endpoint",
+        required=False,
+        type=str,
+        help="The endpoint of the Service of the form, if connection argument is not provided, "
+        '"<host>:<port>"',
     )
     services_create_sd.add_argument(
         "-p",
@@ -325,11 +333,17 @@ def services_create_spatial_command(args):
     try:
         name = args.name
         connection = args.connection
-        parts = connection.split("@")
-        cred_parts = parts[0].split(":")
-        service_username = cred_parts[0]
-        service_password = cred_parts[1]
-        endpoint = parts[1]
+        if connection:
+            parts = connection.split("@")
+            cred_parts = parts[0].split(":")
+            service_username = cred_parts[0]
+            service_password = cred_parts[1]
+            endpoint = parts[1]
+        else:
+            endpoint = args.endpoint
+            service_username = ""
+            service_password = ""
+            
         public_endpoint = args.public_endpoint or ""
         apikey = args.apikey or ""
         service_type = args.type
