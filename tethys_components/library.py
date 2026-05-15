@@ -728,18 +728,18 @@ class CustomComponentManager:
 
 
 class DynamicPackageManager:
-    from reactpy import web
-
     def __init__(
         self,
         library: ComponentLibrary = None,
         package: Package = None,
         component: str = "",
     ):
+        from reactpy import web
 
         self.library = library
         self.package = package
         self.component = component
+        self.web = web
 
     def __getattr__(self, attr):
         component = f"{self.component}.{attr}" if self.component else attr
