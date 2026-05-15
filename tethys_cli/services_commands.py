@@ -341,6 +341,9 @@ def services_create_spatial_command(args):
             endpoint = parts[1]
         else:
             endpoint = args.endpoint
+            service_username = ""
+            service_password = ""
+            
         public_endpoint = args.public_endpoint or ""
         apikey = args.apikey or ""
         service_type = args.type
