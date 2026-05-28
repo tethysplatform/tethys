@@ -484,9 +484,9 @@ class ServicesCommandsTest(unittest.TestCase):
             public_endpoint="https://www.example.com:443/thredds/catalog.xml",
             apikey="apikey123",
             type="THREDDS",
+            connection=None,
         )
         mock_args.name = "test_thredds"
-
         services_create_spatial_command(mock_args)
 
         mock_service.assert_called()
