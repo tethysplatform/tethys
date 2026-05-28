@@ -8,6 +8,7 @@
 *.vscode
 *.sqlite3
 *.db
+*.env
 *.whl
 build/
 dist/
