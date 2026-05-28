@@ -16,6 +16,7 @@ class FormatError(Exception):
     def __init__(self):
         Exception.__init__(self)
 
+
 class MissingArgumentError(Exception):
     def __init__(self, error_message):
         Exception.__init__(self, error_message)
@@ -340,7 +341,9 @@ def services_create_spatial_command(args):
         endpoint = args.endpoint
 
         if connection is None and endpoint is None:
-            raise MissingArgumentError("Either connection or endpoint argument must be provided.")
+            raise MissingArgumentError(
+                "Either connection or endpoint argument must be provided."
+            )
 
         service_username = ""
         service_password = ""

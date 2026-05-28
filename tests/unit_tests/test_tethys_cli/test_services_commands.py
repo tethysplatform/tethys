@@ -569,7 +569,10 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn("Either connection or endpoint argument must be provided.", po_call_args[0][0][0])
+        self.assertIn(
+            "Either connection or endpoint argument must be provided.",
+            po_call_args[0][0][0],
+        )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
