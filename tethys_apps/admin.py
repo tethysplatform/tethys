@@ -37,6 +37,7 @@ from tethys_apps.models import (
     SpatialDatasetServiceSetting,
     WebProcessingServiceSetting,
     SchedulerSetting,
+    SecureMapServiceSetting,
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
     ProxyApp,
@@ -297,6 +298,12 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
         return qs.filter(
             dynamic=False
         )  # Custom form for PersistentStoreDatabaseSetting
+    
+
+class SecureMapServiceSettingInline(TethysAppSettingInline):
+    readonly_fields = ("name", "description", "required")
+    fields = ("name", "description", "secure_map_service", "required")
+    model = SecureMapServiceSetting
 
 
 class TethysAppAdmin(GuardedModelAdmin):
@@ -329,6 +336,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,
         SpatialDatasetServiceSettingInline,
+        SecureMapServiceSettingInline,
         WebProcessingServiceSettingInline,
         SchedulerSettingInline,
         TethysAppQuotasSettingInline,

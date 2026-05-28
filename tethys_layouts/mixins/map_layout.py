@@ -870,6 +870,62 @@ class MapLayoutMixin:
         return mv_layer
 
     @classmethod
+    def build_gml_layer(
+        cls,
+        endpoint,
+        layer_name,
+        layer_title,
+        layer_variable,
+        layer_id=None,
+        visible=True,
+        selectable=False,
+        extent=None,
+        public=True,
+        renamable=False,
+        removable=False,
+        show_legend=True,
+        legend_url=None,
+    ):
+        """
+        Build a GML Map Server MVLayer object with supplied arguments.
+
+        Args:
+            endpoint(str): Full ArcGIS REST URL for the layer (e.g.: "https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer").
+            layer_name(str): Programmatic name of the layer (e.g.: "ESRI_StateCityHighway_USA").
+            layer_title(str): Title of layer to display in Layer Picker (e.g.: "ESRI Highways").
+            layer_variable(str): Variable type/class of the layer (e.g.: "highways").
+            layer_id(UUID, int, str): layer_id for non geoserver layer where layer_name may not be unique.
+            visible(bool): Layer is visible when True. Defaults to True.
+            public(bool): Layer is publicly accessible when app is running in Open Portal Mode if True. Defaults to True.
+            extent(list): Extent for the layer. Optional.
+            renamable(bool): Show Rename option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            removable(bool): Show Remove option in layer context menu when True. Must implement the appropriate method to persist the change. Defaults to False.
+            show_legend(bool): Show the legend for this layer when True and legends are enabled. Defaults to True.
+            legend_url(str): URL of a legend image to display for the layer when legends are enabled.
+        """
+
+        mv_layer = cls._build_mv_layer(
+            layer_id=layer_id,
+            layer_name=layer_name,
+            layer_source="GML",
+            layer_title=layer_title,
+            layer_variable=layer_variable,
+            options={
+                "url": endpoint,
+            },
+            extent=extent,
+            visible=visible,
+            public=public,
+            selectable=selectable,
+            renamable=renamable,
+            removable=removable,
+            show_legend=show_legend,
+            legend_url=legend_url,
+        )
+
+        return mv_layer
+    
+    @classmethod
     def build_custom_layer(
         cls,
         service_type,

@@ -9,9 +9,10 @@
 """
 
 import logging
+import requests
 
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.core.mail import send_mail
 
 from tethys_config.models import get_custom_template
@@ -150,3 +151,41 @@ def send_beta_feedback_email(request):
 
     json = {"success": True, "result": "Emails sent to specified developers"}
     return JsonResponse(json)
+
+@login_required()
+def secure_map_proxy(request, setting_id):
+    """
+    Proxy view for securely accessing map services with credentials stored in Tethys Services or OAuth.
+    """
+    from tethys_services.models import SecureMapService
+
+    try:
+        service = SecureMapService.objects.get(id=setting_id)
+    except SecureMapService.DoesNotExist:
+        return HttpResponse("Service setting not found.", status=404)
+    
+    resolved_service_params = service.get_resolved_params()
+
+    if service.service_type == "wms":
+        browser_params = {
+            key: value for key, value in request.GET.items()
+        }
+        params = {**resolved_service_params, **browser_params}
+    else:
+        params = resolved_service_params
+    
+    headers = {}
+    if service.authentication_method == "oauth":
+        access_token = service.get_oauth_token(request.user)
+        if not access_token:
+            return HttpResponse("Failed to retrieve OAuth token.", status=500)
+        headers["Authorization"] = f"Bearer {access_token}"
+
+
+    resp = requests.get(service.endpoint, params=params, headers=headers, stream=True)
+
+    return StreamingHttpResponse(
+        resp.iter_content(chunk_size=8192),
+        status=resp.status_code,
+        content_type=resp.headers.get('Content-Type', 'application/octet-stream')
+    )
