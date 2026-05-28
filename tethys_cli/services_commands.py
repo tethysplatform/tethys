@@ -16,6 +16,10 @@ class FormatError(Exception):
     def __init__(self):
         Exception.__init__(self)
 
+class MissingArgumentError(Exception):
+    def __init__(self, error_message):
+        Exception.__init__(self, error_message)
+
 
 def add_services_parser(subparsers):
     # SERVICES COMMANDS
@@ -333,16 +337,20 @@ def services_create_spatial_command(args):
     try:
         name = args.name
         connection = args.connection
+        endpoint = args.endpoint
+
+        if connection is None and endpoint is None:
+            raise MissingArgumentError("Either connection or endpoint argument must be provided.")
+
+        service_username = ""
+        service_password = ""
+
         if connection:
             parts = connection.split("@")
             cred_parts = parts[0].split(":")
             service_username = cred_parts[0]
             service_password = cred_parts[1]
             endpoint = parts[1]
-        else:
-            endpoint = args.endpoint
-            service_username = ""
-            service_password = ""
 
         public_endpoint = args.public_endpoint or ""
         apikey = args.apikey or ""
@@ -398,6 +406,10 @@ def services_create_spatial_command(args):
                     name
                 )
             )
+
+    except MissingArgumentError as e:
+        with pretty_output(FG_RED) as p:
+            p.write(str(e))
 
 
 def services_create_dataset_command(args):

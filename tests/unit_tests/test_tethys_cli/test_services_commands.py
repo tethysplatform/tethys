@@ -546,6 +546,32 @@ class ServicesCommandsTest(unittest.TestCase):
         )
 
     @mock.patch("tethys_cli.services_commands.pretty_output")
+    @mock.patch("tethys_services.models.SpatialDatasetService")
+    def test_services_create_spatial_command_thredds_no_connection_no_endpoint(
+        self, mock_service, mock_pretty_output
+    ):
+        """
+        Test for services_create_spatial_command
+        For when neither connection nor endpoint is provided
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock(
+            connection=None,
+            endpoint=None,
+            public_endpoint=None,
+            apikey=None,
+            type="THREDDS",
+        )
+        mock_args.name = "test_thredds"
+        services_create_spatial_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn("Either connection or endpoint argument must be provided.", po_call_args[0][0][0])
+
+    @mock.patch("tethys_cli.services_commands.pretty_output")
     @mock.patch("tethys_cli.services_commands.exit")
     @mock.patch("tethys_services.models.WebProcessingService")
     def test_services_remove_wps_command_Exceptions(
