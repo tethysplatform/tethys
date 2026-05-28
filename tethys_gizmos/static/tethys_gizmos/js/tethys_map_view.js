@@ -236,6 +236,13 @@ ol_base_map_init = function()
       default_source_options: {},
       label_property: null,
   },
+  'WMS': {
+    source_class: function(options) {
+      return new ol.source.TileWMS(options);
+    },
+    default_source_options: {},
+    label_property: null,
+  }
 }
 
   if (is_defined(m_disable_base_map) && m_disable_base_map) {
@@ -792,7 +799,8 @@ ol_layers_init = function()
 {
   // Constants
   var GEOJSON = 'GeoJSON',
-      KML = 'KML';
+      KML = 'KML',
+      GML = 'GML';
 
   var TILE_SOURCES = ['TileDebug', 'TileUTFGrid', 'UrlTile', 'TileImage', 'VectorTile', 'BingMaps', 'TileArcGISRest',
                       'TileJSON', 'TileWMS', 'WMTS', 'XYZ', 'Zoomify', 'CartoDB', 'OSM'];
@@ -800,7 +808,7 @@ ol_layers_init = function()
   var IMAGE_SOURCES = ['ImageArcGISRest', 'ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageWMS', 'ImageVector',
                        'Raster'];
 
-  var VECTOR_SOURCES = ['GeoJSON', 'KML', 'Vector', 'Cluster'];
+  var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GML', 'Vector', 'Cluster'];
 
   var STYLE_MAP = {
       'fill'  : ol.style.Fill,
@@ -1016,6 +1024,47 @@ ol_layers_init = function()
 
             current_layer_layer_options['source'] = kml_source;
             layer = new ol.layer.Vector(current_layer_layer_options);
+          }
+        } else if (current_layer.source === GML) {
+          // TODO look into different GML formats
+          let gmlFormat = new ol.format.WFS({
+              version: '1.1.0',
+              gmlFormat: new ol.format.GML3(),
+          });
+
+          if (current_layer.options.hasOwnProperty('url')) {
+              let url = current_layer.options.url;
+              let gml_source = new ol.source.Vector();
+
+              let headers = {};
+              if (current_layer.options.token) {
+                headers['Authorization'] = 'Bearer ' + current_layer.options.token;
+              }
+              fetch(url, {credentials: 'same-origin', headers: headers})
+                  .then(r => r.text())
+                  .then(text => {
+                      let features = gmlFormat.readFeatures(text, {
+                          dataProjection: 'EPSG:4326',
+                          featureProjection: DEFAULT_PROJECTION,
+                      });
+                      console.log('GML loaded:', features.length, 'features');
+                      gml_source.addFeatures(features);
+                  })
+                  .catch(err => console.error('GML load failed:', err));
+
+              current_layer_layer_options['source'] = gml_source;
+              layer = new ol.layer.Vector(current_layer_layer_options);
+          }
+
+          else if (current_layer.options.hasOwnProperty('gml')) {
+              let gml_source = new ol.source.Vector({
+                  features: gmlFormat.readFeatures(current_layer.options.gml, {
+                      dataProjection: 'EPSG:4326',
+                      featureProjection: DEFAULT_PROJECTION,
+                  }),
+              });
+              current_layer_layer_options['source'] = gml_source;
+              layer = new ol.layer.Vector(current_layer_layer_options);
           }
         }
 

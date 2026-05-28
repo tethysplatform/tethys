@@ -846,34 +846,34 @@ class TethysAppBase(TethysBase):
         """
         return None
     
-    def secure_imagery_service_settings(self):
+    def secure_map_service_settings(self):
         """
-        Override this method to define secure imagery service connections for use in your app.
+        Override this method to define secure map service connections for use in your app.
 
         Returns:
-          iterable: A list or tuple of ``SecureImageryServiceSetting`` objects.
+          iterable: A list or tuple of ``SecureMapServiceSetting`` objects.
 
         **Example:**
 
         ::
 
-            from tethys_sdk.app_settings import SecureImageryServiceSetting
+            from tethys_sdk.app_settings import SecureMapServiceSetting
 
             class MyFirstApp(TethysAppBase):
 
-                def secure_imagery_service_settings(self):
+                def secure_map_service_settings(self):
                     \"""
-                    Example secure_imagery_service_settings method.
+                    Example secure_map_service_settings method.
                     \"""
-                    secure_imagery_services = (
-                        SecureImageryServiceSetting(
-                            name='primary_secure_imagery_service',
-                            description='Secure Imagery Service for app to use',
+                    secure_map_services = (
+                        SecureMapServiceSetting(
+                            name='primary_secure_map_service',
+                            description='Secure Map Service for app to use',
                             required=True,
                         ),
                     )
 
-                    return secure_imagery_services
+                    return secure_map_services
         """
         return None
 
@@ -1893,30 +1893,60 @@ class TethysAppBase(TethysBase):
         return True
     
     @classmethod
-    def get_secure_imagery_service(self, name):
+    def get_secure_map_service_setting(cls, name, as_endpoint=False, as_layer=False, as_response=False, param_overrides=None, request_user=None):
         """
-        Retrieves secure imagery service engine assigned to named SecureImageryServiceSetting for the app.
+        Retrieves secure map service engine assigned to named SecureMapServiceSetting for the app.
 
         Args:
-            name(str): name of the SecureImageryServiceSetting as defined in the app.py.
+            name(str): name of the SecureMapServiceSetting as defined in the app.py.
 
         Returns:
-            SecureImageryService: SecureImageryService assigned to setting.
+            SecureMapService: SecureMapService assigned to setting.
         """
 
         from tethys_apps.models import TethysApp
 
-        db_app = TethysApp.objects.get(package=self.package)
-        secure_imagery_service_settings = db_app.secure_imagery_service_settings
+        db_app = TethysApp.objects.get(package=cls.package)
+        secure_map_service_settings = db_app.secure_map_service_settings
 
         try:
-            secure_imagery_service_setting = secure_imagery_service_settings.get(
+            secure_map_service_setting = secure_map_service_settings.get(
                 name=name
             )
-            return secure_imagery_service_setting.get_value()
+            return secure_map_service_setting.get_value(
+                as_endpoint=as_endpoint, 
+                as_layer=as_layer, 
+                as_response=as_response,
+                param_overrides=param_overrides,
+                request_user=request_user
+            )
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist(
-                "SecureImageryServiceSetting", name, self.name
+                "SecureMapServiceSetting", name, cls.name
+            )
+    @classmethod
+    def update_secure_map_service_setting_params(cls, name, params):
+        """
+        Update the params for a given SecureMapServiceSetting.
+
+        Args:
+            name(str): name of the SecureMapServiceSetting as defined in the app.py.
+            params(dict): dictionary of params to update for the setting.
+        """
+
+        from tethys_apps.models import TethysApp
+
+        db_app = TethysApp.objects.get(package=cls.package)
+        secure_map_service_settings = db_app.secure_map_service_settings
+
+        try:
+            secure_map_service_setting = secure_map_service_settings.get(
+                name=name
+            )
+            secure_map_service_setting.update_params(params)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                "SecureMapServiceSetting", name, cls.name
             )
 
     def sync_all_settings(self, db_app):
@@ -1941,8 +1971,8 @@ class TethysAppBase(TethysBase):
             list(db_app.persistent_store_connection_settings)
             + list(db_app.persistent_store_database_settings),
         )
-        # secure imagery service settings
-        db_app.sync_settings(self.secure_imagery_service_settings(), db_app.secure_imagery_service_settings)
+        # secure map service settings
+        db_app.sync_settings(self.secure_map_service_settings(), db_app.secure_map_service_settings)
         
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)

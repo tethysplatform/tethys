@@ -20,6 +20,6 @@ from tethys_apps.models import (
     SchedulerSetting,
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
-    SecureImageryServiceSetting,
+    SecureMapServiceSetting,
     TethysAppSettingNotAssigned,
 )

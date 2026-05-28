@@ -8,16 +8,18 @@
 ********************************************************************************
 """
 
+from django.conf import settings
 from django.contrib import admin
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from .models import (
     DatasetService,
-    SecureImageryService,
+    SecureMapService,
     SpatialDatasetService,
     WebProcessingService,
     PersistentStoreService,
 )
-from django.forms import ModelForm, PasswordInput
+from django.forms import ModelForm, PasswordInput, ChoiceField
 from tethys_portal.optional_dependencies import (
     optional_import,
     has_module,
@@ -83,21 +85,22 @@ class PersistentStoreServiceForm(ModelForm):
             "password": PasswordInput(),
         }
 
-class SecureImageryServiceForm(ModelForm):
+class SecureMapServiceForm(ModelForm):
     class Meta:
-        model = SecureImageryService
+        model = SecureMapService
         fields = "__all__"
         labels = {
             "name": _("Name"), 
             "endpoint": _("Endpoint"), 
-            "hide_api_key": _("Hide API Key in Requests"),
-            "api_key": _("API Key"), 
-            "params": _("Parameters")
+            "api_key": _("API Key"),
+            "oauth_provider": _("OAuth Provider"),
+            "params": _("Parameters"),
+            "legend_title": _("Legend Title"),
+            "service_type": _("Service Type"),
+            "use_proxy": _("Use Proxy for Requests"),
         }
         
-
         widgets = {
-            "authentication_key": PasswordInput(render_value=True),
             "api_key": PasswordInput(render_value=True),
         }
 
@@ -113,7 +116,19 @@ class SecureImageryServiceForm(ModelForm):
                 height="300px",
                 options=options_default
             )
-        
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        choices = []
+        if settings.AUTHENTICATION_BACKENDS:
+            for backend in settings.AUTHENTICATION_BACKENDS:
+                backend_class = import_string(backend)
+                if hasattr(backend_class, "name"):
+                    choices.append((backend_class.name, backend_class.name))
+        self.fields["oauth_provider"] = ChoiceField(
+            choices=choices,
+            required=False,
+        )
 
 
 class DatasetServiceAdmin(admin.ModelAdmin):
@@ -167,20 +182,20 @@ class PersistentStoreServiceAdmin(admin.ModelAdmin):
     form = PersistentStoreServiceForm
     fields = ("name", "engine", "host", "port", "username", "password")
 
-class SecureImageryServiceAdmin(admin.ModelAdmin):
+class SecureMapServiceAdmin(admin.ModelAdmin):
     """
-    Admin model for Secure Imagery Service Model
+    Admin model for Secure Map Service Model
     """
 
-    form = SecureImageryServiceForm
-    fields = ("name", "endpoint", "authentication_method", "hide_api_key", "authentication_key", "api_key", "params")
+    form = SecureMapServiceForm
+    fields = ("name", "endpoint", "legend_title", "authentication_method", "api_key", "oauth_provider", "service_type", "use_proxy", "params")
 
     class Media:
-        js = ("tethys_services/js/secure_imagery_service_admin.js",)
+        js = ("tethys_services/js/secure_map_service_admin.js",)
 
 
 admin.site.register(DatasetService, DatasetServiceAdmin)
 admin.site.register(SpatialDatasetService, SpatialDatasetServiceAdmin)
 admin.site.register(WebProcessingService, WebProcessingServiceAdmin)
 admin.site.register(PersistentStoreService, PersistentStoreServiceAdmin)
-admin.site.register(SecureImageryService, SecureImageryServiceAdmin)
+admin.site.register(SecureMapService, SecureMapServiceAdmin)

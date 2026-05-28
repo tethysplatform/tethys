@@ -37,7 +37,7 @@ from tethys_apps.models import (
     SchedulerSetting,
     PersistentStoreConnectionSetting,
     PersistentStoreDatabaseSetting,
-    SecureImageryServiceSetting,
+    SecureMapServiceSetting,
     ProxyApp,
 )
 from tethys_portal.optional_dependencies import (
@@ -160,10 +160,10 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
     )
     model = PersistentStoreDatabaseSetting
 
-class SecureImageryServiceSettingInline(TethysAppSettingInline):
+class SecureMapServiceSettingInline(TethysAppSettingInline):
     readonly_fields = ("name", "description", "required")
-    fields = ("name", "description", "secure_imagery_service", "required")
-    model = SecureImageryServiceSetting
+    fields = ("name", "description", "secure_map_service", "required")
+    model = SecureMapServiceSetting
 
 
 class TethysAppAdmin(GuardedModelAdmin):
@@ -196,7 +196,7 @@ class TethysAppAdmin(GuardedModelAdmin):
         PersistentStoreDatabaseSettingInline,
         DatasetServiceSettingInline,
         SpatialDatasetServiceSettingInline,
-        SecureImageryServiceSettingInline,
+        SecureMapServiceSettingInline,
         WebProcessingServiceSettingInline,
         SchedulerSettingInline,
         TethysAppQuotasSettingInline,

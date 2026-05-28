@@ -286,6 +286,7 @@ MIDDLEWARE = portal_config_settings.pop(
         "tethys_portal.middleware.TethysMfaRequiredMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "tethys_portal.middleware.TethysAppAccessMiddleware",
+        "tethys_portal.middleware.TethysOauthRequiredMiddleware",
     ],
 )
 if has_module("corsheaders"):
