@@ -221,6 +221,7 @@ def create_app(request):
         "author": request.user.get_full_name(),
         "author_email": request.user.email,
     }
+    project_name = None
     context = {"form": AppScaffoldForm(initial=initial)}
     command_message_tuples = []
 
@@ -266,7 +267,9 @@ def create_app(request):
             context["app_package"] = project_name
             del context["form"]
 
-    context["project_location"] = Path.cwd() / f"{APP_PREFIX}-<Project Name>"
+    context["project_location"] = (
+        Path.cwd() / f"{APP_PREFIX}-{project_name or '<project_name>'}"
+    )
 
     return render(request, "tethys_portal/create_app.html", context)
 
