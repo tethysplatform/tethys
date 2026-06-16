@@ -594,3 +594,11 @@ class TethysPortalFormsTests(TestCase):
         self.assertFalse(app_import_form.is_valid())
 
         self.assertRaises(forms.ValidationError, app_import_form.clean)
+
+    def test_AppScaffoldForm_capitalized_project(self):
+        form_data = {"project_name": "My Project", "app_name": "My Project"}
+
+        app_scaffold_form = tp_forms.AppScaffoldForm(data=form_data)
+
+        self.assertFalse(app_scaffold_form.is_valid())
+        self.assertIn("project_name", app_scaffold_form.errors)
