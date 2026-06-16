@@ -296,6 +296,8 @@ class TestCommandTests(unittest.TestCase):
             "postgres",
             "-E",
             "utf-8",
+            "--template",
+            "template0",
             "-p",
             self.options["port"],
             "-O",
