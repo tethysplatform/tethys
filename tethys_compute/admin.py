@@ -27,7 +27,11 @@ class DaskSchedulerAdmin(admin.ModelAdmin):
                 "../../dask-dashboard/status/" + str(obj.id),
                 "Launch DashBoard",
             )
-            return format_html(dask_status_link)
+            return format_html(
+                '<a href="{}" target="_blank">{}</a>',
+                "../../dask-dashboard/status/" + str(obj.id),
+                "Launch DashBoard",
+            )
 
     append_link.allow_tags = True
     append_link.short_description = "dashboard"

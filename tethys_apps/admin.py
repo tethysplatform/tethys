@@ -352,23 +352,31 @@ class TethysAppAdmin(GuardedModelAdmin):
 
         url = reverse("admin:clear_workspace", kwargs={"app_id": app.id})
 
-        return format_html("""
+        return format_html(
+            """
         <span>{} of {}</span>
         <a id="clear-workspace" class="btn btn-danger btn-sm"
-        href="{url}">
+        href="{}">
         Clear Workspace</a>
-        """.format(current_use, quota, url=url))
+        """,
+            current_use,
+            quota,
+            url,
+        )
 
     def remove_app(self, app):
         url = reverse("admin:remove_app", kwargs={"app_id": app.id})
-        return format_html(f"""
+        return format_html(
+            """
             <a
                 id="remove-app" class="btn btn-danger btn-sm"
-                href="{url}"
+                href="{}"
             >
                 Remove App
             </a>
-        """)
+        """,
+            url,
+        )
 
 
 class TethysExtensionAdmin(GuardedModelAdmin):

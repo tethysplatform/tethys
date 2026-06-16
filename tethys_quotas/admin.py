@@ -92,12 +92,7 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
             "admin:%s_%s_change" % (content_type.app_label, content_type.model),
             args=(rq.id,),
         )
-        return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
-
-    def description(*args):
-        for arg in args:
-            if isinstance(arg, UserQuota):
-                return arg.resource_quota.description
+        return format_html('<a href="{}">{}</a>', admin_url, rq.name)
 
     def default(*args):
         # Sets the name field as a link to the resource quota admin change page
@@ -159,11 +154,7 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
             "admin:{}_{}_change".format(content_type.app_label, content_type.model),
             args=(rq.id,),
         )
-        return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
-
-    def description(*args):
-        for arg in args:
-            if isinstance(arg, TethysAppQuota):
+        return format_html('<a href="{}">{}</a>', admin_url, rq.name)
                 return arg.resource_quota.description
 
     def default(*args):

@@ -546,12 +546,17 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_get_quota.return_value = {"quota": None}
         url = reverse("admin:clear_workspace", kwargs={"app_id": app.id})
 
-        expected_html = format_html("""
+        expected_html = format_html(
+            """
                 <span>{} of {}</span>
                 <a id="clear-workspace" class="btn btn-danger btn-sm"
-                href="{url}">
+                href="{}">
                 Clear Workspace</a>
-                """.format("0 bytes", "&#8734;", url=url))
+                """,
+            "0 bytes",
+            "&#8734;",
+            url,
+        )
         actual_html = ret.manage_app_storage(app)
 
         self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
@@ -560,12 +565,17 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_get_quota.return_value = {"quota": 5, "units": "gb"}
         url = reverse("admin:clear_workspace", kwargs={"app_id": app.id})
 
-        expected_html = format_html("""
+        expected_html = format_html(
+            """
                         <span>{} of {}</span>
                         <a id="clear-workspace" class="btn btn-danger btn-sm"
-                        href="{url}">
+                        href="{}">
                         Clear Workspace</a>
-                        """.format("0 bytes", "0 bytes", url=url))
+                        """,
+            "0 bytes",
+            "0 bytes",
+            url,
+        )
         actual_html = ret.manage_app_storage(app)
 
         self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
@@ -576,14 +586,17 @@ class TestTethysAppAdmin(unittest.TestCase):
         app = mock.MagicMock()
         app.id = 1
 
-        expected_html = format_html("""
+        expected_html = format_html(
+            """
             <a
                 id="remove-app" class="btn btn-danger btn-sm"
-                href="/admin/remove_app/1/"
+                href="{}"
             >
                 Remove App
             </a>
-        """)
+        """,
+            "/admin/remove_app/1/",
+        )
         actual_html = ret.remove_app(app)
 
         self.assertEqual(expected_html.replace(" ", ""), actual_html.replace(" ", ""))

@@ -390,6 +390,8 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             spec=DaskJob,
             cached_status="Results-Ready",
             label="test_label",
+            update_status=mock.AsyncMock(),
+            safe_close=mock.AsyncMock(),
         )
         rows = [("1", "30")]
         request = RequestFactory().post(
