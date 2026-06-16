@@ -316,6 +316,8 @@ def create_db_user(
         "postgres",
         "-E",
         "utf-8",
+        "--template",
+        "template0",
         "-p",
         f"{port}",
         "-O",
