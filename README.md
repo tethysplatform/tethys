@@ -36,7 +36,7 @@ The `tethys quickstart` command will set up your development environment and sta
 
 ### Detailed Installation
 
-For more detailed installation instructions, including database configuration and production deployment, see our [Detailed Installation documentation](https://docs.tethysplatform.org/en/stable/installation.html).
+For more detailed installation instructions, including database configuration and production deployment, see our [Installation documentation](https://docs.tethysplatform.org/en/stable/installation.html).
 
 ## Next Steps
 

@@ -1,8 +1,9 @@
 import pytest
-from unittest import mock
-from tethys_components import utils
 from pathlib import Path
+from unittest import mock
 from urllib.parse import urlencode, urljoin
+
+from tethys_components import utils
 
 THIS_DIR = Path(__file__).parent
 TEST_APP_DIR = (
@@ -11,6 +12,7 @@ TEST_APP_DIR = (
 
 MOCK_APP = mock.MagicMock()
 MOCK_USER = mock.MagicMock()
+mock_pyproj = mock.MagicMock()
 
 
 @mock.patch("tethys_components.utils.inspect")
@@ -384,36 +386,32 @@ def test_fetch():
         assert data == test_content
 
 
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
 def test_transform_coordinate():
     coordinate = [0, 0]
     src_proj = "EPSG:3857"
     target_proj = "EPSG:4326"
 
-    with mock.patch("builtins.__import__") as mock_import:
-        result = utils.transform_coordinate(coordinate, src_proj, target_proj)
+    result = utils.transform_coordinate(coordinate, src_proj, target_proj)
 
     assert (
-        mock_import.return_value.Transformer.from_crs.return_value.transform.return_value
-        == result
+        mock_pyproj.Transformer.from_crs.return_value.transform.return_value == result
     )
-    mock_import.return_value.CRS.assert_has_calls(
-        [mock.call(src_proj), mock.call(target_proj)]
-    )
+    mock_pyproj.CRS.assert_has_calls([mock.call(src_proj), mock.call(target_proj)])
 
 
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
 def test_transform_coordinate_custom_projections():
     coordinate = [0, 0]
     src_proj = {"definition": "test src proj"}
     target_proj = {"definition": "test src proj"}
 
-    with mock.patch("builtins.__import__") as mock_import:
-        result = utils.transform_coordinate(coordinate, src_proj, target_proj)
+    result = utils.transform_coordinate(coordinate, src_proj, target_proj)
 
     assert (
-        mock_import.return_value.Transformer.from_crs.return_value.transform.return_value
-        == result
+        mock_pyproj.Transformer.from_crs.return_value.transform.return_value == result
     )
-    mock_import.return_value.CRS.assert_has_calls(
+    mock_pyproj.CRS.assert_has_calls(
         [mock.call(src_proj["definition"]), mock.call(target_proj["definition"])]
     )
 
@@ -423,16 +421,17 @@ def test_transform_coordinate_invalid_src_proj():
     src_proj = 1234
     target_proj = {"definition": "test src proj"}
 
-    with mock.patch("builtins.__import__"), pytest.raises(ValueError):
+    with pytest.raises(ValueError):
         utils.transform_coordinate(coordinate, src_proj, target_proj)
 
 
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
 def test_transform_coordinate_invalid_target_proj():
     coordinate = [0, 0]
     src_proj = {"definition": "test src proj"}
     target_proj = 1234
 
-    with mock.patch("builtins.__import__"), pytest.raises(ValueError):
+    with pytest.raises(ValueError):
         utils.transform_coordinate(coordinate, src_proj, target_proj)
 
 
@@ -585,6 +584,7 @@ def test_get_legend_url_basic_with_single_layer_in_layers():
         assert "LAYER=layer1" in url
 
 
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
 def test_get_legend_url_with_resolution_and_scale():
     vdom = {
         "tagName": "ImageWMSSource",
@@ -599,10 +599,9 @@ def test_get_legend_url_with_resolution_and_scale():
     with mock.patch("builtins.__import__") as mock_import:
         mock_import.return_value.urljoin = urljoin
         mock_import.return_value.urlencode = urlencode
-        mock_crs = mock_import.return_value.CRS
         mock_axis = mock.MagicMock()
         mock_axis.unit_conversion_factor = 2
-        mock_crs.return_value.axis_info = [mock_axis]
+        mock_pyproj.CRS.return_value.axis_info = [mock_axis]
 
         # Call with resolution so SCALE is computed
         result = utils._get_legend_url_(vdom, resolution=100)
@@ -635,6 +634,7 @@ def test_get_feature_info_url_not_implemented_for_diff_projections():
             utils._get_feature_info_url_(vdom, [0, 0], 1, "EPSG:3857", "EPSG:4326")
 
 
+@mock.patch("tethys_components.utils.pyproj", new=mock_pyproj)
 def test_get_feature_info_url_success():
     vdom = {
         "tagName": "ImageWMSSource",
@@ -650,12 +650,11 @@ def test_get_feature_info_url_success():
     with mock.patch("builtins.__import__") as mock_import:
         mock_import.return_value.urljoin = urljoin
         mock_import.return_value.urlencode = urlencode
-        mock_crs = mock_import.return_value.CRS
         mock_axis1 = mock.MagicMock()
         mock_axis1.direction = "north"
         mock_axis2 = mock.MagicMock()
         mock_axis2.direction = "east"
-        mock_crs.return_value.axis_info = [mock_axis1, mock_axis2]
+        mock_pyproj.CRS.return_value.axis_info = [mock_axis1, mock_axis2]
 
         feature_url = utils._get_feature_info_url_(
             vdom,

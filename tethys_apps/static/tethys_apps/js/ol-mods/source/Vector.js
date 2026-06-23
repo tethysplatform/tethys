@@ -24,7 +24,7 @@ export default function VectorSource (...props) {
     
     if (props.features || props.options.features) {
         features = props.features || props.options.features;
-        if (Array.isArray(features) && features.length > 0 && features[0] instanceof Feature) {
+        if (Array.isArray(features) && (features.length == 0 || features[0] instanceof Feature)) {
             'pass';
         } else {
             if (!format) {

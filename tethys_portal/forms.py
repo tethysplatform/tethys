@@ -351,8 +351,8 @@ class AppScaffoldForm(forms.Form):
         ),
         validators=[
             RegexValidator(
-                r"^\w+$",
-                "The project name must contain only letters, numbers, and underscores.",
+                r"^[a-z0-9_]+$",
+                "The project name must contain only lower-case letters, numbers, and underscores.",
             ),
             lambda v: (Path.cwd() / f"{APP_PREFIX}-{v}").exists()
             and exec(

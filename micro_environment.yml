@@ -15,7 +15,7 @@ dependencies:
   - python>=3.8
 
   # system dependencies
-  - pyopenssl
+  - pyopenssl>=24.0.0
   - openssl
 
   # core dependencies

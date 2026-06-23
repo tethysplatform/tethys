@@ -5,6 +5,7 @@ import tokenize
 from tethys_components import layouts
 from typing import Any
 from pathlib import Path
+from tethys_portal.optional_dependencies import optional_import
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.base.paths import (
     _get_user_workspace,
@@ -13,6 +14,11 @@ from tethys_apps.base.paths import (
     _get_user_media,
 )
 from concurrent.futures import ThreadPoolExecutor
+
+pyproj = optional_import(
+    "pyproj",
+    error_message="The `pyproj` package is required for the utility function you are accessing.",
+)
 
 
 class DotNotationDict(dict):
@@ -319,27 +325,38 @@ def background_execute(
 
 
 def transform_coordinate(coordinate, src_proj, target_proj):
-    from pyproj import Transformer, CRS
+    """
+    Transforms a coordinate from a source projection to a target projection using pyproj.
 
+    Args:
+        coordinate (list): A list representing the coordinate to be transformed, in the format [x, y].
+        src_proj (str or dict): The source projection, either as a string (e.g. "EPSG:4326") or a dictionary with a "definition" key containing the projection string.
+        target_proj (str or dict): The target projection, either as a string (e.g. "EPSG:3857") or a dictionary with a "definition" key containing the projection string.
+    Returns:
+        A list representing the transformed coordinate in the target projection, in the format [x, y].
+    Raises:
+        ValueError: If src_proj or target_proj are not in the expected formats.
+        tethys_portal.optional_dependencies.MissingOptionalDependency: If the pyproj library is not installed.
+    """
     if isinstance(src_proj, dict):
-        source_crs = CRS(src_proj["definition"])
+        source_crs = pyproj.CRS(src_proj["definition"])
     elif isinstance(src_proj, str):
-        source_crs = CRS(src_proj)
+        source_crs = pyproj.CRS(src_proj)
     else:
         raise ValueError(
             "src_proj must be a string or dictionary with a definition key"
         )
 
     if isinstance(target_proj, dict):
-        target_crs = CRS(target_proj["definition"])
+        target_crs = pyproj.CRS(target_proj["definition"])
     elif isinstance(target_proj, str):
-        target_crs = CRS(target_proj)
+        target_crs = pyproj.CRS(target_proj)
     else:
         raise ValueError(
             "target_proj must be a string or dictionary with a definition key"
         )
 
-    transformer = Transformer.from_crs(source_crs, target_crs)
+    transformer = pyproj.Transformer.from_crs(source_crs, target_crs)
     return transformer.transform(coordinate[0], coordinate[1])
 
 
@@ -349,7 +366,7 @@ class Props(dict):
     They are converted back to ReactPy propery dictionaries when accessed.
 
     Example:
-        Instead of lib.html.div({"backgroundColor": "red", "fontSize": "12px"}, "Hello"), you can use lib.html.div(Props(background_color="red, font_size="12px"), "Hello")
+        Instead of lib.html.div({"backgroundColor": "red", "fontSize": "12px"}, "Hello"), you can use lib.html.div(Props(background_color="red", font_size="12px"), "Hello")
     """
 
     def _snake_to_camel(self, snake):
@@ -443,7 +460,6 @@ def _get_legend_url_(vdom_element, resolution=None, params=None):
         )
 
     from urllib.parse import urlencode, urljoin
-    from pyproj import CRS
 
     if not params:
         params = {}
@@ -468,7 +484,7 @@ def _get_legend_url_(vdom_element, resolution=None, params=None):
 
     if resolution:
         mpu = (
-            CRS(
+            pyproj.CRS(
                 source_params["projection"]
                 if "projection" in source_params
                 else "EPSG:3857"
@@ -493,7 +509,6 @@ def _get_feature_info_url_(
         )
 
     from urllib.parse import urlencode, urljoin
-    from pyproj import CRS
 
     if not params:
         params = {}
@@ -516,7 +531,7 @@ def _get_feature_info_url_(
     x = round(math.floor((map_coordinate[0] - extent[0]) / map_resolution), DECIMALS)
     y = round(math.floor((extent[3] - map_coordinate[1]) / map_resolution), DECIMALS)
 
-    axisOrientation = "".join([a.direction[0] for a in CRS(map_proj).axis_info])
+    axisOrientation = "".join([a.direction[0] for a in pyproj.CRS(map_proj).axis_info])
     bbox = (
         [extent[1], extent[0], extent[3], extent[2]]
         if axisOrientation == "ne"

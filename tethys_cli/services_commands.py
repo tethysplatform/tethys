@@ -17,6 +17,11 @@ class FormatError(Exception):
         Exception.__init__(self)
 
 
+class MissingArgumentError(Exception):
+    def __init__(self, error_message):
+        Exception.__init__(self, error_message)
+
+
 def add_services_parser(subparsers):
     # SERVICES COMMANDS
     services_parser = subparsers.add_parser(
@@ -143,10 +148,18 @@ def add_services_parser(subparsers):
     services_create_sd.add_argument(
         "-c",
         "--connection",
-        required=True,
+        required=False,
         type=str,
         help="The connection of the Service in the form "
         '"<username>:<password>@<protocol>//<host>:<port>"',
+    )
+    services_create_sd.add_argument(
+        "-e",
+        "--endpoint",
+        required=False,
+        type=str,
+        help="The endpoint of the Service of the form, if connection argument is not provided, "
+        '"<host>:<port>"',
     )
     services_create_sd.add_argument(
         "-p",
@@ -325,11 +338,23 @@ def services_create_spatial_command(args):
     try:
         name = args.name
         connection = args.connection
-        parts = connection.split("@")
-        cred_parts = parts[0].split(":")
-        service_username = cred_parts[0]
-        service_password = cred_parts[1]
-        endpoint = parts[1]
+        endpoint = args.endpoint
+
+        if connection is None and endpoint is None:
+            raise MissingArgumentError(
+                "Either connection or endpoint argument must be provided."
+            )
+
+        service_username = ""
+        service_password = ""
+
+        if connection:
+            parts = connection.split("@")
+            cred_parts = parts[0].split(":")
+            service_username = cred_parts[0]
+            service_password = cred_parts[1]
+            endpoint = parts[1]
+
         public_endpoint = args.public_endpoint or ""
         apikey = args.apikey or ""
         service_type = args.type
@@ -384,6 +409,10 @@ def services_create_spatial_command(args):
                     name
                 )
             )
+
+    except MissingArgumentError as e:
+        with pretty_output(FG_RED) as p:
+            p.write(str(e))
 
 
 def services_create_dataset_command(args):
