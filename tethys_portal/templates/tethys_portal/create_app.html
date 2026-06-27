@@ -19,5 +19,5 @@
   {% else %}
     {% include "./lifecycle_progress.html" with action="Creating" app_name=app_name app_package=app_package %}
   {% endif %}
-
+  <p>Note: Project will be created in the current working directory of your running server: {{project_location}}</p>
 {% endblock %}
