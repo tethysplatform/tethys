@@ -6,7 +6,7 @@ Add a REST API
 
 **Last Updated:** March 2026
 
-In this recipe, you'll learn how to add a REST API endpoint to your Tethys application. 
+This recipe will demonstrate how to add a REST API endpoint to your Tethys application. 
 The REST API will provide an access point to your data. This can be used in your front end to access the data in your backend.
 
 For this, we'll be creating special `controllers` that are referred to as 'endpoints'. These endpoints can be accessed by 
@@ -14,11 +14,15 @@ making a request to the URL that is associated with the endpoint. Instead of ret
 For this example, your endpoints will return JSON data. 
 
 Endpoints can also serve as an access point for your data to be edited or updated. 
-This is done by making a POST request to the endpoint with the data that you want to update or edit.
+This is done by making a POST request or a PUT request to the endpoint with the data that you want to update or edit.
+To see how to create a REST endpoint see :ref:`add_post_api_recipe` recipe.
+To see how to create a PUT endpoint see :ref:`add_put_api_recipe` recipe.
 
 In this recipe, you'll learn how to create a GET endpoint. The GET endpoint will return some data in JSON format, and the POST endpoint will allow you to update that data.
 
-1. Install the Django REST framework package
+Install the Django REST framework package
+#########################################
+
 Before you can begin adding a REST API, you'll need to install the Django REST framework package. 
 
 You can install this package using either conda or pip as follows:
@@ -56,7 +60,8 @@ You can add this package to your app's dependencies in the install.yml file like
 
     post:
  
-2. Create a REST API endpoint
+Create a REST API endpoint
+##########################
 
 Next, you'll need to create a REST API endpoint. This is done by creating a new controller function. 
 Common practice is to create a new file called `api.py` in your app's controllers directory to hold all of your REST API endpoints. 
@@ -69,9 +74,21 @@ If you would like to do so, create a new folder called :file:`controllers` insid
 
 Move your existing controller functions to the :file:`controllers.py` module. 
 
+If you have this line in your controllers.py file: 
+
+.. code-block:: python
+
+    from .app import App
+
+Replace it with:
+
+.. code-block:: python
+
+    from ..app import App
+
+
 Next, create a folder called :file:`data` and add this :download:`example data file<./resources/daily_data.json>` to it. 
 This file will be used in the REST API endpoint that you'll create in the next step to provide data.
-
 
 Then, add the following code to the :file:`api.py` module to create a new REST API endpoint:
 
@@ -81,6 +98,9 @@ Then, add the following code to the :file:`api.py` module to create a new REST A
     from tethys_sdk.routing import controller
     from rest_framework.authentication import TokenAuthentication
     from rest_framework.decorators import api_view, authentication_classes
+
+    from pathlib import Path
+    import json
 
     DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "daily_data.json"
 
@@ -105,7 +125,8 @@ Then, add the following code to the :file:`api.py` module to create a new REST A
 
 This code creates a new REST API endpoint at the URL :code:`/api/daily-data`.
 
-3. Test the REST API Endpoint
+Test the REST API Endpoint
+###########################
 
 To more easily test your new API endpoint, you can use a tool like Postman. Follow the following instructions to get started with testing your API with Postman:
 
@@ -123,7 +144,7 @@ To more easily test your new API endpoint, you can use a tool like Postman. Foll
 
 7. Select **GET** as the method and enter "http://localhost:8000/apps/rest-api-app/api/daily-data/" in the URL field.
 
-8. Click on the **Params** button just under the URL field and add a new key-value pair with "date" as the key and "02-16-2026" as the value. 
+8. Click on the **Params** button just under the URL field and add a new key-value pair with "date" as the key and "02-16-2026"(not including quotation marks) as the value. 
 This will add a query parameter to your request that specifies the date for which you want to retrieve data.
 
 9. Press the **Save** button to save changes. This will save the url and any details, like the date param that you send with 
@@ -147,16 +168,18 @@ To retrieve your API token, follow these steps:
 
 4. In Postman, click on the Authorization tab, just under the URL field.
 
-5. Select "API Key" as the **TYPE** and enter "Authorization" for the **Key** and "Token <your token>" for the value (replace ``<your token>`` with the token you copied).
+5. Select "API Key" as the **TYPE** and enter "Authorization" for the **Key** and "Token <your token>" for the value (replace ``<your token>`` with the token you copied ie if your token was abc123, you would enter "Token abc123")
 
 6. Press the **Send** button again. This time the request should be sent with the proper authorization token. 
 You should see a response object with the data corresponding to the date you provided in the request.
 
 7. Press the **Save** button to save your changes to the Postman request.
 
-That's it! You've now created a functioning REST API endpoint and tested it using Postman. You can now use this endpoint in your front end to access the data in your backend.
+That's it! You've now created a functioning REST API endpoint and tested it using Postman. You can now use this endpoint in your app to access data.
 
-To learn more about how to use REST API endpoints in your front end, check out the :ref:`use_rest_api_javascript_recipe` recipe.
+To learn more about how to use REST API endpoints in your frontend, check out the :ref:`use_rest_api_javascript_recipe` recipe.
 
-To learn how to create a POST endpoint that allows you to update data, check out the :ref:`post_rest_api_recipe` recipe.
+To learn how to create a POST endpoint that allows you to add new data, check out the :ref:`add_post_api_recipe` recipe.
+
+To learn how to create a PUT endpoint that allows you to update data, check out the :ref:`add_put_api_recipe` recipe.
 

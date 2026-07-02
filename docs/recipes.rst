@@ -63,6 +63,18 @@ Paths API
     recipes/paths_api/app_public images/recipes/icons/app_public_icon.png [paths, app public, app_public, app, public, files]
     recipes/paths_api/app_resources images/recipes/icons/app_resources_icon.png [paths, app resources, app_public, app, resources, files]
 
+
+Rest API
+++++++++
+.. recipe-gallery:: 
+    :layout: multi-row 
+
+    recipes/rest_api/add_rest_api images/recipes/icons/rest_api_icon.png
+    recipes/rest_api/add_post_api images/recipes/icons/post_endpoint_icon.png
+    recipes/rest_api/add_put_api images/recipes/icons/put_endpoint_icon.png
+    recipes/rest_api/use_rest_api_javascript images/recipes/icons/javascript_api_icon.png
+
+ 
 Quotas
 ++++++
 
