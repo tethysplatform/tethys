@@ -55,7 +55,7 @@ def get_user_context(request):
         "user_token": user_token_key,
         "current_use": current_use,
         "quota": quota,
-        "has_mfa": user_has_mfa,
+        "user_has_mfa": user_has_mfa,
         "mfa_required": mfa_is_required,
         "show_user_token_mfa": show_user_token_mfa,
     }

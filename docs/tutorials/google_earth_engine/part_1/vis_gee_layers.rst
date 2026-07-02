@@ -264,7 +264,7 @@ In this step you'll create a new endpoint that can be used to call the ``get_ima
 
 .. tip::
 
-    In this step you added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/2.2/topics/logging/>`_
+    In this step you added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/5.2/topics/logging/>`_
 
 4. Stub Out the Map JavaScript Methods
 ======================================
@@ -380,7 +380,7 @@ Here is a brief explanation of each method that will be implemented in this step
 
 .. warning::
 
-    If you test the **Load** button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. This token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. You'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
+    If you test the **Load** button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. This token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. You'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/5.2/ref/csrf/>`_.
 
 3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to every AJAX request that needs it:
 

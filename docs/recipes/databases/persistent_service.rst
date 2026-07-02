@@ -12,7 +12,7 @@ Recommended prerequisite: :ref:`Use Databases <_use_databases_recipe>`
 1. Install Dependencies
 =======================
 
-Persistent stores is an optional feature in Tethys, and requires that the ``sqlalchemy<2`` and ``psycopg2`` libraries are installed. Install these libraries using one of the following commands:
+Persistent stores is an optional feature in Tethys. For this recipe, we will be setting up a PostgreSQL persistent store. If using a PostgreSQL persistent store, the ``sqlalchemy<2`` and ``psycopg2`` libraries are required. Install these libraries using one of the following commands:
 
 .. code-block:: bash
 
@@ -50,7 +50,7 @@ If you'd like to install your app somewhere else, it will help to add these libr
 
     post:
 
-2. Connecting to Your Persistent Store Service
+2. Connecting to Your PostgreSQL Persistent Store Service
 ==============================================
 
 
@@ -81,14 +81,14 @@ a. In your preferred text editor, open ``app.py`` and define a new ``PersistentS
                 return ps_settings
 
 
-b. Add a **Persistent Store Service** to Tethys Portal:
+b. Add a **PostgreSQL Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
-    c. Scroll down to the **Tethys Services** section and select **Persistent Store Services** link.
-    d. Click on the **Add Persistent Store Service** button.
-    e. Give the **Persistent Store Service** any name and fill out the connection information.
-    f. Press **Save** to create the new **Persistent Store Service**.
+    c. Scroll down to the **Tethys Services** section and select **PostgreSQL Persistent Store Services** link.
+    d. Click on the **Add PostgreSQL Persistent Store Service** button.
+    e. Give the **PostgreSQL Persistent Store Service** any name and fill out the connection information.
+    f. Press **Save** to create the new **PostgreSQL Persistent Store Service**.
 
 
 .. figure:: ../../images/tutorial/advanced/Persistent_Store_Service.png

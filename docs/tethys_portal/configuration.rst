@@ -84,6 +84,7 @@ ENABLE_OPEN_SIGNUP                                 anyone can create a Tethys Po
 REGISTER_CONTROLLER                                override the default registration page with a custom controller. The value should be the dot-path to the controller function/class (e.g. ``tethysext.my_extension.controllers.custom_registration``)
 ENABLE_OPEN_PORTAL                                 no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``controller`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
 ENABLE_RESTRICTED_APP_ACCESS                       app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. A list can also be provided to restrict specific applications. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.
+ALLOW_JWT_BASIC_AUTHENTICATION                     allows users to get a JSON Web Token (JWT) using basic authentication when ``True``. Defaults to ``False``. If set to true, users can obtain a JWT by sending a POST request with their username and password to the ``/api/token/`` endpoint.
 TETHYS_WORKSPACES_ROOT                             location to where app/user workspaces will be created. Defaults to :file:`<TETHYS_HOME>/workspaces`.
 STATIC_ROOT                                        the Django `STATIC_ROOT <https://docs.djangoproject.com/en/4.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 MEDIA_URL                                          the Django `MEDIA_URL <https://docs.djangoproject.com/en/4.2/ref/settings/#media-url>`_ setting. Defaults to ``'/media/'``.
@@ -523,7 +524,7 @@ ANONYMOUS_USER_NAME                                the Django Guardian `ANONYMOU
 
 .. note::
 
-    You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/2.2/ref/settings/>`_.
+    You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/5.2/ref/settings/>`_.
 
 
 .. tip::
@@ -569,12 +570,6 @@ Secondary Text Color           SECONDARY_TEXT_COLOR           --secondary-text-c
 Secondary Text Hover Color     SECONDARY_TEXT_HOVER_COLOR     --secondary-text-hover-color   Hover color of the secondary text on the home page.
 Background Color               BACKGROUND_COLOR               --background-color             Color of the background on the apps library page and other pages.
 Copyright                      COPYRIGHT                      --copyright                    Copyright text that appears in the footer of the portal. Default is "Copyright © 2022 Your Organization".
-Home Page Template             HOME_PAGE_TEMPLATE             --home-page-template           Path to alternate Home page template (will replace Home page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-Apps Library Template          APPS_LIBRARY_TEMPLATE          --apps-library-template        Path to alternate Apps Library page template (will replace Apps Library page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-Login Page Template            LOGIN_PAGE_TEMPLATE            --login-page-template          Path to alternate portal login page template (will replace login page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-Register Page Template         REGISTER_PAGE_TEMPLATE         --register-page-template       Path to alternate portal registration (or signup) page template (will replace signup page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-User Page Template             USER_PAGE_TEMPLATE             --user-page-template           Path to alternate user profile page template (will replace user page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
-User Settings Page Template    USER_SETTINGS_PAGE_TEMPLATE    --user-settings-page-template  Path to alternate user settings (i.e. edit) page template (will replace settings page template entirely). The template must be located within a valid templates directory, such as in a Tethys app, Tethys extension, or Django app.
 ============================== ============================== ============================== ================================================================================
 
 Home Page

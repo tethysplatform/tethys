@@ -56,3 +56,7 @@ pre {
     padding-right: 1rem;
 }
 
+pre button.copy .sr-only {
+    user-select: none;
+    -webkit-user-select: none;  
+}

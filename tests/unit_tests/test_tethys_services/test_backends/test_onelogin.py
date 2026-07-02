@@ -9,7 +9,6 @@ from django import test
 from tethys_services.backends.onelogin import OneLoginOIDC, OneLoginOIDCMultiTenant
 from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
-
 client_id = "182f8cb0-b8b2-0138-3936-0647e35409d7174645"
 
 
@@ -24,7 +23,7 @@ class OneLoginOIDCBackendTest(test.SimpleTestCase):
         alphanumeric = string.ascii_letters + numbers
         self.nounce = "".join(random.choices(alphanumeric, k=64))
         self.sub = "".join(random.choices(numbers, k=8))
-        self.iat = dt.datetime.utcnow()
+        self.iat = dt.datetime.now(dt.timezone.utc)
         self.id_exp = self.iat + dt.timedelta(hours=3)
         self.access_exp = self.iat + dt.timedelta(hours=1)
         self.sid = str(uuid.uuid4())

@@ -20,14 +20,11 @@ jobs:
       matrix:
         platform: [ ubuntu-latest ]
         python-version: [ "3.10", "3.11", "3.12", "3.13" ]
-        django-version: [ "3.2", "4.2", "5.2" ]
-        exclude:
-          - python-version: "3.13"
-            django-version: "3.2"
+        django-version: [ "4.2", "5.2" ]
     steps:
     # Checkout the source
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Parse version parts from tag
@@ -84,7 +81,7 @@ jobs:
       # Checkout the source
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     # Parse version parts from tag
@@ -212,11 +209,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         persist-credentials: false
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.x"
     - name: Install pypa/build

@@ -18,7 +18,7 @@ Persistent Stores API
         # pip
         pip install psycopg2 "sqlalchemy<2"
 
-The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. The databases that will be created are `PostgreSQL <https://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
+The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. Currently, you can specify `PostgreSQL <https://www.postgresql.org/>`_ and `SQLite <https://www.sqlite.org/>`_ databases. No other databases are supported.
 
 The process of creating a new persistent database can be summarized in the following steps:
 
@@ -76,9 +76,9 @@ The ``PersistentStoreDatabaseSetting`` can be thought of as a socket for a conne
 
     a. Access the Admin interface of Tethys Portal by clicking on the drop down menu next to your user name and selecting the "Site Admin" option.
 
-    b. Scroll to the **Tethys Service** section of the Admin Interface and select the link titled **Persistent Store Services**.
+    b. Scroll to the **Tethys Service** section of the Admin Interface and select the link titled **PostgreSQL Persistent Store Services** or **SQLite Persistent Store Services**.
 
-    c. Click on the **Add Persistent Store Services** button.
+    c. Click on the **Add PostgreSQL Persistent Store Service** or **Add SQLite Persistent Store Service** button.
 
     d. Fill in the connection information to the database server.
 

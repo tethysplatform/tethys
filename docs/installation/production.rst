@@ -4,7 +4,7 @@
 Production Installation Guide
 *****************************
 
-**Last Updated:** September 2024
+**Last Updated:** December 2025
 
 A **production installation**, sometimes called **deployment**, is an installation of Tethys Platform that is configured to for being hosted on a live server. This guide provides an explanation of the difference between Production and Development installations and provides several methods for installing Tethys Platform in production.
 
@@ -13,7 +13,7 @@ Production vs. Development
 
 Here are the primary differences between the :ref:`development installation <development_installation>` you have been using to develop your apps  and a production installation:
 
-* **Production Grade Servers**: The development server (``tethys manage start``) is not efficient nor capable of handling the traffic a production website receives. A combination of the either the `NGINX <https://nginx.org/en/>`_ or `Apache <https://httpd.apache.org/>`_ web server and `Daphne <https://github.com/django/daphne>`_ ASGI server are used for production installations.
+* **Production Grade Servers**: The development server (``tethys start``) is not efficient nor capable of handling the traffic a production website receives. A combination of the either the `NGINX <https://nginx.org/en/>`_ or `Apache <https://httpd.apache.org/>`_ web server and `Daphne <https://github.com/django/daphne>`_ ASGI server are used for production installations.
 * **Database Engine**: The default database engine used in development is SQLite. SQLite may not be a good fit for use in your production site (see `Appropriate Uses For SQLite <https://www.sqlite.org/whentouse.html>`_). Consider using an alternative database backend such as PostgreSQL.
 * **Changes Are Not Automatically Loaded**: When changes are made to a production installation, such as installing new apps or changing settings, the Daphne server must be restarted manually to load them. It does not restart automatically like the development server.
 * **Debug Disabled**: `Debug <https://docs.djangoproject.com/en/5.0/ref/settings/#debug>`_ mode is turned off to prevent sensitive information from being leaked through the detailed error messages produced by debug mode.
@@ -50,6 +50,22 @@ This method involves using Docker to package and automate the deployment of a Te
     :maxdepth: 1
 
     production/docker
+
+Advanced and Optional Capabilities
+==================================
+
+The following sections provide information on configuring advanced and optional capabilities for your production Tethys Platform installation.
+
+* :doc:`Configure HTTPS <production/manual/configuration/advanced/https_config>`: For setting up a secured connection for your portal.
+* :doc:`Customize Portal Theme <production/manual/configuration/advanced/customize>`: Customize the Tethys Portal to reflect your organization's branding.
+* :doc:`Django Channels Layer <production/manual/configuration/advanced/django_channels_layer>`: For production installations that use the WebSockets and/or Bokeh Server functionality that comes with Tethys Platform.
+* :doc:`Forgotten Password Recovery <production/manual/configuration/advanced/email_config>`: Set up email capabilities to allow users to recover forgotten passwords.
+* :doc:`Lockout <production/manual/configuration/advanced/lockout>`: Prevent brute-force login attempts
+* :doc:`Multi Factor Authentication <production/manual/configuration/advanced/multi_factor_auth>`: Enable and enforce multi-factor authentication through apps such as LastPass Authenticator or Google Authenticator.
+* :doc:`Multi Tenancy <production/manual/configuration/advanced/multi_tenancy>`: Enable multiple tenants with a single portal deployment, and customize resources based on tenant.
+* :doc:`Self Hosted Dependency Mode <production/manual/configuration/advanced/self_hosted_js_deps>`: Configure Tethys Portal to host JavaScript dependencies locally.
+* :doc:`Single Sign On <production/manual/configuration/advanced/social_auth>`: Set up social authentication and single sign-on with providers including Google, Facebook, or LinkedIn.
+* :doc:`Web Analytics <production/manual/configuration/advanced/webanalytics>`: Track how users interact with the Tethys portal and its applications using web-based analytical services.
 
 References
 ==========

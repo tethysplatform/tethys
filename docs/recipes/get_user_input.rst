@@ -65,7 +65,7 @@ First, you will need to configure your inputs using Tethys Gizmos by adding them
         context = {
             'name_input': name_input,
             'owner_name_input': owner_name_input,
-            'measurement_type_input', measurement_type,
+            'measurement_type_input': measurement_type_input,
             'date_added_input': date_added_input,
             'submit_button': submit_button,
         }
@@ -91,7 +91,7 @@ First, you will need to configure your inputs using Tethys Gizmos by adding them
     {% endblock %}
 
 
-The form is composed of the the HTML ``<form>`` tag and various input gizmos inside it. We'll use the ``submit_button`` gizmo to submit the form. Also note the use of the ``csrf_token`` tag in the form. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_ article in the Django documentation for more details).
+The form is composed of the the HTML ``<form>`` tag and various input gizmos inside it. We'll use the ``submit_button`` gizmo to submit the form. Also note the use of the ``csrf_token`` tag in the form. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/5.2/ref/csrf/>`_ article in the Django documentation for more details).
 Also note that the ``method`` attribute of the ``<form>`` element is set to ``post``. This means the form will use the POST HTTP method to submit and transmit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <https://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
 
 .. note:: In this code block the form is being added to the main content area of the page.  Forms can be added anywhere you need them in your app by changing the template.

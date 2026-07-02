@@ -16,7 +16,7 @@ docs/_build
 tethys_gizmos/static/tethys_gizmos/less/bower_components/*
 node_modules
 .eggs/
-.coverage
+.coverage*
 tests/coverage_html_report
 .*.swp
 .DS_Store
@@ -38,3 +38,4 @@ git-lfs-*/*
 conda.recipe/meta.yaml
 tethysapp-*
 _build
+.claude/*

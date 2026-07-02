@@ -6,14 +6,21 @@ from tethys_components.library import ComponentLibrary
 from unittest import TestCase, mock
 from asgiref.sync import async_to_sync
 
-
 THIS_DIR = Path(__file__).parent
 CUSTOM_EVAL_DIR = THIS_DIR / "test_resources" / "test_custom_and_layouts"
 
 
 class A:
     def __getattribute__(self, name):
+        if name == "navigation_links":
+            return [{"href": "https://test.com", "title": "Test"}]
         return "MOCK"
+
+
+class B:
+    @property
+    def navigation_links(self):
+        return [{"href": "https://test.com", "title": "Test"}]
 
 
 class TestCustomComponents(TestCase):
@@ -23,13 +30,14 @@ class TestCustomComponents(TestCase):
         cls.mock_all = A()
         cls.lib.hooks = mock.MagicMock()
         cls.lib.hooks.use_query.return_value = mock.MagicMock(data=None)
-        cls.lib.hooks.use_location.return_value = "MOCK"
+        cls.lib.hooks.use_location.return_value = A()
         cls.lib.hooks.use_state.return_value = ("MOCK", lambda x: x)
         cls.required_kwargs_mapping = {
             "HeaderWithNavBar": [{"app": cls.mock_all, "user": cls.mock_all}],
             "NavHeader": [{"app": cls.mock_all, "user": cls.mock_all}],
-            "PageLoader": [{"content": "TEST"}],
             "Chart": [{"data": [{"x": 1, "y": 2}, {"x": 2, "y": 10}]}, {"data": None}],
+            "Display": [{"style": {"color": "black"}}],
+            "AppNavLinks": [{"app": cls.mock_all}, {"app": B}],
         }
 
     def json_serializer(self, obj):
@@ -82,23 +90,21 @@ class TestCustomComponents(TestCase):
 
     def test_panel_special_case_2(self):
         mock_lib = mock.MagicMock()
-        mock_lib.hooks.use_state.return_value = [mock.MagicMock(), mock.MagicMock()]
         style = mock.MagicMock()
         custom.Panel(mock_lib, anchor="top", style=style)
         style.__setitem__.assert_called_once_with("height", "500px")
-        mock_lib.hooks.use_state.assert_called_once()
 
     def test_panel_special_case_3(self):
         proof = mock.MagicMock()
 
-        def test_set_show(val):
+        def test_on_close(val):
             proof(val)
 
-        panel = custom.Panel(self.lib, set_show=test_set_show)
+        panel = custom.Panel(self.lib, on_close=test_on_close)
         async_to_sync(
             panel["children"][0]["children"][1]["eventHandlers"]["onClick"].function
         )(["ignored"])
-        proof.assert_called_once_with(False)
+        proof.assert_called_once_with("ignored")
 
     def test_navheader_special_case_1(self):
         content = "not_list"
@@ -108,3 +114,7 @@ class TestCustomComponents(TestCase):
         vdom_content = layout["children"][1]["children"]
         self.assertIsInstance(vdom_content, list)
         self.assertListEqual([content], vdom_content)
+
+    def test_map_invalid_projection_dict(self):
+        with self.assertRaises(ValueError):
+            custom.Map(self.lib, projection={})

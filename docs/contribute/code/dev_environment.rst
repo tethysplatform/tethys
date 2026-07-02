@@ -4,7 +4,7 @@
 Setting Up Development Environment
 **********************************
 
-**Last Updated:** January 2025
+**Last Updated:** November 2025
 
 The first step in contributing code to Tethys Platform is setting up a development environment. This guide will walk you through the process of setting up a development environment for Tethys Platform.
 
@@ -108,7 +108,7 @@ Other Common Development Setups
 Use PostGIS Running in Docker
 -----------------------------
 
-The most common use case for this setup is to run the test suite. Another common need for using a PostGIS database is to debug features related to Persistent Stores API.
+A common need for using a PostGIS database is to debug features related to Persistent Stores API or to better simulate a production environment. The following steps will guide you through setting up Tethys Platform to use a PostGIS database running in a Docker container.
 
 .. warning::
 
@@ -334,7 +334,7 @@ You can then activate the Tethys conda environment and start the Tethys developm
 .. code-block:: bash
 
     t
-    tethys manage start
+    tethys start
 
 or simply just:
 
@@ -368,7 +368,7 @@ Aliases
 The following aliases are available:
 
 - `tms`:
-        An alias to start the Tethys development server. It calls the command `tethys manage start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
+        An alias to start the Tethys development server. It calls the command `tethys start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
 - `tstart`:
         Combines the `tethys_start_db` and the `tms` commands.
 

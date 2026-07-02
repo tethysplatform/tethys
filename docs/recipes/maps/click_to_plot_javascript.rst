@@ -185,7 +185,7 @@ Next, you'll need to add the plotData function in your JavaScript file outside t
         })
     }
 
-Now, just go ahead and reload your app and click on a feature, then the 'plot' button that is now on the small popup. You should see someting like this:
+Now, just go ahead and reload your app and click on a feature, then the 'plot' button that is now on the small popup. You should see something like this:
 
 .. figure:: ../../images/recipes/javascript_click_to_plot.png
     :width: 500px

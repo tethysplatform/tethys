@@ -12,7 +12,7 @@ This recipe will show you how to add a GEOJSON layer to your MapView Gizmo.
 
 
 Add GEOJSON Data
-############
+################
 
 You'll begin by importing or adding some GEOJSON data. In general, you can import this kind of data from a file, but in this example, you'll just add the necessary data as a dictionary in your :file:`controllers.py` file like so:
 

@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from unittest import mock
@@ -1164,7 +1165,8 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn("service", mock_stdout.getvalue())
         self.assertIn("setting", mock_stdout.getvalue())
 
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
+    @pytest.mark.django_db
     def test_test_command(self, mock_test_command):
         testargs = ["tethys", "test"]
 
@@ -1179,7 +1181,8 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].gui)
         self.assertEqual(False, call_args[0][0][0].unit)
 
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
+    @pytest.mark.django_db
     def test_test_command_options(self, mock_test_command):
         testargs = ["tethys", "test", "-c", "-C", "-u", "-g", "-f", "foo.bar"]
 
@@ -1194,7 +1197,8 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].gui)
         self.assertEqual(True, call_args[0][0][0].unit)
 
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
+    @pytest.mark.django_db
     def test_test_command_options_verbose(self, mock_test_command):
         testargs = [
             "tethys",
@@ -1220,7 +1224,8 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch("sys.stdout", new_callable=StringIO)
     @mock.patch("tethys_cli.argparse._sys.exit")
-    @mock.patch("tethys_cli.test_command.test_command")
+    @mock.patch("tethys_cli.test_command._test_command")
+    @pytest.mark.django_db
     def test_test_command_help(self, mock_test_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ["tethys", "test", "-h"]
@@ -1550,3 +1555,35 @@ class TethysCommandTests(unittest.TestCase):
 
         mock_quickstart_command.assert_not_called()
         mock_exit.assert_called_with(0)
+
+    @mock.patch("sys.stdout", new_callable=StringIO)
+    @mock.patch("tethys_cli.argparse._sys.exit")
+    @mock.patch("tethys_cli.cookie_commands.has_module", return_value=True)
+    def test_cookies_command_when_module_present(self, _, mock_exit, mock_stdout):
+        # When has_module returns True the cookie parser should be added
+        mock_exit.side_effect = SystemExit
+        testargs = ["tethys", "cookies", "--help"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        self.assertIn("list", mock_stdout.getvalue())
+        self.assertIn("purge", mock_stdout.getvalue())
+        self.assertIn("add_group", mock_stdout.getvalue())
+        self.assertIn("add_cookie", mock_stdout.getvalue())
+        self.assertIn("delete_group", mock_stdout.getvalue())
+        self.assertIn("delete_cookie", mock_stdout.getvalue())
+
+    @mock.patch("sys.stderr", new_callable=StringIO)
+    @mock.patch("tethys_cli.argparse._sys.exit")
+    @mock.patch("tethys_cli.cookie_commands.has_module", return_value=False)
+    def test_cookies_command_when_module_absent(self, _, mock_exit, mock_stderr):
+        # When has_module returns False the cookie parser should not be added
+        mock_exit.side_effect = SystemExit
+        testargs = ["tethys", "cookies", "--help"]
+
+        with mock.patch.object(sys, "argv", testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        self.assert_returns_help(mock_stderr.getvalue())
+        self.assertIn("invalid choice: 'cookies'", mock_stderr.getvalue())

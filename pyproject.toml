@@ -26,13 +26,15 @@ classifiers = [
 dynamic = ["version"]
 requires-python = ">= 3.10"
 dependencies = [
-    "pyopenssl",
+    "pyopenssl>=24.0.0",
   # core dependencies
-    "django>=3.2,<6",
+    "django>=4.2,<6",
+    "tornado>=6.5,<7",
     "channels",
     "daphne",
-    "requests",
+    "requests>=2.32.4,<3",
     "bcrypt",
+    "cryptography>=46.0.5",
   # Gen CLI commands
     "pyyaml",
     "jinja2",
@@ -40,7 +42,12 @@ dependencies = [
     "django-bootstrap5",
     "django-model-utils",
     "django-guardian",
+    "djangorestframework_simplejwt",
 ]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-django", "pytest-cov", "requests_mock"]
+lint = ["flake8", "black"]
 
 [project.urls]
 homepage = "http://tethysplatform.org/"
@@ -59,3 +66,24 @@ include = ["tethys_*"]
 
 [tool.setuptools]
 package-data = {"*" = ["*"]}
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tethys_portal.settings"
+addopts = "-s --cov"
+testpaths = ["tests/unit_tests/"]
+
+[tool.coverage.run]
+omit = [
+    "docs/*",
+    "tests/*",
+    "tethys_portal/_version.py",
+    "tethys_portal/__init__.py",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.black]
+target-version = ["py310", "py311", "py312", "py313"]

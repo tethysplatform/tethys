@@ -51,7 +51,7 @@ Open the ``app.py`` and add the following method to the ``App`` class:
 
     cd tethysapp-geoserver_app
     tethys install -d
-    tethys manage start
+    tethys start
 
 
 4. Start GeoServer
@@ -106,7 +106,7 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
         tethys uninstall geoserver_app
         cd tethysapp-geoserver_app
         tethys install -d
-        tethys manage start
+        tethys start
 
 
 7. Download Test Files

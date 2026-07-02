@@ -97,7 +97,7 @@ To add a Gizmo to your page, you'll first need to create a Gizmo in your control
 
 Adding a Gizmo to your page
 ###########################
-Now that yoo've created a Gizmo, you'll need to add that Gizmo to your page by placing it in your template. 
+Now that you've created a Gizmo, you'll need to add that Gizmo to your page by placing it in your template. 
 
 In any template that you want to use Gizmos, you'll need to add the following in the template file **once**:
 

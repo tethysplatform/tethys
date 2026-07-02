@@ -126,17 +126,19 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
 
 In the next step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
 
-1. The Plotly View gizmo requires the `plotly` Python package. We'll also need `geojson` to handle the geometry data. Install `plotly` as follows running the following command in the terminal:
+1. The Plotly View gizmo requires the `plotly` Python package. We'll also need `geojson` to handle the geometry data amd `simplejson` for error handling. Install `plotly`, `geojson`, and `simplejson` as follows running the following command in the terminal:
 
 .. code-block::
 
     # with conda
     conda install plotly
     conda install geojson
+    conda install simplejson
 
     # with pip
     pip install plotly
     pip install geojson
+    pip install simplejson
 
 2. The app now depends on `plotly` and `geojson`, so add them to the `install.yml` file:
 
@@ -146,6 +148,7 @@ In the next step you will create a new controller that will query the dataset at
       ...
       - plotly
       - geojson
+      - simplejson
 
 3. Create New Plot Controller
 =============================
@@ -194,7 +197,7 @@ In this step you will create a new controller that will query the dataset at the
             geometry(geojson): A geojson object representing the location.
             dataset(str): Name of the dataset to query.
             variable(str): Name of the variable to query.
-            start_time(datetime): Start of time range to query. Defaults to datetime.utcnow().
+            start_time(datetime): Start of time range to query. Defaults to datetime.datetime.now(datetime.UTC).
             end_time(datetime): End of time range to query. Defaults to 7 days after start_time.
             vertical_level(number): The vertical level to query. Defaults to 100000.
 
@@ -212,7 +215,7 @@ In this step you will create a new controller that will query the dataset at the
 
             # Filter by time
             if start_time is None:
-                start_time = datetime.utcnow()
+                start_time = datetime.datetime.now(datetime.UTC)
 
             if end_time is None:
                 end_time = start_time + timedelta(days=7)

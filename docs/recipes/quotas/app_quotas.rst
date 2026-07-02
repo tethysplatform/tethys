@@ -1,4 +1,4 @@
-.. _app_quotas_reicpe:
+.. _app_quotas_recipe:
 
 
 **********
@@ -33,6 +33,13 @@ Now that you've added and activated your quota, let's add a controller to your a
             
             temperature_contents = temperature_file.read().decode('utf-8')
             temperature_data = temperate_data.strip().split(',')
+    def page_controller(request, app_workspace): 
+        if request.method == 'POST':
+            date = request.POST.get('date')
+            temperature_file = request.FILES.get('temperature_file')
+            
+            temperature_contents = temperature_file.read().decode('utf-8')
+            temperature_data = temperature_contents.strip().split(',')
 
             file_name = f'temperatures_{date}.txt'
             with open(app_workspace.path / file_name, 'w') as f:

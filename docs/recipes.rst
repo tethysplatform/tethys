@@ -14,6 +14,9 @@ Recipes
     
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/scaffold_an_app images/recipes/scaffold_pic.png [scaffold, app, new_app]
+    recipes/scaffold_an_app_via_the_portal images/recipes/create_app_form.png [scaffold, app, new_app]
+    recipes/scaffold_an_app_via_command_line images/recipes/scaffold_pic.png [scaffold, app, new_app]
+    recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/create_new_page images/recipes/new_page.png [page, app, new_app]
     recipes/add_navigation_buttons images/recipes/app_navigation_menu.png [navigation, app, new_app]
     recipes/get_user_input images/recipes/get_user_input.png [forms, form, input, gizmo]
@@ -95,3 +98,16 @@ Databases
     recipes/databases/persistent_service images/recipes/icons/persistent_store_icon.png [database, persistent store, service]
     recipes/databases/create_database_models images/recipes/icons/database_model_icon.png [database, models, persistent store]
     recipes/databases/working_with_database_models images/recipes/icons/working_with_database_icon.png [database, models, persistent store]
+
+
+Component Apps
+++++++++++++++
+
+.. recipe-gallery::
+    :layout: multi-row
+    
+    recipes/component_apps/mapping_with_geojson images/recipes/component_apps/geojson.png [component, app, geojson, map, server]
+    recipes/component_apps/mapping_with_wms images/recipes/component_apps/wms.png [component, app, wms, map, service]
+    recipes/component_apps/mapping_with_arcgis_rest images/recipes/component_apps/arcgis.png [component, app, arcgis, rest, map, server, service]
+    recipes/component_apps/mapping_with_popups_and_overlays images/recipes/component_apps/overlay_popup.png [component, app, map, popup, overlay]
+    recipes/component_apps/mapping_with_custom_styles images/recipes/component_apps/color_palette.png [component, app, map, custom, style]

@@ -251,7 +251,7 @@ def _resolve_app_class(app_or_request):
         app = get_app_class(app_or_request)
     else:
         raise ValueError(
-            f'Argument "app_or_request" must be of type TethysAppBase, TethysApp, or HttpRequest: '
+            f'Argument "app_or_request" must be of type HttpRequest, TethysAppBase, or TethysApp: '
             f'"{type(app_or_request)}" given.'
         )
 

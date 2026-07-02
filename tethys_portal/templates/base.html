@@ -233,6 +233,7 @@
 
   {# Allows custom attributes to be added to the body tag #}
   <body class="d-flex flex-column h-100"{% block bodytag %}{% endblock %}>
+    {% block modals %}{% endblock %}
     {% if has_analytical %}
     {% include "analytical_body_top.html" %}
     {% endif %}
@@ -324,6 +325,12 @@
 
     {% block scripts %}
       <script type="text/javascript" src="{% static 'tethys_portal/js/header.js' %}"></script>
+    {% endblock %}
+
+    {% block cookie_consent %}
+      {% if has_cookieconsent %}
+        {% include "cookie_consent.html" %}
+      {% endif %}
     {% endblock %}
 
     {% if has_analytical %}

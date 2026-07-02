@@ -1,0 +1,16 @@
+{
+  "imports": {
+    "@planet/maps": "https://esm.sh/@planet/maps@11.2.0?external=react,react-dom,ol&deps=ol@10.7.0,react@19.2.4,react-dom@19.2.4",
+    "@planet/maps/": "https://esm.sh/@planet/maps@11.2.0&external=react,react-dom,ol&deps=ol@10.7.0,react@19.2.4,react-dom@19.2.4/",
+    "ol": "https://esm.sh/ol@10.7.0?external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4",
+    "ol-layerswitcher": "https://esm.sh/ol-layerswitcher?external=react,react-dom,ol&deps=ol@10.7.0,react@19.2.4,react-dom@19.2.4",
+    "ol-layerswitcher/": "https://esm.sh/ol-layerswitcher@&external=react,react-dom,ol&deps=ol@10.7.0,react@19.2.4,react-dom@19.2.4/",
+    "ol-side-panel": "https://esm.sh/ol-side-panel?external=react,react-dom,ol&deps=ol@10.7.0,react@19.2.4,react-dom@19.2.4",
+    "ol-side-panel/": "https://esm.sh/ol-side-panel@&external=react,react-dom,ol&deps=ol@10.7.0,react@19.2.4,react-dom@19.2.4/",
+    "ol/": "https://esm.sh/ol@10.7.0&external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4/",
+    "proj4": "https://esm.sh/proj4?external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4",
+    "proj4/": "https://esm.sh/proj4@&external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4/",
+    "react-bootstrap": "https://esm.sh/react-bootstrap@2.10.10?external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4",
+    "react-bootstrap/": "https://esm.sh/react-bootstrap@2.10.10&external=react,react-dom&deps=react@19.2.4,react-dom@19.2.4/"
+  }
+}

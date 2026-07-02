@@ -53,12 +53,12 @@ Your data list should be in the following format:
 .. code-block:: python
 
     data = [
-        dict(
-            x=[1, 2, 3],
-            y=[1, 2, 3],
-            name='Name of plot',
-            line={'color': "#000000", 'width': 2 'shape': 'spline'}
-        )
+        {
+            'x': [1, 2, 3],
+            'y': [1, 2, 3],
+            'name': 'Name of plot',
+            'line': {'color': "#000000", 'width': 2, 'shape': 'spline'}
+        }
     ]
 
 Your layout dictionary should be in the following format:
@@ -67,7 +67,7 @@ Your layout dictionary should be in the following format:
 
     layout = {
         'title': 'Title of the Plot',
-        'xaxis': {'title': 'X Axis Label'}
+        'xaxis': {'title': 'X Axis Label'},
         'yaxis': {'title': 'Y Axis Label'}
     }
 
@@ -79,9 +79,9 @@ Here is an example completed version of `get_plot_for_layer_feature`:
         data = [
             {
                 'x': [1, 3, 4, 7],
-                'y': [5, 2, 16, 9]
-                name='Example Plot Name',
-                line={'color': '#008000', 'width': 3, 'shape': 'spline'}
+                'y': [5, 2, 16, 9],
+                'name': 'Example Plot Name',
+                'line': {'color': '#008000', 'width': 3, 'shape': 'spline'}
             }
         ]
 
@@ -91,10 +91,10 @@ Here is an example completed version of `get_plot_for_layer_feature`:
             'yaxis': {'title': 'Random Y Axis Numbers'},
         }
 
-        return "Example plot title", data, layout"
+        return "Example plot title", data, layout
 
 Now, open your app and click on a feature on the map. You should see something like this:   
 
-.. figure:: ../../docs/images/recipes/click_to_plot_graph.png
+.. figure:: ../../images/recipes/click_to_plot_graph.png
     :width: 500px
     :align: center

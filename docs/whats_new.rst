@@ -4,50 +4,37 @@
 What's New
 **********
 
-**Last Updated:** November 2024
+**Last Updated:** March 2026
 
 Refer to this article for information about each new release of Tethys Platform.
 
 Release |version|
-==================
+=================
 
-Major Features
---------------
+New Recipes
+-----------
 
-Django 4/5 Support
-..................
+* Tethys Platform has introduced new Recipes, which are step-by-step guides for common tasks and workflows.
+* Recipes are designed to help both new and experienced users quickly find and implement solutions for various Tethys Platform functionalities.
+* Recipes for MapLayout and using GeoServer in Tethys have been added. More recipes will be added over time.
 
-* Tethys Platform 4.3 is compatible with Django versions 3.2 - 5.x. It is now recommended to explicitly specify the version of Django that you want when you create your tethys environment.
+See: :ref:`recipes`
 
-See: :ref:`development_installation`
+SQLite Persistent Stores
+------------------------
 
-New Logo
-........
+* Tethys Platform now supports SQLite persistent stores, allowing for lightweight, file-based database storage for Tethys apps.
+* This feature is particularly useful for development and testing environments where a full database server is not required.
+* When running Tethys Platform migrations, all existing persistent stores will be updated to PostgreSQL persistent stores.
 
-* The new logo design that is on the `Tethys Platform <https://www.tethysplatform.org/>`_ website is now in the default configuration of the Tethys Portal.
+See: :ref:`persistent_stores_api`
 
-Single App Mode
-...............
+Buy Me a Soda
+-------------
+* Tethys Platform has added a "Buy Me a Soda" button to the documentation, allowing users to support the project financially.
+* This is a way for users to contribute to the ongoing development and maintenance of Tethys
 
-* Tethys can now be used to deploy just a single app by setting the new `MULTIPLE_APP_MODE` setting to `False`.
-
-See: :ref:`tethys_portal_config_settings`
-
-Paths API
-.........
-
-* The new Paths API replaces the Workspaces API (which will still be supported until version 5.0) and provides access to the new Media directories and the App Resources directory. It also makes better use of the Python `pathlib` library.
-
-See: :ref:`tethys_paths_api`
-
-Async Support for the Jobs Table Gizmo
-......................................
-
-* Jobs Table actions callbacks are now asynchronous enabling them to run without blocking the webserver. Custom actions can also be `async`.
-
-See: :ref:`jobs-table`
-
-For a full list of changes in version 4.3 refer to `<https://github.com/tethysplatform/tethys/releases/tag/4.3.0>`_
+See: :ref:`contribute_documentation`
 
 Prior Release Notes
 ===================

@@ -11,7 +11,6 @@
 from .base import TethysGizmoOptions
 from tethys_portal.dependencies import vendor_static_dependencies
 
-
 __all__ = ["DatePicker"]
 
 

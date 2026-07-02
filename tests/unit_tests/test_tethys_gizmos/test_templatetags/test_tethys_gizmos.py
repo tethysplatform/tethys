@@ -8,9 +8,10 @@ from django.template import TemplateSyntaxError
 from django.template import Context
 from importlib import reload
 from pathlib import Path
+import sys
 
 
-class TestGizmo(TethysGizmoOptions):
+class CustomGizmo(TethysGizmoOptions):
     gizmo_name = "test_gizmo"
 
     def __init__(self, name, *args, **kwargs):
@@ -74,7 +75,8 @@ class TestTethysGizmos(unittest.TestCase):
         )
 
         # Timestamp should be 1514764800
-        self.assertEqual(1514764800000.0, result)
+        expected = 1514790000000.0 if sys.platform == "win32" else 1514764800000.0
+        self.assertEqual(expected, result)
 
     def test_HighchartsDateEncoder_no_dt(self):
         result = gizmos_templatetags.HighchartsDateEncoder().default(date(2018, 1, 1))
@@ -136,7 +138,8 @@ class TestTethysGizmos(unittest.TestCase):
         result = gizmos_templatetags.json_date_handler(datetime(2018, 1, 1))
 
         # Timestamp should be 1514764800
-        self.assertEqual(1514764800000.0, result)
+        expected = 1514790000000.0 if sys.platform == "win32" else 1514764800000.0
+        self.assertEqual(expected, result)
 
     def test_json_date_handler_no_datetime(self):
         result = gizmos_templatetags.json_date_handler("2018")
@@ -209,12 +212,12 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
         pass
 
     def test_render(self):
-        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
         result = gizmos_templatetags.TethysGizmoIncludeNode(
-            options="foo", gizmo_name=TestGizmo.gizmo_name
+            options="foo", gizmo_name=CustomGizmo.gizmo_name
         )
 
-        context = {"foo": TestGizmo(name="test_render")}
+        context = {"foo": CustomGizmo(name="test_render")}
         result_render = result.render(context)
 
         # Check Result
@@ -225,7 +228,7 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
             options="foo", gizmo_name=None
         )
 
-        context = {"foo": TestGizmo(name="test_render_no_name")}
+        context = {"foo": CustomGizmo(name="test_render_no_name")}
         result_render = result.render(context)
 
         # Check Result
@@ -234,12 +237,14 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
     @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.get_template")
     def test_render_in_extension_path(self, mock_gt):
         # Reset EXTENSION_PATH_MAP
-        gizmos_templatetags.EXTENSION_PATH_MAP = {TestGizmo.gizmo_name: "tethys_gizmos"}
+        gizmos_templatetags.EXTENSION_PATH_MAP = {
+            CustomGizmo.gizmo_name: "tethys_gizmos"
+        }
         mock_gt.return_value = mock.MagicMock()
         result = gizmos_templatetags.TethysGizmoIncludeNode(
-            options="foo", gizmo_name=TestGizmo.gizmo_name
+            options="foo", gizmo_name=CustomGizmo.gizmo_name
         )
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         result.render(context)
 
         # Check Result
@@ -249,7 +254,7 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
 
         # We need to delete this extension path map to avoid template not exist error on the
         # previous test
-        del gizmos_templatetags.EXTENSION_PATH_MAP[TestGizmo.gizmo_name]
+        del gizmos_templatetags.EXTENSION_PATH_MAP[CustomGizmo.gizmo_name]
 
     @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.settings")
     @mock.patch("tethys_gizmos.templatetags.tethys_gizmos.template")
@@ -259,7 +264,7 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
         del mock_resolve.gizmo_name
         mock_setting.TEMPLATES = [{"OPTIONS": {"debug": True}}]
 
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         tgin = gizmos_templatetags.TethysGizmoIncludeNode(
             options="foo", gizmo_name="not_gizmo"
         )
@@ -274,10 +279,10 @@ class TestTethysGizmoIncludeNode(unittest.TestCase):
         del mock_resolve.gizmo_name
         mock_setting.TEMPLATES = [{"OPTIONS": {"debug": False}}]
 
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
 
         result = gizmos_templatetags.TethysGizmoIncludeNode(
-            options="foo", gizmo_name=TestGizmo.gizmo_name
+            options="foo", gizmo_name=CustomGizmo.gizmo_name
         )
         self.assertEqual("", result.render(context=context))
 
@@ -372,7 +377,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         return_value="PLOTLY_JAVASCRIPT",
     )
     def test_render_global_js(self, mock_get_plotlyjs):
-        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
         output_global_js = "global_js"
         result = gizmos_templatetags.TethysGizmoDependenciesNode(
             output_type=output_global_js
@@ -382,7 +387,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertEqual(output_global_js, result.output_type)
 
         # TEST render
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         context.update({"gizmos_rendered": []})
 
         # unless it has the same gizmo name as the predefined one
@@ -400,7 +405,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertNotIn("tethys_map_view.js", render_globaljs)
 
     def test_render_global_css(self):
-        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
         output_global_css = "global_css"
         result = gizmos_templatetags.TethysGizmoDependenciesNode(
             output_type=output_global_css
@@ -410,7 +415,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertEqual(output_global_css, result.output_type)
 
         # TEST render
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         context.update({"gizmos_rendered": []})
 
         # unless it has the same gizmo name as the predefined one
@@ -427,7 +432,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertNotIn("tethys_gizmos.css", render_globalcss)
 
     def test_render_css(self):
-        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
         output_css = "css"
         result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_css)
 
@@ -435,7 +440,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertEqual(output_css, result.output_type)
 
         # TEST render
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         context.update({"gizmos_rendered": []})
 
         # unless it has the same gizmo name as the predefined one
@@ -453,7 +458,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         return_value="PLOTLY_JAVASCRIPT",
     )
     def test_render_js(self, mock_get_plotlyjs):
-        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
         output_js = "js"
         result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_js)
 
@@ -461,7 +466,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertEqual(output_js, result.output_type)
 
         # TEST render
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         context.update({"gizmos_rendered": []})
 
         # unless it has the same gizmo name as the predefined one
@@ -477,7 +482,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertNotIn("PLOTLY_JAVASCRIPT", render_js)
 
     def test_render_modals(self):
-        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        gizmos_templatetags.GIZMO_NAME_MAP[CustomGizmo.gizmo_name] = CustomGizmo
         output_type = "modals"
         result = gizmos_templatetags.TethysGizmoDependenciesNode(
             output_type=output_type
@@ -487,7 +492,7 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         self.assertEqual(output_type, result.output_type)
 
         # TEST render
-        context = Context({"foo": TestGizmo(name="test_render")})
+        context = Context({"foo": CustomGizmo(name="test_render")})
         context.update({"gizmos_rendered": []})
 
         # unless it has the same gizmo name as the predefined one

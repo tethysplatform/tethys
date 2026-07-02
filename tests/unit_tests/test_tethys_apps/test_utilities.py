@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -32,6 +33,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates(self):
         # Get the templates directories for the test_app and test_extension
         result = utilities.get_directories_in_tethys(("templates",))
@@ -43,21 +45,13 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "templates") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
         self.assertTrue(test_ext)
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_templates_with_app_name(self):
         # Get the templates directories for the test_app and test_extension
         # Use the with_app_name argument, so that the app and extension names appear in the result
@@ -77,13 +71,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
                 test_app = True
             if (
                 "test_extension" in r
-                and str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
+                and str(Path("/") / "tethysext" / "test_extension" / "templates")
                 in r[1]
             ):
                 test_ext = True
@@ -110,16 +98,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "templates") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "templates"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "templates") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -149,6 +128,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_directories_in_tethys(("foo",))
         self.assertEqual(0, len(result))
 
+    @pytest.mark.django_db
     def test_get_directories_in_tethys_foo_public(self):
         # Get the foo and public directories for the test_app and test_extension
         # foo doesn't exist, but public will
@@ -161,16 +141,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         for r in result:
             if str(Path("/") / "tethysapp" / "test_app" / "public") in r:
                 test_app = True
-            if (
-                str(
-                    Path("/")
-                    / "tethysext-test_extension"
-                    / "tethysext"
-                    / "test_extension"
-                    / "public"
-                )
-                in r
-            ):
+            if str(Path("/") / "tethysext" / "test_extension" / "public") in r:
                 test_ext = True
 
         self.assertTrue(test_app)
@@ -187,6 +158,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(None, result)
 
     @override_settings(MULTIPLE_APP_MODE=True)
+    @pytest.mark.django_db
     def test_get_app_model_request_app_base(self):
         from tethys_apps.models import TethysApp
 
@@ -553,7 +525,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
     @mock.patch("tethys_services.models.SpatialDatasetService")
     @mock.patch("tethys_services.models.DatasetService")
-    @mock.patch("tethys_services.models.PersistentStoreService")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
     @mock.patch("tethys_services.models.WebProcessingService")
     @mock.patch("tethys_compute.models.CondorScheduler")
     @mock.patch("tethys_compute.models.DaskScheduler")
@@ -607,6 +579,35 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         self.assertEqual(False, result)
         mock_service.objects.get.assert_called_once_with(pk=123)
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn("with ID/Name", po_call_args[0][0][0])
+        self.assertIn("does not exist.", po_call_args[0][0][0])
+
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    @mock.patch("tethys_services.models.PostgresPersistentStoreService")
+    @mock.patch("tethys_services.models.SQLitePersistentStoreService")
+    def test_link_service_to_app_setting_spatial_pss_does_not_exist(
+        self, mock_postgres_service, mock_sqlite_service, mock_pretty_output
+    ):
+        from django.core.exceptions import ObjectDoesNotExist
+
+        # Mock up the PostgresPersistentStoreService to throw ObjectDoesNotExist
+        mock_postgres_service.objects.get.side_effect = ObjectDoesNotExist
+        mock_sqlite_service.objects.get.side_effect = ObjectDoesNotExist
+
+        # Based on exception, False will be returned
+        result = utilities.link_service_to_app_setting(
+            service_type="persistent",
+            service_uid="123",
+            app_package="foo_app",
+            setting_type="pss_spatial",
+            setting_uid="456",
+        )
+
+        self.assertEqual(False, result)
+        mock_postgres_service.objects.get.assert_called_once_with(pk=123)
+        mock_sqlite_service.objects.get.assert_called_once_with(pk=123)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn("with ID/Name", po_call_args[0][0][0])
@@ -755,7 +756,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         env_tethys_home = None
         active_conda_env = "tethys"  # Default Tethys environment name
         expand_user_path = "/home/tethys"
-        active_venv = None
+        active_venv = "(test)"
 
         mock_environ.get.side_effect = [
             env_tethys_home,
@@ -769,7 +770,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(mock_environ.get.call_count, 3)
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "")
 
         # Returns default tethys home environment
         self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
@@ -782,7 +783,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         env_tethys_home = None
         active_conda_env = "foo"  # Non-default Tethys environment name
         expand_user_path = "/home/tethys"
-        active_venv = None
+        active_venv = ""
 
         mock_environ.get.side_effect = [
             env_tethys_home,
@@ -795,7 +796,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "")
 
         # Returns joined path of default tethys home path and environment name
         self.assertEqual(
@@ -807,7 +808,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_tethys_home_dir__tethys_home_defined(self, mock_home, mock_environ):
         env_tethys_home = "/foo/.bar"
         active_conda_env = "foo"
-        active_venv = None
+        active_venv = ""
         mock_environ.get.side_effect = [
             env_tethys_home,
             active_conda_env,
@@ -830,26 +831,27 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     ):
         env_tethys_home = None
         active_conda_env = None
-        active_venv = None
-        expand_user_path = "/home/tethys"
+        active_venv = ""
 
         mock_environ.get.side_effect = [
             env_tethys_home,
             active_conda_env,
             active_venv,
         ]  # [TETHYS_HOME, CONDA_DEFAULT_ENV, VIRTUAL_ENV_PROMPT]
-        mock_home.return_value = Path(expand_user_path)
+        mock_home_path = mock.MagicMock()
+        mock_home_path.__truediv__.side_effect = ["good_path", Exception]
+        mock_home.return_value = mock_home_path
 
         ret = utilities.get_tethys_home_dir()
 
         self.assertEqual(mock_environ.get.call_count, 3)
         mock_environ.get.assert_any_call("TETHYS_HOME")
         mock_environ.get.assert_any_call("CONDA_DEFAULT_ENV")
-        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT")
+        mock_environ.get.assert_any_call("VIRTUAL_ENV_PROMPT", "")
         mock_tethys_log.warning.assert_called()
 
         # Returns default tethys home environment path
-        self.assertEqual(str(Path(expand_user_path) / ".tethys"), ret)
+        self.assertEqual("good_path", ret)
 
     @mock.patch("tethys_apps.utilities.SingletonHarvester")
     def test_get_app_class(self, mock_harvester):

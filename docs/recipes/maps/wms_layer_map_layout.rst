@@ -5,14 +5,12 @@
 WMS Layer Map Layout
 ********************
 
-tasmania_cities
-
 **Last Updated:** October 2025
 
 This recipe will show you how to add a WMS layer to a map layout. WMS Layers are often used to display GeoServer or THREDDS server assets on a map.
 
 
-Start with the :ref:`Map Layout Recipe <add_map_layout_recipe>` and the :ref:`GeoSever Shapefile Upload Recipe <upload_shape_file_to_geoserver_recipe>`.
+Start with the :ref:`Map Layout Recipe <add_map_layout_recipe>` and the :ref:`GeoServer Shapefile Upload Recipe <upload_shape_file_to_geoserver_recipe>`.
 
 Add WMS Layer to MapLayout
 ##########################

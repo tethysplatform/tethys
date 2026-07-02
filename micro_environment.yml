@@ -1,4 +1,4 @@
-# environment.yml
+# micro_environment.yml
 # Configuration file for creating a Conda Environment with dependencies needed for Tethys Platform.
 # Create the environment by running the following command (after installing Mambaforge):
 #   $ mamba env create -f micro_environment.yml
@@ -15,16 +15,18 @@ dependencies:
   - python>=3.8
 
   # system dependencies
-  - pyopenssl
+  - pyopenssl>=24.0.0
   - openssl
 
   # core dependencies
-  - django>=3.2,<6
+  - django>=4.2,<6
   - channels
   - daphne
   - setuptools_scm
   - pip
-  - requests # required by lots of things
+  - requests>=2.32.4,<3  # required by lots of things
+  - tornado>=6.5,<7
+  - cryptography>=46.0.5
   - bcrypt  # also required by channels, docker, daphne, condorpy
 
   # Gen CLI commands

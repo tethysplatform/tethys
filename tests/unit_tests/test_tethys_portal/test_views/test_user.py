@@ -1,3 +1,4 @@
+import pytest
 import sys
 import unittest
 from unittest import mock
@@ -60,7 +61,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": False,
+            "user_has_mfa": False,
             "mfa_required": False,
             "show_user_token_mfa": True,
         }
@@ -106,7 +107,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": "0 bytes",
-            "has_mfa": False,
+            "user_has_mfa": False,
             "mfa_required": False,
             "show_user_token_mfa": True,  # Show user token b/c mfa is not required
         }
@@ -151,7 +152,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": False,
+            "user_has_mfa": False,
             "mfa_required": True,
             "show_user_token_mfa": False,  # Don't show user token b/c mfa is required but user has not setup mfa
         }
@@ -194,7 +195,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": True,
+            "user_has_mfa": True,
             "mfa_required": True,
             "show_user_token_mfa": True,  # Show user token b/c mfa is required and user has setup mfa
         }
@@ -237,7 +238,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "user_token": mock_user_token.key,
             "current_use": "0 bytes",
             "quota": None,
-            "has_mfa": True,
+            "user_has_mfa": True,
             "mfa_required": False,
             "show_user_token_mfa": True,  # Show user token b/c not mfa is required
         }
@@ -286,6 +287,7 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user.Token.objects.get_or_create")
     @mock.patch("tethys_portal.views.user.UserSettingsForm")
     @mock.patch("tethys_portal.views.user.render")
+    @pytest.mark.django_db
     def test_settings_request_get(
         self,
         mock_render,
@@ -317,7 +319,7 @@ class TethysPortalUserTests(unittest.TestCase):
             "current_use": "0 bytes",
             "quota": None,
             "mfa_required": False,
-            "has_mfa": False,
+            "user_has_mfa": False,
             "show_user_token_mfa": True,
         }
 
@@ -488,6 +490,7 @@ class TethysPortalUserTests(unittest.TestCase):
     @mock.patch("tethys_portal.views.user._convert_storage_units")
     @mock.patch("tethys_portal.views.user.SingletonHarvester")
     @mock.patch("tethys_portal.views.user.render")
+    @pytest.mark.django_db
     def test_manage_storage_successful(
         self, mock_render, mock_harvester, mock_convert_storage, _, __
     ):

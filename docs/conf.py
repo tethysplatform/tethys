@@ -52,7 +52,11 @@ MOCK_MODULES = [
     "conda",
     "conda.cli",
     "conda.cli.python_api",
+    "conda.testing",
+    "conda.testing.integration",
     "condorpy",
+    "cookie_consent",
+    "cookie_consent.models",
     "dask",
     "dask.delayed",
     "dask.distributed",
@@ -166,7 +170,7 @@ extensions = [
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = "index"
@@ -195,9 +199,7 @@ branch = ret.stdout.decode().strip() if ret.returncode == 0 else "release"
 
 rst_epilog = """
 .. |branch| replace:: {branch}
-""".format(
-    branch=branch
-)
+""".format(branch=branch)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

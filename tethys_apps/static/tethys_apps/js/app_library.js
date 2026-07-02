@@ -97,7 +97,7 @@ var TETHYS_APPS_LIBRARY = (function() {
 		// Display help info icon on hover of the app tile
 		$('.app-card-container').each(function() {
 			let card_container = this;
-			let help_icon = $(card_container).children('.app-help-icon');
+			let help_icon = $(card_container).children('.app-help-icon, .app-settings-icon');
 
 			if (help_icon.length) {
 				$(card_container).hover(
@@ -115,13 +115,16 @@ var TETHYS_APPS_LIBRARY = (function() {
 		$('.app-help-icon').each(function() {
 			let info_icon = this;
 			let info_text = $(info_icon).siblings('.app-help-info');
+			let settings_icon = $(info_icon).siblings('.app-settings-icon');
 			$(info_icon).on('click', function(e) {
 				e.stopPropagation();
 				info_text.removeClass('d-none');
+				settings_icon.addClass('d-none');
 			});
 			$(info_text).children('.btn-close').on('click', function(e) {
 				e.stopPropagation();
 				info_text.addClass('d-none');
+				settings_icon.removeClass('d-none');
 			});
 		});
 

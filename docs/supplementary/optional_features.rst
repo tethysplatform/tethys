@@ -72,6 +72,14 @@ Allows users to enable multi-factor authentication for their Tethys Portal accou
     - ``arrow``
     - ``isodate``
 
+Multi Tenancy
+-------------
+
+Enable multiple tenants with a single portal deployment and customize resources based on tenant.
+
+**dependencies**
+    - ``django-tenants``
+
 Single Sign On with Social Accounts
 -----------------------------------
 
@@ -116,6 +124,16 @@ Enables portal administrators to define terms and conditions that users must acc
 
 **dependencies**
     - ``django-termsandconditions``
+
+Cookie Consent
+--------------
+
+Allows users to opt in or out of the cookies used by Tethys Portal and its installed apps.
+
+**dependencies**
+    - ``django-cookie-consent``
+
+See :ref:`cookie_consent` for usage.
 
 Web Analytics Tracking
 ----------------------
@@ -191,7 +209,7 @@ Persistent Stores
 Enables apps to define and use persistent stores.
 
 **dependencies**
-    - ``sqlalchemy<2``
+    - ``sqlalchemy<2`` 
     - ``psycopg2`` (or other DB driver for Persistent Store type)
 
 Spatial Persistent Stores

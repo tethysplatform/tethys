@@ -47,7 +47,7 @@ Use start up the development server:
 
 .. code-block:: bash
 
-    tethys manage start
+    tethys start
 
 
 Browse to `<http://127.0.0.1:8000/apps/>`_ in a web browser and login with the **default portal user**:
