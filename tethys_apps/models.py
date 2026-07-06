@@ -1225,6 +1225,15 @@ class SecureMapServiceSetting(TethysAppSetting):
             headers['Authorization'] = f"Bearer {service.get_oauth_token(request_user)}"
         
         resp = requests.get(service.endpoint, params=params, headers=headers)
+        if not resp.ok:
+            log.error(
+                f"SecureMapService with name {service.name} request failed: \n"
+                f"url: {service.endpoint}\n"
+                f"params: {params}\n"
+                f"headers: {headers}\n"
+                f"status_code: {resp.status_code}\n"
+                f"response_text: {resp.text}"
+            )
         resp.raise_for_status()
         return resp
 

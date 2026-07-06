@@ -21,10 +21,7 @@ class GRiDOAuth2(BaseOAuth2):
 
 
     def user_data(self, access_token, *args, **kwargs):
-        return self.get_json(
-            f"{self.auth_server_full_url}/grid/api/user",  # ← replace with Grid's real endpoint
-            headers={"Authorization": f"Bearer {access_token}"},
-        )
+        return {"access_token": access_token} 
 
     def get_user_details(self, response):
         return {

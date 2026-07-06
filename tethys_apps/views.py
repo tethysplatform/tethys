@@ -166,7 +166,7 @@ def secure_map_proxy(request, setting_id):
     
     resolved_service_params = service.get_resolved_params()
 
-    if service.service_type == "wms":
+    if service.service_type == "ImageWMS":
         browser_params = {
             key: value for key, value in request.GET.items()
         }
@@ -181,8 +181,17 @@ def secure_map_proxy(request, setting_id):
             return HttpResponse("Failed to retrieve OAuth token.", status=500)
         headers["Authorization"] = f"Bearer {access_token}"
 
+    if request.content_type:
+        headers["Content-Type"] = request.content_type
 
-    resp = requests.get(service.endpoint, params=params, headers=headers, stream=True)
+    resp = requests.request(
+        method=request.method,
+        url=service.endpoint,
+        params=params,
+        headers=headers,
+        data=request.body if request.body else None,
+        stream=True
+    )
 
     return StreamingHttpResponse(
         resp.iter_content(chunk_size=8192),
