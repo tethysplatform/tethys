@@ -706,9 +706,8 @@ def services_list_command(args):
     if list_persistent:
         postgres_entries = PostgresPersistentStoreService.objects.order_by("id").all()
         sqlite_entries = SQLitePersistentStoreService.objects.order_by("id").all()
-        entries.append(postgres_entries)
-        entries.append(sqlite_entries)
         if len(postgres_entries) > 0:
+            entries.append(postgres_entries)
             with pretty_output(BOLD) as p:
                 p.write("\nPostgreSQL Persistent Store Services:")
             is_first_entry = True
@@ -731,6 +730,7 @@ def services_list_command(args):
                     )
                 )
         if len(sqlite_entries) > 0:
+            entries.append(sqlite_entries)
             with pretty_output(BOLD) as p:
                 p.write("\nSQLite Persistent Store Services:")
             is_first_entry = True
@@ -752,8 +752,8 @@ def services_list_command(args):
 
     if list_spatial:
         spatial_entries = SpatialDatasetService.objects.order_by("id").all()
-        entries.append(spatial_entries)
         if len(spatial_entries) > 0:
+            entries.append(spatial_entries)
             with pretty_output(BOLD) as p:
                 p.write("\nSpatial Dataset Services:")
             is_first_entry = True
@@ -778,8 +778,8 @@ def services_list_command(args):
                 )
     if list_dataset:
         dataset_entries = DatasetService.objects.order_by("id").all()
-        entries.append(dataset_entries)
         if len(dataset_entries) > 0:
+            entries.append(dataset_entries)
             with pretty_output(BOLD) as p:
                 p.write("\nDataset Services:")
             is_first_entry = True
@@ -804,8 +804,8 @@ def services_list_command(args):
                 )
     if list_wps:
         service_entries = WebProcessingService.objects.order_by("id").all()
-        entries.append(service_entries)
         if len(service_entries) > 0:
+            entries.append(service_entries)
             with pretty_output(BOLD) as p:
                 p.write("\nWeb Processing Services:")
             is_first_entry = True
