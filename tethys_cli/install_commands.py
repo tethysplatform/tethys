@@ -455,7 +455,7 @@ def run_interactive_services(app_name):
                 setattr(args, conf, False)
 
             setattr(args, get_setting_type(setting), True)
-            services = services_list_command(args)[0]
+            services = [service for service_group in services_list_command(args) for service in service_group]
 
             if len(services) <= 0:
                 write_warning(
