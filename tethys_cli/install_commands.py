@@ -947,7 +947,11 @@ def install_command(args):
                     command = f'"{path_to_post}"'
                 process = Popen(str(command), shell=True, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
-                write_msg("Post Script Result: {}\nPost Script Errors: {}".format(stdout, stderr))
+                write_msg(
+                    "Post Script Result: {}\nPost Script Errors: {}".format(
+                        stdout, stderr
+                    )
+                )
     write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
 
 
