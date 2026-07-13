@@ -942,7 +942,7 @@ def install_command(args):
                 path_to_post = file_path.resolve().parent / post
                 # Attempting to run processes.
                 if path_to_post.name.endswith(".py"):
-                    command = f'"{sys.executable}" {path_to_post}'
+                    command = f'"{sys.executable}" "{path_to_post}"'
                 else:
                     command = f'"{path_to_post}"'
                 process = Popen(str(command), shell=True, stdout=PIPE, stderr=PIPE)
