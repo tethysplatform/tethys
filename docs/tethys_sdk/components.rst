@@ -275,6 +275,7 @@ Here is a list of the built-in third-party libraries grouped by category and lis
 
 **Data visualization components:**
 
+    - ``lib.pl``: `Plotly <https://plotly.com/javascript/reference/index/>`_
     - ``lib.rc``: `Recharts <https://recharts.org/en-US/api>`_
     - ``lib.ag``: `AG Grid <https://www.ag-grid.com/react-data-grid/getting-started/>`_
 
