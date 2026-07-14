@@ -27,6 +27,7 @@ Command Line Interface
    tethys_cli/list
    tethys_cli/manage
    tethys_cli/paths
+   tethys_cli/run
    tethys_cli/scaffold
    tethys_cli/schedulers
    tethys_cli/services
