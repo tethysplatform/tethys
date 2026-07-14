@@ -673,7 +673,14 @@ def register_custom_group():
     try:
 
         class CustomGroup(GroupAdmin):
-            form = make_gop_app_access_form()
+            def get_form(self, request, obj=None, **kwargs):
+                # create the form here rather than at registration time so the
+                # database is not queried during app initialization
+                try:
+                    kwargs.setdefault("form", make_gop_app_access_form())
+                except (ProgrammingError, OperationalError):
+                    tethys_log.warning("Unable to create GOP app access form.")
+                return super().get_form(request, obj, **kwargs)
 
         admin.site.unregister(Group)
         admin.site.register(Group, CustomGroup)
