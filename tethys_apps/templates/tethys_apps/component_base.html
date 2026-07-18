@@ -74,12 +74,6 @@
   {% component "tethys_apps.base.page_handler.page_component_wrapper" app=app user=request.user layout=layout_func page_func=component_func extras=extras %}
 {% endblock %}
 
-{% block app_base_js %}
-  {% for js in custom_js %}
-    <script src="{{ js }}" type="text/javascript" defer></script>
-  {% endfor %}
-{% endblock %}
-
 {% block content_dependent_styles %}{% endblock %}
 
 {% block scripts %}
@@ -87,4 +81,7 @@
   {% if tethys_app.enable_feedback %}
     <script src="{% static 'tethys_apps/js/feedback.js' %}" type="text/javascript" defer></script>
   {% endif %}
+  {% for js in custom_js %}
+    <script src="{{ js }}" type="text/javascript" defer></script>
+  {% endfor %}
 {% endblock %}
