@@ -7,7 +7,7 @@ Add Navigation Buttons
 
 **Last Updated:** June 2025
 
-Your app may contain multiple pages (i.e. map viewer, home page, disclaimer, etc.).  Navigation buttons provide a convinent way to switch between pages in your app.  To add navigation buttons:
+Your app may contain multiple pages (i.e. map viewer, home page, disclaimer, etc.).  Navigation buttons provide a convenient way to switch between pages in your app.  To add navigation buttons:
 
 a. Open ``/templates/<app_name>/base.html`` and replace the ``app_navigation_items`` block with your code:
 
