@@ -13,7 +13,6 @@ Recipes
     :layout: multi-row
     
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
-    recipes/scaffold_an_app images/recipes/scaffold_pic.png [scaffold, app, new_app]
     recipes/scaffold_an_app_via_the_portal images/recipes/create_app_form.png [scaffold, app, new_app]
     recipes/scaffold_an_app_via_command_line images/recipes/scaffold_pic.png [scaffold, app, new_app]
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
@@ -77,7 +76,7 @@ Rest API
     recipes/rest_api/add_put_api images/recipes/icons/put_endpoint_icon.png
     recipes/rest_api/use_rest_api_javascript images/recipes/icons/javascript_api_icon.png
 
- 
+
 Quotas
 ++++++
 
