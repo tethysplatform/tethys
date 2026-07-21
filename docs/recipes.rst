@@ -12,6 +12,7 @@ Recipes
 .. recipe-gallery::
     :layout: multi-row
     
+    recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
     recipes/scaffold_an_app_via_the_portal images/recipes/create_app_form.png [scaffold, app, new_app]
     recipes/scaffold_an_app_via_command_line images/recipes/scaffold_pic.png [scaffold, app, new_app]
     recipes/start_tethys images/getting_started/hello_world_login.png [start, app, new_app]
@@ -21,9 +22,6 @@ Recipes
     recipes/gizmos images/recipes/icons/gizmos_icon.png [gizmo]
     recipes/file_upload images/recipes/icons/file_upload_icon.png [gizmo, form, forms, input]
     recipes/add_new_user images/recipes/icons/create_user_icon.png [new_user, user]
-
-
-++++
 
 Maps
 ++++
@@ -51,6 +49,8 @@ GeoServer
     recipes/geoserver/spatial_dataset_service images/recipes/icons/spatial_dataset_service_icon.png [geoserver, spatial, dataset, service]
     recipes/geoserver/geoserver_shape_file_upload images/recipes/icons/uploading_shapefiles_to_geoserver_icon.png [geoserver, upload, shapefile, form]
 
+
+
 Paths API
 +++++++++
 
@@ -64,6 +64,18 @@ Paths API
     recipes/paths_api/user_media images/recipes/icons/user_media_icon.png [paths, user media, user_media, user, media, files]
     recipes/paths_api/app_public images/recipes/icons/app_public_icon.png [paths, app public, app_public, app, public, files]
     recipes/paths_api/app_resources images/recipes/icons/app_resources_icon.png [paths, app resources, app_public, app, resources, files]
+
+
+Rest API
+++++++++
+.. recipe-gallery:: 
+    :layout: multi-row 
+
+    recipes/rest_api/add_rest_api images/recipes/icons/rest_api_icon.png
+    recipes/rest_api/add_post_api images/recipes/icons/post_endpoint_icon.png
+    recipes/rest_api/add_put_api images/recipes/icons/put_endpoint_icon.png
+    recipes/rest_api/use_rest_api_javascript images/recipes/icons/javascript_api_icon.png
+
 
 Quotas
 ++++++

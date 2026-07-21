@@ -7,7 +7,7 @@ User Quotas
 
 **Last Updated:** September 2025
 
-This recipe goes over adding and enforcing user quotas.  User workspace quotas can be used to restrict the amount of storage that an individual user has access to in the user workspace and user media locations. For more information on the Quotas API see the :ref:`Quotas API documentation <sdk_quotas_api>`
+This recipe demonstrates how to add and enforce user quotas.  User workspace quotas can be used to restrict the amount of storage that an individual user has access to in the user workspace and user media locations. For more information on the Quotas API see the :ref:`Quotas API documentation <sdk_quotas_api>`
 
 We'll start by going over how to add a generic user workspace quota:
 
