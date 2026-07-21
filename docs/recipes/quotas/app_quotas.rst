@@ -25,6 +25,7 @@ Now that you've added and activated your quota, let's add a controller to your a
 
     from tethys_sdk.routing import controller
     
+    @controller(app_workspace=True)
     def page_controller(request, app_workspace): 
         if request.method == 'POST':
             date = request.POST.get('date')
