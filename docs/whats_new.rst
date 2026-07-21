@@ -11,6 +11,15 @@ Refer to this article for information about each new release of Tethys Platform.
 Release |version|
 =================
 
+Tethys Run (Express Mode)
+-------------------------
+
+* The new ``tethys run`` command runs a single-file component app with zero configuration — no portal configuration, no database setup, no ``pip install``, and no login required.
+* Inspired by tools like Shiny and Streamlit, it lowers the barrier to entry for building Tethys apps: write one Python file and run it with one command.
+* Apps developed this way run on the standard portal machinery and can be installed in a full Tethys Portal without modification.
+
+See: :ref:`tethys_run_cmd`
+
 New Recipes
 -----------
 
