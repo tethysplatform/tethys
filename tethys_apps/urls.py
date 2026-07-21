@@ -12,7 +12,7 @@ import logging
 from django.urls import include, re_path
 from channels.routing import URLRouter
 from tethys_apps.harvester import SingletonHarvester
-from tethys_apps.views import library, send_beta_feedback_email
+from tethys_apps.views import library, send_beta_feedback_email, secure_map_proxy
 from tethys_apps.utilities import get_configured_standalone_app
 from django.conf import settings
 from django.views.generic.base import RedirectView
@@ -24,6 +24,11 @@ urlpatterns = [
     re_path(
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
+    re_path(
+        r"^secure-map-proxy/(?P<setting_id>\d+)/$", 
+        secure_map_proxy, 
+        name="secure_map_proxy"
+    )
 ]
 
 url_namespaces = None

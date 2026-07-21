@@ -43,6 +43,7 @@ dependencies = [
     "django-model-utils",
     "django-guardian",
     "djangorestframework_simplejwt",
+    "django-fernet-encrypted-fields",
 ]
 
 [project.optional-dependencies]

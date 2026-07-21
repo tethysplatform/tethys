@@ -21,6 +21,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
+import os
 import sys
 import yaml
 import logging
@@ -285,6 +286,7 @@ MIDDLEWARE = portal_config_settings.pop(
         "tethys_portal.middleware.TethysMfaRequiredMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "tethys_portal.middleware.TethysAppAccessMiddleware",
+        "tethys_portal.middleware.TethysOauthRequiredMiddleware",
     ],
 )
 if has_module("corsheaders"):
@@ -707,3 +709,6 @@ USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", Tr
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
+
+# Encryption keys
+FERNET_KEYS = [os.environ.get("FERNET_KEY", None)]
