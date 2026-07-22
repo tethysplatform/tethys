@@ -1,0 +1,34 @@
+{% load static tethys %}
+
+{% if display_text %}
+<label class="form-label" for="{{ name }}">{{ display_text }}</label>
+{% endif %}
+<div class="input-group{% if error or success %} has-validation{% endif %}">
+    <input class = "form-control tethys-timepicker{% if error %} is-invalid{% endif %}{% if success %} is-valid{% endif %}{% if classes %} {{ classes }}{% endif %}" id="{{ name }}"
+        name="{{ name }}"
+        type="text"
+        data-provide="timepicker"
+        value="{{ initial }}"
+        {% if default_time %}data-default-time="{{ default_time }}"{% endif %}
+        data-minute-step="{{ minute_step }}"
+        data-second-step="{{ second_step }}"
+        data-show-seconds="{{ show_seconds|yesno:'true,false' }}"
+        data-show-meridian="{{ show_meridian|yesno:'true,false' }}"
+        data-show-inputs="{{ show_inputs|yesno:'true,false' }}"
+        data-disable-focus="{{ disable_focus|yesno:'true,false' }}"
+        data-snap-to-step="{{ snap_to_step|yesno:'true,false' }}"
+        data-max-hours="{{ max_hours }}"
+        data-explicit-mode="{{ explicit_mode|yesno:'true,false' }}"
+        {% if disabled %}disabled{% endif %}
+        {% if attributes %}
+            {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+            {% endfor %}
+        {% endif %}>
+    {% if error %}
+    <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="valid-feedback">{{ success }}</div>
+    {% endif %}
+</div>
