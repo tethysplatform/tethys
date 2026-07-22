@@ -161,6 +161,12 @@ vendor_static_dependencies = {
         js_path="dist/js/bootstrap-datepicker.min.js",
         css_path="dist/css/bootstrap-datepicker3.min.css",
     ),
+    "bootstrap-timepicker": JsDelivrStaticDependency(
+        npm_name="bootstrap-timepicker",
+        version="0.5.2",
+        js_path="js/bootstrap-timepicker.min.js",
+        css_path="css/bootstrap-timepicker.min.css",
+    ),
     "bootstrap_icons": JsDelivrStaticDependency(
         npm_name="bootstrap-icons",
         version="1.11.3",
