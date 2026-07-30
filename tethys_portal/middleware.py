@@ -157,19 +157,21 @@ class TethysMfaRequiredMiddleware:
         response = self.get_response(request)
 
         return response
+
+
 class TethysOauthRequiredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.requirements = getattr(settings, "OAUTH_REQUIREMENTS", {})
-        
+
     def __call__(self, request):
         if not self.requirements:
             return self.get_response(request)
-        
+
         app = get_active_app(request)
         if app is None:
             return self.get_response(request)
-        
+
         app_name = app.package
         required_provider = self.requirements.get(app_name)
         if not required_provider:
@@ -177,9 +179,12 @@ class TethysOauthRequiredMiddleware:
 
         if request.user.social_auth.filter(provider=required_provider).exists():
             return self.get_response(request)
-        
-        messages.info(request, f"This application requires authenticating with {required_provider}. Please link your {required_provider} account.")
-        next_param = urlencode({'next': request.get_full_path()})
 
-        settings_url = reverse('user:settings')
+        messages.info(
+            request,
+            f"This application requires authenticating with {required_provider}. Please link your {required_provider} account.",
+        )
+        next_param = urlencode({"next": request.get_full_path()})
+
+        settings_url = reverse("user:settings")
         return redirect(f"{settings_url}?{next_param}")

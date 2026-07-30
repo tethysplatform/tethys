@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+
 from urllib.parse import urlencode
 
 from django.dispatch import receiver
@@ -169,13 +170,12 @@ class TethysApp(models.Model, TethysBaseMixin):
         return self.settings_set.exclude(
             persistentstoredatabasesetting__isnull=True
         ).select_subclasses("persistentstoredatabasesetting")
-    
+
     @property
     def secure_map_service_settings(self):
         return self.settings_set.exclude(
             securemapservicesetting__isnull=True
         ).select_subclasses("securemapservicesetting")
-
 
     @property
     def configured(self):
@@ -1157,7 +1157,7 @@ class SecureMapServiceSetting(TethysAppSetting):
         """
         if not self.secure_map_service and self.required:
             raise ValidationError("Required.")
-    
+
     def generate_request(self, param_overrides=None):
         """
         Generate a request to the secure map service, including any necessary authentication headers or parameters.
@@ -1177,12 +1177,15 @@ class SecureMapServiceSetting(TethysAppSetting):
         if service.use_proxy:
             endpoint = reverse("secure_map_proxy", kwargs={"setting_id": service.pk})
             return endpoint
-        
+
         params = service.get_resolved_params()
         # If the API key is not already included in the params, add it
         # This allows for the API key to be included in the params with a placeholder (e.g. ${api_key})
         # or to be assigned to a different parameter name if the service expects it that way
-        if service.authentication_method == "api_key" and service.api_key not in params.values():
+        if (
+            service.authentication_method == "api_key"
+            and service.api_key not in params.values()
+        ):
             params["api_key"] = service.api_key
 
         query_string = urlencode(params)
@@ -1192,20 +1195,17 @@ class SecureMapServiceSetting(TethysAppSetting):
     def build_layer(self, param_overrides=None, request_user=None):
         endpoint = self.generate_request(param_overrides=param_overrides)
         service = self.secure_map_service
-        options = {'url': endpoint}
+        options = {"url": endpoint}
         if not service.use_proxy and service.authentication_method == "oauth":
-            options['token'] = service.get_oauth_token(request_user)
+            options["token"] = service.get_oauth_token(request_user)
         return MVLayer(
             source=service.service_type,
             layer_options={"visible": True},
             options=options,
             legend_title=service.legend_title,
-            data={
-                "show_legend": True, 
-                "layer_id": service.pk
-            }
+            data={"show_legend": True, "layer_id": service.pk},
         )
-    
+
     def fetch_response(self, param_overrides=None, request_user=None):
         if not self.secure_map_service:
             raise TethysAppSettingNotAssigned(
@@ -1221,9 +1221,11 @@ class SecureMapServiceSetting(TethysAppSetting):
         headers = {}
         if service.authentication_method == "oauth":
             if not request_user:
-                raise ValueError("Request user must be provided to fetch response for OAuth authenticated service.")
-            headers['Authorization'] = f"Bearer {service.get_oauth_token(request_user)}"
-        
+                raise ValueError(
+                    "Request user must be provided to fetch response for OAuth authenticated service."
+                )
+            headers["Authorization"] = f"Bearer {service.get_oauth_token(request_user)}"
+
         resp = requests.get(service.endpoint, params=params, headers=headers)
         if not resp.ok:
             log.error(
@@ -1237,18 +1239,27 @@ class SecureMapServiceSetting(TethysAppSetting):
         resp.raise_for_status()
         return resp
 
-    
-
-    def get_value(self, as_endpoint=False, as_layer=False, as_response=False, param_overrides=None, request_user=None):
+    def get_value(
+        self,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        param_overrides=None,
+        request_user=None,
+    ):
         if as_endpoint:
             return self.generate_request(param_overrides=param_overrides)
         elif as_layer:
-            return self.build_layer(param_overrides=param_overrides, request_user=request_user)
+            return self.build_layer(
+                param_overrides=param_overrides, request_user=request_user
+            )
         elif as_response:
-            return self.fetch_response(param_overrides=param_overrides, request_user=request_user)
+            return self.fetch_response(
+                param_overrides=param_overrides, request_user=request_user
+            )
         else:
             return self.secure_map_service
-        
+
     def update_params(self, new_params):
         if not self.secure_map_service:
             raise TethysAppSettingNotAssigned(

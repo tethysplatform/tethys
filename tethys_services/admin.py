@@ -97,8 +97,8 @@ class SecureMapServiceForm(ModelForm):
         model = SecureMapService
         fields = "__all__"
         labels = {
-            "name": _("Name"), 
-            "endpoint": _("Endpoint"), 
+            "name": _("Name"),
+            "endpoint": _("Endpoint"),
             "api_key": _("API Key"),
             "oauth_provider": _("OAuth Provider"),
             "params": _("Parameters"),
@@ -106,7 +106,7 @@ class SecureMapServiceForm(ModelForm):
             "service_type": _("Service Type"),
             "use_proxy": _("Use Proxy for Requests"),
         }
-        
+
         widgets = {
             "api_key": PasswordInput(render_value=True),
         }
@@ -119,9 +119,7 @@ class SecureMapServiceForm(ModelForm):
 
         if has_module("django_json_widget"):
             widgets["params"] = JSONEditorWidget(
-                width="60%",
-                height="300px",
-                options=options_default
+                width="60%", height="300px", options=options_default
             )
 
     def __init__(self, *args, **kwargs):
@@ -205,7 +203,17 @@ class SecureMapServiceAdmin(admin.ModelAdmin):
     """
 
     form = SecureMapServiceForm
-    fields = ("name", "endpoint", "legend_title", "authentication_method", "api_key", "oauth_provider", "service_type", "use_proxy", "params")
+    fields = (
+        "name",
+        "endpoint",
+        "legend_title",
+        "authentication_method",
+        "api_key",
+        "oauth_provider",
+        "service_type",
+        "use_proxy",
+        "params",
+    )
 
     class Media:
         js = ("tethys_services/js/secure_map_service_admin.js",)

@@ -152,6 +152,7 @@ def send_beta_feedback_email(request):
     json = {"success": True, "result": "Emails sent to specified developers"}
     return JsonResponse(json)
 
+
 @login_required()
 def secure_map_proxy(request, setting_id):
     """
@@ -163,17 +164,15 @@ def secure_map_proxy(request, setting_id):
         service = SecureMapService.objects.get(id=setting_id)
     except SecureMapService.DoesNotExist:
         return HttpResponse("Service setting not found.", status=404)
-    
+
     resolved_service_params = service.get_resolved_params()
 
     if service.service_type == "ImageWMS":
-        browser_params = {
-            key: value for key, value in request.GET.items()
-        }
+        browser_params = {key: value for key, value in request.GET.items()}
         params = {**resolved_service_params, **browser_params}
     else:
         params = resolved_service_params
-    
+
     headers = {}
     if service.authentication_method == "oauth":
         access_token = service.get_oauth_token(request.user)
@@ -190,11 +189,11 @@ def secure_map_proxy(request, setting_id):
         params=params,
         headers=headers,
         data=request.body if request.body else None,
-        stream=True
+        stream=True,
     )
 
     return StreamingHttpResponse(
         resp.iter_content(chunk_size=8192),
         status=resp.status_code,
-        content_type=resp.headers.get('Content-Type', 'application/octet-stream')
+        content_type=resp.headers.get("Content-Type", "application/octet-stream"),
     )

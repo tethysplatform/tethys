@@ -924,7 +924,7 @@ class MapLayoutMixin:
         )
 
         return mv_layer
-    
+
     @classmethod
     def build_custom_layer(
         cls,

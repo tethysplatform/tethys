@@ -845,7 +845,7 @@ class TethysAppBase(TethysBase):
                     return wps_services
         """
         return None
-    
+
     def secure_map_service_settings(self):
         """
         Override this method to define secure map service connections for use in your app.
@@ -1891,9 +1891,17 @@ class TethysAppBase(TethysBase):
         # Check if it exists
         ps_database_setting.persistent_store_database_exists()
         return True
-    
+
     @classmethod
-    def get_secure_map_service(cls, name, as_endpoint=False, as_layer=False, as_response=False, param_overrides=None, request_user=None):
+    def get_secure_map_service(
+        cls,
+        name,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        param_overrides=None,
+        request_user=None,
+    ):
         """
         Retrieves secure map service assigned to named SecureMapServiceSetting for the app.
 
@@ -1910,21 +1918,19 @@ class TethysAppBase(TethysBase):
         secure_map_service_settings = db_app.secure_map_service_settings
 
         try:
-            secure_map_service_setting = secure_map_service_settings.get(
-                name=name
-            )
+            secure_map_service_setting = secure_map_service_settings.get(name=name)
             return secure_map_service_setting.get_value(
-                as_endpoint=as_endpoint, 
-                as_layer=as_layer, 
+                as_endpoint=as_endpoint,
+                as_layer=as_layer,
                 as_response=as_response,
                 param_overrides=param_overrides,
-                request_user=request_user
+                request_user=request_user,
             )
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist(
                 "SecureMapServiceSetting", name, cls.name
             )
-    
+
     @classmethod
     def update_secure_map_service_setting_params(cls, name, params):
         """
@@ -1941,9 +1947,7 @@ class TethysAppBase(TethysBase):
         secure_map_service_settings = db_app.secure_map_service_settings
 
         try:
-            secure_map_service_setting = secure_map_service_settings.get(
-                name=name
-            )
+            secure_map_service_setting = secure_map_service_settings.get(name=name)
             secure_map_service_setting.update_params(params)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist(
@@ -1973,7 +1977,9 @@ class TethysAppBase(TethysBase):
             + list(db_app.persistent_store_database_settings),
         )
         # secure map service settings
-        db_app.sync_settings(self.secure_map_service_settings(), db_app.secure_map_service_settings)
+        db_app.sync_settings(
+            self.secure_map_service_settings(), db_app.secure_map_service_settings
+        )
         # scheduler settings
         db_app.sync_settings(self.scheduler_settings(), db_app.scheduler_settings)
 
@@ -2008,7 +2014,6 @@ class TethysAppBase(TethysBase):
                     show_in_apps_library=self.show_in_apps_library,
                 )
                 db_app.save()
-
                 self.sync_all_settings(db_app)
 
             # If the app is in the database, update developer priority attributes
@@ -2016,7 +2021,6 @@ class TethysAppBase(TethysBase):
                 db_app = db_apps[0]
                 db_app.index = self.index
                 db_app.root_url = self.root_url
-
                 self.sync_all_settings(db_app)
 
                 # In debug mode, update all fields, not just developer priority attributes

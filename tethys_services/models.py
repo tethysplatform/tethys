@@ -405,20 +405,27 @@ class SQLitePersistentStoreService(PersistentStoreServiceBase):
         db_file = os.path.join(self.dir_path, f"{self.database}.sqlite")
         return f"sqlite:///{db_file}"
 
+
 class SecureMapService(models.Model):
     """
     ORM for Secure Map Service settings.
     """
 
     name = models.CharField(max_length=30, unique=True)
-    legend_title= models.CharField(max_length=100, unique=True)
+    legend_title = models.CharField(max_length=100, unique=True)
     endpoint = models.CharField(max_length=1024, validators=[validate_url])
-    authentication_method = models.CharField(max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth", "OAuth")])
+    authentication_method = models.CharField(
+        max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth", "OAuth")]
+    )
     api_key = EncryptedTextField(blank=True, null=True)
     oauth_provider = models.CharField(max_length=100, blank=True)
-    service_type = models.CharField(max_length=50, choices=[("ImageWMS", "WMS"), ("GML", "GML"), ("geojson", "GeoJSON")], default="ImageWMS")
+    service_type = models.CharField(
+        max_length=50,
+        choices=[("ImageWMS", "WMS"), ("GML", "GML"), ("geojson", "GeoJSON")],
+        default="ImageWMS",
+    )
     params = models.JSONField(blank=True, null=True, default=dict)
-    use_proxy = models.BooleanField(default=False) # Hide API key in requests
+    use_proxy = models.BooleanField(default=False)  # Hide API key in requests
 
     class Meta:
         verbose_name = "Secure Map Service"
@@ -426,38 +433,42 @@ class SecureMapService(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     @classmethod
     def get_authentication_method_options(cls):
-        return [value for value, _ in cls._meta.get_field('authentication_method').choices]
-    
+        return [
+            value for value, _ in cls._meta.get_field("authentication_method").choices
+        ]
+
     def get_oauth_token(self, user):
         if self.authentication_method != "oauth":
-            raise ValueError("Authentication method must be 'oauth' to retrieve an OAuth token.")
+            raise ValueError(
+                "Authentication method must be 'oauth' to retrieve an OAuth token."
+            )
         if not self.oauth_provider:
-            raise ValueError("OAuth provider must be specified to retrieve an OAuth token.")
-        
+            raise ValueError(
+                "OAuth provider must be specified to retrieve an OAuth token."
+            )
+
         try:
             auth = user.social_auth.get(provider=self.oauth_provider)
         except ObjectDoesNotExist:
             raise ValueError(f"User not linked to {self.oauth_provider}.")
-        
-        access_token = auth.extra_data.get('access_token')
+
+        access_token = auth.extra_data.get("access_token")
         if not access_token:
             raise ValueError("No access token found for user.")
-        
-        return access_token
 
+        return access_token
 
     def get_resolved_params(self):
         if not self.params:
             return {}
-        
+
         safe_attribute_names = {
-            f.name: str(getattr(self, f.name, '') or '')
-            for f in self._meta.fields
+            f.name: str(getattr(self, f.name, "") or "") for f in self._meta.fields
         }
-        
+
         resolved_params = {}
         for key, value in self.params.items():
             if isinstance(value, str):

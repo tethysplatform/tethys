@@ -961,7 +961,9 @@ def test_parse_setup_py():
         import textwrap
 
         # Write a fake setup.py into the temp folder
-        setup_path.write_text(textwrap.dedent("""
+        setup_path.write_text(
+            textwrap.dedent(
+                """
                 app_package = 'test_app'
 
                 from setuptools import setup
@@ -973,7 +975,9 @@ def test_parse_setup_py():
                     keywords=['alpha', 'beta'],
                     license='MIT',
                 )
-                """))
+                """
+            )
+        )
 
         metadata = parse_setup_py(setup_path)
 
@@ -1010,7 +1014,9 @@ def test_parse_setup_py_invalid_package_name(mock_exit, mock_write_warning):
         import textwrap
 
         # Write a fake setup.py into the temp folder
-        setup_path.write_text(textwrap.dedent("""
+        setup_path.write_text(
+            textwrap.dedent(
+                """
                 app_package = fake_function()
 
                 from setuptools import setup
@@ -1022,7 +1028,9 @@ def test_parse_setup_py_invalid_package_name(mock_exit, mock_write_warning):
                     keywords=['alpha', 'beta'],
                     license='MIT',
                 )
-                """))
+                """
+            )
+        )
         with pytest.raises(SystemExit):
             parse_setup_py(setup_path)
 
@@ -1045,7 +1053,9 @@ def test_parse_setup_py_no_app_package(mock_exit, mock_write_warning):
         import textwrap
 
         # Write a fake setup.py into the temp folder
-        setup_path.write_text(textwrap.dedent("""
+        setup_path.write_text(
+            textwrap.dedent(
+                """
                 from setuptools import setup
 
                 setup(
@@ -1055,7 +1065,9 @@ def test_parse_setup_py_no_app_package(mock_exit, mock_write_warning):
                     keywords=['alpha', 'beta'],
                     license='MIT',
                 )
-                """))
+                """
+            )
+        )
         with pytest.raises(SystemExit):
             parse_setup_py(setup_path)
 
@@ -1076,7 +1088,9 @@ def test_parse_setup_py_invalid_setup_attr(mock_exit, mock_write_warning):
         import textwrap
 
         # Write a fake setup.py into the temp folder
-        setup_path.write_text(textwrap.dedent("""
+        setup_path.write_text(
+            textwrap.dedent(
+                """
                 from setuptools import setup
 
                 app_package = 'test_app'
@@ -1088,7 +1102,9 @@ def test_parse_setup_py_invalid_setup_attr(mock_exit, mock_write_warning):
                     keywords=['alpha', 'beta'],
                     license='MIT',
                 )
-                """))
+                """
+            )
+        )
         with pytest.raises(SystemExit):
             parse_setup_py(setup_path)
 

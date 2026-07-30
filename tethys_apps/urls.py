@@ -25,10 +25,10 @@ urlpatterns = [
         r"^send-beta-feedback/$", send_beta_feedback_email, name="send_beta_feedback"
     ),
     re_path(
-        r"^secure-map-proxy/(?P<setting_id>\d+)/$", 
-        secure_map_proxy, 
-        name="secure_map_proxy"
-    )
+        r"^secure-map-proxy/(?P<setting_id>\d+)/$",
+        secure_map_proxy,
+        name="secure_map_proxy",
+    ),
 ]
 
 url_namespaces = None

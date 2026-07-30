@@ -1472,7 +1472,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertTrue(mock_ta().save.call_count == 2)
 
         # Check if add_settings is called 6 times
-        self.assertTrue(mock_ta().sync_settings.call_count == 6)
+        self.assertTrue(mock_ta().sync_settings.call_count == 7)
         mock_sync_cookies.assert_called_once_with(
             mock_path().path.__truediv__(), "p", "n"
         )
@@ -1492,7 +1492,7 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertTrue(mock_app.save.call_count == 2)
 
         # Check if add_settings is called 6 times
-        self.assertTrue(mock_app.sync_settings.call_count == 6)
+        self.assertTrue(mock_app.sync_settings.call_count == 7)
 
     @mock.patch("django.conf.settings")
     @mock.patch("tethys_apps.models.TethysApp")

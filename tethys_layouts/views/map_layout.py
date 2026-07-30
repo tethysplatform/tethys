@@ -481,7 +481,7 @@ class MapLayout(TethysLayout, MapLayoutMixin):
             legend=False,
             show_clicks=self.show_map_clicks,
             draw=self.draw,
-            form_id=self.form_id
+            form_id=self.form_id,
         )
 
         # Configure initial basemap visibility
