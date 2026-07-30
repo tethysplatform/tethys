@@ -1,9 +1,11 @@
 from social_core.backends.oauth import BaseOAuth2
 
+
 class GRiDOAuth2(BaseOAuth2):
     """
     GRiD OAuth2 authentication backend.
     """
+
     auth_server_hostname = "grid.nga.mil"
     http_scheme = "https"
     name = "grid"
@@ -19,9 +21,8 @@ class GRiDOAuth2(BaseOAuth2):
 
     SCOPE_SEPARATOR = ","
 
-
     def user_data(self, access_token, *args, **kwargs):
-        return {"access_token": access_token} 
+        return {"access_token": access_token}
 
     def get_user_details(self, response):
         return {
