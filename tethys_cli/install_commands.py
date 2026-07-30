@@ -455,7 +455,11 @@ def run_interactive_services(app_name):
                 setattr(args, conf, False)
 
             setattr(args, get_setting_type(setting), True)
-            services = services_list_command(args)[0]
+            services = [
+                service
+                for service_group in services_list_command(args)
+                for service in service_group
+            ]
 
             if len(services) <= 0:
                 write_warning(
@@ -942,10 +946,16 @@ def install_command(args):
                 path_to_post = file_path.resolve().parent / post
                 # Attempting to run processes.
                 if path_to_post.name.endswith(".py"):
-                    path_to_post = f"{sys.executable} {path_to_post}"
-                process = Popen(str(path_to_post), shell=True, stdout=PIPE)
-                stdout = process.communicate()[0]
-                write_msg("Post Script Result: {}".format(stdout))
+                    command = f'"{sys.executable}" "{path_to_post}"'
+                else:
+                    command = f'"{path_to_post}"'
+                process = Popen(str(command), shell=True, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = process.communicate()
+                write_msg(
+                    "Post Script Result: {}\nPost Script Errors: {}".format(
+                        stdout, stderr
+                    )
+                )
     write_success(f"Successfully installed {app_name} into the active Tethys Portal.")
 
 

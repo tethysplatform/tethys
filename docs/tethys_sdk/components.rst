@@ -261,6 +261,7 @@ Here is a list of the built-in third-party libraries grouped by category and lis
 
 **Standard UI components:**
 
+    - ``lib.m``: `Mantine <https://mantine.dev/core/package/>`_
     - ``lib.bs``: `Bootstrap <https://react-bootstrap.netlify.app/>`_
     - ``lib.chakra``: `Chakra UI <https://chakra-ui.com/docs/components/concepts/overview>`_
     - ``lib.mui``: `Material UI <https://mui.com/components/>`_
@@ -274,6 +275,7 @@ Here is a list of the built-in third-party libraries grouped by category and lis
 
 **Data visualization components:**
 
+    - ``lib.pl``: `Plotly <https://plotly.com/javascript/reference/index/>`_
     - ``lib.rc``: `Recharts <https://recharts.org/en-US/api>`_
     - ``lib.ag``: `AG Grid <https://www.ag-grid.com/react-data-grid/getting-started/>`_
 

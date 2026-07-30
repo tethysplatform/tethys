@@ -883,21 +883,60 @@ class TestTethysAppAdmin(unittest.TestCase):
     @mock.patch("tethys_apps.admin.make_gop_app_access_form")
     @pytest.mark.django_db
     def test_register_custom_group(self, mock_gop_form):
+        from django.contrib import admin
+        from django.contrib.auth.models import Group
 
         register_custom_group()
 
-        mock_gop_form.assert_called()
+        # the form must not be created at registration time because that queries
+        # the database during app initialization (see issue #1060)
+        mock_gop_form.assert_not_called()
+        self.assertIn(Group, admin.site._registry)
+
+    @pytest.mark.django_db
+    def test_register_custom_group_no_queries(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        with CaptureQueriesContext(connection) as queries:
+            register_custom_group()
+
+        self.assertListEqual(queries.captured_queries, [])
+
+    @pytest.mark.django_db
+    def test_custom_group_get_form(self):
+        from django.contrib import admin
+        from django.contrib.auth.models import Group
+
+        register_custom_group()
+        group_admin = admin.site._registry[Group]
+
+        form = group_admin.get_form(mock.MagicMock())
+
+        self.assertIn("admin_test_app_permissions", form.base_fields)
+        self.assertIn("admin_test_app_groups", form.base_fields)
 
     @mock.patch("tethys_apps.admin.tethys_log.warning")
     @mock.patch("tethys_apps.admin.make_gop_app_access_form")
     @pytest.mark.django_db
-    def test_admin_programming_error(self, mock_gop_form, mock_logwarning):
+    def test_custom_group_get_form_programming_error(
+        self, mock_gop_form, mock_logwarning
+    ):
+        from django.contrib import admin
+        from django.contrib.auth.models import Group
+
         mock_gop_form.side_effect = ProgrammingError
 
         register_custom_group()
+        group_admin = admin.site._registry[Group]
+
+        # falls back to the default GroupAdmin form when the database is not
+        # yet migrated (e.g. before the first migrate on a fresh install)
+        form = group_admin.get_form(mock.MagicMock())
 
         mock_gop_form.assert_called()
-        mock_logwarning.assert_called_with("Unable to register CustomGroup.")
+        mock_logwarning.assert_called_with("Unable to create GOP app access form.")
+        self.assertIn("permissions", form.base_fields)
 
     @mock.patch("tethys_apps.admin.tethys_log.warning")
     @mock.patch("tethys_apps.admin.admin.site.register")

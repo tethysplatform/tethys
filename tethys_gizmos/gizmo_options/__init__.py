@@ -10,6 +10,7 @@
 
 # flake8: noqa
 from .date_picker import *
+from .time_picker import *
 from .button import *
 from .range_slider import *
 from .select_input import *

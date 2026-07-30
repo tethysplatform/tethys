@@ -8,6 +8,7 @@
 """
 
 import logging
+import warnings
 from django.apps import AppConfig
 from django.db.utils import ProgrammingError, OperationalError
 from tethys_quotas.utilities import sync_resource_quota_handlers
@@ -21,7 +22,15 @@ class TethysQuotasConfig(AppConfig):
 
     def ready(self):
         try:
-            sync_resource_quota_handlers()
+            with warnings.catch_warnings():
+                # syncing quota handlers with the database at startup is
+                # intentional, so suppress Django's database access warning
+                warnings.filterwarnings(
+                    "ignore",
+                    message="Accessing the database during app initialization",
+                    category=RuntimeWarning,
+                )
+                sync_resource_quota_handlers()
         except (ProgrammingError, OperationalError) as e:
             if isinstance(e, ProgrammingError):
                 log.warning(
