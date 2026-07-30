@@ -9,7 +9,6 @@ Add a Map Layout
 
 Optional prerequisite: :ref:`Scaffold App<scaffold_an_app_recipe>`
 
-
 The map layout is a fundamental feature of Tethys that can be added to your app with just a few lines of code.
 
 1. Swap default home controller with Map Layout

@@ -1,0 +1,88 @@
+/*****************************************************************************
+ * FILE:    time_picker.css
+ * DATE:    July 2026
+ * AUTHOR:  Tethys Platform
+ * LICENSE: BSD 2-Clause
+ * DESCRIPTION:
+ *   Overrides for the bootstrap-timepicker (0.5.2) dropdown/modal widget.
+ *   The vendor CSS was written for Bootstrap 2/3; under Bootstrap 5 the
+ *   fields render too narrow, the cells have little padding, and the
+ *   increment/decrement arrows rely on the glyphicon font (absent in
+ *   Bootstrap 5), leaving them blank. These rules widen the entries, add
+ *   breathing room, and draw the arrows with plain CSS so the widget is
+ *   readable.
+ *****************************************************************************/
+
+.bootstrap-timepicker-widget.dropdown-menu {
+    padding: 8px;
+}
+
+/* Give the whole widget room to breathe. */
+.bootstrap-timepicker-widget table {
+    width: auto;
+    margin: 0 auto;
+}
+
+.bootstrap-timepicker-widget table td {
+    padding: 4px 6px;
+    height: auto;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Widen the hour/minute/second/meridian fields so the text is legible. */
+.bootstrap-timepicker-widget table td input {
+    width: 3.25em;
+    padding: 4px 6px;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+/* The up/down controls. */
+.bootstrap-timepicker-widget table td a {
+    display: inline-block;
+    width: 100%;
+    padding: 6px 0;
+    margin: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: inherit;
+    outline: 0;
+    text-decoration: none;
+}
+
+.bootstrap-timepicker-widget table td a:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* The vendor markup uses glyphicon chevrons which do not render under
+ * Bootstrap 5. Hide the empty <i> and draw a caret with CSS borders so the
+ * arrows are always visible regardless of the icon font in use. */
+.bootstrap-timepicker-widget table td a i {
+    display: none;
+}
+
+.bootstrap-timepicker-widget table td a::before {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+.bootstrap-timepicker-widget table td a[data-action^="increment"]::before {
+    border-bottom: 6px solid currentColor;
+}
+
+.bootstrap-timepicker-widget table td a[data-action^="decrement"]::before {
+    border-top: 6px solid currentColor;
+}
+
+/* Keep the ":" separators snug between the fields. */
+.bootstrap-timepicker-widget table td.separator {
+    padding: 4px 2px;
+    font-weight: 600;
+}

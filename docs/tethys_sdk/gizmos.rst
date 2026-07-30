@@ -188,6 +188,7 @@ This section provides explanations of each of the Gizmo Options Objects availabl
 
    gizmos/button
    gizmos/date_picker
+   gizmos/time_picker
    gizmos/range_slider
    gizmos/select_input
    gizmos/text_input
