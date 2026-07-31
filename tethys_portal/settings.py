@@ -36,7 +36,7 @@ from django.contrib.messages import constants as message_constants
 
 from tethys_apps.utilities import relative_to_tethys_home
 from tethys_utils import deprecation_warning
-from tethys_cli.gen_commands import generate_secret_key
+from tethys_cli.gen_commands import generate_secret_key, generate_salt_key
 from tethys_portal.optional_dependencies import optional_import, has_module
 
 # optional imports
@@ -66,6 +66,9 @@ except Exception:
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
+
+# SECURITY WARNING: keep the salt key used in production secret!
+SALT_KEY = portal_config_settings.pop("SALT_KEY", generate_salt_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = portal_config_settings.pop("DEBUG", True)
@@ -710,5 +713,3 @@ USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", Tr
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
 
-# Encryption keys
-FERNET_KEYS = [os.environ.get("FERNET_KEY", None)]

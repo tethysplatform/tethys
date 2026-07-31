@@ -1247,6 +1247,17 @@ class SecureMapServiceSetting(TethysAppSetting):
         param_overrides=None,
         request_user=None,
     ):
+        secure_map_service = None
+        if self.secure_map_service:
+            secure_map_service = self.secure_map_service
+
+        if secure_map_service is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f"has not been assigned."
+                )
+
         if as_endpoint:
             return self.generate_request(param_overrides=param_overrides)
         elif as_layer:
@@ -1257,8 +1268,8 @@ class SecureMapServiceSetting(TethysAppSetting):
             return self.fetch_response(
                 param_overrides=param_overrides, request_user=request_user
             )
-        else:
-            return self.secure_map_service
+        
+        return secure_map_service
 
     def update_params(self, new_params):
         if not self.secure_map_service:

@@ -165,13 +165,9 @@ def secure_map_proxy(request, setting_id):
     except SecureMapService.DoesNotExist:
         return HttpResponse("Service setting not found.", status=404)
 
-    resolved_service_params = service.get_resolved_params()
-
-    if service.service_type == "ImageWMS":
-        browser_params = {key: value for key, value in request.GET.items()}
-        params = {**resolved_service_params, **browser_params}
-    else:
-        params = resolved_service_params
+    browser_params = {key: value for key, value in request.GET.items()}
+    service_params = service.get_resolved_params()
+    params = {**service_params, **browser_params}
 
     headers = {}
     if service.authentication_method == "oauth":
