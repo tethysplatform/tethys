@@ -256,8 +256,10 @@ def generate_secret_key():
         [random.choice(string.ascii_letters + string.digits) for _ in range(50)]
     )
 
+
 def generate_salt_key():
     return secrets.token_hex(32)
+
 
 def empty_context(args):
     context = {}
@@ -342,10 +344,12 @@ def gen_portal_yaml(args):
     tethys_portal_settings.setdefault("name", "")
     tethys_portal_settings.setdefault("apps", {})
     tethys_portal_settings.setdefault(
-        "settings", {
+        "settings",
+        {
             "SECRET_KEY": generate_secret_key(),
             "SALT_KEY": generate_salt_key(),
-        })
+        },
+    )
     tethys_portal_settings.setdefault(
         "site_settings", {category: {} for category in SITE_SETTING_CATEGORIES}
     )

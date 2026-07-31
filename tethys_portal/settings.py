@@ -712,4 +712,3 @@ USE_OLD_WORKSPACES_API = portal_config_settings.pop("USE_OLD_WORKSPACES_API", Tr
 # Add any additional specified settings to module
 for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)
-

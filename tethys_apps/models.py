@@ -1268,7 +1268,7 @@ class SecureMapServiceSetting(TethysAppSetting):
             return self.fetch_response(
                 param_overrides=param_overrides, request_user=request_user
             )
-        
+
         return secure_map_service
 
     def update_params(self, new_params):
