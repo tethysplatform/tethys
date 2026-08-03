@@ -19,6 +19,8 @@ from django.template.loader import get_template
 from django.template import TemplateSyntaxError
 from django.templatetags.static import static
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.encoding import force_str
+from django.utils.functional import Promise
 
 from tethys_apps.harvester import SingletonHarvester
 
@@ -147,9 +149,12 @@ def return_item(container, i):
         return None
 
 
-def json_date_handler(obj):
+def json_data_handler(obj):
     if isinstance(obj, datetime):
         return time.mktime(obj.timetuple()) * 1000
+    elif isinstance(obj, Promise):
+        # Resolve lazy objects like lazy urls
+        return force_str(obj)
     else:
         return obj
 
@@ -159,7 +164,7 @@ def jsonify(data):
     """
     Convert python data structures into a JSON string
     """
-    return json.dumps(data, default=json_date_handler)
+    return json.dumps(data, default=json_data_handler)
 
 
 @register.filter

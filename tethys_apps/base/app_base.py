@@ -14,7 +14,7 @@ from django.conf import settings
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.urls import re_path
-from django.utils.functional import classproperty
+from django.utils.functional import classproperty, lazy
 from django.shortcuts import render, redirect, reverse
 from django.template.loader import render_to_string
 
@@ -1907,11 +1907,64 @@ class TethysAppBase(TethysBase):
 
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
-
+            as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
+            as_layer(bool): Returns GeoServerLayer object if True, Defaults to False.
+            as_response(bool): Returns requests.Response object if True, Defaults to False.
+            param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
+            request_user(User): Django User object to use for the request. Defaults to None.
+            
         Returns:
             SecureMapService: SecureMapService assigned to setting.
-        """
 
+        **NOTE:** When ``as_endpoint`` is True a lazy string is returned. This ensures the 
+        endpoint reflects the current state of the map service's settings every time it is used.
+        
+        """
+        if as_endpoint:
+            return lazy(cls._resolve_secure_map_service, str)(
+                name,
+                as_endpoint=True,
+                param_overrides=param_overrides,
+            )
+
+        return cls._resolve_secure_map_service(
+            name,
+            as_layer=as_layer,
+            as_response=as_response,
+            param_overrides=param_overrides,
+            request_user=request_user,
+        )
+
+    @classmethod
+    def _resolve_secure_map_service(
+        cls,
+        name,
+        as_endpoint=False,
+        as_layer=False,
+        as_response=False,
+        param_overrides=None,
+        request_user=None,
+    ):
+        """
+        Resolve the named SecureMapServiceSetting.
+
+        This function is kept seperate from ``get_secure_map_service`` to allow for lazy evaluation of the endpoint url.
+        
+        Args:
+            name(str): name of the SecureMapServiceSetting as defined in the app.py.
+            as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
+            as_layer(bool): Returns GeoServerLayer object if True, Defaults to False.
+            as_response(bool): Returns requests.Response object if True, Defaults to False.
+            param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
+            request_user(User): Django User object to use for the request. Defaults to None.
+        
+        Returns:
+            SecureMapService: when no 'as' option is specified
+            str: lazy endpoint url when ``as_endpoint`` is True
+            MVLayer: map layer when ``as_layer`` is True
+            requests.Response: response object when ``as_response`` is True
+        
+        """
         from tethys_apps.models import TethysApp
 
         db_app = TethysApp.objects.get(package=cls.package)
@@ -1919,17 +1972,19 @@ class TethysAppBase(TethysBase):
 
         try:
             secure_map_service_setting = secure_map_service_settings.get(name=name)
-            return secure_map_service_setting.get_value(
-                as_endpoint=as_endpoint,
-                as_layer=as_layer,
-                as_response=as_response,
-                param_overrides=param_overrides,
-                request_user=request_user,
-            )
+            
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist(
                 "SecureMapServiceSetting", name, cls.name
             )
+
+        return secure_map_service_setting.get_value(
+            as_endpoint=as_endpoint,
+            as_layer=as_layer,
+            as_response=as_response,
+            param_overrides=param_overrides,
+            request_user=request_user,
+        )   
 
     @classmethod
     def update_secure_map_service_setting_params(cls, name, params):

@@ -134,15 +134,15 @@ class TestTethysGizmos(unittest.TestCase):
         # Check Result
         self.assertFalse(result)
 
-    def test_json_date_handler(self):
-        result = gizmos_templatetags.json_date_handler(datetime(2018, 1, 1))
+    def test_json_data_handler(self):
+        result = gizmos_templatetags.json_data_handler(datetime(2018, 1, 1))
 
         # Timestamp should be 1514764800
         expected = 1514790000000.0 if sys.platform == "win32" else 1514764800000.0
         self.assertEqual(expected, result)
 
-    def test_json_date_handler_no_datetime(self):
-        result = gizmos_templatetags.json_date_handler("2018")
+    def test_json_data_handler_no_datetime(self):
+        result = gizmos_templatetags.json_data_handler("2018")
 
         # Check Result
         self.assertEqual("2018", result)

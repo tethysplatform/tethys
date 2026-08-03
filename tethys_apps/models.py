@@ -20,7 +20,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.shortcuts import reverse
+from django.urls import reverse_lazy
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
@@ -1158,7 +1158,7 @@ class SecureMapServiceSetting(TethysAppSetting):
         if not self.secure_map_service and self.required:
             raise ValidationError("Required.")
 
-    def generate_request(self, param_overrides=None):
+    def _generate_request(self, param_overrides=None):
         """
         Generate a request to the secure map service, including any necessary authentication headers or parameters.
         """
@@ -1168,17 +1168,22 @@ class SecureMapServiceSetting(TethysAppSetting):
                 f'"{self.name}" for app "{self.tethys_app.package}": '
                 f"no SecureMapService assigned."
             )
+        
         service = self.secure_map_service
+        if service.use_proxy:
+            # Use lazy URL resolution so the proxy endpoint is resolved at 
+            # runtime. This allows the url to be referenced before apps are 
+            # fully loaded and the urls are registered. This helps in cases 
+            # like using a map service for a MapLayout basemap
+            endpoint = reverse_lazy(
+                "secure_map_proxy", kwargs={"setting_id": service.pk}
+            )
+            return endpoint
         endpoint = service.endpoint
-        params = service.params or {}
+        params = service.get_resolved_params()
         if param_overrides:
             params.update(param_overrides)
 
-        if service.use_proxy:
-            endpoint = reverse("secure_map_proxy", kwargs={"setting_id": service.pk})
-            return endpoint
-
-        params = service.get_resolved_params()
         # If the API key is not already included in the params, add it
         # This allows for the API key to be included in the params with a placeholder (e.g. ${api_key})
         # or to be assigned to a different parameter name if the service expects it that way
@@ -1192,8 +1197,8 @@ class SecureMapServiceSetting(TethysAppSetting):
         url = f"{endpoint}?{query_string}" if query_string else endpoint
         return url
 
-    def build_layer(self, param_overrides=None, request_user=None):
-        endpoint = self.generate_request(param_overrides=param_overrides)
+    def _build_layer(self, param_overrides=None, request_user=None):
+        endpoint = self._generate_request(param_overrides=param_overrides)
         service = self.secure_map_service
         options = {"url": endpoint}
         if not service.use_proxy and service.authentication_method == "oauth":
@@ -1206,7 +1211,7 @@ class SecureMapServiceSetting(TethysAppSetting):
             data={"show_legend": True, "layer_id": service.pk},
         )
 
-    def fetch_response(self, param_overrides=None, request_user=None):
+    def _fetch_response(self, param_overrides=None, request_user=None):
         if not self.secure_map_service:
             raise TethysAppSettingNotAssigned(
                 f"Cannot fetch response for SecureMapServiceSetting "
@@ -1259,13 +1264,13 @@ class SecureMapServiceSetting(TethysAppSetting):
                 )
 
         if as_endpoint:
-            return self.generate_request(param_overrides=param_overrides)
+            return self._generate_request(param_overrides=param_overrides)
         elif as_layer:
-            return self.build_layer(
+            return self._build_layer(
                 param_overrides=param_overrides, request_user=request_user
             )
         elif as_response:
-            return self.fetch_response(
+            return self._fetch_response(
                 param_overrides=param_overrides, request_user=request_user
             )
 
