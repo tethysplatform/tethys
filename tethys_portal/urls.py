@@ -243,6 +243,11 @@ urlpatterns = [
         name="update_dask_job_status",
     ),
     re_path(r"^api/", include((api_urls, "api"), namespace="api")),
+    re_path(
+        r"^secure-map-proxy/(?P<setting_id>\d+)/$",
+        tethys_apps_views.secure_map_proxy,
+        name="secure_map_proxy",
+    ),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 
