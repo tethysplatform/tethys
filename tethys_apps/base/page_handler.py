@@ -77,20 +77,14 @@ if has_module("reactpy"):
         page_obj = lib.html.div(
             lib.html.script(key=str(uuid4()), type="importmap")(lib.get_importmap()),
             page_obj,
-            (
-                lib.html.script(
-                    """
+            (lib.html.script("""
                     setTimeout(() => {
                         const loadingRoot = document.getElementById("loading-root");
                         if (loadingRoot) {
                             loadingRoot.style.display = "none";
                         }
                     }, 1000);
-                """
-                )
-                if hide_loading
-                else None
-            ),
+                """) if hide_loading else None),
         )
 
         return page_obj

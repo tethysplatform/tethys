@@ -69,9 +69,7 @@ class PostgresDatabaseHandler(PersistentStoreDatabaseHandler):
                                                 FROM pg_stat_activity
                                                 WHERE pg_stat_activity.datname = '{0}'
                                                 AND pg_stat_activity.pid <> pg_backend_pid();
-                                                """.format(
-                    namespaced_ps_name
-                )
+                                                """.format(namespaced_ps_name)
                 if drop_connection:
                     drop_connection.execute(disconnect_sessions_statement)
 

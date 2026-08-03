@@ -21,7 +21,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 # Build paths inside the project like this: BASE_DIR / '...'
-import os
 import sys
 import yaml
 import logging
