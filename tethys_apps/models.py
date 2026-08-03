@@ -1168,12 +1168,12 @@ class SecureMapServiceSetting(TethysAppSetting):
                 f'"{self.name}" for app "{self.tethys_app.package}": '
                 f"no SecureMapService assigned."
             )
-        
+
         service = self.secure_map_service
         if service.use_proxy:
-            # Use lazy URL resolution so the proxy endpoint is resolved at 
-            # runtime. This allows the url to be referenced before apps are 
-            # fully loaded and the urls are registered. This helps in cases 
+            # Use lazy URL resolution so the proxy endpoint is resolved at
+            # runtime. This allows the url to be referenced before apps are
+            # fully loaded and the urls are registered. This helps in cases
             # like using a map service for a MapLayout basemap
             endpoint = reverse_lazy(
                 "secure_map_proxy", kwargs={"setting_id": service.pk}
