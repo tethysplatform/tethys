@@ -1995,7 +1995,6 @@ class TethysAppBase(TethysBase):
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
             params(dict): dictionary of params to update for the setting.
         """
-
         from tethys_apps.models import TethysApp
 
         db_app = TethysApp.objects.get(package=cls.package)
@@ -2003,11 +2002,13 @@ class TethysAppBase(TethysBase):
 
         try:
             secure_map_service_setting = secure_map_service_settings.get(name=name)
-            secure_map_service_setting.update_params(params)
+
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist(
                 "SecureMapServiceSetting", name, cls.name
             )
+
+        secure_map_service_setting.update_params(params)
 
     def sync_all_settings(self, db_app):
         # custom settings

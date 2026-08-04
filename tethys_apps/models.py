@@ -1198,10 +1198,22 @@ class SecureMapServiceSetting(TethysAppSetting):
         return url
 
     def _build_layer(self, param_overrides=None, request_user=None):
+        if not self.secure_map_service:
+            raise TethysAppSettingNotAssigned(
+                f"Cannot build layer for SecureMapServiceSetting "
+                f'"{self.name}" for app "{self.tethys_app.package}": '
+                f"no SecureMapService assigned."
+            )
+        
         endpoint = self._generate_request(param_overrides=param_overrides)
         service = self.secure_map_service
         options = {"url": endpoint}
         if not service.use_proxy and service.authentication_method == "oauth":
+            if not request_user:
+                raise ValueError(
+                    "Request user must be provided to build layer for OAuth authenticated service."
+                )
+            
             options["token"] = service.get_oauth_token(request_user)
         return MVLayer(
             source=service.service_type,
