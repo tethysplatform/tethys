@@ -7,12 +7,16 @@
 ********************************************************************************
 """
 
+import datetime
 import shutil
 import logging
 from pathlib import Path
 
+from condorpy.static import CONDOR_JOB_STATUSES
+from django.db import models
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
+from django.utils import timezone
 
 from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
@@ -25,6 +29,8 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     """
     CondorPy Workflow job type
     """
+
+    node_statuses_updated = models.DateTimeField(blank=True, null=True)
 
     @property
     def _condor_object(self):
@@ -39,6 +45,112 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
         self.load_nodes()
         super()._execute(options=options)
+
+    @property
+    def node_statuses_max_age(self):
+        """
+        Returns: a ``datetime.timedelta`` of how stale persisted node statuses may
+            be and still be served instead of reading each node's live status.
+        """
+        if not hasattr(self, "_node_statuses_max_age"):
+            self._node_statuses_max_age = datetime.timedelta(seconds=60)
+        return self._node_statuses_max_age
+
+    @property
+    def node_statuses_are_current(self):
+        """Whether the persisted node statuses are recent enough to serve.
+
+        Views use this to decide whether to render the DAG from
+        ``CondorWorkflowNode.cached_node_status`` or to read each node's live status.
+        It is time-based rather than a setting so that a deployment with no
+        background updater, or one whose updater has stopped, falls back to reading
+        live statuses instead of serving values that never advance again.
+
+        The budget is deliberately not ``update_status_interval``. That is the
+        minimum time between polls of a single job, whereas this is how stale a
+        rendered status may be. A background updater refreshing many jobs takes
+        longer per pass than the interval for one job, so tying the two together
+        would leave the statuses never current precisely when there is enough load
+        for it to matter.
+        """
+        if self.node_statuses_updated is None:
+            return False
+        return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
+
+    @property
+    def cached_statuses(self):
+        """Node status counts built from the database instead of the scheduler.
+
+        Mirrors the shape of :attr:`CondorBase.statuses` -- every condor status name
+        mapped to the number of nodes currently in it -- but sources the values from
+        ``CondorWorkflowNode.cached_node_status``, so no remote call is made. Nodes
+        with no persisted status have not been expanded by DAGMan yet and are counted
+        as ``Unexpanded``, matching what condorpy reports for an unsubmitted node.
+        """
+        statuses = {name: 0 for name in CONDOR_JOB_STATUSES.values()}
+
+        for node in self.node_set.all():
+            status = node.cached_node_status or "Unexpanded"
+            statuses[status] = statuses.get(status, 0) + 1
+
+        return statuses
+
+    def update_node_statuses(self):
+        """Refresh and persist the status of every node with one remote query.
+
+        Views can then render the DAG from ``CondorWorkflowNode.cached_node_status``
+        instead of issuing a remote query per node on every poll. Intended to be
+        called by a background updater alongside ``update_status``.
+
+        Returns:
+            dict: node name -> condor status name, for nodes with a known status.
+        """
+        updated = {}
+        if not self.execute_time:
+            return updated
+
+        condor_object = self.condor_object
+        try:
+            by_cluster_id = condor_object.node_statuses_by_cluster_id()
+            condor_object.update_node_ids()
+            status_by_name = {}
+            for cpy_node in condor_object.node_set:
+                status = by_cluster_id.get(cpy_node.job.cluster_id)
+                if status:
+                    status_by_name[cpy_node.job.name] = status
+        except Exception:
+            log.warning(
+                f"Unable to batch-update node statuses for job {self.id}", exc_info=True
+            )
+            return updated
+
+        return self.apply_node_statuses(status_by_name)
+
+    def apply_node_statuses(self, status_by_name):
+        """Persist node statuses that were determined elsewhere.
+
+        Args:
+            status_by_name(dict): condorpy job name -> condor status name. That is
+                the node name with spaces replaced by underscores, as built by
+                CondorPyJob.condorpy_job.
+
+        Returns:
+            dict: node name -> condor status name, for the nodes that matched.
+        """
+        updated = {}
+
+        for node in self.node_set.select_subclasses():
+            status = status_by_name.get(node.job.name)
+            if not status:
+                continue
+            if status != node.cached_node_status:
+                node.cached_node_status = status
+                node.save(update_fields=["cached_node_status"])
+            updated[node.name] = status
+
+        self.node_statuses_updated = timezone.now()
+        self.save(update_fields=["node_statuses_updated"])
+        return updated
 
     def _update_status(self, *args, **kwargs):
         if not self.execute_time:

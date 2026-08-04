@@ -62,7 +62,22 @@ def get_dask_scheduler(scheduler_id):
 
 @database_sync_to_async
 def get_condor_job_nodes(job):
+    """Build the DAG for a CondorWorkflow.
+
+    When serving persisted status, node statuses come from
+    ``CondorWorkflowNode.cached_node_status``; a node with no persisted status has
+    not been expanded by DAGMan yet and is reported as ``Unexpanded``. Reading the
+    live status instead costs one remote query per node on every poll.
+    """
     dag = {}
+    cached_statuses = {}
+    if job.node_statuses_are_current:
+        cached_statuses = {
+            n.job.name: n.cached_node_status
+            for n in job.node_set.select_subclasses()
+            if n.cached_node_status
+        }
+
     nodes = job.condor_object.node_set
 
     for node in nodes:
@@ -72,10 +87,14 @@ def get_condor_job_nodes(job):
 
         job_name = node.job.name
         display_job_name = job_name.replace("_", " ").replace("-", " ").title()
+        if cached_statuses:
+            status = cached_statuses.get(job_name, "Unexpanded")
+        else:
+            status = node.job.status
         dag[node.job.name] = {
             "cluster_id": node.job.cluster_id,
             "display": display_job_name,
-            "status": CondorWorkflow.STATUS_MAP[node.job.status].lower(),
+            "status": CondorWorkflow.STATUS_MAP[status].lower(),
             "parents": parents,
         }
 
@@ -86,7 +105,10 @@ def get_condor_job_nodes(job):
 def get_job_statuses(job):
     num_statuses = 0
     statuses = {"Completed": 0, "Error": 0, "Running": 0, "Aborted": 0}
-    for key, value in job.statuses.items():
+    node_statuses = (
+        job.cached_statuses if job.node_statuses_are_current else job.statuses
+    )
+    for key, value in node_statuses.items():
         if key in statuses:
             num_statuses += value
             statuses[key] = float(value) / float(job.num_jobs) * 100.0

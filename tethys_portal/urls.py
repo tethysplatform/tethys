@@ -238,6 +238,16 @@ urlpatterns = [
         name="update_job_status",
     ),
     re_path(
+        r"^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$",
+        tethys_apps_views.handoff,
+        name="handoff",
+    ),
+    re_path(
+        r"^report-job-status/(?P<job_id>[\w-]+)/$",
+        tethys_compute_views.report_job_status,
+        name="report_job_status",
+    ),
+    re_path(
         r"^update-dask-job-status/(?P<key>[\w-]+)/$",
         tethys_compute_views.update_dask_job_status,
         name="update_dask_job_status",

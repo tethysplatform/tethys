@@ -103,6 +103,126 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         mock_json_response.assert_called_once_with({"success": False})
         mock_log.warning.assert_called_once()
 
+    # ---- report_job_status -------------------------------------------------
+
+    @staticmethod
+    def _report_request(**params):
+        request = mock.MagicMock()
+        request.GET = params
+        return request
+
+    def _token_for(self, job_id):
+        from tethys_compute.models import TethysJob
+
+        job = TethysJob(name="n", label="l")
+        job.id = job_id
+        return job.status_report_token
+
+    async def test_report_job_status_rejects_missing_token(self):
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(status="Complete"), "42"
+        )
+
+        self.assertEqual(403, response.status_code)
+
+    async def test_report_job_status_rejects_forged_token(self):
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(token="not-a-real-token", status="Complete"), "42"
+        )
+
+        self.assertEqual(403, response.status_code)
+
+    async def test_report_job_status_rejects_token_for_another_job(self):
+        """A token authorises one job, so it must not work for a different one."""
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("41"), status="Complete"), "42"
+        )
+
+        self.assertEqual(403, response.status_code)
+
+    async def test_report_job_status_rejects_invalid_status(self):
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("42"), status="Banana"), "42"
+        )
+
+        self.assertEqual(400, response.status_code)
+
+    @mock.patch("tethys_compute.views.update_status.get_job")
+    async def test_report_job_status_applies_the_status(self, mock_get_job):
+        job = mock.MagicMock(spec=["update_status"])
+        mock_get_job.return_value = job
+
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("42"), status="Complete"), "42"
+        )
+
+        job.update_status.assert_called_once_with(status="Complete")
+        self.assertEqual(200, response.status_code)
+
+    @mock.patch("tethys_compute.views.update_status.get_job")
+    async def test_report_job_status_applies_node_statuses(self, mock_get_job):
+        job = mock.MagicMock()
+        job.apply_node_statuses.return_value = {"a": "Running", "b": "Completed"}
+        mock_get_job.return_value = job
+
+        await tethys_compute_update_status.report_job_status(
+            self._report_request(
+                token=self._token_for("42"),
+                status="Running",
+                node_statuses='{"a": "Running", "b": "Completed"}',
+            ),
+            "42",
+        )
+
+        job.apply_node_statuses.assert_called_once_with(
+            {"a": "Running", "b": "Completed"}
+        )
+
+    @mock.patch("tethys_compute.views.update_status.get_job")
+    async def test_report_job_status_keeps_status_when_post_processing_fails(
+        self, mock_get_job
+    ):
+        """A failure syncing results must not leave the job looking like it runs."""
+        job = mock.MagicMock(spec=["update_status"])
+        job.update_status.side_effect = Exception("SCP failed")
+        mock_get_job.return_value = job
+
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("42"), status="Complete"), "42"
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertIn(b'"post_processing": false', response.content)
+
+    @mock.patch("tethys_compute.views.update_status.get_job")
+    async def test_report_job_status_unknown_job(self, mock_get_job):
+        mock_get_job.side_effect = Exception("does not exist")
+
+        response = await tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("42"), status="Complete"), "42"
+        )
+
+        self.assertEqual(404, response.status_code)
+
+    def test_status_report_token_round_trips(self):
+        from tethys_compute.models import TethysJob
+
+        job = TethysJob(name="n", label="l")
+        job.id = "7"
+
+        self.assertEqual(
+            "7", TethysJob.id_from_status_report_token(job.status_report_token)
+        )
+
+    def test_status_report_token_rejects_tampering(self):
+        from tethys_compute.models import TethysJob
+
+        job = TethysJob(name="n", label="l")
+        job.id = "7"
+        tampered = job.status_report_token[:-2] + "xy"
+
+        self.assertIsNone(TethysJob.id_from_status_report_token(tampered))
+
     @mock.patch("tethys_compute.views.update_status.JsonResponse")
     @mock.patch("tethys_compute.views.update_status.DaskJob")
     def test_update_dask_job_status(self, mock_daskjob, mock_json_response):

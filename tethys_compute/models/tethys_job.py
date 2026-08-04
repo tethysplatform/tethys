@@ -13,6 +13,7 @@ import inspect
 from abc import abstractmethod
 
 from django.contrib.auth.models import User, Group
+from django.core import signing
 from django.db import models
 from django.utils import timezone
 from model_utils.managers import InheritanceManager
@@ -63,6 +64,7 @@ class TethysJob(models.Model):
     TERMINAL_STATUS_CODES = VALID_STATUSES[5:-1]
 
     OTHER_STATUS_KEY = "__other_status__"
+    STATUS_REPORT_SALT = "tethys_compute.status_report"
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default="")
@@ -80,6 +82,7 @@ class TethysJob(models.Model):
     status_message = models.CharField(max_length=2048, blank=True, null=True)
     _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
+    _last_status_update = models.DateTimeField(blank=True, null=True)
 
     def __lt__(self, other):
         return self.id < other.id
@@ -167,11 +170,32 @@ class TethysJob(models.Model):
 
     @property
     def last_status_update(self):
-        if not getattr(self, "_last_status_update", None):
-            self._last_status_update = (
-                self.execute_time or timezone.now() - self.update_status_interval
-            )
-        return self._last_status_update
+        """
+        Returns: when the status was last refreshed from the job's source, falling
+            back to a time far enough in the past that an update is due.
+        """
+        return self._last_status_update or (
+            self.execute_time or timezone.now() - self.update_status_interval
+        )
+
+    @property
+    def status_report_token(self):
+        """A token authorising status reports for this job and no other.
+
+        Signed with the portal's SECRET_KEY, so nothing has to be configured and
+        no secret has to be distributed. Hand it to whatever will report on the
+        job's behalf -- for condor jobs, by carrying it in the job ad -- and it can
+        only ever be used to report this job's status.
+        """
+        return signing.dumps(str(self.id), salt=self.STATUS_REPORT_SALT)
+
+    @classmethod
+    def id_from_status_report_token(cls, token):
+        """The job id a report token authorises, or None if it does not verify."""
+        try:
+            return signing.loads(token, salt=cls.STATUS_REPORT_SALT)
+        except signing.BadSignature:
+            return None
 
     @property
     def cached_status(self):
