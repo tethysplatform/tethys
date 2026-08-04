@@ -20,7 +20,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.params_without_api_key = {"param1": "value1"}
 
         self.map_service_with_api_key_no_proxy = SecureMapService(
-            name="map_service_with_api_key_no_proxy",
+            name="api_key_no_proxy",
             legend_title="Map Service with API Token No Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="api_key",
@@ -32,8 +32,8 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.map_service_with_api_key_no_proxy.save()
 
         self.map_service_without_api_key_param_no_proxy = SecureMapService(
-            name="map_service_without_api_key_no_proxy",
-            legend_title="Map Service without API Token No Proxy",
+            name="no_api_key_params_no_proxy",
+            legend_title="Map Service without API Token Param No Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="api_key",
             api_key="test_api_key",
@@ -44,7 +44,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.map_service_without_api_key_param_no_proxy.save()
 
         self.map_service_with_api_key_with_proxy = SecureMapService(
-            name="map_service_with_api_key_with_proxy",
+            name="api_key_with_proxy",
             legend_title="Map Service with API Token With Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="api_key",
@@ -56,7 +56,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.map_service_with_api_key_with_proxy.save()
 
         self.map_service_with_oauth_no_proxy = SecureMapService(
-            name="map_service_with_oauth_no_proxy",
+            name="oauth_no_proxy",
             legend_title="Map Service with OAuth No Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="oauth",
@@ -68,7 +68,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
         self.map_service_with_oauth_no_proxy.save()
 
         self.map_service_with_oauth_with_proxy = SecureMapService(
-            name="map_service_with_oauth_with_proxy",
+            name="oauth_with_proxy",
             legend_title="Map Service with OAuth With Proxy",
             endpoint="https://example.com/map_service",
             authentication_method="oauth",
