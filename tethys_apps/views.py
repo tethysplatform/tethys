@@ -29,9 +29,14 @@ logger = logging.getLogger("tethys." + __name__)
 PROXY_FORWARDED_REQUEST_HEADERS = ("If-None-Match", "If-Modified-Since")
 
 # Forwarded so the browser can cache proxied responses instead of making a new request
-# on every pan and zoom. 
+# on every pan and zoom.
 PROXY_FORWARDED_RESPONSE_HEADERS = (
-    "Cache-Control", "ETag", "Expires", "Last-Modified", "Vary", "Age",
+    "Cache-Control",
+    "ETag",
+    "Expires",
+    "Last-Modified",
+    "Vary",
+    "Age",
 )
 
 

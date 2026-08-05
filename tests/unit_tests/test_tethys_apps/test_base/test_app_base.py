@@ -1432,7 +1432,7 @@ class TestTethysAppBase(unittest.TestCase):
             as_layer=False,
             as_response=False,
             param_overrides=None,
-            request_user=None
+            request_user=None,
         )
         self.assertEqual(mock_rms(), result)
 
@@ -1452,7 +1452,9 @@ class TestTethysAppBase(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.TethysApp")
     def test__resolve_secure_map_service(self, mock_ta):
-        mock_get_value = mock_ta.objects.get().secure_map_service_settings.get().get_value
+        mock_get_value = (
+            mock_ta.objects.get().secure_map_service_settings.get().get_value
+        )
         mock_get_value.return_value = "test_secure_map_service"
 
         result = TethysAppChild._resolve_secure_map_service(name=self.fake_name)
@@ -1476,9 +1478,13 @@ class TestTethysAppBase(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.SecureMapServiceSetting.update_params")
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_update_secure_map_service_setting_params(self, mock_ta, mock_update_params):
-        mock_setting = mock_ta.objects.get().secure_map_service_settings.get.return_value
-        
+    def test_update_secure_map_service_setting_params(
+        self, mock_ta, mock_update_params
+    ):
+        mock_setting = (
+            mock_ta.objects.get().secure_map_service_settings.get.return_value
+        )
+
         fake_params = {"param1": "value1"}
         TethysAppChild.update_secure_map_service_setting_params(
             name=self.fake_name, params=fake_params
@@ -1490,11 +1496,12 @@ class TestTethysAppBase(unittest.TestCase):
         mock_setting.update_params.assert_called_with(fake_params)
 
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_update_secure_map_service_setting_params_object_does_not_exist(self, mock_ta):
+    def test_update_secure_map_service_setting_params_object_does_not_exist(
+        self, mock_ta
+    ):
         mock_get = mock_ta.objects.get().secure_map_service_settings.get
         mock_get.side_effect = ObjectDoesNotExist
 
-    
         self.assertRaises(
             TethysAppSettingDoesNotExist,
             TethysAppChild.update_secure_map_service_setting_params,

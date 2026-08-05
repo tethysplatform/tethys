@@ -367,7 +367,7 @@ class TethysAppTests(TethysTestCase):
         )
         secure_map_setting.secure_map_service = self.ms
         secure_map_setting.save()
-        
+
         ret = self.test_app.configured
 
         self.assertTrue(ret)
