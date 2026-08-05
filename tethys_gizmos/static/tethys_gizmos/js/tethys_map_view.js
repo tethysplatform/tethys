@@ -1033,37 +1033,51 @@ ol_layers_init = function()
           });
 
           if (current_layer.options.hasOwnProperty('url')) {
-              let url = current_layer.options.url;
-              let gml_source = new ol.source.Vector();
+            let baseUrl = current_layer.options.url;
+            let token = current_layer.options.token;
 
-              let headers = {};
-              if (current_layer.options.token) {
-                headers['Authorization'] = 'Bearer ' + current_layer.options.token;
-              }
-              fetch(url, {credentials: 'same-origin', headers: headers})
+            let gmlSource = new ol.source.Vector({
+              format: gmlFormat,
+              strategy: ol.loadingstrategy.bbox,
+              loader: function(extent, resolution, projection, success, failer) {
+                let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
+                let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
+
+                let headers = {};
+                if (token) {
+                  headers['Authorization'] = 'Bearer ' + token;
+                }
+
+                fetch(url, {credentials: 'same-origin', headers: headers})
                   .then(r => r.text())
                   .then(text => {
-                      let features = gmlFormat.readFeatures(text, {
-                          dataProjection: 'EPSG:4326',
-                          featureProjection: DEFAULT_PROJECTION,
-                      });
-                      console.log('GML loaded:', features.length, 'features');
-                      gml_source.addFeatures(features);
+                    let features = gmlFormat.readFeatures(text, {
+                      dataProjection: 'EPSG:4326',
+                      featureProjection: DEFAULT_PROJECTION,
+                    });
+                    gmlSource.addFeatures(features);
+                    success(features);
                   })
-                  .catch(err => console.error('GML load failed:', err));
+                  .catch(err => {
+                    console.error('GML load failed: ', err);
+                    gmlSource.removeLoadedExtent(extent);
+                    failure();
+                  })
+              }
+            })
 
-              current_layer_layer_options['source'] = gml_source;
-              layer = new ol.layer.Vector(current_layer_layer_options);
+            current_layer_layer_options['source'] = gmlSource;
+            layer = new ol.layer.Vector(current_layer_layer_options);
           }
 
           else if (current_layer.options.hasOwnProperty('gml')) {
-              let gml_source = new ol.source.Vector({
+              let gmlSource = new ol.source.Vector({
                   features: gmlFormat.readFeatures(current_layer.options.gml, {
                       dataProjection: 'EPSG:4326',
                       featureProjection: DEFAULT_PROJECTION,
                   }),
               });
-              current_layer_layer_options['source'] = gml_source;
+              current_layer_layer_options['source'] = gmlSource;
               layer = new ol.layer.Vector(current_layer_layer_options);
           }
         }
