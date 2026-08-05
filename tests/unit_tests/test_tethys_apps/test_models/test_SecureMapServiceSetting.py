@@ -510,4 +510,25 @@ class SecureMapServiceSettingTests(TethysTestCase):
 
         self.assertEqual(service, setting.secure_map_service)
 
-    
+    def test_update_params_none(self):
+        setting = self.test_app.settings_set.select_subclasses().get(name="secure_map_service")
+        setting.secure_map_service = None
+        setting.save()
+
+        self.assertRaises(
+            TethysAppSettingNotAssigned,
+            SecureMapServiceSetting.objects.get(name="secure_map_service").update_params,
+            {"param1": "new_value"}
+        )
+
+    def test_update_params(self):
+        setting = self.test_app.settings_set.select_subclasses().get(name="secure_map_service")
+        setting.secure_map_service = self.map_service_with_api_key_no_proxy
+        setting.save()
+
+        new_params = {"param1": "new_value", "param3": "value3"}
+        SecureMapServiceSetting.objects.get(name="secure_map_service").update_params(new_params)
+
+        updated_service = SecureMapService.objects.get(pk=setting.secure_map_service.pk)
+        expected_params = {"param1": "new_value", "api_key": "${api_key}", "param3": "value3"}
+        self.assertEqual(updated_service.params, expected_params)
