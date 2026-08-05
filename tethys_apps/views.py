@@ -24,6 +24,16 @@ from .decorators import login_required
 
 logger = logging.getLogger("tethys." + __name__)
 
+# Forwarded so the browser's cached-copy check reaches the service and it can
+# reply 304 instead of resending the whole body.
+PROXY_FORWARDED_REQUEST_HEADERS = ("If-None-Match", "If-Modified-Since")
+
+# Forwarded so the browser can cache proxied responses instead of making a new request
+# on every pan and zoom. 
+PROXY_FORWARDED_RESPONSE_HEADERS = (
+    "Cache-Control", "ETag", "Expires", "Last-Modified", "Vary", "Age",
+)
+
 
 @login_required()
 def library(request):
@@ -179,6 +189,11 @@ def secure_map_proxy(request, setting_id):
     if request.content_type:
         headers["Content-Type"] = request.content_type
 
+    for header in PROXY_FORWARDED_REQUEST_HEADERS:
+        value = request.headers.get(header)
+        if value:
+            headers[header] = value
+
     resp = requests.request(
         method=request.method,
         url=service.endpoint,
@@ -188,8 +203,19 @@ def secure_map_proxy(request, setting_id):
         stream=True,
     )
 
-    return StreamingHttpResponse(
-        resp.iter_content(chunk_size=8192),
-        status=resp.status_code,
-        content_type=resp.headers.get("Content-Type", "application/octet-stream"),
-    )
+    # A 304 has no body, so return it directly rather than returning an empty response
+    if resp.status_code == 304:
+        proxy_response = HttpResponse(status=304)
+    else:
+        proxy_response = StreamingHttpResponse(
+            resp.iter_content(chunk_size=8192),
+            status=resp.status_code,
+            content_type=resp.headers.get("Content-Type", "application/octet-stream"),
+        )
+
+    for header in PROXY_FORWARDED_RESPONSE_HEADERS:
+        value = resp.headers.get(header)
+        if value:
+            proxy_response[header] = value
+
+    return proxy_response
