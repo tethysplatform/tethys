@@ -6,6 +6,8 @@ from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError
 from django.template import Context
+from django.utils.functional import Promise
+from django.utils.translation import gettext_lazy
 from importlib import reload
 from pathlib import Path
 import sys
@@ -146,6 +148,14 @@ class TestTethysGizmos(unittest.TestCase):
 
         # Check Result
         self.assertEqual("2018", result)
+
+    def test_json_data_handler_promise(self):
+        promise = gettext_lazy("test")
+        result = gizmos_templatetags.json_data_handler(promise)
+
+        self.assertNotIsInstance(result, Promise)
+        self.assertIsInstance(result, str)
+        self.assertEqual(result, "test")
 
     def test_jsonify(self):
         data = ["foo", {"bar": ("baz", None, 1.0, 2)}]
