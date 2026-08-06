@@ -292,6 +292,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_json_response.assert_called_once_with(
             {"success": False, "error": "Failed to send email: foo_error"}
         )
+
     def test_secure_map_proxy_noneexistent_service(self):
         mock_request = mock.MagicMock()
         mock_setting_id = 9999  # Assuming this ID does not exist in the database
