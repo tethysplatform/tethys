@@ -1,4 +1,3 @@
-import pytest
 import requests
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, SecureMapServiceSetting
