@@ -114,7 +114,9 @@ class CondorWorkflowTest(TethysTestCase):
 
         # We already tested load_nodes in CondorPyWorkflow, just mocked to make sure it's called here.
         mock_ln.assert_called()
-        mock_co.submit.assert_called_with(options=["foo"])
+        options = mock_co.submit.call_args[1]["options"]
+        self.assertEqual("foo", options[0])
+        self.assertIn(f'+TethysJobId = "{self.condorworkflow.id}"', options)
 
         # Check cluster_id from _execute in condorbase
         self.assertEqual(111, self.condorworkflow.cluster_id)
@@ -132,10 +134,35 @@ class CondorWorkflowTest(TethysTestCase):
 
         # We already tested load_nodes in CondorPyWorkflow, just mocked to make sure it's called here.
         mock_ln.assert_called()
-        mock_co.submit.assert_called_with(options=[])
+        options = mock_co.submit.call_args[1]["options"]
+        self.assertEqual(self.condorworkflow.status_report_options[0], options[0])
+        self.assertIn(f'+TethysJobId = "{self.condorworkflow.id}"', options)
 
         # Check cluster_id from _execute in condorbase
         self.assertEqual(111, self.condorworkflow.cluster_id)
+
+    def test_status_report_options_carry_the_job_id(self):
+        options = self.condorworkflow.status_report_options
+
+        self.assertEqual(["-append", "-append"], options[0::2])
+        self.assertIn(f'+TethysJobId = "{self.condorworkflow.id}"', options)
+
+    def test_status_report_options_token_verifies_back_to_this_job(self):
+        options = self.condorworkflow.status_report_options
+        ad = [o for o in options if o.startswith("+TethysJobToken")][0]
+        token = ad.split('"')[1]
+
+        self.assertEqual(
+            str(self.condorworkflow.id),
+            CondorWorkflow.id_from_status_report_token(token),
+        )
+
+    def test_status_report_options_token_does_not_verify_if_tampered(self):
+        options = self.condorworkflow.status_report_options
+        ad = [o for o in options if o.startswith("+TethysJobToken")][0]
+        token = ad.split('"')[1]
+
+        self.assertIsNone(CondorWorkflow.id_from_status_report_token(token + "x"))
 
     def test_get_job(self):
         ret = self.condorworkflow.get_job(job_name="Node_1")

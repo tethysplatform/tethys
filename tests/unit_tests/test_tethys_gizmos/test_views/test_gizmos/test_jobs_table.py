@@ -348,6 +348,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             cached_status="Various",
             label="test_label",
             statuses={"Completed": 1, "Running": 1},
+            node_statuses_are_current=False,
             num_jobs=2,
             update_status=mock_async_func,
             safe_close=mock_async_func,
@@ -375,6 +376,36 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
         rts_call_args = mock_rts.call_args_list
         self.assertEqual("Various", rts_call_args[0][0][1]["job_status"])
         self.assertIn("job_statuses", rts_call_args[0][0][1])
+        self.assertEqual(
+            {"Aborted": 0, "Completed": 50.0, "Error": 0, "Running": 50.0},
+            rts_call_args[0][0][1]["job_statuses"],
+        )
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.render_to_string")
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_update_row_serves_persisted_statuses(self, mock_tj, mock_rts):
+        mock_rts.return_value = '{"job_statuses":[]}'
+        mock_tj.return_value = mock.MagicMock(
+            spec=CondorWorkflow,
+            cached_status="Various",
+            label="test_label",
+            statuses={"Completed": 2, "Running": 0},
+            cached_statuses={"Completed": 1, "Running": 1},
+            node_statuses_are_current=True,
+            num_jobs=2,
+            update_status=mock_async_func,
+            safe_close=mock_async_func,
+        )
+        request = RequestFactory().post(
+            "/jobs", {"column_fields": self.column_names, "row": [("1", "30")]}
+        )
+        request.user = mock.MagicMock(is_authenticated=True)
+
+        result = await gizmo_jobs_table.update_row(request, job_id="1")
+
+        rts_call_args = mock_rts.call_args_list
+        self.assertEqual("Various", rts_call_args[0][0][1]["job_status"])
         self.assertEqual(
             {"Aborted": 0, "Completed": 50.0, "Error": 0, "Running": 50.0},
             rts_call_args[0][0][1]["job_statuses"],

@@ -43,8 +43,25 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         if options is None:
             options = list()
 
+        options.extend(self.status_report_options)
         self.load_nodes()
         super()._execute(options=options)
+
+    @property
+    def status_report_options(self):
+        """Submit options that let whatever runs this DAG report its status back.
+
+        The id and a token authorising reports for this job alone are attached to
+        the DAGMan job as ClassAds, so a reporter running next to the scheduler can
+        read them off the queue and POST to ``report-job-status`` without the portal
+        having to be asked. They are inert where nothing is reporting.
+        """
+        return [
+            "-append",
+            f'+TethysJobId = "{self.id}"',
+            "-append",
+            f'+TethysJobToken = "{self.status_report_token}"',
+        ]
 
     @property
     def node_statuses_max_age(self):
