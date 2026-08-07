@@ -421,7 +421,7 @@ class SecureMapService(models.Model):
     oauth_provider = models.CharField(max_length=100, blank=True)
     service_type = models.CharField(
         max_length=50,
-        choices=[("ImageWMS", "WMS"), ("GML", "GML"), ("geojson", "GeoJSON")],
+        choices=[("ImageWMS", "WMS"), ("GML", "GML")],
         default="ImageWMS",
     )
     params = models.JSONField(blank=True, null=True, default=dict)

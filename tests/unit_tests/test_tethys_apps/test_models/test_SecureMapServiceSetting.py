@@ -62,7 +62,7 @@ class SecureMapServiceSettingTests(TethysTestCase):
             endpoint="https://example.com/map_service",
             authentication_method="oauth",
             oauth_provider="test_oauth_provider",
-            service_type="geojson",
+            service_type="GML",
             params=self.params_without_api_key,
             use_proxy=False,
         )
