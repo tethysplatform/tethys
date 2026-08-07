@@ -1,12 +1,14 @@
 import unittest
 from unittest import mock
 
+from django.test.utils import override_settings
 from django.utils.translation import gettext_lazy as _
 from tethys_services.models import (
     DatasetService,
     SpatialDatasetService,
     WebProcessingService,
     PostgresPersistentStoreService,
+    SecureMapService,
 )
 from tethys_services.admin import (
     DatasetServiceForm,
@@ -17,6 +19,7 @@ from tethys_services.admin import (
     SpatialDatasetServiceAdmin,
     WebProcessingServiceAdmin,
     PostgresPersistentStoreServiceAdmin,
+    SecureMapServiceForm,
 )
 
 
@@ -87,6 +90,48 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertEqual(PostgresPersistentStoreService, ret.Meta.model)
         self.assertEqual(expected_fields, ret.Meta.fields)
         self.assertTrue("password" in ret.Meta.widgets)
+
+    @override_settings(AUTHENTICATION_BACKENDS=[])
+    def test_SecureMapServiceForm_no_authentication_backends(self):
+        mock_args = mock.MagicMock()
+    
+        ret = SecureMapServiceForm(mock_args)
+        self.assertEqual(SecureMapService, ret.Meta.model)
+        self.assertEqual("__all__", ret.Meta.fields)
+        self.assertTrue("api_key" in ret.Meta.widgets)
+
+        oauth_provider_field = ret.fields.get("oauth_provider")
+        self.assertEqual([], oauth_provider_field.choices)
+
+    @override_settings(AUTHENTICATION_BACKENDS=["this_is_a_backend"])
+    @mock.patch("tethys_services.admin.import_string")
+    def test_SecureMapServiceForm_with_authentication_backends_no_name(self, mock_is):
+        mock_args = mock.MagicMock()
+        # Mock an object withou a name attribute
+        mock_is.return_value = object()
+
+        ret = SecureMapServiceForm(mock_args)
+        self.assertEqual(SecureMapService, ret.Meta.model)
+        self.assertEqual("__all__", ret.Meta.fields)
+        self.assertTrue("api_key" in ret.Meta.widgets)
+
+        oauth_provider_field = ret.fields.get("oauth_provider")
+        self.assertEqual([], oauth_provider_field.choices)
+
+    @override_settings(AUTHENTICATION_BACKENDS=["this_is_a_backend"])
+    @mock.patch("tethys_services.admin.import_string")
+    def test_SecureMapServiceForm_with_authentication_backends(self, mock_is):
+        mock_args = mock.MagicMock()
+        mock_is.return_value = mock.MagicMock()
+        mock_is.return_value.name = "fake_backend_name"
+
+        ret = SecureMapServiceForm(mock_args)
+        self.assertEqual(SecureMapService, ret.Meta.model)
+        self.assertEqual("__all__", ret.Meta.fields)
+        self.assertTrue("api_key" in ret.Meta.widgets)
+
+        oauth_provider_field = ret.fields.get("oauth_provider")
+        self.assertEqual([("fake_backend_name", "fake_backend_name")], oauth_provider_field.choices)
 
     def test_DatasetServiceAdmin(self):
         mock_args = mock.MagicMock()
