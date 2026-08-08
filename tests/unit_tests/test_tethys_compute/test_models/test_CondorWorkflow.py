@@ -156,7 +156,7 @@ class CondorWorkflowTest(TethysTestCase):
         options = self.condorworkflow.status_report_options
         ad = [o for o in options if o.startswith("'+TethysJobId")][0]
 
-        self.assertEqual(f'\'+TethysJobId = "{self.condorworkflow.id}"\'', ad)
+        self.assertEqual(f"'+TethysJobId = \"{self.condorworkflow.id}\"'", ad)
 
     def test_status_report_options_are_not_quoted_without_a_scheduler(self):
         # A local submit goes through argv, where quotes would become part of the

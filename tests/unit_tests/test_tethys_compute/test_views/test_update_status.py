@@ -3,8 +3,8 @@ import unittest
 from unittest import mock
 
 from django.contrib.auth.models import User
-from django.test import Client
-from django.urls import reverse
+from django.http import HttpResponse
+from django.test import RequestFactory
 from tethys_sdk.testing import TethysTestCase
 
 import tethys_compute.views.update_status as tethys_compute_update_status
@@ -259,44 +259,53 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         mock_json_response.assert_called_once_with({"success": False})
 
 
-class TestReportJobStatusDispatch(TethysTestCase):
-    """Exercises the endpoint through Django rather than by calling the view.
+class TestReportJobStatusIsCallableByDjango(TethysTestCase):
+    """The view must hand back a response when called the way Django calls it.
 
-    Calling the view directly cannot tell whether Django can dispatch to it. It
-    could not, and the tests above still passed: ``csrf_exempt`` wraps an async
-    view in a sync function on Django 4.2, which Tethys targets, so the view
-    returned an unawaited coroutine and every report failed with a 500.
+    The tests above await the view themselves, which says nothing about that:
+    ``csrf_exempt`` wraps an async view in a sync function on Django 4.2, so the
+    view returned an unawaited coroutine, Django could not turn it into a
+    response, and every report failed with a 500 while those tests passed.
+
+    Deliberately does not go through the URL: the portal's routing depends on
+    deployment settings, and this is about the view being callable.
     """
 
     def set_up(self):
         self.user = User.objects.create_user("reporter", "r@example.com", "pass")
         self.job = TethysJob(name="reported", label="test", user=self.user)
         self.job.save()
-        self.url = reverse("report_job_status", kwargs={"job_id": self.job.id})
 
     def tear_down(self):
         self.job.delete()
         self.user.delete()
 
-    def test_a_report_is_dispatched_and_accepted(self):
-        response = self.client.post(
-            f"{self.url}?token={self.job.status_report_token}&status=Complete"
+    def _request(self, token, status="Complete"):
+        return RequestFactory().post(
+            f"/report-job-status/{self.job.id}/?token={token}&status={status}"
         )
 
+    def test_the_view_returns_a_response_and_not_a_coroutine(self):
+        response = tethys_compute_update_status.report_job_status(
+            self._request(self.job.status_report_token), str(self.job.id)
+        )
+
+        self.assertIsInstance(response, HttpResponse)
         self.assertEqual(200, response.status_code)
         self.assertTrue(json.loads(response.content)["success"])
 
     def test_a_report_without_a_valid_token_is_refused(self):
-        response = self.client.post(f"{self.url}?token=nope&status=Complete")
-
-        self.assertEqual(403, response.status_code)
-
-    def test_the_endpoint_does_not_require_a_csrf_token(self):
-        # The reporter is not a browser and has no session to take a token from.
-        client = Client(enforce_csrf_checks=True)
-
-        response = client.post(
-            f"{self.url}?token={self.job.status_report_token}&status=Complete"
+        response = tethys_compute_update_status.report_job_status(
+            self._request("nope"), str(self.job.id)
         )
 
-        self.assertEqual(200, response.status_code)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(403, response.status_code)
+
+    def test_the_view_is_exempt_from_csrf(self):
+        # The reporter is not a browser and has no session to take a token from.
+        self.assertTrue(
+            getattr(
+                tethys_compute_update_status.report_job_status, "csrf_exempt", False
+            )
+        )
