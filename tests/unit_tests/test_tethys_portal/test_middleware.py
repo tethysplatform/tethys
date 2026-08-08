@@ -1,12 +1,11 @@
 import unittest
 from unittest import mock
 from rest_framework.exceptions import AuthenticationFailed
-from tethys_portal.views.user import settings
 from tethys_portal.middleware import (
     TethysSocialAuthExceptionMiddleware,
     TethysAppAccessMiddleware,
     TethysMfaRequiredMiddleware,
-    TethysOauthRequiredMiddleware
+    TethysOauthRequiredMiddleware,
 )
 from django.core.exceptions import PermissionDenied
 
@@ -893,7 +892,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         TethysOauthRequiredMiddleware(mock_get_response)(mock_request)
         mock_get_response.assert_called_once_with(mock_request)
-        mock_request.user.social_auth.filter.assert_called_once_with(provider="test_value")
+        mock_request.user.social_auth.filter.assert_called_once_with(
+            provider="test_value"
+        )
 
     @mock.patch("tethys_portal.middleware.urlencode")
     @mock.patch("tethys_portal.middleware.reverse")
@@ -901,18 +902,29 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch("tethys_portal.middleware.redirect")
     @mock.patch("tethys_portal.middleware.get_active_app")
     @mock.patch("tethys_portal.middleware.settings")
-    def test_oauth_required_no_provider(self, mock_settings, mock_gap, mock_redirect, mock_messages, mock_reverse, mock_urlencode):
+    def test_oauth_required_no_provider(
+        self,
+        mock_settings,
+        mock_gap,
+        mock_redirect,
+        mock_messages,
+        mock_reverse,
+        mock_urlencode,
+    ):
         mock_get_response = mock.MagicMock()
         mock_settings.OAUTH_REQUIREMENTS = {"test_package": "test_provider"}
         mock_gap.return_value = mock.MagicMock(package="test_package")
         mock_request = mock.MagicMock()
         mock_request.get_full_path.return_value = "/apps/test_package/test_path"
         mock_request.user.social_auth.filter.return_value.exists.return_value = False
-        mock_reverse.return_value="/user/settings/"
-        mock_urlencode.return_value="next=/apps/test_package/test_path"
+        mock_reverse.return_value = "/user/settings/"
+        mock_urlencode.return_value = "next=/apps/test_package/test_path"
         TethysOauthRequiredMiddleware(mock_get_response)(mock_request)
         mock_messages.assert_called_once_with(
-            mock_request, 
-            "This application requires authenticating with test_provider. Please link your test_provider account.")
+            mock_request,
+            "This application requires authenticating with test_provider. Please link your test_provider account.",
+        )
         mock_reverse.assert_called_once_with("user:settings")
-        mock_redirect.assert_called_once_with(f"{mock_reverse.return_value}?next=/apps/test_package/test_path")
+        mock_redirect.assert_called_once_with(
+            f"{mock_reverse.return_value}?next=/apps/test_package/test_path"
+        )

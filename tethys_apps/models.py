@@ -1215,6 +1215,7 @@ class SecureMapServiceSetting(TethysAppSetting):
                 )
 
             options["token"] = service.get_oauth_token(request_user)
+
         return MVLayer(
             source=service.service_type,
             layer_options={"visible": True},

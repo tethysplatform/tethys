@@ -94,7 +94,7 @@ class TestTethysServicesAdmin(unittest.TestCase):
     @override_settings(AUTHENTICATION_BACKENDS=[])
     def test_SecureMapServiceForm_no_authentication_backends(self):
         mock_args = mock.MagicMock()
-    
+
         ret = SecureMapServiceForm(mock_args)
         self.assertEqual(SecureMapService, ret.Meta.model)
         self.assertEqual("__all__", ret.Meta.fields)
@@ -131,7 +131,9 @@ class TestTethysServicesAdmin(unittest.TestCase):
         self.assertTrue("api_key" in ret.Meta.widgets)
 
         oauth_provider_field = ret.fields.get("oauth_provider")
-        self.assertEqual([("fake_backend_name", "fake_backend_name")], oauth_provider_field.choices)
+        self.assertEqual(
+            [("fake_backend_name", "fake_backend_name")], oauth_provider_field.choices
+        )
 
     def test_DatasetServiceAdmin(self):
         mock_args = mock.MagicMock()

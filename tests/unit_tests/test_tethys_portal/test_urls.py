@@ -168,9 +168,7 @@ class TestUrls(TethysTestCase):
         url = reverse("secure_map_proxy", kwargs={"setting_id": "15"})
         resolver = resolve(url)
         self.assertEqual("/secure-map-proxy/15/", url)
-        self.assertEqual(
-            "tethys_apps.views.secure_map_proxy", resolver._func_path
-        )
+        self.assertEqual("tethys_apps.views.secure_map_proxy", resolver._func_path)
 
     @override_settings(REGISTER_CONTROLLER="test")
     @mock.patch("django.urls.re_path")

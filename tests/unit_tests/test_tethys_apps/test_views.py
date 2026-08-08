@@ -9,7 +9,7 @@ from tethys_apps.views import (
     handoff_capabilities,
     handoff,
     send_beta_feedback_email,
-    secure_map_proxy
+    secure_map_proxy,
 )
 
 
@@ -313,7 +313,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_service.authentication_method = "oauth"
         mock_service.get_oauth_token.return_value = None
         mock_get.return_value = mock_service
-        
+
         ret = secure_map_proxy(mock_request, mock_setting_id)
 
         assert ret.status_code == 500
@@ -331,7 +331,6 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         mock_request_func.return_value = mock.MagicMock(status_code=304, content=b"")
 
-        
         ret = secure_map_proxy(mock_request, mock_setting_id)
 
         assert ret.status_code == 304
@@ -364,7 +363,9 @@ class TethysAppsViewsTest(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_api_key_no_extra_headers(self, mock_get, mock_request_func):
+    def test_secure_map_proxy_api_key_no_extra_headers(
+        self, mock_get, mock_request_func
+    ):
         mock_request = mock.MagicMock(method="GET", body=None)
         mock_setting_id = 1
         mock_service = mock.MagicMock()
@@ -390,9 +391,14 @@ class TethysAppsViewsTest(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
-    def test_secure_map_proxy_oauth_with_extra_headers(self, mock_get, mock_request_func):
+    def test_secure_map_proxy_oauth_with_extra_headers(
+        self, mock_get, mock_request_func
+    ):
         mock_request = mock.MagicMock(method="GET", body=None)
-        mock_request.headers = {"If-None-Match": "test_value", "If-Modified-Since": "test_date"}
+        mock_request.headers = {
+            "If-None-Match": "test_value",
+            "If-Modified-Since": "test_date",
+        }
         mock_setting_id = 1
         mock_service = mock.MagicMock()
         mock_service.authentication_method = "oauth"
@@ -402,7 +408,10 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         mock_response = mock.MagicMock(status_code=200)
         mock_response.iter_content.return_value = [b"response_content"]
-        mock_response.headers = {"Cache-Control": "max-age=3600", "Expires": "test_expire_date"}
+        mock_response.headers = {
+            "Cache-Control": "max-age=3600",
+            "Expires": "test_expire_date",
+        }
         mock_request_func.return_value = mock_response
 
         ret = secure_map_proxy(mock_request, mock_setting_id)
@@ -417,9 +426,8 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         assert ret.status_code == 200
         assert b"".join(ret.streaming_content) == b"response_content"
-        assert ret.headers['Cache-Control'] == "max-age=3600"
-        assert ret.headers['Expires'] == "test_expire_date"
-
+        assert ret.headers["Cache-Control"] == "max-age=3600"
+        assert ret.headers["Expires"] == "test_expire_date"
 
     @mock.patch("tethys_apps.models.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
