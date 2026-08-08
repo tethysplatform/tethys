@@ -24,10 +24,9 @@ from ..tasks import create_task
 logger = logging.getLogger(f"tethys.{__name__}")
 
 
-@database_sync_to_async
-def get_job(job_id, user=None):
+def get_job_sync(job_id, user=None):
     """
-    Helper method to query a `TethysJob` object safely from an asynchronous context.
+    Helper method to query a `TethysJob` object.
 
     Args:
         job_id: database ID of a `TethysJob`
@@ -45,6 +44,11 @@ def get_job(job_id, user=None):
     ):
         return TethysJob.objects.get_subclass(id=job_id)
     return TethysJob.objects.get_subclass(id=job_id, user=user)
+
+
+# The async views query through this; `report_job_status` is sync and calls the
+# implementation directly.
+get_job = database_sync_to_async(get_job_sync)
 
 
 async def do_job_action(job, action):
@@ -114,7 +118,7 @@ async def update_job_status(request, job_id):
 
 
 @csrf_exempt
-async def report_job_status(request, job_id):
+def report_job_status(request, job_id):
     """Callback endpoint for reporting a job's status to the portal.
 
     Unlike ``update_job_status``, which asks the job's source what the status is,
@@ -147,7 +151,7 @@ async def report_job_status(request, job_id):
         )
 
     try:
-        job = await get_job(job_id)
+        job = get_job_sync(job_id)
     except Exception:
         return JsonResponse({"success": False, "error": "no such job"}, status=404)
 
@@ -155,9 +159,7 @@ async def report_job_status(request, job_id):
     node_statuses = params.get("node_statuses")
     if node_statuses:
         try:
-            nodes_applied = await database_sync_to_async(_apply_node_statuses)(
-                job, json.loads(node_statuses)
-            )
+            nodes_applied = _apply_node_statuses(job, json.loads(node_statuses))
         except Exception as e:
             logger.warning(
                 f"Could not apply reported node statuses for job_id={job_id}: {e}"
@@ -167,7 +169,7 @@ async def report_job_status(request, job_id):
     # fails, so a transient problem syncing results does not leave the portal
     # believing the job is still running.
     try:
-        await database_sync_to_async(job.update_status)(status=status)
+        job.update_status(status=status)
         return JsonResponse({"success": True, "nodes_applied": nodes_applied})
     except Exception as e:
         logger.exception(

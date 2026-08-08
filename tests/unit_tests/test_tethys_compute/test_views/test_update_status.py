@@ -1,7 +1,14 @@
+import json
 import unittest
 from unittest import mock
 
+from django.contrib.auth.models import User
+from django.test import Client
+from django.urls import reverse
+from tethys_sdk.testing import TethysTestCase
+
 import tethys_compute.views.update_status as tethys_compute_update_status
+from tethys_compute.models import TethysJob
 
 
 class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
@@ -118,54 +125,54 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         job.id = job_id
         return job.status_report_token
 
-    async def test_report_job_status_rejects_missing_token(self):
-        response = await tethys_compute_update_status.report_job_status(
+    def test_report_job_status_rejects_missing_token(self):
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(status="Complete"), "42"
         )
 
         self.assertEqual(403, response.status_code)
 
-    async def test_report_job_status_rejects_forged_token(self):
-        response = await tethys_compute_update_status.report_job_status(
+    def test_report_job_status_rejects_forged_token(self):
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(token="not-a-real-token", status="Complete"), "42"
         )
 
         self.assertEqual(403, response.status_code)
 
-    async def test_report_job_status_rejects_token_for_another_job(self):
+    def test_report_job_status_rejects_token_for_another_job(self):
         """A token authorises one job, so it must not work for a different one."""
-        response = await tethys_compute_update_status.report_job_status(
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(token=self._token_for("41"), status="Complete"), "42"
         )
 
         self.assertEqual(403, response.status_code)
 
-    async def test_report_job_status_rejects_invalid_status(self):
-        response = await tethys_compute_update_status.report_job_status(
+    def test_report_job_status_rejects_invalid_status(self):
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(token=self._token_for("42"), status="Banana"), "42"
         )
 
         self.assertEqual(400, response.status_code)
 
-    @mock.patch("tethys_compute.views.update_status.get_job")
-    async def test_report_job_status_applies_the_status(self, mock_get_job):
+    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    def test_report_job_status_applies_the_status(self, mock_get_job):
         job = mock.MagicMock(spec=["update_status"])
         mock_get_job.return_value = job
 
-        response = await tethys_compute_update_status.report_job_status(
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(token=self._token_for("42"), status="Complete"), "42"
         )
 
         job.update_status.assert_called_once_with(status="Complete")
         self.assertEqual(200, response.status_code)
 
-    @mock.patch("tethys_compute.views.update_status.get_job")
-    async def test_report_job_status_applies_node_statuses(self, mock_get_job):
+    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    def test_report_job_status_applies_node_statuses(self, mock_get_job):
         job = mock.MagicMock()
         job.apply_node_statuses.return_value = {"a": "Running", "b": "Completed"}
         mock_get_job.return_value = job
 
-        await tethys_compute_update_status.report_job_status(
+        tethys_compute_update_status.report_job_status(
             self._report_request(
                 token=self._token_for("42"),
                 status="Running",
@@ -178,8 +185,8 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
             {"a": "Running", "b": "Completed"}
         )
 
-    @mock.patch("tethys_compute.views.update_status.get_job")
-    async def test_report_job_status_keeps_status_when_post_processing_fails(
+    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    def test_report_job_status_keeps_status_when_post_processing_fails(
         self, mock_get_job
     ):
         """A failure syncing results must not leave the job looking like it runs."""
@@ -187,18 +194,18 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         job.update_status.side_effect = Exception("SCP failed")
         mock_get_job.return_value = job
 
-        response = await tethys_compute_update_status.report_job_status(
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(token=self._token_for("42"), status="Complete"), "42"
         )
 
         self.assertEqual(200, response.status_code)
         self.assertIn(b'"post_processing": false', response.content)
 
-    @mock.patch("tethys_compute.views.update_status.get_job")
-    async def test_report_job_status_unknown_job(self, mock_get_job):
+    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    def test_report_job_status_unknown_job(self, mock_get_job):
         mock_get_job.side_effect = Exception("does not exist")
 
-        response = await tethys_compute_update_status.report_job_status(
+        response = tethys_compute_update_status.report_job_status(
             self._report_request(token=self._token_for("42"), status="Complete"), "42"
         )
 
@@ -250,3 +257,46 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         tethys_compute_update_status.update_dask_job_status(mock_request, mock_job_key)
         mock_daskjob.objects.filter.assert_called_once_with(key=mock_job_key)
         mock_json_response.assert_called_once_with({"success": False})
+
+
+class TestReportJobStatusDispatch(TethysTestCase):
+    """Exercises the endpoint through Django rather than by calling the view.
+
+    Calling the view directly cannot tell whether Django can dispatch to it. It
+    could not, and the tests above still passed: ``csrf_exempt`` wraps an async
+    view in a sync function on Django 4.2, which Tethys targets, so the view
+    returned an unawaited coroutine and every report failed with a 500.
+    """
+
+    def set_up(self):
+        self.user = User.objects.create_user("reporter", "r@example.com", "pass")
+        self.job = TethysJob(name="reported", label="test", user=self.user)
+        self.job.save()
+        self.url = reverse("report_job_status", kwargs={"job_id": self.job.id})
+
+    def tear_down(self):
+        self.job.delete()
+        self.user.delete()
+
+    def test_a_report_is_dispatched_and_accepted(self):
+        response = self.client.post(
+            f"{self.url}?token={self.job.status_report_token}&status=Complete"
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(json.loads(response.content)["success"])
+
+    def test_a_report_without_a_valid_token_is_refused(self):
+        response = self.client.post(f"{self.url}?token=nope&status=Complete")
+
+        self.assertEqual(403, response.status_code)
+
+    def test_the_endpoint_does_not_require_a_csrf_token(self):
+        # The reporter is not a browser and has no session to take a token from.
+        client = Client(enforce_csrf_checks=True)
+
+        response = client.post(
+            f"{self.url}?token={self.job.status_report_token}&status=Complete"
+        )
+
+        self.assertEqual(200, response.status_code)
