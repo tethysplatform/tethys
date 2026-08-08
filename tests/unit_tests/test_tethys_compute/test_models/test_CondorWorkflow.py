@@ -108,6 +108,7 @@ class CondorWorkflowTest(TethysTestCase):
     def test_execute(self, mock_co, mock_ln):
         # Mock submit to return a 111 cluster id
         mock_co.submit.return_value = 111
+        self.condorworkflow.scheduler = None
 
         # Execute
         self.condorworkflow._execute(options=["foo"])
@@ -128,6 +129,7 @@ class CondorWorkflowTest(TethysTestCase):
     def test_execute_no_options(self, mock_co, mock_ln):
         # Mock submit to return a 111 cluster id
         mock_co.submit.return_value = 111
+        self.condorworkflow.scheduler = None
 
         # Execute
         self.condorworkflow._execute()
@@ -142,12 +144,30 @@ class CondorWorkflowTest(TethysTestCase):
         self.assertEqual(111, self.condorworkflow.cluster_id)
 
     def test_status_report_options_carry_the_job_id(self):
+        self.condorworkflow.scheduler = None
         options = self.condorworkflow.status_report_options
 
         self.assertEqual(["-append", "-append"], options[0::2])
         self.assertIn(f'+TethysJobId = "{self.condorworkflow.id}"', options)
 
+    def test_status_report_options_are_shell_quoted_for_a_remote_scheduler(self):
+        # condorpy joins a remote submit into a string for a shell, so an ad has to
+        # survive word splitting as a single argument.
+        options = self.condorworkflow.status_report_options
+        ad = [o for o in options if o.startswith("'+TethysJobId")][0]
+
+        self.assertEqual(f'\'+TethysJobId = "{self.condorworkflow.id}"\'', ad)
+
+    def test_status_report_options_are_not_quoted_without_a_scheduler(self):
+        # A local submit goes through argv, where quotes would become part of the
+        # value condor reads.
+        self.condorworkflow.scheduler = None
+        options = self.condorworkflow.status_report_options
+
+        self.assertTrue(all(not o.startswith("'") for o in options))
+
     def test_status_report_options_token_verifies_back_to_this_job(self):
+        self.condorworkflow.scheduler = None
         options = self.condorworkflow.status_report_options
         ad = [o for o in options if o.startswith("+TethysJobToken")][0]
         token = ad.split('"')[1]
@@ -158,6 +178,7 @@ class CondorWorkflowTest(TethysTestCase):
         )
 
     def test_status_report_options_token_does_not_verify_if_tampered(self):
+        self.condorworkflow.scheduler = None
         options = self.condorworkflow.status_report_options
         ad = [o for o in options if o.startswith("+TethysJobToken")][0]
         token = ad.split('"')[1]

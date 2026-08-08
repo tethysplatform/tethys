@@ -8,6 +8,7 @@
 """
 
 import datetime
+import shlex
 import shutil
 import logging
 from pathlib import Path
@@ -55,13 +56,24 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         the DAGMan job as ClassAds, so a reporter running next to the scheduler can
         read them off the queue and POST to ``report-job-status`` without the portal
         having to be asked. They are inert where nothing is reporting.
+
+        A ClassAd assignment contains spaces and quotes, and condorpy runs a remote
+        submit by joining the arguments into a string for a shell while running a
+        local one through argv. So the ad is shell-quoted only when it is going to a
+        shell; quoting it for the local path would make condor read the quotes as
+        part of the value.
         """
-        return [
-            "-append",
+        ads = [
             f'+TethysJobId = "{self.id}"',
-            "-append",
             f'+TethysJobToken = "{self.status_report_token}"',
         ]
+        if self.scheduler:
+            ads = [shlex.quote(ad) for ad in ads]
+
+        options = []
+        for ad in ads:
+            options.extend(["-append", ad])
+        return options
 
     @property
     def node_statuses_max_age(self):
