@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 
 from tethys_apps.models import ProxyApp, TethysApp
+from tethys_services.models import SecureMapService
 from tethys_apps.views import (
     library,
     handoff_capabilities,
@@ -293,13 +294,16 @@ class TethysAppsViewsTest(unittest.TestCase):
             {"success": False, "error": "Failed to send email: foo_error"}
         )
 
-    def test_secure_map_proxy_noneexistent_service(self):
+    @mock.patch("tethys_services.models.SecureMapService.objects.get")
+    def test_secure_map_proxy_noneexistent_service(self, mock_get):
         mock_request = mock.MagicMock()
-        mock_setting_id = 9999  # Assuming this ID does not exist in the database
+        mock_setting_id = 9999
+        mock_get.side_effect = SecureMapService.DoesNotExist
+
         ret = secure_map_proxy(mock_request, mock_setting_id)
 
-        assert ret.status_code == 404
-        assert ret.content == b"Service setting not found."
+        self.assertEqual(404, ret.status_code)
+        self.assertEqual(b"Service setting not found.", ret.content)
 
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_no_auth_token(self, mock_get):
