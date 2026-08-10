@@ -14,8 +14,13 @@ from argparse import Namespace
 
 import yaml
 
-from .gen_commands import generate_command
-from tethys_cli.cli_colors import write_info, write_warning, write_error
+from .gen_commands import generate_command, generate_salt_key
+from tethys_cli.cli_colors import (
+    write_info,
+    write_warning,
+    write_error,
+    write_success,
+)
 from tethys_apps.utilities import get_tethys_home_dir
 
 from django.conf import settings
@@ -53,6 +58,18 @@ def add_settings_parser(subparsers):
         help="Removes a key from the portal_config.yml file if it exists. Hierarchical keys can be specified with "
         "dot notation. (e.g. DATABASES.default.NAME)",
         nargs=1,
+    )
+    settings_parser.add_argument(
+        "--generate-salt-key",
+        dest="generate_salt_key",
+        action="store_true",
+        help="Generate a new SALT_KEY and write it to the settings in the portal_config.yml file.",
+    )
+    settings_parser.add_argument(
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        help="Overwrite an existing SALT_KEY without prompting. Use with --generate-salt-key.",
     )
     settings_parser.set_defaults(
         func=settings_command,
@@ -119,6 +136,33 @@ def get_setting(tethys_settings, key):
             write_info(f"{key}: {pformat(d[k])}")
 
 
+def generate_salt_key_setting(tethys_settings, overwrite=False):
+    # Rotating the SALT_KEY makes values encrypted with the previous key
+    # unrecoverable, so confirm before replacing
+    if tethys_settings.get("SALT_KEY"):
+        if not overwrite:
+            valid_inputs = ("y", "n", "yes", "no")
+            no_inputs = ("n", "no")
+
+            write_warning(
+                "WARNING: A SALT_KEY already exists in the portal_config.yml file. "
+                "Replacing it will make any values encrypted with the existing key "
+                "unrecoverable."
+            )
+            overwrite_input = input("Overwrite? (y/n): ").lower()
+
+            while overwrite_input not in valid_inputs:
+                overwrite_input = input("Invalid option. Overwrite? (y/n): ").lower()
+
+            if overwrite_input in no_inputs:
+                write_warning("Generation of SALT_KEY cancelled.")
+                return
+
+    tethys_settings["SALT_KEY"] = generate_salt_key()
+    write_settings(tethys_settings)
+    write_success("Successfully generated a new SALT_KEY.")
+
+
 def remove_setting(tethys_settings, key):
     result = _get_dict_key_handle(tethys_settings, key)
     if result is not None:
@@ -162,3 +206,5 @@ def settings_command(args):
         get_setting(tethys_settings, args.get_key)
     elif args.rm_key:
         remove_setting(tethys_settings, args.rm_key[0])
+    elif args.generate_salt_key:
+        generate_salt_key_setting(tethys_settings, args.overwrite)
