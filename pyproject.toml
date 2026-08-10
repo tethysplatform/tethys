@@ -47,7 +47,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-django", "pytest-cov", "requests_mock"]
+# pytest-django 4.13 dropped Django 4.2 support. 
+# Unpin once we drop support for Django 4.2 in Tethys.
+test = ["pytest", "pytest-django<4.13", "pytest-cov", "requests_mock"]
 lint = ["flake8", "black"]
 
 [project.urls]
