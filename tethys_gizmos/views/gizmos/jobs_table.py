@@ -60,42 +60,48 @@ def get_dask_scheduler(scheduler_id):
     return DaskScheduler.objects.get(id=scheduler_id)
 
 
+def _display_node_name(job_name):
+    """The node name as shown in the diagram."""
+    return job_name.replace("_", " ").replace("-", " ").title()
+
+
 @database_sync_to_async
 def get_condor_job_nodes(job):
     """Build the DAG for a CondorWorkflow.
 
-    When serving persisted status, node statuses come from
-    ``CondorWorkflowNode.cached_node_status``; a node with no persisted status has
-    not been expanded by DAGMan yet and is reported as ``Unexpanded``. Reading the
-    live status instead costs one remote query per node on every poll.
+    When persisted statuses are current the whole DAG is assembled from the
+    database -- statuses from ``CondorWorkflowNode.cached_node_status`` and the
+    topology from the node rows themselves. A node with no persisted status has
+    not been expanded by DAGMan yet and is reported as ``Unexpanded``.
+
+    Going through ``condor_object`` instead costs a connection to the scheduler on
+    every poll even when no status is read from it, and then one remote query per
+    node for the live status.
     """
     dag = {}
-    cached_statuses = {}
+
     if job.node_statuses_are_current:
-        cached_statuses = {
-            n.job.name: n.cached_node_status
-            for n in job.node_set.select_subclasses()
-            if n.cached_node_status
-        }
+        nodes = job.node_set.select_subclasses().prefetch_related("parent_nodes")
+        for node in nodes:
+            dag[node.name] = {
+                # Condor assigns cluster ids at submit time and they are not
+                # persisted. The jobs table does not read this, and fetching it
+                # would need the remote connection this branch exists to avoid.
+                "cluster_id": None,
+                "display": _display_node_name(node.name),
+                "status": CondorWorkflow.STATUS_MAP[
+                    node.cached_node_status or "Unexpanded"
+                ].lower(),
+                "parents": [parent.name for parent in node.parent_nodes.all()],
+            }
+        return dag
 
-    nodes = job.condor_object.node_set
-
-    for node in nodes:
-        parents = []
-        for parent in node.parent_nodes:
-            parents.append(parent.job.name)
-
-        job_name = node.job.name
-        display_job_name = job_name.replace("_", " ").replace("-", " ").title()
-        if cached_statuses:
-            status = cached_statuses.get(job_name, "Unexpanded")
-        else:
-            status = node.job.status
+    for node in job.condor_object.node_set:
         dag[node.job.name] = {
             "cluster_id": node.job.cluster_id,
-            "display": display_job_name,
-            "status": CondorWorkflow.STATUS_MAP[status].lower(),
-            "parents": parents,
+            "display": _display_node_name(node.job.name),
+            "status": CondorWorkflow.STATUS_MAP[node.job.status].lower(),
+            "parents": [parent.job.name for parent in node.parent_nodes],
         }
 
     return dag

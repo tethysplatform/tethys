@@ -513,6 +513,7 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             cached_status="Various",
             label="test_label",
             condor_object=mock_condor_object,
+            node_statuses_are_current=False,
             update_status=mock_async_func,
             safe_close=mock_async_func,
         )
@@ -537,6 +538,68 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
                 "b_job": {
                     "status": "run",
                     "cluster_id": 2,
+                    "parents": ["a-job"],
+                    "display": "B Job",
+                },
+            },
+            data["dag"],
+        )
+
+    @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
+    async def test_update_workflow_nodes_row_from_persisted_statuses(self, mock_tj):
+        """With statuses current the DAG comes from the database, untouched by condor."""
+        node_a = mock.MagicMock(
+            spec=CondorWorkflowJobNode, cached_node_status="Completed"
+        )
+        node_a.name = "a-job"
+        node_a.parent_nodes.all.return_value = []
+
+        # No persisted status: DAGMan has not expanded it yet.
+        node_b = mock.MagicMock(spec=CondorWorkflowJobNode, cached_node_status=None)
+        node_b.name = "b_job"
+        node_b.parent_nodes.all.return_value = [node_a]
+
+        # Reaching for condor_object is the bug this guards against: it opens a
+        # connection to the scheduler on every poll.
+        mock_condor_object = mock.MagicMock(spec=Workflow)
+        type(mock_condor_object).node_set = mock.PropertyMock(
+            side_effect=AssertionError("condor_object must not be used")
+        )
+
+        mock_job = mock.MagicMock(
+            spec=CondorWorkflow,
+            cached_status="Various",
+            label="test_label",
+            condor_object=mock_condor_object,
+            node_statuses_are_current=True,
+            update_status=mock_async_func,
+            safe_close=mock_async_func,
+        )
+        mock_job.node_set.select_subclasses.return_value.prefetch_related.return_value = [
+            node_a,
+            node_b,
+        ]
+        mock_tj.return_value = mock_job
+
+        request = RequestFactory().post("/jobs")
+        request.user = mock.MagicMock(is_authenticated=True)
+
+        result = await gizmo_jobs_table.update_workflow_nodes_row(request, job_id="1")
+
+        self.assertEqual(200, result.status_code)
+        data = json.loads(result.content.decode())
+        self.assertTrue(data["success"])
+        self.assertEqual(
+            {
+                "a-job": {
+                    "status": "com",
+                    "cluster_id": None,
+                    "parents": [],
+                    "display": "A Job",
+                },
+                "b_job": {
+                    "status": "sub",
+                    "cluster_id": None,
                     "parents": ["a-job"],
                     "display": "B Job",
                 },
