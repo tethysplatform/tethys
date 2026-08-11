@@ -22,7 +22,10 @@
     </div>
   {% endif %}
   {% csrf_token %}
-  {% bootstrap_form form %}
+  {% bootstrap_field form.username show_label=False %}
+  {% bootstrap_field form.email show_label=False %}
+  {% bootstrap_field form.password1 show_label=False %}
+  {% bootstrap_field form.password2 show_label=False %}
   <button type="submit" id="register-submit" class="btn btn-primary mb-3" name="register-submit">Sign Up</button>
   <span class="d-block">Already have an account? <a href="{% url 'accounts:login' %}">Login</a></span>
 </form>
