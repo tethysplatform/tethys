@@ -109,15 +109,26 @@ def get_condor_job_nodes(job):
 
 @database_sync_to_async
 def get_job_statuses(job):
+    """Percentage of the workflow in each status.
+
+    The denominator has to match whatever the counts were taken from.
+    ``cached_statuses`` counts node rows, so the total is the node count; reading
+    ``num_jobs`` there would build the condorpy workflow, which means a connection
+    to the scheduler on every poll -- the cost this path exists to avoid.
+    """
     num_statuses = 0
     statuses = {"Completed": 0, "Error": 0, "Running": 0, "Aborted": 0}
-    node_statuses = (
-        job.cached_statuses if job.node_statuses_are_current else job.statuses
-    )
+    if job.node_statuses_are_current:
+        node_statuses = job.cached_statuses
+        total = job.node_set.count()
+    else:
+        node_statuses = job.statuses
+        total = job.num_jobs
+
     for key, value in node_statuses.items():
         if key in statuses:
             num_statuses += value
-            statuses[key] = float(value) / float(job.num_jobs) * 100.0
+            statuses[key] = float(value) / float(total or 1) * 100.0
 
     return statuses, num_statuses
 

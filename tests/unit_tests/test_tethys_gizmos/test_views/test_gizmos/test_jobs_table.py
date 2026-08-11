@@ -386,17 +386,24 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
     async def test_update_row_serves_persisted_statuses(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
-        mock_tj.return_value = mock.MagicMock(
+        mock_job = mock.MagicMock(
             spec=CondorWorkflow,
             cached_status="Various",
             label="test_label",
             statuses={"Completed": 2, "Running": 0},
             cached_statuses={"Completed": 1, "Running": 1},
             node_statuses_are_current=True,
-            num_jobs=2,
             update_status=mock_async_func,
             safe_close=mock_async_func,
         )
+        # cached_statuses counts node rows, so the denominator is the node count.
+        mock_job.node_set.count.return_value = 2
+        # Reading num_jobs builds the condorpy workflow, which connects to the
+        # scheduler -- exactly what this path must not do.
+        type(mock_job).num_jobs = mock.PropertyMock(
+            side_effect=AssertionError("num_jobs must not be read")
+        )
+        mock_tj.return_value = mock_job
         request = RequestFactory().post(
             "/jobs", {"column_fields": self.column_names, "row": [("1", "30")]}
         )
