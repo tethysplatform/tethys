@@ -418,6 +418,15 @@ class TethysJobTest(TethysTestCase):
 
         self.assertTrue(time_to_update_status)
 
+    def test_update_status_given_status_marks_it_fresh(self):
+        """A reported status must satisfy is_time_to_update, or polls keep refreshing."""
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._last_status_update = django_timezone.now() - timedelta(minutes=15)
+
+        job.update_status(status="RUN")
+
+        self.assertFalse(job.is_time_to_update())
+
     def test_is_time_to_update_false(self):
         ret = TethysJob.objects.get(name="test_tethysjob")
         ret._update_status_interval = timedelta(minutes=15)

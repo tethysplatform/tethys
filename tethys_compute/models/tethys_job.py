@@ -282,6 +282,11 @@ class TethysJob(models.Model):
             if status != "OTH":
                 self.extended_properties.pop(self.OTHER_STATUS_KEY, None)
             self._status = status
+            # A reported status is as current as one we fetched ourselves, so move
+            # the clock is_time_to_update() reads. Without this, a job whose status
+            # is pushed to us is still refreshed from its source on the next poll,
+            # and reporting buys nothing.
+            self._last_status_update = timezone.now()
             self.save()
 
         # Update status if status not given and still pending/running
