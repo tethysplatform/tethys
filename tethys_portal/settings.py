@@ -506,7 +506,10 @@ if has_module(bokeh_settings):
         bokeh_js_dir = bokeh_settings.bokehjsdir()
     STATICFILES_DIRS.append(bokeh_js_dir)
 
-STATICFILES_USE_NPM = TETHYS_PORTAL_CONFIG.pop("STATICFILES_USE_NPM", False)
+STATICFILES_USE_NPM = (
+    TETHYS_PORTAL_CONFIG.pop("STATICFILES_USE_NPM", False)
+    or "STATICFILES_USE_NPM" in portal_config_settings.keys()
+)
 if STATICFILES_USE_NPM:
     STATICFILES_DIRS.append(BASE_DIR / "static" / "node_modules")
 
