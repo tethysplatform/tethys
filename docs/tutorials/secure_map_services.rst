@@ -6,34 +6,6 @@ Secure Map Services
 
 **Last Updated:** August 2026
 
-.. note::
-
-    **AUTHOR NOTES — REMOVE BEFORE PUBLISHING**
-
-    This draft was written from the ``SecureMapService`` implementation on the ``secure-map-service``
-    branch and from the working example app in
-    :file:`19.b.1/testing_app/tethysapp-test_app`. Items that could not be verified from the source
-    are called out in ``TODO`` / ``VERIFY`` notes throughout the document. Search for "TODO" and
-    "VERIFY" to find them all. Outstanding items:
-
-    * **No starting-point / solution repository exists yet.** Every other tutorial clones a
-      ``tethysapp-*_tutorial`` repo and checks out a per-section solution branch. This tutorial
-      currently just tells the reader to scaffold an app. Decide on a repo name (e.g.
-      ``tethysapp-secure_map_services_tutorial``) and add the ``git clone`` / ``git checkout``
-      blocks that the other tutorials use.
-    * **No screenshots.** There is no :file:`docs/tutorials/secure_map_services/resources/`
-      directory. Admin form screenshots and a finished-app screenshot should be added, along with
-      the ``.. figure::`` directives (currently omitted so the docs build does not break on
-      missing images).
-    * **No SDK reference docs.** ``SecureMapServiceSetting`` is not documented in
-      :file:`docs/tethys_sdk/app_settings.rst`, and ``SecureMapService`` is not documented in
-      :file:`docs/tethys_portal/admin_pages/tethys_services.rst`. This tutorial links to those
-      pages as though the sections exist. Either add those sections or remove the links.
-    * The public example service used throughout (GEGD / GRiD, ``https://grid.nga.mil/grid``)
-      requires credentials that most readers will not have. Consider swapping in a service readers
-      can actually sign up for, or clearly framing these as illustrative.
-
-
 This tutorial demonstrates how to use **Secure Map Services** in a Tethys app. A Secure Map Service
 lets app developers store the connection information and credentials for map services that
 require authentication — an API key or an OAuth2 access token — and then lets an app consume that
@@ -47,6 +19,8 @@ The following topics are covered:
 * Proxying requests so credentials never reach the browser
 * Changing service parameters at runtime
 * Requiring users to link an OAuth account before being able to access the app.
+* Utilizing a Secure Map Service as a response to retrieve data from a service and format it for use in your app.
+* Utilizing a Secure Map Service as an endpoint to make requests to a service from your app using JavaScript.
 
 0. Prerequisites
 ================
@@ -56,7 +30,7 @@ For this tutorial, we'll be utilizing two services that require authentication t
 * **GEGD** - a WMS imagery service authenticated with an API key.
 * **GRiD** - a REST API authenticated with an OAuth2 access token. 
 
-Before beginning this tutorial, make sure you have created an account with each service and have retreived an API key from the GEGD page.
+Before beginning this tutorial, make sure you have created an account with each service and have retrieved an API key from the GEGD page.
 
 1. Scaffold a New App
 =====================
@@ -68,7 +42,7 @@ To generate a new app using the scaffold, open a terminal, :ref:`activate_enviro
     tethys scaffold secure_map_app
 
 You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default value that is shown in the square brackets by pressing enter.
- 
+
 You'll then need to install your app by running these commands:
 
 .. code-block:: bash
@@ -96,7 +70,7 @@ If you've already generated a portal_config file, you may still need to generate
 3. Add a MapLayout
 ==================
 
-We'll be using a MapLayout for this application, so we'll begin by adding a MapLayout controller to your app. Begin by opening your `controllers.py` file and replacing the contents with the following code:
+We'll be using a MapLayout for this application, so we'll begin by adding a MapLayout controller to your app. Begin by opening your ``controllers.py`` file and replacing the contents with the following code:
 
 .. code-block:: python
 
@@ -111,7 +85,7 @@ We'll be using a MapLayout for this application, so we'll begin by adding a MapL
         template_name = f'{App.package}/home.html'
         map_title = 'Secure Map Services Tutorial'
 
-Next open the `home.html` in your `templates/secure_map_services_tutorial` directory and replace the contents with the following code:
+Next open the ``home.html`` in your ``templates/secure_map_services_tutorial`` directory and replace the contents with the following code:
 
 .. code-block:: html+django
 
@@ -120,15 +94,14 @@ Next open the `home.html` in your `templates/secure_map_services_tutorial` direc
 
 Now go ahead and open your app at localhost:8000 and you should see a fully interactive map like this one:
 
-###########################
-PUT A SCREENSHOT IMAGE HERE
-###########################
+.. figure:: ../images/tutorial/secure_map_services/secure-map-service-initial-map.png
+    :width: 650px
 
 4. Add a Basemap
 ================
 Now, you'll be setting up your first SecureMapService that you'll be using as a basemap. You'll want to make sure you have created your GEGD account and have your API key ready.
 
-First, open your `app.py` file and first add the following import to the top of your file:
+First, open your ``app.py`` file and first add the following import to the top of your file:
 
 .. code-block:: python
 
@@ -195,7 +168,7 @@ Use the following configurations for your new Secure Map Service:
 
 Then save your new Secure Map Service and assign it to the GEGD Secure Map Service setting, then save your app settings.
 
-Now we'll be adding the GEGD service as a basemap to your MapLayout. Open your `controllers.py` and add the following to your MapLayout class:
+Now we'll be adding the GEGD service as a basemap to your MapLayout. Open your ``controllers.py`` and add the following to your MapLayout class:
 
 .. code-block:: python
     :emphasize-lines: 6-11
@@ -233,6 +206,7 @@ Then configure your portal to require users to link their GRiD account before be
     tethys settings --set OAUTH_REQUIREMENTS.secure_map_app grid
 
 The last step required to configure your application to work with GRiD is to register your application with GRiD. You'll need to register your application with GRiD to get a client ID and client secret. You can do this by going to the GRiD developer portal and creating a new application. Use the following settings:
+
 - Go to https://grid.nga.mil/grid/api/application/list
 - Click on "Create new application"
 - Fill out the form with the following settings:
@@ -256,7 +230,7 @@ Now when you try to open your app you will be redirected to your account setting
 
 Next, you'll be setting up your second SecureMapService that you'll be using as a map layer. You'll want to make sure you have created your GRiD account since we'll be using that service for this layer.
 
-Begin by adding a new SecureMapServiceSetting to your app class in `app.py`:
+Begin by adding a new SecureMapServiceSetting to your app class in ``app.py``:
 
 .. code-block:: python
     :emphasize-lines: 17, 30-34
@@ -324,7 +298,7 @@ Use the following configurations for your new Secure Map Service:
 
 Then save your new Secure Map Service and assign it to the GRiD Secure Map Service setting, then save your app settings.
 
-Our next step will be to add a new map layer to our MapLayout using the GRiD service. Open your `controllers.py` and add the following to your MapLayout class:
+Our next step will be to add a new map layer to our MapLayout using the GRiD service. Open your ``controllers.py`` and add the following to your MapLayout class:
 
 .. code-block:: python
     :emphasize-lines: 5-19
@@ -349,15 +323,15 @@ Our next step will be to add a new map layer to our MapLayout using the GRiD ser
             ]
             return layer_groups
 
-    Now just go ahead and refresh your app and you should see the GRiD layer on your map. You can toggle the visibility of the layer using the layers control in the top right corner of the map.
+Now just go ahead and refresh your app and you should see the GRiD layer on your map. You can toggle the visibility of the layer using the layers control in the top right corner of the map.
     
 7. Update Service Parameters
 ============================
-Now that you have data from GRiD displaying on your map in the form of a layer, you may want to change the parameters of the service to display different data. You can do this by going into the service settings and manually updating the parameters field. But you can also do this in your app dynamically using the `update_secure_map_service_setting_params()` method in your app code.
+Now that you have data from GRiD displaying on your map in the form of a layer, you may want to change the parameters of the service to display different data. You can do this by going into the service settings and manually updating the parameters field. But you can also do this in your app dynamically using the ``update_secure_map_service_setting_params()`` method in your app code.
 
-In order to demonstrate how this can be done dynamically in your app, we'll add a form to the app that will allow the user to select which GRiD layer they want to display on the map. We'll then use the `update_secure_map_service_setting_params()` method to update the parameters of the GRiD service based on the user's selection.
+In order to demonstrate how this can be done dynamically in your app, we'll add a form to the app that will allow the user to select which GRiD layer they want to display on the map. We'll then use the ``update_secure_map_service_setting_params()`` method to update the parameters of the GRiD service based on the user's selection.
 
-We'll begin by adding a custom map tab to your MapLayout that will contain this form. Open `home.html` and add the following code:
+We'll begin by adding a custom map tab to your MapLayout that will contain this form. Open ``home.html`` and add the following code:
 
 .. code-block:: html+django
 
@@ -378,7 +352,7 @@ We'll begin by adding a custom map tab to your MapLayout that will contain this 
     </div>
     {% endblock %}
 
-Now we'll need to add the gizmos for the form to your MapLayout class in `controllers.py`. Add the following code:
+Now we'll need to add the gizmos for the form to your MapLayout class in ``controllers.py``. Add the following code:
 
 .. code-block:: python
 
@@ -411,7 +385,7 @@ Now we'll need to add the gizmos for the form to your MapLayout class in `contro
 
             return context
 
-Now if you refresh your app, you should see a new tab on the left that you can switch to with a select input and a button. Right now if you click the "Update GRID Layer" button, nothing will happen. We'll need to add a `post()` method to your MapLayout class to handle the form submission and update the GRiD service parameters.
+Now if you refresh your app, you should see a new tab on the left that you can switch to with a select input and a button. Right now if you click the "Update GRID Layer" button, nothing will happen. We'll need to add a ``post()`` method to your MapLayout class to handle the form submission and update the GRiD service parameters.
 
 To add that functionality, first add the following imports to the top of `controllers.py`:
 
@@ -420,7 +394,7 @@ To add that functionality, first add the following imports to the top of `contro
     from django.http import HttpResponse
     from django.shortcuts import redirect
 
-Then add the following `post()` method to your MapLayout class:
+Then add the following ``post()`` method to your MapLayout class:
 
 .. code-block:: python
 
@@ -443,9 +417,9 @@ Now go ahead and try selecting a different GRiD layer from the select input and 
 8. Using a Secure Map Service as a Response
 ===========================================
 
-You can access a SecureMapService as a response in order to work directly with the data returned from the service in your python. We'll be using this to retreive spatial data from the GRiD API and format it into GeoJSON to display AOIs on the map.
+You can access a SecureMapService as a response in order to work directly with the data returned from the service in your Python code. We'll be using this to retrieve spatial data from the GRiD API and format it into GeoJSON to display AOIs on the map.
 
-First, let's add a new SecureMapServiceSetting to your app class in `app.py` for the GRiD AOI service. This service will be used to both dsiplay existing AOIs on the map, and to submit new AOIs to the GRiD service. Add the following code to your app class:
+First, let's add a new SecureMapServiceSetting to your app class in ``app.py`` for the GRiD AOI service. This service will be used to both dsiplay existing AOIs on the map, and to submit new AOIs to the GRiD service. Add the following code to your app class:
 
 .. code-block:: python
     :emphasize-lines: 18, 36-40
@@ -516,9 +490,9 @@ Use these configurations for the new Secure Map Service:
 
 Save your new Secure Map Service and assign it to the GRiD AOI Secure Map Service setting, then save your app settings.
 
-Next, add a new layer to your MapLayout class in `controllers.py` that will display the existing AOIs on the map. 
+Next, add a new layer to your MapLayout class in ``controllers.py`` that will display the existing AOIs on the map. 
 
-For that you'll need to first add the following packages to the dependencies of your application. Open your `install.yml` and edit the requirements block like so:
+For that you'll need to first add the following packages to the dependencies of your application. Open your ``install.yml`` and edit the requirements block like so:
 
 .. code-block:: yaml
     :emphasize-lines: 6, 8
@@ -532,7 +506,7 @@ For that you'll need to first add the following packages to the dependencies of 
       packages:
         - shapely
 
-Next, add the following imports to `controllers.py`:
+Next, add the following imports to ``controllers.py``:
 
 .. code-block:: python
     :emphasize-lines: 3, 6-7
@@ -547,7 +521,7 @@ Next, add the following imports to `controllers.py`:
     import json
     from .app import App
 
-Now add the following helper function to `controllers.py` This function will help format the AOI data returned from the GRiD service into a GeoJSON format that can be used to create a new MVLayer:
+Now add the following helper function to ``controllers.py``. This function will help format the AOI data returned from the GRiD service into a GeoJSON format that can be used to create a new MVLayer:
 
 .. code-block:: python
 
@@ -584,7 +558,7 @@ Now add the following helper function to `controllers.py` This function will hel
             "features": features,
     }
 
-Now update your `compose_layers()` method in your MapLayout class to create a new MVLayer for the AOIs:
+Now update your ``compose_layers()`` method in your MapLayout class to create a new MVLayer for the AOIs:
 
 .. code-block:: python
     :emphasize-lines: 8-12, 14, 16-34, 40
@@ -642,7 +616,7 @@ The last feature we'll be adding to our app is the ability to use a SecureMapSer
 
 Now let's look at adding a new AOI to the GRiD service using the GRiD AOI Secure Map Service. We'll be adding a new form to the custom map tab that will allow the user to draw a new AOI on the map and submit it to the GRiD service.
 
-First, we'll need to make some updates to your `controllers.py` file. 
+First, we'll need to make some updates to your ``controllers.py`` file.
 
 To start, update your imports:
 
@@ -686,7 +660,7 @@ Begin by adding the MVDraw gizmo to your class:
         )
         
 
-Next, let's add the gizmos you'll need for your new AOI form. Add the following code to your `get_context` method in `controllers.py`:
+Next, let's add the gizmos you'll need for your new AOI form. Add the following code to your ``get_context`` method in ``controllers.py``:
 
 .. code-block:: python
     :emphasize-lines: 19-23, 25-27, 29-34, 38-39
@@ -733,10 +707,11 @@ Next, let's add the gizmos you'll need for your new AOI form. Add the following 
 
         return context
 
-Now you need to add the new gizmos to a form in `home.html`. You'll also be making a slight update to the form you added in step 7 to differentiate it from the new AOI form in your app's requests.
+Now you need to add the new gizmos to a form in ``home.html``. You'll also be making a slight update to the form you added in step 7 to differentiate it from the new AOI form in your app's requests.
 
 .. code-block:: html+django
     :emphasize-lines: 5, 10-15
+
     {% block custom_map_tab_panels %}
     <div class="tab-pane" id="custom-tab-panel" role="tabpanel" aria-labelledby="custom-tab-toggle">
         <form method="POST">
@@ -756,9 +731,9 @@ Now you need to add the new gizmos to a form in `home.html`. You'll also be maki
     </div>
     {% endblock %}
 
-Next, we need to add some custom JavaScript to handle the AOI form submission and send the request 
+Next, we need to add some custom JavaScript to handle the AOI form submission and send the request.
 
-Open the `public/js` folder and create a new file named `aoi.js` and add the following code:
+Open the ``public/js`` folder and create a new file named ``aoi.js`` and add the following code:
 
 .. code-block:: javascript
 
@@ -788,7 +763,7 @@ Open the `public/js` folder and create a new file named `aoi.js` and add the fol
         })
     });
 
-Now just include new JavaScript file in your `home.html` file by adding this:
+Now just include the new JavaScript file in your ``home.html`` file by adding this code block:
 
 .. code-block:: html+django
 
@@ -800,18 +775,11 @@ Now just include new JavaScript file in your `home.html` file by adding this:
 That's it! Now just do a refresh on your page and you should be able to draw an AOI on the map, enter a name for it, and click the "Create AOI" button to submit it to the GRiD service. You can check your GRiD account to see if the new AOI was created successfully, or just refresh the page and the AOI should be there with the other already existing AOIs.
 
 That's it! You've now successfully created a Tethys app that uses Secure Map Services to display data from GEGD and GRiD, and allows users to create new AOIs on the map using the GRiD service.
-For more information
 
-12. Solution
+10. Solution
 ============
+This concludes the tutorial. You can view the solution code for this tutorial in the `tethysapp-secure_map_tutorial <https://github.com/tethysplatform/tethysapp-secure_map_tutorial>`__ repository on GitHub. You can clone the repository using the following command:
 
-.. note::
+.. code-block:: bash
 
-    **TODO:** Add the solution repository and clone instructions once the tutorial app repo exists,
-    matching the pattern used by the other tutorials:
-
-    .. parsed-literal::
-
-        git clone https://github.com/tethysplatform/tethysapp-secure_map_services_tutorial
-        cd tethysapp-secure_map_services_tutorial
-        git checkout -b secure-map-services-solution secure-map-services-solution-|version|
+    git clone https://github.com/tethysplatform/tethysapp-secure_map_tutorial
