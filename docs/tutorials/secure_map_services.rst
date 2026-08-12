@@ -39,7 +39,7 @@ To generate a new app using the scaffold, open a terminal, :ref:`activate_enviro
 
 .. code-block:: bash
 
-    tethys scaffold secure_map_app
+    tethys scaffold secure_map_tutorial
 
 You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default value that is shown in the square brackets by pressing enter.
 
@@ -47,7 +47,7 @@ You'll then need to install your app by running these commands:
 
 .. code-block:: bash
 
-    cd tethysapp-secure_map_app
+    cd tethysapp-secure_map_tutorial
     tethys install -d
 
 
@@ -119,7 +119,7 @@ Then add this to your main App class:
         """
         name = 'Secure Map App'
         description = ''
-        package = 'secure_map_app'  # WARNING: Do not change this value
+        package = 'secure_map_tutorial'  # WARNING: Do not change this value
         index = 'home'
         icon = f'{package}/images/icon.gif'
         root_url = 'secure-map-app'
@@ -203,7 +203,7 @@ Then configure your portal to require users to link their GRiD account before be
 
 .. code-block:: bash
 
-    tethys settings --set OAUTH_REQUIREMENTS.secure_map_app grid
+    tethys settings --set OAUTH_REQUIREMENTS.secure_map_tutorial grid
 
 The last step required to configure your application to work with GRiD is to register your application with GRiD. You'll need to register your application with GRiD to get a client ID and client secret. You can do this by going to the GRiD developer portal and creating a new application. Use the following settings:
 
@@ -241,7 +241,7 @@ Begin by adding a new SecureMapServiceSetting to your app class in ``app.py``:
         """
         name = 'Secure Map App'
         description = ''
-        package = 'secure_map_app'  # WARNING: Do not change this value
+        package = 'secure_map_tutorial'  # WARNING: Do not change this value
         index = 'home'
         icon = f'{package}/images/icon.gif'
         root_url = 'secure-map-app'
@@ -430,7 +430,7 @@ First, let's add a new SecureMapServiceSetting to your app class in ``app.py`` f
         """
         name = 'Secure Map App'
         description = ''
-        package = 'secure_map_app'  # WARNING: Do not change this value
+        package = 'secure_map_tutorial'  # WARNING: Do not change this value
         index = 'home'
         icon = f'{package}/images/icon.gif'
         root_url = 'secure-map-app'
@@ -769,7 +769,7 @@ Now just include the new JavaScript file in your ``home.html`` file by adding th
 
     {% block scripts %}
         {{ block.super }}
-        <script src="{% static 'secure_map_app/js/aoi.js' %}"></script>
+        <script src="{% static 'secure_map_tutorial/js/aoi.js' %}"></script>
     {% endblock %}
 
 That's it! Now just do a refresh on your page and you should be able to draw an AOI on the map, enter a name for it, and click the "Create AOI" button to submit it to the GRiD service. You can check your GRiD account to see if the new AOI was created successfully, or just refresh the page and the AOI should be there with the other already existing AOIs.
