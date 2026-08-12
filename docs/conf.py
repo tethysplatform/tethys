@@ -70,6 +70,8 @@ MOCK_MODULES = [
     "docker",
     "docker.types",
     "docker.errors",
+    "encrypted_fields",
+    "encrypted_fields.fields",
     "guardian",
     "guardian.admin",
     "guardian.models",
