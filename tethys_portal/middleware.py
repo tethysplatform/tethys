@@ -176,7 +176,12 @@ class TethysOauthRequiredMiddleware:
         required_provider = self.requirements.get(app_name)
         if not required_provider:
             return self.get_response(request)
-
+        # If the user is trying to access an app and there is a required OAuth provider for that app, check if the user is authenticated.
+        if not request.user.is_authenticated:
+            next_param = urlencode({"next": request.get_full_path()})
+            login_url = reverse("accounts:login")
+            return redirect(f"{login_url}?{next_param}")
+        
         if request.user.social_auth.filter(provider=required_provider).exists():
             return self.get_response(request)
 
