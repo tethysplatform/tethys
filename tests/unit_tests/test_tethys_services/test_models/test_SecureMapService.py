@@ -167,3 +167,32 @@ class SecureMapServiceTests(TethysTestCase):
                 "test_api_key": "api_key_12345",
             },
         )
+
+    def test_update_params(self):
+        secure_map_service = SecureMapService(
+            name="test_secure_map_service",
+            endpoint="http://example.com",
+            params={"param1": "value1", "param2": "value2"},
+        )
+        secure_map_service.save()
+
+        secure_map_service.update_params({"param2": "new_value", "param3": "value3"})
+
+        updated_service = SecureMapService.objects.get(pk=secure_map_service.pk)
+        self.assertEqual(
+            updated_service.params,
+            {"param1": "value1", "param2": "new_value", "param3": "value3"},
+        )
+
+    def test_update_params_no_existing_params(self):
+        secure_map_service = SecureMapService(
+            name="test_secure_map_service",
+            endpoint="http://example.com",
+            params=None,
+        )
+        secure_map_service.save()
+
+        secure_map_service.update_params({"param1": "value1"})
+
+        updated_service = SecureMapService.objects.get(pk=secure_map_service.pk)
+        self.assertEqual(updated_service.params, {"param1": "value1"})

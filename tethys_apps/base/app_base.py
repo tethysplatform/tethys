@@ -1987,13 +1987,13 @@ class TethysAppBase(TethysBase):
         )
 
     @classmethod
-    def update_secure_map_service_setting_params(cls, name, params):
+    def update_secure_map_service_params(cls, name, params):
         """
         Update the params for a given SecureMapServiceSetting.
 
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
-            params(dict): dictionary of params to update for the setting.
+            params(dict): dictionary of params to update for the service.
         """
         from tethys_apps.models import TethysApp
 

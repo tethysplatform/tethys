@@ -441,11 +441,23 @@ class SecureMapService(models.Model):
 
     @classmethod
     def get_authentication_method_options(cls):
+        """
+        Get the available authentication method options for the SecureMapService model. 
+        This method is used for populating the choices in the admin form.
+        """
         return [
             value for value, _ in cls._meta.get_field("authentication_method").choices
         ]
 
     def get_oauth_token(self, user):
+        """
+        Retrieve the OAuth token for the given user.
+        Args:
+            user (User): The user for whom to retrieve the OAuth token.
+        
+        Returns:
+            str: The OAuth token for the user.
+        """
         if self.authentication_method != "oauth":
             raise ValueError(
                 "Authentication method must be 'oauth' to retrieve an OAuth token."
@@ -467,6 +479,12 @@ class SecureMapService(models.Model):
         return access_token
 
     def get_resolved_params(self):
+        """
+        Resolve template variables in the service parameters using the model's attributes.
+
+        Returns:
+            dict: A dictionary of resolved parameters.
+        """
         if not self.params:
             return {}
 
@@ -480,3 +498,18 @@ class SecureMapService(models.Model):
                 value = Template(value).safe_substitute(safe_attribute_names)
             resolved_params[key] = value
         return resolved_params
+
+    def update_params(self, new_params):
+        """
+        Merge the given parameters into the parameters of the service and save.
+
+        Note that a SecureMapService may be shared by multiple settings and apps,
+        so updating its parameters affects every app that uses it.
+
+        Args:
+            new_params (dict): The parameters to merge into the service parameters.
+        """
+        params = self.params or {}
+        params.update(new_params)
+        self.params = params
+        self.save()

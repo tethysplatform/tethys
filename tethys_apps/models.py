@@ -1296,11 +1296,7 @@ class SecureMapServiceSetting(TethysAppSetting):
                 f'"{self.name}" for app "{self.tethys_app.package}": '
                 f"no SecureMapService assigned."
             )
-        service = self.secure_map_service
-        params = service.params or {}
-        params.update(new_params)
-        service.params = params
-        service.save()
+        self.secure_map_service.update_params(new_params)
 
 
 class SchedulerSetting(TethysAppSetting):
