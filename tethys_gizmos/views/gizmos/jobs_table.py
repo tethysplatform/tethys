@@ -65,46 +65,62 @@ def _display_node_name(job_name):
     return job_name.replace("_", " ").replace("-", " ").title()
 
 
+def _persisted_dag_nodes(job):
+    """Each node's name, status, cluster id and parent names, from the database.
+
+    Names are the CondorPy job name, the same as the live source uses, so a workflow
+    whose node names contain spaces produces the same keys whichever source served it.
+    Condor assigns cluster ids at submit time and does not persist them; nothing reads
+    them, and fetching them would need the remote connection this path exists to avoid.
+    """
+    nodes = list(job.node_set.select_subclasses().prefetch_related("parent_nodes"))
+    names = {node.pk: node.job.name for node in nodes}
+
+    for node in nodes:
+        yield (
+            names[node.pk],
+            node.cached_node_status or "Unexpanded",
+            None,
+            [names.get(p.pk, p.name) for p in node.parent_nodes.all()],
+        )
+
+
+def _live_dag_nodes(job):
+    """The same, read from the scheduler: a connection plus one query per node."""
+    for node in job.condor_object.node_set:
+        yield (
+            node.job.name,
+            node.job.status,
+            node.job.cluster_id,
+            [parent.job.name for parent in node.parent_nodes],
+        )
+
+
 @database_sync_to_async
 def get_condor_job_nodes(job):
     """Build the DAG for a CondorWorkflow.
 
-    When persisted statuses are current the whole DAG is assembled from the
-    database -- statuses from ``CondorWorkflowNode.cached_node_status`` and the
-    topology from the node rows themselves. A node with no persisted status has
-    not been expanded by DAGMan yet and is reported as ``Unexpanded``.
+    Assembled from the database while persisted statuses are current -- statuses from
+    ``CondorWorkflowNode.cached_node_status``, topology from the node rows themselves.
+    A node with no persisted status has not been expanded by DAGMan yet and is reported
+    as ``Unexpanded``.
 
-    Going through ``condor_object`` instead costs a connection to the scheduler on
-    every poll even when no status is read from it, and then one remote query per
-    node for the live status.
+    Only where the rows come from differs between the two sources; the shape they are
+    turned into is built in one place, so the two cannot drift apart.
     """
-    dag = {}
+    nodes = _persisted_dag_nodes if job.node_statuses_are_current else _live_dag_nodes
 
-    if job.node_statuses_are_current:
-        nodes = job.node_set.select_subclasses().prefetch_related("parent_nodes")
-        for node in nodes:
-            dag[node.name] = {
-                # Condor assigns cluster ids at submit time and they are not
-                # persisted. The jobs table does not read this, and fetching it
-                # would need the remote connection this branch exists to avoid.
-                "cluster_id": None,
-                "display": _display_node_name(node.name),
-                "status": CondorWorkflow.STATUS_MAP[
-                    node.cached_node_status or "Unexpanded"
-                ].lower(),
-                "parents": [parent.name for parent in node.parent_nodes.all()],
-            }
-        return dag
-
-    for node in job.condor_object.node_set:
-        dag[node.job.name] = {
-            "cluster_id": node.job.cluster_id,
-            "display": _display_node_name(node.job.name),
-            "status": CondorWorkflow.STATUS_MAP[node.job.status].lower(),
-            "parents": [parent.job.name for parent in node.parent_nodes],
+    return {
+        name: {
+            "cluster_id": cluster_id,
+            "display": _display_node_name(name),
+            # Defaulted rather than indexed: a persisted status comes from a remote
+            # reporter, and one condor does not define must not take the diagram down.
+            "status": CondorWorkflow.STATUS_MAP.get(status, "SUB").lower(),
+            "parents": parents,
         }
-
-    return dag
+        for name, status, cluster_id, parents in nodes(job)
+    }
 
 
 @database_sync_to_async
@@ -112,15 +128,16 @@ def get_job_statuses(job):
     """Percentage of the workflow in each status.
 
     The denominator has to match whatever the counts were taken from.
-    ``cached_statuses`` counts node rows, so the total is the node count; reading
-    ``num_jobs`` there would build the condorpy workflow, which means a connection
-    to the scheduler on every poll -- the cost this path exists to avoid.
+    ``cached_node_statuses`` buckets every node row, so its values already sum to the node
+    count -- no second query for it. Reading ``num_jobs`` there would build the
+    condorpy workflow, which means a connection to the scheduler on every poll, the
+    cost this path exists to avoid.
     """
     num_statuses = 0
     statuses = {"Completed": 0, "Error": 0, "Running": 0, "Aborted": 0}
     if job.node_statuses_are_current:
-        node_statuses = job.cached_statuses
-        total = job.node_set.count()
+        node_statuses = job.cached_node_statuses
+        total = sum(node_statuses.values())
     else:
         node_statuses = job.statuses
         total = job.num_jobs

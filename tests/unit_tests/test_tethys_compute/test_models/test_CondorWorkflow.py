@@ -314,20 +314,20 @@ class CondorWorkflowTest(TethysTestCase):
 
         self.assertEqual("ERR", self.condorworkflow._status)
 
-    def test_cached_statuses_unexpanded_when_nothing_persisted(self):
-        statuses = self.condorworkflow.cached_statuses
+    def test_cached_node_statuses_unexpanded_when_nothing_persisted(self):
+        statuses = self.condorworkflow.cached_node_statuses
 
         self.assertEqual(2, statuses["Unexpanded"])
         self.assertEqual(0, statuses["Running"])
         self.assertEqual(0, statuses["Completed"])
 
-    def test_cached_statuses_counts_persisted_statuses(self):
+    def test_cached_node_statuses_counts_persisted_statuses(self):
         self.condorworkflowjobnode.cached_node_status = "Running"
         self.condorworkflowjobnode.save()
         self.condorworkflowjobnode_child.cached_node_status = "Completed"
         self.condorworkflowjobnode_child.save()
 
-        statuses = self.condorworkflow.cached_statuses
+        statuses = self.condorworkflow.cached_node_statuses
 
         self.assertEqual(1, statuses["Running"])
         self.assertEqual(1, statuses["Completed"])
@@ -371,38 +371,23 @@ class CondorWorkflowTest(TethysTestCase):
 
         self.assertFalse(self.condorworkflow.node_statuses_are_current)
 
-    def test_cached_statuses_makes_no_remote_call(self):
+    def test_cached_node_statuses_makes_no_remote_call(self):
         with mock.patch(
             "tethys_compute.models.condor.condor_workflow.CondorBase.condor_object"
         ) as mock_co:
-            self.condorworkflow.cached_statuses
+            self.condorworkflow.cached_node_statuses
 
         mock_co.assert_not_called()
 
-    def test_update_node_statuses_no_execute_time(self):
-        self.condorworkflow.execute_time = None
-
-        self.assertEqual({}, self.condorworkflow.update_node_statuses())
-
-    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
-    def test_update_node_statuses_persists_status(self, mock_co):
-        self.condorworkflow.execute_time = tz.now()
-        cpy_node = mock.MagicMock()
-        cpy_node.job.cluster_id = 7
-        cpy_node.job.name = "Node_1"
-        mock_co.node_set = [cpy_node]
-        mock_co.node_statuses_by_cluster_id.return_value = {7: "Running"}
-
-        updated = self.condorworkflow.update_node_statuses()
+    def test_apply_node_statuses_persists_status_and_marks_fresh(self):
+        updated = self.condorworkflow.apply_node_statuses({"Node_1": "Running"})
 
         self.condorworkflowjobnode.refresh_from_db()
         self.assertEqual("Running", self.condorworkflowjobnode.cached_node_status)
         self.assertEqual({"Node_1": "Running"}, updated)
-        mock_co.node_statuses_by_cluster_id.assert_called_once()
         self.assertTrue(self.condorworkflow.node_statuses_are_current)
 
-    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
-    def test_update_node_statuses_matches_name_with_spaces(self, mock_co):
+    def test_apply_node_statuses_matches_name_with_spaces(self):
         """Node names are underscored to build the condorpy job name."""
         spaced_node = CondorWorkflowJobNode(
             name="Node With Spaces",
@@ -411,26 +396,83 @@ class CondorWorkflowTest(TethysTestCase):
             _num_jobs=1,
         )
         spaced_node.save()
-        self.condorworkflow.execute_time = tz.now()
-        cpy_node = mock.MagicMock()
-        cpy_node.job.cluster_id = 9
-        cpy_node.job.name = "Node_With_Spaces"
-        mock_co.node_set = [cpy_node]
-        mock_co.node_statuses_by_cluster_id.return_value = {9: "Completed"}
 
-        self.condorworkflow.update_node_statuses()
+        self.condorworkflow.apply_node_statuses({"Node_With_Spaces": "Completed"})
 
         spaced_node.refresh_from_db()
         self.assertEqual("Completed", spaced_node.cached_node_status)
 
-    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
-    def test_update_node_statuses_remote_failure(self, mock_co):
-        self.condorworkflow.execute_time = tz.now()
-        mock_co.node_statuses_by_cluster_id.side_effect = Exception("boom")
+    def test_apply_node_statuses_makes_no_remote_call(self):
+        with mock.patch(
+            "tethys_compute.models.condor.condor_workflow.CondorBase.condor_object"
+        ) as mock_co:
+            self.condorworkflow.apply_node_statuses({"Node_1": "Running"})
 
-        updated = self.condorworkflow.update_node_statuses()
+        mock_co.assert_not_called()
+
+    def test_apply_node_statuses_matching_nothing_does_not_mark_fresh(self):
+        """Freshness means something was learned, or the views serve an empty DAG."""
+        updated = self.condorworkflow.apply_node_statuses({"no_such_node": "Running"})
+
+        self.assertEqual({}, updated)
+        self.assertIsNone(self.condorworkflow.node_statuses_updated)
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
+        self.condorworkflowjobnode.refresh_from_db()
+        self.assertIsNone(self.condorworkflowjobnode.cached_node_status)
+
+    def test_apply_node_statuses_matching_nothing_leaves_an_existing_stamp_alone(self):
+        """Not stamping is not the same as clearing: fresh statuses must survive."""
+        self.condorworkflow.apply_node_statuses({"Node_1": "Running"})
+        stamped = self.condorworkflow.node_statuses_updated
+
+        self.condorworkflow.apply_node_statuses({"no_such_node": "Completed"})
+
+        self.assertEqual(stamped, self.condorworkflow.node_statuses_updated)
+        self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
+    def test_apply_node_statuses_ignores_a_status_condor_does_not_define(self):
+        """The reporter is remote, so an unknown status must not be persisted."""
+        updated = self.condorworkflow.apply_node_statuses({"Node_1": "Banana"})
 
         self.assertEqual({}, updated)
         self.condorworkflowjobnode.refresh_from_db()
         self.assertIsNone(self.condorworkflowjobnode.cached_node_status)
         self.assertIsNone(self.condorworkflow.node_statuses_updated)
+
+    def test_apply_node_statuses_keeps_the_valid_half_of_a_mixed_report(self):
+        self.condorworkflow.apply_node_statuses(
+            {"Node_1": "Completed", "no_such_node": "Running"}
+        )
+
+        self.condorworkflowjobnode.refresh_from_db()
+        self.assertEqual("Completed", self.condorworkflowjobnode.cached_node_status)
+        self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
+    def test_apply_node_statuses_repeated_report_keeps_statuses_fresh(self):
+        """The reporter heartbeats unchanged statuses to hold the cache open."""
+        self.condorworkflow.apply_node_statuses({"Node_1": "Running"})
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            seconds=59
+        )
+
+        updated = self.condorworkflow.apply_node_statuses({"Node_1": "Running"})
+
+        self.assertEqual({"Node_1": "Running"}, updated)
+        self.assertLess(
+            tz.now() - self.condorworkflow.node_statuses_updated,
+            datetime.timedelta(seconds=5),
+        )
+
+    @mock.patch(
+        "tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes"
+    )
+    @mock.patch("tethys_compute.models.condor.condor_workflow.CondorBase.condor_object")
+    def test_execute_does_not_mutate_the_callers_options(self, mock_co, mock_ln):
+        """The ads belong to this job, so a reused list must not collect them."""
+        mock_co.submit.return_value = 111
+        self.condorworkflow.scheduler = None
+        options = ["foo"]
+
+        self.condorworkflow._execute(options=options)
+
+        self.assertEqual(["foo"], options)

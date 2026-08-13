@@ -14,7 +14,7 @@ import logging
 from pathlib import Path
 
 from condorpy.static import CONDOR_JOB_STATUSES
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
@@ -48,8 +48,9 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         return self.condorpy_workflow
 
     def _execute(self, options=None):
-        if options is None:
-            options = list()
+        # Copied rather than extended in place: the ads are this job's, so appending
+        # them to the caller's list would leak them into a second submit that reused it.
+        options = list(options) if options is not None else []
 
         options.extend(self.status_report_options)
         self.load_nodes()
@@ -114,7 +115,7 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
 
     @property
-    def cached_statuses(self):
+    def cached_node_statuses(self):
         """Node status counts built from the database instead of the scheduler.
 
         Mirrors the shape of :attr:`CondorBase.statuses` -- every condor status name
@@ -131,61 +132,50 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
         return statuses
 
-    def update_node_statuses(self):
-        """Refresh and persist the status of every node with one remote query.
-
-        Views can then render the DAG from ``CondorWorkflowNode.cached_node_status``
-        instead of issuing a remote query per node on every poll. Intended to be
-        called by a background updater alongside ``update_status``.
-
-        Returns:
-            dict: node name -> condor status name, for nodes with a known status.
-        """
-        updated = {}
-        if not self.execute_time:
-            return updated
-
-        condor_object = self.condor_object
-        try:
-            by_cluster_id = condor_object.node_statuses_by_cluster_id()
-            condor_object.update_node_ids()
-            status_by_name = {}
-            for cpy_node in condor_object.node_set:
-                status = by_cluster_id.get(cpy_node.job.cluster_id)
-                if status:
-                    status_by_name[cpy_node.job.name] = status
-        except Exception:
-            log.warning(
-                f"Unable to batch-update node statuses for job {self.id}", exc_info=True
-            )
-            return updated
-
-        return self.apply_node_statuses(status_by_name)
-
     def apply_node_statuses(self, status_by_name):
         """Persist node statuses that were determined elsewhere.
 
         Args:
             status_by_name(dict): condorpy job name -> condor status name. That is
                 the node name with spaces replaced by underscores, as built by
-                CondorPyJob.condorpy_job.
+                CondorPyJob.condorpy_job. Names matching no node are ignored, as are
+                statuses condor does not define -- the caller is remote, so neither
+                is trustworthy.
 
         Returns:
             dict: node name -> condor status name, for the nodes that matched.
         """
+        valid_statuses = set(CONDOR_JOB_STATUSES.values())
         updated = {}
+        changed = []
 
         for node in self.node_set.select_subclasses():
             status = status_by_name.get(node.job.name)
             if not status:
                 continue
+            if status not in valid_statuses:
+                log.warning(
+                    f"Ignoring unrecognized status {status!r} reported for node "
+                    f"{node.name!r} of job {self.id}."
+                )
+                continue
             if status != node.cached_node_status:
                 node.cached_node_status = status
-                node.save(update_fields=["cached_node_status"])
+                changed.append(node)
             updated[node.name] = status
 
-        self.node_statuses_updated = timezone.now()
-        self.save(update_fields=["node_statuses_updated"])
+        # Nothing matched, so nothing was learned about this workflow. Leaving the
+        # freshness stamp alone keeps the views reading live rather than serving a
+        # DAG of unexpanded nodes as though it were current.
+        if not updated:
+            return updated
+
+        with transaction.atomic():
+            if changed:
+                CondorWorkflowNode.objects.bulk_update(changed, ["cached_node_status"])
+            self.node_statuses_updated = timezone.now()
+            self.save(update_fields=["node_statuses_updated"])
+
         return updated
 
     def _update_status(self, *args, **kwargs):

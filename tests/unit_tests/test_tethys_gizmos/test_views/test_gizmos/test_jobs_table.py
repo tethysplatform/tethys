@@ -391,12 +391,12 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             cached_status="Various",
             label="test_label",
             statuses={"Completed": 2, "Running": 0},
-            cached_statuses={"Completed": 1, "Running": 1},
+            cached_node_statuses={"Completed": 1, "Running": 1},
             node_statuses_are_current=True,
             update_status=mock_async_func,
             safe_close=mock_async_func,
         )
-        # cached_statuses counts node rows, so the denominator is the node count.
+        # cached_node_statuses counts node rows, so the denominator is the node count.
         mock_job.node_set.count.return_value = 2
         # Reading num_jobs builds the condorpy workflow, which connects to the
         # scheduler -- exactly what this path must not do.
@@ -556,14 +556,18 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
     async def test_update_workflow_nodes_row_from_persisted_statuses(self, mock_tj):
         """With statuses current the DAG comes from the database, untouched by condor."""
         node_a = mock.MagicMock(
-            spec=CondorWorkflowJobNode, cached_node_status="Completed"
+            spec=CondorWorkflowJobNode, cached_node_status="Completed", pk=1
         )
         node_a.name = "a-job"
+        node_a.job.name = "a-job"
         node_a.parent_nodes.all.return_value = []
 
         # No persisted status: DAGMan has not expanded it yet.
-        node_b = mock.MagicMock(spec=CondorWorkflowJobNode, cached_node_status=None)
+        node_b = mock.MagicMock(
+            spec=CondorWorkflowJobNode, cached_node_status=None, pk=2
+        )
         node_b.name = "b_job"
+        node_b.job.name = "b_job"
         node_b.parent_nodes.all.return_value = [node_a]
 
         # Reaching for condor_object is the bug this guards against: it opens a
@@ -674,6 +678,58 @@ class TestJobsTable(unittest.IsolatedAsyncioTestCase):
             },
             data["dag"],
         )
+
+    def test_dag_node_keys_agree_between_sources_for_a_spaced_name(self):
+        """A workflow must key its DAG the same way whichever source served it.
+
+        CondorPy underscores spaces to build the job name, so a node called
+        "Prep Data" is "Prep_Data" there. Keying the database source on the raw node
+        name instead would change every id and parent reference depending only on
+        whether the persisted statuses happened to be fresh.
+        """
+        node = mock.MagicMock(
+            spec=CondorWorkflowJobNode, cached_node_status="Running", pk=1
+        )
+        node.name = "Prep Data"
+        node.job.name = "Prep_Data"
+        node.parent_nodes.all.return_value = []
+        persisted_job = mock.MagicMock(spec=CondorWorkflow)
+        persisted_job.node_set.select_subclasses.return_value.prefetch_related.return_value = [
+            node
+        ]
+
+        cpy_node = mock.MagicMock()
+        cpy_node.job.name = "Prep_Data"
+        cpy_node.job.status = "Running"
+        cpy_node.parent_nodes = []
+        live_job = mock.MagicMock(spec=CondorWorkflow)
+        live_job.condor_object.node_set = [cpy_node]
+
+        from_db = [
+            entry[0] for entry in gizmo_jobs_table._persisted_dag_nodes(persisted_job)
+        ]
+        from_condor = [entry[0] for entry in gizmo_jobs_table._live_dag_nodes(live_job)]
+
+        self.assertEqual(["Prep_Data"], from_db)
+        self.assertEqual(from_db, from_condor)
+
+    async def test_a_status_condor_does_not_define_does_not_break_the_dag(self):
+        """A persisted status comes from a remote reporter, so it may be anything."""
+        node = mock.MagicMock(
+            spec=CondorWorkflowJobNode, cached_node_status="Banana", pk=1
+        )
+        node.name = "a-job"
+        node.job.name = "a-job"
+        node.parent_nodes.all.return_value = []
+
+        job = mock.MagicMock(spec=CondorWorkflow, node_statuses_are_current=True)
+        job.node_set.select_subclasses.return_value.prefetch_related.return_value = [
+            node
+        ]
+
+        dag = await gizmo_jobs_table.get_condor_job_nodes(job)
+
+        self.assertEqual("sub", dag["a-job"]["status"])
 
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.logger")
     @mock.patch("tethys_gizmos.views.gizmos.jobs_table.get_job")
