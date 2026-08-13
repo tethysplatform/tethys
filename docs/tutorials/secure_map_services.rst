@@ -508,6 +508,12 @@ For that you'll need to first add the following packages to the dependencies of 
         packages:
           - shapely
 
+Then you'll need to actually install the shapely package into your environment. You can do this by running the following command:
+
+.. code-block:: bash
+
+    conda install -c conda-forge shapely
+
 Next, add the following imports to ``controllers.py``:
 
 .. code-block:: python
