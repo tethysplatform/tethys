@@ -31,6 +31,13 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     CondorPy Workflow job type
     """
 
+    # The ClassAd names a reporter reads off the queue to know which job it is looking
+    # at and to prove it may report on it. Renaming either breaks every deployed
+    # reporter, so they are named here and documented in the Jobs API rather than
+    # written inline. See :ref:`jobs_api_report_status`.
+    JOB_ID_AD = "TethysJobId"
+    JOB_TOKEN_AD = "TethysJobToken"
+
     node_statuses_updated = models.DateTimeField(blank=True, null=True)
 
     @property
@@ -64,8 +71,8 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         part of the value.
         """
         ads = [
-            f'+TethysJobId = "{self.id}"',
-            f'+TethysJobToken = "{self.status_report_token}"',
+            f'+{self.JOB_ID_AD} = "{self.id}"',
+            f'+{self.JOB_TOKEN_AD} = "{self.status_report_token}"',
         ]
         if self.scheduler:
             ads = [shlex.quote(ad) for ad in ads]

@@ -261,6 +261,72 @@ In this case the response would look like this:
 
 This delay can be useful so the job itself can hit the endpoint just before completing to trigger the Tethys Portal to check its status after it has time to complete and exit. This will allow the portal to register that the job has completed and start any data transfer that is triggered upon job completion.
 
+.. _jobs_api_report_status:
+
+Reporting Job Status
+--------------------
+The callback above asks the job's *source* what the status is. For a Condor job that means the portal opens an SSH connection to the scheduler while a request is waiting. The reporting endpoint inverts this: it accepts the status from whatever already knows it, so a process running next to the scheduler can tell the portal instead of being asked.
+
+.. code-block::
+
+    POST http://<host>/report-job-status/<job_id>/?token=<token>&status=<status>
+
+The parameters are passed in the query string:
+
+``token``
+    The job's ``status_report_token``. Required. It authorizes reports for that one job and no other.
+
+``status``
+    A status code (``COM``) or display name (``Complete``). Required.
+
+``node_statuses``
+    Optional, and only meaningful for a :ref:`tethys_jobs_condor_workflow`. A JSON object mapping each node's *CondorPy job name* to a Condor status name. The CondorPy job name is the node name with spaces replaced by underscores. Statuses Condor does not define, and names that match no node, are ignored.
+
+A successful report responds with:
+
+.. code-block:: javascript
+
+    {"success": true, "nodes_applied": 4, "post_processing": true}
+
+``nodes_applied`` is how many nodes the reported ``node_statuses`` matched. ``post_processing`` is ``false`` when the status was recorded but the work that follows it — fetching results — raised. The status is recorded either way, deliberately, so that a failure retrieving results cannot leave the portal believing a finished job is still running. Reporting the same terminal status again retries that work.
+
+A refused report responds with ``success: false``, an ``error`` message, and one of:
+
+=========  ====================================================================
+Status     Meaning
+=========  ====================================================================
+``403``    The token is missing, malformed, expired, or belongs to another job.
+``400``    The ``status`` value is not a recognized code or display name.
+``404``    No such job.
+``409``    The job has already finished. A report may not move a job out of a
+           terminal status, because doing so makes the next poll process its
+           results a second time.
+=========  ====================================================================
+
+Obtaining the token
+^^^^^^^^^^^^^^^^^^^
+Every job can produce its own token:
+
+.. code-block:: python
+
+    token = job.status_report_token
+
+The token is signed with the portal's ``SECRET_KEY``, so there is nothing to configure and no shared secret to distribute. It is valid for ``TethysJob.STATUS_REPORT_MAX_AGE`` (30 days by default) and cannot be revoked individually — rotating ``SECRET_KEY`` invalidates all of them at once.
+
+.. warning::
+
+    A token is a bearer credential for one job. Anything holding it can set that job's status, which for a terminal status also triggers the job's results processing. Deliver it only to the process that will report on the job's behalf, and be aware of who can read it there — see :ref:`tethys_jobs_condor_workflow` for how this applies to a Condor pool.
+
+.. _jobs_api_report_status_heartbeat:
+
+Reporting periodically
+^^^^^^^^^^^^^^^^^^^^^^
+For a Condor workflow, reported node statuses let the jobs table and the workflow diagram render from the database instead of querying the scheduler once per node on every poll. They are only used while they are *fresh*: ``CondorWorkflow.node_statuses_are_current`` is ``True`` for ``node_statuses_max_age`` (60 seconds by default) after the last report that matched at least one node. Once they go stale the views fall back to reading live statuses, so a portal where nothing reports behaves exactly as it did before, with nothing to configure.
+
+.. important::
+
+    A reporter must therefore send ``node_statuses`` **periodically, not only when something changes**. A workflow whose nodes are all steadily running produces no changes, so a report-on-change-only reporter lets the statuses expire and the views resume querying the scheduler per node — precisely under the long-running workloads where serving from the database helps most. Re-report on an interval comfortably shorter than ``node_statuses_max_age`` (for example every 30 seconds) even when nothing has changed. Repeating an unchanged status is cheap: it writes no node rows and only moves the freshness timestamp.
+
 Custom Statuses
 ---------------
 Custom statuses can be given to jobs simply by assigning the ``status`` attribute:
