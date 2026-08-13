@@ -442,7 +442,7 @@ class SecureMapService(models.Model):
     @classmethod
     def get_authentication_method_options(cls):
         """
-        Get the available authentication method options for the SecureMapService model. 
+        Get the available authentication method options for the SecureMapService model.
         This method is used for populating the choices in the admin form.
         """
         return [
@@ -454,7 +454,7 @@ class SecureMapService(models.Model):
         Retrieve the OAuth token for the given user.
         Args:
             user (User): The user for whom to retrieve the OAuth token.
-        
+
         Returns:
             str: The OAuth token for the user.
         """

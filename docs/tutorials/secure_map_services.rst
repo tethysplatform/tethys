@@ -1,4 +1,4 @@
-.. _tutorial_secure_map_services:
+.. _secure_map_services_tutorial:
 
 *******************
 Secure Map Services
@@ -22,13 +22,15 @@ The following topics are covered:
 * Utilizing a Secure Map Service as a response to retrieve data from a service and format it for use in your app.
 * Utilizing a Secure Map Service as an endpoint to make requests to a service from your app using JavaScript.
 
+For more information on Secure Map Services, see the :ref:`Secure Map Services API Documentation <secure_map_services_api>`.
+
 0. Prerequisites
 ================
 
 For this tutorial, we'll be utilizing two services that require authentication to use their data in your app:
 
 * **GEGD** - a WMS imagery service authenticated with an API key.
-* **GRiD** - a REST API authenticated with an OAuth2 access token. 
+* **GRiD** - an OGC/WFS imagery service and REST API authenticated with an OAuth2 access token. 
 
 Before beginning this tutorial, make sure you have created an account with each service and have retrieved an API key from the GEGD page.
 
@@ -177,6 +179,7 @@ Now we'll be adding the GEGD service as a basemap to your MapLayout. Open your `
     class SecureMapServiceMapLayout(MapLayout):
         app = App
         base_template = f'{App.package}/base.html'
+        template_name = f'{App.package}/home.html'
         map_title = 'Secure Map Services Tutorial'
         basemaps = [
             {"WMS": {
@@ -190,7 +193,7 @@ Now reopen your app and you should see the GEGD imagery on your map.
 Notice that if you look at the network traffic in your browser, you will see that the requests to the GEGD service are being proxied through your Tethys Portal and the API key is not visible in the request.
 
 5. Configure for OAuth2 with GRiD
-================================= 
+=================================
 Next, we want to add a map layer using the GRiD service. Before we can authenticate with OAuth2 to do that, we need to configure the Tethys Portal to use GRiD as an OAuth2 provider. 
 
 Start by running this command:
@@ -327,9 +330,9 @@ Now just go ahead and refresh your app and you should see the GRiD layer on your
     
 7. Update Service Parameters
 ============================
-Now that you have data from GRiD displaying on your map in the form of a layer, you may want to change the parameters of the service to display different data. You can do this by going into the service settings and manually updating the parameters field. But you can also do this in your app dynamically using the ``update_secure_map_service_setting_params()`` method in your app code.
+Now that you have data from GRiD displaying on your map in the form of a layer, you may want to change the parameters of the service to display different data. You can do this by going into the service settings and manually updating the parameters field. But you can also do this in your app dynamically using the ``update_secure_map_service_params()`` method in your app code.
 
-In order to demonstrate how this can be done dynamically in your app, we'll add a form to the app that will allow the user to select which GRiD layer they want to display on the map. We'll then use the ``update_secure_map_service_setting_params()`` method to update the parameters of the GRiD service based on the user's selection.
+In order to demonstrate how this can be done dynamically in your app, we'll add a form to the app that will allow the user to select which GRiD layer they want to display on the map. We'll then use the ``update_secure_map_service_params()`` method to update the parameters of the GRiD service based on the user's selection.
 
 We'll begin by adding a custom map tab to your MapLayout that will contain this form. Open ``home.html`` and add the following code:
 
@@ -345,7 +348,6 @@ We'll begin by adding a custom map tab to your MapLayout that will contain this 
     <div class="tab-pane" id="custom-tab-panel" role="tabpanel" aria-labelledby="custom-tab-toggle">
         <form method="POST">
         {% csrf_token %}
-        <input type="hidden" name="form_id" value="update-grid-layer-form">
         {% gizmo grid_type %}
         {% gizmo update_grid_button %}
         </form>
@@ -403,7 +405,7 @@ Then add the following ``post()`` method to your MapLayout class:
         if grid_type not in ["pointcloud", "raster"]:
             return HttpResponse("Invalid GRID layer type selected.", status=400)
 
-        App.update_secure_map_service_setting_params(
+        App.update_secure_map_service_params(
             App.GRID_SECURE_MAP_SERVICE_NAME,
             params={
                 "typename": f"ms:gridws_{grid_type}",
@@ -419,7 +421,7 @@ Now go ahead and try selecting a different GRiD layer from the select input and 
 
 You can access a SecureMapService as a response in order to work directly with the data returned from the service in your Python code. We'll be using this to retrieve spatial data from the GRiD API and format it into GeoJSON to display AOIs on the map.
 
-First, let's add a new SecureMapServiceSetting to your app class in ``app.py`` for the GRiD AOI service. This service will be used to both dsiplay existing AOIs on the map, and to submit new AOIs to the GRiD service. Add the following code to your app class:
+First, let's add a new SecureMapServiceSetting to your app class in ``app.py`` for the GRiD AOI service. This service will be used to both display existing AOIs on the map, and to submit new AOIs to the GRiD service. Add the following code to your app class:
 
 .. code-block:: python
     :emphasize-lines: 18, 36-40
@@ -498,13 +500,13 @@ For that you'll need to first add the following packages to the dependencies of 
     :emphasize-lines: 6, 8
 
     requirements:
-    # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-    skip: false
-    conda:
-      channels:
-        - conda-forge
-      packages:
-        - shapely
+      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+      skip: false
+      conda:
+        channels:
+          - conda-forge
+        packages:
+          - shapely
 
 Next, add the following imports to ``controllers.py``:
 
@@ -556,7 +558,7 @@ Now add the following helper function to ``controllers.py``. This function will 
             "type": "FeatureCollection",
             "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
             "features": features,
-    }
+        }
 
 Now update your ``compose_layers()`` method in your MapLayout class to create a new MVLayer for the AOIs:
 
@@ -707,27 +709,23 @@ Next, let's add the gizmos you'll need for your new AOI form. Add the following 
 
         return context
 
-Now you need to add the new gizmos to a form in ``home.html``. You'll also be making a slight update to the form you added in step 7 to differentiate it from the new AOI form in your app's requests.
+Now you need to add the new gizmos to a form in ``home.html``.
 
 .. code-block:: html+django
-    :emphasize-lines: 5, 10-15
+    :emphasize-lines: 8-12
 
     {% block custom_map_tab_panels %}
     <div class="tab-pane" id="custom-tab-panel" role="tabpanel" aria-labelledby="custom-tab-toggle">
         <form method="POST">
             {% csrf_token %}
-            <input type="hidden" name="form_id" value="update-grid-layer-form">
             {% gizmo grid_type %}
             {% gizmo update_grid_button %}
-            </form>
-        <div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="form_id" value="create-aoi-form">
-                {% gizmo aoi_name %}
-                {% gizmo create_aoi_button %}
-            </form>
-        </div>
+        </form>
+        <form method="POST">
+            {% csrf_token %}
+            {% gizmo aoi_name %}
+            {% gizmo create_aoi_button %}
+        </form>
     </div>
     {% endblock %}
 
@@ -772,9 +770,12 @@ Now just include the new JavaScript file in your ``home.html`` file by adding th
         <script src="{% static 'secure_map_tutorial/js/aoi.js' %}"></script>
     {% endblock %}
 
-That's it! Now just do a refresh on your page and you should be able to draw an AOI on the map, enter a name for it, and click the "Create AOI" button to submit it to the GRiD service. You can check your GRiD account to see if the new AOI was created successfully, or just refresh the page and the AOI should be there with the other already existing AOIs.
+Now just refresh the page and you should be able to draw an AOI on the map, enter a name for it, and click the "Create AOI" button to submit it to the GRiD service. You can check your GRiD account to see if the new AOI was created successfully, or just refresh the page and the AOI should be there with the other already existing AOIs.
 
 That's it! You've now successfully created a Tethys app that uses Secure Map Services to display data from GEGD and GRiD, and allows users to create new AOIs on the map using the GRiD service.
+
+For more information, see the :ref:`Secure Map Services API Documentation <secure_map_services_api>`.
+
 
 10. Solution
 ============

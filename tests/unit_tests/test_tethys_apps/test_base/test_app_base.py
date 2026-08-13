@@ -1478,9 +1478,7 @@ class TestTethysAppBase(unittest.TestCase):
 
     @mock.patch("tethys_apps.models.SecureMapServiceSetting.update_params")
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_update_secure_map_service_params(
-        self, mock_ta, mock_update_params
-    ):
+    def test_update_secure_map_service_params(self, mock_ta, mock_update_params):
         mock_setting = (
             mock_ta.objects.get().secure_map_service_settings.get.return_value
         )
@@ -1496,9 +1494,7 @@ class TestTethysAppBase(unittest.TestCase):
         mock_setting.update_params.assert_called_with(fake_params)
 
     @mock.patch("tethys_apps.models.TethysApp")
-    def test_update_secure_map_service_params_object_does_not_exist(
-        self, mock_ta
-    ):
+    def test_update_secure_map_service_params_object_does_not_exist(self, mock_ta):
         mock_get = mock_ta.objects.get().secure_map_service_settings.get
         mock_get.side_effect = ObjectDoesNotExist
 

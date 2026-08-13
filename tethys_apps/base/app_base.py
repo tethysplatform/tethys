@@ -1989,7 +1989,10 @@ class TethysAppBase(TethysBase):
     @classmethod
     def update_secure_map_service_params(cls, name, params):
         """
-        Update the params for a given SecureMapServiceSetting.
+        Update the params for a given SecureMapServiceSetting's assigned SecureMapService.
+
+        **NOTE**: This method will not update the params for the SecureMapServiceSetting itself.
+        It will only update the params for the assigned SecureMapService.
 
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
