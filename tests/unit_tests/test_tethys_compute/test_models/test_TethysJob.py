@@ -427,6 +427,138 @@ class TethysJobTest(TethysTestCase):
 
         self.assertFalse(job.is_time_to_update())
 
+    def test_last_status_update_is_persisted_not_just_held_in_memory(self):
+        """The whole point of the field: a fresh instance per request must see it.
+
+        Read off the same instance that set it, this passes whether or not the value
+        ever reaches the database -- which is how it went unnoticed that it never did.
+        """
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job.update_status(status="RUN")
+
+        reloaded = TethysJob.objects.get(name="test_tethysjob")
+
+        self.assertIsNotNone(reloaded._last_status_update)
+        self.assertFalse(reloaded.is_time_to_update())
+
+    def test_apply_node_statuses_on_a_job_without_parts_applies_nothing(self):
+        """A DaskJob or BasicJob has no nodes, so the base implementation is a no-op."""
+        job = TethysJob.objects.get(name="test_tethysjob")
+
+        self.assertEqual({}, job.apply_node_statuses({"a": "Running"}))
+
+    def test_post_processing_incomplete_while_results_are_owed(self):
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "COM"
+        job.completion_time = None
+
+        self.assertTrue(job.post_processing_incomplete)
+
+    def test_post_processing_not_incomplete_once_results_are_in(self):
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "COM"
+        job.completion_time = django_timezone.now()
+
+        self.assertFalse(job.post_processing_incomplete)
+
+    def test_post_processing_not_incomplete_while_still_running(self):
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "RUN"
+        job.completion_time = None
+
+        self.assertFalse(job.post_processing_incomplete)
+
+    def test_is_terminal_for_a_standard_status(self):
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "COM"
+
+        self.assertTrue(job.is_terminal)
+
+    def test_is_terminal_while_running(self):
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "RUN"
+
+        self.assertFalse(job.is_terminal)
+
+    def test_is_terminal_for_a_custom_terminal_status(self):
+        """A custom status lives in OTH, so the code alone cannot answer this."""
+        TethysJob.add_custom_terminal_status("Archived")
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job.update_status(status="Archived")
+
+        self.assertEqual("OTH", job._status)
+        self.assertTrue(job.is_terminal)
+
+    def test_is_terminal_for_an_unclassified_custom_status(self):
+        """Never classified, so it is not known to be finished."""
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job.update_status(status="Whatever")
+
+        self.assertEqual("OTH", job._status)
+        self.assertFalse(job.is_terminal)
+
+    @mock.patch("tethys_compute.models.tethys_job.TethysJob._process_results")
+    def test_failed_post_processing_is_retried_by_a_later_report(self, mock_pr):
+        """Otherwise a job whose results never synced is terminal, and stays that way."""
+        mock_pr.side_effect = [Exception("SCP failed"), None]
+        job = TethysJob.objects.get(name="test_tethysjob")
+
+        with self.assertRaisesRegex(Exception, "SCP failed"):
+            job.update_status(status="Complete")
+
+        # The status stuck -- deliberately -- but the work after it did not.
+        reloaded = TethysJob.objects.get(name="test_tethysjob")
+        self.assertEqual("COM", reloaded._status)
+        self.assertIsNone(reloaded.completion_time)
+        self.assertTrue(reloaded.post_processing_incomplete)
+
+        # A later report, past the interval that rate-limits the retry.
+        reloaded._last_status_update = django_timezone.now() - timedelta(minutes=15)
+        reloaded.update_status(status="Complete")
+
+        self.assertEqual(2, mock_pr.call_count)
+        self.assertIsNotNone(
+            TethysJob.objects.get(name="test_tethysjob").completion_time
+        )
+
+    @mock.patch("tethys_compute.models.tethys_job.TethysJob._process_results")
+    def test_rapid_repeat_reports_do_not_each_retry_post_processing(self, mock_pr):
+        """A held token must not be able to drive one remote sync attempt per request."""
+        mock_pr.side_effect = Exception("SCP failed")
+        job = TethysJob.objects.get(name="test_tethysjob")
+
+        with self.assertRaisesRegex(Exception, "SCP failed"):
+            job.update_status(status="Complete")
+
+        # Immediately again, inside update_status_interval.
+        reloaded = TethysJob.objects.get(name="test_tethysjob")
+        reloaded.update_status(status="Complete")
+
+        self.assertEqual(1, mock_pr.call_count)
+
+    @mock.patch("tethys_compute.models.tethys_job.TethysJob._process_results")
+    def test_a_repeated_report_does_not_reprocess_a_finished_job(self, mock_pr):
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "COM"
+        job.completion_time = django_timezone.now()
+        job.save()
+
+        job.update_status(status="Complete")
+
+        mock_pr.assert_not_called()
+
+    @mock.patch("tethys_compute.models.tethys_job.TethysJob._process_results")
+    def test_a_poll_does_not_retry_post_processing(self, mock_pr):
+        """A poll must not pay for a result sync -- for condor that is an SCP."""
+        job = TethysJob.objects.get(name="test_tethysjob")
+        job._status = "COM"
+        job.completion_time = None
+        job.save()
+
+        job.update_status()
+
+        mock_pr.assert_not_called()
+
     def test_is_time_to_update_false(self):
         ret = TethysJob.objects.get(name="test_tethysjob")
         ret._update_status_interval = timedelta(minutes=15)

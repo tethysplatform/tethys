@@ -24,7 +24,7 @@ from ..tasks import create_task
 logger = logging.getLogger(f"tethys.{__name__}")
 
 
-def get_job_sync(job_id, user=None):
+def _get_job_sync(job_id, user=None):
     """
     Helper method to query a `TethysJob` object.
 
@@ -48,7 +48,7 @@ def get_job_sync(job_id, user=None):
 
 # The async views query through this; `report_job_status` is sync and calls the
 # implementation directly.
-get_job = database_sync_to_async(get_job_sync)
+get_job = database_sync_to_async(_get_job_sync)
 
 
 async def do_job_action(job, action):
@@ -128,7 +128,12 @@ def report_job_status(request, job_id):
     than over SSH.
 
     Requires ``token`` to be the job's ``status_report_token``, which authorises
-    reports for that job and no other.
+    reports for that job and no other. Note that for condor jobs the token travels
+    in a job ad, which any user who can query the scheduler can read, so a report is
+    only as trustworthy as the pool.
+
+    A report may not move a job out of a terminal status; such a report is refused
+    with 409 rather than reviving a finished job.
 
     Query parameters:
         token: the job's status report token.
@@ -136,12 +141,18 @@ def report_job_status(request, job_id):
         node_statuses: optional JSON object of condorpy job name -> condor status
             name, persisted so the workflow's DAG can be rendered without asking
             the scheduler about each node.
+
+    Returns:
+        JsonResponse: always ``success``; on success also ``nodes_applied`` (how many
+            nodes the reported statuses matched) and ``post_processing`` (False when
+            the status was recorded but the work following it raised). On refusal,
+            ``error``, with 403 (token), 400 (status), 404 (job) or 409 (finished).
     """
     params = request.GET
     token = params.get("token")
     status = params.get("status")
 
-    if TethysJob.id_from_status_report_token(token or "") != str(job_id):
+    if TethysJob.id_from_status_report_token(token) != str(job_id):
         logger.warning(f"Rejected a status report for job_id={job_id}: bad token.")
         return JsonResponse({"success": False, "error": "invalid token"}, status=403)
 
@@ -151,15 +162,32 @@ def report_job_status(request, job_id):
         )
 
     try:
-        job = get_job_sync(job_id)
+        job = _get_job_sync(job_id)
     except Exception:
         return JsonResponse({"success": False, "error": "no such job"}, status=404)
+
+    # Reports can arrive out of order, and reviving a finished job is not a harmless
+    # display error: the next poll re-reaches the terminal status with a non-terminal
+    # one recorded, so update_status treats it as a fresh completion and processes the
+    # results a second time -- for condor, syncing the remote output again.
+    # ``is_terminal`` rather than a check against TERMINAL_STATUS_CODES because a
+    # custom terminal status is stored as OTH; only a reported status can be trusted
+    # to be one of the standard codes, since the endpoint rejects anything else above.
+    reported_code = TethysJob.REVERSE_STATUSES.get(status, status)
+    if job.is_terminal and reported_code not in TethysJob.TERMINAL_STATUS_CODES:
+        logger.warning(
+            f"Refused a report of {status} for job_id={job_id}: it already finished "
+            f"as {job.cached_status}."
+        )
+        return JsonResponse(
+            {"success": False, "error": "job has already finished"}, status=409
+        )
 
     nodes_applied = 0
     node_statuses = params.get("node_statuses")
     if node_statuses:
         try:
-            nodes_applied = _apply_node_statuses(job, json.loads(node_statuses))
+            nodes_applied = len(job.apply_node_statuses(json.loads(node_statuses)))
         except Exception as e:
             logger.warning(
                 f"Could not apply reported node statuses for job_id={job_id}: {e}"
@@ -170,7 +198,9 @@ def report_job_status(request, job_id):
     # believing the job is still running.
     try:
         job.update_status(status=status)
-        return JsonResponse({"success": True, "nodes_applied": nodes_applied})
+        return JsonResponse(
+            {"success": True, "nodes_applied": nodes_applied, "post_processing": True}
+        )
     except Exception as e:
         logger.exception(
             f"Status {status} was recorded for job_id={job_id} but the work that "
@@ -179,13 +209,6 @@ def report_job_status(request, job_id):
         return JsonResponse(
             {"success": True, "nodes_applied": nodes_applied, "post_processing": False}
         )
-
-
-def _apply_node_statuses(job, statuses):
-    """Persist reported node statuses, if this job type has nodes."""
-    if not hasattr(job, "apply_node_statuses"):
-        return 0
-    return len(job.apply_node_statuses(statuses))
 
 
 def update_dask_job_status(request, key):

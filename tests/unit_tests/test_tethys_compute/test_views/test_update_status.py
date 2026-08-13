@@ -1,3 +1,4 @@
+import datetime
 import json
 import unittest
 from unittest import mock
@@ -5,6 +6,7 @@ from unittest import mock
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import RequestFactory
+from django.utils import timezone
 from tethys_sdk.testing import TethysTestCase
 
 import tethys_compute.views.update_status as tethys_compute_update_status
@@ -154,9 +156,28 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(400, response.status_code)
 
-    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    @staticmethod
+    def _reportable_job(**kwargs):
+        """A job double that is running, so a report is not refused as finished."""
+        job = mock.MagicMock(
+            spec=[
+                "update_status",
+                "_status",
+                "is_terminal",
+                "cached_status",
+                "apply_node_statuses",
+            ],
+            **kwargs,
+        )
+        job._status = "RUN"
+        job.is_terminal = False
+        # What TethysJob's base implementation returns for a job with no parts.
+        job.apply_node_statuses.return_value = {}
+        return job
+
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
     def test_report_job_status_applies_the_status(self, mock_get_job):
-        job = mock.MagicMock(spec=["update_status"])
+        job = self._reportable_job()
         mock_get_job.return_value = job
 
         response = tethys_compute_update_status.report_job_status(
@@ -165,10 +186,11 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
 
         job.update_status.assert_called_once_with(status="Complete")
         self.assertEqual(200, response.status_code)
+        self.assertIn(b'"post_processing": true', response.content)
 
-    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
     def test_report_job_status_applies_node_statuses(self, mock_get_job):
-        job = mock.MagicMock()
+        job = self._reportable_job()
         job.apply_node_statuses.return_value = {"a": "Running", "b": "Completed"}
         mock_get_job.return_value = job
 
@@ -185,12 +207,12 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
             {"a": "Running", "b": "Completed"}
         )
 
-    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
     def test_report_job_status_keeps_status_when_post_processing_fails(
         self, mock_get_job
     ):
         """A failure syncing results must not leave the job looking like it runs."""
-        job = mock.MagicMock(spec=["update_status"])
+        job = self._reportable_job()
         job.update_status.side_effect = Exception("SCP failed")
         mock_get_job.return_value = job
 
@@ -201,7 +223,7 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(200, response.status_code)
         self.assertIn(b'"post_processing": false', response.content)
 
-    @mock.patch("tethys_compute.views.update_status.get_job_sync")
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
     def test_report_job_status_unknown_job(self, mock_get_job):
         mock_get_job.side_effect = Exception("does not exist")
 
@@ -210,6 +232,95 @@ class TestUpdateStatus(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(404, response.status_code)
+
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
+    def test_report_job_status_refuses_to_revive_a_finished_job(self, mock_get_job):
+        """Reviving a finished job makes the next poll process its results twice."""
+        job = self._reportable_job()
+        job._status = "COM"
+        job.is_terminal = True
+        job.cached_status = "Complete"
+        mock_get_job.return_value = job
+
+        response = tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("42"), status="Running"), "42"
+        )
+
+        self.assertEqual(409, response.status_code)
+        job.update_status.assert_not_called()
+
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
+    def test_report_job_status_allows_a_terminal_status_to_be_repeated(
+        self, mock_get_job
+    ):
+        """A reporter retrying after a timeout must not be refused."""
+        job = self._reportable_job()
+        job._status = "COM"
+        job.is_terminal = True
+        job.cached_status = "Complete"
+        mock_get_job.return_value = job
+
+        response = tethys_compute_update_status.report_job_status(
+            self._report_request(token=self._token_for("42"), status="Complete"), "42"
+        )
+
+        self.assertEqual(200, response.status_code)
+        job.update_status.assert_called_once_with(status="Complete")
+
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
+    def test_report_job_status_ignores_node_statuses_for_a_job_without_nodes(
+        self, mock_get_job
+    ):
+        """A DaskJob has no nodes, so a node payload is dropped rather than raising."""
+        job = self._reportable_job()
+        mock_get_job.return_value = job
+
+        response = tethys_compute_update_status.report_job_status(
+            self._report_request(
+                token=self._token_for("42"),
+                status="Complete",
+                node_statuses='{"a": "Running"}',
+            ),
+            "42",
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertIn(b'"nodes_applied": 0', response.content)
+
+    @mock.patch("tethys_compute.views.update_status._get_job_sync")
+    def test_report_job_status_survives_malformed_node_statuses(self, mock_get_job):
+        job = self._reportable_job()
+        mock_get_job.return_value = job
+
+        response = tethys_compute_update_status.report_job_status(
+            self._report_request(
+                token=self._token_for("42"),
+                status="Running",
+                node_statuses="not-json",
+            ),
+            "42",
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertIn(b'"nodes_applied": 0', response.content)
+        job.apply_node_statuses.assert_not_called()
+
+    def test_status_report_token_rejects_a_non_string(self):
+        from tethys_compute.models import TethysJob
+
+        self.assertIsNone(TethysJob.id_from_status_report_token(None))
+
+    def test_status_report_token_expires(self):
+        from tethys_compute.models import TethysJob
+
+        job = TethysJob(name="n", label="l")
+        job.id = "7"
+        token = job.status_report_token
+
+        with mock.patch.object(
+            TethysJob, "STATUS_REPORT_MAX_AGE", datetime.timedelta(seconds=-1)
+        ):
+            self.assertIsNone(TethysJob.id_from_status_report_token(token))
 
     def test_status_report_token_round_trips(self):
         from tethys_compute.models import TethysJob
@@ -301,6 +412,42 @@ class TestReportJobStatusIsCallableByDjango(TethysTestCase):
 
         self.assertIsInstance(response, HttpResponse)
         self.assertEqual(403, response.status_code)
+
+    def test_a_report_may_move_a_job_from_various_complete_to_complete(self):
+        """Why the guard allows terminal-to-terminal rather than repeats only.
+
+        Various-Complete is both terminal and results-pending, and it is what a condor
+        workflow reaches before its results are processed. A reporter mirroring the
+        scheduler sends it and then Complete, so refusing anything but an identical
+        repeat would 409 the normal end of a workflow.
+        """
+        self.job._status = "VCP"
+        self.job.completion_time = None
+        self.job._last_status_update = timezone.now() - datetime.timedelta(minutes=15)
+        self.job.save()
+
+        response = tethys_compute_update_status.report_job_status(
+            self._request(self.job.status_report_token), str(self.job.id)
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.job.refresh_from_db()
+        self.assertEqual("COM", self.job._status)
+        self.assertIsNotNone(self.job.completion_time)
+
+    def test_a_report_cannot_revive_a_job_finished_by_a_custom_status(self):
+        """A custom terminal status is stored as OTH, so the code alone misses it."""
+        TethysJob.add_custom_terminal_status("Shelved")
+        self.job.update_status(status="Shelved")
+
+        response = tethys_compute_update_status.report_job_status(
+            self._request(self.job.status_report_token, status="Running"),
+            str(self.job.id),
+        )
+
+        self.assertEqual(409, response.status_code)
+        self.job.refresh_from_db()
+        self.assertEqual("OTH", self.job._status)
 
     def test_the_view_is_exempt_from_csrf(self):
         # The reporter is not a browser and has no session to take a token from.
