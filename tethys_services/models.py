@@ -412,7 +412,7 @@ class SecureMapService(models.Model):
     """
 
     name = models.CharField(max_length=30, unique=True)
-    legend_title = models.CharField(max_length=100, unique=True)
+    legend_title = models.CharField(max_length=100, blank=True)
     endpoint = models.CharField(max_length=1024, validators=[validate_url])
     authentication_method = models.CharField(
         max_length=100, blank=True, choices=[("api_key", "API Key"), ("oauth", "OAuth")]
@@ -421,7 +421,12 @@ class SecureMapService(models.Model):
     oauth_provider = models.CharField(max_length=100, blank=True)
     service_type = models.CharField(
         max_length=50,
-        choices=[("ImageWMS", "WMS"), ("GML", "GML")],
+        choices=[
+            ("ImageWMS", "WMS"),
+            ("GML", "GML"),
+            ("GeoJSON", "GeoJSON"),
+            ("REST", "REST/JSON API"),
+        ],
         default="ImageWMS",
     )
     params = models.JSONField(blank=True, null=True, default=dict)
