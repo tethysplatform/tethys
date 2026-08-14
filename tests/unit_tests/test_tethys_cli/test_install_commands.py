@@ -893,6 +893,50 @@ class TestInstallCommands(TestCase):
         )
 
     @mock.patch("tethys_cli.install_commands.run_services")
+    @mock.patch("tethys_cli.install_commands.call", return_value=0)
+    @mock.patch("tethys_cli.install_commands.Popen")
+    @mock.patch("tethys_cli.cli_colors.pretty_output")
+    def test_input_file_with_non_py_post(self, mock_pretty_output, mock_popen, _, __):
+        file_path = self.root_app_path / "install-with-post-non-py.yml"
+        file_path.write_text(
+            "version: 1.0\n"
+            "name: test_app\n"
+            "\n"
+            "requirements:\n"
+            "  skip: True\n"
+            "post:\n"
+            "  - ./test.sh\n"
+        )
+        args = mock.MagicMock(
+            file=file_path,
+            verbose=False,
+            no_db_sync=False,
+            only_dependencies=False,
+            without_dependencies=False,
+        )
+        mock_popen.return_value.communicate.return_value = (b"test", b"")
+
+        try:
+            install_commands.install_command(args)
+        finally:
+            file_path.unlink(missing_ok=True)
+
+        expected_command = f'"{self.root_app_path / "test.sh"}"'
+        mock_popen.assert_called_once_with(
+            expected_command,
+            shell=True,
+            stdout=install_commands.PIPE,
+            stderr=install_commands.PIPE,
+        )
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn("Running post installation tasks...", po_call_args[6][0][0])
+        self.assertIn("Post Script Result: b'test", po_call_args[7][0][0])
+        self.assertIn(
+            "Successfully installed test_app into the active Tethys Portal.",
+            po_call_args[8][0][0],
+        )
+
+    @mock.patch("tethys_cli.install_commands.run_services")
     @mock.patch("tethys_cli.install_commands.run_sync_stores")
     @mock.patch("tethys_cli.install_commands.run_interactive_services")
     @mock.patch("tethys_cli.install_commands.run_portal_install", return_value=False)
