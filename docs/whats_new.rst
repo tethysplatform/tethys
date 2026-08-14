@@ -32,12 +32,27 @@ Job Status Update Throttling
 
 See: :ref:`jobs_api`
 
-Buy Me a Soda
--------------
-* Tethys Platform has added a "Buy Me a Soda" button to the documentation, allowing users to support the project financially.
-* This is a way for users to contribute to the ongoing development and maintenance of Tethys
+Time Picker Gizmo
+-----------------
 
-See: :ref:`contribute_documentation`
+* Added a new ``TimePicker`` gizmo for time-entry form inputs.
+
+See: :doc:`tethys_sdk/gizmos/time_picker`
+
+Bug Fixes
+---------
+
+* Login and register form fixes: `PR 1293 <https://github.com/tethysplatform/tethys/pull/1293>`_
+* Static file discovery fix for ``STATICFILES_USE_NPM``: `PR 1291 <https://github.com/tethysplatform/tethys/pull/1291>`_
+* Django 5 app initialization warning fix: `PR 1288 <https://github.com/tethysplatform/tethys/pull/1288>`_
+* Component fixes: `PR 1285 <https://github.com/tethysplatform/tethys/pull/1285>`_
+* App install fix for service settings: `PR 1284 <https://github.com/tethysplatform/tethys/pull/1284>`_
+
+Documentation and CI
+--------------------
+
+* Added new recipes documentation: `PR 1282 <https://github.com/tethysplatform/tethys/pull/1282>`_
+* Fixed Read the Docs builds for the Ubuntu 26.04 image: `PR 1289 <https://github.com/tethysplatform/tethys/pull/1289>`_
 
 Prior Release Notes
 ===================
