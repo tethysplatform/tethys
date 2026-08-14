@@ -1061,7 +1061,7 @@ ol_layers_init = function()
                   .catch(err => {
                     console.error('GML load failed: ', err);
                     gmlSource.removeLoadedExtent(extent);
-                    failer();
+                    if (failer) { failer(); }
                   })
               }
             })
@@ -1084,8 +1084,46 @@ ol_layers_init = function()
 
         // Generic vector case
         else {
-          Source = string_to_function('ol.source.' + current_layer.source);
-          current_layer_layer_options['source'] = new Source(current_layer.options);
+          let token = current_layer.options ? current_layer.options.token: null;
+          let baseUrl = current_layer.options ? current_layer.options.url: null;
+
+          if (token && baseUrl) {
+            let format_name = current_layer.options.format || 'GeoJSON';
+            let VectorFormat = string_to_function('ol.format.' + format_name);
+            let vector_format = new VectorFormat();
+
+            let vector_source = new ol.source.Vector({
+              format: vector_format,
+              strategy: use_bbox ? ol.loadingstrategy.bbox : ol.loadingstrategy.all,
+              loader: function(extent, resolution, projection, success, failer) {
+                let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
+                let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
+                
+                let headers = {'Authorization': 'Bearer ' + token};
+
+                fetch(url, {credentials: 'same-origin', headers: headers})
+                  .then(r => r.text())
+                  .then(text => {
+                    let features = vector_format.readFeatures(text, {
+                      dataProjection: 'EPSG:4326',
+                      featureProjection: DEFAULT_PROJECTION,
+                    });
+                    vector_source.addFeatures(features);
+                    success(features);
+                  })
+                  .catch(err => {
+                    console.error('Vector load failed: ', err);
+                    vector_source.removeLoadedExtent(extent);
+                    if (failer) { failer(); }
+                  })
+              },
+            });
+            current_layer_layer_options['source'] = vector_source;
+          } else {
+            Source = string_to_function('ol.source.' + current_layer.source);
+            current_layer_layer_options['source'] = new Source(current_layer.options);
+          }
+          
           layer = new ol.layer.Vector(current_layer_layer_options);
         }
       }
