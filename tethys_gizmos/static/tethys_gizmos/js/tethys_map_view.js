@@ -1056,7 +1056,7 @@ ol_layers_init = function()
                       featureProjection: DEFAULT_PROJECTION,
                     });
                     gmlSource.addFeatures(features);
-                    success(features);
+                    if (success) { success(features); }
                   })
                   .catch(err => {
                     console.error('GML load failed: ', err);
@@ -1091,13 +1091,17 @@ ol_layers_init = function()
             let format_name = current_layer.options.format || 'GeoJSON';
             let VectorFormat = string_to_function('ol.format.' + format_name);
             let vector_format = new VectorFormat();
+            let use_bbox = current_layer.options.strategy === 'bbox';
 
             let vector_source = new ol.source.Vector({
               format: vector_format,
               strategy: use_bbox ? ol.loadingstrategy.bbox : ol.loadingstrategy.all,
               loader: function(extent, resolution, projection, success, failer) {
-                let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
-                let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
+                let url = baseUrl;
+                if (use_bbox) {
+                  let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
+                  url += sep + 'bbox=' + extent.join(',') + ',' + DEFAULT_PROJECTION;
+                }
                 
                 let headers = {'Authorization': 'Bearer ' + token};
 
@@ -1109,7 +1113,7 @@ ol_layers_init = function()
                       featureProjection: DEFAULT_PROJECTION,
                     });
                     vector_source.addFeatures(features);
-                    success(features);
+                    if (success) { success(features); }
                   })
                   .catch(err => {
                     console.error('Vector load failed: ', err);
@@ -1123,7 +1127,7 @@ ol_layers_init = function()
             Source = string_to_function('ol.source.' + current_layer.source);
             current_layer_layer_options['source'] = new Source(current_layer.options);
           }
-          
+
           layer = new ol.layer.Vector(current_layer_layer_options);
         }
       }
