@@ -7,12 +7,17 @@
 ********************************************************************************
 """
 
+import datetime
+import shlex
 import shutil
 import logging
 from pathlib import Path
 
+from condorpy.static import CONDOR_JOB_STATUSES
+from django.db import models, transaction
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
+from django.utils import timezone
 
 from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
@@ -26,6 +31,15 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     CondorPy Workflow job type
     """
 
+    # The ClassAd names a reporter reads off the queue to know which job it is looking
+    # at and to prove it may report on it. Renaming either breaks every deployed
+    # reporter, so they are named here and documented in the Jobs API rather than
+    # written inline. See :ref:`jobs_api_report_status`.
+    JOB_ID_AD = "TethysJobId"
+    JOB_TOKEN_AD = "TethysJobToken"
+
+    node_statuses_updated = models.DateTimeField(blank=True, null=True)
+
     @property
     def _condor_object(self):
         """
@@ -34,11 +48,135 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         return self.condorpy_workflow
 
     def _execute(self, options=None):
-        if options is None:
-            options = list()
+        # Copied rather than extended in place: the ads are this job's, so appending
+        # them to the caller's list would leak them into a second submit that reused it.
+        options = list(options) if options is not None else []
 
+        options.extend(self.status_report_options)
         self.load_nodes()
         super()._execute(options=options)
+
+    @property
+    def status_report_options(self):
+        """Submit options that let whatever runs this DAG report its status back.
+
+        The id and a token authorising reports for this job alone are attached to
+        the DAGMan job as ClassAds, so a reporter running next to the scheduler can
+        read them off the queue and POST to ``report-job-status`` without the portal
+        having to be asked. They are inert where nothing is reporting.
+
+        A ClassAd assignment contains spaces and quotes, and condorpy runs a remote
+        submit by joining the arguments into a string for a shell while running a
+        local one through argv. So the ad is shell-quoted only when it is going to a
+        shell; quoting it for the local path would make condor read the quotes as
+        part of the value.
+        """
+        ads = [
+            f'+{self.JOB_ID_AD} = "{self.id}"',
+            f'+{self.JOB_TOKEN_AD} = "{self.status_report_token}"',
+        ]
+        if self.scheduler:
+            ads = [shlex.quote(ad) for ad in ads]
+
+        options = []
+        for ad in ads:
+            options.extend(["-append", ad])
+        return options
+
+    @property
+    def node_statuses_max_age(self):
+        """
+        Returns: a ``datetime.timedelta`` of how stale persisted node statuses may
+            be and still be served instead of reading each node's live status.
+        """
+        if not hasattr(self, "_node_statuses_max_age"):
+            self._node_statuses_max_age = datetime.timedelta(seconds=60)
+        return self._node_statuses_max_age
+
+    @property
+    def node_statuses_are_current(self):
+        """Whether the persisted node statuses are recent enough to serve.
+
+        Views use this to decide whether to render the DAG from
+        ``CondorWorkflowNode.cached_node_status`` or to read each node's live status.
+        It is time-based rather than a setting so that a deployment with no
+        background updater, or one whose updater has stopped, falls back to reading
+        live statuses instead of serving values that never advance again.
+
+        The budget is deliberately not ``update_status_interval``. That is the
+        minimum time between polls of a single job, whereas this is how stale a
+        rendered status may be. A background updater refreshing many jobs takes
+        longer per pass than the interval for one job, so tying the two together
+        would leave the statuses never current precisely when there is enough load
+        for it to matter.
+        """
+        if self.node_statuses_updated is None:
+            return False
+        return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
+
+    @property
+    def cached_node_statuses(self):
+        """Node status counts built from the database instead of the scheduler.
+
+        Mirrors the shape of :attr:`CondorBase.statuses` -- every condor status name
+        mapped to the number of nodes currently in it -- but sources the values from
+        ``CondorWorkflowNode.cached_node_status``, so no remote call is made. Nodes
+        with no persisted status have not been expanded by DAGMan yet and are counted
+        as ``Unexpanded``, matching what condorpy reports for an unsubmitted node.
+        """
+        statuses = {name: 0 for name in CONDOR_JOB_STATUSES.values()}
+
+        for node in self.node_set.all():
+            status = node.cached_node_status or "Unexpanded"
+            statuses[status] = statuses.get(status, 0) + 1
+
+        return statuses
+
+    def apply_node_statuses(self, status_by_name):
+        """Persist node statuses that were determined elsewhere.
+
+        Args:
+            status_by_name(dict): condorpy job name -> condor status name. That is
+                the node name with spaces replaced by underscores, as built by
+                CondorPyJob.condorpy_job. Names matching no node are ignored, as are
+                statuses condor does not define -- the caller is remote, so neither
+                is trustworthy.
+
+        Returns:
+            dict: node name -> condor status name, for the nodes that matched.
+        """
+        valid_statuses = set(CONDOR_JOB_STATUSES.values())
+        updated = {}
+        changed = []
+
+        for node in self.node_set.select_subclasses():
+            status = status_by_name.get(node.job.name)
+            if not status:
+                continue
+            if status not in valid_statuses:
+                log.warning(
+                    f"Ignoring unrecognized status {status!r} reported for node "
+                    f"{node.name!r} of job {self.id}."
+                )
+                continue
+            if status != node.cached_node_status:
+                node.cached_node_status = status
+                changed.append(node)
+            updated[node.name] = status
+
+        # Nothing matched, so nothing was learned about this workflow. Leaving the
+        # freshness stamp alone keeps the views reading live rather than serving a
+        # DAG of unexpanded nodes as though it were current.
+        if not updated:
+            return updated
+
+        with transaction.atomic():
+            if changed:
+                CondorWorkflowNode.objects.bulk_update(changed, ["cached_node_status"])
+            self.node_statuses_updated = timezone.now()
+            self.save(update_fields=["node_statuses_updated"])
+
+        return updated
 
     def _update_status(self, *args, **kwargs):
         if not self.execute_time:
