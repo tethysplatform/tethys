@@ -58,6 +58,7 @@ class CondorWorkflowNode(models.Model):
     dir = models.CharField(max_length=1024, null=True, blank=True)
     noop = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
+    cached_node_status = models.CharField(max_length=32, null=True, blank=True)
 
     @abstractmethod
     def type(self):

@@ -55,6 +55,7 @@ MOCK_MODULES = [
     "conda.testing",
     "conda.testing.integration",
     "condorpy",
+    "condorpy.static",
     "cookie_consent",
     "cookie_consent.models",
     "dask",

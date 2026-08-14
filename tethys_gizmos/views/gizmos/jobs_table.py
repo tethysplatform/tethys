@@ -60,36 +60,92 @@ def get_dask_scheduler(scheduler_id):
     return DaskScheduler.objects.get(id=scheduler_id)
 
 
-@database_sync_to_async
-def get_condor_job_nodes(job):
-    dag = {}
-    nodes = job.condor_object.node_set
+def _display_node_name(job_name):
+    """The node name as shown in the diagram."""
+    return job_name.replace("_", " ").replace("-", " ").title()
+
+
+def _persisted_dag_nodes(job):
+    """Each node's name, status, cluster id and parent names, from the database.
+
+    Names are the CondorPy job name, the same as the live source uses, so a workflow
+    whose node names contain spaces produces the same keys whichever source served it.
+    Condor assigns cluster ids at submit time and does not persist them; nothing reads
+    them, and fetching them would need the remote connection this path exists to avoid.
+    """
+    nodes = list(job.node_set.select_subclasses().prefetch_related("parent_nodes"))
+    names = {node.pk: node.job.name for node in nodes}
 
     for node in nodes:
-        parents = []
-        for parent in node.parent_nodes:
-            parents.append(parent.job.name)
+        yield (
+            names[node.pk],
+            node.cached_node_status or "Unexpanded",
+            None,
+            [names.get(p.pk, p.name) for p in node.parent_nodes.all()],
+        )
 
-        job_name = node.job.name
-        display_job_name = job_name.replace("_", " ").replace("-", " ").title()
-        dag[node.job.name] = {
-            "cluster_id": node.job.cluster_id,
-            "display": display_job_name,
-            "status": CondorWorkflow.STATUS_MAP[node.job.status].lower(),
+
+def _live_dag_nodes(job):
+    """The same, read from the scheduler: a connection plus one query per node."""
+    for node in job.condor_object.node_set:
+        yield (
+            node.job.name,
+            node.job.status,
+            node.job.cluster_id,
+            [parent.job.name for parent in node.parent_nodes],
+        )
+
+
+@database_sync_to_async
+def get_condor_job_nodes(job):
+    """Build the DAG for a CondorWorkflow.
+
+    Assembled from the database while persisted statuses are current -- statuses from
+    ``CondorWorkflowNode.cached_node_status``, topology from the node rows themselves.
+    A node with no persisted status has not been expanded by DAGMan yet and is reported
+    as ``Unexpanded``.
+
+    Only where the rows come from differs between the two sources; the shape they are
+    turned into is built in one place, so the two cannot drift apart.
+    """
+    nodes = _persisted_dag_nodes if job.node_statuses_are_current else _live_dag_nodes
+
+    return {
+        name: {
+            "cluster_id": cluster_id,
+            "display": _display_node_name(name),
+            # Defaulted rather than indexed: a persisted status comes from a remote
+            # reporter, and one condor does not define must not take the diagram down.
+            "status": CondorWorkflow.STATUS_MAP.get(status, "SUB").lower(),
             "parents": parents,
         }
-
-    return dag
+        for name, status, cluster_id, parents in nodes(job)
+    }
 
 
 @database_sync_to_async
 def get_job_statuses(job):
+    """Percentage of the workflow in each status.
+
+    The denominator has to match whatever the counts were taken from.
+    ``cached_node_statuses`` buckets every node row, so its values already sum to the node
+    count -- no second query for it. Reading ``num_jobs`` there would build the
+    condorpy workflow, which means a connection to the scheduler on every poll, the
+    cost this path exists to avoid.
+    """
     num_statuses = 0
     statuses = {"Completed": 0, "Error": 0, "Running": 0, "Aborted": 0}
-    for key, value in job.statuses.items():
+    if job.node_statuses_are_current:
+        node_statuses = job.cached_node_statuses
+        total = sum(node_statuses.values())
+    else:
+        node_statuses = job.statuses
+        total = job.num_jobs
+
+    for key, value in node_statuses.items():
         if key in statuses:
             num_statuses += value
-            statuses[key] = float(value) / float(job.num_jobs) * 100.0
+            statuses[key] = float(value) / float(total or 1) * 100.0
 
     return statuses, num_statuses
 

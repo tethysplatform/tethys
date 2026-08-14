@@ -13,6 +13,7 @@ import inspect
 from abc import abstractmethod
 
 from django.contrib.auth.models import User, Group
+from django.core import signing
 from django.db import models
 from django.utils import timezone
 from model_utils.managers import InheritanceManager
@@ -61,8 +62,15 @@ class TethysJob(models.Model):
 
     NON_TERMINAL_STATUS_CODES = VALID_STATUSES[0:5]
     TERMINAL_STATUS_CODES = VALID_STATUSES[5:-1]
+    # The statuses that mean there are results to process.
+    RESULTS_STATUS_CODES = ["COM", "VCP", "RES"]
 
     OTHER_STATUS_KEY = "__other_status__"
+    STATUS_REPORT_SALT = "tethys_compute.status_report"
+    # A report token has to outlive the job it authorises, so this is generous. It is
+    # here to bound how long one stays usable after being read off the condor queue,
+    # where any pool user can see it, not to expire it during a run.
+    STATUS_REPORT_MAX_AGE = datetime.timedelta(days=30)
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default="")
@@ -80,6 +88,7 @@ class TethysJob(models.Model):
     status_message = models.CharField(max_length=2048, blank=True, null=True)
     _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
+    _last_status_update = models.DateTimeField(blank=True, null=True)
 
     def __lt__(self, other):
         return self.id < other.id
@@ -167,11 +176,83 @@ class TethysJob(models.Model):
 
     @property
     def last_status_update(self):
-        if not getattr(self, "_last_status_update", None):
-            self._last_status_update = (
-                self.execute_time or timezone.now() - self.update_status_interval
+        """
+        Returns: when the status was last refreshed from the job's source, falling
+            back to a time far enough in the past that an update is due.
+        """
+        return self._last_status_update or (
+            self.execute_time or timezone.now() - self.update_status_interval
+        )
+
+    @property
+    def status_report_token(self):
+        """A token authorising status reports for this job and no other.
+
+        Signed with the portal's SECRET_KEY, so nothing has to be configured and
+        no secret has to be distributed. Hand it to whatever will report on the
+        job's behalf -- for condor jobs, by carrying it in the job ad -- and it can
+        only ever be used to report this job's status.
+        """
+        return signing.dumps(str(self.id), salt=self.STATUS_REPORT_SALT)
+
+    @classmethod
+    def id_from_status_report_token(cls, token):
+        """The job id a report token authorises, or None if it does not verify.
+
+        Tokens older than ``STATUS_REPORT_MAX_AGE`` no longer verify.
+        ``SignatureExpired`` is a ``BadSignature``, so both are refused the same way.
+        """
+        if not isinstance(token, str):
+            return None
+        try:
+            return signing.loads(
+                token,
+                salt=cls.STATUS_REPORT_SALT,
+                max_age=cls.STATUS_REPORT_MAX_AGE,
             )
-        return self._last_status_update
+        except signing.BadSignature:
+            return None
+
+    @property
+    def is_terminal(self):
+        """Whether the job has reached a status it will not move on from by itself.
+
+        A custom status is stored as ``OTH`` with its real name in
+        ``extended_properties``, so a custom status classified as terminal by
+        ``add_custom_terminal_status`` has to be recognised through that rather than
+        from the status code alone. A custom status that was never classified is in
+        neither list and is not treated as terminal.
+        """
+        if self._status != "OTH":
+            return self._status in self.TERMINAL_STATUS_CODES
+        return (
+            self.extended_properties.get(self.OTHER_STATUS_KEY)
+            in self.TERMINAL_STATUSES
+        )
+
+    @property
+    def post_processing_incomplete(self):
+        """Whether a finished job still owes the work that follows its status.
+
+        ``process_results`` stamps ``completion_time`` only once ``_process_results``
+        has returned, so a job in a results status without one did not get through it
+        -- for a condor job, its output was never synced back. Nothing else in the
+        model sets ``completion_time`` on this path, so no extra state is needed to
+        know this.
+
+        A status that was reported to us is recorded before that work runs, on purpose,
+        so that a failure syncing results cannot leave the portal believing a finished
+        job is still running. This is what makes such a report retryable: without it a
+        job whose post-processing failed is terminal forever, ``update_status`` treats
+        it as needing nothing, and the results are never fetched.
+
+        Note this cannot see a *resubmitted* job whose second run failed to
+        post-process, because ``execute`` leaves the first run's ``completion_time`` in
+        place.
+        """
+        return (
+            self._status in self.RESULTS_STATUS_CODES and self.completion_time is None
+        )
 
     @property
     def cached_status(self):
@@ -246,6 +327,14 @@ class TethysJob(models.Model):
             and self.extended_properties[self.OTHER_STATUS_KEY]
             in self.NON_TERMINAL_STATUSES
         )
+        # Decided here rather than below because being given a status moves the clock
+        # that is_time_to_update() reads, and because the state that matters is the one
+        # before this report was applied.
+        retry_post_processing = (
+            bool(status)
+            and self.post_processing_incomplete
+            and self.is_time_to_update()
+        )
 
         # Set status from status given
         if status:
@@ -258,6 +347,11 @@ class TethysJob(models.Model):
             if status != "OTH":
                 self.extended_properties.pop(self.OTHER_STATUS_KEY, None)
             self._status = status
+            # A reported status is as current as one we fetched ourselves, so move
+            # the clock is_time_to_update() reads. Without this, a job whose status
+            # is pushed to us is still refreshed from its source on the next poll,
+            # and reporting buys nothing.
+            self._last_status_update = timezone.now()
             self.save()
 
         # Update status if status not given and still pending/running
@@ -269,10 +363,20 @@ class TethysJob(models.Model):
         if update_needed:
             if self._status == "RUN" and (old_status in ("PEN", "SUB")):
                 self.start_time = timezone.now()
-            if self._status in ["COM", "VCP", "RES"]:
+            if self._status in self.RESULTS_STATUS_CODES:
                 self.process_results()
             elif self._status == "ERR" or self._status == "ABT":
                 self.completion_time = timezone.now()
+
+        # The job was already finished, so the block above did not run -- but the work
+        # that follows its status did not complete last time. Being told the status
+        # again is a retry of that work, and the only way it ever gets another chance.
+        # Not attempted when no status was given: a poll must not pay for a result sync,
+        # which for condor means SCP inside the request/response cycle. Rate-limited the
+        # same way a refresh is, so repeated reports for a job whose sync keeps failing
+        # cannot each start their own.
+        elif retry_post_processing:
+            self.process_results()
 
         self.save()
 
@@ -309,6 +413,21 @@ class TethysJob(models.Model):
         module_path = inspect.getmodule(function).__name__.split(".")
         module_path.append(function.__name__)
         self._process_results_function = ".".join(module_path)
+
+    def apply_node_statuses(self, status_by_name):
+        """Persist statuses reported for the individual parts of a job.
+
+        Most job types are a single unit with no parts to report on, so there is
+        nothing to record and nothing was applied. ``CondorWorkflow`` overrides this
+        to persist the status of each node in its DAG.
+
+        Args:
+            status_by_name(dict): name -> status name, as reported.
+
+        Returns:
+            dict: the reported statuses that were applied.
+        """
+        return {}
 
     def process_results(self, *args, **kwargs):
         """
