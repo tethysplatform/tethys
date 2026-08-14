@@ -1061,7 +1061,7 @@ ol_layers_init = function()
                   .catch(err => {
                     console.error('GML load failed: ', err);
                     gmlSource.removeLoadedExtent(extent);
-                    failure();
+                    failer();
                   })
               }
             })
