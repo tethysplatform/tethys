@@ -92,7 +92,7 @@ Next open the ``home.html`` in your ``templates/secure_map_services_tutorial`` d
 .. code-block:: html+django
 
     {% extends "tethys_layouts/map_layout/map_layout.html" %}
-    {% load tethys %}
+    {% load static tethys %}
 
 Now go ahead and open your app at localhost:8000 and you should see a fully interactive map like this one:
 
@@ -173,7 +173,7 @@ Then save your new Secure Map Service and assign it to the GEGD Secure Map Servi
 Now we'll be adding the GEGD service as a basemap to your MapLayout. Open your ``controllers.py`` and add the following to your MapLayout class:
 
 .. code-block:: python
-    :emphasize-lines: 6-11
+    :emphasize-lines: 7-12
 
     @controller(name='home')
     class SecureMapServiceMapLayout(MapLayout):
@@ -326,6 +326,10 @@ Our next step will be to add a new map layer to our MapLayout using the GRiD ser
             ]
             return layer_groups
 
+.. caution::
+
+    The ellipsis in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
+
 Now just go ahead and refresh your app and you should see the GRiD layer on your map. You can toggle the visibility of the layer using the layers control in the top right corner of the map.
     
 7. Update Service Parameters
@@ -357,6 +361,7 @@ We'll begin by adding a custom map tab to your MapLayout that will contain this 
 Now we'll need to add the gizmos for the form to your MapLayout class in ``controllers.py``. Add the following code:
 
 .. code-block:: python
+    :emphasize-lines: 1, 7-28
 
     from tethys_sdk.gizmos import Button, SelectInput
     ...
@@ -399,22 +404,26 @@ To add that functionality, first add the following imports to the top of `contro
 Then add the following ``post()`` method to your MapLayout class:
 
 .. code-block:: python
+    :emphasize-lines: 4-16
 
-    def post(self, request, *args, **kwargs):
-        grid_type = request.POST.get("grid_type")
-        if grid_type not in ["pointcloud", "raster"]:
-            return HttpResponse("Invalid GRID layer type selected.", status=400)
+    class SecureMapServiceMapLayout(MapLayout):
+        ...
 
-        App.update_secure_map_service_params(
-            App.GRID_SECURE_MAP_SERVICE_NAME,
-            params={
-                "typename": f"ms:gridws_{grid_type}",
-            },
-        )
+        def post(self, request, *args, **kwargs):
+            grid_type = request.POST.get("grid_type")
+            if grid_type not in ["pointcloud", "raster"]:
+                return HttpResponse("Invalid GRID layer type selected.", status=400)
 
-        return redirect(request.path)
+            App.update_secure_map_service_params(
+                App.GRID_SECURE_MAP_SERVICE_NAME,
+                params={
+                    "typename": f"ms:gridws_{grid_type}",
+                },
+            )
 
-Now go ahead and try selecting a different GRiD layer from the select input and clicking the "Update GRID Layer" button. The app will refresh and you should see the layer on the map update to reflect your selection. You can even go in and look at the service settings and see that the parameters have been updated to reflect your selection manually.
+            return redirect(request.path)
+
+Now go ahead and try selecting a different GRiD layer from the select input and clicking the "Update GRID Layer" button. The app will refresh and you should see the layer on the map update to reflect your selection. You can even go in and look at the service settings and see that the parameters have been updated to reflect your selection.
 
 8. Using a Secure Map Service as a Response
 ===========================================
@@ -477,7 +486,7 @@ Use these configurations for the new Secure Map Service:
 - **Legend Title:** GRiD AOIs
 - **Authentication Method:** OAuth
 - **OAuth Provider:** grid
-- **Service Type:** WMS
+- **Service Type:** REST/JSON API
 - **Use Proxy for Requests:** True
 - **Parameters:**
 
@@ -492,7 +501,7 @@ Use these configurations for the new Secure Map Service:
 
 Save your new Secure Map Service and assign it to the GRiD AOI Secure Map Service setting, then save your app settings.
 
-Next, add a new layer to your MapLayout class in ``controllers.py`` that will display the existing AOIs on the map. 
+Next, you'll add a new layer to your MapLayout class in ``controllers.py`` that will display the existing AOIs on the map. 
 
 For that you'll need to first add the following packages to the dependencies of your application. Open your ``install.yml`` and edit the requirements block like so:
 
@@ -526,7 +535,6 @@ Next, add the following imports to ``controllers.py``:
     from django.shortcuts import redirect
     from shapely import wkt
     from shapely.geometry import mapping
-    import json
     from .app import App
 
 Now add the following helper function to ``controllers.py``. This function will help format the AOI data returned from the GRiD service into a GeoJSON format that can be used to create a new MVLayer:
@@ -629,7 +637,7 @@ First, we'll need to make some updates to your ``controllers.py`` file.
 To start, update your imports:
 
 .. code-block:: python
-    :emphasize-lines: 3, 9
+    :emphasize-lines: 3, 8
 
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
@@ -638,7 +646,6 @@ To start, update your imports:
     from django.shortcuts import redirect
     from shapely import wkt
     from shapely.geometry import mapping
-    import json
     import requests
     from .app import App
 
@@ -647,7 +654,7 @@ Next, you need to add drawing capabilities to your map so that users can draw AO
 Begin by adding the MVDraw gizmo to your class:
 
 .. code-block:: python
-    :emphasize-lines: 6-11
+    :emphasize-lines: 13-17
 
     @controller(name='home')
     class SecureMapServiceMapLayout(MapLayout):
