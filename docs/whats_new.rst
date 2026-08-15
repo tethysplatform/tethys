@@ -42,6 +42,7 @@ See: :doc:`tethys_sdk/gizmos/time_picker`
 Bug Fixes
 ---------
 
+* Node statuses of finished condor workflows are served from the database instead of expiring: `PR 1298 <https://github.com/tethysplatform/tethys/pull/1298>`_
 * Login and register form fixes: `PR 1293 <https://github.com/tethysplatform/tethys/pull/1293>`_
 * Static file discovery fix for ``STATICFILES_USE_NPM``: `PR 1291 <https://github.com/tethysplatform/tethys/pull/1291>`_
 * Django 5 app initialization warning fix: `PR 1288 <https://github.com/tethysplatform/tethys/pull/1288>`_
