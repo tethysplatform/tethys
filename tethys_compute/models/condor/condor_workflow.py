@@ -109,10 +109,46 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         longer per pass than the interval for one job, so tying the two together
         would leave the statuses never current precisely when there is enough load
         for it to matter.
+
+        Age stops mattering once there is nothing left to learn. A workflow that has
+        left the queue with every node in a status it cannot leave will never report
+        again, so expiring its statuses only sends the views to the scheduler to be
+        told the same thing -- and a finished workflow is the one whose working
+        directory is most likely to have been cleaned up, which is what reading a
+        node's live status needs.
         """
         if self.node_statuses_updated is None:
             return False
+        if (
+            self.cached_status in self.TERMINAL_STATUSES
+            and self.all_node_statuses_are_terminal
+        ):
+            return True
         return timezone.now() - self.node_statuses_updated < self.node_statuses_max_age
+
+    @property
+    def all_node_statuses_are_terminal(self):
+        """Whether every node has reached a status it cannot leave.
+
+        Both halves are load-bearing. The workflow's own status is not enough,
+        because a node can be reported terminal and then requeued -- a held node
+        that DAGMan retries -- and the workflow is only terminal once DAGMan itself
+        has departed. The nodes are not enough either: a status recorded by a
+        reporter that never sent a final one leaves the last node non-terminal, and
+        that is exactly the copy that must not be trusted forever.
+
+        A node with no persisted status has not been heard about at all, so it
+        counts against the whole set rather than being skipped.
+
+        Returns: bool
+        """
+        statuses = list(self.node_set.values_list("cached_node_status", flat=True))
+        if not statuses:
+            return False
+        return all(
+            self.STATUS_MAP.get(status) in self.TERMINAL_STATUS_CODES
+            for status in statuses
+        )
 
     @property
     def cached_node_statuses(self):

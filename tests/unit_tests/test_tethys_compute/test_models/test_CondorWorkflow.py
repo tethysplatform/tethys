@@ -371,6 +371,49 @@ class CondorWorkflowTest(TethysTestCase):
 
         self.assertFalse(self.condorworkflow.node_statuses_are_current)
 
+    def set_node_statuses(self, *statuses):
+        nodes = (self.condorworkflowjobnode, self.condorworkflowjobnode_child)
+        for node, status in zip(nodes, statuses):
+            node.cached_node_status = status
+            node.save()
+
+    def test_finished_workflow_stays_current_however_old(self):
+        self.condorworkflow._status = "COM"
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertTrue(self.condorworkflow.node_statuses_are_current)
+
+    def test_finished_workflow_with_a_node_left_running_still_expires(self):
+        self.condorworkflow._status = "COM"
+        self.set_node_statuses("Completed", "Running")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
+
+    def test_unfinished_workflow_expires_even_with_every_node_terminal(self):
+        self.condorworkflow._status = "VAR"
+        self.set_node_statuses("Completed", "Completed")
+        self.condorworkflow.node_statuses_updated = tz.now() - datetime.timedelta(
+            days=30
+        )
+
+        self.assertFalse(self.condorworkflow.node_statuses_are_current)
+
+    def test_a_removed_node_counts_as_terminal(self):
+        self.set_node_statuses("Completed", "Removed")
+
+        self.assertTrue(self.condorworkflow.all_node_statuses_are_terminal)
+
+    def test_nodes_are_not_terminal_until_every_one_is_heard_from(self):
+        self.set_node_statuses("Completed")
+
+        self.assertFalse(self.condorworkflow.all_node_statuses_are_terminal)
+
     def test_cached_node_statuses_makes_no_remote_call(self):
         with mock.patch(
             "tethys_compute.models.condor.condor_workflow.CondorBase.condor_object"
