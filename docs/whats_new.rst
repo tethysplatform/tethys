@@ -42,6 +42,7 @@ See: :doc:`tethys_sdk/gizmos/time_picker`
 Bug Fixes
 ---------
 
+* Captcha field rendering fix for the login and register pages: `PR 1297 <https://github.com/tethysplatform/tethys/pull/1297>`_
 * Login and register form fixes: `PR 1293 <https://github.com/tethysplatform/tethys/pull/1293>`_
 * Static file discovery fix for ``STATICFILES_USE_NPM``: `PR 1291 <https://github.com/tethysplatform/tethys/pull/1291>`_
 * Django 5 app initialization warning fix: `PR 1288 <https://github.com/tethysplatform/tethys/pull/1288>`_
