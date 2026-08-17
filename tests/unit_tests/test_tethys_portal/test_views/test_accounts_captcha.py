@@ -22,7 +22,10 @@ class TethysPortalAccountsCaptchaRenderingTest(TestCase):
             return self.client.get(reverse("accounts:register"))
 
     @override_settings(
-        ENABLE_CAPTCHA=True, RECAPTCHA_PRIVATE_KEY="", RECAPTCHA_PUBLIC_KEY=""
+        ENABLE_CAPTCHA=True,
+        RECAPTCHA_PRIVATE_KEY="",
+        RECAPTCHA_PUBLIC_KEY="",
+        SHOW_PUBLIC_IF_NO_TENANT_FOUND=True,
     )
     def test_login_page_renders_captcha_when_enabled(self):
         reload(tp_forms)
@@ -33,7 +36,7 @@ class TethysPortalAccountsCaptchaRenderingTest(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertContains(response, 'name="captcha_1"')
 
-    @override_settings(ENABLE_CAPTCHA=False)
+    @override_settings(ENABLE_CAPTCHA=False, SHOW_PUBLIC_IF_NO_TENANT_FOUND=True)
     def test_login_page_omits_captcha_when_disabled(self):
         reload(tp_forms)
         self.assertNotIn("captcha", tp_forms.LoginForm().fields)
@@ -48,6 +51,7 @@ class TethysPortalAccountsCaptchaRenderingTest(TestCase):
         ENABLE_OPEN_SIGNUP=True,
         RECAPTCHA_PRIVATE_KEY="",
         RECAPTCHA_PUBLIC_KEY="",
+        SHOW_PUBLIC_IF_NO_TENANT_FOUND=True,
     )
     def test_register_page_renders_captcha_when_enabled(self):
         reload(tp_forms)
@@ -58,7 +62,11 @@ class TethysPortalAccountsCaptchaRenderingTest(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertContains(response, 'name="captcha_1"')
 
-    @override_settings(ENABLE_CAPTCHA=False, ENABLE_OPEN_SIGNUP=True)
+    @override_settings(
+        ENABLE_CAPTCHA=False,
+        ENABLE_OPEN_SIGNUP=True,
+        SHOW_PUBLIC_IF_NO_TENANT_FOUND=True,
+    )
     def test_register_page_omits_captcha_when_disabled(self):
         reload(tp_forms)
         self.assertNotIn("captcha", tp_forms.RegisterForm().fields)
