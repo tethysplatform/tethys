@@ -150,7 +150,8 @@ var map_clicked, set_map_on_click, clear_clicked_point, highlight_clicked_point;
 var update_field;
 
 // Utility Methods
-var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer;
+var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer,
+    get_token_headers, remove_token, load_tile_token, load_image_token;
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -919,9 +920,15 @@ ol_layers_init = function()
 
       // Tile layer case
       if (in_array(current_layer.source, TILE_SOURCES)) {
-        var resolutions, source_options, tile_grid;
+        var resolutions, source_options, tile_grid, tile_token;
 
-        source_options = current_layer.options;
+        tile_token = current_layer.options ? current_layer.options.token : null;
+        source_options = remove_token(current_layer.options);
+
+        // Load the tiles with an Authorization header when a token is given
+        if (tile_token) {
+          source_options['tileLoadFunction'] = load_tile_token(tile_token);
+        }
 
         if (source_options && 'tileGrid' in source_options) {
           source_options['tileGrid'] = new ol.tilegrid.TileGrid(source_options['tileGrid']);
@@ -968,8 +975,16 @@ ol_layers_init = function()
 
       // Image layer case
       else if (in_array(current_layer.source, IMAGE_SOURCES)) {
+        let image_token = current_layer.options ? current_layer.options.token : null;
+        let image_source_options = remove_token(current_layer.options);
+
+        // Load the images with an Authorization header when a token is given
+        if (image_token) {
+          image_source_options['imageLoadFunction'] = load_image_token(image_token);
+        }
+
         Source = string_to_function('ol.source.' + current_layer.source);
-        current_layer_layer_options['source'] = new Source(current_layer.options);
+        current_layer_layer_options['source'] = new Source(image_source_options);
         layer = new ol.layer.Image(current_layer_layer_options);
       }
 
@@ -1005,11 +1020,44 @@ ol_layers_init = function()
         else if (current_layer.source === KML){
           // From URL case
           if (current_layer.options.hasOwnProperty('url')) {
-            current_layer_layer_options['source'] = new ol.source.Vector({
-              url: current_layer.options.url,
-              format: new ol.format.KML(),
-              projection: new ol.proj.get(DEFAULT_PROJECTION)
-            });
+            let kml_url = current_layer.options.url;
+            let kml_token = current_layer.options.token;
+
+            // Load the KML with an Authorization header when a token is given
+            if (kml_token) {
+              let kml_format = new ol.format.KML();
+
+              let kml_url_source = new ol.source.Vector({
+                format: kml_format,
+                strategy: ol.loadingstrategy.all,
+                projection: new ol.proj.get(DEFAULT_PROJECTION),
+                loader: function(extent, resolution, projection, success, failer) {
+                  fetch(kml_url, {credentials: 'same-origin', headers: get_token_headers(kml_token)})
+                    .then(r => r.text())
+                    .then(text => {
+                      let features = kml_format.readFeatures(text, {
+                        featureProjection: DEFAULT_PROJECTION,
+                      });
+                      kml_url_source.addFeatures(features);
+                      if (success) { success(features); }
+                    })
+                    .catch(err => {
+                      console.error('KML load failed: ', err);
+                      kml_url_source.removeLoadedExtent(extent);
+                      if (failer) { failer(); }
+                    })
+                },
+              });
+
+              current_layer_layer_options['source'] = kml_url_source;
+            } else {
+              current_layer_layer_options['source'] = new ol.source.Vector({
+                url: kml_url,
+                format: new ol.format.KML(),
+                projection: new ol.proj.get(DEFAULT_PROJECTION)
+              });
+            }
+
             layer = new ol.layer.Vector(current_layer_layer_options);
           }
 
@@ -1043,12 +1091,7 @@ ol_layers_init = function()
                 let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
                 let url = baseUrl + sep + 'bbox=' + extent.join(',') + ',EPSG:3857';
 
-                let headers = {};
-                if (token) {
-                  headers['Authorization'] = 'Bearer ' + token;
-                }
-
-                fetch(url, {credentials: 'same-origin', headers: headers})
+                fetch(url, {credentials: 'same-origin', headers: get_token_headers(token)})
                   .then(r => r.text())
                   .then(text => {
                     let features = gmlFormat.readFeatures(text, {
@@ -1102,10 +1145,7 @@ ol_layers_init = function()
                   let sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
                   url += sep + 'bbox=' + extent.join(',') + ',' + DEFAULT_PROJECTION;
                 }
-                
-                let headers = {'Authorization': 'Bearer ' + token};
-
-                fetch(url, {credentials: 'same-origin', headers: headers})
+                fetch(url, {credentials: 'same-origin', headers: get_token_headers(token)})
                   .then(r => r.text())
                   .then(text => {
                     let features = vector_format.readFeatures(text, {
@@ -1125,7 +1165,7 @@ ol_layers_init = function()
             current_layer_layer_options['source'] = vector_source;
           } else {
             Source = string_to_function('ol.source.' + current_layer.source);
-            current_layer_layer_options['source'] = new Source(current_layer.options);
+            current_layer_layer_options['source'] = new Source(remove_token(current_layer.options));
           }
 
           layer = new ol.layer.Vector(current_layer_layer_options);
@@ -2416,6 +2456,72 @@ in_array = function(item, array)
 is_defined = function(variable)
 {
   return !!(typeof variable !== typeof undefined && variable !== false && variable !== null);
+};
+
+// Build request headers with a token for authentication
+get_token_headers = function(token) {
+  let headers = {};
+
+  if (token) {
+    headers['Authorization'] = 'Bearer ' + token;
+  }
+
+  return headers;
+};
+
+// Remove the token from the options object
+remove_token = function(options) {
+  if (!options) { return options; }
+
+  let stripped_options = Object.assign({}, options);
+  delete stripped_options.token;
+  return stripped_options;
+};
+
+// Load a tile with an authorization header
+load_tile_token = function(token) {
+  return function(tile, src) {
+    fetch(src, {credentials: 'same-origin', headers: get_token_headers(token)})
+      .then(r => {
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.blob();
+      })
+      .then(blob => {
+        let object_url = URL.createObjectURL(blob);
+        let image = tile.getImage();
+        image.onload = function() { URL.revokeObjectURL(object_url); };
+        image.src = object_url;
+      })
+      .catch(err => {
+        console.error('Tile load failed: ', err);
+        if (is_defined(ol.TileState) && tile.setState) {
+          tile.setState(ol.TileState.ERROR);
+        }
+      });
+  };
+};
+
+// Load an image with an authorization header
+load_image_token = function(token) {
+  return function(image, src) {
+    fetch(src, {credentials: 'same-origin', headers: get_token_headers(token)})
+      .then(r => {
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.blob();
+      })
+      .then(blob => {
+        let object_url = URL.createObjectURL(blob);
+        let img = image.getImage();
+        img.onload = function() { URL.revokeObjectURL(object_url); };
+        img.src = object_url;
+      })
+      .catch(err => {
+        console.error('Image load failed: ', err);
+        if (is_defined(ol.ImageState) && image.setState) {
+          image.setState(ol.ImageState.ERROR);
+        }
+      });
+  };
 };
 
 // Instantiate a function from a string
