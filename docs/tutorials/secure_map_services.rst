@@ -208,15 +208,26 @@ Then configure your portal to require users to link their GRiD account before be
 
     tethys settings --set OAUTH_REQUIREMENTS.secure_map_tutorial grid
 
-The last step required to configure your application to work with GRiD is to register your application with GRiD. You'll need to register your application with GRiD to get a client ID and client secret. You can do this by going to the GRiD developer portal and creating a new application. Use the following settings:
+The last step required to configure your application to work with GRiD is to register your application with GRiD to get a client ID and client secret. You can do this by going to the GRiD developer portal and setting up a new application with the following settings:
 
-- Go to https://grid.nga.mil/grid/api/application/list
-- Click on "Create new application"
-- Fill out the form with the following settings:
-  - **Application Name:** [YOUR APP NAME]
-  - **Redirect URI:** http://localhost:8000/oauth2/complete/grid/
-- Before submitting the form, make sure you've copied the client ID and client secret that are generated for your application. You'll need to add these to your Tethys Portal settings.
-- Add the provided redirect URI to the Redirect uris field, along with `http://localhost:8000/oauth2/complete/grid/`, with each URI separated by a space. You can update this list later when you deploy your app to a production server.
+#. Navigate to the `GRiD application list <https://grid.nga.mil/grid/api/application/list>`_.
+
+#. Click **Create new application**.
+
+#. Fill out the form:
+
+   :Application Name: Your application's name
+   :Redirect URIs: ``http://localhost:8000/oauth2/complete/grid/``
+
+   .. note::
+
+        Below the Redirect URIs field, you will see instructions to add a second redirect URI required 
+        for the GRiD service to work with Tethys. Add it to the same field, separated from the first 
+        by a space. You can update this list later when deploying to a production server.
+
+#. Copy the generated **client ID** and **client secret** and store them somewhere secure.
+
+#. Submit the form.
 
 Once you've registered your application, you'll need to add the client ID and client secret to your Tethys Portal settings. You can do this by running the following commands:
 
@@ -394,7 +405,7 @@ Now we'll need to add the gizmos for the form to your MapLayout class in ``contr
 
 Now if you refresh your app, you should see a new tab on the left that you can switch to with a select input and a button. Right now if you click the "Update GRID Layer" button, nothing will happen. We'll need to add a ``post()`` method to your MapLayout class to handle the form submission and update the GRiD service parameters.
 
-To add that functionality, first add the following imports to the top of `controllers.py`:
+To add that functionality, first add the following imports to the top of ``controllers.py``:
 
 .. code-block:: python
     
