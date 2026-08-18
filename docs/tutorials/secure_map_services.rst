@@ -72,7 +72,7 @@ If you've already generated a portal_config file, you may still need to generate
 3. Add a MapLayout
 ==================
 
-We'll be using a MapLayout for this application, so we'll begin by adding a MapLayout controller to your app. Begin by opening your ``controllers.py`` file and replacing the contents with the following code:
+We'll be using a MapLayout for this application, so we'll begin by adding a MapLayout controller to your app. Open your ``controllers.py`` file and replace the contents with the following code:
 
 .. code-block:: python
 
@@ -103,7 +103,7 @@ Now go ahead and open your app at localhost:8000 and you should see a fully inte
 ================
 Now, you'll be setting up your first SecureMapService that you'll be using as a basemap. You'll want to make sure you have created your GEGD account and have your API key ready.
 
-First, open your ``app.py`` file and first add the following import to the top of your file:
+First, open your ``app.py`` file and add the following import to the top of your file:
 
 .. code-block:: python
 
@@ -219,11 +219,11 @@ The last step required to configure your application to work with GRiD is to reg
    :Application Name: Your application's name
    :Redirect URIs: ``http://localhost:8000/oauth2/complete/grid/``
 
-   .. note::
+.. note::
 
-        Below the Redirect URIs field, you will see instructions to add a second redirect URI required 
-        for the GRiD service to work with Tethys. Add it to the same field, separated from the first 
-        by a space. You can update this list later when deploying to a production server.
+    Below the Redirect URIs field, you will see instructions to add a second redirect URI required 
+    for the GRiD service to work with Tethys. Add it to the same field, separated from the first 
+    by a space. You can update this list later when deploying to a production server.
 
 #. Copy the generated **client ID** and **client secret** and store them somewhere secure.
 
@@ -641,14 +641,14 @@ Go ahead and refresh your app and you should see the AOIs displayed on the map a
 
 The last feature we'll be adding to our app is the ability to use a SecureMapService as an endpoint that can be used to make requests to the service from your app. You'll be using the GRiD service for this example, allowing you to draw AOIs on the map and submitting them to the GRiD service to create new AOIs using the GRiD REST API.
 
-Now let's look at adding a new AOI to the GRiD service using the GRiD AOI Secure Map Service. We'll be adding a new form to the custom map tab that will allow the user to draw a new AOI on the map and submit it to the GRiD service.
+We'll be adding a new form to the custom map tab that will allow the user to set a name for their new AOI.
 
 First, we'll need to make some updates to your ``controllers.py`` file.
 
 To start, update your imports:
 
 .. code-block:: python
-    :emphasize-lines: 3, 8
+    :emphasize-lines: 8
 
     from tethys_sdk.layouts import MapLayout
     from tethys_sdk.routing import controller
@@ -657,7 +657,6 @@ To start, update your imports:
     from django.shortcuts import redirect
     from shapely import wkt
     from shapely.geometry import mapping
-    import requests
     from .app import App
 
 Next, you need to add drawing capabilities to your map so that users can draw AOIs on the map that they would like to submit to the GRiD service. We'll be using the MVDraw gizmo for this. 
