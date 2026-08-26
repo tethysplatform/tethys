@@ -172,6 +172,11 @@ vendor_static_dependencies = {
         version="1.11.3",
         css_path="font/bootstrap-icons.min.css",
     ),
+    "bootstrap_select2_5_theme": JsDelivrStaticDependency(
+        npm_name="select2-bootstrap-5-theme",
+        version="1.2.0",
+        css_path="dist/select2-bootstrap-5-theme.min.css",
+    ),
     "bootstrap-switch": JsDelivrStaticDependency(
         npm_name="bootstrap-switch",
         version="4.0.0-alpha.1",

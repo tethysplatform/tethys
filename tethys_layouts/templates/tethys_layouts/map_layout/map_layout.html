@@ -3,7 +3,9 @@
 
 {% block import_gizmos %}
   {% import_gizmo_dependency select_input %}
-  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+  <!-- Bootstrap Select2 Theme -->
+  {{ tethys.select2_bootstrap_5_theme.link_tag|safe }}
+  <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
 {% endblock %}
 
