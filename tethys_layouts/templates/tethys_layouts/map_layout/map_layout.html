@@ -6,7 +6,11 @@
   <!-- Bootstrap Select2 Theme -->
   {{ tethys.select2_bootstrap_5_theme.link_tag|safe }}
   <!-- Plotly -->
-  <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
+  {% if staticfiles_use_npm %}
+    {% import_gizmo_dependency plotly_view %}
+  {% else %}
+    <script src="https://cdn.plot.ly/plotly-{{ plotly_version }}.min.js"></script>
+  {% endif %}
 {% endblock %}
 
 {% block app_navigation %}
