@@ -65,9 +65,9 @@ class StaticDependency:
         elif not self.use_cdn:
             logger.warning(
                 f'The "STATICFILES_USE_NPM" setting is set to True, but the custom version "{self.npm_name}={version}" '
-                f"is not supported. A CDN will be used to attempt to provide the custom version ({self.version})."
+                f"is not available locally. Serving the installed version ({self.version}) instead."
             )
-            use_cdn = True
+            version = self.version
         return self._get_url(url_type, version, debug=debug, use_cdn=use_cdn)
 
     def get_js_urls(self, version=None):
