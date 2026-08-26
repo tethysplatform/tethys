@@ -228,6 +228,11 @@ vendor_static_dependencies = {
         js_path="cookies_min.js",
         debug_path_converter=lambda path: path.replace("_min", ""),
     ),
+    "fontawesome": JsDelivrStaticDependency(
+        npm_name="@fortawesome/fontawesome-free",
+        version="5.6.1",
+        css_path="css/all.min.css",
+    ),
     "graphlib": JsDelivrStaticDependency(
         npm_name="graphlib",
         version="2.1.8",
