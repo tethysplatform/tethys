@@ -9,6 +9,7 @@
 """
 
 from tethys_apps.templatetags.app_theme import register as app_theme_library
+from tethys_apps.templatetags.dependency import register as dependency_library
 from tethys_apps.templatetags.humanize import register as humanize_library
 from tethys_apps.templatetags.site_settings import register as site_settings_library
 from tethys_apps.templatetags.tags import register as tags_library
@@ -18,6 +19,7 @@ from django import template
 
 libraries = (
     app_theme_library,
+    dependency_library,
     humanize_library,
     site_settings_library,
     tags_library,
