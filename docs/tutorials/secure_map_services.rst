@@ -8,7 +8,7 @@ Secure Map Services
 
 This tutorial demonstrates how to use **Secure Map Services** in a Tethys app. A Secure Map Service
 lets app developers store the connection information and credentials for map services that
-require authentication — an API key or an OAuth2 access token — and then lets an app consume that
+require authentication — an API key or an OAuth2 access token — and, when proxying is enabled, consume that
 service without ever handling the credentials itself or exposing them to the user/browser.
 
 The following topics are covered:

@@ -1908,7 +1908,7 @@ class TethysAppBase(TethysBase):
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.
             as_endpoint(bool): Returns endpoint url string if True, Defaults to False.
-            as_layer(bool): Returns GeoServerLayer object if True, Defaults to False.
+            as_layer(bool): Returns an MVLayer object if True, Defaults to False.
             as_response(bool): Returns requests.Response object if True, Defaults to False.
             param_overrides(dict): Dictionary of parameters to override for the map service request. Defaults to None.
             request_user(User): Django User object to use for the request. Defaults to None.
@@ -1948,7 +1948,7 @@ class TethysAppBase(TethysBase):
         """
         Resolve the named SecureMapServiceSetting.
 
-        This function is kept seperate from ``get_secure_map_service`` to allow for lazy evaluation of the endpoint url.
+        This function is kept separate from ``get_secure_map_service`` to allow for lazy evaluation of the endpoint url.
 
         Args:
             name(str): name of the SecureMapServiceSetting as defined in the app.py.

@@ -107,7 +107,7 @@ class TestTethysServicesAdmin(unittest.TestCase):
     @mock.patch("tethys_services.admin.import_string")
     def test_SecureMapServiceForm_with_authentication_backends_no_name(self, mock_is):
         mock_args = mock.MagicMock()
-        # Mock an object withou a name attribute
+        # Mock an object without a name attribute
         mock_is.return_value = object()
 
         ret = SecureMapServiceForm(mock_args)

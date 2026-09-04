@@ -890,7 +890,7 @@ class MapLayoutMixin:
         Build a GML Map Server MVLayer object with supplied arguments.
 
         Args:
-            endpoint(str): Full ArcGIS REST URL for the layer (e.g.: "https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer").
+            endpoint(str): Full URL for the GML or WFS layer endpoint.
             layer_name(str): Programmatic name of the layer (e.g.: "ESRI_StateCityHighway_USA").
             layer_title(str): Title of layer to display in Layer Picker (e.g.: "ESRI Highways").
             layer_variable(str): Variable type/class of the layer (e.g.: "highways").
