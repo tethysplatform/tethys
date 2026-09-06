@@ -22,12 +22,9 @@ class GRiDOAuth2(BaseOAuth2):
     SCOPE_SEPARATOR = ","
 
     def user_data(self, access_token, *args, **kwargs):
-        return {"access_token": access_token}
+        # GRiD's OAuth2 does not provide user information, it is used for authorization only.
+        return {}
 
     def get_user_details(self, response):
-        return {
-            "username": response.get("username", ""),
-            "email": response.get("email", ""),
-            "first_name": response.get("first_name", ""),
-            "last_name": response.get("last_name", ""),
-        }
+        # No profile data is available through the GRiD Oauth2 service for the user.
+        return {}
