@@ -464,6 +464,9 @@ class SecureMapService(models.Model):
         Returns:
             str: The OAuth token for the user.
         """
+        from social_django.utils import load_strategy
+        from social_core.exceptions import AuthException
+        
         if self.authentication_method != "oauth":
             raise ValueError(
                 "Authentication method must be 'oauth' to retrieve an OAuth token."
@@ -478,7 +481,11 @@ class SecureMapService(models.Model):
         except ObjectDoesNotExist:
             raise ValueError(f"User not linked to {self.oauth_provider}.")
 
-        access_token = auth.extra_data.get("access_token")
+        try:
+            access_token = auth.get_access_token(load_strategy())
+        except AuthException as e:
+            raise ValueError(f"Failed to retrieve access token for {self.oauth_provider}: {e}")
+
         if not access_token:
             raise ValueError("No access token found for user.")
 
