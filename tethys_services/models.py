@@ -441,6 +441,10 @@ class SecureMapService(models.Model):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        if self.params is not None and not isinstance(self.params, dict):
+            raise ValidationError({"params": "Parameters must be a JSON object (e.g. {\"key\": \"value\"})"})
+
     @classmethod
     def get_authentication_method_options(cls):
         """
@@ -489,6 +493,11 @@ class SecureMapService(models.Model):
         """
         if not self.params:
             return {}
+        if not isinstance(self.params, dict):
+            raise ValueError(
+                f"SecureMapService '{self.name}': params must be a JSON object, "
+                f"got {type(self.params).__name__}."
+            )
 
         safe_attribute_names = {
             f.name: str(getattr(self, f.name, "") or "") for f in self._meta.fields
