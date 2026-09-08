@@ -20,7 +20,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.urls import reverse_lazy
+from django.urls import reverse
+from django.utils.functional import lazy
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import (
     TethysAppSettingNotAssigned,
@@ -1175,10 +1176,14 @@ class SecureMapServiceSetting(TethysAppSetting):
             # runtime. This allows the url to be referenced before apps are
             # fully loaded and the urls are registered. This helps in cases
             # like using a map service for a MapLayout basemap
-            endpoint = reverse_lazy(
-                "secure_map_proxy", kwargs={"setting_id": service.pk}
-            )
-            return endpoint
+            def build_proxy_url():
+                url = reverse("secure_map_proxy", kwargs={"setting_id": service.pk})
+                if param_overrides:
+                    return f"{url}?{urlencode(param_overrides)}"
+                return url
+
+            return lazy(build_proxy_url, str)()
+    
         endpoint = service.endpoint
         params = service.get_resolved_params()
         if param_overrides:
@@ -1248,11 +1253,7 @@ class SecureMapServiceSetting(TethysAppSetting):
         if not resp.ok:
             log.error(
                 f"SecureMapService with name {service.name} request failed: \n"
-                f"url: {service.endpoint}\n"
-                f"params: {params}\n"
-                f"headers: {headers}\n"
-                f"status_code: {resp.status_code}\n"
-                f"response_text: {resp.text}"
+                f"code: {resp.status_code}\n"
             )
         resp.raise_for_status()
         return resp
