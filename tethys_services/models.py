@@ -528,6 +528,8 @@ class SecureMapService(models.Model):
         Args:
             new_params (dict): The parameters to merge into the service parameters.
         """
+        if not isinstance(new_params, dict):
+            raise ValueError("new_params must be a JSON object (dict).")
         params = self.params or {}
         params.update(new_params)
         self.params = params
