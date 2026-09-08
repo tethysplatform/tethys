@@ -70,10 +70,11 @@ SECRET_KEY = portal_config_settings.pop("SECRET_KEY", generate_secret_key())
 SALT_KEY = portal_config_settings.pop("SALT_KEY", None)
 
 if not SALT_KEY:
-    log.warning("SALT_KEY not found in portal_config.yml"
-                "Any data stored in encrypted fields will be inaccessible after a restart."
-                "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY." 
-                )
+    log.warning(
+        "SALT_KEY not found in portal_config.yml"
+        "Any data stored in encrypted fields will be inaccessible after a restart."
+        "Run 'tethys settings --generate-salt-key' to generate a SALT_KEY."
+    )
     SALT_KEY = generate_salt_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
