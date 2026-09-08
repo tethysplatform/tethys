@@ -1183,20 +1183,11 @@ class SecureMapServiceSetting(TethysAppSetting):
                 return url
 
             return lazy(build_proxy_url, str)()
-    
+
         endpoint = service.endpoint
         params = service.get_resolved_params()
         if param_overrides:
             params.update(param_overrides)
-
-        # If the API key is not already included in the params, add it
-        # This allows for the API key to be included in the params with a placeholder (e.g. ${api_key})
-        # or to be assigned to a different parameter name if the service expects it that way
-        if (
-            service.authentication_method == "api_key"
-            and service.api_key not in params.values()
-        ):
-            params["api_key"] = service.api_key
 
         query_string = urlencode(params)
         separator = "&" if "?" in endpoint else "?"

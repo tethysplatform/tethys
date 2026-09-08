@@ -497,6 +497,14 @@ class SecureMapService(models.Model):
             if isinstance(value, str):
                 value = Template(value).safe_substitute(safe_attribute_names)
             resolved_params[key] = value
+
+        if (
+            self.authentication_method == "api_key"
+            and self.api_key
+            and self.api_key not in resolved_params.values()
+        ):
+            resolved_params["api_key"] = self.api_key
+
         return resolved_params
 
     def update_params(self, new_params):
