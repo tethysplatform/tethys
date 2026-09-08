@@ -319,7 +319,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         assert ret.status_code == 500
         assert ret.content == b"Failed to retrieve OAuth token."
 
-    @mock.patch("tethys_apps.models.requests.request")
+    @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_empty_304(self, mock_get, mock_request_func):
         mock_request = mock.MagicMock()
@@ -335,7 +335,7 @@ class TethysAppsViewsTest(unittest.TestCase):
 
         assert ret.status_code == 304
 
-    @mock.patch("tethys_apps.models.requests.request")
+    @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_oauth_no_extra_headers(self, mock_get, mock_request_func):
         mock_request = mock.MagicMock(method="POST", body=b"test_body")
@@ -361,7 +361,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         assert ret.status_code == 200
         assert b"".join(ret.streaming_content) == b"response_content"
 
-    @mock.patch("tethys_apps.models.requests.request")
+    @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_api_key_no_extra_headers(
         self, mock_get, mock_request_func
@@ -389,7 +389,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         assert ret.status_code == 200
         assert b"".join(ret.streaming_content) == b"response_content"
 
-    @mock.patch("tethys_apps.models.requests.request")
+    @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_oauth_with_extra_headers(
         self, mock_get, mock_request_func
@@ -429,7 +429,7 @@ class TethysAppsViewsTest(unittest.TestCase):
         assert ret.headers["Cache-Control"] == "max-age=3600"
         assert ret.headers["Expires"] == "test_expire_date"
 
-    @mock.patch("tethys_apps.models.requests.request")
+    @mock.patch("tethys_apps.views.requests.request")
     @mock.patch("tethys_services.models.SecureMapService.objects.get")
     def test_secure_map_proxy_api_key_content_type(self, mock_get, mock_request_func):
         mock_request = mock.MagicMock(method="POST", body=b"test_body")
