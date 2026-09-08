@@ -1199,7 +1199,8 @@ class SecureMapServiceSetting(TethysAppSetting):
             params["api_key"] = service.api_key
 
         query_string = urlencode(params)
-        url = f"{endpoint}?{query_string}" if query_string else endpoint
+        separator = "&" if "?" in endpoint else "?"
+        url = f"{endpoint}{separator}{query_string}" if query_string else endpoint
         return url
 
     def _build_layer(self, param_overrides=None, request_user=None):
