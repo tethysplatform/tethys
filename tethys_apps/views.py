@@ -199,14 +199,31 @@ def secure_map_proxy(request, setting_id):
         if value:
             headers[header] = value
 
-    resp = requests.request(
-        method=request.method,
-        url=service.endpoint,
-        params=params,
-        headers=headers,
-        data=request.body if request.body else None,
-        stream=True,
+    connection_timeout = (
+        service.connection_timeout if service.connection_timeout is not None else 10
     )
+    read_timeout = service.read_timeout if service.read_timeout is not None else 30
+    try:
+        resp = requests.request(
+            method=request.method,
+            url=service.endpoint,
+            params=params,
+            headers=headers,
+            data=request.body if request.body else None,
+            stream=True,
+            timeout=(connection_timeout, read_timeout),
+        )
+    except requests.Timeout:
+        logger.error(
+            f"Request to {service.endpoint} timed out. "
+            f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
+        )
+        return HttpResponse("Request timed out.", status=504)
+
+    if not resp.ok:
+        logger.error(
+            f"Upstream request to {service.endpoint} failed with status {resp.status_code}."
+        )
 
     # A 304 has no body, so return it directly rather than returning an empty response
     if resp.status_code == 304:
@@ -222,5 +239,9 @@ def secure_map_proxy(request, setting_id):
         value = resp.headers.get(header)
         if value:
             proxy_response[header] = value
+
+    # Prevent shared caches from storing OAuth2 responses fetched with user credentials.
+    if service.authentication_method == "oauth":
+        proxy_response["Cache-Control"] = "private, no-store"
 
     return proxy_response

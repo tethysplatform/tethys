@@ -431,6 +431,8 @@ class SecureMapService(models.Model):
     )
     params = models.JSONField(blank=True, null=True, default=dict)
     use_proxy = models.BooleanField(default=False)  # Hide API key in requests
+    connection_timeout = models.IntegerField(default=10, null=True, blank=True)
+    read_timeout = models.IntegerField(default=30, null=True, blank=True)
 
     class Meta:
         verbose_name = "Secure Map Service"

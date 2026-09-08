@@ -1241,7 +1241,25 @@ class SecureMapServiceSetting(TethysAppSetting):
                 )
             headers["Authorization"] = f"Bearer {service.get_oauth_token(request_user)}"
 
-        resp = requests.get(service.endpoint, params=params, headers=headers)
+        connection_timeout = (
+            service.connection_timeout if service.connection_timeout is not None else 10
+        )
+        read_timeout = service.read_timeout if service.read_timeout is not None else 30
+        try:
+            resp = requests.get(
+                service.endpoint,
+                params=params,
+                headers=headers,
+                timeout=(connection_timeout, read_timeout),
+            )
+
+        except requests.Timeout:
+            log.error(
+                f"SecureMapService with name {service.name} request timed out. "
+                f"(connection_timeout: {connection_timeout}s, read_timeout: {read_timeout}s)"
+            )
+            raise
+
         if not resp.ok:
             log.error(
                 f"SecureMapService with name {service.name} request failed: \n"
