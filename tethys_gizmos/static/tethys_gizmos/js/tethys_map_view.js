@@ -151,7 +151,7 @@ var update_field;
 
 // Utility Methods
 var is_defined, in_array, string_to_function, build_ol_objects, add_default_base_map_layer,
-    get_token_headers, remove_token, load_tile_token, load_image_token;
+    get_token_headers, remove_token, load_image_or_tile_token 
 
 // Class Declarations
 var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -927,7 +927,7 @@ ol_layers_init = function()
 
         // Load the tiles with an Authorization header when a token is given
         if (tile_token) {
-          source_options['tileLoadFunction'] = load_tile_token(tile_token);
+          source_options['tileLoadFunction'] = load_image_or_tile_token(tile_token, ol.TileState.ERROR);
         }
 
         if (source_options && 'tileGrid' in source_options) {
@@ -980,7 +980,7 @@ ol_layers_init = function()
 
         // Load the images with an Authorization header when a token is given
         if (image_token) {
-          image_source_options['imageLoadFunction'] = load_image_token(image_token);
+          image_source_options['imageLoadFunction'] = load_image_or_tile_token(image_token, ol.ImageState.ERROR);
         }
 
         Source = string_to_function('ol.source.' + current_layer.source);
@@ -2478,32 +2478,10 @@ remove_token = function(options) {
   return stripped_options;
 };
 
-// Load a tile with an authorization header
-load_tile_token = function(token) {
-  return function(tile, src) {
-    fetch(src, {credentials: 'same-origin', headers: get_token_headers(token)})
-      .then(r => {
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.blob();
-      })
-      .then(blob => {
-        let object_url = URL.createObjectURL(blob);
-        let image = tile.getImage();
-        image.onload = function() { URL.revokeObjectURL(object_url); };
-        image.src = object_url;
-      })
-      .catch(err => {
-        console.error('Tile load failed: ', err);
-        if (is_defined(ol.TileState) && tile.setState) {
-          tile.setState(ol.TileState.ERROR);
-        }
-      });
-  };
-};
 
-// Load an image with an authorization header
-load_image_token = function(token) {
-  return function(image, src) {
+// Load an image or tile with an authorization header
+load_image_or_tile_token = function(token, error_state) {
+  return function(image_or_tile, src) {
     fetch(src, {credentials: 'same-origin', headers: get_token_headers(token)})
       .then(r => {
         if (!r.ok) { throw new Error('HTTP ' + r.status); }
@@ -2511,14 +2489,14 @@ load_image_token = function(token) {
       })
       .then(blob => {
         let object_url = URL.createObjectURL(blob);
-        let img = image.getImage();
+        let img = image_or_tile.getImage();
         img.onload = function() { URL.revokeObjectURL(object_url); };
         img.src = object_url;
       })
       .catch(err => {
-        console.error('Image load failed: ', err);
-        if (is_defined(ol.ImageState) && image.setState) {
-          image.setState(ol.ImageState.ERROR);
+        console.error('Load failed for ' + src + ': ', err);
+        if (is_defined(error_state) && image_or_tile.setState) {
+          image_or_tile.setState(error_state);
         }
       });
   };
