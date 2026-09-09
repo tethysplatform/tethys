@@ -11,17 +11,6 @@ class SecureMapServiceTests(TethysTestCase):
         )
         self.assertEqual("test_secure_map_service", str(secure_map_service))
 
-    def test_get_authentication_method_options(self):
-        secure_map_service = SecureMapService(
-            name="test_secure_map_service", endpoint="http://example.com"
-        )
-
-        expected_options = ["api_key", "oauth"]
-
-        actual_options = secure_map_service.get_authentication_method_options()
-        for option in expected_options:
-            self.assertIn(option, actual_options)
-
     def test_get_oauth_token_api_key(self):
         secure_map_service = SecureMapService(
             name="test_secure_map_service",

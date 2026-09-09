@@ -445,16 +445,6 @@ class SecureMapService(models.Model):
         if self.params is not None and not isinstance(self.params, dict):
             raise ValidationError({"params": "Parameters must be a JSON object (e.g. {\"key\": \"value\"})"})
 
-    @classmethod
-    def get_authentication_method_options(cls):
-        """
-        Get the available authentication method options for the SecureMapService model.
-        This method is used for populating the choices in the admin form.
-        """
-        return [
-            value for value, _ in cls._meta.get_field("authentication_method").choices
-        ]
-
     def get_oauth_token(self, user):
         """
         Retrieve the OAuth token for the given user.
@@ -466,7 +456,7 @@ class SecureMapService(models.Model):
         """
         from social_django.utils import load_strategy
         from social_core.exceptions import AuthException
-        
+
         if self.authentication_method != "oauth":
             raise ValueError(
                 "Authentication method must be 'oauth' to retrieve an OAuth token."
