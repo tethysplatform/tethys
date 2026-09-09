@@ -149,7 +149,7 @@ def return_item(container, i):
         return None
 
 
-def json_data_handler(obj):
+def _json_data_handler(obj):
     if isinstance(obj, datetime):
         return time.mktime(obj.timetuple()) * 1000
     elif isinstance(obj, Promise):
@@ -164,7 +164,7 @@ def jsonify(data):
     """
     Convert python data structures into a JSON string
     """
-    return json.dumps(data, default=json_data_handler)
+    return json.dumps(data, default=_json_data_handler)
 
 
 @register.filter
